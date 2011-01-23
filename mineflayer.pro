@@ -6,7 +6,7 @@
 
 QT       += core gui opengl
 
-TARGET = minecraft-client
+TARGET = mineflayer
 TEMPLATE = app
 
 
