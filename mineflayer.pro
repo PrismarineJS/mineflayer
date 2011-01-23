@@ -14,13 +14,15 @@ SOURCES += main.cpp \
     Server.cpp \
     ConnectionSettings.cpp \
     Messages.cpp \
-    IncomingMessageParser.cpp
+    IncomingMessageParser.cpp \
+    RingBuffer.cpp
 HEADERS += MainWindow.h \
     ConnectDialog.h \
     GameWidget.h \
     Server.h \
     Messages.h \
     ConnectionSettings.h \
-    IncomingMessageParser.h
+    IncomingMessageParser.h \
+    RingBuffer.h
 FORMS += MainWindow.ui \
     ConnectDialog.ui

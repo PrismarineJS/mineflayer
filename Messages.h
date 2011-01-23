@@ -70,17 +70,21 @@ protected:
 
 class OutgoingMessage : public Message {
 public:
+    static const qint32 c_protocol_version;
     virtual ~OutgoingMessage() {}
     void writeToStream(QDataStream & stream);
 protected:
     OutgoingMessage(MessageType messageType) : Message(messageType) {}
     virtual void writeMessageBody(QDataStream & stream) = 0;
+
     static void writeString(QDataStream & stream, QString string);
 };
 
 class KeepAliveMessage : public OutgoingMessage {
 public:
     KeepAliveMessage() : OutgoingMessage(KeepAlive) {}
+protected:
+    virtual void writeMessageBody(QDataStream &) {}
 };
 
 class LoginRequestMessage : public OutgoingMessage {
@@ -89,6 +93,8 @@ public:
     QString password;
     LoginRequestMessage(QString username, QString password) : OutgoingMessage(LoginRequest),
         username(username), password(password) {}
+protected:
+    virtual void writeMessageBody(QDataStream &stream);
 };
 
 class HandshakeRequestMessage : public OutgoingMessage {
@@ -115,10 +121,26 @@ public:
 protected:
     IncomingMessage(MessageType messageType) : Message(messageType) {}
 
-    int parseInt16(QByteArray buffer, int index, qint16 & string);
-    // parses a string from buffer at index into the string parameter.
-    // returns the next index after the string or -1.
-    int parseString(QByteArray buffer, int index, QString & string);
+    // parsing methods return -1 if they were unable to parse the data into the parameter.
+    // if they're successful they return the index after the data.
+    int parseInt8(QByteArray buffer, int index, qint8 & value);
+    int parseInt16(QByteArray buffer, int index, qint16 & value);
+    int parseInt32(QByteArray buffer, int index, qint32 & value);
+    int parseInt64(QByteArray buffer, int index, qint64 & value);
+    int parseFloat(QByteArray buffer, int index, float & value);
+    int parseDouble(QByteArray buffer, int index, double & value);
+    int parseString(QByteArray buffer, int index, QString & value);
+};
+
+class LoginRespsonseMessage : public IncomingMessage {
+public:
+    qint32 entity_id;
+    QString _unknown_1;
+    QString _unknown_2;
+    qint64 map_seed;
+    qint8 dimension; // 0: normal, -1: nether,
+    LoginRespsonseMessage() : IncomingMessage(LoginRequest) {}
+    virtual int parse(QByteArray buffer);
 };
 
 class HandshakeResponseMessage : public IncomingMessage {
