@@ -3,6 +3,7 @@
 
 #include "ConnectionSettings.h"
 #include "Messages.h"
+#include "IncomingMessageParser.h"
 
 #include <QObject>
 #include <QThread>
@@ -36,7 +37,6 @@ public:
 
     void setPassword(QString password);
     void setUsername(QString username);
-    void setNeedHardware(bool need_hardware);
 
     // returns the ConnectionResultMessage that the server gave upon connection
     QSharedPointer<IncomingMessage> connectionResultMessage() const { return m_connection_result; }
@@ -49,12 +49,6 @@ signals:
 
     void loginStatusUpdated(LoginStatus status);
     void socketDisconnected();
-
-    // gives you progress of incoming messages.
-    // don't try to access the data of message because it will be garbage. do that in
-    // messageReceived. use it only to tell messages apart. You are, however, guaranteed
-    // ability to read message->type.
-    void progress(qint64 bytesTransferred, qint64 bytesTotal, IncomingMessage * message);
 
     void pingComputed(int ms);
 
@@ -87,6 +81,7 @@ private:
 
     QThread * m_socket_thread;
     QTcpSocket * m_socket;
+    IncomingMessageParser * m_parser;
 
     LoginStatus m_login_state;
 

@@ -13,12 +13,14 @@ SOURCES += main.cpp \
     GameWidget.cpp \
     Server.cpp \
     ConnectionSettings.cpp \
-    Messages.cpp
+    Messages.cpp \
+    IncomingMessageParser.cpp
 HEADERS += MainWindow.h \
     ConnectDialog.h \
     GameWidget.h \
     Server.h \
     Messages.h \
-    ConnectionSettings.h
+    ConnectionSettings.h \
+    IncomingMessageParser.h
 FORMS += MainWindow.ui \
     ConnectDialog.ui

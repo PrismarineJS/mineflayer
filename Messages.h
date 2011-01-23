@@ -2,9 +2,11 @@
 #define MESSAGES_H
 
 #include <QString>
+#include <QDataStream>
+
 
 class Message {
-protected:
+public:
     enum MessageType {
         KeepAlive=0x00,
         LoginRequest=0x01,
@@ -61,6 +63,8 @@ protected:
     };
 
     MessageType messageType;
+
+protected:
     Message(MessageType messageType) : messageType(messageType) {}
 };
 
@@ -70,6 +74,8 @@ public:
     void writeToStream(QDataStream & stream);
 protected:
     OutgoingMessage(MessageType messageType) : Message(messageType) {}
+    virtual void writeMessageBody(QDataStream & stream) = 0;
+    static void writeString(QDataStream & stream, QString string);
 };
 
 class KeepAliveMessage : public OutgoingMessage {
@@ -90,15 +96,36 @@ public:
     QString username;
     HandshakeRequestMessage(QString username) : OutgoingMessage(Handshake),
         username(username) {}
+    virtual void writeMessageBody(QDataStream & stream);
 };
 
 
 class DummyDisconnectMessage : public OutgoingMessage {
 public:
     DummyDisconnectMessage() : OutgoingMessage(DummyDisconnect) {}
+    virtual void writeMessageBody(QDataStream &) {};
 };
 
 class IncomingMessage : public Message {
+public:
+    virtual ~IncomingMessage() {}
+    // attempts to parse entire message from the beginning of the buffer.
+    // returns length of message parsed, or -1 if message is not compelte.
+    virtual int parse(QByteArray buffer) = 0;
+protected:
+    IncomingMessage(MessageType messageType) : Message(messageType) {}
+
+    int parseInt16(QByteArray buffer, int index, qint16 & string);
+    // parses a string from buffer at index into the string parameter.
+    // returns the next index after the string or -1.
+    int parseString(QByteArray buffer, int index, QString & string);
+};
+
+class HandshakeResponseMessage : public IncomingMessage {
+public:
+    QString connectionHash;
+    HandshakeResponseMessage() : IncomingMessage(Handshake) {}
+    virtual int parse(QByteArray buffer);
 };
 
 #endif // MESSAGES_H

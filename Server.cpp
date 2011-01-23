@@ -8,7 +8,7 @@ Server::Server(ConnectionSettings connection_info, QString password, bool hardwa
     m_password(password),
     m_hardware(hardware),
     m_socket_thread(NULL),
-    m_socket(NULL)
+    m_parser(NULL)
 {
     // we run in m_socket_thread
     m_socket_thread = new QThread(this);
@@ -22,6 +22,7 @@ Server::Server(ConnectionSettings connection_info, QString password, bool hardwa
 
 Server::~Server()
 {
+    delete m_parser;
 }
 
 void Server::initialize()
@@ -75,7 +76,7 @@ void Server::sendMessage(QSharedPointer<OutgoingMessage> msg)
         return;
     }
 
-    if (dynamic_cast<DummyDisconnectMessage *>(msg.data()) != NULL) {
+    if (msg.data()->messageType == Message::DummyDisconnect) {
         socketDisconnect();
         return;
     }
@@ -87,6 +88,13 @@ void Server::sendMessage(QSharedPointer<OutgoingMessage> msg)
 
 void Server::handleConnected()
 {
+    delete m_parser;
+    m_parser = new IncomingMessageParser(m_socket);
+
+    bool success;
+    success = connect(m_parser, SIGNAL(messageReceived(QSharedPointer<IncomingMessage>)), this, SLOT(processIncomingMessage(QSharedPointer<IncomingMessage>)));
+    Q_ASSERT(success);
+
     changeLoginState(WaitingForMagicalResponse);
     sendMessage(QSharedPointer<OutgoingMessage>(new HandshakeRequestMessage(m_connection_info.username)));
 }
@@ -156,9 +164,4 @@ void Server::setPassword(QString password)
 void Server::setUsername(QString username)
 {
     m_connection_info.username = username;
-}
-
-void Server::setNeedHardware(bool need_hardware)
-{
-    m_hardware = need_hardware;
 }
