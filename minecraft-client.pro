@@ -13,11 +13,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         MainWindow.cpp \
     ConnectDialog.cpp \
-    GameWidget.cpp
+    GameWidget.cpp \
+    Server.cpp
 
 HEADERS  += MainWindow.h \
     ConnectDialog.h \
-    GameWidget.h
+    GameWidget.h \
+    Server.h
 
 FORMS    += MainWindow.ui \
     ConnectDialog.ui
