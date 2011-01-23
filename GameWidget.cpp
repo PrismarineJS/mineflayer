@@ -2,6 +2,12 @@
 
 #include <QtGlobal>
 
+
+uint qHash(GameWidget::ChunkCoord coord)
+{
+    return (coord.x * 8191 + coord.z) * 131071 + coord.y;
+}
+
 GameWidget::GameWidget(QWidget *parent) :
     QGLWidget(parent)
 {
@@ -62,3 +68,30 @@ void GameWidget::mouseReleaseEvent(QMouseEvent *)
 {
 
 }
+
+int GameWidget::Chunk::indexOf(GameWidget::ChunkCoord coord) const
+{
+    return coord.y + (coord.z * (m_size_y+1)) + (coord.x * (m_size_y+1) * (m_size_z+1));
+}
+
+int GameWidget::Chunk::getType(GameWidget::ChunkCoord coord) const
+{
+    return m_type.at(indexOf(coord));
+}
+
+int GameWidget::Chunk::getMetadata(GameWidget::ChunkCoord coord) const
+{
+    return m_metadata.at(indexOf(coord));
+}
+
+int GameWidget::Chunk::getLight(GameWidget::ChunkCoord coord) const
+{
+    return m_light.at(indexOf(coord));
+}
+
+int GameWidget::Chunk::getSkyLight(GameWidget::ChunkCoord coord) const
+{
+    return m_sky_light.at(indexOf(coord));
+}
+
+
