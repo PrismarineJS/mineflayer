@@ -14,6 +14,8 @@ SOURCES += main.cpp \
     Server.cpp \
     ConnectionSettings.cpp \
     Messages.cpp \
+    IncomingMessageParser.cpp \
+    RingBuffer.cpp \
     Camera.cpp \
     Util.cpp \
     Mesh.cpp \
@@ -29,6 +31,7 @@ HEADERS += MainWindow.h \
     Server.h \
     Messages.h \
     ConnectionSettings.h \
+<<<<<<< HEAD
     Camera.h \
     Util.h \
     Mesh.h \
@@ -37,7 +40,8 @@ HEADERS += MainWindow.h \
     Drawable.h \
     Bitmap.h \
     Chunk.h \
-    Constants.h
-
+    Constants.h \
+    IncomingMessageParser.h \
+    RingBuffer.h
 FORMS += MainWindow.ui \
     ConnectDialog.ui

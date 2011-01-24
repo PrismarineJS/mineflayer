@@ -8,7 +8,8 @@ Server::Server(ConnectionSettings connection_info, QString password, bool hardwa
     m_password(password),
     m_hardware(hardware),
     m_socket_thread(NULL),
-    m_socket(NULL)
+    m_parser(NULL),
+    m_login_state(Disconnected)
 {
     // we run in m_socket_thread
     m_socket_thread = new QThread(this);
@@ -22,6 +23,7 @@ Server::Server(ConnectionSettings connection_info, QString password, bool hardwa
 
 Server::~Server()
 {
+    delete m_parser;
 }
 
 void Server::initialize()
@@ -75,7 +77,7 @@ void Server::sendMessage(QSharedPointer<OutgoingMessage> msg)
         return;
     }
 
-    if (dynamic_cast<DummyDisconnectMessage *>(msg.data()) != NULL) {
+    if (msg.data()->messageType == Message::DummyDisconnect) {
         socketDisconnect();
         return;
     }
@@ -87,7 +89,14 @@ void Server::sendMessage(QSharedPointer<OutgoingMessage> msg)
 
 void Server::handleConnected()
 {
-    changeLoginState(WaitingForMagicalResponse);
+    delete m_parser;
+    m_parser = new IncomingMessageParser(m_socket);
+
+    bool success;
+    success = connect(m_parser, SIGNAL(messageReceived(QSharedPointer<IncomingMessage>)), this, SLOT(processIncomingMessage(QSharedPointer<IncomingMessage>)));
+    Q_ASSERT(success);
+
+    changeLoginState(WaitingForHandshakeResponse);
     sendMessage(QSharedPointer<OutgoingMessage>(new HandshakeRequestMessage(m_connection_info.username)));
 }
 
@@ -120,9 +129,27 @@ void Server::processIncomingMessage(QSharedPointer<IncomingMessage> msg)
         socketDisconnect();
         return;
     }
-
-    // emit it if we didn't handle it
-    emit messageReceived(msg);
+    switch (msg.data()->messageType) {
+        case Message::Handshake: {
+            HandshakeResponseMessage * message = (HandshakeResponseMessage *)msg.data();
+            // we don't support authenticated logging in yet.
+            Q_ASSERT_X(message->connectionHash == HandshakeResponseMessage::AuthenticationNotRequired, "",
+                       (QString("unexpected connection hash: ") + message->connectionHash).toStdString().c_str());
+            changeLoginState(WaitingForLoginResponse);
+            sendMessage(QSharedPointer<OutgoingMessage>(new LoginRequestMessage(m_connection_info.username, m_connection_info.password)));
+            break;
+        }
+        case Message::DisconnectOrKick: {
+            // TODO: use the reason somehow
+            finishWritingAndDisconnect();
+            break;
+        }
+        default: {
+            // emit it if we didn't handle it
+            emit messageReceived(msg);
+            break;
+        }
+    }
 }
 
 void Server::changeLoginState(LoginStatus state)
@@ -156,9 +183,4 @@ void Server::setPassword(QString password)
 void Server::setUsername(QString username)
 {
     m_connection_info.username = username;
-}
-
-void Server::setNeedHardware(bool need_hardware)
-{
-    m_hardware = need_hardware;
 }
