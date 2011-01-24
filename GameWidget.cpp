@@ -3,6 +3,12 @@
 #include "Camera.h"
 
 #include <QtGlobal>
+#include <QTimer>
+#include <QApplication>
+#include <QDateTime>
+
+const int GameWidget::c_fps = 60;
+const double GameWidget::c_time_per_frame_msecs = 1.0 / (double)c_fps * 1000.0;
 
 GameWidget::GameWidget(QWidget *parent) :
     QGLWidget(parent),
@@ -20,9 +26,33 @@ GameWidget::~GameWidget()
 
 void GameWidget::start(QString user, QString password, QString server)
 {
+    // TODO: connect to the server
+
+    m_target_time_msecs = (double)QDateTime::currentMSecsSinceEpoch();
+    QTimer::singleShot(1, this, SLOT(mainLoop()));
+}
+
+void GameWidget::mainLoop()
+{
+    // until we catch up to where we want to be
+    double current_time_msecs = (double)QDateTime::currentMSecsSinceEpoch();
+    while (m_target_time_msecs < current_time_msecs) {
+        // process events
+        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers);
+
+        m_target_time_msecs += c_time_per_frame_msecs;
+        computeNextFrame();
+    }
+    glDraw();
+    // compute the time we need to wait until computing the next frame
+    double wait_time_msecs = m_target_time_msecs + c_time_per_frame_msecs - current_time_msecs;
+
+    QTimer::singleShot((int)wait_time_msecs, this, SLOT(mainLoop()));
+}
+
+void GameWidget::computeNextFrame()
+{
     // TODO
-
-
 }
 
 void GameWidget::paintGL()
@@ -96,4 +126,12 @@ void GameWidget::mouseReleaseEvent(QMouseEvent *)
 
 }
 
+void GameWidget::keyPressEvent(QKeyEvent * e)
+{
+    m_key_down.insert(e->key(), true);
+}
 
+void GameWidget::keyReleaseEvent(QKeyEvent * e)
+{
+    m_key_down.insert(e->key(), false);
+}
