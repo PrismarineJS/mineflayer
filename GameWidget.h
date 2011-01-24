@@ -77,7 +77,7 @@ private:
     double m_target_time_msecs;
 
 private slots:
-    void handleMessage(QSharedPointer<IncomingMessage> message);
+    void handleMessage(QSharedPointer<IncomingResponse> message);
     void mainLoop();
 
 private:

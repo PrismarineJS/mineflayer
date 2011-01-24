@@ -264,79 +264,79 @@ protected:
     Message(MessageType messageType) : messageType(messageType) {}
 };
 
-class OutgoingMessage : public Message {
+class OutgoingRequest : public Message {
 public:
     static const qint32 c_protocol_version;
-    virtual ~OutgoingMessage() {}
+    virtual ~OutgoingRequest() {}
     void writeToStream(QDataStream & stream);
 protected:
-    OutgoingMessage(MessageType messageType) : Message(messageType) {}
+    OutgoingRequest(MessageType messageType) : Message(messageType) {}
     virtual void writeMessageBody(QDataStream & stream) = 0;
 
     static void writeString(QDataStream & stream, QString string);
 };
 
-class KeepAliveRequest : public OutgoingMessage {
+class KeepAliveRequest : public OutgoingRequest {
 public:
-    KeepAliveRequest() : OutgoingMessage(KeepAlive) {}
+    KeepAliveRequest() : OutgoingRequest(KeepAlive) {}
 protected:
     virtual void writeMessageBody(QDataStream &) {}
 };
 
-class LoginRequestMessage : public OutgoingMessage {
+class LoginRequest : public OutgoingRequest {
 public:
     QString username;
     QString password;
-    LoginRequestMessage(QString username, QString password) : OutgoingMessage(Login),
+    LoginRequest(QString username, QString password) : OutgoingRequest(Login),
         username(username), password(password) {}
 protected:
     virtual void writeMessageBody(QDataStream &stream);
 };
 
-class HandshakeRequestMessage : public OutgoingMessage {
+class HandshakeRequest : public OutgoingRequest {
 public:
     QString username;
-    HandshakeRequestMessage(QString username) : OutgoingMessage(Handshake),
+    HandshakeRequest(QString username) : OutgoingRequest(Handshake),
         username(username) {}
     virtual void writeMessageBody(QDataStream & stream);
 };
 
 
-class DummyDisconnectMessage : public OutgoingMessage {
+class DummyDisconnectRequest : public OutgoingRequest {
 public:
-    DummyDisconnectMessage() : OutgoingMessage(DummyDisconnect) {}
+    DummyDisconnectRequest() : OutgoingRequest(DummyDisconnect) {}
     virtual void writeMessageBody(QDataStream &) {};
 };
 
-class IncomingMessage : public Message {
+class IncomingResponse : public Message {
 public:
-    virtual ~IncomingMessage() {}
+    virtual ~IncomingResponse() {}
     // attempts to parse entire message from the beginning of the buffer.
     // returns length of message parsed, or -1 if message is not compelte.
     virtual int parse(QByteArray buffer) = 0;
 protected:
-    IncomingMessage(MessageType messageType) : Message(messageType) {}
+    IncomingResponse(MessageType messageType) : Message(messageType) {}
 
     // parsing methods return -1 if they were unable to parse the data into the parameter.
     // if they're successful they return the index after the data.
-    static int parseBool(QByteArray buffer, int index, bool &value);
-    static int parseInt8(QByteArray buffer, int index, qint8 & value);
-    static int parseInt16(QByteArray buffer, int index, qint16 & value);
-    static int parseInt32(QByteArray buffer, int index, qint32 & value);
-    static int parseInt64(QByteArray buffer, int index, qint64 & value);
-    static int parseFloat(QByteArray buffer, int index, float & value);
-    static int parseDouble(QByteArray buffer, int index, double & value);
-    static int parseString(QByteArray buffer, int index, QString & value);
-    static int parseItem(QByteArray buffer, int index, Item & item);
+    static int parseValue(QByteArray buffer, int index, bool &value);
+    static int parseValue(QByteArray buffer, int index, qint8 &value);
+    static int parseValue(QByteArray buffer, int index, qint16 &value);
+    static int parseValue(QByteArray buffer, int index, qint32 &value);
+    static int parseValue(QByteArray buffer, int index, qint64 &value);
+    static int parseValue(QByteArray buffer, int index, float &value);
+    static int parseValue(QByteArray buffer, int index, double &value);
+    static int parseValue(QByteArray buffer, int index, QString &value);
+    static int parseValue(QByteArray buffer, int index, Item &item);
 };
 
-class KeepAliveResponse : public IncomingMessage {
+class KeepAliveResponse : public IncomingResponse {
 public:
-    KeepAliveResponse() : IncomingMessage(KeepAlive) {}
+    KeepAliveResponse() : IncomingResponse(KeepAlive) {}
     virtual int parse(QByteArray) { return 1; }
 };
 
-class LoginRespsonseMessage : public IncomingMessage {
+class LoginRespsonse : public IncomingResponse {
 public:
     enum Dimension {
         Normal = 0,
@@ -347,36 +347,36 @@ public:
     QString _unknown_2;
     qint64 map_seed;
     Dimension dimension;
-    LoginRespsonseMessage() : IncomingMessage(Login) {}
+    LoginRespsonse() : IncomingResponse(Login) {}
     virtual int parse(QByteArray buffer);
 };
 
-class HandshakeResponseMessage : public IncomingMessage {
+class HandshakeResponse : public IncomingResponse {
 public:
     static const QString AuthenticationRequired;
     static const QString AuthenticationNotRequired;
     QString connectionHash;
-    HandshakeResponseMessage() : IncomingMessage(Handshake) {}
+    HandshakeResponse() : IncomingResponse(Handshake) {}
     virtual int parse(QByteArray buffer);
 };
 
-class TimeUpdateMessage : public IncomingMessage {
+class TimeUpdateResponse : public IncomingResponse {
 public:
     qint64 game_time_in_twentieths_of_a_second;
-    TimeUpdateMessage() : IncomingMessage(TimeUpdate) {}
+    TimeUpdateResponse() : IncomingResponse(TimeUpdate) {}
     virtual int parse(QByteArray buffer);
 };
 
-class SpawnPositionMessage : public IncomingMessage {
+class SpawnPositionResponse : public IncomingResponse {
 public:
     qint32 x;
     qint32 y;
     qint32 z;
-    SpawnPositionMessage() : IncomingMessage(SpawnPosition) {}
+    SpawnPositionResponse() : IncomingResponse(SpawnPosition) {}
     virtual int parse(QByteArray buffer);
 };
 
-class PlayerPositionAndLookResponse : public IncomingMessage {
+class PlayerPositionAndLookResponse : public IncomingResponse {
 public:
     double x;
     double y;
@@ -385,11 +385,11 @@ public:
     float yaw;
     float pitch;
     bool on_ground;
-    PlayerPositionAndLookResponse() : IncomingMessage(PlayerPositionAndLook) {}
+    PlayerPositionAndLookResponse() : IncomingResponse(PlayerPositionAndLook) {}
     virtual int parse(QByteArray buffer);
 };
 
-class PickupSpawnResponseMessage : public IncomingMessage {
+class PickupSpawnResponse : public IncomingResponse {
 public:
     qint32 entity_id;
     ItemType item_type;
@@ -401,11 +401,11 @@ public:
     qint8 rotation;
     qint8 pitch;
     qint8 roll;
-    PickupSpawnResponseMessage() : IncomingMessage(PickupSpawn) {}
+    PickupSpawnResponse() : IncomingResponse(PickupSpawn) {}
     virtual int parse(QByteArray buffer);
 };
 
-class MobSpawnMessage : public IncomingMessage {
+class MobSpawnResponse : public IncomingResponse {
 public:
     enum MobType {
         Creeper=50,
@@ -429,74 +429,74 @@ public:
     qint8 yaw_out_of_256;
     qint8 pitch_out_of_256;
     QByteArray metadata;
-    MobSpawnMessage() : IncomingMessage(MobSpawn) {}
+    MobSpawnResponse() : IncomingResponse(MobSpawn) {}
     virtual int parse(QByteArray buffer);
 };
 
-class EntityVelocityMessage : public IncomingMessage {
+class EntityVelocityResponse : public IncomingResponse {
 public:
     qint32 entity_id;
     qint16 velocity_x;
     qint16 velocity_y;
     qint16 velocity_z;
-    EntityVelocityMessage() : IncomingMessage(EntityVelocity) {}
+    EntityVelocityResponse() : IncomingResponse(EntityVelocity) {}
     virtual int parse(QByteArray buffer);
 };
 
-class DestroyEntityResponse : public IncomingMessage {
+class DestroyEntityResponse : public IncomingResponse {
 public:
     qint32 entity_id;
-    DestroyEntityResponse() : IncomingMessage(DestroyEntity) {}
+    DestroyEntityResponse() : IncomingResponse(DestroyEntity) {}
     virtual int parse(QByteArray buffer);
 };
 
-class EntityResponse : public IncomingMessage {
+class EntityResponse : public IncomingResponse {
 public:
     qint32 entity_id;
-    EntityResponse() : IncomingMessage(Entity) {}
+    EntityResponse() : IncomingResponse(Entity) {}
     virtual int parse(QByteArray buffer);
 };
 
-class EntityRelativeMoveResponse : public IncomingMessage {
-public:
-    qint32 entity_id;
-    qint8 absolute_dx;
-    qint8 absolute_dy;
-    qint8 absolute_dz;
-    EntityRelativeMoveResponse() : IncomingMessage(EntityRelativeMove) {}
-    virtual int parse(QByteArray buffer);
-};
-
-class EntityLookResponse : public IncomingMessage {
-public:
-    qint32 entity_id;
-    qint8 yaw_out_of_256;
-    qint8 pitch_out_of_256;
-    EntityLookResponse() : IncomingMessage(EntityLook) {}
-    virtual int parse(QByteArray buffer);
-};
-
-class EntityLookAndRelativeMoveResponse : public IncomingMessage {
+class EntityRelativeMoveResponse : public IncomingResponse {
 public:
     qint32 entity_id;
     qint8 absolute_dx;
     qint8 absolute_dy;
     qint8 absolute_dz;
-    qint8 yaw_out_of_256;
-    qint8 pitch_out_of_256;
-    EntityLookAndRelativeMoveResponse() : IncomingMessage(EntityLookAndRelativeMove) {}
+    EntityRelativeMoveResponse() : IncomingResponse(EntityRelativeMove) {}
     virtual int parse(QByteArray buffer);
 };
 
-class EntityStatusResponse : public IncomingMessage {
+class EntityLookResponse : public IncomingResponse {
+public:
+    qint32 entity_id;
+    qint8 yaw_out_of_256;
+    qint8 pitch_out_of_256;
+    EntityLookResponse() : IncomingResponse(EntityLook) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class EntityLookAndRelativeMoveResponse : public IncomingResponse {
+public:
+    qint32 entity_id;
+    qint8 absolute_dx;
+    qint8 absolute_dy;
+    qint8 absolute_dz;
+    qint8 yaw_out_of_256;
+    qint8 pitch_out_of_256;
+    EntityLookAndRelativeMoveResponse() : IncomingResponse(EntityLookAndRelativeMove) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class EntityStatusResponse : public IncomingResponse {
 public:
     qint32 entity_id;
     qint8 status;
-    EntityStatusResponse() : IncomingMessage(EntityStatus) {}
+    EntityStatusResponse() : IncomingResponse(EntityStatus) {}
     virtual int parse(QByteArray buffer);
 };
 
-class PreChunkMessage : public IncomingMessage {
+class PreChunkResponse : public IncomingResponse {
 public:
     enum Mode {
         Unload = 0,
@@ -505,11 +505,11 @@ public:
     qint32 x;
     qint32 z;
     Mode mode;
-    PreChunkMessage() : IncomingMessage(PreChunk) {}
+    PreChunkResponse() : IncomingResponse(PreChunk) {}
     virtual int parse(QByteArray buffer);
 };
 
-class MapChunkMessage : public IncomingMessage {
+class MapChunkResponse : public IncomingResponse {
 public:
     qint32 x;
     qint16 y;
@@ -518,53 +518,53 @@ public:
     qint8 size_y_minus_one;
     qint8 size_z_minus_one;
     QByteArray compressed_data;
-    MapChunkMessage() : IncomingMessage(MapChunk) {}
+    MapChunkResponse() : IncomingResponse(MapChunk) {}
     virtual int parse(QByteArray buffer);
 };
 
-class MultiBlockChangeResponse : public IncomingMessage {
+class MultiBlockChangeResponse : public IncomingResponse {
 public:
     qint32 chunk_x;
     qint32 chunk_z;
     QVector<Chunk::Coord> block_coords;
     QVector<ItemType> new_block_types;
     QVector<qint8> new_block_metadatas;
-    MultiBlockChangeResponse() : IncomingMessage(MultiBlockChange) {}
+    MultiBlockChangeResponse() : IncomingResponse(MultiBlockChange) {}
     virtual int parse(QByteArray buffer);
 };
 
-class BlockChangeResposne : public IncomingMessage {
+class BlockChangeResposne : public IncomingResponse {
 public:
     qint32 x;
     qint8 y;
     qint32 z;
     ItemType new_block_type;
     qint8 metadata;
-    BlockChangeResposne() : IncomingMessage(BlockChange) {}
+    BlockChangeResposne() : IncomingResponse(BlockChange) {}
     virtual int parse(QByteArray buffer);
 };
 
-class SetSlotResponse : public IncomingMessage {
+class SetSlotResponse : public IncomingResponse {
 public:
     qint8 window_id;
     qint16 slot;
     Item item;
-    SetSlotResponse() : IncomingMessage(SetSlot) {}
+    SetSlotResponse() : IncomingResponse(SetSlot) {}
     virtual int parse(QByteArray buffer);
 };
 
-class WindowItemsMessage : public IncomingMessage {
+class WindowItemsResponse : public IncomingResponse {
 public:
     qint8 window_id;
     QList<Item> items;
-    WindowItemsMessage() : IncomingMessage(WindowItems) {}
+    WindowItemsResponse() : IncomingResponse(WindowItems) {}
     virtual int parse(QByteArray buffer);
 };
 
-class DisconnectOrKickMessage : public IncomingMessage {
+class DisconnectOrKickResponse : public IncomingResponse {
 public:
     QString reason;
-    DisconnectOrKickMessage() : IncomingMessage(DisconnectOrKick) {}
+    DisconnectOrKickResponse() : IncomingResponse(DisconnectOrKick) {}
     virtual int parse(QByteArray buffer);
 };
 

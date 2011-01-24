@@ -1,21 +1,21 @@
 #include "Messages.h"
 
-const qint32 OutgoingMessage::c_protocol_version = 8;
+const qint32 OutgoingRequest::c_protocol_version = 8;
 
-void OutgoingMessage::writeToStream(QDataStream &stream)
+void OutgoingRequest::writeToStream(QDataStream &stream)
 {
     stream << (qint8)messageType;
     writeMessageBody(stream);
 }
 
-void OutgoingMessage::writeString(QDataStream & stream, QString string)
+void OutgoingRequest::writeString(QDataStream & stream, QString string)
 {
     QByteArray utf8_data = string.toUtf8();
     stream << (qint16)utf8_data.size();
     stream.device()->write(utf8_data);
 }
 
-void LoginRequestMessage::writeMessageBody(QDataStream &stream)
+void LoginRequest::writeMessageBody(QDataStream &stream)
 {
     stream << c_protocol_version;
     writeString(stream, username);
@@ -24,20 +24,20 @@ void LoginRequestMessage::writeMessageBody(QDataStream &stream)
     stream << (qint8)0; // dimension
 }
 
-void HandshakeRequestMessage::writeMessageBody(QDataStream &stream)
+void HandshakeRequest::writeMessageBody(QDataStream &stream)
 {
     writeString(stream, username);
 }
 
-int IncomingMessage::parseBool(QByteArray buffer, int index, bool &value)
+int IncomingResponse::parseValue(QByteArray buffer, int index, bool &value)
 {
     qint8 tmp;
-    if ((index = parseInt8(buffer, index, tmp)) == -1)
+    if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
     value = tmp;
     return index;
 }
-int IncomingMessage::parseInt8(QByteArray buffer, int index, qint8 &value)
+int IncomingResponse::parseValue(QByteArray buffer, int index, qint8 &value)
 {
     const int size = 1;
     if (!(index + size <= buffer.size()))
@@ -46,7 +46,7 @@ int IncomingMessage::parseInt8(QByteArray buffer, int index, qint8 &value)
     index += size;
     return index;
 }
-int IncomingMessage::parseInt16(QByteArray buffer, int index, qint16 &value)
+int IncomingResponse::parseValue(QByteArray buffer, int index, qint16 &value)
 {
     const int size = 2;
     if (!(index + size <= buffer.size()))
@@ -56,7 +56,7 @@ int IncomingMessage::parseInt16(QByteArray buffer, int index, qint16 &value)
     index += size;
     return index;
 }
-int IncomingMessage::parseInt32(QByteArray buffer, int index, qint32 &value)
+int IncomingResponse::parseValue(QByteArray buffer, int index, qint32 &value)
 {
     const int size = 4;
     if (!(index + size <= buffer.size()))
@@ -66,7 +66,7 @@ int IncomingMessage::parseInt32(QByteArray buffer, int index, qint32 &value)
     index += size;
     return index;
 }
-int IncomingMessage::parseInt64(QByteArray buffer, int index, qint64 &value)
+int IncomingResponse::parseValue(QByteArray buffer, int index, qint64 &value)
 {
     const int size = 8;
     if (!(index + size <= buffer.size()))
@@ -76,7 +76,7 @@ int IncomingMessage::parseInt64(QByteArray buffer, int index, qint64 &value)
     index += size;
     return index;
 }
-int IncomingMessage::parseFloat(QByteArray buffer, int index, float &value)
+int IncomingResponse::parseValue(QByteArray buffer, int index, float &value)
 {
     const int size = 4;
     if (!(index + size <= buffer.size()))
@@ -86,7 +86,7 @@ int IncomingMessage::parseFloat(QByteArray buffer, int index, float &value)
     index += size;
     return index;
 }
-int IncomingMessage::parseDouble(QByteArray buffer, int index, double &value)
+int IncomingResponse::parseValue(QByteArray buffer, int index, double &value)
 {
     const int size = 8;
     if (!(index + size <= buffer.size()))
@@ -96,10 +96,10 @@ int IncomingMessage::parseDouble(QByteArray buffer, int index, double &value)
     index += size;
     return index;
 }
-int IncomingMessage::parseString(QByteArray buffer, int index, QString &value)
+int IncomingResponse::parseValue(QByteArray buffer, int index, QString &value)
 {
     qint16 length;
-    if ((index = parseInt16(buffer, index, length)) == -1)
+    if ((index = parseValue(buffer, index, length)) == -1)
         return -1;
     if (!(index + length <= buffer.size()))
         return -1;
@@ -107,65 +107,65 @@ int IncomingMessage::parseString(QByteArray buffer, int index, QString &value)
     index += length;
     return index;
 }
-int IncomingMessage::parseItem(QByteArray buffer, int index, Item &item)
+int IncomingResponse::parseValue(QByteArray buffer, int index, Item &item)
 {
     qint16 tmp;
-    if ((index = parseInt16(buffer, index, tmp)) == -1)
+    if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
     item.type = (ItemType)tmp;
     if (item.type != NoItem) {
-        if ((index = parseInt8(buffer, index, item.count)) == -1)
+        if ((index = parseValue(buffer, index, item.count)) == -1)
             return -1;
-        if ((index = parseInt16(buffer, index, item.uses)) == -1)
+        if ((index = parseValue(buffer, index, item.uses)) == -1)
             return -1;
     }
     return index;
 }
 
-int LoginRespsonseMessage::parse(QByteArray buffer)
+int LoginRespsonse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseInt32(buffer, index, entity_id)) == -1)
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
         return -1;
-    if ((index = parseString(buffer, index, _unknown_1)) == -1)
+    if ((index = parseValue(buffer, index, _unknown_1)) == -1)
         return -1;
-    if ((index = parseString(buffer, index, _unknown_2)) == -1)
+    if ((index = parseValue(buffer, index, _unknown_2)) == -1)
         return -1;
-    if ((index = parseInt64(buffer, index, map_seed)) == -1)
+    if ((index = parseValue(buffer, index, map_seed)) == -1)
         return -1;
     qint8 tmp;
-    if ((index = parseInt8(buffer, index, tmp)) == -1)
+    if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
     dimension = (Dimension)tmp;
     return index;
 }
 
-const QString HandshakeResponseMessage::AuthenticationRequired = "+";
-const QString HandshakeResponseMessage::AuthenticationNotRequired = "-";
-int HandshakeResponseMessage::parse(QByteArray buffer)
+const QString HandshakeResponse::AuthenticationRequired = "+";
+const QString HandshakeResponse::AuthenticationNotRequired = "-";
+int HandshakeResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseString(buffer, index, connectionHash)) == -1)
+    if ((index = parseValue(buffer, index, connectionHash)) == -1)
         return -1;
     return index;
 }
 
-int TimeUpdateMessage::parse(QByteArray buffer)
+int TimeUpdateResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseInt64(buffer, index, game_time_in_twentieths_of_a_second)) == -1)
+    if ((index = parseValue(buffer, index, game_time_in_twentieths_of_a_second)) == -1)
         return -1;
     return index;
 }
 
-int SpawnPositionMessage::parse(QByteArray buffer)
+int SpawnPositionResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseInt32(buffer, index, x)) == -1)
+    if ((index = parseValue(buffer, index, x)) == -1)
         return -1;
-    if ((index = parseInt32(buffer, index, y)) == -1)
+    if ((index = parseValue(buffer, index, y)) == -1)
         return -1;
-    if ((index = parseInt32(buffer, index, z)) == -1)
+    if ((index = parseValue(buffer, index, z)) == -1)
         return -1;
     return index;
 }
@@ -173,69 +173,69 @@ int SpawnPositionMessage::parse(QByteArray buffer)
 int PlayerPositionAndLookResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseDouble(buffer, index, x)) == -1)
+    if ((index = parseValue(buffer, index, x)) == -1)
         return -1;
-    if ((index = parseDouble(buffer, index, y)) == -1)
+    if ((index = parseValue(buffer, index, y)) == -1)
         return -1;
-    if ((index = parseDouble(buffer, index, stance)) == -1)
+    if ((index = parseValue(buffer, index, stance)) == -1)
         return -1;
-    if ((index = parseDouble(buffer, index, z)) == -1)
+    if ((index = parseValue(buffer, index, z)) == -1)
         return -1;
-    if ((index = parseFloat(buffer, index, yaw)) == -1)
+    if ((index = parseValue(buffer, index, yaw)) == -1)
         return -1;
-    if ((index = parseFloat(buffer, index, pitch)) == -1)
+    if ((index = parseValue(buffer, index, pitch)) == -1)
         return -1;
-    if ((index = parseBool(buffer, index, on_ground)) == -1)
+    if ((index = parseValue(buffer, index, on_ground)) == -1)
         return -1;
     return index;
 }
 
-int PickupSpawnResponseMessage::parse(QByteArray buffer)
+int PickupSpawnResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseInt32(buffer, index, entity_id)) == -1)
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
         return -1;
     qint16 tmp;
-    if ((index = parseInt16(buffer, index, tmp)) == -1)
+    if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
     item_type = (ItemType)tmp;
-    if ((index = parseInt8(buffer, index, count)) == -1)
+    if ((index = parseValue(buffer, index, count)) == -1)
         return -1;
-    if ((index = parseInt16(buffer, index, damage)) == -1)
+    if ((index = parseValue(buffer, index, damage)) == -1)
         return -1;
-    if ((index = parseInt32(buffer, index, x)) == -1)
+    if ((index = parseValue(buffer, index, x)) == -1)
         return -1;
-    if ((index = parseInt32(buffer, index, y)) == -1)
+    if ((index = parseValue(buffer, index, y)) == -1)
         return -1;
-    if ((index = parseInt32(buffer, index, z)) == -1)
+    if ((index = parseValue(buffer, index, z)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, rotation)) == -1)
+    if ((index = parseValue(buffer, index, rotation)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, pitch)) == -1)
+    if ((index = parseValue(buffer, index, pitch)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, roll)) == -1)
+    if ((index = parseValue(buffer, index, roll)) == -1)
         return -1;
     return index;
 }
 
-int MobSpawnMessage::parse(QByteArray buffer)
+int MobSpawnResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseInt32(buffer, index, entity_id)) == -1)
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
         return -1;
     qint8 tmp;
-    if ((index = parseInt8(buffer, index, tmp)) == -1)
+    if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
     mob_type = (MobType)tmp;
-    if ((index = parseInt32(buffer, index, absolute_x)) == -1)
+    if ((index = parseValue(buffer, index, absolute_x)) == -1)
         return -1;
-    if ((index = parseInt32(buffer, index, absolute_y)) == -1)
+    if ((index = parseValue(buffer, index, absolute_y)) == -1)
         return -1;
-    if ((index = parseInt32(buffer, index, absolute_z)) == -1)
+    if ((index = parseValue(buffer, index, absolute_z)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, yaw_out_of_256)) == -1)
+    if ((index = parseValue(buffer, index, yaw_out_of_256)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, pitch_out_of_256)) == -1)
+    if ((index = parseValue(buffer, index, pitch_out_of_256)) == -1)
         return -1;
     // find the 0x7f
     int i = index;
@@ -252,16 +252,16 @@ int MobSpawnMessage::parse(QByteArray buffer)
     return index;
 }
 
-int EntityVelocityMessage::parse(QByteArray buffer)
+int EntityVelocityResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseInt32(buffer, index, entity_id)) == -1)
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
         return -1;
-    if ((index = parseInt16(buffer, index, velocity_x)) == -1)
+    if ((index = parseValue(buffer, index, velocity_x)) == -1)
         return -1;
-    if ((index = parseInt16(buffer, index, velocity_y)) == -1)
+    if ((index = parseValue(buffer, index, velocity_y)) == -1)
         return -1;
-    if ((index = parseInt16(buffer, index, velocity_z)) == -1)
+    if ((index = parseValue(buffer, index, velocity_z)) == -1)
         return -1;
     return index;
 }
@@ -269,7 +269,7 @@ int EntityVelocityMessage::parse(QByteArray buffer)
 int DestroyEntityResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseInt32(buffer, index, entity_id)) == -1)
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
         return -1;
     return index;
 }
@@ -277,7 +277,7 @@ int DestroyEntityResponse::parse(QByteArray buffer)
 int EntityResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseInt32(buffer, index, entity_id)) == -1)
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
         return -1;
     return index;
 }
@@ -285,13 +285,13 @@ int EntityResponse::parse(QByteArray buffer)
 int EntityRelativeMoveResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseInt32(buffer, index, entity_id)) == -1)
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, absolute_dx)) == -1)
+    if ((index = parseValue(buffer, index, absolute_dx)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, absolute_dy)) == -1)
+    if ((index = parseValue(buffer, index, absolute_dy)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, absolute_dz)) == -1)
+    if ((index = parseValue(buffer, index, absolute_dz)) == -1)
         return -1;
     return index;
 }
@@ -299,11 +299,11 @@ int EntityRelativeMoveResponse::parse(QByteArray buffer)
 int EntityLookResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseInt32(buffer, index, entity_id)) == -1)
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, yaw_out_of_256)) == -1)
+    if ((index = parseValue(buffer, index, yaw_out_of_256)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, pitch_out_of_256)) == -1)
+    if ((index = parseValue(buffer, index, pitch_out_of_256)) == -1)
         return -1;
     return index;
 }
@@ -311,17 +311,17 @@ int EntityLookResponse::parse(QByteArray buffer)
 int EntityLookAndRelativeMoveResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseInt32(buffer, index, entity_id)) == -1)
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, absolute_dx)) == -1)
+    if ((index = parseValue(buffer, index, absolute_dx)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, absolute_dy)) == -1)
+    if ((index = parseValue(buffer, index, absolute_dy)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, absolute_dz)) == -1)
+    if ((index = parseValue(buffer, index, absolute_dz)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, yaw_out_of_256)) == -1)
+    if ((index = parseValue(buffer, index, yaw_out_of_256)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, pitch_out_of_256)) == -1)
+    if ((index = parseValue(buffer, index, pitch_out_of_256)) == -1)
         return -1;
     return index;
 }
@@ -329,44 +329,44 @@ int EntityLookAndRelativeMoveResponse::parse(QByteArray buffer)
 int EntityStatusResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseInt32(buffer, index, entity_id)) == -1)
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, status)) == -1)
+    if ((index = parseValue(buffer, index, status)) == -1)
         return -1;
     return index;
 }
 
-int PreChunkMessage::parse(QByteArray buffer)
+int PreChunkResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseInt32(buffer, index, x)) == -1)
+    if ((index = parseValue(buffer, index, x)) == -1)
         return -1;
-    if ((index = parseInt32(buffer, index, z)) == -1)
+    if ((index = parseValue(buffer, index, z)) == -1)
         return -1;
     qint8 tmp;
-    if ((index = parseInt8(buffer, index, tmp)) == -1)
+    if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
     mode = (Mode)tmp;
     return index;
 }
 
-int MapChunkMessage::parse(QByteArray buffer)
+int MapChunkResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseInt32(buffer, index, x)) == -1)
+    if ((index = parseValue(buffer, index, x)) == -1)
         return -1;
-    if ((index = parseInt16(buffer, index, y)) == -1)
+    if ((index = parseValue(buffer, index, y)) == -1)
         return -1;
-    if ((index = parseInt32(buffer, index, z)) == -1)
+    if ((index = parseValue(buffer, index, z)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, size_x_minus_one)) == -1)
+    if ((index = parseValue(buffer, index, size_x_minus_one)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, size_y_minus_one)) == -1)
+    if ((index = parseValue(buffer, index, size_y_minus_one)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, size_z_minus_one)) == -1)
+    if ((index = parseValue(buffer, index, size_z_minus_one)) == -1)
         return -1;
     qint32 compressed_data_size;
-    if ((index = parseInt32(buffer, index, compressed_data_size)) == -1)
+    if ((index = parseValue(buffer, index, compressed_data_size)) == -1)
         return -1;
     if (!(index + compressed_data_size <= buffer.size()))
         return -1; // this might be common. optimize?
@@ -379,21 +379,21 @@ int MultiBlockChangeResponse::parse(QByteArray buffer)
 {
     // optimize size checking?
     int index = 1;
-    if ((index = parseInt32(buffer, index, chunk_x)) == -1)
+    if ((index = parseValue(buffer, index, chunk_x)) == -1)
         return -1;
-    if ((index = parseInt32(buffer, index, chunk_z)) == -1)
+    if ((index = parseValue(buffer, index, chunk_z)) == -1)
         return -1;
     qint16 block_count;
-    if ((index = parseInt16(buffer, index, block_count)) == -1)
+    if ((index = parseValue(buffer, index, block_count)) == -1)
         return -1;
     block_coords.clear();
     block_coords.resize(block_count);
     for (int i = 0; i < block_count; i++) {
         qint8 x_and_z;
-        if ((index = parseInt8(buffer, index, x_and_z)) == -1)
+        if ((index = parseValue(buffer, index, x_and_z)) == -1)
             return -1;
         qint8 y;
-        if ((index = parseInt8(buffer, index, y)) == -1)
+        if ((index = parseValue(buffer, index, y)) == -1)
             return -1;
         block_coords.replace(i, Chunk::Coord((x_and_z >> 4) & 0xf, y, x_and_z & 0xf));
     }
@@ -401,7 +401,7 @@ int MultiBlockChangeResponse::parse(QByteArray buffer)
     new_block_types.resize(block_count);
     for (int i = 0; i < block_count; i++) {
         qint8 block_type;
-        if ((index = parseInt8(buffer, index, block_type)) == -1)
+        if ((index = parseValue(buffer, index, block_type)) == -1)
             return -1;
         new_block_types.replace(i, (ItemType)block_type);
     }
@@ -409,7 +409,7 @@ int MultiBlockChangeResponse::parse(QByteArray buffer)
     new_block_metadatas.resize(block_count);
     for (int i = 0; i < block_count; i++) {
         qint8 metadata;
-        if ((index = parseInt8(buffer, index, metadata)) == -1)
+        if ((index = parseValue(buffer, index, metadata)) == -1)
             return -1;
         new_block_metadatas.replace(i, metadata);
     }
@@ -419,17 +419,17 @@ int MultiBlockChangeResponse::parse(QByteArray buffer)
 int BlockChangeResposne::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseInt32(buffer, index, x)) == -1)
+    if ((index = parseValue(buffer, index, x)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, y)) == -1)
+    if ((index = parseValue(buffer, index, y)) == -1)
         return -1;
-    if ((index = parseInt32(buffer, index, z)) == -1)
+    if ((index = parseValue(buffer, index, z)) == -1)
         return -1;
     qint8 tmp;
-    if ((index = parseInt8(buffer, index, tmp)) == -1)
+    if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
     new_block_type = (ItemType)tmp;
-    if ((index = parseInt8(buffer, index, metadata)) == -1)
+    if ((index = parseValue(buffer, index, metadata)) == -1)
         return -1;
     return index;
 }
@@ -437,37 +437,37 @@ int BlockChangeResposne::parse(QByteArray buffer)
 int SetSlotResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseInt8(buffer, index, window_id)) == -1)
+    if ((index = parseValue(buffer, index, window_id)) == -1)
         return -1;
-    if ((index = parseInt16(buffer, index, slot)) == -1)
+    if ((index = parseValue(buffer, index, slot)) == -1)
         return -1;
-    if ((index = parseItem(buffer, index, item)) == -1)
+    if ((index = parseValue(buffer, index, item)) == -1)
         return -1;
     return index;
 }
 
-int WindowItemsMessage::parse(QByteArray buffer)
+int WindowItemsResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseInt8(buffer, index, window_id)) == -1)
+    if ((index = parseValue(buffer, index, window_id)) == -1)
         return -1;
     qint16 count;
-    if ((index = parseInt16(buffer, index, count)) == -1)
+    if ((index = parseValue(buffer, index, count)) == -1)
         return -1;
     items.clear();
     for (int i = 0; i < count; i++) {
         Item item;
-        if ((index = parseItem(buffer, index, item)) == -1)
+        if ((index = parseValue(buffer, index, item)) == -1)
             return -1;
         items.append(item);
     }
     return index;
 }
 
-int DisconnectOrKickMessage::parse(QByteArray buffer)
+int DisconnectOrKickResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseString(buffer, index, reason)) == -1)
+    if ((index = parseValue(buffer, index, reason)) == -1)
         return -1;
     return index;
 }

@@ -67,10 +67,10 @@ void Server::socketDisconnect()
         m_socket->disconnectFromHost();
 }
 
-void Server::sendMessage(QSharedPointer<OutgoingMessage> msg)
+void Server::sendMessage(QSharedPointer<OutgoingRequest> msg)
 {
     if (QThread::currentThread() != m_socket_thread) {
-        bool success = QMetaObject::invokeMethod(this, "sendMessage", Qt::QueuedConnection, QGenericReturnArgument(), Q_ARG(QSharedPointer<OutgoingMessage>, msg));
+        bool success = QMetaObject::invokeMethod(this, "sendMessage", Qt::QueuedConnection, QGenericReturnArgument(), Q_ARG(QSharedPointer<OutgoingRequest>, msg));
         Q_ASSERT(success);
         return;
     }
@@ -91,11 +91,11 @@ void Server::handleConnected()
     m_parser = new IncomingMessageParser(m_socket);
 
     bool success;
-    success = connect(m_parser, SIGNAL(messageReceived(QSharedPointer<IncomingMessage>)), this, SLOT(processIncomingMessage(QSharedPointer<IncomingMessage>)));
+    success = connect(m_parser, SIGNAL(messageReceived(QSharedPointer<IncomingResponse>)), this, SLOT(processIncomingMessage(QSharedPointer<IncomingResponse>)));
     Q_ASSERT(success);
 
     changeLoginState(WaitingForHandshakeResponse);
-    sendMessage(QSharedPointer<OutgoingMessage>(new HandshakeRequestMessage(m_connection_info.username)));
+    sendMessage(QSharedPointer<OutgoingRequest>(new HandshakeRequest(m_connection_info.username)));
 }
 
 void Server::cleanUpAfterDisconnect()
@@ -118,18 +118,18 @@ void Server::terminate()
     emit socketDisconnected();
 }
 
-void Server::processIncomingMessage(QSharedPointer<IncomingMessage> msg)
+void Server::processIncomingMessage(QSharedPointer<IncomingResponse> msg)
 {
     // possibly handle the message (only for the initial setup)
     qDebug() << ("Received message of type: 0x" + QString::number(msg.data()->messageType, 16)).toStdString().c_str();
     switch (msg.data()->messageType) {
         case Message::Handshake: {
-            HandshakeResponseMessage * message = (HandshakeResponseMessage *)msg.data();
+            HandshakeResponse * message = (HandshakeResponse *)msg.data();
             // we don't support authenticated logging in yet.
-            Q_ASSERT_X(message->connectionHash == HandshakeResponseMessage::AuthenticationNotRequired, "",
+            Q_ASSERT_X(message->connectionHash == HandshakeResponse::AuthenticationNotRequired, "",
                        (QString("unexpected connection hash: ") + message->connectionHash).toStdString().c_str());
             changeLoginState(WaitingForLoginResponse);
-            sendMessage(QSharedPointer<OutgoingMessage>(new LoginRequestMessage(m_connection_info.username, m_connection_info.password)));
+            sendMessage(QSharedPointer<OutgoingRequest>(new LoginRequest(m_connection_info.username, m_connection_info.password)));
             break;
         }
         case Message::DisconnectOrKick: {
@@ -160,7 +160,7 @@ void Server::handleSocketError(QAbstractSocket::SocketError error)
 void Server::finishWritingAndDisconnect()
 {
     // put a dummy message on the queue
-    this->sendMessage(QSharedPointer<OutgoingMessage>(new DummyDisconnectMessage()));
+    this->sendMessage(QSharedPointer<OutgoingRequest>(new DummyDisconnectRequest()));
 }
 
 Server::LoginStatus Server::loginStatus()

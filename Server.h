@@ -37,19 +37,19 @@ public:
     void setUsername(QString username);
 
     // returns the ConnectionResultMessage that the server gave upon connection
-    QSharedPointer<IncomingMessage> connectionResultMessage() const { return m_connection_result; }
+    QSharedPointer<IncomingResponse> connectionResultMessage() const { return m_connection_result; }
 
     const ConnectionSettings * connectionSettings() const { return &m_connection_info; }
 
 signals:
     // use this signal to listen for incoming messages
-    void messageReceived(QSharedPointer<IncomingMessage> message);
+    void messageReceived(QSharedPointer<IncomingResponse> message);
 
     void loginStatusUpdated(LoginStatus status);
     void socketDisconnected();
 
 public slots:
-    void sendMessage(QSharedPointer<OutgoingMessage> message);
+    void sendMessage(QSharedPointer<OutgoingRequest> message);
 
     // use this to actually connect to the server
     void socketConnect();
@@ -72,7 +72,7 @@ private:
 
     LoginStatus m_login_state;
 
-    QSharedPointer<IncomingMessage> m_connection_result;
+    QSharedPointer<IncomingResponse> m_connection_result;
 
 private:
     void changeLoginState(LoginStatus state);
@@ -82,7 +82,7 @@ private slots:
     void terminate();
     void handleConnected();
     void cleanUpAfterDisconnect();
-    void processIncomingMessage(QSharedPointer<IncomingMessage>);
+    void processIncomingMessage(QSharedPointer<IncomingResponse>);
     void handleSocketError(QAbstractSocket::SocketError);
 };
 

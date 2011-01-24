@@ -28,34 +28,34 @@ void IncomingMessageParser::readMessage()
         // message is complete. remove it from the buffer
         m_buffer.remove(0, index);
         // emit and start over.
-        emit messageReceived(QSharedPointer<IncomingMessage>(m_in_progress_msg));
+        emit messageReceived(QSharedPointer<IncomingResponse>(m_in_progress_msg));
         m_in_progress_msg = NULL;
         if (m_buffer.isEmpty())
             return;
     }
 }
 
-IncomingMessage * IncomingMessageParser::createMessageOfType(IncomingMessage::MessageType type)
+IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::MessageType type)
 {
     switch (type) {
     case Message::KeepAlive:
         return new KeepAliveResponse;
     case Message::Login:
-        return new LoginRespsonseMessage;
+        return new LoginRespsonse;
     case Message::Handshake:
-        return new HandshakeResponseMessage;
+        return new HandshakeResponse;
     case Message::TimeUpdate:
-        return new TimeUpdateMessage;
+        return new TimeUpdateResponse;
     case Message::SpawnPosition:
-        return new SpawnPositionMessage;
+        return new SpawnPositionResponse;
     case Message::PlayerPositionAndLook:
         return new PlayerPositionAndLookResponse;
     case Message::PickupSpawn:
-        return new PickupSpawnResponseMessage;
+        return new PickupSpawnResponse;
     case Message::MobSpawn:
-        return new MobSpawnMessage;
+        return new MobSpawnResponse;
     case Message::EntityVelocity:
-        return new EntityVelocityMessage;
+        return new EntityVelocityResponse;
     case Message::DestroyEntity:
         return new DestroyEntityResponse;
     case Message::Entity:
@@ -69,9 +69,9 @@ IncomingMessage * IncomingMessageParser::createMessageOfType(IncomingMessage::Me
     case Message::EntityStatus:
         return new EntityStatusResponse;
     case Message::PreChunk:
-        return new PreChunkMessage;
+        return new PreChunkResponse;
     case Message::MapChunk:
-        return new MapChunkMessage;
+        return new MapChunkResponse;
     case Message::MultiBlockChange:
         return new MultiBlockChangeResponse;
     case Message::BlockChange:
@@ -79,9 +79,9 @@ IncomingMessage * IncomingMessageParser::createMessageOfType(IncomingMessage::Me
     case Message::SetSlot:
         return new SetSlotResponse;
     case Message::WindowItems:
-        return new WindowItemsMessage;
+        return new WindowItemsResponse;
     case Message::DisconnectOrKick:
-        return new DisconnectOrKickMessage;
+        return new DisconnectOrKickResponse;
     default:
         Q_ASSERT_X(false, "", (QString("parse message: 0x") + QString::number(type, 16)).toStdString().c_str());
         return NULL;

@@ -67,7 +67,7 @@ void GameWidget::start(QString username, QString password, QString hostname, int
         connection_info.port = port;
         m_server = new Server(connection_info);
         bool success;
-        success = connect(m_server, SIGNAL(messageReceived(QSharedPointer<IncomingMessage>)), this, SLOT(handleMessage(QSharedPointer<IncomingMessage>)));
+        success = connect(m_server, SIGNAL(messageReceived(QSharedPointer<IncomingResponse>)), this, SLOT(handleMessage(QSharedPointer<IncomingResponse>)));
         Q_ASSERT(success);
         m_server->socketConnect();
     }
@@ -79,7 +79,7 @@ void GameWidget::start(QString username, QString password, QString hostname, int
     QTimer::singleShot(1, this, SLOT(mainLoop()));
 }
 
-void GameWidget::handleMessage(QSharedPointer<IncomingMessage>message)
+void GameWidget::handleMessage(QSharedPointer<IncomingResponse>message)
 {
     // TODO:
     message.data();
