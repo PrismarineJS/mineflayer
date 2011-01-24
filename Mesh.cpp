@@ -286,6 +286,14 @@ Mesh * Mesh::createUnitCylinder(Vec3<float> color, int numSides) {
     return mesh;
 }
 
+Mesh * Mesh::createUnitCube(Vec3<float> color, Texture * tex_top, Texture * tex_bottom,
+                            Texture * tex_front, Texture * tex_back,
+                            Texture * tex_left, Texture * tex_right)
+{
+    Mesh * mesh = createUnitCube(color, tex_top);
+    return mesh;
+}
+
 Mesh * Mesh::createUnitCube(Vec3<float> color, Texture * tex) {
     Mesh * mesh = createUnitCube(color);
     mesh->m_texture = tex;

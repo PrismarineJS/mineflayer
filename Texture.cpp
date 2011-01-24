@@ -3,14 +3,12 @@
 #include <cmath>
 using namespace std;
 
-#include "Bitmap.h"
-
 #include <QtOpenGL>
 
 Texture::Mode Texture::s_mode = ModeReplace;
 
-Texture::Texture(Bitmap * bmp)
-    : m_bmp(bmp)
+Texture::Texture(QImage image)
+    : m_image(image)
 {
     glGenTextures(1, &m_id);
     glEnable(GL_TEXTURE_2D);
@@ -21,11 +19,11 @@ Texture::Texture(Bitmap * bmp)
     gluBuild2DMipmaps(
         GL_TEXTURE_2D,
         GL_RGBA,
-        bmp->width(),
-        bmp->height(),
-        GL_RGB,
+        image.width(),
+        image.height(),
+        GL_RGBA,
         GL_UNSIGNED_BYTE,
-        bmp->buffer()
+        image.bits()
     );
 }
 

@@ -1,0 +1,165 @@
+# name              x   y   w   h
+GrassTop            0   0   16  16
+Stone               16  0   16  16
+Dirt                32  0   16  16                
+GrassDirtSide       48  0   16  16          
+WoodenPlank         64  0   16  16
+DoubleStoneSlab     80  0   16  16
+StoneSlabTop        96  0   16  16
+Brick               112 0   16  16
+TntSide             128 0   16  16
+TntTop              144 0   16  16
+TntBottom           160 0   16  16
+SpiderWeb           176 0   16  16
+RedFlower           192 0   16  16
+YellowFlower        208 0   16  16
+Sapling             240 0   16  16
+
+Cobblestone         0   16  16  16
+Bedrock             16  16  16  16
+Sand                32  16  16  16
+Gravel              48  16  16  16
+WoodSide            64  16  16  16
+WoodTop             80  16  16  16
+IronBlock           96  16  16  16
+GoldBlock           112 16  16  16
+DiamondBlock        128 16  16  16
+ChestBottom         144 16  16  16
+SmallChestBack      160 16  16  16
+SmallChestFront     176 16  16  16
+RedMushroom         192 16  16  16
+TanMushroom         208 16  16  16
+
+GoldOre             0   32  16  16
+IronOre             16  32  16  16
+CoalOre             32  32  16  16
+Bookshelf           48  32  16  16
+MossStone           64  32  16  16
+Obsidian            80  32  16  16
+LgChestFrLeft       144 32  16  16
+LgChestFrRight      160 32  16  16
+WorkbenchTop        176 32  16  16
+FurnaceFront        192 32  16  16
+FurnaceBack         208 32  16  16
+DispenserFront      224 32  16  16
+
+Sponge              0   48  16  16
+Glass               16  48  16  16
+DiamondOre          32  48  16  16
+RedstoneOre         48  48  16  16
+LeavesRegular       64  48  16  16
+LeavesNotFancy      80  48  16  16
+LgChestBkLeft       144 48  16  16
+LgChestBkRight      160 48  16  16
+WorkbenchFront      176 48  16  16
+WorkbenchBack       192 48  16  16
+FurnaceFrontLit     208 48  16  16
+FurnaceTop          224 48  16  16
+
+Wool                0   64  16  16
+MonsterSpawner      16  64  16  16
+Snow                32  64  16  16
+Ice                 48  64  16  16
+SnowDirtSide        64  64  16  16
+CactusTop           80  64  16  16
+CactusSide          96  64  16  16
+CactusBottom        112 64  16  16
+Clay                128 64  16  16
+SugarCane           144 64  16  16
+NoteBlock           160 64  16  16
+JukeBoxTop          176 64  16  16
+
+Torch               0   80  16  16
+WoodDoorTop         16  80  16  16
+IronDoorTop         32  80  16  16
+Ladder              48  80  16  16
+RedWire4wayOff      64  80  16  16
+RedWire2wayOff      80  80  16  16
+WetTilledDirt       96  80  16  16
+DryTilledDirt       112 80  16  16
+Wheat0              128 80  16  16
+Wheat1              144 80  16  16
+Wheat2              160 80  16  16
+Wheat3              176 80  16  16
+Wheat4              192 80  16  16
+Wheat5              208 80  16  16
+Wheat6              224 80  16  16
+Wheat7              240 80  16  16
+
+BurnedOutTorch      0   96  16  16
+WoodDoorBottom      16  96  16  16
+IronDoorBottom      32  96  16  16
+RedstoneTorchOn     48  96  16  16
+RedWire4wayOn       64  96  16  16
+RedWire2wayOn       112 96  16  16
+PumpkinTop          128 96  16  16
+Netherrack          144 96  16  16
+SoulSand            160 96  16  16
+Glowstone           176 96  16  16
+
+TrackCorner         0   112 16  16
+DarkBlackWool       16  112 16  16
+DarkGrayWool        32  112 16  16
+RedstoneTorchOff    48  112 16  16
+PineTrunkSide       64  112 16  16
+BirchTrunkSide      80  112 16  16
+PumpkinBack         96  112 16  16
+PumpkinFront        112 112 16  16
+JackOLanternFront   128 112 16  16
+CakeTop             144 112 16  16
+CakeSide            160 112 16  16
+CakeInside          176 112 16  16
+CakeBottom          192 112 16  16
+
+TrackStraight       0   128 16  16
+DarkRedWool         16  128 16  16
+LightRedWool        32  128 16  16
+BirchLeaves         64  128 16  16
+RedwoodLeaves       80  128 16  16
+
+BlueStuffBlock      0   144 16  16
+DarkGreenWool       16  144 16  16
+LightGreenWool      32  144 16  16
+
+BlueStuffOre        0   160 16  16
+DarkBrownWool       16  160 16  16
+YellowWool          32  160 16  16
+
+SandstoneTop        0   176 16  16
+DarkBlueWool        16  176 16  16
+LightBlueWool       32  176 16  16
+
+SandstoneSide       0   192 16  16
+DarkPurpleWool      16  192 16  16
+LightPurpleWool     32  192 16  16
+
+Water1              208 192 16  16
+Water2              224 192 16  16
+Water3              240 192 16  16
+
+SandstoneBottom     0   208 16  16
+CyanWool            16  208 16  16
+OrangeWool          32  208 16  16
+
+Water4              224 208 16  16
+Water5              240 208 16  16
+
+GrayWool            16  224 16  16
+
+Lava1               208 224 16  16
+Lava2               224 224 16  16
+Lava3               240 224 16  16
+
+Crack0              0   240 16  16
+Crack1              16  240 16  16
+Crack2              32  240 16  16
+Crack3              48  240 16  16
+Crack4              64  240 16  16
+Crack5              80  240 16  16
+Crack6              96  240 16  16
+Crack7              112 240 16  16
+Crack8              128 240 16  16
+Crack9              144 240 16  16
+
+Lava4               224 240 16  16
+Lava5               240 240 16  16
