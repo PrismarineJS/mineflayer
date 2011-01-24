@@ -1,7 +1,7 @@
 #ifndef _TEXTURE_H_
 #define _TEXTURE_H_
 
-#include "Bitmap.h"
+#include <QImage>
 
 class Texture {
     public:
@@ -16,16 +16,16 @@ class Texture {
             FilterModeSmooth
         };
 
-        Texture(Bitmap * bitmap);
+        Texture(QImage image);
         ~Texture();
 
         static void setMode(Mode mode);
         static void setFilterMode(FilterMode mode);
 
-        inline Bitmap * bitmap() { return m_bmp; }
+        inline QImage image() { return m_image; }
         void bind();
     private:
-        Bitmap * m_bmp;
+        QImage m_image;
         unsigned int m_id;
 
         static Mode s_mode;

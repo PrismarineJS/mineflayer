@@ -1,14 +1,18 @@
 #ifndef CHUNK_H
 #define CHUNK_H
 
-#include <QVector>
-#include <QSharedPointer>
+#include <QtGlobal>
 
 #include <OpenEXR/ImathVec.h>
 using namespace Imath;
 
+uint qHash(const Vec3<int> & coord);
+
+#include <QVector>
+#include <QSharedPointer>
+#include <QHash>
+
 #include "Drawable.h"
-#include "Bitmap.h"
 #include "Texture.h"
 #include "Mesh.h"
 #include "MeshInstance.h"
@@ -44,9 +48,8 @@ private:
     Coord m_pos;
 
     static bool s_initialized;
-    static Bitmap * s_brick_bitmap;
-    static Texture * s_brick_texture;
-    static Mesh * s_block_mesh;
+    static QHash<QString, Texture *> s_textures;
+    static QVector<Mesh *> s_meshes;
 
 private:
     int indexOf(const Coord & coord) const;
@@ -55,7 +58,5 @@ private:
 
     void updateEntireChunkMesh();
 };
-
-uint qHash(const Chunk::Coord & coord);
 
 #endif // CHUNK_H

@@ -22,7 +22,6 @@ SOURCES += main.cpp \
     MeshInstance.cpp \
     Texture.cpp \
     Drawable.cpp \
-    Bitmap.cpp \
     Chunk.cpp
 
 HEADERS += MainWindow.h \
@@ -37,10 +36,12 @@ HEADERS += MainWindow.h \
     MeshInstance.h \
     Texture.h \
     Drawable.h \
-    Bitmap.h \
     Chunk.h \
     Constants.h \
     IncomingMessageParser.h \
     RingBuffer.h
 FORMS += MainWindow.ui \
     ConnectDialog.ui
+
+RESOURCES += \
+    mineflayer.qrc

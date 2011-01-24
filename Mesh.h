@@ -35,6 +35,9 @@ class Mesh : public Drawable, public MeshCalculations {
         static Mesh * loadFile(const char * file);
 
         // centered at origin from -0.5 to 0.5
+        static Mesh * createUnitCube(Vec3<float> color, Texture * tex_top, Texture * tex_bottom,
+                                    Texture * tex_front, Texture * tex_back,
+                                    Texture * tex_left, Texture * tex_right);
         static Mesh * createUnitCube(Vec3<float> color, Texture * tex);
         static Mesh * createUnitCube(Vec3<float> color);
 

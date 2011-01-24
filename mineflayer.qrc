@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/textures">
+        <file alias="terrain.png">resources/terrain.png</file>
+        <file alias="textures.txt">resources/textures.txt</file>
+        <file alias="blocks.txt">resources/blocks.txt</file>
+    </qresource>
+</RCC>

@@ -18,6 +18,8 @@ namespace Constants {
     Vec3<float> zero = Vec3<float>(0, 0, 0);
     Vec3<float> white = Vec3<float>(1.0f, 1.0f, 1.0f);
     Vec3<float> black = Vec3<float>(0, 0, 0);
+
+    int tick_ms = 200;
 }
 
 #endif // CONSTANTS_H
