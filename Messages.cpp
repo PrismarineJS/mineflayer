@@ -222,6 +222,14 @@ int SpawnPositionResponse::parse(QByteArray buffer)
     return index;
 }
 
+int UpdateHealthResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, health)) == -1)
+        return -1;
+    return index;
+}
+
 int PlayerPositionAndLookResponse::parse(QByteArray buffer)
 {
     int index = 1;

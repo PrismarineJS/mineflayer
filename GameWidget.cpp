@@ -71,10 +71,6 @@ void GameWidget::start(QString username, QString password, QString hostname, int
         Q_ASSERT(success);
         m_server->socketConnect();
     }
-    Chunk::Coord chunk_pos(0, 0, 0);
-    Chunk * chunk = new Chunk(chunk_pos);
-    chunk->randomize();
-    m_chunks.insert(chunk_pos, QSharedPointer<Chunk>(chunk));
 
     m_target_time_msecs = (double)QDateTime::currentMSecsSinceEpoch();
     QTimer::singleShot(1, this, SLOT(mainLoop()));
@@ -100,25 +96,46 @@ void GameWidget::handleMessage(QSharedPointer<IncomingResponse>incomingMessage)
         case Message::MapChunk: {
             MapChunkResponse * message = (MapChunkResponse *) incomingMessage.data();
 
-            QByteArray decompressed = qUncompress(message->compressed_data);
+            // remember to swap y and z
+            QByteArray tmp = message->compressed_data;
+            // prepend a guess at the final size... or just 0.
+            tmp.prepend(QByteArray("\0\0\0\0", 4));
+            QByteArray decompressed = qUncompress(tmp);
 
-            // determine the chunk coordinates
-            Chunk::Coord pos;
-            pos.x = message->x;
-            pos.y = message->y;
-            pos.z = message->z;
+            // determine the chunk corner
+            Chunk::Coord chunk_key;
+            chunk_key.x = message->x & ~0xf;
+            chunk_key.y = message->z & ~0xf;
+            chunk_key.z = message->y & ~0xff; // always 0
+
+            // if the chunk doesn't exist, create it
+            QSharedPointer<Chunk> chunk = m_chunks.value(chunk_key, QSharedPointer<Chunk>());
+            if (chunk.isNull()) {
+                chunk = QSharedPointer<Chunk>(new Chunk(chunk_key));
+                m_chunks.insert(chunk_key, chunk);
+            }
 
             // if the chunk already exists, update it
+            Chunk::Coord relative_pos;
+            relative_pos.x = message->x & 0xf;
+            relative_pos.y = message->z & 0xf;
+            relative_pos.z = message->y & 0xff;
 
-            // if not, create it
+            Chunk::Coord size;
+            size.x = message->size_x_minus_one + 1;
+            size.y = message->size_z_minus_one + 1;
+            size.z = message->size_y_minus_one + 1;
 
-            qint32 x;
-            qint16 y;
-            qint32 z;
-            qint8 size_x_minus_one;
-            qint8 size_y_minus_one;
-            qint8 size_z_minus_one;
-            QByteArray compressed_data;
+            int array_index = 0;
+            for (; relative_pos.x < size.x; relative_pos.x++) {
+                for (; relative_pos.y < size.y; relative_pos.y++) {
+                    for (; relative_pos.z < size.z; relative_pos.z++) {
+                        int block_type = decompressed.at(array_index++);
+                        chunk.data()->getBlock(relative_pos).data()->type = block_type;
+                        chunk.data()->updateBlock(relative_pos);
+                    }
+                }
+            }
         }
         default: {
             //ignore

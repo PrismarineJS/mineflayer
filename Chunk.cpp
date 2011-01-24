@@ -20,9 +20,22 @@ uint qHash(const Chunk::Coord & coord)
 }
 
 Chunk::Chunk(const Coord & pos) :
-    m_pos(pos)
+    m_pos(pos),
+    m_size(16,16,128),
+    m_blocks(m_size.x * m_size.y * m_size.z)
 {
     initialize();
+
+    // fill with dark air
+    for (int i = 0; i < m_blocks.size(); i++) {
+        Block * block = new Block();
+        block->type = 0;
+        block->light = 0;
+        block->sky_light = 0;
+        block->metadata = 0;
+        m_blocks.replace(i, QSharedPointer<Block>(block));
+    }
+    // no need to update since air has null textures
 }
 
 void Chunk::initialize()
@@ -100,6 +113,8 @@ void Chunk::render()
         for (coord.y = 0; coord.y < m_size.y; coord.y++) {
             for (coord.x = 0; coord.x < m_size.x; coord.x++) {
                 Block * block = getBlock(coord).data();
+                if (block == NULL)
+                    continue;
                 if (! block->mesh_instance.isNull())
                     block->mesh_instance.data()->draw();
             }
@@ -148,7 +163,7 @@ void Chunk::randomize()
     // create and allocate this chunk
     m_size.setValue(16, 16, 16);
     m_pos.setValue(0, 0, 0);
-    m_blocks.resize(16 * 16 * 16);
+    m_blocks.resize(16 * 16 * 128);
 
     // for each block, assign random values
     Coord coord;
@@ -168,9 +183,4 @@ void Chunk::randomize()
     }
 
     updateEntireChunkMesh();
-}
-
-void Chunk::resize(Vec3<int> size)
-{
-    m_blocks.resize(size.x * size.y * size.z);
 }

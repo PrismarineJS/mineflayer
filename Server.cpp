@@ -121,7 +121,6 @@ void Server::terminate()
 void Server::processIncomingMessage(QSharedPointer<IncomingResponse> msg)
 {
     // possibly handle the message (only for the initial setup)
-    qDebug() << ("Received message of type: 0x" + QString::number(msg.data()->messageType, 16)).toStdString().c_str();
     switch (msg.data()->messageType) {
         case Message::Handshake: {
             HandshakeResponse * message = (HandshakeResponse *)msg.data();

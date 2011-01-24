@@ -52,6 +52,8 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
         return new EntityEquipmentResponse;
     case Message::SpawnPosition:
         return new SpawnPositionResponse;
+    case Message::UpdateHealth:
+        return new UpdateHealthResponse;
     case Message::PlayerPositionAndLook:
         return new PlayerPositionAndLookResponse;
     case Message::Animation:

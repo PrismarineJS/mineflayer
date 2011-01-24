@@ -37,8 +37,6 @@ public:
     // call this if you edit the data from a block.
     void updateBlock(const Coord & coord);
 
-    void resize(Vec3<int> size);
-
     // debug method to generate random blocks
     void randomize();
 
@@ -46,9 +44,9 @@ protected:
     void render();
 
 private:
-    QVector<QSharedPointer<Block> > m_blocks;
-    Vec3<int> m_size;
     Coord m_pos;
+    Vec3<int> m_size;
+    QVector<QSharedPointer<Block> > m_blocks;
 
     static bool s_initialized;
     static QHash<QString, Texture *> s_textures;

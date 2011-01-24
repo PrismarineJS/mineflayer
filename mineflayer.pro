@@ -23,7 +23,6 @@ SOURCES += main.cpp \
     Texture.cpp \
     Drawable.cpp \
     Chunk.cpp
-
 HEADERS += MainWindow.h \
     ConnectDialog.h \
     GameWidget.h \
@@ -39,9 +38,8 @@ HEADERS += MainWindow.h \
     Chunk.h \
     Constants.h \
     IncomingMessageParser.h \
-    RingBuffer.h
+    RingBuffer.h \
+    MetaTypes.h
 FORMS += MainWindow.ui \
     ConnectDialog.ui
-
-RESOURCES += \
-    mineflayer.qrc
+RESOURCES += mineflayer.qrc

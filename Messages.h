@@ -407,6 +407,13 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class UpdateHealthResponse : public IncomingResponse {
+public:
+    qint16 health;
+    UpdateHealthResponse() : IncomingResponse(UpdateHealth) {}
+    virtual int parse(QByteArray buffer);
+};
+
 class PlayerPositionAndLookResponse : public IncomingResponse {
 public:
     double x;
