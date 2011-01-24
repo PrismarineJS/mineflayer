@@ -11,7 +11,6 @@ uint qHash(Chunk::Coord coord)
     return (coord.x * 8191 + coord.z) * 131071 + coord.y;
 }
 
-
 Chunk::Chunk()
 {
     initialize();

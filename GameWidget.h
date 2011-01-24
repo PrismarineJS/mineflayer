@@ -29,6 +29,7 @@ public:
         Action1, // left click
         Action2, // right click
         Inventory,
+        Chat,
     };
 
 public:

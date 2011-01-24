@@ -43,6 +43,7 @@ void GameWidget::loadControls()
     m_key_to_control.insert(settings.value("controls/action_1", Qt::LeftButton).toInt(), Action1);
     m_key_to_control.insert(settings.value("controls/action_2", Qt::RightButton).toInt(), Action2);
     m_key_to_control.insert(settings.value("controls/inventory", Qt::Key_I).toInt(), Inventory);
+    m_key_to_control.insert(settings.value("controls/chat", Qt::Key_T).toInt(), Chat);
 
     QHashIterator<int, Control> it(m_key_to_control);
     while (it.hasNext()) {
@@ -92,18 +93,18 @@ void GameWidget::computeNextFrame()
 
     if (forward && ! backward) {
         // move camera forward in direction it is facing
-        m_camera->moveForward(1.0f);
+        m_camera->moveForward(2.0f);
     } else if (backward && ! forward) {
         // move camera backward in direction it is facing
-        m_camera->moveBackward(1.0f);
+        m_camera->moveBackward(2.0f);
     }
 
     if (left && ! right) {
         // strafe camera left
-        m_camera->moveLeft(1.0f);
+        m_camera->moveLeft(2.0f);
     } else if (right && ! left) {
         // strafe camera right
-        m_camera->moveRight(1.0f);
+        m_camera->moveRight(2.0f);
     }
 }
 
@@ -142,17 +143,14 @@ void GameWidget::initializeGL()
     glDepthFunc(GL_LESS);
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
-    glEnable(GL_TEXTURE_2D);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_NORMALIZE);
-    const GLfloat goodAmbientLight[]  = { 0.3f, 0.3f, 0.3f, 1.0f };
+    const GLfloat goodAmbientLight[]  = { 1.0f, 1.0f, 1.0f, 1.0f };
     glLightfv(GL_LIGHT0, GL_AMBIENT, goodAmbientLight);
 
-    // Texture::setFilterMode(Texture::FilterModeSimple);
     glColorMaterial(GL_FRONT, GL_AMBIENT);
 
     m_player = new Entity;
