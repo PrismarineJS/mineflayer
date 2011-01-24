@@ -1,27 +1,36 @@
 #ifndef GAMEWIDGET_H
 #define GAMEWIDGET_H
 
+#include "Chunk.h"
 #include "Server.h"
 
 #include <QGLWidget>
 #include <QHash>
 #include <QSharedPointer>
 #include <QLinkedList>
+#include <QKeyEvent>
+
+#include <OpenEXR/ImathVec.h>
+using namespace Imath;
+
+class Camera;
 
 class GameWidget : public QGLWidget
 {
     Q_OBJECT
 public:
-    struct ChunkCoord {
-        int x;
-        int y;
-        int z;
-    };
-
-    struct EntityCoord {
-        double x;
-        double y;
-        double z;
+    enum Control {
+        Forward,
+        Back,
+        Left,
+        Right,
+        Jump,
+        Crouch,
+        DiscardItem,
+        Action1, // left click
+        Action2, // right click
+        Inventory,
+        Chat,
     };
 
 public:
@@ -37,46 +46,43 @@ protected:
     void mouseMoveEvent(QMouseEvent *);
     void mousePressEvent(QMouseEvent *);
     void mouseReleaseEvent(QMouseEvent *);
+    void keyPressEvent(QKeyEvent *);
+    void keyReleaseEvent(QKeyEvent *);
 
 private:
-    class Chunk {
-    public:
-        int getType(ChunkCoord coord) const;
-        int getMetadata(ChunkCoord coord) const;
-        int getLight(ChunkCoord coord) const;
-        int getSkyLight(ChunkCoord coord) const;
-
-    private:
-        QVector<int> m_type;
-        QVector<int> m_metadata;
-        QVector<int> m_light;
-        QVector<int> m_sky_light;
-
-        int m_size_x;
-        int m_size_y;
-        int m_size_z;
-
-    private:
-        int indexOf(ChunkCoord coord) const;
-    };
 
     struct Entity {
-        EntityCoord coord;
+        Vec3<float> pos;
+        Vec3<float> up;
+        Vec3<float> look;
         double stance;
-        float yaw;
-        float pitch;
         bool on_ground;
     };
 
     Server * m_server;
 
-    QHash<ChunkCoord, QSharedPointer<Chunk> > m_chunks;
+    QHash<Chunk::Coord, QSharedPointer<Chunk> > m_chunks;
     QLinkedList<QSharedPointer<Entity> > m_entities;
-    QSharedPointer<Entity> m_player;
+    Camera * m_camera;
+    Entity * m_player;
+
+    // keeps track of the keyboard state
+    QHash<int, bool> m_key_down;
+    // maps Qt::Key to Control and vice versa
+    QHash<int, Control> m_key_to_control;
+    QHash<Control, int> m_control_to_key;
+
+    static const int c_fps;
+    static const double c_time_per_frame_msecs;
+    double m_target_time_msecs;
+
 private slots:
     void handleMessage(QSharedPointer<IncomingMessage> message);
-};
+    void mainLoop();
 
-uint qHash(GameWidget::ChunkCoord coord);
+private:
+    void computeNextFrame();
+    void loadControls();
+};
 
 #endif // GAMEWIDGET_H
