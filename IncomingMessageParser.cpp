@@ -38,16 +38,20 @@ void IncomingMessageParser::readMessage()
 IncomingMessage * IncomingMessageParser::createMessageOfType(IncomingMessage::MessageType type)
 {
     switch (type) {
-    case Message::Handshake:
-        return new HandshakeResponseMessage;
     case Message::Login:
         return new LoginRespsonseMessage;
+    case Message::Handshake:
+        return new HandshakeResponseMessage;
+    case Message::SpawnPosition:
+        return new SpawnPositionMessage;
+    case Message::MobSpawn:
+        return new MobSpawnMessage;
     case Message::PreChunk:
         return new PreChunkMessage;
     case Message::DisconnectOrKick:
         return new DisconnectOrKickMessage;
     default:
-        Q_ASSERT_X(false, "", QString("parse message: " + type).toStdString().c_str());
+        Q_ASSERT_X(false, "", (QString("parse message: 0x") + QString::number(type, 16)).toStdString().c_str());
         return NULL;
     }
 }

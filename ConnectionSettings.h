@@ -8,7 +8,7 @@ class QSettings;
 class ConnectionSettings
 {
 public:
-    QString host;
+    QString hostname;
     int port;
     QString username;
     QString password; // empty string means no saved password

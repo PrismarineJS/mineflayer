@@ -9,14 +9,35 @@ uint qHash(GameWidget::ChunkCoord coord)
 }
 
 GameWidget::GameWidget(QWidget *parent) :
-    QGLWidget(parent)
+    QGLWidget(parent),
+    m_server(NULL)
 {
     this->setMouseTracking(true);
 }
-
-void GameWidget::start(QString user, QString password, QString server)
+GameWidget::~GameWidget()
 {
-    // TODO
+    delete m_server;
+}
+
+void GameWidget::start(QString username, QString password, QString hostname, int port)
+{
+    return; // TODO: tmp
+    ConnectionSettings connection_info;
+    connection_info.username = username;
+    connection_info.password = password;
+    connection_info.hostname = hostname;
+    connection_info.port = port;
+    m_server = new Server(connection_info);
+    bool success;
+    success = connect(m_server, SIGNAL(messageReceived(QSharedPointer<IncomingMessage>)), this, SLOT(handleMessage(QSharedPointer<IncomingMessage>)));
+    Q_ASSERT(success);
+    m_server->socketConnect();
+}
+
+void GameWidget::handleMessage(QSharedPointer<IncomingMessage>message)
+{
+    // TODO:
+    message.data();
 }
 
 void GameWidget::paintGL()

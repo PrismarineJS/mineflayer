@@ -3,10 +3,8 @@
 #include <QDir>
 #include <QCoreApplication>
 
-Server::Server(ConnectionSettings connection_info, QString password, bool hardware) :
+Server::Server(ConnectionSettings connection_info) :
     m_connection_info(connection_info),
-    m_password(password),
-    m_hardware(hardware),
     m_socket_thread(NULL),
     m_parser(NULL),
     m_login_state(Disconnected)
@@ -54,7 +52,7 @@ void Server::socketConnect()
     Q_ASSERT(m_socket);
 
     changeLoginState(Connecting);
-    m_socket->connectToHost(m_connection_info.host, m_connection_info.port);
+    m_socket->connectToHost(m_connection_info.hostname, m_connection_info.port);
 }
 
 void Server::socketDisconnect()
@@ -123,12 +121,7 @@ void Server::terminate()
 void Server::processIncomingMessage(QSharedPointer<IncomingMessage> msg)
 {
     // possibly handle the message (only for the initial setup)
-    if (msg.isNull()) {
-        // end the connection
-        qDebug() << "null message, socket disconnect";
-        socketDisconnect();
-        return;
-    }
+    qDebug() << ("Received message of type: 0x" + QString::number(msg.data()->messageType, 16)).toStdString().c_str();
     switch (msg.data()->messageType) {
         case Message::Handshake: {
             HandshakeResponseMessage * message = (HandshakeResponseMessage *)msg.data();
@@ -173,14 +166,4 @@ void Server::finishWritingAndDisconnect()
 Server::LoginStatus Server::loginStatus()
 {
     return m_login_state;
-}
-
-void Server::setPassword(QString password)
-{
-    m_password = password;
-}
-
-void Server::setUsername(QString username)
-{
-    m_connection_info.username = username;
 }

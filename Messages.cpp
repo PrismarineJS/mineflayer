@@ -131,6 +131,52 @@ int HandshakeResponseMessage::parse(QByteArray buffer)
     return index;
 }
 
+int SpawnPositionMessage::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseInt32(buffer, index, x)) == -1)
+        return -1;
+    if ((index = parseInt32(buffer, index, y)) == -1)
+        return -1;
+    if ((index = parseInt32(buffer, index, z)) == -1)
+        return -1;
+    return index;
+}
+
+int MobSpawnMessage::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseInt32(buffer, index, entity_id)) == -1)
+        return -1;
+    qint8 tmp;
+    if ((index = parseInt8(buffer, index, tmp)) == -1)
+        return -1;
+    mob_type = (MobType)tmp;
+    if ((index = parseInt32(buffer, index, absolute_x)) == -1)
+        return -1;
+    if ((index = parseInt32(buffer, index, absolute_y)) == -1)
+        return -1;
+    if ((index = parseInt32(buffer, index, absolute_z)) == -1)
+        return -1;
+    if ((index = parseInt8(buffer, index, yaw_out_of_255)) == -1)
+        return -1;
+    if ((index = parseInt8(buffer, index, pitch_out_of_255)) == -1)
+        return -1;
+    // find the 0x7f
+    int i = index;
+    while (true) {
+        if (i >= buffer.size())
+            return -1; // didn't find it
+        if (buffer.at(i) == 0x7f)
+            break;
+        i++;
+    }
+    i++; // include the terminator
+    metadata = buffer.mid(index, i - index);
+    index = i;
+    return index;
+}
+
 int PreChunkMessage::parse(QByteArray buffer)
 {
     int index = 1;

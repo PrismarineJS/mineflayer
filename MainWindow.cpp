@@ -41,6 +41,6 @@ void MainWindow::start()
 
 //    ui->gameWidget->start(dialog.username(), dialog.password(), dialog.server());
 
-    ui->gameWidget->start("superbot", "", "localhost");
+    ui->gameWidget->start("superbot", "", "localhost", 25565);
 
 }

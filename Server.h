@@ -10,7 +10,6 @@
 #include <QTcpSocket>
 #include <QSharedPointer>
 
-// MessageHandler has a QTcpSocket to talk to the server.
 // use it to send messages and connect to it to hear it emit incoming messages.
 // this object runs in its own thread which it manages for you, but you must
 // never call a slot directly.
@@ -32,10 +31,9 @@ public:
     };
 
 
-    explicit Server(ConnectionSettings connection_info, QString password = QString(), bool hardware = false);
+    explicit Server(ConnectionSettings connection_info);
     ~Server();
 
-    void setPassword(QString password);
     void setUsername(QString username);
 
     // returns the ConnectionResultMessage that the server gave upon connection
@@ -49,8 +47,6 @@ signals:
 
     void loginStatusUpdated(LoginStatus status);
     void socketDisconnected();
-
-    void pingComputed(int ms);
 
 public slots:
     void sendMessage(QSharedPointer<OutgoingMessage> message);
@@ -68,16 +64,7 @@ public:
     LoginStatus loginStatus();
 
 private:
-    static const int c_client_major_version;
-    static const int c_client_minor_version;
-    static const int c_client_build_version;
-    static const int c_server_major_version;
-    static const int c_server_minor_version;
-    static const int c_server_build_version;
-
     ConnectionSettings m_connection_info;
-    QString m_password;
-    bool m_hardware;
 
     QThread * m_socket_thread;
     QTcpSocket * m_socket;

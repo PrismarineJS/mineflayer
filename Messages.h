@@ -156,6 +156,43 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class SpawnPositionMessage : public IncomingMessage {
+public:
+    qint32 x;
+    qint32 y;
+    qint32 z;
+    SpawnPositionMessage() : IncomingMessage(SpawnPosition) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class MobSpawnMessage : public IncomingMessage {
+public:
+    enum MobType {
+        Creeper=50,
+        Skeleton=51,
+        Spider=52,
+        GiantZombie=53,
+        Zombie=54,
+        Slime=55,
+        Ghast=56,
+        ZombiePigman=57,
+        Pig=90,
+        Sheep=91,
+        Cow=92,
+        Hen=93,
+    };
+    qint32 entity_id;
+    MobType mob_type;
+    qint32 absolute_x;
+    qint32 absolute_y;
+    qint32 absolute_z;
+    qint8 yaw_out_of_255;
+    qint8 pitch_out_of_255;
+    QByteArray metadata;
+    MobSpawnMessage() : IncomingMessage(MobSpawn) {}
+    virtual int parse(QByteArray buffer);
+};
+
 class PreChunkMessage : public IncomingMessage {
 public:
     enum Mode {

@@ -1,6 +1,8 @@
 #ifndef GAMEWIDGET_H
 #define GAMEWIDGET_H
 
+#include "Server.h"
+
 #include <QGLWidget>
 #include <QHash>
 #include <QSharedPointer>
@@ -24,8 +26,9 @@ public:
 
 public:
     explicit GameWidget(QWidget *parent = 0);
+    ~GameWidget();
 
-    void start(QString user, QString password, QString server);
+    void start(QString username, QString password, QString hostname, int port);
 
 protected:
     void paintGL();
@@ -65,9 +68,13 @@ private:
         bool on_ground;
     };
 
+    Server * m_server;
+
     QHash<ChunkCoord, QSharedPointer<Chunk> > m_chunks;
     QLinkedList<QSharedPointer<Entity> > m_entities;
     QSharedPointer<Entity> m_player;
+private slots:
+    void handleMessage(QSharedPointer<IncomingMessage> message);
 };
 
 uint qHash(GameWidget::ChunkCoord coord);
