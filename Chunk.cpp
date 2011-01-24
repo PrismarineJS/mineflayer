@@ -19,7 +19,8 @@ uint qHash(const Chunk::Coord & coord)
     return (coord.x * 8191 + coord.z) * 131071 + coord.y;
 }
 
-Chunk::Chunk()
+Chunk::Chunk(const Coord & pos) :
+    m_pos(pos)
 {
     initialize();
 }
@@ -167,4 +168,9 @@ void Chunk::randomize()
     }
 
     updateEntireChunkMesh();
+}
+
+void Chunk::resize(Vec3<int> size)
+{
+    m_blocks.resize(size.x * size.y * size.z);
 }

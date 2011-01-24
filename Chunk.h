@@ -30,13 +30,16 @@ public:
     };
 
 public:
-    Chunk();
+    Chunk(const Coord & pos);
 
     // use to set or retrieve Block data. Call updateBlock when done.
     QSharedPointer<Block> getBlock(const Coord & coord) const;
     // call this if you edit the data from a block.
     void updateBlock(const Coord & coord);
 
+    void resize(Vec3<int> size);
+
+    // debug method to generate random blocks
     void randomize();
 
 protected:
