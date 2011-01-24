@@ -124,7 +124,7 @@ void Chunk::render()
 void Chunk::updateBlock(const Coord & coord)
 {
     QSharedPointer<Block> block = m_blocks.at(indexOf(coord));
-    Vec3<float> loc = m_pos + coord * Constants::block_size;
+    Vec3<float> loc = (m_pos + coord) * Constants::block_size;
     if (s_meshes.at(block.data()->type) != NULL) {
         block.data()->mesh_instance = QSharedPointer<MeshInstance>(new MeshInstance(
             s_meshes.at(block.data()->type), loc, Constants::block_size, Constants::up, Constants::forwardX));

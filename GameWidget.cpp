@@ -114,6 +114,7 @@ void GameWidget::handleMessage(QSharedPointer<IncomingResponse>incomingMessage)
                 chunk = QSharedPointer<Chunk>(new Chunk(chunk_key));
                 m_chunks.insert(chunk_key, chunk);
             }
+            //qDebug() << "Got chunk:" << chunk_key.x << chunk_key.y << chunk_key.z;
 
             Chunk::Coord size;
             size.x = message->size_x_minus_one + 1;
@@ -233,7 +234,7 @@ void GameWidget::initializeGL()
     glAlphaFunc(GL_GREATER, 0.6f);
 
     m_player = new Entity;
-    m_player->pos = Vec3<float>(10, 10, 2);
+    m_player->pos = Vec3<float>(0, 0, 69*16);
     m_player->up = Vec3<float>(0, 0, 1);
     m_player->look = Vec3<float>(1,1,0);
     m_camera = new Camera(m_player->pos, m_player->up, m_player->look);

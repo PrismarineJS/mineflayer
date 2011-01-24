@@ -11,20 +11,7 @@ using namespace std;
 #include <OpenEXR/ImathVec.h>
 using namespace Imath;
 
-class MeshCalculations {
-    public:
-        enum CalcNormalMethod {
-            Surface,
-            Average,
-            WeightedAverage
-        };
-
-        virtual void calculateNormals(CalcNormalMethod mode,
-            int creaseAngle) = 0;
-        virtual void setShowNormals(bool value) = 0;
-};
-
-class Mesh : public Drawable, public MeshCalculations {
+class Mesh : public Drawable {
     public:
         ~Mesh();
 
@@ -49,15 +36,6 @@ class Mesh : public Drawable, public MeshCalculations {
         // centered at origin from -0.5 to 0.5, z=0
         static Mesh * createUnitPlane(Vec3<float> color, Texture * tex);
         static Mesh * createUnitPlane(Vec3<float> color);
-
-        // recalculate normals
-        void calculateNormals(MeshCalculations::CalcNormalMethod mode,
-            int creaseAngle);
-
-        // show/hide normal arrows
-        void setShowNormals(bool value);
-
-        void superHappyFunTime();
 
         inline Vec3<float> size() { return m_size; }
 
@@ -88,7 +66,6 @@ class Mesh : public Drawable, public MeshCalculations {
         Texture * m_texture;
 
         bool m_showNormals;
-        MeshCalculations::CalcNormalMethod m_normalMode;
 
         Mesh();
 

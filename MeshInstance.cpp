@@ -58,7 +58,6 @@ void MeshInstance::render() {
 
     glScalef(m_scale.x, m_scale.y, m_scale.z);
     m_mesh->draw();
-    m_mesh->drawNormalArrows(m_scale);
 
     glPopMatrix();
 }
