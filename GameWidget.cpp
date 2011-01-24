@@ -191,6 +191,11 @@ void GameWidget::initializeGL()
 
     glColorMaterial(GL_FRONT, GL_AMBIENT);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.6f);
+
     m_player = new Entity;
     m_player->pos = Vec3<float>(10, 10, 2);
     m_player->up = Vec3<float>(0, 0, 1);

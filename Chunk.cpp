@@ -33,7 +33,7 @@ void Chunk::initialize()
     {
         // grab all the textures from resources
         QImage terrain(":/textures/terrain.png");
-        terrain.convertToFormat(QImage::Format_ARGB32);
+        terrain.convertToFormat(QImage::Format_ARGB32_Premultiplied);
 
         QFile texture_index_file(":/textures/textures.txt");
         texture_index_file.open(QFile::ReadOnly);
@@ -156,6 +156,8 @@ void Chunk::randomize()
             for (coord.x = 0; coord.x < m_size.x; coord.x++) {
                 Block * new_block = new Block;
                 new_block->type = (rand() % 20 == 1) ? (rand() % 92 + 1) : 0;
+                if (rand() % 20 == 1)
+                    new_block->type = 79;
                 new_block->light = 0;
                 new_block->metadata = 0;
                 new_block->sky_light = 0;
