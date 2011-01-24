@@ -23,7 +23,7 @@ void Chunk::initialize()
         return;
     s_initialized = true;
 
-    s_brick_bitmap = new Bitmap("brick.bmp");
+    s_brick_bitmap = new Bitmap("dirt.bmp");
     s_brick_texture = new Texture(s_brick_bitmap);
     s_block_mesh = Mesh::createUnitCube(Constants::white, s_brick_texture);
 }
@@ -34,7 +34,12 @@ void Chunk::render()
     for (coord.z = 0; coord.z < m_size.z; coord.z++) {
         for (coord.y = 0; coord.y < m_size.y; coord.y++) {
             for (coord.x = 0; coord.x < m_size.x; coord.x++) {
-                block(coord).data()->mesh_instance.data()->draw();
+                Block * block = getBlock(coord).data();
+                if (block->type == 0) {
+                    // air
+                } else {
+                    block->mesh_instance.data()->draw();
+                }
             }
         }
     }
@@ -62,10 +67,35 @@ void Chunk::updateEntireChunkMesh()
 
 int Chunk::indexOf(const Coord & coord) const
 {
-    return coord.y + (coord.z * (m_size.y+1)) + (coord.x * (m_size.y+1) * (m_size.z+1));
+    return coord.y + (coord.z * m_size.y) + (coord.x * m_size.y * m_size.z);
 }
 
-QSharedPointer<Chunk::Block> Chunk::block(const Coord & coord) const
+QSharedPointer<Chunk::Block> Chunk::getBlock(const Coord & coord) const
 {
     return m_blocks.at(indexOf(coord));
+}
+
+void Chunk::randomize()
+{
+    // create and allocate this chunk
+    m_size.setValue(16, 16, 16);
+    m_pos.setValue(0, 0, 0);
+    m_blocks.resize(16 * 16 * 16);
+
+    // for each block, assign random values
+    Coord coord;
+    for (coord.z = 0; coord.z < m_size.z; coord.z++) {
+        for (coord.y = 0; coord.y < m_size.y; coord.y++) {
+            for (coord.x = 0; coord.x < m_size.x; coord.x++) {
+                Block * new_block = new Block;
+                new_block->type = ((coord.x + coord.y + coord.z) % 21 == 0) ? 1 : 0;
+                new_block->light = 0;
+                new_block->metadata = 0;
+                new_block->sky_light = 0;
+                m_blocks.replace(indexOf(coord), QSharedPointer<Block>(new_block));
+            }
+        }
+    }
+
+    updateEntireChunkMesh();
 }

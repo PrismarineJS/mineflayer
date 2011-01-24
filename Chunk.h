@@ -29,9 +29,11 @@ public:
     Chunk();
 
     // use to set or retrieve Block data. Call updateBlock when done.
-    QSharedPointer<Block> block(const Coord & coord) const;
+    QSharedPointer<Block> getBlock(const Coord & coord) const;
     // call this if you edit the data from a block.
     void updateBlock(const Coord & coord);
+
+    void randomize();
 
 protected:
     void render();
@@ -39,7 +41,7 @@ protected:
 private:
     QVector<QSharedPointer<Block> > m_blocks;
     Vec3<int> m_size;
-    Vec3<int> m_pos;
+    Coord m_pos;
 
     static bool s_initialized;
     static Bitmap * s_brick_bitmap;

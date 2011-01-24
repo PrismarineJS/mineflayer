@@ -6,6 +6,8 @@
 #include <QTimer>
 #include <QApplication>
 #include <QDateTime>
+#include <QSettings>
+#include <QDir>
 
 const int GameWidget::c_fps = 60;
 const double GameWidget::c_time_per_frame_msecs = 1.0 / (double)c_fps * 1000.0;
@@ -16,6 +18,9 @@ GameWidget::GameWidget(QWidget *parent) :
     m_player(NULL)
 {
     this->setMouseTracking(true);
+    this->setFocusPolicy(Qt::StrongFocus);
+
+    loadControls();
 }
 
 GameWidget::~GameWidget()
@@ -24,9 +29,35 @@ GameWidget::~GameWidget()
     delete m_player;
 }
 
+void GameWidget::loadControls()
+{
+    QDir dir(QCoreApplication::applicationDirPath());
+    QSettings settings(dir.absoluteFilePath("mineflayer.ini"), QSettings::IniFormat);
+    m_key_to_control.insert(settings.value("controls/forward", Qt::Key_W).toInt(), Forward);
+    m_key_to_control.insert(settings.value("controls/back", Qt::Key_S).toInt(), Back);
+    m_key_to_control.insert(settings.value("controls/left", Qt::Key_A).toInt(), Left);
+    m_key_to_control.insert(settings.value("controls/right", Qt::Key_D).toInt(), Right);
+    m_key_to_control.insert(settings.value("controls/jump", Qt::Key_Space).toInt(), Jump);
+    m_key_to_control.insert(settings.value("controls/crouch", Qt::Key_Shift).toInt(), Crouch);
+    m_key_to_control.insert(settings.value("controls/discard_item", Qt::Key_Q).toInt(), DiscardItem);
+    m_key_to_control.insert(settings.value("controls/action_1", Qt::LeftButton).toInt(), Action1);
+    m_key_to_control.insert(settings.value("controls/action_2", Qt::RightButton).toInt(), Action2);
+    m_key_to_control.insert(settings.value("controls/inventory", Qt::Key_I).toInt(), Inventory);
+
+    QHashIterator<int, Control> it(m_key_to_control);
+    while (it.hasNext()) {
+        it.next();
+        m_control_to_key.insert(it.value(), it.key());
+    }
+}
+
 void GameWidget::start(QString user, QString password, QString server)
 {
     // TODO: connect to the server
+
+    Chunk * chunk = new Chunk();
+    chunk->randomize();
+    m_chunks.insert(Chunk::Coord(0, 0, 0), QSharedPointer<Chunk>(chunk));
 
     m_target_time_msecs = (double)QDateTime::currentMSecsSinceEpoch();
     QTimer::singleShot(1, this, SLOT(mainLoop()));
@@ -52,7 +83,28 @@ void GameWidget::mainLoop()
 
 void GameWidget::computeNextFrame()
 {
-    // TODO
+
+    //  move the player
+    bool forward = m_key_down.value(m_control_to_key.value(Forward));
+    bool backward = m_key_down.value(m_control_to_key.value(Back));
+    bool left = m_key_down.value(m_control_to_key.value(Left));
+    bool right = m_key_down.value(m_control_to_key.value(Right));
+
+    if (forward && ! backward) {
+        // move camera forward in direction it is facing
+        m_camera->moveForward(1.0f);
+    } else if (backward && ! forward) {
+        // move camera backward in direction it is facing
+        m_camera->moveBackward(1.0f);
+    }
+
+    if (left && ! right) {
+        // strafe camera left
+        m_camera->moveLeft(1.0f);
+    } else if (right && ! left) {
+        // strafe camera right
+        m_camera->moveRight(1.0f);
+    }
 }
 
 void GameWidget::paintGL()
@@ -79,8 +131,7 @@ void GameWidget::paintGL()
 
 void GameWidget::resizeGL(int width, int height)
 {
-    int side = qMin(width, height);
-    glViewport((width - side) / 2, (height - side) / 2, side, side);
+    glViewport(0, 0, width, height);
 }
 
 void GameWidget::initializeGL()
@@ -116,9 +167,16 @@ void GameWidget::mousePressEvent(QMouseEvent *)
 
 }
 
-void GameWidget::mouseMoveEvent(QMouseEvent *)
+void GameWidget::mouseMoveEvent(QMouseEvent * e)
 {
+    QPoint center(this->width() / 2, this->height() / 2);
+    QPoint delta = e->pos() - center;
 
+    if (delta.manhattanLength() > 0) {
+        QCursor::setPos(this->mapToGlobal(center));
+        m_camera->pointRight(delta.x() / 500.0f);
+        m_camera->pointDown(delta.y() / 500.0f);
+    }
 }
 
 void GameWidget::mouseReleaseEvent(QMouseEvent *)

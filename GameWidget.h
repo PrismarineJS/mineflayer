@@ -17,6 +17,19 @@ class Camera;
 class GameWidget : public QGLWidget
 {
     Q_OBJECT
+public:
+    enum Control {
+        Forward,
+        Back,
+        Left,
+        Right,
+        Jump,
+        Crouch,
+        DiscardItem,
+        Action1, // left click
+        Action2, // right click
+        Inventory,
+    };
 
 public:
     explicit GameWidget(QWidget *parent = 0);
@@ -49,7 +62,11 @@ private:
     Camera * m_camera;
     Entity * m_player;
 
+    // keeps track of the keyboard state
     QHash<int, bool> m_key_down;
+    // maps Qt::Key to Control and vice versa
+    QHash<int, Control> m_key_to_control;
+    QHash<Control, int> m_control_to_key;
 
     static const int c_fps;
     static const double c_time_per_frame_msecs;
@@ -60,6 +77,7 @@ private slots:
 
 private:
     void computeNextFrame();
+    void loadControls();
 };
 
 #endif // GAMEWIDGET_H
