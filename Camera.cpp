@@ -96,7 +96,13 @@ void Camera::pointRight(float radians) {
 void Camera::pointUp(float radians) {
     // rotate about left vector
     radians = fmodf(radians, 2*M_PI);
+    int x_sign = Util::sign(m_look.x);
+    int y_sign = Util::sign(m_look.y);
     Util::rotateVector(m_look, m_look.cross(m_up), radians);
+    if (x_sign != Util::sign(m_look.x) && y_sign != Util::sign(m_look.y)) {
+        m_look.x = -m_look.x;
+        m_look.y = -m_look.y;
+    }
     calcRefPoint();
 }
 

@@ -8,6 +8,7 @@
 #include <QDateTime>
 #include <QSettings>
 #include <QDir>
+#include <QDebug>
 
 const int GameWidget::c_fps = 60;
 const double GameWidget::c_time_per_frame_msecs = 1.0 / (double)c_fps * 1000.0;
@@ -19,6 +20,7 @@ GameWidget::GameWidget(QWidget *parent) :
 {
     this->setMouseTracking(true);
     this->setFocusPolicy(Qt::StrongFocus);
+    this->setCursor(Qt::BlankCursor);
 
     loadControls();
 }

@@ -12,6 +12,8 @@ namespace Util {
     // get the angle in radians between two vectors
     template <class vec> float angleBetween(const vec & vec1, const vec & vec2);
 
+    // returns -1 if < 0, 1 if > 0, 0 if 0.
+    template <class T> int sign(T number);
 
 
     // --------------
@@ -22,6 +24,17 @@ namespace Util {
     template <class vec> float angleBetween(const vec & vec1, const vec & vec2)
     {
         return acosf(vec1.normalized().dot(vec2.normalized()));
+    }
+
+    template <class T> int sign(T number)
+    {
+        if (number < 0) {
+            return -1;
+        } else if (number > 0) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 }
 #endif

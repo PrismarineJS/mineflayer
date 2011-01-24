@@ -5,7 +5,7 @@
 using namespace Imath;
 
 namespace Constants {
-    Vec3<int> block_size = Vec3<int>(32, 32, 32);
+    Vec3<int> block_size = Vec3<int>(16, 16, 16);
 
     Vec3<float> up = Vec3<float>(0, 0, 1.0f);
     Vec3<float> down = Vec3<float>(0, 0, -1.0f);
