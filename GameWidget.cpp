@@ -59,7 +59,7 @@ void GameWidget::loadControls()
 void GameWidget::start(QString username, QString password, QString hostname, int port)
 {
     // TODO: tmp
-    if (false) {
+    if (true) {
         ConnectionSettings connection_info;
         connection_info.username = username;
         connection_info.password = password;
@@ -70,14 +70,13 @@ void GameWidget::start(QString username, QString password, QString hostname, int
         success = connect(m_server, SIGNAL(messageReceived(QSharedPointer<IncomingMessage>)), this, SLOT(handleMessage(QSharedPointer<IncomingMessage>)));
         Q_ASSERT(success);
         m_server->socketConnect();
-    } else {
-        Chunk * chunk = new Chunk();
-        chunk->randomize();
-        m_chunks.insert(Chunk::Coord(0, 0, 0), QSharedPointer<Chunk>(chunk));
-
-        m_target_time_msecs = (double)QDateTime::currentMSecsSinceEpoch();
-        QTimer::singleShot(1, this, SLOT(mainLoop()));
     }
+    Chunk * chunk = new Chunk();
+    chunk->randomize();
+    m_chunks.insert(Chunk::Coord(0, 0, 0), QSharedPointer<Chunk>(chunk));
+
+    m_target_time_msecs = (double)QDateTime::currentMSecsSinceEpoch();
+    QTimer::singleShot(1, this, SLOT(mainLoop()));
 }
 
 void GameWidget::handleMessage(QSharedPointer<IncomingMessage>message)

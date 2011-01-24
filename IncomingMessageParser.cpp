@@ -38,16 +38,48 @@ void IncomingMessageParser::readMessage()
 IncomingMessage * IncomingMessageParser::createMessageOfType(IncomingMessage::MessageType type)
 {
     switch (type) {
+    case Message::KeepAlive:
+        return new KeepAliveResponse;
     case Message::Login:
         return new LoginRespsonseMessage;
     case Message::Handshake:
         return new HandshakeResponseMessage;
+    case Message::TimeUpdate:
+        return new TimeUpdateMessage;
     case Message::SpawnPosition:
         return new SpawnPositionMessage;
+    case Message::PlayerPositionAndLook:
+        return new PlayerPositionAndLookResponse;
+    case Message::PickupSpawn:
+        return new PickupSpawnResponseMessage;
     case Message::MobSpawn:
         return new MobSpawnMessage;
+    case Message::EntityVelocity:
+        return new EntityVelocityMessage;
+    case Message::DestroyEntity:
+        return new DestroyEntityResponse;
+    case Message::Entity:
+        return new EntityResponse;
+    case Message::EntityRelativeMove:
+        return new EntityRelativeMoveResponse;
+    case Message::EntityLook:
+        return new EntityLookResponse;
+    case Message::EntityLookAndRelativeMove:
+        return new EntityLookAndRelativeMoveResponse;
+    case Message::EntityStatus:
+        return new EntityStatusResponse;
     case Message::PreChunk:
         return new PreChunkMessage;
+    case Message::MapChunk:
+        return new MapChunkMessage;
+    case Message::MultiBlockChange:
+        return new MultiBlockChangeResponse;
+    case Message::BlockChange:
+        return new BlockChangeResposne;
+    case Message::SetSlot:
+        return new SetSlotResponse;
+    case Message::WindowItems:
+        return new WindowItemsMessage;
     case Message::DisconnectOrKick:
         return new DisconnectOrKickMessage;
     default:
