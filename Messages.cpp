@@ -29,6 +29,18 @@ void HandshakeRequest::writeMessageBody(QDataStream &stream)
     writeString(stream, username);
 }
 
+void PlayerPositionAndLookRequest::writeMessageBody(QDataStream &stream)
+{
+    stream << x;
+    stream << stance;
+    stream << y;
+    stream << z;
+    stream << yaw;
+    stream << pitch;
+    stream << on_ground;
+
+}
+
 int IncomingResponse::parseValue(QByteArray buffer, int index, bool &value)
 {
     qint8 tmp;
@@ -121,6 +133,22 @@ int IncomingResponse::parseValue(QByteArray buffer, int index, Item &item)
     }
     return index;
 }
+int IncomingResponse::parseValue(QByteArray buffer, int index, QByteArray &value)
+{
+    // find the 0x7f
+    int i = index;
+    while (true) {
+        if (i >= buffer.size())
+            return -1; // didn't find it
+        if (buffer.at(i) == 0x7f)
+            break;
+        i++;
+    }
+    i++; // include the terminator
+    value = buffer.mid(index, i - index);
+    index = i;
+    return index;
+}
 
 int LoginRespsonse::parse(QByteArray buffer)
 {
@@ -150,10 +178,34 @@ int HandshakeResponse::parse(QByteArray buffer)
     return index;
 }
 
+int ChatResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, content)) == -1)
+        return -1;
+    return index;
+}
+
 int TimeUpdateResponse::parse(QByteArray buffer)
 {
     int index = 1;
     if ((index = parseValue(buffer, index, game_time_in_twentieths_of_a_second)) == -1)
+        return -1;
+    return index;
+}
+
+int EntityEquipmentResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, slot)) == -1)
+        return -1;
+    qint16 tmp;
+    if ((index = parseValue(buffer, index, tmp)) == -1)
+        return -1;
+    item_type = (ItemType)tmp;
+    if ((index = parseValue(buffer, index, unknown)) == -1)
         return -1;
     return index;
 }
@@ -187,6 +239,42 @@ int PlayerPositionAndLookResponse::parse(QByteArray buffer)
         return -1;
     if ((index = parseValue(buffer, index, on_ground)) == -1)
         return -1;
+    return index;
+}
+
+int AnimationResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
+        return -1;
+    qint8 tmp;
+    if ((index = parseValue(buffer, index, tmp)) == -1)
+        return -1;
+    animation_type = (AnimationType)tmp;
+    return index;
+}
+
+int NamedEntitySpawnResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, player_name)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, x)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, y)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, z)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, yaw)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, pitch)) == -1)
+        return -1;
+    qint16 tmp;
+    if ((index = parseValue(buffer, index, tmp)) == -1)
+        return -1;
+    held_item = (ItemType)tmp;
     return index;
 }
 
@@ -237,18 +325,8 @@ int MobSpawnResponse::parse(QByteArray buffer)
         return -1;
     if ((index = parseValue(buffer, index, pitch_out_of_256)) == -1)
         return -1;
-    // find the 0x7f
-    int i = index;
-    while (true) {
-        if (i >= buffer.size())
-            return -1; // didn't find it
-        if (buffer.at(i) == 0x7f)
-            break;
-        i++;
-    }
-    i++; // include the terminator
-    metadata = buffer.mid(index, i - index);
-    index = i;
+    if ((index = parseValue(buffer, index, metadata)) == -1)
+        return -1;
     return index;
 }
 
@@ -326,12 +404,40 @@ int EntityLookAndRelativeMoveResponse::parse(QByteArray buffer)
     return index;
 }
 
+int EntityTeleportResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, absolute_x)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, absolute_y)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, absolute_z)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, yaw_out_of_256)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, pitch_out_of_256)) == -1)
+        return -1;
+    return index;
+}
+
 int EntityStatusResponse::parse(QByteArray buffer)
 {
     int index = 1;
     if ((index = parseValue(buffer, index, entity_id)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, status)) == -1)
+        return -1;
+    return index;
+}
+
+int EntityMetadataResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, metadata)) == -1)
         return -1;
     return index;
 }

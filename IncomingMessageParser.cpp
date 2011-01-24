@@ -44,12 +44,20 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
         return new LoginRespsonse;
     case Message::Handshake:
         return new HandshakeResponse;
+    case Message::Chat:
+        return new ChatResponse;
     case Message::TimeUpdate:
         return new TimeUpdateResponse;
+    case Message::EntityEquipment:
+        return new EntityEquipmentResponse;
     case Message::SpawnPosition:
         return new SpawnPositionResponse;
     case Message::PlayerPositionAndLook:
         return new PlayerPositionAndLookResponse;
+    case Message::Animation:
+        return new AnimationResponse;
+    case Message::NamedEntitySpawn:
+        return new NamedEntitySpawnResponse;
     case Message::PickupSpawn:
         return new PickupSpawnResponse;
     case Message::MobSpawn:
@@ -66,8 +74,12 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
         return new EntityLookResponse;
     case Message::EntityLookAndRelativeMove:
         return new EntityLookAndRelativeMoveResponse;
+    case Message::EntityTeleport:
+        return new EntityTeleportResponse;
     case Message::EntityStatus:
         return new EntityStatusResponse;
+    case Message::EntityMetadata:
+        return new EntityMetadataResponse;
     case Message::PreChunk:
         return new PreChunkResponse;
     case Message::MapChunk:

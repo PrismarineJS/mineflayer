@@ -301,6 +301,19 @@ public:
     virtual void writeMessageBody(QDataStream & stream);
 };
 
+class PlayerPositionAndLookRequest : public OutgoingRequest {
+public:
+    double x;
+    double stance;
+    double y;
+    double z;
+    float yaw;
+    float pitch;
+    bool on_ground;
+    PlayerPositionAndLookRequest() : OutgoingRequest(PlayerPositionAndLook) {}
+protected:
+    virtual void writeMessageBody(QDataStream &stream);
+};
 
 class DummyDisconnectRequest : public OutgoingRequest {
 public:
@@ -328,6 +341,7 @@ protected:
     static int parseValue(QByteArray buffer, int index, double &value);
     static int parseValue(QByteArray buffer, int index, QString &value);
     static int parseValue(QByteArray buffer, int index, Item &item);
+    static int parseValue(QByteArray buffer, int index, QByteArray &value);
 };
 
 class KeepAliveResponse : public IncomingResponse {
@@ -360,10 +374,27 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class ChatResponse : public IncomingResponse {
+public:
+    QString content;
+    ChatResponse() : IncomingResponse(Chat) {}
+    virtual int parse(QByteArray buffer);
+};
+
 class TimeUpdateResponse : public IncomingResponse {
 public:
     qint64 game_time_in_twentieths_of_a_second;
     TimeUpdateResponse() : IncomingResponse(TimeUpdate) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class EntityEquipmentResponse : public IncomingResponse {
+public:
+    qint32 entity_id;
+    qint16 slot;
+    ItemType item_type;
+    qint16 unknown;
+    EntityEquipmentResponse() : IncomingResponse(EntityEquipment) {}
     virtual int parse(QByteArray buffer);
 };
 
@@ -386,6 +417,35 @@ public:
     float pitch;
     bool on_ground;
     PlayerPositionAndLookResponse() : IncomingResponse(PlayerPositionAndLook) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class AnimationResponse : public IncomingResponse {
+public:
+    enum AnimationType {
+        NoAnimation=0,
+        SwingArm=1,
+        Damage=2,
+        Crouch=104,
+        Uncrouch=105,
+    };
+    qint32 entity_id;
+    AnimationType animation_type;
+    AnimationResponse() : IncomingResponse(Animation) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class NamedEntitySpawnResponse : public IncomingResponse {
+public:
+    qint32 entity_id;
+    QString player_name;
+    qint32 x;
+    qint32 y;
+    qint32 z;
+    qint8 yaw;
+    qint8 pitch;
+    ItemType held_item;
+    NamedEntitySpawnResponse() : IncomingResponse(NamedEntitySpawn) {}
     virtual int parse(QByteArray buffer);
 };
 
@@ -488,11 +548,31 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class EntityTeleportResponse : public IncomingResponse {
+public:
+    qint32 entity_id;
+    qint32 absolute_x;
+    qint32 absolute_y;
+    qint32 absolute_z;
+    qint8 yaw_out_of_256;
+    qint8 pitch_out_of_256;
+    EntityTeleportResponse() : IncomingResponse(EntityTeleport) {}
+    virtual int parse(QByteArray buffer);
+};
+
 class EntityStatusResponse : public IncomingResponse {
 public:
     qint32 entity_id;
     qint8 status;
     EntityStatusResponse() : IncomingResponse(EntityStatus) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class EntityMetadataResponse : public IncomingResponse {
+public:
+    qint32 entity_id;
+    QByteArray metadata;
+    EntityMetadataResponse() : IncomingResponse(EntityMetadata) {}
     virtual int parse(QByteArray buffer);
 };
 

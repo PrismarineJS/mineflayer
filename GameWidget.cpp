@@ -79,10 +79,27 @@ void GameWidget::start(QString username, QString password, QString hostname, int
     QTimer::singleShot(1, this, SLOT(mainLoop()));
 }
 
-void GameWidget::handleMessage(QSharedPointer<IncomingResponse>message)
+void GameWidget::handleMessage(QSharedPointer<IncomingResponse>incomingMessage)
 {
-    // TODO:
-    message.data();
+    switch (incomingMessage.data()->messageType) {
+        case Message::PlayerPositionAndLook: {
+            // echo back the same thing
+            PlayerPositionAndLookResponse * message = (PlayerPositionAndLookResponse *) incomingMessage.data();
+            PlayerPositionAndLookRequest * outgoing = new PlayerPositionAndLookRequest();
+            outgoing->x = message->x;
+            outgoing->y = message->y;
+            outgoing->z = message->z;
+            outgoing->stance = message->stance;
+            outgoing->yaw = message->yaw;
+            outgoing->pitch = message->pitch;
+            outgoing->on_ground = message->on_ground;
+            m_server->sendMessage(QSharedPointer<OutgoingRequest>(outgoing));
+            break;
+        }
+        default: {
+            //ignore
+        }
+    }
 }
 
 void GameWidget::mainLoop()
