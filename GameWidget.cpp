@@ -71,9 +71,10 @@ void GameWidget::start(QString username, QString password, QString hostname, int
         Q_ASSERT(success);
         m_server->socketConnect();
     }
-    Chunk * chunk = new Chunk();
+    Chunk::Coord chunk_pos(0, 0, 0);
+    Chunk * chunk = new Chunk(chunk_pos);
     chunk->randomize();
-    m_chunks.insert(Chunk::Coord(0, 0, 0), QSharedPointer<Chunk>(chunk));
+    m_chunks.insert(chunk_pos, QSharedPointer<Chunk>(chunk));
 
     m_target_time_msecs = (double)QDateTime::currentMSecsSinceEpoch();
     QTimer::singleShot(1, this, SLOT(mainLoop()));
@@ -95,6 +96,29 @@ void GameWidget::handleMessage(QSharedPointer<IncomingResponse>incomingMessage)
             outgoing->on_ground = message->on_ground;
             m_server->sendMessage(QSharedPointer<OutgoingRequest>(outgoing));
             break;
+        }
+        case Message::MapChunk: {
+            MapChunkResponse * message = (MapChunkResponse *) incomingMessage.data();
+
+            QByteArray decompressed = qUncompress(message->compressed_data);
+
+            // determine the chunk coordinates
+            Chunk::Coord pos;
+            pos.x = message->x;
+            pos.y = message->y;
+            pos.z = message->z;
+
+            // if the chunk already exists, update it
+
+            // if not, create it
+
+            qint32 x;
+            qint16 y;
+            qint32 z;
+            qint8 size_x_minus_one;
+            qint8 size_y_minus_one;
+            qint8 size_z_minus_one;
+            QByteArray compressed_data;
         }
         default: {
             //ignore
@@ -190,6 +214,11 @@ void GameWidget::initializeGL()
     glLightfv(GL_LIGHT0, GL_AMBIENT, goodAmbientLight);
 
     glColorMaterial(GL_FRONT, GL_AMBIENT);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.6f);
 
     m_player = new Entity;
     m_player->pos = Vec3<float>(10, 10, 2);
