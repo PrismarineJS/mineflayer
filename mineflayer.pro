@@ -31,7 +31,6 @@ HEADERS += MainWindow.h \
     Server.h \
     Messages.h \
     ConnectionSettings.h \
-<<<<<<< HEAD
     Camera.h \
     Util.h \
     Mesh.h \
