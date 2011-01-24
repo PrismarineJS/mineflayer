@@ -40,8 +40,14 @@ IncomingMessage * IncomingMessageParser::createMessageOfType(IncomingMessage::Me
     switch (type) {
     case Message::Handshake:
         return new HandshakeResponseMessage;
+    case Message::Login:
+        return new LoginRespsonseMessage;
+    case Message::PreChunk:
+        return new PreChunkMessage;
+    case Message::DisconnectOrKick:
+        return new DisconnectOrKickMessage;
     default:
-        Q_ASSERT(false);
+        Q_ASSERT_X(false, "", QString("parse message: " + type).toStdString().c_str());
         return NULL;
     }
 }

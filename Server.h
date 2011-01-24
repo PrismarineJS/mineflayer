@@ -22,8 +22,8 @@ public:
     {
         Disconnected,
         Connecting,
-        WaitingForMagicalResponse,
-        WaitingForConnectionResult,
+        WaitingForHandshakeResponse,
+        WaitingForLoginResponse,
         ServerIsBogus,
         LoginIsInvalid,
         InsufficientPrivileges,

@@ -9,7 +9,7 @@ class Message {
 public:
     enum MessageType {
         KeepAlive=0x00,
-        LoginRequest=0x01,
+        Login=0x01,
         Handshake=0x02,
         Chat=0x03,
         TimeUpdate=0x04,
@@ -91,7 +91,7 @@ class LoginRequestMessage : public OutgoingMessage {
 public:
     QString username;
     QString password;
-    LoginRequestMessage(QString username, QString password) : OutgoingMessage(LoginRequest),
+    LoginRequestMessage(QString username, QString password) : OutgoingMessage(Login),
         username(username), password(password) {}
 protected:
     virtual void writeMessageBody(QDataStream &stream);
@@ -134,19 +134,57 @@ protected:
 
 class LoginRespsonseMessage : public IncomingMessage {
 public:
+    enum Dimension {
+        Normal = 0,
+        Nether = -1,
+    };
     qint32 entity_id;
     QString _unknown_1;
     QString _unknown_2;
     qint64 map_seed;
-    qint8 dimension; // 0: normal, -1: nether,
-    LoginRespsonseMessage() : IncomingMessage(LoginRequest) {}
+    Dimension dimension;
+    LoginRespsonseMessage() : IncomingMessage(Login) {}
     virtual int parse(QByteArray buffer);
 };
 
 class HandshakeResponseMessage : public IncomingMessage {
 public:
+    static const QString AuthenticationRequired;
+    static const QString AuthenticationNotRequired;
     QString connectionHash;
     HandshakeResponseMessage() : IncomingMessage(Handshake) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class PreChunkMessage : public IncomingMessage {
+public:
+    enum Mode {
+        Unload = 0,
+        Load = 1,
+    };
+    qint32 x;
+    qint32 z;
+    Mode mode;
+    PreChunkMessage() : IncomingMessage(PreChunk) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class MapChunkMessage : public IncomingMessage {
+    qint32 x;
+    qint16 y;
+    qint32 z;
+    qint8 size_x_minus_one;
+    qint8 size_y_minus_one;
+    qint8 size_z_minus_one;
+    QByteArray compressed_data;
+    MapChunkMessage() : IncomingMessage(MapChunk) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class DisconnectOrKickMessage : public IncomingMessage {
+public:
+    QString reason;
+    DisconnectOrKickMessage() : IncomingMessage(DisconnectOrKick) {}
     virtual int parse(QByteArray buffer);
 };
 

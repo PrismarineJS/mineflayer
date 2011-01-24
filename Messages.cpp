@@ -114,11 +114,15 @@ int LoginRespsonseMessage::parse(QByteArray buffer)
         return -1;
     if ((index = parseInt64(buffer, index, map_seed)) == -1)
         return -1;
-    if ((index = parseInt8(buffer, index, dimension)) == -1)
+    qint8 tmp;
+    if ((index = parseInt8(buffer, index, tmp)) == -1)
         return -1;
+    dimension = (Dimension)tmp;
     return index;
 }
 
+const QString HandshakeResponseMessage::AuthenticationRequired = "+";
+const QString HandshakeResponseMessage::AuthenticationNotRequired = "-";
 int HandshakeResponseMessage::parse(QByteArray buffer)
 {
     int index = 1;
@@ -127,3 +131,49 @@ int HandshakeResponseMessage::parse(QByteArray buffer)
     return index;
 }
 
+int PreChunkMessage::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseInt32(buffer, index, x)) == -1)
+        return -1;
+    if ((index = parseInt32(buffer, index, z)) == -1)
+        return -1;
+    qint8 tmp;
+    if ((index = parseInt8(buffer, index, tmp)) == -1)
+        return -1;
+    mode = (Mode)tmp;
+    return index;
+}
+
+int MapChunkMessage::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseInt32(buffer, index, x)) == -1)
+        return -1;
+    if ((index = parseInt16(buffer, index, y)) == -1)
+        return -1;
+    if ((index = parseInt32(buffer, index, z)) == -1)
+        return -1;
+    if ((index = parseInt8(buffer, index, size_x_minus_one)) == -1)
+        return -1;
+    if ((index = parseInt8(buffer, index, size_y_minus_one)) == -1)
+        return -1;
+    if ((index = parseInt8(buffer, index, size_z_minus_one)) == -1)
+        return -1;
+    qint32 compressed_data_size;
+    if ((index = parseInt32(buffer, index, compressed_data_size)) == -1)
+        return -1;
+    if (!(index + compressed_data_size <= buffer.size()))
+        return -1; // this might be common. optimize?
+    compressed_data = buffer.mid(index, compressed_data_size);
+    index += compressed_data_size;
+    return index;
+}
+
+int DisconnectOrKickMessage::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseString(buffer, index, reason)) == -1)
+        return -1;
+    return index;
+}
