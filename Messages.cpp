@@ -306,6 +306,34 @@ int PickupSpawnResponse::parse(QByteArray buffer)
     return index;
 }
 
+int CollectItemResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, collected_entity_id)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, collector_entity_id)) == -1)
+        return -1;
+    return index;
+}
+
+int AddObjectOrVehicleResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
+        return -1;
+    qint8 tmp;
+    if ((index = parseValue(buffer, index, tmp)) == -1)
+        return -1;
+    object_or_vehicle_type = (ObjectOrVehicleType)tmp;
+    if ((index = parseValue(buffer, index, absolute_x)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, absolute_y)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, absolute_z)) == -1)
+        return -1;
+    return index;
+}
+
 int MobSpawnResponse::parse(QByteArray buffer)
 {
     int index = 1;
@@ -537,6 +565,37 @@ int BlockChangeResposne::parse(QByteArray buffer)
     new_block_type = (ItemType)tmp;
     if ((index = parseValue(buffer, index, metadata)) == -1)
         return -1;
+    return index;
+}
+
+int ExplosionResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, x)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, y)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, z)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, unknown)) == -1)
+        return -1;
+    qint32 record_count;
+    if ((index = parseValue(buffer, index, record_count)) == -1)
+        return -1;
+    offsets_to_affected_blocks.clear();
+    offsets_to_affected_blocks.resize(record_count);
+    for (int i = 0; i < record_count; i++) {
+        qint8 local_x;
+        if ((index = parseValue(buffer, index, local_x)) == -1)
+            return -1;
+        qint8 local_y;
+        if ((index = parseValue(buffer, index, local_y)) == -1)
+            return -1;
+        qint8 local_z;
+        if ((index = parseValue(buffer, index, local_z)) == -1)
+            return -1;
+        offsets_to_affected_blocks.replace(i, Chunk::Coord(local_x, local_y, local_z));
+    }
     return index;
 }
 

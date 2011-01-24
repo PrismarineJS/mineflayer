@@ -60,6 +60,10 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
         return new NamedEntitySpawnResponse;
     case Message::PickupSpawn:
         return new PickupSpawnResponse;
+    case Message::CollectItem:
+        return new CollectItemResponse;
+    case Message::AddObjectOrVehicle:
+        return new AddObjectOrVehicleResponse;
     case Message::MobSpawn:
         return new MobSpawnResponse;
     case Message::EntityVelocity:
@@ -88,6 +92,8 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
         return new MultiBlockChangeResponse;
     case Message::BlockChange:
         return new BlockChangeResposne;
+    case Message::Explosion:
+        return new ExplosionResponse;
     case Message::SetSlot:
         return new SetSlotResponse;
     case Message::WindowItems:

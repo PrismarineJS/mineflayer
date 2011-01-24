@@ -465,6 +465,38 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class CollectItemResponse : public IncomingResponse {
+public:
+    qint32 collected_entity_id;
+    qint32 collector_entity_id;
+    CollectItemResponse() : IncomingResponse(CollectItem) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class AddObjectOrVehicleResponse : public IncomingResponse {
+public:
+    enum ObjectOrVehicleType {
+        Boat=1,
+        Minecart=10,
+        StorageCart=11,
+        PoweredCart=12,
+        ActivatedTnt=50,
+        Arrow=60,
+        ThrownSnowball=61,
+        ThrownEgg=62,
+        FallingSand=70,
+        FallingGravel=71,
+        FishingFloat=90,
+    };
+    qint32 entity_id;
+    ObjectOrVehicleType object_or_vehicle_type;
+    qint32 absolute_x;
+    qint32 absolute_y;
+    qint32 absolute_z;
+    AddObjectOrVehicleResponse() : IncomingResponse(AddObjectOrVehicle) {}
+    virtual int parse(QByteArray buffer);
+};
+
 class MobSpawnResponse : public IncomingResponse {
 public:
     enum MobType {
@@ -621,6 +653,17 @@ public:
     ItemType new_block_type;
     qint8 metadata;
     BlockChangeResposne() : IncomingResponse(BlockChange) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class ExplosionResponse : public IncomingResponse {
+public:
+    double x;
+    double y;
+    double z;
+    float unknown;
+    QVector<Chunk::Coord> offsets_to_affected_blocks;
+    ExplosionResponse() : IncomingResponse(Explosion) {}
     virtual int parse(QByteArray buffer);
 };
 
