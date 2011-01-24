@@ -66,7 +66,6 @@ void Chunk::initialize()
             QImage image = terrain.copy(x, y, w, h).rgbSwapped();
             Texture * texture = new Texture(image);
             s_textures.insert(name, texture);
-            qDebug() << "found texture: " << name;
         }
         texture_index_file.close();
     }
@@ -161,8 +160,7 @@ QSharedPointer<Chunk::Block> Chunk::getBlock(const Coord & coord) const
 void Chunk::randomize()
 {
     // create and allocate this chunk
-    m_size.setValue(16, 16, 16);
-    m_pos.setValue(0, 0, 0);
+    m_size.setValue(16, 16, 128);
     m_blocks.resize(16 * 16 * 128);
 
     // for each block, assign random values

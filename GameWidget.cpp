@@ -115,21 +115,16 @@ void GameWidget::handleMessage(QSharedPointer<IncomingResponse>incomingMessage)
                 m_chunks.insert(chunk_key, chunk);
             }
 
-            // if the chunk already exists, update it
-            Chunk::Coord relative_pos;
-            relative_pos.x = message->x & 0xf;
-            relative_pos.y = message->z & 0xf;
-            relative_pos.z = message->y & 0xff;
-
             Chunk::Coord size;
             size.x = message->size_x_minus_one + 1;
             size.y = message->size_z_minus_one + 1;
             size.z = message->size_y_minus_one + 1;
 
             int array_index = 0;
-            for (; relative_pos.x < size.x; relative_pos.x++) {
-                for (; relative_pos.y < size.y; relative_pos.y++) {
-                    for (; relative_pos.z < size.z; relative_pos.z++) {
+            Chunk::Coord relative_pos;
+            for (relative_pos.x = message->x & 0xf; relative_pos.x < size.x; relative_pos.x++) {
+                for (relative_pos.y = message->z & 0xf; relative_pos.y < size.y; relative_pos.y++) {
+                    for (relative_pos.z = message->y & 0xff; relative_pos.z < size.z; relative_pos.z++) {
                         int block_type = decompressed.at(array_index++);
                         chunk.data()->getBlock(relative_pos).data()->type = block_type;
                         chunk.data()->updateBlock(relative_pos);
