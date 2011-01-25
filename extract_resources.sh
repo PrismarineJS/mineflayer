@@ -2,7 +2,7 @@
 
 # TODO: check usage, location, and unzip
 
-resource_names=armor art environment font gui item misc mob terrain terrain.png
+resource_names="armor art environment font gui item misc mob terrain terrain.png"
 tmp_stash=$(mktemp -d)
 
 unzip -q -d $tmp_stash $1
