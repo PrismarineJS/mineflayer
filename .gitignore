@@ -1,3 +1,13 @@
 decompiled/
 *.pro.user
 build
+resources/armor/
+resources/art/
+resources/environment/
+resources/font/
+resources/gui/
+resources/item/
+resources/misc/
+resources/mob/
+resources/terrain/
+resources/terrain.png
