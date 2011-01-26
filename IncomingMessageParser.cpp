@@ -38,70 +38,51 @@ void IncomingMessageParser::readMessage()
 IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::MessageType type)
 {
     switch (type) {
-    case Message::KeepAlive:
-        return new KeepAliveResponse;
-    case Message::Login:
-        return new LoginRespsonse;
-    case Message::Handshake:
-        return new HandshakeResponse;
-    case Message::Chat:
-        return new ChatResponse;
-    case Message::TimeUpdate:
-        return new TimeUpdateResponse;
-    case Message::EntityEquipment:
-        return new EntityEquipmentResponse;
-    case Message::SpawnPosition:
-        return new SpawnPositionResponse;
-    case Message::UpdateHealth:
-        return new UpdateHealthResponse;
-    case Message::PlayerPositionAndLook:
-        return new PlayerPositionAndLookResponse;
-    case Message::Animation:
-        return new AnimationResponse;
-    case Message::NamedEntitySpawn:
-        return new NamedEntitySpawnResponse;
-    case Message::PickupSpawn:
-        return new PickupSpawnResponse;
-    case Message::CollectItem:
-        return new CollectItemResponse;
-    case Message::AddObjectOrVehicle:
-        return new AddObjectOrVehicleResponse;
-    case Message::MobSpawn:
-        return new MobSpawnResponse;
-    case Message::EntityVelocity:
-        return new EntityVelocityResponse;
-    case Message::DestroyEntity:
-        return new DestroyEntityResponse;
-    case Message::Entity:
-        return new EntityResponse;
-    case Message::EntityRelativeMove:
-        return new EntityRelativeMoveResponse;
-    case Message::EntityLook:
-        return new EntityLookResponse;
-    case Message::EntityLookAndRelativeMove:
-        return new EntityLookAndRelativeMoveResponse;
-    case Message::EntityTeleport:
-        return new EntityTeleportResponse;
-    case Message::EntityStatus:
-        return new EntityStatusResponse;
-    case Message::EntityMetadata:
-        return new EntityMetadataResponse;
-    case Message::PreChunk:
-        return new PreChunkResponse;
-    case Message::MapChunk:
-        return new MapChunkResponse;
-    case Message::MultiBlockChange:
-        return new MultiBlockChangeResponse;
-    case Message::BlockChange:
-        return new BlockChangeResposne;
-    case Message::Explosion:
-        return new ExplosionResponse;
-    case Message::SetSlot:
-        return new SetSlotResponse;
-    case Message::WindowItems:
-        return new WindowItemsResponse;
-    case Message::DisconnectOrKick:
-        return new DisconnectOrKickResponse;
+    case Message::KeepAlive: return new KeepAliveResponse;
+    case Message::Login: return new LoginResponse;
+    case Message::Handshake: return new HandshakeResponse;
+    case Message::Chat: return new ChatResponse;
+    case Message::TimeUpdate: return new TimeUpdateResponse;
+    case Message::EntityEquipment: return new EntityEquipmentResponse;
+    case Message::SpawnPosition: return new SpawnPositionResponse;
+    case Message::UseEntity: return new UseEntityResponse;
+    case Message::UpdateHealth: return new UpdateHealthResponse;
+    case Message::Respawn: return new RespawnResponse;
+    case Message::PlayerPositionAndLook: return new PlayerPositionAndLookResponse;
+    case Message::PlayerDigging: return new PlayerDiggingResponse;
+    case Message::PlayerBlockPlacement: return new PlayerBlockPlacementResponse;
+    case Message::HoldingChange: return new HoldingChangeResponse;
+    case Message::Animation: return new AnimationResponse;
+    case Message::EntityAction: return new EntityActionResponse;
+    case Message::NamedEntitySpawn: return new NamedEntitySpawnResponse;
+    case Message::PickupSpawn: return new PickupSpawnResponse;
+    case Message::CollectItem: return new CollectItemResponse;
+    case Message::AddObjectOrVehicle: return new AddObjectOrVehicleResponse;
+    case Message::MobSpawn: return new MobSpawnResponse;
+    case Message::EntityPainting: return new EntityPaintingResponse;
+    case Message::EntityVelocity: return new EntityVelocityResponse;
+    case Message::DestroyEntity: return new DestroyEntityResponse;
+    case Message::Entity: return new EntityResponse;
+    case Message::EntityRelativeMove: return new EntityRelativeMoveResponse;
+    case Message::EntityLook: return new EntityLookResponse;
+    case Message::EntityLookAndRelativeMove: return new EntityLookAndRelativeMoveResponse;
+    case Message::EntityTeleport: return new EntityTeleportResponse;
+    case Message::EntityStatus: return new EntityStatusResponse;
+    case Message::AttachEntity: return new AttachEntityResponse;
+    case Message::EntityMetadata: return new EntityMetadataResponse;
+    case Message::PreChunk: return new PreChunkResponse;
+    case Message::MapChunk: return new MapChunkResponse;
+    case Message::MultiBlockChange: return new MultiBlockChangeResponse;
+    case Message::BlockChange: return new BlockChangeResponse;
+    case Message::PlayNoteBlock: return new PlayNoteBlockResponse;
+    case Message::Explosion: return new ExplosionResponse;
+    case Message::OpenWindow: return new OpenWindowResponse;
+    case Message::SetSlot: return new SetSlotResponse;
+    case Message::WindowItems: return new WindowItemsResponse;
+    case Message::UpdateProgressBar: return new UpdateProgressBarResponse;
+    case Message::Transaction: return new TransactionResponse;
+    case Message::UpdateSign: return new UpdateSignResponse;
+    case Message::DisconnectOrKick: return new DisconnectOrKickResponse;
     default:
         Q_ASSERT_X(false, "", (QString("parse message: 0x") + QString::number(type, 16)).toStdString().c_str());
         return NULL;

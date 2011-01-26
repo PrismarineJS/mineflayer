@@ -150,7 +150,7 @@ int IncomingResponse::parseValue(QByteArray buffer, int index, QByteArray &value
     return index;
 }
 
-int LoginRespsonse::parse(QByteArray buffer)
+int LoginResponse::parse(QByteArray buffer)
 {
     int index = 1;
     if ((index = parseValue(buffer, index, entity_id)) == -1)
@@ -222,11 +222,29 @@ int SpawnPositionResponse::parse(QByteArray buffer)
     return index;
 }
 
+int UseEntityResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, user_entity_id)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, target_entity_id)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, is_left_click)) == -1)
+        return -1;
+    return index;
+}
+
 int UpdateHealthResponse::parse(QByteArray buffer)
 {
     int index = 1;
     if ((index = parseValue(buffer, index, health)) == -1)
         return -1;
+    return index;
+}
+
+int RespawnResponse::parse(QByteArray)
+{
+    int index = 1;
     return index;
 }
 
@@ -250,6 +268,51 @@ int PlayerPositionAndLookResponse::parse(QByteArray buffer)
     return index;
 }
 
+int PlayerDiggingResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    qint8 tmp;
+    if ((index = parseValue(buffer, index, tmp)) == -1)
+        return -1;
+    digging_status = (DiggingStatus)tmp;
+    if ((index = parseValue(buffer, index, absolute_x)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, absolute_y)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, absolute_z)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, tmp)) == -1)
+        return -1;
+    block_face = (BlockFaceDirection)tmp;
+    return index;
+}
+
+int PlayerBlockPlacementResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, absolute_x)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, absolute_y)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, absolute_z)) == -1)
+        return -1;
+    qint8 tmp;
+    if ((index = parseValue(buffer, index, tmp)) == -1)
+        return -1;
+    block_face = (BlockFaceDirection)tmp;
+    if ((index = parseValue(buffer, index, item)) == -1)
+        return -1;
+    return index;
+}
+
+int HoldingChangeResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, slot)) == -1)
+        return -1;
+    return index;
+}
+
 int AnimationResponse::parse(QByteArray buffer)
 {
     int index = 1;
@@ -259,6 +322,18 @@ int AnimationResponse::parse(QByteArray buffer)
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
     animation_type = (AnimationType)tmp;
+    return index;
+}
+
+int EntityActionResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
+        return -1;
+    qint8 tmp;
+    if ((index = parseValue(buffer, index, tmp)) == -1)
+        return -1;
+    entity_action_type = (EntityActionType)tmp;
     return index;
 }
 
@@ -366,6 +441,24 @@ int MobSpawnResponse::parse(QByteArray buffer)
     return index;
 }
 
+int EntityPaintingResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, name)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, x)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, y)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, z)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, type)) == -1)
+        return -1;
+    return index;
+}
+
 int EntityVelocityResponse::parse(QByteArray buffer)
 {
     int index = 1;
@@ -468,6 +561,16 @@ int EntityStatusResponse::parse(QByteArray buffer)
     return index;
 }
 
+int AttachEntityResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, rider_entity_id)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, vehicle_entity_id)) == -1)
+        return -1;
+    return index;
+}
+
 int EntityMetadataResponse::parse(QByteArray buffer)
 {
     int index = 1;
@@ -558,7 +661,7 @@ int MultiBlockChangeResponse::parse(QByteArray buffer)
     return index;
 }
 
-int BlockChangeResposne::parse(QByteArray buffer)
+int BlockChangeResponse::parse(QByteArray buffer)
 {
     int index = 1;
     if ((index = parseValue(buffer, index, x)) == -1)
@@ -572,6 +675,24 @@ int BlockChangeResposne::parse(QByteArray buffer)
         return -1;
     new_block_type = (ItemType)tmp;
     if ((index = parseValue(buffer, index, metadata)) == -1)
+        return -1;
+    return index;
+}
+
+int PlayNoteBlockResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, absolute_x)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, absolute_y)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, absolute_z)) == -1)
+        return -1;
+    qint8 tmp;
+    if ((index = parseValue(buffer, index, tmp)) == -1)
+        return -1;
+    instrument_type = (InstrumentType)tmp;
+    if ((index = parseValue(buffer, index, pitch)) == -1)
         return -1;
     return index;
 }
@@ -607,6 +728,22 @@ int ExplosionResponse::parse(QByteArray buffer)
     return index;
 }
 
+int OpenWindowResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, window_id)) == -1)
+        return -1;
+    qint8 tmp;
+    if ((index = parseValue(buffer, index, tmp)) == -1)
+        return -1;
+    inventory_type = (InventoryType)tmp;
+    if ((index = parseValue(buffer, index, window_title)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, number_of_slots)) == -1)
+        return -1;
+    return index;
+}
+
 int SetSlotResponse::parse(QByteArray buffer)
 {
     int index = 1;
@@ -615,6 +752,30 @@ int SetSlotResponse::parse(QByteArray buffer)
     if ((index = parseValue(buffer, index, slot)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, item)) == -1)
+        return -1;
+    return index;
+}
+
+int UpdateProgressBarResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, window_id)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, progress_bar_type)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, value)) == -1)
+        return -1;
+    return index;
+}
+
+int TransactionResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, window_id)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, action_id)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, is_accepted)) == -1)
         return -1;
     return index;
 }
@@ -634,6 +795,26 @@ int WindowItemsResponse::parse(QByteArray buffer)
             return -1;
         items.append(item);
     }
+    return index;
+}
+
+int UpdateSignResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, absolute_x)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, absolute_y)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, absolute_z)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, line_1)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, line_2)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, line_3)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, line_4)) == -1)
+        return -1;
     return index;
 }
 

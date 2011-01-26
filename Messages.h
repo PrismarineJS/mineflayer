@@ -258,6 +258,16 @@ public:
         qint16 uses;
     };
 
+    enum BlockFaceDirection {
+        NoDirection=-1,
+        NegativeY=0,
+        PositiveY=1,
+        NegativeZ=2,
+        PositiveZ=3,
+        NegativeX=4,
+        PositiveX=5,
+    };
+
     MessageType messageType;
 
 protected:
@@ -350,7 +360,7 @@ public:
     virtual int parse(QByteArray) { return 1; }
 };
 
-class LoginRespsonse : public IncomingResponse {
+class LoginResponse : public IncomingResponse {
 public:
     enum Dimension {
         Normal = 0,
@@ -361,7 +371,7 @@ public:
     QString _unknown_2;
     qint64 map_seed;
     Dimension dimension;
-    LoginRespsonse() : IncomingResponse(Login) {}
+    LoginResponse() : IncomingResponse(Login) {}
     virtual int parse(QByteArray buffer);
 };
 
@@ -407,10 +417,25 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class UseEntityResponse : public IncomingResponse {
+public:
+    qint32 user_entity_id;
+    qint32 target_entity_id;
+    qint8 is_left_click;
+    UseEntityResponse() : IncomingResponse(UseEntity) {}
+    virtual int parse(QByteArray buffer);
+};
+
 class UpdateHealthResponse : public IncomingResponse {
 public:
     qint16 health;
     UpdateHealthResponse() : IncomingResponse(UpdateHealth) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class RespawnResponse : public IncomingResponse {
+public:
+    RespawnResponse() : IncomingResponse(Respawn) {}
     virtual int parse(QByteArray buffer);
 };
 
@@ -427,6 +452,42 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class PlayerDiggingResponse : public IncomingResponse {
+public:
+    enum DiggingStatus {
+        StartDigging=0,
+        DiggingInProgress=1,
+        AbortDigging=2,
+        BlockBroken=3,
+        DropItem=4,
+    };
+    DiggingStatus digging_status;
+    qint32 absolute_x;
+    qint8 absolute_y;
+    qint32 absolute_z;
+    BlockFaceDirection block_face;
+    PlayerDiggingResponse() : IncomingResponse(PlayerDigging) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class PlayerBlockPlacementResponse : public IncomingResponse {
+public:
+    qint32 absolute_x;
+    qint8 absolute_y;
+    qint32 absolute_z;
+    BlockFaceDirection block_face;
+    Item item;
+    PlayerBlockPlacementResponse() : IncomingResponse(PlayerBlockPlacement) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class HoldingChangeResponse : public IncomingResponse {
+public:
+    qint16 slot;
+    HoldingChangeResponse() : IncomingResponse(HoldingChange) {}
+    virtual int parse(QByteArray buffer);
+};
+
 class AnimationResponse : public IncomingResponse {
 public:
     enum AnimationType {
@@ -439,6 +500,18 @@ public:
     qint32 entity_id;
     AnimationType animation_type;
     AnimationResponse() : IncomingResponse(Animation) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class EntityActionResponse : public IncomingResponse {
+public:
+    enum EntityActionType {
+        Crouch=1,
+        Uncrouch=2,
+    };
+    qint32 entity_id;
+    EntityActionType entity_action_type;
+    EntityActionResponse() : IncomingResponse(EntityAction) {}
     virtual int parse(QByteArray buffer);
 };
 
@@ -532,6 +605,18 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class EntityPaintingResponse : public IncomingResponse {
+public:
+    qint32 entity_id;
+    QString name;
+    qint32 x;
+    qint32 y;
+    qint32 z;
+    qint32 type;
+    EntityPaintingResponse() : IncomingResponse(EntityPainting) {}
+    virtual int parse(QByteArray buffer);
+};
+
 class EntityVelocityResponse : public IncomingResponse {
 public:
     qint32 entity_id;
@@ -607,6 +692,14 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class AttachEntityResponse : public IncomingResponse {
+public:
+    qint32 rider_entity_id;
+    qint32 vehicle_entity_id;
+    AttachEntityResponse() : IncomingResponse(AttachEntity) {}
+    virtual int parse(QByteArray buffer);
+};
+
 class EntityMetadataResponse : public IncomingResponse {
 public:
     qint32 entity_id;
@@ -652,14 +745,32 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
-class BlockChangeResposne : public IncomingResponse {
+class BlockChangeResponse : public IncomingResponse {
 public:
     qint32 x;
     qint8 y;
     qint32 z;
     ItemType new_block_type;
     qint8 metadata;
-    BlockChangeResposne() : IncomingResponse(BlockChange) {}
+    BlockChangeResponse() : IncomingResponse(BlockChange) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class PlayNoteBlockResponse : public IncomingResponse {
+public:
+    enum InstrumentType {
+        DoubleBass=1,
+        SnareDrum=2,
+        Sticks=3,
+        BassDrum=4,
+        Harp=5,
+    };
+    qint32 absolute_x;
+    qint16 absolute_y;
+    qint32 absolute_z;
+    InstrumentType instrument_type;
+    qint8 pitch;
+    PlayNoteBlockResponse() : IncomingResponse(PlayNoteBlock) {}
     virtual int parse(QByteArray buffer);
 };
 
@@ -674,6 +785,22 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class OpenWindowResponse : public IncomingResponse {
+public:
+    enum InventoryType {
+        BasicInventory=0,
+        WorkbenchInventory=1,
+        FurnaceInventory=2,
+        DispenserInventory=3,
+    };
+    qint8 window_id;
+    InventoryType inventory_type;
+    QString window_title;
+    qint8 number_of_slots;
+    OpenWindowResponse() : IncomingResponse(OpenWindow) {}
+    virtual int parse(QByteArray buffer);
+};
+
 class SetSlotResponse : public IncomingResponse {
 public:
     qint8 window_id;
@@ -683,11 +810,42 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class UpdateProgressBarResponse : public IncomingResponse {
+public:
+    qint8 window_id;
+    qint16 progress_bar_type;
+    qint16 value;
+    UpdateProgressBarResponse() : IncomingResponse(UpdateProgressBar) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class TransactionResponse : public IncomingResponse {
+public:
+    qint8 window_id;
+    qint16 action_id;
+    bool is_accepted;
+    TransactionResponse() : IncomingResponse(Transaction) {}
+    virtual int parse(QByteArray buffer);
+};
+
 class WindowItemsResponse : public IncomingResponse {
 public:
     qint8 window_id;
     QList<Item> items;
     WindowItemsResponse() : IncomingResponse(WindowItems) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class UpdateSignResponse : public IncomingResponse {
+public:
+    qint32 absolute_x;
+    qint16 absolute_y;
+    qint32 absolute_z;
+    QString line_1;
+    QString line_2;
+    QString line_3;
+    QString line_4;
+    UpdateSignResponse() : IncomingResponse(UpdateSign) {}
     virtual int parse(QByteArray buffer);
 };
 
