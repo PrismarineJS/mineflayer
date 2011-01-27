@@ -258,6 +258,14 @@ public:
         qint16 uses;
     };
 
+    enum DiggingType {
+        StartDigging=0,
+        DiggingInProgress=1,
+        AbortDigging=2,
+        BlockBroken=3,
+        DropItem=4,
+    };
+
     enum BlockFaceDirection {
         NoDirection=-1,
         NegativeY=0,
@@ -266,6 +274,13 @@ public:
         PositiveZ=3,
         NegativeX=4,
         PositiveX=5,
+    };
+
+    enum InventoryType {
+        BasicInventory=0,
+        WorkbenchInventory=1,
+        FurnaceInventory=2,
+        DispenserInventory=3,
     };
 
     MessageType messageType;
@@ -284,6 +299,7 @@ protected:
     virtual void writeMessageBody(QDataStream & stream) = 0;
 
     static void writeString(QDataStream & stream, QString string);
+    static void writeItem(QDataStream & stream, Item item);
 };
 
 class KeepAliveRequest : public OutgoingRequest {
@@ -311,6 +327,14 @@ public:
     virtual void writeMessageBody(QDataStream & stream);
 };
 
+class ChatRequest : public OutgoingRequest {
+public:
+    QString message;
+    ChatRequest(QString message) : OutgoingRequest(Chat),
+        message(message) {}
+    virtual void writeMessageBody(QDataStream &stream);
+};
+
 class PlayerPositionAndLookRequest : public OutgoingRequest {
 public:
     double x;
@@ -325,10 +349,65 @@ protected:
     virtual void writeMessageBody(QDataStream &stream);
 };
 
+class PlayerDiggingRequest : public OutgoingRequest {
+public:
+    DiggingType digging_type;
+    qint32 x;
+    qint8 y;
+    qint32 z;
+    BlockFaceDirection block_face;
+    PlayerDiggingRequest(DiggingType digging_type, qint32 x, qint8 y, qint32 z, BlockFaceDirection block_face) : OutgoingRequest(PlayerDigging),
+        digging_type(digging_type), x(x), y(y), z(z), block_face(block_face) {}
+    virtual void writeMessageBody(QDataStream &stream);
+};
+
+class PlayerBlockPlacementRequest : public OutgoingRequest {
+public:
+    qint32 meters_x;
+    qint8 meters_y;
+    qint32 meters_z;
+    BlockFaceDirection block_face;
+    Item item;
+    PlayerBlockPlacementRequest(qint32 meters_x, qint8 meters_y, qint32 meters_z, BlockFaceDirection block_face, Item item) : OutgoingRequest(PlayerBlockPlacement),
+        meters_x(meters_x), meters_y(meters_y), meters_z(meters_z), block_face(block_face), item(item) {}
+    virtual void writeMessageBody(QDataStream &stream);
+};
+
+class OpenWindowRequest : public OutgoingRequest {
+public:
+    qint8 window_id;
+    InventoryType inventory_type;
+    QString window_title;
+    qint8 number_of_slots;
+    OpenWindowRequest(qint8 window_id, InventoryType inventory_type, QString window_title, qint8 number_of_slots) : OutgoingRequest(OpenWindow),
+            window_id(window_id), inventory_type(inventory_type), window_title(window_title), number_of_slots(number_of_slots) {}
+    virtual void writeMessageBody(QDataStream &stream);
+};
+
+class CloseWindowRequest : public OutgoingRequest {
+public:
+    qint8 window_id;
+    CloseWindowRequest(qint8 window_id) : OutgoingRequest(CloseWindow),
+        window_id(window_id) {}
+    virtual void writeMessageBody(QDataStream &stream);
+};
+
+class WindowClickRequest : public OutgoingRequest {
+public:
+    qint8 window_id;
+    qint16 slot;
+    bool is_right_click;
+    qint16 action_id;
+    Item item;
+    WindowClickRequest(qint8 window_id, qint16 slot, bool is_right_click, qint16 action_id, Item item) : OutgoingRequest(WindowClick),
+        window_id(window_id), slot(slot), is_right_click(is_right_click), action_id(action_id), item(item) {}
+    virtual void writeMessageBody(QDataStream &stream);
+};
+
 class DummyDisconnectRequest : public OutgoingRequest {
 public:
     DummyDisconnectRequest() : OutgoingRequest(DummyDisconnect) {}
-    virtual void writeMessageBody(QDataStream &) {};
+    virtual void writeMessageBody(QDataStream &);
 };
 
 class IncomingResponse : public Message {
@@ -454,14 +533,7 @@ public:
 
 class PlayerDiggingResponse : public IncomingResponse {
 public:
-    enum DiggingStatus {
-        StartDigging=0,
-        DiggingInProgress=1,
-        AbortDigging=2,
-        BlockBroken=3,
-        DropItem=4,
-    };
-    DiggingStatus digging_status;
+    DiggingType digging_type;
     qint32 absolute_x;
     qint8 absolute_y;
     qint32 absolute_z;
@@ -787,12 +859,6 @@ public:
 
 class OpenWindowResponse : public IncomingResponse {
 public:
-    enum InventoryType {
-        BasicInventory=0,
-        WorkbenchInventory=1,
-        FurnaceInventory=2,
-        DispenserInventory=3,
-    };
     qint8 window_id;
     InventoryType inventory_type;
     QString window_title;

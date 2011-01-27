@@ -15,6 +15,15 @@ void OutgoingRequest::writeString(QDataStream & stream, QString string)
     stream.device()->write(utf8_data);
 }
 
+void OutgoingRequest::writeItem(QDataStream &stream, Item item)
+{
+    stream << (qint16)item.type;
+    if (item.type == NoItem)
+        return;
+    stream << item.count;
+    stream << item.uses;
+}
+
 void LoginRequest::writeMessageBody(QDataStream &stream)
 {
     stream << c_protocol_version;
@@ -29,6 +38,11 @@ void HandshakeRequest::writeMessageBody(QDataStream &stream)
     writeString(stream, username);
 }
 
+void ChatRequest::writeMessageBody(QDataStream &stream)
+{
+    writeString(stream, message);
+}
+
 void PlayerPositionAndLookRequest::writeMessageBody(QDataStream &stream)
 {
     stream << x;
@@ -39,6 +53,50 @@ void PlayerPositionAndLookRequest::writeMessageBody(QDataStream &stream)
     stream << pitch;
     stream << on_ground;
 
+}
+
+void PlayerDiggingRequest::writeMessageBody(QDataStream &stream)
+{
+    stream << (qint8)digging_type;
+    stream << x;
+    stream << y;
+    stream << z;
+    stream << (qint8)block_face;
+}
+
+void PlayerBlockPlacementRequest::writeMessageBody(QDataStream &stream)
+{
+    stream << meters_x;
+    stream << meters_y;
+    stream << meters_z;
+    stream << (qint8)block_face;
+    writeItem(stream, item);
+}
+
+void OpenWindowRequest::writeMessageBody(QDataStream &stream)
+{
+    stream << window_id;
+    stream << (qint8)inventory_type;
+    writeString(stream, window_title);
+    stream << number_of_slots;
+}
+
+void CloseWindowRequest::writeMessageBody(QDataStream &stream)
+{
+    stream << window_id;
+}
+
+void WindowClickRequest::writeMessageBody(QDataStream &stream)
+{
+    stream << window_id;
+    stream << slot;
+    stream << is_right_click;
+    stream << action_id;
+    writeItem(stream, item);
+}
+
+void DummyDisconnectRequest::writeMessageBody(QDataStream &)
+{
 }
 
 int IncomingResponse::parseValue(QByteArray buffer, int index, bool &value)
@@ -274,7 +332,7 @@ int PlayerDiggingResponse::parse(QByteArray buffer)
     qint8 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    digging_status = (DiggingStatus)tmp;
+    digging_type = (DiggingType)tmp;
     if ((index = parseValue(buffer, index, absolute_x)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, absolute_y)) == -1)
