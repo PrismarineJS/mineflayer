@@ -45,6 +45,8 @@ public:
 
     void render();
 
+    static void initialize();
+
 private:
     Coord m_pos;
     Vec3<int> m_size;
@@ -56,8 +58,6 @@ private:
 
 private:
     int indexOf(const Coord & coord) const;
-
-    static void initialize();
 
     void updateEntireChunkMesh();
 };

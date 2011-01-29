@@ -58,6 +58,8 @@ void GameWidget::loadControls()
 
 void GameWidget::start(QString username, QString password, QString hostname, int port)
 {
+    Chunk::initialize();
+
     ConnectionSettings connection_info;
     connection_info.username = username;
     connection_info.password = password;
@@ -92,12 +94,15 @@ void GameWidget::mainLoop()
     QTimer::singleShot((int)wait_time_msecs, this, SLOT(mainLoop()));
 }
 
-void GameWidget::handleMapChunkUpdated(QSharedPointer<Chunk>chunk)
+void GameWidget::handleMapChunkUpdated(QSharedPointer<Chunk>new_chunk)
 {
     Chunk::Coord chunk_key;
-    chunk_key.x = chunk.data()->position().x & 0xf;
-    chunk_key.y = chunk.data()->position().y & 0xf;
-    chunk_key.z = chunk.data()->position().z & 0xff; // always 0
+    chunk_key.x = new_chunk.data()->position().x / 16 * 16;
+    chunk_key.y = new_chunk.data()->position().y / 16 * 16;
+    chunk_key.z = new_chunk.data()->position().z / 128 * 128; // always 0
+    // new chunk's relative position inside the full chunk.
+    Chunk::Coord new_offset = new_chunk.data()->position() - chunk_key;
+
     QSharedPointer<Chunk> existing_chunk = m_chunks.value(chunk_key, QSharedPointer<Chunk>());
     if (existing_chunk.isNull()) {
         existing_chunk = QSharedPointer<Chunk>(new Chunk(chunk_key, Chunk::Coord(16, 16, 128)));
@@ -106,12 +111,12 @@ void GameWidget::handleMapChunkUpdated(QSharedPointer<Chunk>chunk)
     }
 
     Chunk::Coord relative_position;
-    for (relative_position.x = 0; relative_position.x < chunk.data()->size().x; relative_position.x++) {
-        for (relative_position.y = 0; relative_position.y < chunk.data()->size().y; relative_position.y++) {
-            for (relative_position.z = 0; relative_position.z < chunk.data()->size().z; relative_position.z++) {
-                Chunk::Coord existing_position = chunk.data()->position() + relative_position;
-                existing_chunk.data()->getBlock(existing_position).data()->type = chunk.data()->getBlock(relative_position).data()->type;
-                existing_chunk.data()->updateBlock(existing_position);
+    for (relative_position.x = 0; relative_position.x < new_chunk.data()->size().x; relative_position.x++) {
+        for (relative_position.y = 0; relative_position.y < new_chunk.data()->size().y; relative_position.y++) {
+            for (relative_position.z = 0; relative_position.z < new_chunk.data()->size().z; relative_position.z++) {
+                Chunk::Coord position_relative_to_chunk_key = relative_position + new_offset;
+                existing_chunk.data()->getBlock(position_relative_to_chunk_key).data()->type = new_chunk.data()->getBlock(relative_position).data()->type;
+                existing_chunk.data()->updateBlock(position_relative_to_chunk_key);
             }
         }
     }
