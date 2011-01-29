@@ -61,7 +61,6 @@ private:
 
     Server * m_server;
 
-    QHash<Chunk::Coord, QSharedPointer<Chunk> > m_chunks;
     QLinkedList<QSharedPointer<Entity> > m_entities;
     Camera * m_camera;
     Entity * m_player;
@@ -72,13 +71,15 @@ private:
     QHash<int, Control> m_key_to_control;
     QHash<Control, int> m_control_to_key;
 
+    QHash<Chunk::Coord, QSharedPointer<Chunk> > m_chunks;
+
     static const int c_fps;
     static const double c_time_per_frame_msecs;
     double m_target_time_msecs;
 
 private slots:
-    void handleMessage(QSharedPointer<IncomingResponse> message);
     void mainLoop();
+    void handleMapChunkUpdated(QSharedPointer<Chunk> chunk);
 
 private:
     void computeNextFrame();

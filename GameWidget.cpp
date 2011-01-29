@@ -58,85 +58,20 @@ void GameWidget::loadControls()
 
 void GameWidget::start(QString username, QString password, QString hostname, int port)
 {
-    // TODO: tmp
-    if (true) {
-        ConnectionSettings connection_info;
-        connection_info.username = username;
-        connection_info.password = password;
-        connection_info.hostname = hostname;
-        connection_info.port = port;
-        m_server = new Server(connection_info);
-        bool success;
-        success = connect(m_server, SIGNAL(messageReceived(QSharedPointer<IncomingResponse>)), this, SLOT(handleMessage(QSharedPointer<IncomingResponse>)));
-        Q_ASSERT(success);
-        m_server->socketConnect();
-    }
+    ConnectionSettings connection_info;
+    connection_info.username = username;
+    connection_info.password = password;
+    connection_info.hostname = hostname;
+    connection_info.port = port;
+    m_server = new Server(connection_info);
+    // TODO: connect server signals
+    m_server->socketConnect();
 
+    bool success;
+    success = connect(m_server, SIGNAL(mapChunkUpdated(QSharedPointer<Chunk>)), this, SLOT(handleMapChunkUpdated(QSharedPointer<Chunk>)));
+    Q_ASSERT(success);
     m_target_time_msecs = (double)QDateTime::currentMSecsSinceEpoch();
     QTimer::singleShot(1, this, SLOT(mainLoop()));
-}
-
-void GameWidget::handleMessage(QSharedPointer<IncomingResponse>incomingMessage)
-{
-    switch (incomingMessage.data()->messageType) {
-        case Message::PlayerPositionAndLook: {
-            // echo back the same thing
-            PlayerPositionAndLookResponse * message = (PlayerPositionAndLookResponse *) incomingMessage.data();
-            PlayerPositionAndLookRequest * outgoing = new PlayerPositionAndLookRequest();
-            outgoing->x = message->x;
-            outgoing->y = message->y;
-            outgoing->z = message->z;
-            outgoing->stance = message->stance;
-            outgoing->yaw = message->yaw;
-            outgoing->pitch = message->pitch;
-            outgoing->on_ground = message->on_ground;
-            m_server->sendMessage(QSharedPointer<OutgoingRequest>(outgoing));
-            break;
-        }
-        case Message::MapChunk: {
-            MapChunkResponse * message = (MapChunkResponse *) incomingMessage.data();
-
-            // remember to swap y and z
-            QByteArray tmp = message->compressed_data;
-            // prepend a guess at the final size... or just 0.
-            tmp.prepend(QByteArray("\0\0\0\0", 4));
-            QByteArray decompressed = qUncompress(tmp);
-
-            // determine the chunk corner
-            Chunk::Coord chunk_key;
-            chunk_key.x = message->x & ~0xf;
-            chunk_key.y = message->z & ~0xf;
-            chunk_key.z = message->y & ~0xff; // always 0
-
-            // if the chunk doesn't exist, create it
-            QSharedPointer<Chunk> chunk = m_chunks.value(chunk_key, QSharedPointer<Chunk>());
-            if (chunk.isNull()) {
-                chunk = QSharedPointer<Chunk>(new Chunk(chunk_key));
-                m_chunks.insert(chunk_key, chunk);
-            }
-            //qDebug() << "Got chunk:" << chunk_key.x << chunk_key.y << chunk_key.z;
-
-            Chunk::Coord size;
-            size.x = message->size_x_minus_one + 1;
-            size.y = message->size_z_minus_one + 1;
-            size.z = message->size_y_minus_one + 1;
-
-            int array_index = 0;
-            Chunk::Coord relative_pos;
-            for (relative_pos.x = message->x & 0xf; relative_pos.x < size.x; relative_pos.x++) {
-                for (relative_pos.y = message->z & 0xf; relative_pos.y < size.y; relative_pos.y++) {
-                    for (relative_pos.z = message->y & 0xff; relative_pos.z < size.z; relative_pos.z++) {
-                        int block_type = decompressed.at(array_index++);
-                        chunk.data()->getBlock(relative_pos).data()->type = block_type;
-                        chunk.data()->updateBlock(relative_pos);
-                    }
-                }
-            }
-        }
-        default: {
-            //ignore
-        }
-    }
 }
 
 void GameWidget::mainLoop()
@@ -155,6 +90,31 @@ void GameWidget::mainLoop()
     double wait_time_msecs = m_target_time_msecs + c_time_per_frame_msecs - current_time_msecs;
 
     QTimer::singleShot((int)wait_time_msecs, this, SLOT(mainLoop()));
+}
+
+void GameWidget::handleMapChunkUpdated(QSharedPointer<Chunk>chunk)
+{
+    Chunk::Coord chunk_key;
+    chunk_key.x = chunk.data()->position().x & 0xf;
+    chunk_key.y = chunk.data()->position().y & 0xf;
+    chunk_key.z = chunk.data()->position().z & 0xff; // always 0
+    QSharedPointer<Chunk> existing_chunk = m_chunks.value(chunk_key, QSharedPointer<Chunk>());
+    if (existing_chunk.isNull()) {
+        existing_chunk = QSharedPointer<Chunk>(new Chunk(chunk_key, Chunk::Coord(16, 16, 128)));
+        m_chunks.insert(chunk_key, existing_chunk);
+        qDebug() << "chunk count: " << m_chunks.size();
+    }
+
+    Chunk::Coord relative_position;
+    for (relative_position.x = 0; relative_position.x < chunk.data()->size().x; relative_position.x++) {
+        for (relative_position.y = 0; relative_position.y < chunk.data()->size().y; relative_position.y++) {
+            for (relative_position.z = 0; relative_position.z < chunk.data()->size().z; relative_position.z++) {
+                Chunk::Coord existing_position = chunk.data()->position() + relative_position;
+                existing_chunk.data()->getBlock(existing_position).data()->type = chunk.data()->getBlock(relative_position).data()->type;
+                existing_chunk.data()->updateBlock(existing_position);
+            }
+        }
+    }
 }
 
 void GameWidget::computeNextFrame()
@@ -201,7 +161,7 @@ void GameWidget::paintGL()
     QHashIterator<Chunk::Coord, QSharedPointer<Chunk> > it(m_chunks);
     while (it.hasNext()) {
         it.next();
-        it.value().data()->draw();
+        it.value().data()->render();
     }
 }
 

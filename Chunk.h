@@ -17,7 +17,7 @@ uint qHash(const Vec3<int> & coord);
 #include "Mesh.h"
 #include "MeshInstance.h"
 
-class Chunk : public Drawable {
+class Chunk {
 public:
     typedef Vec3<int> Coord;
 
@@ -30,7 +30,7 @@ public:
     };
 
 public:
-    Chunk(const Coord & pos);
+    Chunk(const Coord & pos, const Coord & size);
 
     // use to set or retrieve Block data. Call updateBlock when done.
     QSharedPointer<Block> getBlock(const Coord & coord) const;
@@ -40,7 +40,9 @@ public:
     // debug method to generate random blocks
     void randomize();
 
-protected:
+    Chunk::Coord position() const { return m_pos; }
+    Chunk::Coord size() const { return m_size; }
+
     void render();
 
 private:

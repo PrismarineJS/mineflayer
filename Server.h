@@ -9,6 +9,7 @@
 #include <QThread>
 #include <QTcpSocket>
 #include <QSharedPointer>
+#include <QTimer>
 
 // use it to send messages and connect to it to hear it emit incoming messages.
 // this object runs in its own thread which it manages for you, but you must
@@ -23,30 +24,39 @@ public:
         Connecting,
         WaitingForHandshakeResponse,
         WaitingForLoginResponse,
-        ServerIsBogus,
-        LoginIsInvalid,
-        InsufficientPrivileges,
+        WaitingForPlayerPositionAndLook,
         Success,
         SocketError,
+    };
+
+    struct EntityPosition
+    {
+        double x; // east
+        double y; // north
+        double z; // up
+        double stance; // [0.1, 1.65] how tall you are.
+        float yaw; // [0, 2pi] rotation around z axis. 0 is +x. pi/2 is +y. pi is -x. 3pi/2 is -y.
+        float pitch; // [-pi/2, pi/2] 0 is parallel to the ground. pi/2 is up. -pi/2 is down.
+        float roll; // [-pi, pi] usually ignored. 0 is level. pi/2 is left ear pointing downward.
+        bool on_ground;
     };
 
 
     explicit Server(ConnectionSettings connection_info);
     ~Server();
 
-    void setUsername(QString username);
-
     // returns the ConnectionResultMessage that the server gave upon connection
     QSharedPointer<IncomingResponse> connectionResultMessage() const { return m_connection_result; }
 
     const ConnectionSettings * connectionSettings() const { return &m_connection_info; }
 
-signals:
-    // use this signal to listen for incoming messages
-    void messageReceived(QSharedPointer<IncomingResponse> message);
+    // update this to move around. it's garbage until login statis is success.
+    EntityPosition player_position;
 
+signals:
     void loginStatusUpdated(LoginStatus status);
     void socketDisconnected();
+    void mapChunkUpdated(QSharedPointer<Chunk> chunk);
 
 public slots:
     void sendMessage(QSharedPointer<OutgoingRequest> message);
@@ -69,6 +79,9 @@ private:
     QThread * m_socket_thread;
     QTcpSocket * m_socket;
     IncomingMessageParser * m_parser;
+    QTimer * m_position_update_timer;
+
+
 
     LoginStatus m_login_state;
 
@@ -76,6 +89,8 @@ private:
 
 private:
     void changeLoginState(LoginStatus state);
+    void gotFirstPlayerPositionAndLookResponse();
+    void sendPosition();
 
 private slots:
     void initialize();
@@ -84,6 +99,7 @@ private slots:
     void cleanUpAfterDisconnect();
     void processIncomingMessage(QSharedPointer<IncomingResponse>);
     void handleSocketError(QAbstractSocket::SocketError);
+    void timeToSendPosition();
 };
 
 
