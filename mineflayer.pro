@@ -2,44 +2,28 @@
 # Project created by QtCreator 2011-01-23T00:47:29
 # -------------------------------------------------
 QT += core \
-    gui \
-    opengl \
     network
+QT -= gui
 TARGET = mineflayer
 TEMPLATE = app
 SOURCES += main.cpp \
-    MainWindow.cpp \
-    ConnectDialog.cpp \
-    GameWidget.cpp \
     Server.cpp \
-    ConnectionSettings.cpp \
     Messages.cpp \
     IncomingMessageParser.cpp \
-    RingBuffer.cpp \
-    Camera.cpp \
-    Util.cpp \
-    Mesh.cpp \
-    MeshInstance.cpp \
-    Texture.cpp \
-    Drawable.cpp \
-    Chunk.cpp
-HEADERS += MainWindow.h \
-    ConnectDialog.h \
-    GameWidget.h \
+    Chunk.cpp \
+    BaseApplication.cpp \
+    MineflayerApplication.cpp
+HEADERS += \
     Server.h \
     Messages.h \
-    ConnectionSettings.h \
-    Camera.h \
-    Util.h \
-    Mesh.h \
-    MeshInstance.h \
-    Texture.h \
-    Drawable.h \
     Chunk.h \
-    Constants.h \
     IncomingMessageParser.h \
-    RingBuffer.h \
-    MetaTypes.h
-FORMS += MainWindow.ui \
-    ConnectDialog.ui
+    MetaTypes.h \
+    BaseApplication.h \
+    MineflayerApplication.h
+FORMS +=
 RESOURCES += mineflayer.qrc
+
+LIBS += \
+    -lOgreMain \
+    -lOIS

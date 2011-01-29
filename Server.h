@@ -1,7 +1,6 @@
 #ifndef MESSAGE_HANDLER_H
 #define MESSAGE_HANDLER_H
 
-#include "ConnectionSettings.h"
 #include "Messages.h"
 #include "IncomingMessageParser.h"
 
@@ -9,6 +8,7 @@
 #include <QThread>
 #include <QTcpSocket>
 #include <QSharedPointer>
+#include <QUrl>
 
 // use it to send messages and connect to it to hear it emit incoming messages.
 // this object runs in its own thread which it manages for you, but you must
@@ -31,15 +31,13 @@ public:
     };
 
 
-    explicit Server(ConnectionSettings connection_info);
+    explicit Server(QUrl connection_info);
     ~Server();
 
     void setUsername(QString username);
 
     // returns the ConnectionResultMessage that the server gave upon connection
     QSharedPointer<IncomingResponse> connectionResultMessage() const { return m_connection_result; }
-
-    const ConnectionSettings * connectionSettings() const { return &m_connection_info; }
 
 signals:
     // use this signal to listen for incoming messages
@@ -64,7 +62,7 @@ public:
     LoginStatus loginStatus();
 
 private:
-    ConnectionSettings m_connection_info;
+    QUrl m_connection_info;
 
     QThread * m_socket_thread;
     QTcpSocket * m_socket;

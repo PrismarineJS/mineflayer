@@ -1,7 +1,6 @@
 #include "Chunk.h"
-#include "Constants.h"
 
-#include <QImage>
+//#include <QImage>
 #include <QFile>
 #include <QTextStream>
 #include <QStringList>
@@ -11,8 +10,6 @@
 using namespace std;
 
 bool Chunk::s_initialized = false;
-QHash<QString, Texture *> Chunk::s_textures;
-QVector<Mesh *> Chunk::s_meshes;
 
 uint qHash(const Chunk::Coord & coord)
 {
@@ -46,8 +43,8 @@ void Chunk::initialize()
 
     {
         // grab all the textures from resources
-        QImage terrain(":/textures/terrain.png");
-        terrain.convertToFormat(QImage::Format_ARGB32_Premultiplied);
+        //QImage terrain(":/textures/terrain.png");
+        //terrain.convertToFormat(QImage::Format_ARGB32_Premultiplied);
 
         QFile texture_index_file(":/textures/textures.txt");
         texture_index_file.open(QFile::ReadOnly);
@@ -63,16 +60,15 @@ void Chunk::initialize()
             int y = parts.at(2).toInt();
             int w = parts.at(3).toInt();
             int h = parts.at(4).toInt();
-            QImage image = terrain.copy(x, y, w, h).rgbSwapped();
-            Texture * texture = new Texture(image);
-            s_textures.insert(name, texture);
+            //QImage image = terrain.copy(x, y, w, h).rgbSwapped();
+            //Texture * texture = new Texture(image);
+            //s_textures.insert(name, texture);
         }
         texture_index_file.close();
     }
 
     {
         // grab all the solid block data from resources
-        s_meshes.fill(NULL, 100);
         QFile blocks_file(":/textures/blocks.txt");
         blocks_file.open(QFile::ReadOnly);
         QTextStream stream(&blocks_file);
@@ -92,58 +88,16 @@ void Chunk::initialize()
             QString left = parts.at(6);
             QString right = parts.at(7);
 
-            Mesh * textured_cube = Mesh::createUnitCube(Constants::white,
-                s_textures.value(top),
-                s_textures.value(bottom),
-                s_textures.value(front),
-                s_textures.value(back),
-                s_textures.value(left),
-                s_textures.value(right));
-            s_meshes.replace(id, textured_cube);
+//            Mesh * textured_cube = Mesh::createUnitCube(Constants::white,
+//                s_textures.value(top),
+//                s_textures.value(bottom),
+//                s_textures.value(front),
+//                s_textures.value(back),
+//                s_textures.value(left),
+//                s_textures.value(right));
+//            s_meshes.replace(id, textured_cube);
         }
         blocks_file.close();
-    }
-}
-
-void Chunk::render()
-{
-    Coord coord;
-    for (coord.z = 0; coord.z < m_size.z; coord.z++) {
-        for (coord.y = 0; coord.y < m_size.y; coord.y++) {
-            for (coord.x = 0; coord.x < m_size.x; coord.x++) {
-                Block * block = getBlock(coord).data();
-                if (block == NULL)
-                    continue;
-                if (! block->mesh_instance.isNull())
-                    block->mesh_instance.data()->draw();
-            }
-        }
-    }
-}
-
-void Chunk::updateBlock(const Coord & coord)
-{
-    QSharedPointer<Block> block = m_blocks.at(indexOf(coord));
-    Vec3<float> loc = (m_pos + coord) * Constants::block_size;
-    if (s_meshes.at(block.data()->type) != NULL) {
-        block.data()->mesh_instance = QSharedPointer<MeshInstance>(new MeshInstance(
-            s_meshes.at(block.data()->type), loc, Constants::block_size, Constants::up, Constants::forwardX));
-    } else {
-        block.data()->mesh_instance = QSharedPointer<MeshInstance>();
-        if (block.data()->type != 0)
-            qDebug() << "can't display block type" << block.data()->type;
-    }
-}
-
-void Chunk::updateEntireChunkMesh()
-{
-    Coord coord;
-    for (coord.z = 0; coord.z < m_size.z; coord.z++) {
-        for (coord.y = 0; coord.y < m_size.y; coord.y++) {
-            for (coord.x = 0; coord.x < m_size.x; coord.x++) {
-                updateBlock(coord);
-            }
-        }
     }
 }
 
@@ -180,5 +134,4 @@ void Chunk::randomize()
         }
     }
 
-    updateEntireChunkMesh();
 }

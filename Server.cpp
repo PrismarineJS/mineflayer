@@ -3,7 +3,7 @@
 #include <QDir>
 #include <QCoreApplication>
 
-Server::Server(ConnectionSettings connection_info) :
+Server::Server(QUrl connection_info) :
     m_connection_info(connection_info),
     m_socket_thread(NULL),
     m_parser(NULL),
@@ -52,7 +52,7 @@ void Server::socketConnect()
     Q_ASSERT(m_socket);
 
     changeLoginState(Connecting);
-    m_socket->connectToHost(m_connection_info.hostname, m_connection_info.port);
+    m_socket->connectToHost(m_connection_info.host(), m_connection_info.port(25565));
 }
 
 void Server::socketDisconnect()
@@ -95,7 +95,7 @@ void Server::handleConnected()
     Q_ASSERT(success);
 
     changeLoginState(WaitingForHandshakeResponse);
-    sendMessage(QSharedPointer<OutgoingRequest>(new HandshakeRequest(m_connection_info.username)));
+    sendMessage(QSharedPointer<OutgoingRequest>(new HandshakeRequest(m_connection_info.userName())));
 }
 
 void Server::cleanUpAfterDisconnect()
@@ -128,7 +128,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> msg)
             Q_ASSERT_X(message->connectionHash == HandshakeResponse::AuthenticationNotRequired, "",
                        (QString("unexpected connection hash: ") + message->connectionHash).toStdString().c_str());
             changeLoginState(WaitingForLoginResponse);
-            sendMessage(QSharedPointer<OutgoingRequest>(new LoginRequest(m_connection_info.username, m_connection_info.password)));
+            sendMessage(QSharedPointer<OutgoingRequest>(new LoginRequest(m_connection_info.userName(), m_connection_info.password())));
             break;
         }
         case Message::DisconnectOrKick: {

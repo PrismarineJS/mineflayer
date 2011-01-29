@@ -8,3 +8,8 @@ Current features:
 
 Planned features:
  * bot that builds stuff
+
+
+
+random;
+    int tick_ms = 200;
