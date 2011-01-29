@@ -71,12 +71,6 @@ void Server::socketDisconnect()
 
 void Server::sendMessage(QSharedPointer<OutgoingRequest> msg)
 {
-    if (QThread::currentThread() != m_socket_thread) {
-        bool success = QMetaObject::invokeMethod(this, "sendMessage", Qt::QueuedConnection, QGenericReturnArgument(), Q_ARG(QSharedPointer<OutgoingRequest>, msg));
-        Q_ASSERT(success);
-        return;
-    }
-
     if (msg.data()->messageType == Message::DummyDisconnect) {
         socketDisconnect();
         return;
@@ -183,9 +177,11 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
                 }
             }
             emit mapChunkUpdated(chunk);
+            break;
         }
         case Message::DisconnectOrKick: {
-            // TODO: use the reason somehow
+            DisconnectOrKickResponse * message = (DisconnectOrKickResponse *)incomingMessage.data();
+            qDebug() << "got disconnected: " << message->reason;
             finishWritingAndDisconnect();
             break;
         }
@@ -213,6 +209,7 @@ void Server::gotFirstPlayerPositionAndLookResponse()
 
 void Server::timeToSendPosition()
 {
+    qDebug() << "time to send position";
     sendPosition();
 }
 

@@ -59,8 +59,6 @@ signals:
     void mapChunkUpdated(QSharedPointer<Chunk> chunk);
 
 public slots:
-    void sendMessage(QSharedPointer<OutgoingRequest> message);
-
     // use this to actually connect to the server
     void socketConnect();
 
@@ -91,6 +89,7 @@ private:
     void changeLoginState(LoginStatus state);
     void gotFirstPlayerPositionAndLookResponse();
     void sendPosition();
+    void sendMessage(QSharedPointer<OutgoingRequest> message);
 
 private slots:
     void initialize();

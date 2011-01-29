@@ -94,12 +94,17 @@ void GameWidget::mainLoop()
     QTimer::singleShot((int)wait_time_msecs, this, SLOT(mainLoop()));
 }
 
+int round_down_to_multiple(int number, int multiple)
+{
+    return number - (number % multiple + multiple) % multiple;
+}
+
 void GameWidget::handleMapChunkUpdated(QSharedPointer<Chunk>new_chunk)
 {
     Chunk::Coord chunk_key;
-    chunk_key.x = new_chunk.data()->position().x / 16 * 16;
-    chunk_key.y = new_chunk.data()->position().y / 16 * 16;
-    chunk_key.z = new_chunk.data()->position().z / 128 * 128; // always 0
+    chunk_key.x = round_down_to_multiple(new_chunk.data()->position().x, 16);
+    chunk_key.y = round_down_to_multiple(new_chunk.data()->position().y, 16);
+    chunk_key.z = round_down_to_multiple(new_chunk.data()->position().z, 128); // always 0
     // new chunk's relative position inside the full chunk.
     Chunk::Coord new_offset = new_chunk.data()->position() - chunk_key;
 
