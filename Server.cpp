@@ -161,19 +161,32 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
 
             Chunk * chunk = new Chunk(position, size);
 
+            int volume = size.x * size.y * size.z;
+            int metadata_offset = volume;
+            int light_offset = volume * 3 / 2;
+            int sky_light_offest = volume * 2;
             int array_index = 0;
+            int nibble_shifter = 0; // start with low nibble
             Chunk::Int3D notchian_relative_pos;
+            // traversal order is x,z,y in notchian coordinates
             for (notchian_relative_pos.x = 0; notchian_relative_pos.x < notchian_size.x; notchian_relative_pos.x++) {
                 for (notchian_relative_pos.z = 0; notchian_relative_pos.z < notchian_size.z; notchian_relative_pos.z++) {
                     for (notchian_relative_pos.y = 0; notchian_relative_pos.y < notchian_size.y; notchian_relative_pos.y++) {
-                        int block_type = decompressed.at(array_index++);
+                        Chunk::Block block;
+                        block.type = decompressed.at(array_index);
+                        block.metadata  = (decompressed.at( metadata_offset + array_index / 2) >> nibble_shifter) & 0xf;
+                        block.light     = (decompressed.at(    light_offset + array_index / 2) >> nibble_shifter) & 0xf;
+                        block.sky_light = (decompressed.at(sky_light_offest + array_index / 2) >> nibble_shifter) & 0xf;
+
+                        array_index++;
+                        nibble_shifter = 4 - nibble_shifter;
+
                         Chunk::Int3D relative_pos;
                         fromNotchianXyz(relative_pos, notchian_relative_pos.x, notchian_relative_pos.y, notchian_relative_pos.z);
-                        chunk->getBlock(relative_pos).data()->type = block_type;
+                        // TODO: chunk->setBlock(relative_pos, block);
                     }
                 }
             }
-            // ... and then just ignore the other two arrays.
             emit mapChunkUpdated(QSharedPointer<Chunk>(chunk));
             break;
         }
