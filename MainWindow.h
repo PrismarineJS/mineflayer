@@ -1,21 +1,5 @@
-/*
------------------------------------------------------------------------------
-Filename:    BaseApplication.h
------------------------------------------------------------------------------
-
-This source file is part of the
-   ___                 __    __ _ _    _
-  /___\__ _ _ __ ___  / / /\ \ (_) | _(_)
- //  // _` | '__/ _ \ \ \/  \/ / | |/ / |
-/ \_// (_| | | |  __/  \  /\  /| |   <| |
-\___/ \__, |_|  \___|   \/  \/ |_|_|\_\_|
-      |___/
-      Tutorial Framework
-      http://www.ogre3d.org/tikiwiki/
------------------------------------------------------------------------------
-*/
-#ifndef __BaseApplication_h_
-#define __BaseApplication_h_
+#ifndef MINEFLAYERAPPLICATION_H
+#define MINEFLAYERAPPLICATION_H
 
 #include <OGRE/OgreCamera.h>
 #include <OGRE/OgreEntity.h>
@@ -25,6 +9,7 @@ This source file is part of the
 #include <OGRE/OgreSceneManager.h>
 #include <OGRE/OgreRenderWindow.h>
 #include <OGRE/OgreConfigFile.h>
+#include <OGRE/OgreVector3.h>
 
 #include <OIS/OISEvents.h>
 #include <OIS/OISInputManager.h>
@@ -35,34 +20,54 @@ This source file is part of the
 #include <OGRE/SdkCameraMan.h>
 
 #include <QObject>
+#include <QHash>
+#include <QSharedPointer>
 
-class BaseApplication :
-        public QObject,
-        public Ogre::FrameListener,
-        public Ogre::WindowEventListener,
-        public OIS::KeyListener,
-        public OIS::MouseListener,
-        OgreBites::SdkTrayListener
+#include "Chunk.h"
+#include "Server.h"
+
+class MineflayerApplication :
+    public QObject,
+    public Ogre::FrameListener,
+    public Ogre::WindowEventListener,
+    public OIS::KeyListener,
+    public OIS::MouseListener,
+    OgreBites::SdkTrayListener
 {
     Q_OBJECT
 public:
-    BaseApplication(void);
-    virtual ~BaseApplication(void);
+    enum Control {
+        Forward,
+        Back,
+        Left,
+        Right,
+        Jump,
+        Crouch,
+        DiscardItem,
+        Action1, // left click
+        Action2, // right click
+        Inventory,
+        Chat,
+    };
 
-    virtual void go(void);
+public:
+    MineflayerApplication();
+    virtual ~MineflayerApplication();
+
+    virtual void go();
 
 protected:
     virtual bool setup();
-    virtual bool configure(void);
-    virtual void chooseSceneManager(void);
-    virtual void createCamera(void);
-    virtual void createFrameListener(void);
-    virtual void createScene(void) = 0; // Override me!
-    virtual void destroyScene(void);
-    virtual void createViewports(void);
-    virtual void setupResources(void);
-    virtual void createResourceListener(void);
-    virtual void loadResources(void);
+    virtual bool configure();
+    virtual void chooseSceneManager();
+    virtual void createCamera();
+    virtual void createFrameListener();
+    virtual void createScene();
+    virtual void destroyScene();
+    virtual void createViewports();
+    virtual void setupResources();
+    virtual void createResourceListener();
+    virtual void loadResources();
 
     // Ogre::FrameListener
     virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt);
@@ -99,6 +104,36 @@ protected:
     OIS::InputManager* mInputManager;
     OIS::Mouse*    mMouse;
     OIS::Keyboard* mKeyboard;
+
+
+private:
+
+    struct Entity {
+        Ogre::Vector3 pos;
+        Ogre::Vector3 up;
+        Ogre::Vector3 look;
+        double stance;
+        bool on_ground;
+    };
+
+    Server * m_server;
+
+    QHash<Chunk::Coord, QSharedPointer<Chunk> > m_chunks;
+    QHash<qint32, QSharedPointer<Entity> > m_entities;
+    Entity * m_player;
+
+    // maps Qt::Key to Control and vice versa
+    QHash<int, Control> m_key_to_control;
+    QHash<Control, int> m_control_to_key;
+
+    static const int c_fps;
+    static const double c_time_per_frame_msecs;
+    double m_target_time_msecs;
+
+
+private:
+    void loadControls();
+
 };
 
-#endif // #ifndef __BaseApplication_h_
+#endif // MINEFLAYERAPPLICATION_H

@@ -11,16 +11,14 @@ SOURCES += main.cpp \
     Messages.cpp \
     IncomingMessageParser.cpp \
     Chunk.cpp \
-    BaseApplication.cpp \
-    MineflayerApplication.cpp
+    MainWindow.cpp
 HEADERS += \
     Server.h \
     Messages.h \
     Chunk.h \
     IncomingMessageParser.h \
     MetaTypes.h \
-    BaseApplication.h \
-    MineflayerApplication.h
+    MainWindow.h
 FORMS +=
 RESOURCES += mineflayer.qrc
 
