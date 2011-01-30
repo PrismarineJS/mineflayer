@@ -150,24 +150,24 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             tmp.prepend(QByteArray("\0\0\0\0", 4));
             QByteArray decompressed = qUncompress(tmp);
 
-            Chunk::Coord position;
+            Chunk::Int3D position;
             fromNotchianXyz(position, message->x, message->y, message->z);
-            Chunk::Coord notchian_size;
+            Chunk::Int3D notchian_size;
             notchian_size.x = message->size_x_minus_one + 1;
             notchian_size.y = message->size_y_minus_one + 1;
             notchian_size.z = message->size_z_minus_one + 1;
-            Chunk::Coord size;
+            Chunk::Int3D size;
             fromNotchianXyz(size, notchian_size.x, notchian_size.y, notchian_size.z);
 
             Chunk * chunk = new Chunk(position, size);
 
             int array_index = 0;
-            Chunk::Coord notchian_relative_pos;
+            Chunk::Int3D notchian_relative_pos;
             for (notchian_relative_pos.x = 0; notchian_relative_pos.x < notchian_size.x; notchian_relative_pos.x++) {
                 for (notchian_relative_pos.z = 0; notchian_relative_pos.z < notchian_size.z; notchian_relative_pos.z++) {
                     for (notchian_relative_pos.y = 0; notchian_relative_pos.y < notchian_size.y; notchian_relative_pos.y++) {
                         int block_type = decompressed.at(array_index++);
-                        Chunk::Coord relative_pos;
+                        Chunk::Int3D relative_pos;
                         fromNotchianXyz(relative_pos, notchian_relative_pos.x, notchian_relative_pos.y, notchian_relative_pos.z);
                         chunk->getBlock(relative_pos).data()->type = block_type;
                     }
@@ -199,7 +199,7 @@ void Server::fromNotchianXyz(EntityPosition &destination, double notchian_x, dou
     // up
     destination.z = notchian_y;
 }
-void Server::fromNotchianXyz(Chunk::Coord &destination, int notchian_x, int notchian_y, int notchian_z)
+void Server::fromNotchianXyz(Chunk::Int3D &destination, int notchian_x, int notchian_y, int notchian_z)
 {
     // east
     destination.x = notchian_z;

@@ -16,7 +16,6 @@
 #include <OIS/OISKeyboard.h>
 #include <OIS/OISMouse.h>
 
-#include <OGRE/SdkTrays.h>
 #include <OGRE/SdkCameraMan.h>
 
 #include <QObject>
@@ -31,8 +30,7 @@ class MainWindow :
     public Ogre::FrameListener,
     public Ogre::WindowEventListener,
     public OIS::KeyListener,
-    public OIS::MouseListener,
-    OgreBites::SdkTrayListener
+    public OIS::MouseListener
 {
     Q_OBJECT
 public:
@@ -52,40 +50,29 @@ public:
 
 public:
     MainWindow();
-    virtual ~MainWindow();
+    ~MainWindow();
 
-    virtual void go();
+    void go();
 
 protected:
-    virtual bool setup();
-    virtual bool configure();
-    virtual void chooseSceneManager();
-    virtual void createCamera();
-    virtual void createFrameListener();
-    virtual void createScene();
-    virtual void destroyScene();
-    virtual void createViewports();
-    virtual void setupResources();
-    virtual void createResourceListener();
-    virtual void loadResources();
-
     // Ogre::FrameListener
-    virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt);
+    bool frameRenderingQueued(const Ogre::FrameEvent& evt);
 
     // OIS::KeyListener
-    virtual bool keyPressed( const OIS::KeyEvent &arg );
-    virtual bool keyReleased( const OIS::KeyEvent &arg );
+    bool keyPressed( const OIS::KeyEvent &arg );
+    bool keyReleased( const OIS::KeyEvent &arg );
     // OIS::MouseListener
-    virtual bool mouseMoved( const OIS::MouseEvent &arg );
-    virtual bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
-    virtual bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
+    bool mouseMoved( const OIS::MouseEvent &arg );
+    bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
+    bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
 
     // Ogre::WindowEventListener
     //Adjust mouse clipping area
-    virtual void windowResized(Ogre::RenderWindow* rw);
+    void windowResized(Ogre::RenderWindow* rw);
     //Unattach OIS before window shutdown (very important under Linux)
-    virtual void windowClosed(Ogre::RenderWindow* rw);
+    void windowClosed(Ogre::RenderWindow* rw);
 
+private:
     Ogre::Root *m_root;
     Ogre::Camera* m_camera;
     Ogre::SceneManager* m_scene_manager;
@@ -94,19 +81,13 @@ protected:
     Ogre::String m_plugins_config;
 
     // OgreBites
-    OgreBites::SdkTrayManager* m_tray_manager;
     OgreBites::SdkCameraMan* m_camera_man;       // basic camera controller
-    OgreBites::ParamsPanel* m_details_panel;     // sample details panel
-    bool m_cursor_was_visible;                    // was cursor visible before dialog appeared
     bool m_shut_down;
 
     //OIS Input devices
     OIS::InputManager* m_input_manager;
     OIS::Mouse* m_mouse;
     OIS::Keyboard* m_keyboard;
-
-
-private:
 
     struct Entity {
         Ogre::Vector3 pos;
@@ -118,7 +99,7 @@ private:
 
     Server * m_server;
 
-    QHash<Chunk::Coord, QSharedPointer<Chunk> > m_chunks;
+    QHash<Chunk::Int3D, QSharedPointer<Chunk> > m_chunks;
     QHash<qint32, QSharedPointer<Entity> > m_entities;
     Entity * m_player;
 
@@ -126,13 +107,21 @@ private:
     QHash<OIS::KeyCode, Control> m_key_to_control;
     QHash<Control, OIS::KeyCode> m_control_to_key;
 
-    static const int c_fps;
-    static const double c_time_per_frame_msecs;
-    double m_target_time_msecs;
-
-
 private:
     void loadControls();
+
+    bool setup();
+    bool configure();
+    void createCamera();
+    void createFrameListener();
+    void createScene();
+    void destroyScene();
+    void createViewports();
+    void setupResources();
+    void loadResources();
+
+private slots:
+    void updateChunk(QSharedPointer<Chunk> chunk);
 
 };
 

@@ -12,8 +12,7 @@
 #include <QTimer>
 
 // use it to send messages and connect to it to hear it emit incoming messages.
-// this object runs in its own thread which it manages for you, but you must
-// never call a slot directly.
+// this object runs in its own thread which it manages for you.
 class Server : public QObject
 {
     Q_OBJECT
@@ -96,7 +95,7 @@ private:
 
 
     static void fromNotchianXyz(EntityPosition & destination, double notchian_x, double notchian_y, double notchian_z);
-    static void fromNotchianXyz(Chunk::Coord & destination, int notchian_x, int notchian_y, int notchian_z);
+    static void fromNotchianXyz(Chunk::Int3D & destination, int notchian_x, int notchian_y, int notchian_z);
     static void toNotchianXyz(const EntityPosition &source, double & destination_notchian_x, double & destination_notchian_y, double & destination_notchian_z);
     static void fromNotchianYawPitch(EntityPosition & destination, float notchian_yaw, float notchian_pitch);
     static void toNotchianYawPitch(const EntityPosition &source, float & destination_notchian_yaw, float & destination_notchian_pitch);
