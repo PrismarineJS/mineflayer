@@ -24,6 +24,8 @@ Installing Ogre 1.7 from source on Ubuntu:
             - cmake ..
             - make
             - sudo make install
+        - make sure the .so shows up in some ld list thing:
+            - sudo ldconfig /usr/local/lib
 
 TODO include somewhere:
     int tick_ms = 200;
