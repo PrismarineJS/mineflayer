@@ -10,22 +10,6 @@ Planned features:
  * bot that builds stuff
 
 
-Installing Ogre 1.7 from source on Ubuntu:
-    - install ogre dependencies:
-        - sudo apt-get install libois-dev libfreeimage-dev libfreetype6-dev libzzip-dev libxaw7-dev libglew1.5-dev libxrandr-dev cmake build-essential
-    - install ogre 1.7 from source:
-        - download the source from http://www.ogre3d.org/download/source
-        - extract the source with tar or something:
-            - tar xaf file-you-just-downloaded
-        - build and install it with cmake and make:
-            - cd directory-you-just-got-from-extracting
-            - mkdir build
-            - cd build/
-            - cmake ..
-            - make
-            - sudo make install
-        - make sure the .so shows up in some ld list thing:
-            - sudo ldconfig /usr/local/lib
 
 TODO include somewhere:
     int tick_ms = 200;
