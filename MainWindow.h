@@ -16,7 +16,6 @@
 #include <OIS/OISKeyboard.h>
 #include <OIS/OISMouse.h>
 
-#include <OGRE/SdkTrays.h>
 #include <OGRE/SdkCameraMan.h>
 
 #include <QObject>
@@ -31,8 +30,7 @@ class MainWindow :
     public Ogre::FrameListener,
     public Ogre::WindowEventListener,
     public OIS::KeyListener,
-    public OIS::MouseListener,
-    OgreBites::SdkTrayListener
+    public OIS::MouseListener
 {
     Q_OBJECT
 public:
@@ -92,10 +90,7 @@ protected:
     Ogre::String m_plugins_config;
 
     // OgreBites
-    OgreBites::SdkTrayManager* m_tray_manager;
     OgreBites::SdkCameraMan* m_camera_man;       // basic camera controller
-    OgreBites::ParamsPanel* m_details_panel;     // sample details panel
-    bool m_cursor_was_visible;                    // was cursor visible before dialog appeared
     bool m_shut_down;
 
     //OIS Input devices

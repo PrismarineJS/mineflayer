@@ -20,10 +20,7 @@ MainWindow::MainWindow() :
     m_window(0),
     m_resources_config(Ogre::StringUtil::BLANK),
     m_plugins_config(Ogre::StringUtil::BLANK),
-    m_tray_manager(0),
     m_camera_man(0),
-    m_details_panel(0),
-    m_cursor_was_visible(false),
     m_shut_down(false),
     m_input_manager(0),
     m_mouse(0),
@@ -34,7 +31,6 @@ MainWindow::MainWindow() :
 
 MainWindow::~MainWindow()
 {
-    if (m_tray_manager) delete m_tray_manager;
     if (m_camera_man) delete m_camera_man;
 
     //Remove ourself as a Window listener
@@ -134,11 +130,6 @@ void MainWindow::createFrameListener()
     //Register as a Window listener
     Ogre::WindowEventUtilities::addWindowEventListener(m_window, this);
 
-    m_tray_manager = new OgreBites::SdkTrayManager("InterfaceName", m_window, m_mouse, this);
-    m_tray_manager->showFrameStats(OgreBites::TL_BOTTOMLEFT);
-    m_tray_manager->showLogo(OgreBites::TL_BOTTOMRIGHT);
-    m_tray_manager->hideCursor();
-
     // create a params panel for displaying sample details
     Ogre::StringVector items;
     items.push_back("cam.pX");
@@ -152,11 +143,6 @@ void MainWindow::createFrameListener()
     items.push_back("");
     items.push_back("Filtering");
     items.push_back("Poly Mode");
-
-    m_details_panel = m_tray_manager->createParamsPanel(OgreBites::TL_NONE, "DetailsPanel", 200, items);
-    m_details_panel->setParamValue(9, "Bilinear");
-    m_details_panel->setParamValue(10, "Solid");
-    m_details_panel->hide();
 
     m_root->addFrameListener(this);
 }
@@ -260,118 +246,19 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
     m_keyboard->capture();
     m_mouse->capture();
 
-    m_tray_manager->frameRenderingQueued(evt);
 
-    if (!m_tray_manager->isDialogVisible())
-    {
-        m_camera_man->frameRenderingQueued(evt);   // if dialog isn't up, then update the camera
-        if (m_details_panel->isVisible())   // if details panel is visible, then update its contents
-        {
-            m_details_panel->setParamValue(0, Ogre::StringConverter::toString(m_camera->getDerivedPosition().x));
-            m_details_panel->setParamValue(1, Ogre::StringConverter::toString(m_camera->getDerivedPosition().y));
-            m_details_panel->setParamValue(2, Ogre::StringConverter::toString(m_camera->getDerivedPosition().z));
-            m_details_panel->setParamValue(4, Ogre::StringConverter::toString(m_camera->getDerivedOrientation().w));
-            m_details_panel->setParamValue(5, Ogre::StringConverter::toString(m_camera->getDerivedOrientation().x));
-            m_details_panel->setParamValue(6, Ogre::StringConverter::toString(m_camera->getDerivedOrientation().y));
-            m_details_panel->setParamValue(7, Ogre::StringConverter::toString(m_camera->getDerivedOrientation().z));
-        }
-    }
-
+    m_camera_man->frameRenderingQueued(evt);   // if dialog isn't up, then update the camera
 
     // compute next frame
+    QCoreApplication::processEvents();
 
     return true;
 }
 
 bool MainWindow::keyPressed( const OIS::KeyEvent &arg )
 {
-    if (m_tray_manager->isDialogVisible()) return true;   // don't process any more keys if dialog is up
-
-    if (arg.key == OIS::KC_F)   // toggle visibility of advanced frame stats
-    {
-        m_tray_manager->toggleAdvancedFrameStats();
-    }
-    else if (arg.key == OIS::KC_G)   // toggle visibility of even rarer debugging details
-    {
-        if (m_details_panel->getTrayLocation() == OgreBites::TL_NONE)
-        {
-            m_tray_manager->moveWidgetToTray(m_details_panel, OgreBites::TL_TOPRIGHT, 0);
-            m_details_panel->show();
-        }
-        else
-        {
-            m_tray_manager->removeWidgetFromTray(m_details_panel);
-            m_details_panel->hide();
-        }
-    }
-    else if (arg.key == OIS::KC_T)   // cycle polygon rendering mode
-    {
-        Ogre::String newVal;
-        Ogre::TextureFilterOptions tfo;
-        unsigned int aniso;
-
-        switch (m_details_panel->getParamValue(9).asUTF8()[0])
-        {
-        case 'B':
-            newVal = "Trilinear";
-            tfo = Ogre::TFO_TRILINEAR;
-            aniso = 1;
-            break;
-        case 'T':
-            newVal = "Anisotropic";
-            tfo = Ogre::TFO_ANISOTROPIC;
-            aniso = 8;
-            break;
-        case 'A':
-            newVal = "None";
-            tfo = Ogre::TFO_NONE;
-            aniso = 1;
-            break;
-        default:
-            newVal = "Bilinear";
-            tfo = Ogre::TFO_BILINEAR;
-            aniso = 1;
-        }
-
-        Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(tfo);
-        Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(aniso);
-        m_details_panel->setParamValue(9, newVal);
-    }
-    else if (arg.key == OIS::KC_R)   // cycle polygon rendering mode
-    {
-        Ogre::String newVal;
-        Ogre::PolygonMode pm;
-
-        switch (m_camera->getPolygonMode())
-        {
-        case Ogre::PM_SOLID:
-            newVal = "Wireframe";
-            pm = Ogre::PM_WIREFRAME;
-            break;
-        case Ogre::PM_WIREFRAME:
-            newVal = "Points";
-            pm = Ogre::PM_POINTS;
-            break;
-        default:
-            newVal = "Solid";
-            pm = Ogre::PM_SOLID;
-        }
-
-        m_camera->setPolygonMode(pm);
-        m_details_panel->setParamValue(10, newVal);
-    }
-    else if(arg.key == OIS::KC_F5)   // refresh all textures
-    {
-        Ogre::TextureManager::getSingleton().reloadAll();
-    }
-    else if (arg.key == OIS::KC_SYSRQ)   // take a screenshot
-    {
-        m_window->writeContentsToTimestampedFile("screenshot", ".jpg");
-    }
-    else if (arg.key == OIS::KC_ESCAPE)
-    {
+    if (arg.key == OIS::KC_ESCAPE || (m_keyboard->isModifierDown(OIS::Keyboard::Alt) && arg.key == OIS::KC_F4))
         m_shut_down = true;
-    }
 
     m_camera_man->injectKeyDown(arg);
     return true;
@@ -385,21 +272,18 @@ bool MainWindow::keyReleased( const OIS::KeyEvent &arg )
 
 bool MainWindow::mouseMoved( const OIS::MouseEvent &arg )
 {
-    if (m_tray_manager->injectMouseMove(arg)) return true;
     m_camera_man->injectMouseMove(arg);
     return true;
 }
 
 bool MainWindow::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-    if (m_tray_manager->injectMouseDown(arg, id)) return true;
     m_camera_man->injectMouseDown(arg, id);
     return true;
 }
 
 bool MainWindow::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-    if (m_tray_manager->injectMouseUp(arg, id)) return true;
     m_camera_man->injectMouseUp(arg, id);
     return true;
 }
