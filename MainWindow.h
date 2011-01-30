@@ -86,24 +86,24 @@ protected:
     //Unattach OIS before window shutdown (very important under Linux)
     virtual void windowClosed(Ogre::RenderWindow* rw);
 
-    Ogre::Root *mRoot;
-    Ogre::Camera* mCamera;
-    Ogre::SceneManager* mSceneMgr;
-    Ogre::RenderWindow* mWindow;
-    Ogre::String mResourcesCfg;
-    Ogre::String mPluginsCfg;
+    Ogre::Root *m_root;
+    Ogre::Camera* m_camera;
+    Ogre::SceneManager* m_scene_manager;
+    Ogre::RenderWindow* m_window;
+    Ogre::String m_resources_config;
+    Ogre::String m_plugins_config;
 
     // OgreBites
-    OgreBites::SdkTrayManager* mTrayMgr;
-    OgreBites::SdkCameraMan* mCameraMan;       // basic camera controller
-    OgreBites::ParamsPanel* mDetailsPanel;     // sample details panel
-    bool mCursorWasVisible;                    // was cursor visible before dialog appeared
-    bool mShutDown;
+    OgreBites::SdkTrayManager* m_tray_manager;
+    OgreBites::SdkCameraMan* m_camera_man;       // basic camera controller
+    OgreBites::ParamsPanel* m_details_panel;     // sample details panel
+    bool m_cursor_was_visible;                    // was cursor visible before dialog appeared
+    bool m_shut_down;
 
     //OIS Input devices
-    OIS::InputManager* mInputManager;
-    OIS::Mouse*    mMouse;
-    OIS::Keyboard* mKeyboard;
+    OIS::InputManager* m_input_manager;
+    OIS::Mouse* m_mouse;
+    OIS::Keyboard* m_keyboard;
 
 
 private:
@@ -122,9 +122,9 @@ private:
     QHash<qint32, QSharedPointer<Entity> > m_entities;
     Entity * m_player;
 
-    // maps Qt::Key to Control and vice versa
-    QHash<int, Control> m_key_to_control;
-    QHash<Control, int> m_control_to_key;
+    // maps OIS::KeyCode to Control and vice versa
+    QHash<OIS::KeyCode, Control> m_key_to_control;
+    QHash<Control, OIS::KeyCode> m_control_to_key;
 
     static const int c_fps;
     static const double c_time_per_frame_msecs;
