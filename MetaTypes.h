@@ -10,6 +10,7 @@ namespace MetaTypes {
     void registerMetaTypes() {
         qRegisterMetaType<QSharedPointer<IncomingResponse> >("QSharedPointer<IncomingResponse>");
         qRegisterMetaType<QSharedPointer<OutgoingRequest> >("QSharedPointer<OutgoingRequest>");
+        qRegisterMetaType<QSharedPointer<Chunk> >("QSharedPointer<Chunk>");
         qRegisterMetaType<Server::LoginStatus>("ServerTypes::LoginStatus");
         qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError");
     }

@@ -16,9 +16,9 @@ uint qHash(const Chunk::Coord & coord)
     return (coord.x * 8191 + coord.z) * 131071 + coord.y;
 }
 
-Chunk::Chunk(const Coord & pos) :
+Chunk::Chunk(const Coord &pos, const Coord &size) :
     m_pos(pos),
-    m_size(16,16,128),
+    m_size(size),
     m_blocks(m_size.x * m_size.y * m_size.z)
 {
     initialize();

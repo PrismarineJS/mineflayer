@@ -24,13 +24,18 @@ public:
     };
 
 public:
-    Chunk(const Coord & pos);
+    Chunk(const Coord & pos, const Coord & size);
 
     // use to set or retrieve Block data. Call updateBlock when done.
     QSharedPointer<Block> getBlock(const Coord & coord) const;
 
     // debug method to generate random blocks
     void randomize();
+
+    Chunk::Coord position() const { return m_pos; }
+    Chunk::Coord size() const { return m_size; }
+
+    static void initialize();
 
 private:
     Coord m_pos;
@@ -41,9 +46,6 @@ private:
 
 private:
     int indexOf(const Coord & coord) const;
-
-    static void initialize();
-
 };
 
 #endif // CHUNK_H
