@@ -847,11 +847,12 @@ int WindowItemsResponse::parse(QByteArray buffer)
     if ((index = parseValue(buffer, index, count)) == -1)
         return -1;
     items.clear();
+    items.resize(count);
     for (int i = 0; i < count; i++) {
         Item item;
         if ((index = parseValue(buffer, index, item)) == -1)
             return -1;
-        items.append(item);
+        items.replace(i, item);
     }
     return index;
 }

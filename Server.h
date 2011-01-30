@@ -60,6 +60,7 @@ signals:
     void loginStatusUpdated(LoginStatus status);
     void socketDisconnected();
     void mapChunkUpdated(QSharedPointer<Chunk> chunk);
+    void inventoryUpdated(QVector<Message::Item> inventory);
 
 public slots:
     // use this to actually connect to the server

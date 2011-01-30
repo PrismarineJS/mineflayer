@@ -897,7 +897,7 @@ public:
 class WindowItemsResponse : public IncomingResponse {
 public:
     qint8 window_id;
-    QList<Item> items;
+    QVector<Item> items;
     WindowItemsResponse() : IncomingResponse(WindowItems) {}
     virtual int parse(QByteArray buffer);
 };

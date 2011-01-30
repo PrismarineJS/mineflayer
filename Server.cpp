@@ -190,6 +190,16 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             emit mapChunkUpdated(QSharedPointer<Chunk>(chunk));
             break;
         }
+        case Message::WindowItems: {
+            WindowItemsResponse * message = (WindowItemsResponse *) incomingMessage.data();
+            if (message->window_id == 0) {
+                // inventory
+                emit inventoryUpdated(message->items);
+            } else {
+                // not inventory
+            }
+            break;
+        }
         case Message::DisconnectOrKick: {
             DisconnectOrKickResponse * message = (DisconnectOrKickResponse *)incomingMessage.data();
             qDebug() << "got disconnected: " << message->reason;
