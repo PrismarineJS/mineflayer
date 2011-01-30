@@ -92,8 +92,22 @@ private:
 private:
     void changeLoginState(LoginStatus state);
     void gotFirstPlayerPositionAndLookResponse();
-    void sendPosition();
     void sendMessage(QSharedPointer<OutgoingRequest> message);
+
+
+    static void fromNotchianXyz(EntityPosition & destination, double notchian_x, double notchian_y, double notchian_z);
+    static void fromNotchianXyz(Chunk::Coord & destination, int notchian_x, int notchian_y, int notchian_z);
+    static void toNotchianXyz(const EntityPosition &source, double & destination_notchian_x, double & destination_notchian_y, double & destination_notchian_z);
+    static void fromNotchianYawPitch(EntityPosition & destination, float notchian_yaw, float notchian_pitch);
+    static void toNotchianYawPitch(const EntityPosition &source, float & destination_notchian_yaw, float & destination_notchian_pitch);
+
+    static const float c_pi;
+    static const float c_2pi;
+    static const float c_radians_per_degree;
+    static const float c_degrees_per_radian;
+    static float degreesToRadians(float degrees);
+    static float radiansToDegrees(float radians);
+    static float euclideanMod(float numerator, float denominator);
 
 private slots:
     void initialize();
@@ -102,7 +116,7 @@ private slots:
     void cleanUpAfterDisconnect();
     void processIncomingMessage(QSharedPointer<IncomingResponse>);
     void handleSocketError(QAbstractSocket::SocketError);
-    void timeToSendPosition();
+    void sendPosition();
 };
 
 
