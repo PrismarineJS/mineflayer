@@ -84,27 +84,15 @@ void MainWindow::loadControls()
 
 bool MainWindow::configure()
 {
-    // Show the configuration dialog and initialise the system
-    // You can skip this and use root.restoreConfig() to load configuration
-    // settings if you were sure there are valid ones saved in ogre.cfg
-    if(m_root->showConfigDialog())
-    {
-        // If returned true, user clicked OK so initialise
-        // Here we choose to let the system create a default rendering window by passing 'true'
-        m_window = m_root->initialise(true, "TutorialApplication Render Window");
-
-        return true;
+    if (! m_root->restoreConfig()) {
+        if (! m_root->showConfigDialog())
+            return false;
     }
-    else
-    {
+    m_window = m_root->initialise(true, "Mine Flayer");
+    if (! m_window)
         return false;
-    }
-}
 
-void MainWindow::chooseSceneManager()
-{
-    // Get the SceneManager, in this case a generic one
-    m_scene_manager = m_root->createSceneManager(Ogre::ST_GENERIC);
+    return true;
 }
 
 void MainWindow::createCamera()
@@ -213,11 +201,6 @@ void MainWindow::setupResources()
     }
 }
 
-void MainWindow::createResourceListener()
-{
-
-}
-
 void MainWindow::loadResources()
 {
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
@@ -245,15 +228,15 @@ bool MainWindow::setup()
     bool carryOn = configure();
     if (!carryOn) return false;
 
-    chooseSceneManager();
+    // Get the SceneManager, in this case a generic one
+    m_scene_manager = m_root->createSceneManager(Ogre::ST_GENERIC);
+
     createCamera();
     createViewports();
 
     // Set default mipmap level (NB some APIs ignore this)
     Ogre::TextureManager::getSingleton().setDefaultNumMipmaps(5);
 
-    // Create any resource listeners (for loading screens)
-    createResourceListener();
     // Load resources
     loadResources();
 
@@ -294,27 +277,8 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
         }
     }
 
-    //    //  move the player
-    //    bool forward = m_key_down.value(m_control_to_key.value(Forward));
-    //    bool backward = m_key_down.value(m_control_to_key.value(Back));
-    //    bool left = m_key_down.value(m_control_to_key.value(Left));
-    //    bool right = m_key_down.value(m_control_to_key.value(Right));
 
-    //    if (forward && ! backward) {
-    //        // move camera forward in direction it is facing
-    //        m_camera->moveForward(5.0f);
-    //    } else if (backward && ! forward) {
-    //        // move camera backward in direction it is facing
-    //        m_camera->moveBackward(5.0f);
-    //    }
-
-    //    if (left && ! right) {
-    //        // strafe camera left
-    //        m_camera->moveLeft(2.0f);
-    //    } else if (right && ! left) {
-    //        // strafe camera right
-    //        m_camera->moveRight(2.0f);
-    //    }
+    // compute next frame
 
     return true;
 }

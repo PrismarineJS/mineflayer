@@ -52,39 +52,37 @@ public:
 
 public:
     MainWindow();
-    virtual ~MainWindow();
+    ~MainWindow();
 
-    virtual void go();
+    void go();
 
 protected:
-    virtual bool setup();
-    virtual bool configure();
-    virtual void chooseSceneManager();
-    virtual void createCamera();
-    virtual void createFrameListener();
-    virtual void createScene();
-    virtual void destroyScene();
-    virtual void createViewports();
-    virtual void setupResources();
-    virtual void createResourceListener();
-    virtual void loadResources();
+    bool setup();
+    bool configure();
+    void createCamera();
+    void createFrameListener();
+    void createScene();
+    void destroyScene();
+    void createViewports();
+    void setupResources();
+    void loadResources();
 
     // Ogre::FrameListener
-    virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt);
+    bool frameRenderingQueued(const Ogre::FrameEvent& evt);
 
     // OIS::KeyListener
-    virtual bool keyPressed( const OIS::KeyEvent &arg );
-    virtual bool keyReleased( const OIS::KeyEvent &arg );
+    bool keyPressed( const OIS::KeyEvent &arg );
+    bool keyReleased( const OIS::KeyEvent &arg );
     // OIS::MouseListener
-    virtual bool mouseMoved( const OIS::MouseEvent &arg );
-    virtual bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
-    virtual bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
+    bool mouseMoved( const OIS::MouseEvent &arg );
+    bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
+    bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
 
     // Ogre::WindowEventListener
     //Adjust mouse clipping area
-    virtual void windowResized(Ogre::RenderWindow* rw);
+    void windowResized(Ogre::RenderWindow* rw);
     //Unattach OIS before window shutdown (very important under Linux)
-    virtual void windowClosed(Ogre::RenderWindow* rw);
+    void windowClosed(Ogre::RenderWindow* rw);
 
     Ogre::Root *m_root;
     Ogre::Camera* m_camera;
