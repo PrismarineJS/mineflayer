@@ -1,5 +1,5 @@
-#ifndef MINEFLAYERAPPLICATION_H
-#define MINEFLAYERAPPLICATION_H
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
 #include <OGRE/OgreCamera.h>
 #include <OGRE/OgreEntity.h>
@@ -26,7 +26,7 @@
 #include "Chunk.h"
 #include "Server.h"
 
-class MineflayerApplication :
+class MainWindow :
     public QObject,
     public Ogre::FrameListener,
     public Ogre::WindowEventListener,
@@ -51,8 +51,8 @@ public:
     };
 
 public:
-    MineflayerApplication();
-    virtual ~MineflayerApplication();
+    MainWindow();
+    virtual ~MainWindow();
 
     virtual void go();
 
@@ -136,4 +136,4 @@ private:
 
 };
 
-#endif // MINEFLAYERAPPLICATION_H
+#endif // MAINWINDOW_H

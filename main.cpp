@@ -1,13 +1,13 @@
 #include <QCoreApplication>
 
 #include "MetaTypes.h"
-#include "MineflayerApplication.h"
+#include "MainWindow.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
     MetaTypes::registerMetaTypes();
-    MineflayerApplication w;
+    MainWindow w;
     w.go();
     return 0;
 }

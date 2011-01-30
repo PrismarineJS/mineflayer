@@ -1,4 +1,4 @@
-#include "MineflayerApplication.h"
+#include "MainWindow.h"
 
 #include <QtGlobal>
 #include <QTimer>
@@ -9,11 +9,11 @@
 #include <QDebug>
 
 
-const int MineflayerApplication::c_fps = 60;
-const double MineflayerApplication::c_time_per_frame_msecs = 1.0 / (double)c_fps * 1000.0;
+const int MainWindow::c_fps = 60;
+const double MainWindow::c_time_per_frame_msecs = 1.0 / (double)c_fps * 1000.0;
 
 
-MineflayerApplication::MineflayerApplication() :
+MainWindow::MainWindow() :
     mRoot(0),
     mCamera(0),
     mSceneMgr(0),
@@ -32,7 +32,7 @@ MineflayerApplication::MineflayerApplication() :
     loadControls();
 }
 
-MineflayerApplication::~MineflayerApplication()
+MainWindow::~MainWindow()
 {
     if (mTrayMgr) delete mTrayMgr;
     if (mCameraMan) delete mCameraMan;
@@ -43,7 +43,7 @@ MineflayerApplication::~MineflayerApplication()
     delete mRoot;
 }
 
-void MineflayerApplication::createScene()
+void MainWindow::createScene()
 {
     Ogre::Entity* ogreHead = mSceneMgr->createEntity("Head", "ogrehead.mesh");
 
@@ -59,7 +59,7 @@ void MineflayerApplication::createScene()
 }
 
 
-void MineflayerApplication::loadControls()
+void MainWindow::loadControls()
 {
     QDir dir(QCoreApplication::applicationDirPath());
     QSettings settings(dir.absoluteFilePath("mineflayer.ini"), QSettings::IniFormat);
@@ -82,7 +82,7 @@ void MineflayerApplication::loadControls()
     }
 }
 
-bool MineflayerApplication::configure()
+bool MainWindow::configure()
 {
     // Show the configuration dialog and initialise the system
     // You can skip this and use root.restoreConfig() to load configuration
@@ -101,13 +101,13 @@ bool MineflayerApplication::configure()
     }
 }
 
-void MineflayerApplication::chooseSceneManager()
+void MainWindow::chooseSceneManager()
 {
     // Get the SceneManager, in this case a generic one
     mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
 }
 
-void MineflayerApplication::createCamera()
+void MainWindow::createCamera()
 {
     // Create the camera
     mCamera = mSceneMgr->createCamera("PlayerCam");
@@ -121,7 +121,7 @@ void MineflayerApplication::createCamera()
     mCameraMan = new OgreBites::SdkCameraMan(mCamera);   // create a default camera controller
 }
 
-void MineflayerApplication::createFrameListener()
+void MainWindow::createFrameListener()
 {
     Ogre::LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
     OIS::ParamList pl;
@@ -173,11 +173,11 @@ void MineflayerApplication::createFrameListener()
     mRoot->addFrameListener(this);
 }
 
-void MineflayerApplication::destroyScene()
+void MainWindow::destroyScene()
 {
 }
 
-void MineflayerApplication::createViewports()
+void MainWindow::createViewports()
 {
     // Create one viewport, entire window
     Ogre::Viewport* vp = mWindow->addViewport(mCamera);
@@ -188,7 +188,7 @@ void MineflayerApplication::createViewports()
         Ogre::Real(vp->getActualWidth()) / Ogre::Real(vp->getActualHeight()));
 }
 
-void MineflayerApplication::setupResources()
+void MainWindow::setupResources()
 {
     // Load resource paths from config file
     Ogre::ConfigFile cf;
@@ -213,17 +213,17 @@ void MineflayerApplication::setupResources()
     }
 }
 
-void MineflayerApplication::createResourceListener()
+void MainWindow::createResourceListener()
 {
 
 }
 
-void MineflayerApplication::loadResources()
+void MainWindow::loadResources()
 {
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 }
 
-void MineflayerApplication::go()
+void MainWindow::go()
 {
     mResourcesCfg = "resources.cfg";
     mPluginsCfg = "plugins.cfg";
@@ -236,7 +236,7 @@ void MineflayerApplication::go()
     destroyScene();
 }
 
-bool MineflayerApplication::setup()
+bool MainWindow::setup()
 {
     mRoot = new Ogre::Root(mPluginsCfg);
 
@@ -265,7 +265,7 @@ bool MineflayerApplication::setup()
     return true;
 };
 
-bool MineflayerApplication::frameRenderingQueued(const Ogre::FrameEvent& evt)
+bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
 {
     if(mWindow->isClosed())
         return false;
@@ -319,7 +319,7 @@ bool MineflayerApplication::frameRenderingQueued(const Ogre::FrameEvent& evt)
     return true;
 }
 
-bool MineflayerApplication::keyPressed( const OIS::KeyEvent &arg )
+bool MainWindow::keyPressed( const OIS::KeyEvent &arg )
 {
     if (mTrayMgr->isDialogVisible()) return true;   // don't process any more keys if dialog is up
 
@@ -413,27 +413,27 @@ bool MineflayerApplication::keyPressed( const OIS::KeyEvent &arg )
     return true;
 }
 
-bool MineflayerApplication::keyReleased( const OIS::KeyEvent &arg )
+bool MainWindow::keyReleased( const OIS::KeyEvent &arg )
 {
     mCameraMan->injectKeyUp(arg);
     return true;
 }
 
-bool MineflayerApplication::mouseMoved( const OIS::MouseEvent &arg )
+bool MainWindow::mouseMoved( const OIS::MouseEvent &arg )
 {
     if (mTrayMgr->injectMouseMove(arg)) return true;
     mCameraMan->injectMouseMove(arg);
     return true;
 }
 
-bool MineflayerApplication::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+bool MainWindow::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
     if (mTrayMgr->injectMouseDown(arg, id)) return true;
     mCameraMan->injectMouseDown(arg, id);
     return true;
 }
 
-bool MineflayerApplication::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+bool MainWindow::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
     if (mTrayMgr->injectMouseUp(arg, id)) return true;
     mCameraMan->injectMouseUp(arg, id);
@@ -441,7 +441,7 @@ bool MineflayerApplication::mouseReleased( const OIS::MouseEvent &arg, OIS::Mous
 }
 
 //Adjust mouse clipping area
-void MineflayerApplication::windowResized(Ogre::RenderWindow* rw)
+void MainWindow::windowResized(Ogre::RenderWindow* rw)
 {
     unsigned int width, height, depth;
     int left, top;
@@ -453,7 +453,7 @@ void MineflayerApplication::windowResized(Ogre::RenderWindow* rw)
 }
 
 //Unattach OIS before window shutdown (very important under Linux)
-void MineflayerApplication::windowClosed(Ogre::RenderWindow* rw)
+void MainWindow::windowClosed(Ogre::RenderWindow* rw)
 {
     //Only close for window that created OIS (the main window in these demos)
     if( rw == mWindow )
