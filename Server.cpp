@@ -143,8 +143,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             position.on_ground = message->on_ground;
             if (m_login_state == WaitingForPlayerPositionAndLook)
                 gotFirstPlayerPositionAndLookResponse(position);
-            else
-                emit playerPositionUpdated(position);
+            emit playerPositionUpdated(position);
             break;
         }
         case Message::MapChunk: {
@@ -155,19 +154,19 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             tmp.prepend(QByteArray("\0\0\0\0", 4));
             QByteArray decompressed = qUncompress(tmp);
 
-            Chunk::Int3D notchian_size;
+            Int3D notchian_size;
             notchian_size.x = message->size_x_minus_one + 1;
             notchian_size.y = message->size_y_minus_one + 1;
             notchian_size.z = message->size_z_minus_one + 1;
-            Chunk::Int3D rotated_size = fromNotchianXyz(notchian_size);
-            Chunk::Int3D positive_size;
+            Int3D rotated_size = fromNotchianXyz(notchian_size);
+            Int3D positive_size;
             positive_size.x = Ogre::Math::IAbs(rotated_size.x);
             positive_size.y = Ogre::Math::IAbs(rotated_size.y);
             positive_size.z = Ogre::Math::IAbs(rotated_size.z);
 
-            Chunk::Int3D notchian_pos(message->x, message->y, message->z);
-            Chunk::Int3D rotated_position = fromNotchianXyz(notchian_pos);
-            Chunk::Int3D position = rotated_position + (rotated_size - positive_size) / 2;
+            Int3D notchian_pos(message->x, message->y, message->z);
+            Int3D rotated_position = fromNotchianXyz(notchian_pos);
+            Int3D position = rotated_position + (rotated_size - positive_size) / 2;
 
             Chunk * chunk = new Chunk(position, positive_size);
 
@@ -177,7 +176,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             int sky_light_offest = volume * 2;
             int array_index = 0;
             int nibble_shifter = 0; // start with low nibble
-            Chunk::Int3D notchian_relative_pos;
+            Int3D notchian_relative_pos;
             // traversal order is x,z,y in notchian coordinates
             for (notchian_relative_pos.x = 0; notchian_relative_pos.x < notchian_size.x; notchian_relative_pos.x++) {
                 for (notchian_relative_pos.z = 0; notchian_relative_pos.z < notchian_size.z; notchian_relative_pos.z++) {
@@ -191,9 +190,9 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
                         array_index++;
                         nibble_shifter = 4 - nibble_shifter;
 
-                        Chunk::Int3D notchian_abs_pos = notchian_pos + notchian_relative_pos;
-                        Chunk::Int3D abs_pos = fromNotchianXyz(notchian_abs_pos);
-                        Chunk::Int3D relative_pos = abs_pos - position;
+                        Int3D notchian_abs_pos = notchian_pos + notchian_relative_pos;
+                        Int3D abs_pos = fromNotchianXyz(notchian_abs_pos);
+                        Int3D relative_pos = abs_pos - position;
                         // TODO: chunk->setBlock(relative_pos, block);
                     }
                 }
@@ -207,7 +206,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
                 // inventory
                 emit inventoryUpdated(message->items);
             } else {
-                // not inventory
+                // TODO: not inventory
             }
             break;
         }
@@ -233,9 +232,9 @@ void Server::fromNotchianXyz(EntityPosition &destination, double notchian_x, dou
     // up
     destination.z = notchian_y;
 }
-Chunk::Int3D Server::fromNotchianXyz(int notchian_x, int notchian_y, int notchian_z)
+Int3D Server::fromNotchianXyz(int notchian_x, int notchian_y, int notchian_z)
 {
-    Chunk::Int3D result;
+    Int3D result;
     // east
     result.x = notchian_z;
     // north
@@ -244,7 +243,7 @@ Chunk::Int3D Server::fromNotchianXyz(int notchian_x, int notchian_y, int notchia
     result.z = notchian_y;
     return result;
 }
-Chunk::Int3D Server::fromNotchianXyz(Chunk::Int3D notchian_xyz)
+Int3D Server::fromNotchianXyz(Int3D notchian_xyz)
 {
     return fromNotchianXyz(notchian_xyz.x, notchian_xyz.y, notchian_xyz.z);
 }

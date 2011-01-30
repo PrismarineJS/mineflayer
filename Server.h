@@ -96,8 +96,8 @@ private:
 
 
     static void fromNotchianXyz(EntityPosition & destination, double notchian_x, double notchian_y, double notchian_z);
-    static Chunk::Int3D fromNotchianXyz(int notchian_x, int notchian_y, int notchian_z);
-    static Chunk::Int3D fromNotchianXyz(Chunk::Int3D notchian_xyz);
+    static Int3D fromNotchianXyz(int notchian_x, int notchian_y, int notchian_z);
+    static Int3D fromNotchianXyz(Int3D notchian_xyz);
     static void toNotchianXyz(const EntityPosition &source, double & destination_notchian_x, double & destination_notchian_y, double & destination_notchian_z);
     static void fromNotchianYawPitch(EntityPosition & destination, float notchian_yaw, float notchian_pitch);
     static void toNotchianYawPitch(const EntityPosition &source, float & destination_notchian_yaw, float & destination_notchian_pitch);

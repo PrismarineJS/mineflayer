@@ -12,16 +12,14 @@ SOURCES += main.cpp \
     IncomingMessageParser.cpp \
     Chunk.cpp \
     MainWindow.cpp
-HEADERS += \
-    Server.h \
+HEADERS += Server.h \
     Messages.h \
     Chunk.h \
     IncomingMessageParser.h \
     MetaTypes.h \
-    MainWindow.h
-FORMS +=
+    MainWindow.h \
+    Int3D.h
+FORMS += 
 RESOURCES += mineflayer.qrc
-
-LIBS += \
-    -lOgreMain \
+LIBS += -lOgreMain \
     -lOIS

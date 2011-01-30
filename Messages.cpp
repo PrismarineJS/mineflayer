@@ -698,7 +698,7 @@ int MultiBlockChangeResponse::parse(QByteArray buffer)
         qint8 y;
         if ((index = parseValue(buffer, index, y)) == -1)
             return -1;
-        block_coords.replace(i, Chunk::Int3D((x_and_z >> 4) & 0xf, y, x_and_z & 0xf));
+        block_coords.replace(i, Int3D((x_and_z >> 4) & 0xf, y, x_and_z & 0xf));
     }
     new_block_types.clear();
     new_block_types.resize(block_count);
@@ -781,7 +781,7 @@ int ExplosionResponse::parse(QByteArray buffer)
         qint8 local_z;
         if ((index = parseValue(buffer, index, local_z)) == -1)
             return -1;
-        offsets_to_affected_blocks.replace(i, Chunk::Int3D(local_x, local_y, local_z));
+        offsets_to_affected_blocks.replace(i, Int3D(local_x, local_y, local_z));
     }
     return index;
 }
