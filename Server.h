@@ -12,8 +12,7 @@
 #include <QTimer>
 
 // use it to send messages and connect to it to hear it emit incoming messages.
-// this object runs in its own thread which it manages for you, but you must
-// never call a slot directly.
+// this object runs in its own thread which it manages for you.
 class Server : public QObject
 {
     Q_OBJECT

@@ -156,11 +156,11 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             QByteArray decompressed = qUncompress(tmp);
 
             // determine the chunk corner
-            Chunk::Coord position;
+            Chunk::Int3D position;
             position.x = message->x;
             position.y = message->z;
             position.z = message->y;
-            Chunk::Coord size;
+            Chunk::Int3D size;
             size.x = message->size_x_minus_one + 1;
             size.y = message->size_z_minus_one + 1;
             size.z = message->size_y_minus_one + 1;
@@ -168,7 +168,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             QSharedPointer<Chunk> chunk = QSharedPointer<Chunk>(new Chunk(position, size));
 
             int array_index = 0;
-            Chunk::Coord relative_pos;
+            Chunk::Int3D relative_pos;
             for (relative_pos.x = 0; relative_pos.x < size.x; relative_pos.x++) {
                 for (relative_pos.y = 0; relative_pos.y < size.y; relative_pos.y++) {
                     for (relative_pos.z = 0; relative_pos.z < size.z; relative_pos.z++) {

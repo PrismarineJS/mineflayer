@@ -3,18 +3,21 @@
 
 #include <QtGlobal>
 
-#include <OpenEXR/ImathVec.h>
-using namespace Imath;
-
-uint qHash(const Vec3<int> & coord);
-
 #include <QVector>
 #include <QSharedPointer>
 #include <QHash>
 
 class Chunk {
 public:
-    typedef Vec3<int> Coord;
+    struct Int3D {
+        int x;
+        int y;
+        int z;
+
+        Int3D() {}
+        Int3D(int x, int y, int z) : x(x), y(y), z(z) {}
+        void setValue(int _x, int _y, int _z) { x=_x; y=_y; z=_z; }
+    };
 
     struct Block {
         int type;
@@ -24,28 +27,30 @@ public:
     };
 
 public:
-    Chunk(const Coord & pos, const Coord & size);
+    Chunk(const Int3D & pos, const Int3D & size);
 
     // use to set or retrieve Block data. Call updateBlock when done.
-    QSharedPointer<Block> getBlock(const Coord & coord) const;
+    QSharedPointer<Block> getBlock(const Int3D & coord) const;
 
     // debug method to generate random blocks
     void randomize();
 
-    Chunk::Coord position() const { return m_pos; }
-    Chunk::Coord size() const { return m_size; }
+    Int3D position() const { return m_pos; }
+    Int3D size() const { return m_size; }
 
     static void initialize();
 
 private:
-    Coord m_pos;
-    Vec3<int> m_size;
+    Int3D m_pos;
+    Int3D m_size;
     QVector<QSharedPointer<Block> > m_blocks;
 
     static bool s_initialized;
 
 private:
-    int indexOf(const Coord & coord) const;
+    int indexOf(const Int3D & coord) const;
 };
+
+uint qHash(const Chunk::Int3D & coord);
 
 #endif // CHUNK_H

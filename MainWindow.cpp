@@ -8,32 +8,28 @@
 #include <QDir>
 #include <QDebug>
 
-
-const int MainWindow::c_fps = 60;
-const double MainWindow::c_time_per_frame_msecs = 1.0 / (double)c_fps * 1000.0;
-
-
 MainWindow::MainWindow() :
-    m_root(0),
-    m_camera(0),
-    m_scene_manager(0),
-    m_window(0),
+    m_root(NULL),
+    m_camera(NULL),
+    m_scene_manager(NULL),
+    m_window(NULL),
     m_resources_config(Ogre::StringUtil::BLANK),
     m_plugins_config(Ogre::StringUtil::BLANK),
-    m_camera_man(0),
+    m_camera_man(NULL),
     m_shut_down(false),
-    m_input_manager(0),
-    m_mouse(0),
-    m_keyboard(0)
+    m_input_manager(NULL),
+    m_mouse(NULL),
+    m_keyboard(NULL),
+    m_server(NULL)
 {
     loadControls();
 }
 
 MainWindow::~MainWindow()
 {
-    if (m_camera_man) delete m_camera_man;
+    delete m_camera_man;
 
-    //Remove ourself as a Window listener
+    // Remove ourself as a Window listener
     Ogre::WindowEventUtilities::removeWindowEventListener(m_window, this);
     windowClosed(m_window);
     delete m_root;
@@ -124,25 +120,11 @@ void MainWindow::createFrameListener()
     m_mouse->setEventCallback(this);
     m_keyboard->setEventCallback(this);
 
-    //Set initial mouse clipping size
+    // Set initial mouse clipping size
     windowResized(m_window);
 
-    //Register as a Window listener
+    // Register as a Window listener
     Ogre::WindowEventUtilities::addWindowEventListener(m_window, this);
-
-    // create a params panel for displaying sample details
-    Ogre::StringVector items;
-    items.push_back("cam.pX");
-    items.push_back("cam.pY");
-    items.push_back("cam.pZ");
-    items.push_back("");
-    items.push_back("cam.oW");
-    items.push_back("cam.oX");
-    items.push_back("cam.oY");
-    items.push_back("cam.oZ");
-    items.push_back("");
-    items.push_back("Filtering");
-    items.push_back("Poly Mode");
 
     m_root->addFrameListener(this);
 }
@@ -245,12 +227,13 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
     //Need to capture/update each device
     m_keyboard->capture();
     m_mouse->capture();
+    QCoreApplication::processEvents();
+
+    // compute next frame
 
 
     m_camera_man->frameRenderingQueued(evt);   // if dialog isn't up, then update the camera
 
-    // compute next frame
-    QCoreApplication::processEvents();
 
     return true;
 }
@@ -288,9 +271,9 @@ bool MainWindow::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID i
     return true;
 }
 
-//Adjust mouse clipping area
 void MainWindow::windowResized(Ogre::RenderWindow* rw)
 {
+    // Adjust mouse clipping area
     unsigned int width, height, depth;
     int left, top;
     rw->getMetrics(width, height, depth, left, top);
@@ -300,19 +283,20 @@ void MainWindow::windowResized(Ogre::RenderWindow* rw)
     ms.height = height;
 }
 
-//Unattach OIS before window shutdown (very important under Linux)
 void MainWindow::windowClosed(Ogre::RenderWindow* rw)
 {
-    //Only close for window that created OIS (the main window in these demos)
-    if( rw == m_window )
-    {
-        if( m_input_manager )
-        {
-            m_input_manager->destroyInputObject( m_mouse );
-            m_input_manager->destroyInputObject( m_keyboard );
+    // Unattach OIS before window shutdown (very important under Linux)
+    // Only close for window that created OIS (the main window)
+    if (rw == m_window && m_input_manager) {
+        m_input_manager->destroyInputObject(m_mouse);
+        m_input_manager->destroyInputObject(m_keyboard);
 
-            OIS::InputManager::destroyInputSystem(m_input_manager);
-            m_input_manager = 0;
-        }
+        OIS::InputManager::destroyInputSystem(m_input_manager);
+        m_input_manager = NULL;
     }
+}
+
+void MainWindow::updateChunk(QSharedPointer<Chunk> chunk)
+{
+
 }

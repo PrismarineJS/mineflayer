@@ -55,16 +55,6 @@ public:
     void go();
 
 protected:
-    bool setup();
-    bool configure();
-    void createCamera();
-    void createFrameListener();
-    void createScene();
-    void destroyScene();
-    void createViewports();
-    void setupResources();
-    void loadResources();
-
     // Ogre::FrameListener
     bool frameRenderingQueued(const Ogre::FrameEvent& evt);
 
@@ -82,6 +72,7 @@ protected:
     //Unattach OIS before window shutdown (very important under Linux)
     void windowClosed(Ogre::RenderWindow* rw);
 
+private:
     Ogre::Root *m_root;
     Ogre::Camera* m_camera;
     Ogre::SceneManager* m_scene_manager;
@@ -98,9 +89,6 @@ protected:
     OIS::Mouse* m_mouse;
     OIS::Keyboard* m_keyboard;
 
-
-private:
-
     struct Entity {
         Ogre::Vector3 pos;
         Ogre::Vector3 up;
@@ -111,7 +99,7 @@ private:
 
     Server * m_server;
 
-    QHash<Chunk::Coord, QSharedPointer<Chunk> > m_chunks;
+    QHash<Chunk::Int3D, QSharedPointer<Chunk> > m_chunks;
     QHash<qint32, QSharedPointer<Entity> > m_entities;
     Entity * m_player;
 
@@ -119,13 +107,21 @@ private:
     QHash<OIS::KeyCode, Control> m_key_to_control;
     QHash<Control, OIS::KeyCode> m_control_to_key;
 
-    static const int c_fps;
-    static const double c_time_per_frame_msecs;
-    double m_target_time_msecs;
-
-
 private:
     void loadControls();
+
+    bool setup();
+    bool configure();
+    void createCamera();
+    void createFrameListener();
+    void createScene();
+    void destroyScene();
+    void createViewports();
+    void setupResources();
+    void loadResources();
+
+private slots:
+    void updateChunk(QSharedPointer<Chunk> chunk);
 
 };
 

@@ -11,12 +11,12 @@ using namespace std;
 
 bool Chunk::s_initialized = false;
 
-uint qHash(const Chunk::Coord & coord)
+uint qHash(const Chunk::Int3D & coord)
 {
     return (coord.x * 8191 + coord.z) * 131071 + coord.y;
 }
 
-Chunk::Chunk(const Coord &pos, const Coord &size) :
+Chunk::Chunk(const Int3D &pos, const Int3D &size) :
     m_pos(pos),
     m_size(size),
     m_blocks(m_size.x * m_size.y * m_size.z)
@@ -101,12 +101,12 @@ void Chunk::initialize()
     }
 }
 
-int Chunk::indexOf(const Coord & coord) const
+int Chunk::indexOf(const Int3D & coord) const
 {
     return coord.y + (coord.z * m_size.y) + (coord.x * m_size.y * m_size.z);
 }
 
-QSharedPointer<Chunk::Block> Chunk::getBlock(const Coord & coord) const
+QSharedPointer<Chunk::Block> Chunk::getBlock(const Int3D & coord) const
 {
     return m_blocks.at(indexOf(coord));
 }
@@ -118,7 +118,7 @@ void Chunk::randomize()
     m_blocks.resize(16 * 16 * 128);
 
     // for each block, assign random values
-    Coord coord;
+    Int3D coord;
     for (coord.z = 0; coord.z < m_size.z; coord.z++) {
         for (coord.y = 0; coord.y < m_size.y; coord.y++) {
             for (coord.x = 0; coord.x < m_size.x; coord.x++) {
