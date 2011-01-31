@@ -14,7 +14,6 @@ MainWindow::MainWindow() :
     m_scene_manager(NULL),
     m_window(NULL),
     m_resources_config(Ogre::StringUtil::BLANK),
-    m_plugins_config(Ogre::StringUtil::BLANK),
     m_camera_man(NULL),
     m_shut_down(false),
     m_input_manager(NULL),
@@ -34,22 +33,6 @@ MainWindow::~MainWindow()
     windowClosed(m_window);
     delete m_root;
 }
-
-void MainWindow::createScene()
-{
-    Ogre::Entity* ogreHead = m_scene_manager->createEntity("Head", "ogrehead.mesh");
-
-    Ogre::SceneNode* headNode = m_scene_manager->getRootSceneNode()->createChildSceneNode();
-    headNode->attachObject(ogreHead);
-
-    // Set ambient light
-    m_scene_manager->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
-
-    // Create a light
-    Ogre::Light* l = m_scene_manager->createLight("MainLight");
-    l->setPosition(20,80,50);
-}
-
 
 void MainWindow::loadControls()
 {
@@ -129,10 +112,6 @@ void MainWindow::createFrameListener()
     m_root->addFrameListener(this);
 }
 
-void MainWindow::destroyScene()
-{
-}
-
 void MainWindow::createViewports()
 {
     // Create one viewport, entire window
@@ -146,50 +125,87 @@ void MainWindow::createViewports()
 
 void MainWindow::setupResources()
 {
-    // Load resource paths from config file
-    Ogre::ConfigFile cf;
-    cf.load(m_resources_config);
-
-    // Go through all sections & settings in the file
-    Ogre::ConfigFile::SectionIterator seci = cf.getSectionIterator();
-
-    Ogre::String secName, typeName, archName;
-    while (seci.hasMoreElements())
-    {
-        secName = seci.peekNextKey();
-        Ogre::ConfigFile::SettingsMultiMap *settings = seci.getNext();
-        Ogre::ConfigFile::SettingsMultiMap::iterator i;
-        for (i = settings->begin(); i != settings->end(); ++i)
-        {
-            typeName = i->first;
-            archName = i->second;
-            Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-                archName, typeName, secName);
-        }
-    }
+    Ogre::ResourceGroupManager * mgr = Ogre::ResourceGroupManager::getSingletonPtr();
+    mgr->addResourceLocation("media", "FileSystem", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, true);
 }
 
 void MainWindow::loadResources()
 {
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+
+
+    {
+        // grab all the textures from resources
+        //QImage terrain(":/textures/terrain.png");
+        //terrain.convertToFormat(QImage::Format_ARGB32_Premultiplied);
+
+        QFile texture_index_file(":/textures/textures.txt");
+        texture_index_file.open(QFile::ReadOnly);
+        QTextStream stream(&texture_index_file);
+        while (! stream.atEnd()) {
+            QString line = stream.readLine().trimmed();
+            if (line.isEmpty() || line.startsWith("#"))
+                continue;
+            QStringList parts = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+            Q_ASSERT(parts.size() == 5);
+            QString name = parts.at(0);
+            int x = parts.at(1).toInt();
+            int y = parts.at(2).toInt();
+            int w = parts.at(3).toInt();
+            int h = parts.at(4).toInt();
+            //QImage image = terrain.copy(x, y, w, h).rgbSwapped();
+            //Texture * texture = new Texture(image);
+            //s_textures.insert(name, texture);
+        }
+        texture_index_file.close();
+    }
+
+    {
+        // grab all the solid block data from resources
+        QFile blocks_file(":/textures/blocks.txt");
+        blocks_file.open(QFile::ReadOnly);
+        QTextStream stream(&blocks_file);
+        while(! stream.atEnd()) {
+            QString line = stream.readLine().trimmed();
+            if (line.isEmpty() || line.startsWith("#"))
+                continue;
+            QStringList parts = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+            Q_ASSERT(parts.size() == 8);
+            int id = parts.at(0).toInt();
+            QString name = parts.at(1);
+            QString top = parts.at(2);
+            QString bottom = parts.at(3);
+            QString front = parts.at(4);
+            QString back = parts.at(5);
+            QString left = parts.at(6);
+            QString right = parts.at(7);
+
+//            Mesh * textured_cube = Mesh::createUnitCube(Constants::white,
+//                s_textures.value(top),
+//                s_textures.value(bottom),
+//                s_textures.value(front),
+//                s_textures.value(back),
+//                s_textures.value(left),
+//                s_textures.value(right));
+//            s_meshes.replace(id, textured_cube);
+        }
+        blocks_file.close();
+    }
 }
 
 void MainWindow::go()
 {
     m_resources_config = "resources.cfg";
-    m_plugins_config = "plugins.cfg";
 
     if (!setup())
         return;
 
     m_root->startRendering();
-
-    destroyScene();
 }
 
 bool MainWindow::setup()
 {
-    m_root = new Ogre::Root(m_plugins_config);
+    m_root = new Ogre::Root("resources/plugins.cfg");
 
     setupResources();
 
@@ -208,8 +224,8 @@ bool MainWindow::setup()
     // Load resources
     loadResources();
 
-    // Create the scene
-    createScene();
+    // create the scene
+    m_scene_manager->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
 
     createFrameListener();
 

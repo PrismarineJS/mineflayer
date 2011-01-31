@@ -38,14 +38,10 @@ public:
     Int3D position() const { return m_pos; }
     Int3D size() const { return m_size; }
 
-    static void initialize();
-
 private:
     Int3D m_pos;
     Int3D m_size;
     QVector<QSharedPointer<Block> > m_blocks;
-
-    static bool s_initialized;
 
 private:
     int indexOf(const Int3D & coord) const;

@@ -78,7 +78,6 @@ private:
     Ogre::SceneManager* m_scene_manager;
     Ogre::RenderWindow* m_window;
     Ogre::String m_resources_config;
-    Ogre::String m_plugins_config;
 
     // OgreBites
     OgreBites::SdkCameraMan* m_camera_man;       // basic camera controller
@@ -114,8 +113,6 @@ private:
     bool configure();
     void createCamera();
     void createFrameListener();
-    void createScene();
-    void destroyScene();
     void createViewports();
     void setupResources();
     void loadResources();

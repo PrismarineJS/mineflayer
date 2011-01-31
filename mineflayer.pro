@@ -19,7 +19,6 @@ HEADERS += \
     IncomingMessageParser.h \
     MetaTypes.h \
     MainWindow.h
-FORMS +=
 RESOURCES += mineflayer.qrc
 
 LIBS += \
