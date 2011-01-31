@@ -53,10 +53,6 @@ public:
     EntityPosition player_position;
 
 signals:
-    // use this signal to listen for incoming messages
-    void messageReceived(QSharedPointer<IncomingResponse> message);
-
-signals:
     void loginStatusUpdated(LoginStatus status);
     void socketDisconnected();
 
