@@ -9,7 +9,10 @@ Current features:
 Planned features:
  * bot that builds stuff
 
-
+Installing Ogre 1.7 in Ubunut:
+    sudo apt-add-repository ppa:ogre-team/ogre
+    sudo aptitude update 
+    sudo aptitude install libogre-dev 
 
 TODO include somewhere:
     int tick_ms = 200;
