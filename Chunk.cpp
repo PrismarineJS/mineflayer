@@ -2,7 +2,7 @@
 
 #include <cstdlib>
 
-uint qHash(const Chunk::Int3D & coord)
+uint qHash(const Int3D & coord)
 {
     return (coord.x * 8191 + coord.z) * 131071 + coord.y;
 }

@@ -810,7 +810,7 @@ class MultiBlockChangeResponse : public IncomingResponse {
 public:
     qint32 chunk_x;
     qint32 chunk_z;
-    QVector<Chunk::Int3D> block_coords;
+    QVector<Int3D> block_coords;
     QVector<ItemType> new_block_types;
     QVector<qint8> new_block_metadatas;
     MultiBlockChangeResponse() : IncomingResponse(MultiBlockChange) {}
@@ -852,7 +852,7 @@ public:
     double y;
     double z;
     float unknown;
-    QVector<Chunk::Int3D> offsets_to_affected_blocks;
+    QVector<Int3D> offsets_to_affected_blocks;
     ExplosionResponse() : IncomingResponse(Explosion) {}
     virtual int parse(QByteArray buffer);
 };
@@ -897,7 +897,7 @@ public:
 class WindowItemsResponse : public IncomingResponse {
 public:
     qint8 window_id;
-    QList<Item> items;
+    QVector<Item> items;
     WindowItemsResponse() : IncomingResponse(WindowItems) {}
     virtual int parse(QByteArray buffer);
 };

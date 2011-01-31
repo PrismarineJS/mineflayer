@@ -53,13 +53,12 @@ public:
     EntityPosition player_position;
 
 signals:
-    // use this signal to listen for incoming messages
-    void messageReceived(QSharedPointer<IncomingResponse> message);
-
-signals:
     void loginStatusUpdated(LoginStatus status);
     void socketDisconnected();
+
     void mapChunkUpdated(QSharedPointer<Chunk> chunk);
+    void playerPositionUpdated(EntityPosition position);
+    void inventoryUpdated(QVector<Message::Item> inventory);
 
 public slots:
     // use this to actually connect to the server
@@ -82,20 +81,19 @@ private:
     IncomingMessageParser * m_parser;
     QTimer * m_position_update_timer;
 
-
-
     LoginStatus m_login_state;
 
     QSharedPointer<IncomingResponse> m_connection_result;
 
 private:
     void changeLoginState(LoginStatus state);
-    void gotFirstPlayerPositionAndLookResponse();
+    void gotFirstPlayerPositionAndLookResponse(EntityPosition position);
     void sendMessage(QSharedPointer<OutgoingRequest> message);
 
 
     static void fromNotchianXyz(EntityPosition & destination, double notchian_x, double notchian_y, double notchian_z);
-    static void fromNotchianXyz(Chunk::Int3D & destination, int notchian_x, int notchian_y, int notchian_z);
+    static Int3D fromNotchianXyz(int notchian_x, int notchian_y, int notchian_z);
+    static Int3D fromNotchianXyz(Int3D notchian_xyz);
     static void toNotchianXyz(const EntityPosition &source, double & destination_notchian_x, double & destination_notchian_y, double & destination_notchian_z);
     static void fromNotchianYawPitch(EntityPosition & destination, float notchian_yaw, float notchian_pitch);
     static void toNotchianYawPitch(const EntityPosition &source, float & destination_notchian_yaw, float & destination_notchian_pitch);

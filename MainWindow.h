@@ -98,7 +98,7 @@ private:
 
     Server * m_server;
 
-    QHash<Chunk::Int3D, QSharedPointer<Chunk> > m_chunks;
+    QHash<Int3D, QSharedPointer<Chunk> > m_chunks;
     QHash<qint32, QSharedPointer<Entity> > m_entities;
     Entity * m_player;
 
