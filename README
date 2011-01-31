@@ -11,8 +11,8 @@ Planned features:
 
 Installing Ogre 1.7 in Ubunut:
     sudo apt-add-repository ppa:ogre-team/ogre
-    sudo aptitude update 
-    sudo aptitude install libogre-dev 
+    sudo apt-get update 
+    sudo apt-get install libogre-dev 
 
 TODO include somewhere:
     int tick_ms = 200;
