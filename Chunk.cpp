@@ -27,6 +27,9 @@ Chunk::Chunk(const Int3D &pos, const Int3D &size) :
 
 int Chunk::indexOf(const Int3D & coord) const
 {
+    Q_ASSERT(0 <= coord.x && coord.x < m_size.x &&
+             0 <= coord.y && coord.y < m_size.y &&
+             0 <= coord.z && coord.z < m_size.z);
     return coord.y + (coord.z * m_size.y) + (coord.x * m_size.y * m_size.z);
 }
 

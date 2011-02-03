@@ -57,6 +57,7 @@ signals:
     void socketDisconnected();
 
     void mapChunkUpdated(QSharedPointer<Chunk> chunk);
+    void unloadChunk(Int3D coord);
     void playerPositionUpdated(EntityPosition position);
     void inventoryUpdated(QVector<Message::Item> inventory);
 
@@ -105,6 +106,7 @@ private:
     static float degreesToRadians(float degrees);
     static float radiansToDegrees(float radians);
     static float euclideanMod(float numerator, float denominator);
+    static int sign(int value);
 
 private slots:
     void initialize();

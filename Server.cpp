@@ -120,7 +120,6 @@ void Server::terminate()
 
 void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMessage)
 {
-    // possibly handle the message (only for the initial setup)
     switch (incomingMessage.data()->messageType) {
         case Message::Handshake: {
             HandshakeResponse * message = (HandshakeResponse *)incomingMessage.data();
@@ -145,14 +144,19 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             emit playerPositionUpdated(position);
             break;
         }
+        case Message::PreChunk: {
+            PreChunkResponse * message = (PreChunkResponse *) incomingMessage.data();
+            if (message->mode == PreChunkResponse::Unload) {
+                emit unloadChunk(fromNotchianXyz(message->x, 0, message->z));
+            } else {
+                // don't care about Load Chunk messages
+            }
+            break;
+        }
         case Message::MapChunk: {
             MapChunkResponse * message = (MapChunkResponse *) incomingMessage.data();
 
-            QByteArray tmp = message->compressed_data;
-            // prepend a guess at the final size... or just 0.
-            tmp.prepend(QByteArray("\0\0\0\0", 4));
-            QByteArray decompressed = qUncompress(tmp);
-
+            // determin the size of the chunk
             Int3D notchian_size;
             notchian_size.x = message->size_x_minus_one + 1;
             notchian_size.y = message->size_y_minus_one + 1;
@@ -162,14 +166,30 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             positive_size.x = Ogre::Math::IAbs(rotated_size.x);
             positive_size.y = Ogre::Math::IAbs(rotated_size.y);
             positive_size.z = Ogre::Math::IAbs(rotated_size.z);
+            int volume = positive_size.x * positive_size.y * positive_size.z;
 
+            // determin the position of the chunk
+            Int3D rotated_size_minus_positive_size = rotated_size - positive_size;
+            // off by one corrector needs to subtract 1 from any axis that got negated
+            Int3D off_by_one_corrector = rotated_size_minus_positive_size;
+            off_by_one_corrector.x = sign(off_by_one_corrector.x);
+            off_by_one_corrector.y = sign(off_by_one_corrector.y);
+            off_by_one_corrector.z = sign(off_by_one_corrector.z);
             Int3D notchian_pos(message->x, message->y, message->z);
             Int3D rotated_position = fromNotchianXyz(notchian_pos);
-            Int3D position = rotated_position + (rotated_size - positive_size) / 2;
+            Int3D position = rotated_position + rotated_size_minus_positive_size / 2;
 
+            // decompress the data
+            QByteArray uncrompressable_data = message->compressed_data;
+            // prepend a guess of the final size. we know the final size is volume * 2.5;
+            qint32 decompressed_size = volume * 5 / 2;
+            QByteArray decompressed_size_array;
+            QDataStream(&decompressed_size_array, QIODevice::WriteOnly) << decompressed_size;
+            uncrompressable_data.prepend(decompressed_size_array);
+            QByteArray decompressed = qUncompress(uncrompressable_data);
+
+            // parse and store the data
             Chunk * chunk = new Chunk(position, positive_size);
-
-            int volume = positive_size.x * positive_size.y * positive_size.z;
             int metadata_offset = volume;
             int light_offset = volume * 3 / 2;
             int sky_light_offest = volume * 2;
@@ -180,6 +200,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             for (notchian_relative_pos.x = 0; notchian_relative_pos.x < notchian_size.x; notchian_relative_pos.x++) {
                 for (notchian_relative_pos.z = 0; notchian_relative_pos.z < notchian_size.z; notchian_relative_pos.z++) {
                     for (notchian_relative_pos.y = 0; notchian_relative_pos.y < notchian_size.y; notchian_relative_pos.y++) {
+                        // grab all the fields for each block at once even though they're strewn accross the data structure.
                         Chunk::Block block;
                         block.type = decompressed.at(array_index);
                         block.metadata  = (decompressed.at( metadata_offset + array_index / 2) >> nibble_shifter) & 0xf;
@@ -187,11 +208,11 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
                         block.sky_light = (decompressed.at(sky_light_offest + array_index / 2) >> nibble_shifter) & 0xf;
 
                         array_index++;
-                        nibble_shifter = 4 - nibble_shifter;
+                        nibble_shifter = 4 - nibble_shifter; // toggle between 0 and 4.
 
-                        Int3D notchian_abs_pos = notchian_pos + notchian_relative_pos;
-                        Int3D abs_pos = fromNotchianXyz(notchian_abs_pos);
-                        Int3D relative_pos = abs_pos - position;
+                        Int3D notchian_absolute_pos = notchian_pos + notchian_relative_pos;
+                        Int3D absolute_pos = fromNotchianXyz(notchian_absolute_pos) + off_by_one_corrector;
+                        Int3D relative_pos = absolute_pos - position;
                         chunk->setBlock(relative_pos, block);
                     }
                 }
@@ -206,6 +227,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
                 emit inventoryUpdated(message->items);
             } else {
                 // TODO: not inventory
+                qDebug() << "why'd we get a WindowItems?";
             }
             break;
         }
@@ -216,7 +238,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             break;
         }
         default: {
-            // qDebug() << "ignoring message type: 0x" << QString::number(incomingMessage.data()->messageType, 16).toStdString().c_str();
+            qDebug() << "ignoring message type: 0x" << QString::number(incomingMessage.data()->messageType, 16).toStdString().c_str();
             break;
         }
     }
@@ -294,6 +316,11 @@ float Server::euclideanMod(float numerator, float denominator)
     if (result < 0)
         result += denominator;
     return result;
+}
+
+int Server::sign(int value)
+{
+    return value < 0 ? -1 : value == 0 ? 0 : 1;
 }
 
 void Server::gotFirstPlayerPositionAndLookResponse(EntityPosition position)
