@@ -17,6 +17,37 @@ const Int3D MainWindow::c_side_offset[] = {
     Int3D(1, 0, 0),
 };
 
+const Ogre::Vector3 MainWindow::c_side_coord[6][2][3] = {
+    {
+        {Ogre::Vector3(0, 0, 1), Ogre::Vector3(0, 0, 0), Ogre::Vector3(1, 0, 1)},
+        {Ogre::Vector3(1, 0, 1), Ogre::Vector3(0, 0, 0), Ogre::Vector3(1, 0, 0)},
+    },
+    {
+        {Ogre::Vector3(1, 1, 1), Ogre::Vector3(1, 1, 0), Ogre::Vector3(0, 1, 1)},
+        {Ogre::Vector3(0, 1, 1), Ogre::Vector3(1, 1, 0), Ogre::Vector3(0, 1, 0)},
+    },
+    {
+        {Ogre::Vector3(0, 0, 0), Ogre::Vector3(0, 1, 0), Ogre::Vector3(1, 0, 0)},
+        {Ogre::Vector3(1, 0, 0), Ogre::Vector3(0, 1, 0), Ogre::Vector3(1, 1, 0)},
+    },
+    {
+        {Ogre::Vector3(0, 1, 1), Ogre::Vector3(0, 0, 1), Ogre::Vector3(1, 1, 1)},
+        {Ogre::Vector3(1, 1, 1), Ogre::Vector3(0, 0, 1), Ogre::Vector3(1, 0, 1)},
+    },
+    {
+        {Ogre::Vector3(0, 1, 1), Ogre::Vector3(0, 1, 0), Ogre::Vector3(0, 0, 1)},
+        {Ogre::Vector3(0, 0, 1), Ogre::Vector3(0, 1, 0), Ogre::Vector3(0, 0, 0)},
+    },
+    {
+        {Ogre::Vector3(1, 0, 1), Ogre::Vector3(1, 0, 0), Ogre::Vector3(1, 1, 1)},
+        {Ogre::Vector3(1, 1, 1), Ogre::Vector3(1, 0, 0), Ogre::Vector3(1, 1, 0)},
+    },
+
+};
+const Ogre::Vector2 MainWindow::c_tex_coord[2][3] = {
+    {Ogre::Vector2(0, 0), Ogre::Vector2(0, 1), Ogre::Vector2(1, 0)},
+    {Ogre::Vector2(1, 0), Ogre::Vector2(0, 1), Ogre::Vector2(1, 1)},
+};
 const Int3D MainWindow::c_chunk_size(16, 16, 128);
 
 MainWindow::MainWindow() :
@@ -103,8 +134,10 @@ void MainWindow::createCamera()
     // Look back along -Z
     m_camera->lookAt(Ogre::Vector3(1,1,-0.1));
     m_camera->setNearClipDistance(0.1);
+    m_camera->setFixedYawAxis(false);
 
     m_camera_man = new OgreBites::SdkCameraMan(m_camera);   // create a default camera controller
+    m_camera_man->setTopSpeed(10);
 }
 
 void MainWindow::createFrameListener()
@@ -169,6 +202,7 @@ void MainWindow::loadResources()
     Ogre::TextureUnitState* lTextureUnit = lFirstPass->createTextureUnitState();
     lTextureUnit->setTextureName("terrain.png", Ogre::TEX_TYPE_2D);
     lTextureUnit->setTextureCoordSet(0);
+    lTextureUnit->setTextureFiltering(Ogre::TFO_NONE);
 
     {
         // grab all the textures from resources
@@ -391,29 +425,15 @@ void MainWindow::generateChunkMesh(QSharedPointer<Chunk> chunk)
                     Int3D abs_block_loc = chunk.data()->position() + offset;
                     QString texture_name = side_textures.at(i);
                     BlockTextureCoord btc = m_terrain_tex_coords.value(texture_name);
-                    switch (i) {
-                    case 0: // Int3D(0, -1, 0),
-                        break;
-                    case 1: // Int3D(0, 1, 0),
-                        break;
-                    case 2: // Int3D(0, 0, -1),
-                        break;
-                    case 3: // Int3D(0, 0, 1),
-                        break;
-                    case 4: // Int3D(-1, 0, 0),
-                        break;
-                    case 5: // Int3D(1, 0, 0),
-                        obj->position(abs_block_loc.x+1, abs_block_loc.y+0, abs_block_loc.z+1);
-                        obj->textureCoord(btc.x / 256.0f, btc.y / 256.0f);
 
-                        obj->position(abs_block_loc.x+1, abs_block_loc.y+0, abs_block_loc.z+0);
-                        obj->textureCoord(btc.x / 256.0f, (btc.y + btc.h) / 256.0f);
-
-                        obj->position(abs_block_loc.x+1, abs_block_loc.y+1, abs_block_loc.z+1);
-                        obj->textureCoord((btc.x+btc.w) / 256.0f, btc.y / 256.0f);
-                        break;
+                    for (int triangle_index = 0; triangle_index < 2; triangle_index++) {
+                        for (int point_index = 0; point_index < 3; point_index++) {
+                            Ogre::Vector3 side_coord = c_side_coord[i][triangle_index][point_index];
+                            Ogre::Vector2 tex_coord = c_tex_coord[triangle_index][point_index];
+                            obj->position(abs_block_loc.x+side_coord.x, abs_block_loc.y+side_coord.y, abs_block_loc.z+side_coord.z);
+                            obj->textureCoord((btc.x+tex_coord.x*btc.w) / 256.f, (btc.y+tex_coord.y*btc.h) / 256.0f);
+                        }
                     }
-
                 }
             }
         }

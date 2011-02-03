@@ -75,6 +75,8 @@ protected:
 private:
     static const Int3D c_side_offset[];
     static const Int3D c_chunk_size;
+    static const Ogre::Vector3 c_side_coord[6][2][3];
+    static const Ogre::Vector2 c_tex_coord[2][3];
 
     Ogre::Root *m_root;
     Ogre::Camera* m_camera;
