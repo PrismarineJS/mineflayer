@@ -22,6 +22,13 @@ MainWindow::MainWindow() :
     m_server(NULL)
 {
     loadControls();
+
+    QUrl connection_settings;
+    connection_settings.setHost("localhost");
+    connection_settings.setPort(25565);
+    connection_settings.setUserName("superbot");
+    m_server = new Server(connection_settings);
+    m_server->socketConnect();
 }
 
 MainWindow::~MainWindow()
@@ -86,6 +93,7 @@ void MainWindow::createCamera()
 
 void MainWindow::createFrameListener()
 {
+    return; // TODO: stop borking my keyboard!
     Ogre::LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
     OIS::ParamList pl;
     size_t windowHnd = 0;

@@ -358,6 +358,7 @@ public:
     BlockFaceDirection block_face;
     PlayerDiggingRequest(DiggingType digging_type, qint32 x, qint8 y, qint32 z, BlockFaceDirection block_face) : OutgoingRequest(PlayerDigging),
         digging_type(digging_type), x(x), y(y), z(z), block_face(block_face) {}
+protected:
     virtual void writeMessageBody(QDataStream &stream);
 };
 

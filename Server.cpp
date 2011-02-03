@@ -75,6 +75,7 @@ void Server::socketDisconnect()
 
 void Server::sendMessage(QSharedPointer<OutgoingRequest> msg)
 {
+    qDebug() << "sending message 0x" << QString::number(msg.data()->messageType, 16).toStdString().c_str();
     if (msg.data()->messageType == Message::DummyDisconnect) {
         socketDisconnect();
         return;
@@ -170,7 +171,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
 
             Chunk * chunk = new Chunk(position, positive_size);
 
-            int volume = rotated_size.x * rotated_size.y * rotated_size.z;
+            int volume = positive_size.x * positive_size.y * positive_size.z;
             int metadata_offset = volume;
             int light_offset = volume * 3 / 2;
             int sky_light_offest = volume * 2;

@@ -51,8 +51,7 @@ void PlayerPositionAndLookRequest::writeMessageBody(QDataStream &stream)
     stream << z;
     stream << yaw;
     stream << pitch;
-    stream << on_ground;
-
+    stream << (qint8)on_ground;
 }
 
 void PlayerDiggingRequest::writeMessageBody(QDataStream &stream)
