@@ -256,7 +256,7 @@ bool MainWindow::setup()
 {
     // suppress debug output on stdout
     Ogre::LogManager * logManager = new Ogre::LogManager;
-    logManager->createLog("DefaultLog", true, false, false);
+    logManager->createLog("ogre.log", true, false, false);
 
     m_root = new Ogre::Root("resources/plugins.cfg");
 
