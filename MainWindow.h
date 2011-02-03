@@ -117,6 +117,8 @@ private:
     void setupResources();
     void loadResources();
 
+    void createUnitCubeMesh();
+
 private slots:
     void updateChunk(QSharedPointer<Chunk> chunk);
 
