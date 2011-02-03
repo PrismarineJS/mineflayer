@@ -8,6 +8,17 @@
 #include <QDir>
 #include <QDebug>
 
+const Int3D MainWindow::c_side_offset[] = {
+    Int3D(1, 0, 0),
+    Int3D(-1, 0, 0),
+    Int3D(0, 1, 0),
+    Int3D(0, -1, 0),
+    Int3D(0, 0, 1),
+    Int3D(0, 0, -1),
+};
+
+const Int3D MainWindow::c_chunk_size(16, 16, 128);
+
 MainWindow::MainWindow() :
     m_root(NULL),
     m_camera(NULL),
@@ -28,6 +39,11 @@ MainWindow::MainWindow() :
     connection_settings.setPort(25565);
     connection_settings.setUserName("superbot");
     m_server = new Server(connection_settings);
+    bool success;
+    success = connect(m_server, SIGNAL(mapChunkUpdated(QSharedPointer<Chunk>)), this, SLOT(updateChunk(QSharedPointer<Chunk>)));
+    Q_ASSERT(success);
+    success = connect(m_server, SIGNAL(playerPositionUpdated(Server::EntityPosition)), this, SLOT(movePlayerPosition(Server::EntityPosition)));
+    Q_ASSERT(success);
     m_server->socketConnect();
 }
 
@@ -83,17 +99,16 @@ void MainWindow::createCamera()
     m_camera = m_scene_manager->createCamera("PlayerCam");
 
     // Position it at 500 in Z direction
-    m_camera->setPosition(Ogre::Vector3(0,0,80));
+    m_camera->setPosition(Ogre::Vector3(0,0,0));
     // Look back along -Z
-    m_camera->lookAt(Ogre::Vector3(0,0,-300));
-    m_camera->setNearClipDistance(5);
+    m_camera->lookAt(Ogre::Vector3(1,1,-0.1));
+    m_camera->setNearClipDistance(0.1);
 
     m_camera_man = new OgreBites::SdkCameraMan(m_camera);   // create a default camera controller
 }
 
 void MainWindow::createFrameListener()
 {
-    return; // TODO: stop borking my keyboard!
     Ogre::LogManager::getSingletonPtr()->logMessage("*** Initializing OIS ***");
     OIS::ParamList pl;
     size_t windowHnd = 0;
@@ -102,6 +117,10 @@ void MainWindow::createFrameListener()
     m_window->getCustomAttribute("WINDOW", &windowHnd);
     windowHndStr << windowHnd;
     pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
+#ifdef OIS_LINUX_PLATFORM
+   // pl.insert(std::make_pair(std::string("x11_mouse_grab"), std::string("false")));
+    //pl.insert(std::make_pair(std::string("x11_keyboard_grab"), std::string("false")));
+#endif
 
     m_input_manager = OIS::InputManager::createInputSystem( pl );
 
@@ -134,15 +153,26 @@ void MainWindow::createViewports()
 void MainWindow::setupResources()
 {
     Ogre::ResourceGroupManager * mgr = Ogre::ResourceGroupManager::getSingletonPtr();
-    mgr->addResourceLocation("media", "FileSystem", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, true);
+    mgr->addResourceLocation("resources", "FileSystem", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, true);
 }
 
 void MainWindow::loadResources()
 {
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
-    createUnitCubeMesh();
+    // create the terrain material
+    //Ogre::ResourceGroupManager::getSingleton().createResourceGroup("Global");
+    Ogre::MaterialPtr lMaterial = Ogre::MaterialManager::getSingleton().create("Terrain", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    Ogre::Technique* lFirstTechnique = lMaterial->getTechnique(0);
+    Ogre::Pass* lFirstPass = lFirstTechnique->getPass(0);
 
+    lFirstPass->setLightingEnabled(true);
+    Ogre::ColourValue lAmbientColour(0.5f, 0.5f, 0.5f, 1.0f);
+    lFirstPass->setAmbient(lAmbientColour);
+
+    Ogre::TextureUnitState* lTextureUnit = lFirstPass->createTextureUnitState();
+    lTextureUnit->setTextureName("terrain.png", Ogre::TEX_TYPE_2D);
+    lTextureUnit->setTextureCoordSet(0);
 
     {
         // grab all the textures from resources
@@ -201,45 +231,6 @@ void MainWindow::loadResources()
         }
         blocks_file.close();
     }
-}
-
-void MainWindow::createUnitCubeMesh()
-{
-
-    Ogre::ManualObject * obj = new Ogre::ManualObject("Cube");
-
-    // front face
-    obj->begin("", Ogre::RenderOperation::OT_TRIANGLE_STRIP);
-    obj->position(0.5f, 0, 0);      obj->textureCoord(0, 0);
-    obj->position(0.5f, 0.5f, 0);   obj->textureCoord(1, 0);
-    obj->position(0, 0, 0);         obj->textureCoord(1, 1);
-    obj->position(0, 0.5f, 0);      obj->textureCoord(0, 1);
-    // left face
-    obj->position(0, 0, -0.5f);     obj->textureCoord(1, 0);
-    obj->position(0, 0.5f, -0.5f);  obj->textureCoord(1, 1);
-    // back face
-    obj->position(0.5f, 0, -0.5f);  obj->textureCoord(0, 0);
-    obj->position(0.5f, 0.5f,-0.5f);obj->textureCoord(0, 1);
-    // right face
-    obj->position(0.5f, 0, 0);      obj->textureCoord(1, 0);
-    obj->position(0.5f, 0.5f, 0);   obj->textureCoord(1, 1);
-    obj->end();
-    // top face
-    obj->begin("", Ogre::RenderOperation::OT_TRIANGLE_STRIP);
-    obj->position(0.5f, 0.5f, 0);   obj->textureCoord(0, 0);
-    obj->position(0.5f, 0.5f,-0.5f);obj->textureCoord(1, 0);
-    obj->position(0, 0.5f, 0);      obj->textureCoord(1, 1);
-    obj->position(0, 0.5f, -0.5f);  obj->textureCoord(0, 1);
-    obj->end();
-    // bottom face
-    obj->begin("", Ogre::RenderOperation::OT_TRIANGLE_STRIP);
-    obj->position(0, 0, 0);         obj->textureCoord(0, 0);
-    obj->position(0, 0, -0.5f);     obj->textureCoord(1, 0);
-    obj->position(0.5f, 0, 0);      obj->textureCoord(1, 1);
-    obj->position(0.5f, 0, -0.5f);  obj->textureCoord(0, 1);
-    obj->end();
-
-    obj->convertToMesh("Cube");
 }
 
 void MainWindow::go()
@@ -365,7 +356,115 @@ void MainWindow::windowClosed(Ogre::RenderWindow* rw)
     }
 }
 
-void MainWindow::updateChunk(QSharedPointer<Chunk> chunk)
+void MainWindow::updateChunk(QSharedPointer<Chunk> update)
 {
+    // build a mesh for the chunk
+    // find the chunk coordinates for this updated stuff.
+    Int3D chunk_key = chunkKey(update->position());
 
+    // update our chunk with update
+    QSharedPointer<Chunk> chunk = getChunk(chunk_key);
+    Int3D offset;
+    Int3D size = update.data()->size();
+    for (offset.x = 0; offset.x < size.x; offset.x++) {
+        for (offset.y = 0; offset.y < size.y; offset.y++) {
+            for (offset.z = 0; offset.z < size.z; offset.z++) {
+                chunk.data()->setBlock(update.data()->position() + offset - chunk.data()->position(), update.data()->getBlock(offset));
+            }
+        }
+    }
+
+    generateChunkMesh(chunk);
+}
+
+void MainWindow::generateChunkMesh(QSharedPointer<Chunk> chunk)
+{
+    // delete old mesh
+    // TODO
+
+    Ogre::ManualObject * obj = new Ogre::ManualObject(Ogre::String());
+    obj->begin("Terrain", Ogre::RenderOperation::OT_TRIANGLE_LIST);
+
+    Int3D offset;
+    Int3D size = chunk.data()->size();
+    for (offset.x = 0; offset.x < size.x; offset.x++) {
+        for (offset.y = 0; offset.y < size.y; offset.y++) {
+            for (offset.z = 0; offset.z < size.z; offset.z++) {
+                Chunk::Block block = chunk.data()->getBlock(offset);
+
+                if (block.type == Chunk::Air)
+                    continue;
+
+                // for every side
+                for (int i = 0; i <= 6; i++) {
+                    // if the block on this side is opaque, skip
+                    Chunk::ItemType side_type = blockTypeAt(chunk.data()->position()+offset+c_side_offset[i]);
+                    if (side_type != Chunk::Air)
+                        continue;
+
+                    // add this side to mesh
+                    Int3D abs_block_loc = chunk.data()->position() + offset;
+                    switch (i) {
+                    case 0: // Int3D(1, 0, 0),
+                        obj->position(abs_block_loc.x+1, abs_block_loc.y+0, abs_block_loc.z+1);
+                        obj->textureCoord(32 / 256.0f, 0 / 256.0f);
+
+                        obj->position(abs_block_loc.x+1, abs_block_loc.y+0, abs_block_loc.z+0);
+                        obj->textureCoord(32 / 256.0f, 16 / 256.0f);
+
+                        obj->position(abs_block_loc.x+1, abs_block_loc.y+1, abs_block_loc.z+1);
+                        obj->textureCoord(48 / 256.0f, 0 / 256.0f);
+                        //qDebug() << "triangle at " << abs_block_loc.x << abs_block_loc.y << abs_block_loc.z;
+                        break;
+                    case 1: // Int3D(-1, 0, 0),
+                        break;
+                    case 2: // Int3D(0, 1, 0),
+                        break;
+                    case 3: // Int3D(0, -1, 0),
+                        break;
+                    case 4: // Int3D(0, 0, 1),
+                        break;
+                    case 5: // Int3D(0, 0, -1),
+                        break;
+                    }
+
+                }
+            }
+        }
+    }
+    obj->end();
+
+    Ogre::SceneNode * node = m_scene_manager->getRootSceneNode();
+    Ogre::SceneNode * chunk_node = node->createChildSceneNode();
+    chunk_node->attachObject(obj);
+}
+
+Chunk::ItemType MainWindow::blockTypeAt(const Int3D & coord)
+{
+    Int3D chunk_key = chunkKey(coord);
+    QSharedPointer<Chunk> chunk = m_chunks.value(chunk_key, QSharedPointer<Chunk>());
+    if (chunk.isNull())
+        return Chunk::Air;
+    Int3D offset = coord - chunk_key;
+    return chunk.data()->getBlock(offset).type;
+}
+
+Int3D MainWindow::chunkKey(const Int3D & coord)
+{
+    return coord - (coord % c_chunk_size);
+}
+
+QSharedPointer<Chunk> MainWindow::getChunk(const Int3D & key)
+{
+    QSharedPointer<Chunk> chunk = m_chunks.value(key, QSharedPointer<Chunk>());
+    if (! chunk.isNull())
+        return chunk;
+    chunk = QSharedPointer<Chunk>(new Chunk(key, c_chunk_size));
+    m_chunks.insert(key, chunk);
+    return chunk;
+}
+
+void MainWindow::movePlayerPosition(Server::EntityPosition position)
+{
+    m_camera->setPosition(Ogre::Vector3(position.x, position.y, position.z));
 }

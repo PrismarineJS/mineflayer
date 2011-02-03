@@ -13,6 +13,7 @@ namespace MetaTypes {
         qRegisterMetaType<QSharedPointer<Chunk> >("QSharedPointer<Chunk>");
         qRegisterMetaType<Server::LoginStatus>("ServerTypes::LoginStatus");
         qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError");
+        qRegisterMetaType<Server::EntityPosition>("Server::EntityPosition");
     }
 }
 

@@ -52,7 +52,7 @@ void OutgoingRequest::writeValue(QDataStream & stream, QString value)
 void OutgoingRequest::writeValue(QDataStream &stream, Item value)
 {
     writeValue(stream, (qint16)value.type);
-    if (value.type == NoItem)
+    if (value.type == Chunk::NoItem)
         return;
     writeValue(stream, value.count);
     writeValue(stream, value.uses);
@@ -215,8 +215,8 @@ int IncomingResponse::parseValue(QByteArray buffer, int index, Item &item)
     qint16 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    item.type = (ItemType)tmp;
-    if (item.type != NoItem) {
+    item.type = (Chunk::ItemType)tmp;
+    if (item.type != Chunk::NoItem) {
         if ((index = parseValue(buffer, index, item.count)) == -1)
             return -1;
         if ((index = parseValue(buffer, index, item.uses)) == -1)
@@ -295,7 +295,7 @@ int EntityEquipmentResponse::parse(QByteArray buffer)
     qint16 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    item_type = (ItemType)tmp;
+    item_type = (Chunk::ItemType)tmp;
     if ((index = parseValue(buffer, index, unknown)) == -1)
         return -1;
     return index;
@@ -448,7 +448,7 @@ int NamedEntitySpawnResponse::parse(QByteArray buffer)
     qint16 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    held_item = (ItemType)tmp;
+    held_item = (Chunk::ItemType)tmp;
     return index;
 }
 
@@ -460,7 +460,7 @@ int PickupSpawnResponse::parse(QByteArray buffer)
     qint16 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    item_type = (ItemType)tmp;
+    item_type = (Chunk::ItemType)tmp;
     if ((index = parseValue(buffer, index, count)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, damage)) == -1)
@@ -739,7 +739,7 @@ int MultiBlockChangeResponse::parse(QByteArray buffer)
         qint8 block_type;
         if ((index = parseValue(buffer, index, block_type)) == -1)
             return -1;
-        new_block_types.replace(i, (ItemType)block_type);
+        new_block_types.replace(i, (Chunk::ItemType)block_type);
     }
     new_block_metadatas.clear();
     new_block_metadatas.resize(block_count);
@@ -764,7 +764,7 @@ int BlockChangeResponse::parse(QByteArray buffer)
     qint8 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    new_block_type = (ItemType)tmp;
+    new_block_type = (Chunk::ItemType)tmp;
     if ((index = parseValue(buffer, index, metadata)) == -1)
         return -1;
     return index;

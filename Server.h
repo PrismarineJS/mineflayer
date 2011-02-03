@@ -58,7 +58,7 @@ signals:
 
     void mapChunkUpdated(QSharedPointer<Chunk> chunk);
     void unloadChunk(Int3D coord);
-    void playerPositionUpdated(EntityPosition position);
+    void playerPositionUpdated(Server::EntityPosition position);
     void inventoryUpdated(QVector<Message::Item> inventory);
 
 public slots:
@@ -98,15 +98,6 @@ private:
     static void toNotchianXyz(const EntityPosition &source, double & destination_notchian_x, double & destination_notchian_y, double & destination_notchian_z);
     static void fromNotchianYawPitch(EntityPosition & destination, float notchian_yaw, float notchian_pitch);
     static void toNotchianYawPitch(const EntityPosition &source, float & destination_notchian_yaw, float & destination_notchian_pitch);
-
-    static const float c_pi;
-    static const float c_2pi;
-    static const float c_radians_per_degree;
-    static const float c_degrees_per_radian;
-    static float degreesToRadians(float degrees);
-    static float radiansToDegrees(float radians);
-    static float euclideanMod(float numerator, float denominator);
-    static int sign(int value);
 
 private slots:
     void initialize();

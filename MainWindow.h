@@ -88,7 +88,7 @@ private:
     OIS::Mouse* m_mouse;
     OIS::Keyboard* m_keyboard;
 
-    struct Entity {
+    struct Mob {
         Ogre::Vector3 pos;
         Ogre::Vector3 up;
         Ogre::Vector3 look;
@@ -98,13 +98,18 @@ private:
 
     Server * m_server;
 
+    // key is the meter coordinates of the min corner
     QHash<Int3D, QSharedPointer<Chunk> > m_chunks;
-    QHash<qint32, QSharedPointer<Entity> > m_entities;
-    Entity * m_player;
+    QHash<qint32, QSharedPointer<Mob> > m_entities;
+
+    Mob * m_player;
 
     // maps OIS::KeyCode to Control and vice versa
     QHash<OIS::KeyCode, Control> m_key_to_control;
     QHash<Control, OIS::KeyCode> m_control_to_key;
+
+    static const Int3D c_side_offset[];
+    static const Int3D c_chunk_size;
 
 private:
     void loadControls();
@@ -117,10 +122,14 @@ private:
     void setupResources();
     void loadResources();
 
-    void createUnitCubeMesh();
+    Chunk::ItemType blockTypeAt(const Int3D & coord);
+    Int3D chunkKey(const Int3D & coord);
+    void generateChunkMesh(QSharedPointer<Chunk>);
+    QSharedPointer<Chunk> getChunk(const Int3D & );
 
 private slots:
     void updateChunk(QSharedPointer<Chunk> chunk);
+    void movePlayerPosition(Server::EntityPosition position);
 
 };
 

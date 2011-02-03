@@ -1,6 +1,8 @@
 #ifndef INT3D_H
 #define INT3D_H
 
+#include "Util.h"
+
 class Int3D {
 public:
     int x;
@@ -37,6 +39,18 @@ public:
     }
     const Int3D operator/(int divisor) const {
         return Int3D(*this) /= divisor;
+    }
+    Int3D & operator%=(const Int3D & other) {
+        x = Util::euclideanMod(x, other.x);
+        y = Util::euclideanMod(y, other.y);
+        z = Util::euclideanMod(z, other.z);
+        return *this;
+    }
+    const Int3D operator%(const Int3D & other) const {
+        return Int3D(*this) %= other;
+    }
+    bool operator==(const Int3D & other) const {
+        return other.x == x && other.y == y && other.z == z;
     }
 };
 

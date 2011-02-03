@@ -1,11 +1,9 @@
 #include "Server.h"
 
+#include "Util.h"
+
 #include <QDir>
 #include <QCoreApplication>
-
-#include <cmath>
-
-#include <OGRE/OgreMath.h>
 
 Server::Server(QUrl connection_info) :
     m_connection_info(connection_info),
@@ -163,18 +161,18 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             notchian_size.z = message->size_z_minus_one + 1;
             Int3D rotated_size = fromNotchianXyz(notchian_size);
             Int3D positive_size;
-            positive_size.x = Ogre::Math::IAbs(rotated_size.x);
-            positive_size.y = Ogre::Math::IAbs(rotated_size.y);
-            positive_size.z = Ogre::Math::IAbs(rotated_size.z);
+            positive_size.x = Util::abs(rotated_size.x);
+            positive_size.y = Util::abs(rotated_size.y);
+            positive_size.z = Util::abs(rotated_size.z);
             int volume = positive_size.x * positive_size.y * positive_size.z;
 
             // determin the position of the chunk
             Int3D rotated_size_minus_positive_size = rotated_size - positive_size;
             // off by one corrector needs to subtract 1 from any axis that got negated
             Int3D off_by_one_corrector = rotated_size_minus_positive_size;
-            off_by_one_corrector.x = sign(off_by_one_corrector.x);
-            off_by_one_corrector.y = sign(off_by_one_corrector.y);
-            off_by_one_corrector.z = sign(off_by_one_corrector.z);
+            off_by_one_corrector.x = Util::sign(off_by_one_corrector.x);
+            off_by_one_corrector.y = Util::sign(off_by_one_corrector.y);
+            off_by_one_corrector.z = Util::sign(off_by_one_corrector.z);
             Int3D notchian_pos(message->x, message->y, message->z);
             Int3D rotated_position = fromNotchianXyz(notchian_pos);
             Int3D position = rotated_position + rotated_size_minus_positive_size / 2;
@@ -202,7 +200,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
                     for (notchian_relative_pos.y = 0; notchian_relative_pos.y < notchian_size.y; notchian_relative_pos.y++) {
                         // grab all the fields for each block at once even though they're strewn accross the data structure.
                         Chunk::Block block;
-                        block.type = decompressed.at(array_index);
+                        block.type = (Chunk::ItemType) decompressed.at(array_index);
                         block.metadata  = (decompressed.at( metadata_offset + array_index / 2) >> nibble_shifter) & 0xf;
                         block.light     = (decompressed.at(    light_offset + array_index / 2) >> nibble_shifter) & 0xf;
                         block.sky_light = (decompressed.at(sky_light_offest + array_index / 2) >> nibble_shifter) & 0xf;
@@ -283,44 +281,16 @@ void Server::toNotchianXyz(const EntityPosition &source, double &destination_not
 void Server::fromNotchianYawPitch(EntityPosition &destination, float notchian_yaw, float notchian_pitch)
 {
     // amazingly, yaw is oriented properly.
-    destination.yaw = euclideanMod(degreesToRadians(notchian_yaw), c_2pi);
+    destination.yaw = Util::euclideanMod(Util::degreesToRadians(notchian_yaw), Util::two_pi);
     // TODO: check pitch
-    destination.pitch = euclideanMod(degreesToRadians(notchian_pitch) + c_pi, c_2pi) - c_2pi;
+    destination.pitch = Util::euclideanMod(Util::degreesToRadians(notchian_pitch) + Util::pi, Util::two_pi) - Util::two_pi;
 }
 
 void Server::toNotchianYawPitch(const EntityPosition &source, float &destination_notchian_yaw, float &destination_notchian_pitch)
 {
-    destination_notchian_yaw = radiansToDegrees(source.yaw);
+    destination_notchian_yaw = Util::radiansToDegrees(source.yaw);
     // TODO: check pitch
-    destination_notchian_pitch = radiansToDegrees(source.pitch);
-}
-
-const float Server::c_pi = 3.14159265f;
-const float Server::c_2pi = 6.28318531f;
-const float Server::c_degrees_per_radian = 57.2957795f;
-const float Server::c_radians_per_degree = 0.0174532925f;
-
-float Server::degreesToRadians(float degrees)
-{
-    return degrees * c_radians_per_degree;
-}
-
-float Server::radiansToDegrees(float radians)
-{
-    return radians * c_degrees_per_radian;
-}
-
-float Server::euclideanMod(float numerator, float denominator)
-{
-    float result = std::fmod(numerator, denominator);
-    if (result < 0)
-        result += denominator;
-    return result;
-}
-
-int Server::sign(int value)
-{
-    return value < 0 ? -1 : value == 0 ? 0 : 1;
+    destination_notchian_pitch = Util::radiansToDegrees(source.pitch);
 }
 
 void Server::gotFirstPlayerPositionAndLookResponse(EntityPosition position)
