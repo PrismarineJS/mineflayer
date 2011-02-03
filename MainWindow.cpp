@@ -141,6 +141,8 @@ void MainWindow::loadResources()
 {
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
+    createUnitCubeMesh();
+
 
     {
         // grab all the textures from resources
@@ -199,6 +201,45 @@ void MainWindow::loadResources()
         }
         blocks_file.close();
     }
+}
+
+void MainWindow::createUnitCubeMesh()
+{
+
+    Ogre::ManualObject * obj = new Ogre::ManualObject("Cube");
+
+    // front face
+    obj->begin("", Ogre::RenderOperation::OT_TRIANGLE_STRIP);
+    obj->position(0.5f, 0, 0);      obj->textureCoord(0, 0);
+    obj->position(0.5f, 0.5f, 0);   obj->textureCoord(1, 0);
+    obj->position(0, 0, 0);         obj->textureCoord(1, 1);
+    obj->position(0, 0.5f, 0);      obj->textureCoord(0, 1);
+    // left face
+    obj->position(0, 0, -0.5f);     obj->textureCoord(1, 0);
+    obj->position(0, 0.5f, -0.5f);  obj->textureCoord(1, 1);
+    // back face
+    obj->position(0.5f, 0, -0.5f);  obj->textureCoord(0, 0);
+    obj->position(0.5f, 0.5f,-0.5f);obj->textureCoord(0, 1);
+    // right face
+    obj->position(0.5f, 0, 0);      obj->textureCoord(1, 0);
+    obj->position(0.5f, 0.5f, 0);   obj->textureCoord(1, 1);
+    obj->end();
+    // top face
+    obj->begin("", Ogre::RenderOperation::OT_TRIANGLE_STRIP);
+    obj->position(0.5f, 0.5f, 0);   obj->textureCoord(0, 0);
+    obj->position(0.5f, 0.5f,-0.5f);obj->textureCoord(1, 0);
+    obj->position(0, 0.5f, 0);      obj->textureCoord(1, 1);
+    obj->position(0, 0.5f, -0.5f);  obj->textureCoord(0, 1);
+    obj->end();
+    // bottom face
+    obj->begin("", Ogre::RenderOperation::OT_TRIANGLE_STRIP);
+    obj->position(0, 0, 0);         obj->textureCoord(0, 0);
+    obj->position(0, 0, -0.5f);     obj->textureCoord(1, 0);
+    obj->position(0.5f, 0, 0);      obj->textureCoord(1, 1);
+    obj->position(0.5f, 0, -0.5f);  obj->textureCoord(0, 1);
+    obj->end();
+
+    obj->convertToMesh("Cube");
 }
 
 void MainWindow::go()
