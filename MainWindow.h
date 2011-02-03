@@ -73,6 +73,9 @@ protected:
     void windowClosed(Ogre::RenderWindow* rw);
 
 private:
+    static const Int3D c_side_offset[];
+    static const Int3D c_chunk_size;
+
     Ogre::Root *m_root;
     Ogre::Camera* m_camera;
     Ogre::SceneManager* m_scene_manager;
@@ -96,6 +99,13 @@ private:
         bool on_ground;
     };
 
+    struct BlockTextureCoord {
+        int x;
+        int y;
+        int w;
+        int h;
+    };
+
     Server * m_server;
 
     // key is the meter coordinates of the min corner
@@ -108,8 +118,10 @@ private:
     QHash<OIS::KeyCode, Control> m_key_to_control;
     QHash<Control, OIS::KeyCode> m_control_to_key;
 
-    static const Int3D c_side_offset[];
-    static const Int3D c_chunk_size;
+    // maps texture name to coordinates in terrain.png
+    QHash<QString, BlockTextureCoord> m_terrain_tex_coords;
+    // maps item type to texture name for each side
+    QHash<Chunk::ItemType, QVector<QString> > m_side_texture_names;
 
 private:
     void loadControls();

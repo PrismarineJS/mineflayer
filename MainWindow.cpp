@@ -9,12 +9,12 @@
 #include <QDebug>
 
 const Int3D MainWindow::c_side_offset[] = {
-    Int3D(1, 0, 0),
-    Int3D(-1, 0, 0),
-    Int3D(0, 1, 0),
     Int3D(0, -1, 0),
-    Int3D(0, 0, 1),
+    Int3D(0, 1, 0),
     Int3D(0, 0, -1),
+    Int3D(0, 0, 1),
+    Int3D(-1, 0, 0),
+    Int3D(1, 0, 0),
 };
 
 const Int3D MainWindow::c_chunk_size(16, 16, 128);
@@ -166,19 +166,12 @@ void MainWindow::loadResources()
     Ogre::Technique* lFirstTechnique = lMaterial->getTechnique(0);
     Ogre::Pass* lFirstPass = lFirstTechnique->getPass(0);
 
-    lFirstPass->setLightingEnabled(true);
-    Ogre::ColourValue lAmbientColour(0.5f, 0.5f, 0.5f, 1.0f);
-    lFirstPass->setAmbient(lAmbientColour);
-
     Ogre::TextureUnitState* lTextureUnit = lFirstPass->createTextureUnitState();
     lTextureUnit->setTextureName("terrain.png", Ogre::TEX_TYPE_2D);
     lTextureUnit->setTextureCoordSet(0);
 
     {
         // grab all the textures from resources
-        //QImage terrain(":/textures/terrain.png");
-        //terrain.convertToFormat(QImage::Format_ARGB32_Premultiplied);
-
         QFile texture_index_file(":/textures/textures.txt");
         texture_index_file.open(QFile::ReadOnly);
         QTextStream stream(&texture_index_file);
@@ -188,14 +181,13 @@ void MainWindow::loadResources()
                 continue;
             QStringList parts = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
             Q_ASSERT(parts.size() == 5);
+            BlockTextureCoord texture_data;
             QString name = parts.at(0);
-            int x = parts.at(1).toInt();
-            int y = parts.at(2).toInt();
-            int w = parts.at(3).toInt();
-            int h = parts.at(4).toInt();
-            //QImage image = terrain.copy(x, y, w, h).rgbSwapped();
-            //Texture * texture = new Texture(image);
-            //s_textures.insert(name, texture);
+            texture_data.x = parts.at(1).toInt();
+            texture_data.y = parts.at(2).toInt();
+            texture_data.w = parts.at(3).toInt();
+            texture_data.h = parts.at(4).toInt();
+            m_terrain_tex_coords.insert(name, texture_data);
         }
         texture_index_file.close();
     }
@@ -211,23 +203,12 @@ void MainWindow::loadResources()
                 continue;
             QStringList parts = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
             Q_ASSERT(parts.size() == 8);
-            int id = parts.at(0).toInt();
-            QString name = parts.at(1);
-            QString top = parts.at(2);
-            QString bottom = parts.at(3);
-            QString front = parts.at(4);
-            QString back = parts.at(5);
-            QString left = parts.at(6);
-            QString right = parts.at(7);
-
-//            Mesh * textured_cube = Mesh::createUnitCube(Constants::white,
-//                s_textures.value(top),
-//                s_textures.value(bottom),
-//                s_textures.value(front),
-//                s_textures.value(back),
-//                s_textures.value(left),
-//                s_textures.value(right));
-//            s_meshes.replace(id, textured_cube);
+            QVector<QString> side_texture(6);
+            Chunk::ItemType id = (Chunk::ItemType) parts.at(0).toInt();
+            // parts.at(1) is the name but we'll ignore that.
+            for (int i = 0; i < 6; i++)
+                side_texture.replace(i, parts.at(i+2));
+            m_side_texture_names.insert(id, side_texture);
         }
         blocks_file.close();
     }
@@ -269,7 +250,7 @@ bool MainWindow::setup()
     loadResources();
 
     // create the scene
-    m_scene_manager->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
+    m_scene_manager->setAmbientLight(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
 
     createFrameListener();
 
@@ -395,8 +376,12 @@ void MainWindow::generateChunkMesh(QSharedPointer<Chunk> chunk)
                 if (block.type == Chunk::Air)
                     continue;
 
+                QVector<QString> side_textures = m_side_texture_names.value(block.type, QVector<QString>());
+                if (side_textures.isEmpty())
+                    continue;
+
                 // for every side
-                for (int i = 0; i <= 6; i++) {
+                for (int i = 0; i < 6; i++) {
                     // if the block on this side is opaque, skip
                     Chunk::ItemType side_type = blockTypeAt(chunk.data()->position()+offset+c_side_offset[i]);
                     if (side_type != Chunk::Air)
@@ -404,27 +389,28 @@ void MainWindow::generateChunkMesh(QSharedPointer<Chunk> chunk)
 
                     // add this side to mesh
                     Int3D abs_block_loc = chunk.data()->position() + offset;
+                    QString texture_name = side_textures.at(i);
+                    BlockTextureCoord btc = m_terrain_tex_coords.value(texture_name);
                     switch (i) {
-                    case 0: // Int3D(1, 0, 0),
+                    case 0: // Int3D(0, -1, 0),
+                        break;
+                    case 1: // Int3D(0, 1, 0),
+                        break;
+                    case 2: // Int3D(0, 0, -1),
+                        break;
+                    case 3: // Int3D(0, 0, 1),
+                        break;
+                    case 4: // Int3D(-1, 0, 0),
+                        break;
+                    case 5: // Int3D(1, 0, 0),
                         obj->position(abs_block_loc.x+1, abs_block_loc.y+0, abs_block_loc.z+1);
-                        obj->textureCoord(32 / 256.0f, 0 / 256.0f);
+                        obj->textureCoord(btc.x / 256.0f, btc.y / 256.0f);
 
                         obj->position(abs_block_loc.x+1, abs_block_loc.y+0, abs_block_loc.z+0);
-                        obj->textureCoord(32 / 256.0f, 16 / 256.0f);
+                        obj->textureCoord(btc.x / 256.0f, (btc.y + btc.h) / 256.0f);
 
                         obj->position(abs_block_loc.x+1, abs_block_loc.y+1, abs_block_loc.z+1);
-                        obj->textureCoord(48 / 256.0f, 0 / 256.0f);
-                        //qDebug() << "triangle at " << abs_block_loc.x << abs_block_loc.y << abs_block_loc.z;
-                        break;
-                    case 1: // Int3D(-1, 0, 0),
-                        break;
-                    case 2: // Int3D(0, 1, 0),
-                        break;
-                    case 3: // Int3D(0, -1, 0),
-                        break;
-                    case 4: // Int3D(0, 0, 1),
-                        break;
-                    case 5: // Int3D(0, 0, -1),
+                        obj->textureCoord((btc.x+btc.w) / 256.0f, btc.y / 256.0f);
                         break;
                     }
 
