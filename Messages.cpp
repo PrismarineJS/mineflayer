@@ -1,97 +1,131 @@
 #include "Messages.h"
 
+#include <QDebug>
+
 const qint32 OutgoingRequest::c_protocol_version = 8;
 
 void OutgoingRequest::writeToStream(QDataStream &stream)
 {
-    stream << (qint8)messageType;
-    writeMessageBody(stream);
+    if (false) {
+        // for printing outgoing binary
+        QByteArray buffer;
+        QDataStream fake_stream(&buffer, QIODevice::WriteOnly);
+
+        fake_stream << (qint8)messageType;
+        writeMessageBody(fake_stream);
+
+        qDebug() << "sending message: " << buffer.toHex();
+        // use python 3 to see ascii:
+        // >>> hexstr_to_str = lambda h: b"".join(bytes(((int(b[0], 16) << 4) + int(b[1], 16),)) for b in zip(*[iter(h)]*2))
+        // >>> hexstr_to_str("0200087375706572626f74")
+        // b'\x02\x00\x08superbot'
+
+        stream.device()->write(buffer);
+    } else {
+        // production mode
+        stream << (qint8)messageType;
+        writeMessageBody(stream);
+    }
 }
 
-void OutgoingRequest::writeString(QDataStream & stream, QString string)
+void OutgoingRequest::writeValue(QDataStream &stream, bool value) { writeValue(stream, (qint8)value); }
+void OutgoingRequest::writeValue(QDataStream &stream, qint8 value) { stream << value; }
+void OutgoingRequest::writeValue(QDataStream &stream, qint16 value) { stream << value; }
+void OutgoingRequest::writeValue(QDataStream &stream, qint32 value) { stream << value; }
+void OutgoingRequest::writeValue(QDataStream &stream, qint64 value) { stream << value; }
+void OutgoingRequest::writeValue(QDataStream &stream, float value)
 {
-    QByteArray utf8_data = string.toUtf8();
-    stream << (qint16)utf8_data.size();
+    stream.setFloatingPointPrecision(QDataStream::SinglePrecision);
+    stream << value;
+}
+void OutgoingRequest::writeValue(QDataStream &stream, double value)
+{
+    stream.setFloatingPointPrecision(QDataStream::DoublePrecision);
+    stream << value;
+}
+void OutgoingRequest::writeValue(QDataStream & stream, QString value)
+{
+    QByteArray utf8_data = value.toUtf8();
+    writeValue(stream, (qint16)utf8_data.size());
     stream.device()->write(utf8_data);
 }
-
-void OutgoingRequest::writeItem(QDataStream &stream, Item item)
+void OutgoingRequest::writeValue(QDataStream &stream, Item value)
 {
-    stream << (qint16)item.type;
-    if (item.type == NoItem)
+    writeValue(stream, (qint16)value.type);
+    if (value.type == NoItem)
         return;
-    stream << item.count;
-    stream << item.uses;
+    writeValue(stream, value.count);
+    writeValue(stream, value.uses);
 }
 
 void LoginRequest::writeMessageBody(QDataStream &stream)
 {
-    stream << c_protocol_version;
-    writeString(stream, username);
-    writeString(stream, password);
-    stream << (qint64)0; // map seed
-    stream << (qint8)0; // dimension
+    writeValue(stream, c_protocol_version);
+    writeValue(stream, username);
+    writeValue(stream, password);
+    writeValue(stream, (qint64)0); // map seed
+    writeValue(stream, (qint8)0); // dimension
 }
 
 void HandshakeRequest::writeMessageBody(QDataStream &stream)
 {
-    writeString(stream, username);
+    writeValue(stream, username);
 }
 
 void ChatRequest::writeMessageBody(QDataStream &stream)
 {
-    writeString(stream, message);
+    writeValue(stream, message);
 }
 
 void PlayerPositionAndLookRequest::writeMessageBody(QDataStream &stream)
 {
-    stream << x;
-    stream << stance;
-    stream << y;
-    stream << z;
-    stream << yaw;
-    stream << pitch;
-    stream << (qint8)on_ground;
+    writeValue(stream, x);
+    writeValue(stream, stance);
+    writeValue(stream, y);
+    writeValue(stream, z);
+    writeValue(stream, yaw);
+    writeValue(stream, pitch);
+    writeValue(stream, on_ground);
 }
 
 void PlayerDiggingRequest::writeMessageBody(QDataStream &stream)
 {
-    stream << (qint8)digging_type;
-    stream << x;
-    stream << y;
-    stream << z;
-    stream << (qint8)block_face;
+    writeValue(stream, (qint8)digging_type);
+    writeValue(stream, x);
+    writeValue(stream, y);
+    writeValue(stream, z);
+    writeValue(stream, (qint8)block_face);
 }
 
 void PlayerBlockPlacementRequest::writeMessageBody(QDataStream &stream)
 {
-    stream << meters_x;
-    stream << meters_y;
-    stream << meters_z;
-    stream << (qint8)block_face;
-    writeItem(stream, item);
+    writeValue(stream, meters_x);
+    writeValue(stream, meters_y);
+    writeValue(stream, meters_z);
+    writeValue(stream, (qint8)block_face);
+    writeValue(stream, item);
 }
 
 void OpenWindowRequest::writeMessageBody(QDataStream &stream)
 {
-    stream << window_id;
-    stream << (qint8)inventory_type;
-    writeString(stream, window_title);
-    stream << number_of_slots;
+    writeValue(stream, window_id);
+    writeValue(stream, (qint8)inventory_type);
+    writeValue(stream, window_title);
+    writeValue(stream, number_of_slots);
 }
 
 void CloseWindowRequest::writeMessageBody(QDataStream &stream)
 {
-    stream << window_id;
+    writeValue(stream, window_id);
 }
 
 void WindowClickRequest::writeMessageBody(QDataStream &stream)
 {
-    stream << window_id;
-    stream << slot;
-    stream << is_right_click;
-    stream << action_id;
-    writeItem(stream, item);
+    writeValue(stream, window_id);
+    writeValue(stream, slot);
+    writeValue(stream, is_right_click);
+    writeValue(stream, action_id);
+    writeValue(stream, item);
 }
 
 void DummyDisconnectRequest::writeMessageBody(QDataStream &)

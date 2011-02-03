@@ -298,8 +298,15 @@ protected:
     OutgoingRequest(MessageType messageType) : Message(messageType) {}
     virtual void writeMessageBody(QDataStream & stream) = 0;
 
-    static void writeString(QDataStream & stream, QString string);
-    static void writeItem(QDataStream & stream, Item item);
+    static void writeValue(QDataStream & stream, bool value);
+    static void writeValue(QDataStream & stream, qint8 value);
+    static void writeValue(QDataStream & stream, qint16 value);
+    static void writeValue(QDataStream & stream, qint32 value);
+    static void writeValue(QDataStream & stream, qint64 value);
+    static void writeValue(QDataStream & stream, float value);
+    static void writeValue(QDataStream & stream, double value);
+    static void writeValue(QDataStream & stream, QString value);
+    static void writeValue(QDataStream & stream, Item value);
 };
 
 class KeepAliveRequest : public OutgoingRequest {

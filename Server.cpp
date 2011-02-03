@@ -75,7 +75,6 @@ void Server::socketDisconnect()
 
 void Server::sendMessage(QSharedPointer<OutgoingRequest> msg)
 {
-    qDebug() << "sending message 0x" << QString::number(msg.data()->messageType, 16).toStdString().c_str();
     if (msg.data()->messageType == Message::DummyDisconnect) {
         socketDisconnect();
         return;
@@ -129,7 +128,6 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             // we don't support authenticated logging in yet.
             Q_ASSERT_X(message->connectionHash == HandshakeResponse::AuthenticationNotRequired, "",
                        (QString("unexpected connection hash: ") + message->connectionHash).toStdString().c_str());
-            changeLoginState(WaitingForLoginResponse);
             changeLoginState(WaitingForPlayerPositionAndLook);
             sendMessage(QSharedPointer<OutgoingRequest>(new LoginRequest(m_connection_info.userName(), m_connection_info.password())));
             break;
