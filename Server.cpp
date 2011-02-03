@@ -192,7 +192,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
                         Int3D notchian_abs_pos = notchian_pos + notchian_relative_pos;
                         Int3D abs_pos = fromNotchianXyz(notchian_abs_pos);
                         Int3D relative_pos = abs_pos - position;
-                        // TODO: chunk->setBlock(relative_pos, block);
+                        chunk->setBlock(relative_pos, block);
                     }
                 }
             }

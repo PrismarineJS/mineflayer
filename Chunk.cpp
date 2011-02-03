@@ -15,12 +15,12 @@ Chunk::Chunk(const Int3D &pos, const Int3D &size) :
 
     // fill with dark air
     for (int i = 0; i < m_blocks.size(); i++) {
-        Block * block = new Block();
-        block->type = 0;
-        block->light = 0;
-        block->sky_light = 0;
-        block->metadata = 0;
-        m_blocks.replace(i, QSharedPointer<Block>(block));
+        Block block;
+        block.type = 0;
+        block.light = 0;
+        block.sky_light = 0;
+        block.metadata = 0;
+        m_blocks.replace(i, block);
     }
     // no need to update since air has null textures
 }
@@ -30,9 +30,13 @@ int Chunk::indexOf(const Int3D & coord) const
     return coord.y + (coord.z * m_size.y) + (coord.x * m_size.y * m_size.z);
 }
 
-QSharedPointer<Chunk::Block> Chunk::getBlock(const Int3D & coord) const
+Chunk::Block Chunk::getBlock(const Int3D & coord) const
 {
     return m_blocks.at(indexOf(coord));
+}
+void Chunk::setBlock(const Int3D &coord, const Block &value)
+{
+    m_blocks.replace(indexOf(coord), value);
 }
 
 void Chunk::randomize()
@@ -46,14 +50,14 @@ void Chunk::randomize()
     for (coord.z = 0; coord.z < m_size.z; coord.z++) {
         for (coord.y = 0; coord.y < m_size.y; coord.y++) {
             for (coord.x = 0; coord.x < m_size.x; coord.x++) {
-                Block * new_block = new Block;
-                new_block->type = (std::rand() % 20 == 1) ? (std::rand() % 92 + 1) : 0;
+                Block block;
+                block.type = (std::rand() % 20 == 1) ? (std::rand() % 92 + 1) : 0;
                 if (std::rand() % 20 == 1)
-                    new_block->type = 79;
-                new_block->light = 0;
-                new_block->metadata = 0;
-                new_block->sky_light = 0;
-                m_blocks.replace(indexOf(coord), QSharedPointer<Block>(new_block));
+                    block.type = 79;
+                block.light = 0;
+                block.metadata = 0;
+                block.sky_light = 0;
+                setBlock(coord, block);
             }
         }
     }

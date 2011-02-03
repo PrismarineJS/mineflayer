@@ -21,8 +21,8 @@ public:
 public:
     Chunk(const Int3D & pos, const Int3D & size);
 
-    // use to set or retrieve Block data. Call updateBlock when done.
-    QSharedPointer<Block> getBlock(const Int3D & coord) const;
+    Block getBlock(const Int3D & coord) const;
+    void setBlock(const Int3D & coord, const Block & value);
 
     // debug method to generate random blocks
     void randomize();
@@ -33,7 +33,7 @@ public:
 private:
     Int3D m_pos;
     Int3D m_size;
-    QVector<QSharedPointer<Block> > m_blocks;
+    QVector<Block> m_blocks;
 
 private:
     int indexOf(const Int3D & coord) const;
