@@ -52,7 +52,7 @@ public:
     MainWindow();
     ~MainWindow();
 
-    void go();
+    int exec();
 
 protected:
     // Ogre::FrameListener

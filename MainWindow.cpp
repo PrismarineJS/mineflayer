@@ -248,14 +248,16 @@ void MainWindow::loadResources()
     }
 }
 
-void MainWindow::go()
+int MainWindow::exec()
 {
     m_resources_config = "resources.cfg";
 
     if (!setup())
-        return;
+        return -1;
 
     m_root->startRendering();
+
+    return 0;
 }
 
 bool MainWindow::setup()

@@ -2,8 +2,10 @@
 # Project created by QtCreator 2011-01-23T00:47:29
 # -------------------------------------------------
 QT += core \
-    network
-QT -= gui
+    network \
+    script \
+    scripttools \
+    gui
 TARGET = mineflayer
 TEMPLATE = app
 SOURCES += main.cpp \
@@ -12,7 +14,8 @@ SOURCES += main.cpp \
     IncomingMessageParser.cpp \
     Chunk.cpp \
     MainWindow.cpp \
-    Util.cpp
+    Util.cpp \
+    ScriptRunner.cpp
 HEADERS += Server.h \
     Messages.h \
     Chunk.h \
@@ -20,7 +23,8 @@ HEADERS += Server.h \
     MetaTypes.h \
     MainWindow.h \
     Int3D.h \
-    Util.h
+    Util.h \
+    ScriptRunner.h
 RESOURCES += mineflayer.qrc
 LIBS += -lOgreMain \
     -lOIS
