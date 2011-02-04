@@ -2,9 +2,8 @@
 mineflayer - Minecraft client and bot.
 
 Current features:
- * logs in without authentication
- * renders some of the actual map with OpenGL
- * doesn't crash for 10 seconds or so
+ * logs in (no authentication support yet)
+ * renders all the chunks around spawn in an Ogre 3d fly-around viewer
 
 Planned features:
  * bot that builds stuff
