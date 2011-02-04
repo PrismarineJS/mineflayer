@@ -13,9 +13,11 @@ public:
 
     // start the engine. returns success
     bool go();
+
 public slots:
-    // call when we want to spend some CPU cycles on the bot
-    void process();
+    void print(QString line);
+
+signals:
 
 private:
     QString m_script_filename;
@@ -26,6 +28,10 @@ private:
     QScriptValue m_bot;
 
     void callBotMethod(QString method_name, const QScriptValueList & args = QScriptValueList());
+
+private slots:
+    // call when we want to spend some CPU cycles on the bot
+    void process();
 };
 
 #endif // SCRIPTRUNNER_H

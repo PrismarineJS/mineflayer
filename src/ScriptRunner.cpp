@@ -27,23 +27,24 @@ bool ScriptRunner::go()
     m_engine.evaluate(script_file.readAll(), m_script_filename);
     script_file.close();
     if (m_engine.hasUncaughtException()) {
-        qWarning() << "Error while evaluating script file:";
+        qWarning() << "Error while evaluating script file:" << m_engine.uncaughtException().toString();
         qWarning() << m_engine.uncaughtExceptionBacktrace();
         return false;
     }
 
     QScriptValue ctor = m_engine.evaluate("MineflayerBot");
     if (m_engine.hasUncaughtException()) {
-        qWarning() << "Error while evaluating MineflayerBot constructor:";
+        qWarning() << "Error while evaluating MineflayerBot constructor:" << m_engine.uncaughtException().toString();
         qWarning() << m_engine.uncaughtExceptionBacktrace();
         return false;
     }
     m_bot = ctor.construct();
     if (m_engine.hasUncaughtException()) {
-        qWarning() << "Error while calling MineflayerBot constructor:";
+        qWarning() << "Error while calling MineflayerBot constructor:" << m_engine.uncaughtException().toString();
         qWarning() << m_engine.uncaughtExceptionBacktrace();
         return false;
     }
+    m_engine.globalObject().setProperty("mf", m_engine.newQObject(this));
 
     QTimer::singleShot(1, this, SLOT(process()));
     return true;
@@ -62,8 +63,14 @@ void ScriptRunner::callBotMethod(QString method_name, const QScriptValueList &ar
         method.call(m_bot, args);
         if (m_engine.hasUncaughtException()) {
             qWarning() << "Error while calling method" << method_name;
+            qWarning() << m_engine.uncaughtException().toString();
             qWarning() << m_engine.uncaughtExceptionBacktrace();
             m_engine.clearExceptions();
         }
     }
+}
+
+void ScriptRunner::print(QString line)
+{
+    qDebug() << line;
 }
