@@ -151,7 +151,8 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
                 Q_ASSERT(pos != -1);
                 QString username = message->content.mid(1, pos-1);
                 QString content = message->content.mid(pos+2);
-                emit chatReceived(username, content);
+                if (username != m_connection_info.userName())
+                    emit chatReceived(username, content);
             } else {
                 // TODO
             }

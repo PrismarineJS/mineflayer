@@ -130,7 +130,5 @@ void ScriptRunner::handleLoginStatusUpdated(Server::LoginStatus status)
 
 void ScriptRunner::handleChatReceived(QString username, QString message)
 {
-    // TODO: get rid of this hardcoded string
-    if (username != "superbot")
-        callBotMethod("onChat", QScriptValueList() << username << message);
+    callBotMethod("onChat", QScriptValueList() << username << message);
 }
