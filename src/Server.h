@@ -47,12 +47,11 @@ public:
     explicit Server(QUrl connection_info);
     ~Server();
 
-    const QUrl * connectionSettings() const { return &m_connection_info; }
-
 signals:
     void loginStatusUpdated(LoginStatus status);
     void socketDisconnected();
 
+    void chatReceived(QString message);
     void mapChunkUpdated(QSharedPointer<Chunk> chunk);
     void unloadChunk(Int3D coord);
     void playerPositionUpdated(Server::EntityPosition position);
@@ -68,6 +67,8 @@ public slots:
     // finishes up the outgoing message queue and then performs socketDisconnect.
     void finishWritingAndDisconnect();
 
+    // sends a chat
+    void sendChat(QString message);
 public:
     LoginStatus loginStatus();
     void updateNextPlayerPosition(EntityPosition next_player_position);

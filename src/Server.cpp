@@ -78,6 +78,11 @@ void Server::socketDisconnect()
 
 void Server::sendMessage(QSharedPointer<OutgoingRequest> msg)
 {
+    if (QThread::currentThread() != m_socket_thread) {
+        bool success = QMetaObject::invokeMethod(this, "sendMessage", Qt::QueuedConnection, Q_ARG(QSharedPointer<OutgoingRequest>, msg));
+        Q_ASSERT(success);
+        return;
+    }
     if (msg.data()->messageType == Message::DummyDisconnect) {
         socketDisconnect();
         return;
@@ -86,6 +91,11 @@ void Server::sendMessage(QSharedPointer<OutgoingRequest> msg)
         QDataStream stream(m_socket);
         msg.data()->writeToStream(stream);
     }
+}
+
+void Server::sendChat(QString message)
+{
+    sendMessage(QSharedPointer<OutgoingRequest>(new ChatRequest(message)));
 }
 
 void Server::handleConnected()
@@ -132,6 +142,11 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
                        (QString("unexpected connection hash: ") + message->connectionHash).toStdString().c_str());
             changeLoginState(WaitingForPlayerPositionAndLook);
             sendMessage(QSharedPointer<OutgoingRequest>(new LoginRequest(m_connection_info.userName(), m_connection_info.password())));
+            break;
+        }
+        case Message::Chat: {
+            ChatResponse * message = (ChatResponse *)incomingMessage.data();
+            emit chatReceived(message->content);
             break;
         }
         case Message::PlayerPositionAndLook: {
