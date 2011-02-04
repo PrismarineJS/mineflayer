@@ -48,7 +48,7 @@ public:
     ~Server();
 
 signals:
-    void loginStatusUpdated(LoginStatus status);
+    void loginStatusUpdated(Server::LoginStatus status);
     void socketDisconnected();
 
     void chatReceived(QString message);

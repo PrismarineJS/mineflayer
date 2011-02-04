@@ -1,0 +1,89 @@
+// http://code.google.com/p/jsdoc-toolkit/
+// methods. All properties of the mf object, e.g. mf.print("hi");
+
+/**
+ * Simply prints a string to stdout. useful for debugging.
+ * @param {String} line The line to print to stdout.
+ */
+print(line)
+
+/**
+ * Sends a message over chat. breaks up big messages for you
+ * @param {String} message The message to send to everyone on the server.
+ */
+chat(message)
+
+/**
+ * Looks in a direction.
+ * @param {Number} yaw The number of radians to rotate around the Z axis, starting from due east. Counter clockwise.
+ * @param {Number} pitch Number of radians to point up or down. 0 means straight forward. pi / 2 means straight up. -pi / 2 means straight down.
+ */
+look(yaw, pitch)
+
+/**
+ * Begin digging into a block with the currently equipped item. When you finally break through the block, or you are interrupted for any reason, you will get an onStoppedDigging() event.
+ * @param {Number} x X coordinate in meters.
+ * @param {Number} y Y coordinate in meters.
+ * @param {Number} z Z coordinate in meters.
+ * @param {Number} face The side of the block you want to start digging into. See the mf.Face enum.
+ */
+startDigging(x, y, z, face)
+
+/**
+ * Place the currently equipped item, with some exceptions. If the block at x, y, z is a chest, furnace, workbench, etc, you will "activate" the block. If the equipped item is food, you will eat it.
+ * @param {Number} x X coordinate in meters.
+ * @param {Number} y Y coordinate in meters.
+ * @param {Number} z Z coordinate in meters.
+ * @param {Number} face The side of the block you want to start digging into. See the mf.Face enum.
+ */
+placeBlock(x, y, z, face)
+
+/**
+ * Looks for an item in your inventory and equips it. If you don't have the item, nothing happens.
+ * @param {Number} item The item ID of the item you want to equip.
+ */
+equipItem(item)
+
+/**
+ * Looks for armor in your inventory and equips it. If you don't have the armor, nothing happens.
+ * @param {Number} item The item ID of the armor you want to equip.
+ */
+equipArmor(item)
+
+/**
+ * Counts how many of a certain type of item you have.
+ * @param {Number} item The item ID of the item you want to count.
+ * @returns {Number} The number of items of that type that you have in all of your inventory slots combined. 
+ */
+countInventoryItemsOfType(item)
+
+// gets the current inventory
+inventory()
+
+// TODO: moving around
+// TODO: using items. same as place block?
+// TODO: crafting
+// TODO: attacking
+
+
+
+events:
+
+onConnected()
+onChunkUpdate(start_x, start_y, width, height)
+onMobSpawn(id, x, y)
+onMobMovement(id, x, y)
+onHealthChanged(health)
+onSpawn()
+onNextFrame()
+onStoppedDigging(reason)
+onEquippedItemChanged(new_item_id)
+onInventoryUpdated()
+onUserJoined(user)
+onUserQuit(user)
+// TODO: other non-chat type messages
+onChat(user, string)
+
+
+
+

@@ -11,7 +11,7 @@ namespace MetaTypes {
         qRegisterMetaType<QSharedPointer<IncomingResponse> >("QSharedPointer<IncomingResponse>");
         qRegisterMetaType<QSharedPointer<OutgoingRequest> >("QSharedPointer<OutgoingRequest>");
         qRegisterMetaType<QSharedPointer<Chunk> >("QSharedPointer<Chunk>");
-        qRegisterMetaType<Server::LoginStatus>("ServerTypes::LoginStatus");
+        qRegisterMetaType<Server::LoginStatus>("Server::LoginStatus");
         qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError");
         qRegisterMetaType<Server::EntityPosition>("Server::EntityPosition");
     }
