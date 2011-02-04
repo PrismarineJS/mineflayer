@@ -3,6 +3,7 @@
 #include <QTimer>
 #include <QMainWindow>
 #include <QDebug>
+#include <QApplication>
 
 ScriptRunner::ScriptRunner(QString script_file, bool debug, bool headless, QObject *parent) :
     QObject(parent),
@@ -109,9 +110,20 @@ void ScriptRunner::movePlayerPosition(Server::EntityPosition position)
 
 void ScriptRunner::handleLoginStatusUpdated(Server::LoginStatus status)
 {
-    if (status == Server::Success) {
-        callBotMethod("onConnected");
-        QTimer::singleShot(1, this, SLOT(process()));
+    switch (status) {
+        case Server::Disconnected:
+            qWarning() << "Got disconnected from server";
+            QApplication::instance()->quit();
+            break;
+        case Server::Success:
+            callBotMethod("onConnected");
+            QTimer::singleShot(1, this, SLOT(process()));
+            break;
+        case Server::SocketError:
+            qWarning() << "Unable to connect to server";
+            QApplication::instance()->quit();
+            break;
+        default:;
     }
 }
 
