@@ -8,23 +8,23 @@ QT += core \
     gui
 TARGET = mineflayer
 TEMPLATE = app
-SOURCES += main.cpp \
-    Server.cpp \
-    Messages.cpp \
-    IncomingMessageParser.cpp \
-    Chunk.cpp \
-    MainWindow.cpp \
-    Util.cpp \
-    ScriptRunner.cpp
-HEADERS += Server.h \
-    Messages.h \
-    Chunk.h \
-    IncomingMessageParser.h \
-    MetaTypes.h \
-    MainWindow.h \
-    Int3D.h \
-    Util.h \
-    ScriptRunner.h
+SOURCES += src/main.cpp \
+    src/Server.cpp \
+    src/Messages.cpp \
+    src/IncomingMessageParser.cpp \
+    src/Chunk.cpp \
+    src/MainWindow.cpp \
+    src/Util.cpp \
+    src/ScriptRunner.cpp
+HEADERS += src/Server.h \
+    src/Messages.h \
+    src/Chunk.h \
+    src/IncomingMessageParser.h \
+    src/MetaTypes.h \
+    src/MainWindow.h \
+    src/Int3D.h \
+    src/Util.h \
+    src/ScriptRunner.h
 RESOURCES += mineflayer.qrc
 LIBS += -lOgreMain \
     -lOIS
