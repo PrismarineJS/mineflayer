@@ -91,11 +91,11 @@ WoodDoorBottom      16  96  16  16
 IronDoorBottom      32  96  16  16
 RedstoneTorchOn     48  96  16  16
 RedWire4wayOn       64  96  16  16
-RedWire2wayOn       112 96  16  16
-PumpkinTop          128 96  16  16
-Netherrack          144 96  16  16
-SoulSand            160 96  16  16
-Glowstone           176 96  16  16
+RedWire2wayOn       80  96  16  16
+PumpkinTop          96  96  16  16
+Netherrack          112 96  16  16
+SoulSand            128 96  16  16
+Glowstone           144 96  16  16
 
 TrackCorner         0   112 16  16
 DarkBlackWool       16  112 16  16
