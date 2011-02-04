@@ -1,6 +1,8 @@
 // http://code.google.com/p/jsdoc-toolkit/
 // methods. All properties of the mf object, e.g. mf.print("hi");
 
+// IMPLEMENTED
+
 /**
  * Simply prints a string to stdout. useful for debugging.
  * @param {String} line The line to print to stdout.
@@ -12,6 +14,8 @@ print(line)
  * @param {String} message The message to send to everyone on the server.
  */
 chat(message)
+
+// NOT YET IMPLEMENTED
 
 /**
  * Looks in a direction.
@@ -69,20 +73,25 @@ inventory()
 
 events:
 
+// IMPLEMENTED:
+
 onConnected()
+onNextFrame()
+onChat(user, string)
+
+// NOT YET IMPLEMENTED
+
 onChunkUpdate(start_x, start_y, width, height)
 onMobSpawn(id, x, y)
 onMobMovement(id, x, y)
 onHealthChanged(health)
 onSpawn()
-onNextFrame()
 onStoppedDigging(reason)
 onEquippedItemChanged(new_item_id)
 onInventoryUpdated()
 onUserJoined(user)
 onUserQuit(user)
 // TODO: other non-chat type messages
-onChat(user, string)
 
 
 
