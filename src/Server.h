@@ -93,7 +93,6 @@ private:
 private:
     void changeLoginState(LoginStatus state);
     void gotFirstPlayerPositionAndLookResponse();
-    void sendMessage(QSharedPointer<OutgoingRequest> message);
 
 
     static void fromNotchianXyz(EntityPosition & destination, double notchian_x, double notchian_y, double notchian_z);
@@ -113,6 +112,7 @@ private slots:
     void sendPosition();
     void doPhysics();
     void internalUpdateNextPlayerPosition(EntityPosition next_player_position);
+    void sendMessage(QSharedPointer<OutgoingRequest> message);
 };
 
 

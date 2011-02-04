@@ -301,14 +301,12 @@ void Server::fromNotchianYawPitch(EntityPosition &destination, float notchian_ya
 {
     // amazingly, yaw is oriented properly.
     destination.yaw = Util::euclideanMod(Util::degreesToRadians(notchian_yaw), Util::two_pi);
-    // TODO: check pitch
-    destination.pitch = Util::euclideanMod(Util::degreesToRadians(notchian_pitch) + Util::pi, Util::two_pi) - Util::two_pi;
+    destination.pitch = Util::euclideanMod(Util::degreesToRadians(notchian_pitch) + Util::pi, Util::two_pi) - Util::pi;
 }
 
 void Server::toNotchianYawPitch(const EntityPosition &source, float &destination_notchian_yaw, float &destination_notchian_pitch)
 {
     destination_notchian_yaw = Util::radiansToDegrees(source.yaw);
-    // TODO: check pitch
     destination_notchian_pitch = Util::radiansToDegrees(source.pitch);
 }
 
