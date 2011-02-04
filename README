@@ -18,7 +18,6 @@ Setting up build:
  2. Open .pro file in QtCreator
  3. Build
  4. Manually copy resources/ to build directory
-    * resources/
 
 TODO include somewhere:
     int tick_ms = 200;

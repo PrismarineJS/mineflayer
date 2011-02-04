@@ -1,5 +1,45 @@
 // http://code.google.com/p/jsdoc-toolkit/
-// methods. All properties of the mf object, e.g. mf.print("hi");
+
+/**
+ * Vocabulary
+ *
+ * meter - a block is 1 meter cubed, or 1x1x1.
+ *
+ * Enums
+ * 
+ * mf.Face - Which side of a block, if any.
+ *     NoDirection
+ *     NegativeY
+ *     PositiveY
+ *     NegativeZ
+ *     PositiveZ
+ *     NegativeX
+ *     PositiveX
+ *
+ * mf.Mob
+ *     Pig
+ *     Sheep
+ *     Cow
+ *     Chicken
+ *     Squid
+ *     Zombie Pigman
+ *     Spider
+ *     Zombie
+ *     Skeleton
+ *     Spider Jockey
+ *     Creeper
+ *     Slime
+ *     Ghast
+ *     Human
+ *     Pigman
+ *     Giant
+ *
+ * mf.StoppedDiggingReason
+ *     BlockBroken
+ *     Interrupted
+ */
+
+// Methods. All properties of the mf object, e.g. mf.print("hi");
 
 // IMPLEMENTED
 
@@ -29,9 +69,8 @@ look(yaw, pitch)
  * @param {Number} x X coordinate in meters.
  * @param {Number} y Y coordinate in meters.
  * @param {Number} z Z coordinate in meters.
- * @param {Number} face The side of the block you want to start digging into. See the mf.Face enum.
  */
-startDigging(x, y, z, face)
+startDigging(x, y, z)
 
 /**
  * Place the currently equipped item, with some exceptions. If the block at x, y, z is a chest, furnace, workbench, etc, you will "activate" the block. If the equipped item is food, you will eat it.
@@ -61,36 +100,126 @@ equipArmor(item)
  */
 countInventoryItemsOfType(item)
 
-// gets the current inventory
+/**
+ * Lists all of your inventory
+ * @returns {Object} An object with two properties:
+ *                   items - an Array of item ids
+ *                   count - an object with every item id from items as a property name, and the property value is the total number of those items that you have.
+ */
 inventory()
+
+/**
+ * Tells how much room you have left in your inventory. No need to worry about merging stacks; this function takes that into account automatically.
+ * @param {Number} item The item ID that you want to see how many more will fit in your inventory.
+ * @returns {Number} How many more of those items will fit.
+ */
+inventorySpaceLeft(item)
+
+/**
+ * Tells how many free slots you have open in your inventory. No need to worry about merging stacks; this method takes that into account automatically.
+ * @returns {Number} The total number of empty inventory slots.
+ */
+inventorySlotsLeft()
 
 // TODO: moving around
 // TODO: using items. same as place block?
 // TODO: crafting
 // TODO: attacking
+// TODO: inventory manipulation
 
-
-
-events:
+// Events. To listen, use MineflayerBot.prototype.<event name> = function() {}
 
 // IMPLEMENTED:
 
+/**
+ * Called when the bot successfully logs into a server.
+ */
 onConnected()
+
+/**
+ * Called on a set interval to give you a spot to do continuous processing.
+ */
 onNextFrame()
-onChat(user, string)
+
+/**
+ * Called when the bot receives a chat message.
+ * @param {String} user The username of the person sending the message.
+ * @param {String} message The content of the message.
+ */
+onChat(user, message)
 
 // NOT YET IMPLEMENTED
 
-onChunkUpdate(start_x, start_y, width, height)
-onMobSpawn(id, x, y)
-onMobMovement(id, x, y)
-onHealthChanged(health)
+/**
+ * Called when blocks are updated.
+ * @param {Number} start_x The x position in absolute meters of the first block that was updated.
+ * @param {Number} start_y The y position in absolute meters of the first block that was updated.
+ * @param {Number} start_z The z position in absolute meters of the first block that was updated.
+ * @param {Number} x_count The number of blocks in the x direction that were updated.
+ * @param {Number} y_count The number of blocks in the y direction that were updated.
+ * @param {Number} z_count The number of blocks in the z direction that were updated.
+  */
+onChunkUpdate(start_x, start_y, start_z, x_count, y_count, z_count)
+
+/**
+ * Called when a mob (Cow, Spider, Squid, etc) is created.
+ * @param {Number} id A unique identifier for this specific mob.
+ * @param {Number} type The class of mob that was spawned. See the mf.Mob enum.
+ * @param {Number} x The absolute x position in meters where the mob spawned.
+ * @param {Number} y The absolute y position in meters where the mob spawned.
+ * @param {Number} z The absolute z position in meters where the mob spawned.
+ */
+onMobSpawn(id, type, x, y, z)
+
+/**
+ * Called when a mob moves.
+ * @param {Number} id The unique identifier for this specific mob.
+ * @param {Number} x The absolute x position in meters where the mob has just moved to.
+ * @param {Number} y The absolute y position in meters where the mob has just moved to.
+ * @param {Number} z The absolute z position in meters where the mob has just moved to.
+ */
+onMobMovement(id, x, y, z)
+
+/**
+ * Called when you get hit, take fall damage, eat food, etc.
+ * @param {Number} health The number of half-hearts that you have, out of 20.
+ */
+onHealthChanged(new_health)
+
+/**
+ * Called when you have spawned and can start moving about.
+ */
 onSpawn()
+
+/**
+ * Called when you have stopped digging for some reason.
+ * @param {Number} reason Why you have stopped digging. See the mf.StoppedDiggingReason enum.
+ */
 onStoppedDigging(reason)
+
+/**
+ * Called when what you are currently equipped with has changed. For example, if your pickaxe breaks or you eat food.
+ * @param {Number} new_item_id What you are now equipped with, if anything.
+ */
 onEquippedItemChanged(new_item_id)
+
+/**
+ * Called when anything in your inventory changes. Use inventory() to get a list of everything.
+ */
 onInventoryUpdated()
-onUserJoined(user)
-onUserQuit(user)
+
+/**
+ * Called when another user joins the server.
+ * @param {String} username The username of the person joining.
+ */
+onUserJoined(username)
+
+/**
+ * Called when another user quits the server.
+ * @param {String} username The username of the person quitting.
+ */
+onUserQuit(username)
+
 // TODO: other non-chat type messages
 
 
