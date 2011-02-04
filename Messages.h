@@ -57,10 +57,10 @@ public:
         WindowItems=0x68,
         UpdateProgressBar=0x69,
         Transaction=0x6A,
-        UpdateSign=0x82,
-        DisconnectOrKick=0xFF,
+        UpdateSign=(qint8)0x82,
+        DisconnectOrKick=(qint8)0xFF,
 
-        DummyDisconnect=-1,
+        DummyDisconnect=(qint8)0xFE,
     };
 
 

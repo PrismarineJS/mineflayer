@@ -33,6 +33,9 @@ public:
         double x; // east
         double y; // north
         double z; // up
+        double dx;
+        double dy;
+        double dz;
         double stance; // [0.1, 1.65] how tall you are.
         float yaw; // [0, 2pi] rotation around z axis. 0 is +x. pi/2 is +y. pi is -x. 3pi/2 is -y.
         float pitch; // [-pi/2, pi/2] 0 is parallel to the ground. pi/2 is up. -pi/2 is down.
@@ -44,13 +47,7 @@ public:
     explicit Server(QUrl connection_info);
     ~Server();
 
-    // returns the ConnectionResultMessage that the server gave upon connection
-    QSharedPointer<IncomingResponse> connectionResultMessage() const { return m_connection_result; }
-
     const QUrl * connectionSettings() const { return &m_connection_info; }
-
-    // update this to move around. it's garbage until login statis is success.
-    EntityPosition player_position;
 
 signals:
     void loginStatusUpdated(LoginStatus status);
@@ -73,6 +70,7 @@ public slots:
 
 public:
     LoginStatus loginStatus();
+    void updateNextPlayerPosition(EntityPosition next_player_position);
 
 private:
     QUrl m_connection_info;
@@ -82,13 +80,18 @@ private:
     IncomingMessageParser * m_parser;
     QTimer * m_position_update_timer;
 
+    static const int c_physics_fps;
+    static const float c_gravity; // m/s^2
+    QTimer * m_physics_timer;
+
     LoginStatus m_login_state;
 
-    QSharedPointer<IncomingResponse> m_connection_result;
+    EntityPosition m_canonical_player_position;
+    EntityPosition m_next_player_position;
 
 private:
     void changeLoginState(LoginStatus state);
-    void gotFirstPlayerPositionAndLookResponse(EntityPosition position);
+    void gotFirstPlayerPositionAndLookResponse();
     void sendMessage(QSharedPointer<OutgoingRequest> message);
 
 
@@ -107,6 +110,8 @@ private slots:
     void processIncomingMessage(QSharedPointer<IncomingResponse>);
     void handleSocketError(QAbstractSocket::SocketError);
     void sendPosition();
+    void doPhysics();
+    void internalUpdateNextPlayerPosition(EntityPosition next_player_position);
 };
 
 

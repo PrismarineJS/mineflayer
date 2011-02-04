@@ -5,11 +5,15 @@
 #include <QDir>
 #include <QCoreApplication>
 
+const int Server::c_physics_fps = 60;
+const float Server::c_gravity = -9.81;
+
 Server::Server(QUrl connection_info) :
     m_connection_info(connection_info),
     m_socket_thread(NULL),
     m_parser(NULL),
     m_position_update_timer(NULL),
+    m_physics_timer(NULL),
     m_login_state(Disconnected)
 {
     // we run in m_socket_thread
@@ -26,6 +30,7 @@ Server::~Server()
 {
     delete m_parser;
     delete m_position_update_timer;
+    delete m_physics_timer;
 }
 
 void Server::initialize()
@@ -131,15 +136,13 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         }
         case Message::PlayerPositionAndLook: {
             PlayerPositionAndLookResponse * message = (PlayerPositionAndLookResponse *) incomingMessage.data();
-            EntityPosition position;
-            fromNotchianXyz(position, message->x, message->z, message->y);
-            position.stance = message->stance;
-            fromNotchianYawPitch(position, message->yaw, message->pitch);
-            position.roll = 0.0f;
-            position.on_ground = message->on_ground;
+            fromNotchianXyz(m_canonical_player_position, message->x, message->y, message->z);
+            m_canonical_player_position.stance = message->stance;
+            fromNotchianYawPitch(m_canonical_player_position, message->yaw, message->pitch);
+            m_canonical_player_position.on_ground = message->on_ground;
             if (m_login_state == WaitingForPlayerPositionAndLook)
-                gotFirstPlayerPositionAndLookResponse(position);
-            emit playerPositionUpdated(position);
+                gotFirstPlayerPositionAndLookResponse();
+            emit playerPositionUpdated(m_canonical_player_position);
             break;
         }
         case Message::PreChunk: {
@@ -185,6 +188,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             QDataStream(&decompressed_size_array, QIODevice::WriteOnly) << decompressed_size;
             uncrompressable_data.prepend(decompressed_size_array);
             QByteArray decompressed = qUncompress(uncrompressable_data);
+            Q_ASSERT(decompressed.size() == decompressed_size);
 
             // parse and store the data
             Chunk * chunk = new Chunk(position, positive_size);
@@ -236,7 +240,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             break;
         }
         default: {
-            qDebug() << "ignoring message type: 0x" << QString::number(incomingMessage.data()->messageType, 16).toStdString().c_str();
+//            qDebug() << "ignoring message type: 0x" << QString::number(incomingMessage.data()->messageType, 16).toStdString().c_str();
             break;
         }
     }
@@ -293,12 +297,33 @@ void Server::toNotchianYawPitch(const EntityPosition &source, float &destination
     destination_notchian_pitch = Util::radiansToDegrees(source.pitch);
 }
 
-void Server::gotFirstPlayerPositionAndLookResponse(EntityPosition position)
+void Server::updateNextPlayerPosition(EntityPosition next_player_position)
 {
-    player_position = position;
+    if (QThread::currentThread() == m_socket_thread) {
+        internalUpdateNextPlayerPosition(next_player_position);
+    } else {
+        bool success = QMetaObject::invokeMethod(this, "internalUpdateNextPlayerPosition", Qt::QueuedConnection, Q_ARG(EntityPosition, next_player_position));
+        Q_ASSERT(success);
+    }
+}
+void Server::internalUpdateNextPlayerPosition(EntityPosition next_player_position)
+{
+    m_next_player_position = next_player_position;
+    sendPosition();
+}
+
+void Server::gotFirstPlayerPositionAndLookResponse()
+{
+    m_canonical_player_position.dx = 0;
+    m_canonical_player_position.dy = 0;
+    m_canonical_player_position.dz = 0;
+    m_canonical_player_position.roll = 0;
+
+    m_next_player_position = m_canonical_player_position;
+    sendPosition();
 
     delete m_position_update_timer;
-    m_position_update_timer = new QTimer();
+    m_position_update_timer = new QTimer;
     m_position_update_timer->setInterval(200);
 
     bool success;
@@ -307,17 +332,39 @@ void Server::gotFirstPlayerPositionAndLookResponse(EntityPosition position)
 
     m_position_update_timer->start();
 
+    delete m_physics_timer;
+    m_physics_timer = new QTimer;
+    m_physics_timer->setInterval(1000 / c_physics_fps);
+
+    success = connect(m_physics_timer, SIGNAL(timeout()), this, SLOT(doPhysics()));
+    Q_ASSERT(success);
+
+    m_physics_timer->start();
+
     changeLoginState(Success);
 }
 
 void Server::sendPosition()
 {
     PlayerPositionAndLookRequest * request = new PlayerPositionAndLookRequest;
-    toNotchianXyz(player_position, request->x, request->y, request->z);
-    request->stance = player_position.stance;
-    toNotchianYawPitch(player_position, request->yaw, request->pitch);
-    request->on_ground = player_position.on_ground;
+    toNotchianXyz(m_next_player_position, request->x, request->y, request->z);
+    request->stance = m_next_player_position.stance;
+    toNotchianYawPitch(m_next_player_position, request->yaw, request->pitch);
+    request->on_ground = m_next_player_position.on_ground;
     sendMessage(QSharedPointer<OutgoingRequest>(request));
+}
+
+void Server::doPhysics()
+{
+//    if (m_canonical_player_position.on_ground) {
+//        qDebug() << "standing";
+//        m_canonical_player_position.dz = 0;
+//    } else {
+//        m_canonical_player_position.z += m_canonical_player_position.dz;
+//        m_canonical_player_position.dz += c_gravity / (c_physics_fps * c_physics_fps);
+//    }
+//    m_next_player_position.z = m_canonical_player_position.z;
+//    emit playerPositionUpdated(m_canonical_player_position);
 }
 
 void Server::changeLoginState(LoginStatus state)

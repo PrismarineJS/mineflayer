@@ -80,8 +80,8 @@ void ChatRequest::writeMessageBody(QDataStream &stream)
 void PlayerPositionAndLookRequest::writeMessageBody(QDataStream &stream)
 {
     writeValue(stream, x);
-    writeValue(stream, stance);
     writeValue(stream, y);
+    writeValue(stream, stance);
     writeValue(stream, z);
     writeValue(stream, yaw);
     writeValue(stream, pitch);
@@ -344,9 +344,9 @@ int PlayerPositionAndLookResponse::parse(QByteArray buffer)
     int index = 1;
     if ((index = parseValue(buffer, index, x)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, y)) == -1)
-        return -1;
     if ((index = parseValue(buffer, index, stance)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, y)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, z)) == -1)
         return -1;
