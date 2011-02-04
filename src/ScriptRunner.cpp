@@ -49,6 +49,7 @@ bool ScriptRunner::go()
     m_engine.globalObject().setProperty("mf", m_engine.newQObject(this));
 
     // connect to server
+    // TODO: this data should be passed in through config or command line
     QUrl connection_settings;
     connection_settings.setHost("localhost");
     connection_settings.setPort(25565);
@@ -61,7 +62,7 @@ bool ScriptRunner::go()
     Q_ASSERT(success);
     success = connect(m_server, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SLOT(handleLoginStatusUpdated(Server::LoginStatus)));
     Q_ASSERT(success);
-    success = connect(m_server, SIGNAL(chatReceived(QString)), this, SLOT(handleChatReceived(QString)));
+    success = connect(m_server, SIGNAL(chatReceived(QString,QString)), this, SLOT(handleChatReceived(QString,QString)));
     Q_ASSERT(success);
     m_server->socketConnect();
 
@@ -127,7 +128,9 @@ void ScriptRunner::handleLoginStatusUpdated(Server::LoginStatus status)
     }
 }
 
-void ScriptRunner::handleChatReceived(QString message)
+void ScriptRunner::handleChatReceived(QString username, QString message)
 {
-    callBotMethod("onChat", QScriptValueList() << "user" << message);
+    // TODO: get rid of this hardcoded string
+    if (username != "superbot")
+        callBotMethod("onChat", QScriptValueList() << username << message);
 }

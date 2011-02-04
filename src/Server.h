@@ -51,7 +51,7 @@ signals:
     void loginStatusUpdated(Server::LoginStatus status);
     void socketDisconnected();
 
-    void chatReceived(QString message);
+    void chatReceived(QString username, QString message);
     void mapChunkUpdated(QSharedPointer<Chunk> chunk);
     void unloadChunk(Int3D coord);
     void playerPositionUpdated(Server::EntityPosition position);
