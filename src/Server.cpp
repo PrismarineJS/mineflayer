@@ -5,17 +5,10 @@
 #include <QDir>
 #include <QCoreApplication>
 
-const float Server::c_walking_speed = 4.27;
-const int Server::c_notchian_tick_ms = 200;
-const int Server::c_physics_fps = 60;
-const float Server::c_gravity = -9.81;
-
 Server::Server(QUrl connection_info) :
     m_connection_info(connection_info),
     m_socket_thread(NULL),
     m_parser(NULL),
-    m_position_update_timer(NULL),
-    m_physics_timer(NULL),
     m_login_state(Disconnected)
 {
     // we run in m_socket_thread
@@ -31,8 +24,6 @@ Server::Server(QUrl connection_info) :
 Server::~Server()
 {
     delete m_parser;
-    delete m_position_update_timer;
-    delete m_physics_timer;
 }
 
 void Server::initialize()
@@ -120,39 +111,34 @@ void Server::terminate()
 void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMessage)
 {
     switch (incomingMessage.data()->messageType) {
+        case Message::Login: {
+            Q_ASSERT(m_login_state == WaitingForLoginResponse);
+            changeLoginState(Success);
+            break;
+        }
         case Message::Handshake: {
-            HandshakeResponse * message = (HandshakeResponse *)incomingMessage.data();
+            HandshakeResponse * message = (HandshakeResponse *) incomingMessage.data();
             Q_ASSERT(m_login_state == WaitingForHandshakeResponse);
             // we don't support authenticated logging in yet.
             Q_ASSERT_X(message->connectionHash == HandshakeResponse::AuthenticationNotRequired, "",
                        (QString("unexpected connection hash: ") + message->connectionHash).toStdString().c_str());
-            changeLoginState(WaitingForPlayerPositionAndLook);
+            changeLoginState(WaitingForLoginResponse);
             sendMessage(QSharedPointer<OutgoingRequest>(new LoginRequest(m_connection_info.userName(), m_connection_info.password())));
             break;
         }
         case Message::Chat: {
-            ChatResponse * message = (ChatResponse *)incomingMessage.data();
-            if (message->content.startsWith("<")) {
-                int pos = message->content.indexOf(">");
-                Q_ASSERT(pos != -1);
-                QString username = message->content.mid(1, pos-1);
-                QString content = message->content.mid(pos+2);
-                if (username != m_connection_info.userName())
-                    emit chatReceived(username, content);
-            } else {
-                // TODO
-            }
+            ChatResponse * message = (ChatResponse *) incomingMessage.data();
+            emit chatReceived(message->content);
             break;
         }
         case Message::PlayerPositionAndLook: {
             PlayerPositionAndLookResponse * message = (PlayerPositionAndLookResponse *) incomingMessage.data();
-            fromNotchianXyz(m_canonical_player_position, message->x, message->y, message->z);
-            m_canonical_player_position.stance = message->stance - m_canonical_player_position.z;
-            fromNotchianYawPitch(m_canonical_player_position, message->yaw, message->pitch);
-            m_canonical_player_position.on_ground = message->on_ground;
-            if (m_login_state == WaitingForPlayerPositionAndLook)
-                gotFirstPlayerPositionAndLookResponse();
-            emit playerPositionUpdated(m_canonical_player_position);
+            EntityPosition player_position;
+            fromNotchianXyz(player_position, message->x, message->y, message->z);
+            player_position.stance = message->stance - player_position.z;
+            fromNotchianYawPitch(player_position, message->yaw, message->pitch);
+            player_position.on_ground = message->on_ground;
+            emit playerPositionAndLookUpdated(player_position);
             break;
         }
         case Message::PreChunk: {
@@ -292,7 +278,6 @@ void Server::toNotchianXyz(const EntityPosition &source, double &destination_not
     destination_notchian_y = source.z;
 }
 
-
 void Server::fromNotchianYawPitch(EntityPosition &destination, float notchian_yaw, float notchian_pitch)
 {
     // amazingly, yaw is oriented properly.
@@ -306,78 +291,14 @@ void Server::toNotchianYawPitch(const EntityPosition &source, float &destination
     destination_notchian_pitch = Util::radiansToDegrees(source.pitch);
 }
 
-void Server::updateNextPlayerPosition(EntityPosition next_player_position)
-{
-    if (QThread::currentThread() == m_socket_thread) {
-        internalUpdateNextPlayerPosition(next_player_position);
-    } else {
-        bool success = QMetaObject::invokeMethod(this, "internalUpdateNextPlayerPosition", Qt::QueuedConnection, Q_ARG(EntityPosition, next_player_position));
-        Q_ASSERT(success);
-    }
-}
-void Server::internalUpdateNextPlayerPosition(EntityPosition next_player_position)
-{
-    m_next_player_position = next_player_position;
-    sendPosition();
-}
-
-void Server::gotFirstPlayerPositionAndLookResponse()
-{
-    m_canonical_player_position.dx = 0;
-    m_canonical_player_position.dy = 0;
-    m_canonical_player_position.dz = 0;
-    m_canonical_player_position.roll = 0;
-
-    m_next_player_position = m_canonical_player_position;
-    sendPosition();
-
-    delete m_position_update_timer;
-    m_position_update_timer = new QTimer;
-    m_position_update_timer->setInterval(c_notchian_tick_ms);
-
-    bool success;
-    success = connect(m_position_update_timer, SIGNAL(timeout()), this, SLOT(sendPosition()));
-    Q_ASSERT(success);
-
-    m_position_update_timer->start();
-
-    delete m_physics_timer;
-    m_physics_timer = new QTimer;
-    m_physics_timer->setInterval(1000 / c_physics_fps);
-
-    success = connect(m_physics_timer, SIGNAL(timeout()), this, SLOT(doPhysics()));
-    Q_ASSERT(success);
-
-    m_physics_timer->start();
-
-    changeLoginState(Success);
-}
-
-void Server::sendPosition()
+void Server::sendPositionAndLook(EntityPosition positionAndLook)
 {
     PlayerPositionAndLookRequest * request = new PlayerPositionAndLookRequest;
-    toNotchianXyz(m_next_player_position, request->x, request->y, request->z);
-    request->stance = m_next_player_position.stance + m_next_player_position.z;
-    toNotchianYawPitch(m_next_player_position, request->yaw, request->pitch);
-    request->on_ground = m_next_player_position.on_ground;
+    toNotchianXyz(positionAndLook, request->x, request->y, request->z);
+    request->stance = positionAndLook.stance + positionAndLook.z;
+    toNotchianYawPitch(positionAndLook, request->yaw, request->pitch);
+    request->on_ground = positionAndLook.on_ground;
     sendMessage(QSharedPointer<OutgoingRequest>(request));
-}
-
-void Server::doPhysics()
-{
-//    if (true && m_canonical_player_position.z <= 64) {
-//        m_canonical_player_position.z = 64.0;
-//        m_canonical_player_position.on_ground = true;
-//        m_canonical_player_position.dz = 0;
-//        m_canonical_player_position.x += c_walking_speed / c_physics_fps;
-//    } else {
-//        m_canonical_player_position.z -= 0.05;
-//    }
-//    m_next_player_position.x = m_canonical_player_position.x;
-//    m_next_player_position.y = m_canonical_player_position.y;
-//    m_next_player_position.z = m_canonical_player_position.z;
-//    m_next_player_position.on_ground = m_canonical_player_position.on_ground;
-//    emit playerPositionUpdated(m_canonical_player_position);
 }
 
 void Server::changeLoginState(LoginStatus state)
@@ -390,9 +311,4 @@ void Server::handleSocketError(QAbstractSocket::SocketError error)
 {
     qDebug() << "Socket error: " << error;
     changeLoginState(SocketError);
-}
-
-Server::LoginStatus Server::loginStatus()
-{
-    return m_login_state;
 }

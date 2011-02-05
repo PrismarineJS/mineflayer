@@ -63,7 +63,7 @@ MainWindow::MainWindow() :
     m_input_manager(NULL),
     m_mouse(NULL),
     m_keyboard(NULL),
-    m_server(NULL)
+    m_game(NULL)
 {
     loadControls();
 
@@ -77,13 +77,13 @@ MainWindow::MainWindow() :
     connection_settings.setHost("localhost");
     connection_settings.setPort(25565);
     connection_settings.setUserName("superbot");
-    m_server = new Server(connection_settings);
+    m_game = new Game(connection_settings);
     bool success;
-    success = connect(m_server, SIGNAL(mapChunkUpdated(QSharedPointer<Chunk>)), this, SLOT(updateChunk(QSharedPointer<Chunk>)));
+    success = connect(m_game, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(handleChunkUpdated(Int3D,Int3D)));
     Q_ASSERT(success);
-    success = connect(m_server, SIGNAL(playerPositionUpdated(Server::EntityPosition)), this, SLOT(movePlayerPosition(Server::EntityPosition)));
+    success = connect(m_game, SIGNAL(playerPositionUpdated(Server::EntityPosition)), this, SLOT(movePlayerPosition(Server::EntityPosition)));
     Q_ASSERT(success);
-    m_server->socketConnect();
+    m_game->start();
 }
 
 MainWindow::~MainWindow()
@@ -437,26 +437,14 @@ bool MainWindow::controlPressed(Control control)
             m_keyboard->isModifierDown((OIS::Keyboard::Modifier) key_code);
 }
 
-void MainWindow::updateChunk(QSharedPointer<Chunk> update)
+void MainWindow::handleChunkUpdated(Int3D start, Int3D size)
 {
     // build a mesh for the chunk
     // find the chunk coordinates for this updated stuff.
-    Int3D chunk_key = chunkKey(update->position());
-
-    // update our chunk with update
-    bool chunk_is_new;
-    ChunkData chunk_data = getChunk(chunk_key, &chunk_is_new);
-    QSharedPointer<Chunk> chunk = chunk_data.chunk;
-    Int3D offset;
-    Int3D size = update.data()->size();
-    for (offset.x = 0; offset.x < size.x; offset.x++) {
-        for (offset.y = 0; offset.y < size.y; offset.y++) {
-            for (offset.z = 0; offset.z < size.z; offset.z++) {
-                chunk.data()->setBlock(update.data()->position() + offset - chunk.data()->position(), update.data()->getBlock(offset));
-            }
-        }
-    }
-
+    Int3D chunk_key = chunkKey(start);
+    // make sure it fits in one chunk
+    Q_ASSERT(chunkKey(start + size - Int3D(1,1,1)) == chunk_key);
+    ChunkData chunk_data = getChunk(chunk_key);
     generateChunkMesh(chunk_data);
 }
 
@@ -468,16 +456,16 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
     if (chunk_data.node)
         m_scene_manager->destroySceneNode(chunk_data.node);
 
-    QSharedPointer<Chunk> chunk = chunk_data.chunk;
     Int3D offset;
-    Int3D size = chunk.data()->size();
+    Int3D size = c_chunk_size;
     for (int pass = 0; pass < 2; pass++) {
         Ogre::ManualObject * obj = new Ogre::ManualObject(Ogre::String());
         obj->begin(pass == 0 ? "TerrainOpaque" : "TerrainTransparent", Ogre::RenderOperation::OT_TRIANGLE_LIST);
-        for (offset.x = 0; offset.x < size.x; offset.x++) {
-            for (offset.y = 0; offset.y < size.y; offset.y++) {
-                for (offset.z = 0; offset.z < size.z; offset.z++) {
-                    Chunk::Block block = chunk.data()->getBlock(offset);
+        Int3D absolute_position;
+        for (offset.x = 0, absolute_position.x = chunk_data.position.x; offset.x < size.x; offset.x++, absolute_position.x++) {
+            for (offset.y = 0, absolute_position.y = chunk_data.position.y; offset.y < size.y; offset.y++, absolute_position.y++) {
+                for (offset.z = 0, absolute_position.z = chunk_data.position.z; offset.z < size.z; offset.z++, absolute_position.z++) {
+                    Chunk::Block block = m_game->blockAt(absolute_position);
 
                     BlockData block_data = m_block_data.value(block.type, m_air);
 
@@ -496,12 +484,11 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                     // for every side
                     for (int i = 0; i < 6; i++) {
                         // if the block on this side is opaque or the same block, skip
-                        Chunk::ItemType side_type = blockTypeAt(chunk.data()->position()+offset+c_side_offset[i]);
+                        Chunk::ItemType side_type = m_game->blockAt(absolute_position + c_side_offset[i]).type;
                         if (side_type == block.type || ! m_block_data.value(side_type, m_air).see_through)
                             continue;
 
                         // add this side to mesh
-                        Int3D abs_block_loc = chunk.data()->position() + offset;
                         QString texture_name = block_data.side_textures.at(i);
                         BlockTextureCoord btc = m_terrain_tex_coords.value(texture_name);
 
@@ -509,7 +496,7 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                             for (int point_index = 0; point_index < 3; point_index++) {
                                 Ogre::Vector3 side_coord = c_side_coord[i][triangle_index][point_index];
                                 Ogre::Vector2 tex_coord = c_tex_coord[triangle_index][point_index];
-                                obj->position(abs_block_loc.x+side_coord.x, abs_block_loc.y+side_coord.y, abs_block_loc.z+side_coord.z);
+                                obj->position(absolute_position.x+side_coord.x, absolute_position.y+side_coord.y, absolute_position.z+side_coord.z);
                                 obj->textureCoord((btc.x+tex_coord.x*btc.w) / 256.f, (btc.y+tex_coord.y*btc.h) / 256.0f);
                             }
                         }
@@ -526,41 +513,28 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
     }
 }
 
-Chunk::ItemType MainWindow::blockTypeAt(const Int3D & coord)
-{
-    Int3D chunk_key = chunkKey(coord);
-    ChunkData chunk_data = m_chunks.value(chunk_key, ChunkData());
-    QSharedPointer<Chunk> chunk = chunk_data.chunk;
-    if (chunk.isNull())
-        return Chunk::Air;
-    Int3D offset = coord - chunk_key;
-    return chunk.data()->getBlock(offset).type;
-}
-
 Int3D MainWindow::chunkKey(const Int3D & coord)
 {
     return coord - (coord % c_chunk_size);
 }
 
-MainWindow::ChunkData MainWindow::getChunk(const Int3D & key, bool * made_new_chunk)
+MainWindow::ChunkData MainWindow::getChunk(const Int3D & key)
 {
-    ChunkData chunk_data = m_chunks.value(key, ChunkData());
-    QSharedPointer<Chunk> chunk = chunk_data.chunk;
-    if (! chunk.isNull()) {
-        if (made_new_chunk)
-            *made_new_chunk = false;
+    ChunkData default_chunk_data;
+    default_chunk_data.node = NULL;
+    ChunkData chunk_data = m_chunks.value(key, default_chunk_data);
+    if (chunk_data.node != NULL)
         return chunk_data;
-    }
-    chunk_data.node = NULL;
     chunk_data.manual_object = NULL;
-    chunk_data.chunk = QSharedPointer<Chunk>(new Chunk(key, c_chunk_size));
     m_chunks.insert(key, chunk_data);
-    if (made_new_chunk)
-        *made_new_chunk = true;
     return chunk_data;
 }
 
 void MainWindow::movePlayerPosition(Server::EntityPosition position)
 {
-    m_camera->setPosition(Ogre::Vector3(position.x, position.y, position.z + position.stance));
+    Ogre::Vector3 cameraPosition(position.x, position.y, position.z + position.stance);
+    m_camera->setPosition(cameraPosition);
+    // TODO: pitch
+    Ogre::Vector3 lookingVector(Ogre::Math::Cos(position.yaw), Ogre::Math::Sin(position.yaw), 0);
+    m_camera->lookAt(cameraPosition + lookingVector);
 }

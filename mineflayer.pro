@@ -15,7 +15,8 @@ SOURCES += src/main.cpp \
     src/Chunk.cpp \
     src/MainWindow.cpp \
     src/Util.cpp \
-    src/ScriptRunner.cpp
+    src/ScriptRunner.cpp \
+    src/Game.cpp
 HEADERS += src/Server.h \
     src/Messages.h \
     src/Chunk.h \
@@ -24,7 +25,8 @@ HEADERS += src/Server.h \
     src/MainWindow.h \
     src/Int3D.h \
     src/Util.h \
-    src/ScriptRunner.h
+    src/ScriptRunner.h \
+    src/Game.h
 RESOURCES += mineflayer.qrc
 LIBS += -lOgreMain \
     -lOIS
