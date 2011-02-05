@@ -83,6 +83,7 @@ private:
     Ogre::RenderWindow* m_window;
     Ogre::String m_resources_config;
 
+    Ogre::Vector3 m_camera_velocity;
     bool m_shut_down;
 
     //OIS Input devices
@@ -137,6 +138,7 @@ private:
     Int3D chunkKey(const Int3D & coord);
     void generateChunkMesh(QSharedPointer<Chunk>);
     QSharedPointer<Chunk> getChunk(const Int3D & );
+    bool controlPressed(Control control);
 
 private slots:
     void updateChunk(QSharedPointer<Chunk> chunk);

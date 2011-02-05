@@ -308,23 +308,39 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
 
 
     // update the camera
-    bool forward = m_keyboard->isKeyDown(m_control_to_key.value(Forward));
-    bool backward = m_keyboard->isKeyDown(m_control_to_key.value(Back));
-    bool left = m_keyboard->isKeyDown(m_control_to_key.value(Left));
-    bool right = m_keyboard->isKeyDown(m_control_to_key.value(Right));
+    bool forward = controlPressed(Forward);
+    bool backward = controlPressed(Back);
+    bool left = controlPressed(Left);
+    bool right = controlPressed(Right);
+    bool crouch = controlPressed(Crouch);
 
-    float camera_speed = 0.3;
-    if (m_keyboard->isKeyDown(m_control_to_key.value(Crouch)))
-        camera_speed *= 4;
-    if (forward && ! backward)
-        m_camera->moveRelative(Ogre::Vector3(0, 0, -camera_speed));
-    else if (backward && ! forward)
-        m_camera->moveRelative(Ogre::Vector3(0, 0, camera_speed));
+    Ogre::Vector3 accel = Ogre::Vector3::ZERO;
+    if (forward) accel += m_camera->getDirection();
+    if (backward) accel -= m_camera->getDirection();
+    if (left) accel -= m_camera->getRight();
+    if (right) accel += m_camera->getRight();
 
-    if (left && ! right)
-        m_camera->moveRelative(Ogre::Vector3(-camera_speed, 0, 0));
-    else if (right && ! left)
-        m_camera->moveRelative(Ogre::Vector3(camera_speed, 0, 0));
+    float top_speed = 20;
+    if (crouch)
+        top_speed *= 20;
+
+    if (accel.squaredLength() != 0) {
+        accel.normalise();
+        m_camera_velocity += accel * top_speed * evt.timeSinceLastFrame * 10;
+    } else {
+        m_camera_velocity -= m_camera_velocity * evt.timeSinceLastFrame * 10;
+    }
+
+    float too_small = std::numeric_limits<float>::epsilon();
+
+    if (m_camera_velocity.squaredLength() > top_speed * top_speed) {
+        m_camera_velocity.normalise();
+        m_camera_velocity *= top_speed;
+    } else if (m_camera_velocity.squaredLength() < too_small * too_small) {
+        m_camera_velocity = Ogre::Vector3::ZERO;
+    }
+    if (m_camera_velocity != Ogre::Vector3::ZERO)
+        m_camera->move(m_camera_velocity * evt.timeSinceLastFrame);
 
     return true;
 }
@@ -345,8 +361,8 @@ bool MainWindow::keyReleased(const OIS::KeyEvent &arg )
 bool MainWindow::mouseMoved(const OIS::MouseEvent &arg )
 {
     // move camera
-    m_camera->rotate(Ogre::Vector3(0, 0, 1), Ogre::Degree(-arg.state.X.rel * 0.15f));
-    m_camera->pitch(Ogre::Degree(-arg.state.Y.rel * 0.15f));
+    m_camera->rotate(Ogre::Vector3(0, 0, 1), Ogre::Degree(-arg.state.X.rel * 0.25f));
+    m_camera->pitch(Ogre::Degree(-arg.state.Y.rel * 0.25f));
     return true;
 }
 
@@ -383,6 +399,13 @@ void MainWindow::windowClosed(Ogre::RenderWindow* rw)
         OIS::InputManager::destroyInputSystem(m_input_manager);
         m_input_manager = NULL;
     }
+}
+
+bool MainWindow::controlPressed(Control control)
+{
+    OIS::KeyCode key_code = m_control_to_key.value(control);
+    return m_keyboard->isKeyDown(key_code) ||
+            m_keyboard->isModifierDown((OIS::Keyboard::Modifier) key_code);
 }
 
 void MainWindow::updateChunk(QSharedPointer<Chunk> update)
