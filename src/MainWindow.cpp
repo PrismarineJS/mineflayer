@@ -1,5 +1,8 @@
 #include "MainWindow.h"
 
+#include <OGRE/OgreMaterialManager.h>
+#include <OGRE/OgreManualObject.h>
+
 #include <QtGlobal>
 #include <QTimer>
 #include <QCoreApplication>
@@ -56,7 +59,6 @@ MainWindow::MainWindow() :
     m_scene_manager(NULL),
     m_window(NULL),
     m_resources_config(Ogre::StringUtil::BLANK),
-    m_camera_man(NULL),
     m_shut_down(false),
     m_input_manager(NULL),
     m_mouse(NULL),
@@ -80,8 +82,6 @@ MainWindow::MainWindow() :
 
 MainWindow::~MainWindow()
 {
-    delete m_camera_man;
-
     // Remove ourself as a Window listener
     Ogre::WindowEventUtilities::removeWindowEventListener(m_window, this);
     windowClosed(m_window);
@@ -133,11 +133,9 @@ void MainWindow::createCamera()
     m_camera->setPosition(Ogre::Vector3(0,0,0));
     // Look back along -Z
     m_camera->lookAt(Ogre::Vector3(1,1,-0.1));
+    m_camera->roll(Ogre::Degree(-90));
     m_camera->setNearClipDistance(0.1);
-    m_camera->setFixedYawAxis(false);
 
-    m_camera_man = new OgreBites::SdkCameraMan(m_camera);   // create a default camera controller
-    m_camera_man->setTopSpeed(10);
 }
 
 void MainWindow::createFrameListener()
@@ -195,14 +193,14 @@ void MainWindow::loadResources()
 
     // create the terrain material
     //Ogre::ResourceGroupManager::getSingleton().createResourceGroup("Global");
-    Ogre::MaterialPtr lMaterial = Ogre::MaterialManager::getSingleton().create("Terrain", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-    Ogre::Technique* lFirstTechnique = lMaterial->getTechnique(0);
-    Ogre::Pass* lFirstPass = lFirstTechnique->getPass(0);
+    Ogre::MaterialPtr materal = Ogre::MaterialManager::getSingleton().create("Terrain", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    Ogre::Technique* first_technique = materal->getTechnique(0);
+    Ogre::Pass* first_pass = first_technique->getPass(0);
 
-    Ogre::TextureUnitState* lTextureUnit = lFirstPass->createTextureUnitState();
-    lTextureUnit->setTextureName("terrain.png", Ogre::TEX_TYPE_2D);
-    lTextureUnit->setTextureCoordSet(0);
-    lTextureUnit->setTextureFiltering(Ogre::TFO_NONE);
+    Ogre::TextureUnitState* texture_unit = first_pass->createTextureUnitState();
+    texture_unit->setTextureName("terrain.png", Ogre::TEX_TYPE_2D);
+    texture_unit->setTextureCoordSet(0);
+    texture_unit->setTextureFiltering(Ogre::TFO_NONE);
 
     {
         // grab all the textures from resources
@@ -295,13 +293,13 @@ bool MainWindow::setup()
 
 bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
 {
-    if(m_window->isClosed())
+    if (m_window->isClosed())
         return false;
 
-    if(m_shut_down)
+    if (m_shut_down)
         return false;
 
-    //Need to capture/update each device
+    // Need to capture/update each device
     m_keyboard->capture();
     m_mouse->capture();
     QCoreApplication::processEvents();
@@ -309,42 +307,56 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
     // compute next frame
 
 
-    m_camera_man->frameRenderingQueued(evt);   // if dialog isn't up, then update the camera
+    // update the camera
+    bool forward = m_keyboard->isKeyDown(m_control_to_key.value(Forward));
+    bool backward = m_keyboard->isKeyDown(m_control_to_key.value(Back));
+    bool left = m_keyboard->isKeyDown(m_control_to_key.value(Left));
+    bool right = m_keyboard->isKeyDown(m_control_to_key.value(Right));
 
+    float camera_speed = 0.3;
+    if (m_keyboard->isKeyDown(m_control_to_key.value(Crouch)))
+        camera_speed *= 4;
+    if (forward && ! backward)
+        m_camera->moveRelative(Ogre::Vector3(0, 0, -camera_speed));
+    else if (backward && ! forward)
+        m_camera->moveRelative(Ogre::Vector3(0, 0, camera_speed));
+
+    if (left && ! right)
+        m_camera->moveRelative(Ogre::Vector3(-camera_speed, 0, 0));
+    else if (right && ! left)
+        m_camera->moveRelative(Ogre::Vector3(camera_speed, 0, 0));
 
     return true;
 }
 
-bool MainWindow::keyPressed( const OIS::KeyEvent &arg )
+bool MainWindow::keyPressed(const OIS::KeyEvent &arg )
 {
     if (arg.key == OIS::KC_ESCAPE || (m_keyboard->isModifierDown(OIS::Keyboard::Alt) && arg.key == OIS::KC_F4))
         m_shut_down = true;
 
-    m_camera_man->injectKeyDown(arg);
     return true;
 }
 
-bool MainWindow::keyReleased( const OIS::KeyEvent &arg )
+bool MainWindow::keyReleased(const OIS::KeyEvent &arg )
 {
-    m_camera_man->injectKeyUp(arg);
     return true;
 }
 
-bool MainWindow::mouseMoved( const OIS::MouseEvent &arg )
+bool MainWindow::mouseMoved(const OIS::MouseEvent &arg )
 {
-    m_camera_man->injectMouseMove(arg);
+    // move camera
+    m_camera->rotate(Ogre::Vector3(0, 0, 1), Ogre::Degree(-arg.state.X.rel * 0.15f));
+    m_camera->pitch(Ogre::Degree(-arg.state.Y.rel * 0.15f));
     return true;
 }
 
-bool MainWindow::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+bool MainWindow::mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-    m_camera_man->injectMouseDown(arg, id);
     return true;
 }
 
-bool MainWindow::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+bool MainWindow::mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-    m_camera_man->injectMouseUp(arg, id);
     return true;
 }
 

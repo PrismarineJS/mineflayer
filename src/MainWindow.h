@@ -10,13 +10,12 @@
 #include <OGRE/OgreRenderWindow.h>
 #include <OGRE/OgreConfigFile.h>
 #include <OGRE/OgreVector3.h>
+#include <OGRE/OgreWindowEventUtilities.h>
 
 #include <OIS/OISEvents.h>
 #include <OIS/OISInputManager.h>
 #include <OIS/OISKeyboard.h>
 #include <OIS/OISMouse.h>
-
-#include <OGRE/SdkCameraMan.h>
 
 #include <QObject>
 #include <QHash>
@@ -84,8 +83,6 @@ private:
     Ogre::RenderWindow* m_window;
     Ogre::String m_resources_config;
 
-    // OgreBites
-    OgreBites::SdkCameraMan* m_camera_man;       // basic camera controller
     bool m_shut_down;
 
     //OIS Input devices

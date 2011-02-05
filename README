@@ -8,16 +8,15 @@ Current features:
 Planned features:
  * bot that builds stuff
 
-Installing Ogre 1.7 in Ubunut:
-    sudo apt-add-repository ppa:ogre-team/ogre
-    sudo apt-get update 
-    sudo apt-get install libogre-dev 
-
 Setting up build:
- 1. Run ./extract_resources <path_to_minecraft.jar>
- 2. Open .pro file in QtCreator
- 3. Build
- 4. Manually copy resources/ to build directory
+ 1. Get prereqs.
+    libois-dev
+    libogre-dev
+    qt4-dev-tools
+ 2. Run ./extract_resources <path_to_minecraft.jar>
+ 3. Open .pro file in QtCreator
+ 4. Build
+ 5. Manually copy resources/ to build directory
 
 TODO include somewhere:
     int tick_ms = 200;
