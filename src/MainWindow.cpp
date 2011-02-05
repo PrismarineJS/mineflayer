@@ -192,15 +192,18 @@ void MainWindow::loadResources()
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
     // create the terrain material
-    //Ogre::ResourceGroupManager::getSingleton().createResourceGroup("Global");
     Ogre::MaterialPtr materal = Ogre::MaterialManager::getSingleton().create("Terrain", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
     Ogre::Technique* first_technique = materal->getTechnique(0);
     Ogre::Pass* first_pass = first_technique->getPass(0);
-
+    first_pass->setAlphaRejectFunction(Ogre::CMPF_GREATER_EQUAL);
+    first_pass->setAlphaRejectValue(128);
+    first_pass->setDepthWriteEnabled(true);
+    first_pass->setDepthCheckEnabled(true);
     Ogre::TextureUnitState* texture_unit = first_pass->createTextureUnitState();
-    texture_unit->setTextureName("terrain.png", Ogre::TEX_TYPE_2D);
+    texture_unit->setTextureName("terrain.png");
     texture_unit->setTextureCoordSet(0);
     texture_unit->setTextureFiltering(Ogre::TFO_NONE);
+    texture_unit->setAlphaOperation(Ogre::LBX_SOURCE1);
 
     {
         // grab all the textures from resources
