@@ -360,7 +360,6 @@ void Server::sendPosition()
     request->stance = m_next_player_position.stance + m_next_player_position.z;
     toNotchianYawPitch(m_next_player_position, request->yaw, request->pitch);
     request->on_ground = m_next_player_position.on_ground;
-    qDebug() << m_next_player_position.x << m_next_player_position.y << m_next_player_position.z << m_next_player_position.on_ground;
     sendMessage(QSharedPointer<OutgoingRequest>(request));
 }
 
