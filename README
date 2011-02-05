@@ -1,5 +1,5 @@
 
-mineflayer - Minecraft client and bot.
+mineflayer - Minecraft client and bot scripting interface.
 
 Current features:
  * logs in (no authentication support yet)
@@ -7,13 +7,12 @@ Current features:
  * runs javascript bot scripts with a limited api
 
 Planned features:
- * bot that builds stuff
+ * authenticated login.
+ * the rest of the bot api. see doc/bot-api for further details.
+ * examples of bot scripts with AI.
 
 Setting up build:
- 1. Get prereqs.
-    libois-dev
-    libogre-dev
-    qt4-dev-tools
+ 1. Install prerequisites: libois-dev libogre-dev qt4-dev-tools
  2. Run ./extract_resources <path_to_minecraft.jar>
  3. Open .pro file in QtCreator
  4. Build
