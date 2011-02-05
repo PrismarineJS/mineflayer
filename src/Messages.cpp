@@ -128,10 +128,6 @@ void WindowClickRequest::writeMessageBody(QDataStream &stream)
     writeValue(stream, item);
 }
 
-void DummyDisconnectRequest::writeMessageBody(QDataStream &)
-{
-}
-
 int IncomingResponse::parseValue(QByteArray buffer, int index, bool &value)
 {
     qint8 tmp;

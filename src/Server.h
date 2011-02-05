@@ -61,12 +61,6 @@ public slots:
     // use this to actually connect to the server
     void socketConnect();
 
-    // disconnects immediately, without finishing writing or reading messages.
-    void socketDisconnect();
-
-    // finishes up the outgoing message queue and then performs socketDisconnect.
-    void finishWritingAndDisconnect();
-
     // sends a chat
     void sendChat(QString message);
 public:
@@ -81,6 +75,7 @@ private:
     IncomingMessageParser * m_parser;
     QTimer * m_position_update_timer;
 
+    static const float c_walking_speed; // m/s
     static const int c_notchian_tick_ms;
     static const int c_physics_fps;
     static const float c_gravity; // m/s^2

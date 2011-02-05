@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QCoreApplication>
 
+const float Server::c_walking_speed = 4.27;
 const int Server::c_notchian_tick_ms = 200;
 const int Server::c_physics_fps = 60;
 const float Server::c_gravity = -9.81;
@@ -65,27 +66,11 @@ void Server::socketConnect()
     m_socket->connectToHost(m_connection_info.host(), m_connection_info.port(25565));
 }
 
-void Server::socketDisconnect()
-{
-    if (QThread::currentThread() != m_socket_thread) {
-        bool success = QMetaObject::invokeMethod(this, "socketDisconnect", Qt::QueuedConnection);
-        Q_ASSERT(success);
-        return;
-    }
-
-    if (m_socket->isOpen())
-        m_socket->disconnectFromHost();
-}
-
 void Server::sendMessage(QSharedPointer<OutgoingRequest> msg)
 {
     if (QThread::currentThread() != m_socket_thread) {
         bool success = QMetaObject::invokeMethod(this, "sendMessage", Qt::QueuedConnection, Q_ARG(QSharedPointer<OutgoingRequest>, msg));
         Q_ASSERT(success);
-        return;
-    }
-    if (msg.data()->messageType == Message::DummyDisconnect) {
-        socketDisconnect();
         return;
     }
     if (m_socket->isOpen()) {
@@ -162,7 +147,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::PlayerPositionAndLook: {
             PlayerPositionAndLookResponse * message = (PlayerPositionAndLookResponse *) incomingMessage.data();
             fromNotchianXyz(m_canonical_player_position, message->x, message->y, message->z);
-            m_canonical_player_position.stance = message->stance;
+            m_canonical_player_position.stance = message->stance - m_canonical_player_position.z;
             fromNotchianYawPitch(m_canonical_player_position, message->yaw, message->pitch);
             m_canonical_player_position.on_ground = message->on_ground;
             if (m_login_state == WaitingForPlayerPositionAndLook)
@@ -261,7 +246,8 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::DisconnectOrKick: {
             DisconnectOrKickResponse * message = (DisconnectOrKickResponse *)incomingMessage.data();
             qDebug() << "got disconnected: " << message->reason;
-            finishWritingAndDisconnect();
+            if (m_socket->isOpen())
+                m_socket->disconnectFromHost();
             break;
         }
         default: {
@@ -371,22 +357,27 @@ void Server::sendPosition()
 {
     PlayerPositionAndLookRequest * request = new PlayerPositionAndLookRequest;
     toNotchianXyz(m_next_player_position, request->x, request->y, request->z);
-    request->stance = m_next_player_position.stance;
+    request->stance = m_next_player_position.stance + m_next_player_position.z;
     toNotchianYawPitch(m_next_player_position, request->yaw, request->pitch);
     request->on_ground = m_next_player_position.on_ground;
+    qDebug() << m_next_player_position.x << m_next_player_position.y << m_next_player_position.z << m_next_player_position.on_ground;
     sendMessage(QSharedPointer<OutgoingRequest>(request));
 }
 
 void Server::doPhysics()
 {
-//    if (m_canonical_player_position.on_ground) {
-//        qDebug() << "standing";
+//    if (true && m_canonical_player_position.z <= 64) {
+//        m_canonical_player_position.z = 64.0;
+//        m_canonical_player_position.on_ground = true;
 //        m_canonical_player_position.dz = 0;
+//        m_canonical_player_position.x += c_walking_speed / c_physics_fps;
 //    } else {
-//        m_canonical_player_position.z += m_canonical_player_position.dz;
-//        m_canonical_player_position.dz += c_gravity / (c_physics_fps * c_physics_fps);
+//        m_canonical_player_position.z -= 0.05;
 //    }
+//    m_next_player_position.x = m_canonical_player_position.x;
+//    m_next_player_position.y = m_canonical_player_position.y;
 //    m_next_player_position.z = m_canonical_player_position.z;
+//    m_next_player_position.on_ground = m_canonical_player_position.on_ground;
 //    emit playerPositionUpdated(m_canonical_player_position);
 }
 
@@ -400,12 +391,6 @@ void Server::handleSocketError(QAbstractSocket::SocketError error)
 {
     qDebug() << "Socket error: " << error;
     changeLoginState(SocketError);
-}
-
-void Server::finishWritingAndDisconnect()
-{
-    // put a dummy message on the queue
-    this->sendMessage(QSharedPointer<OutgoingRequest>(new DummyDisconnectRequest()));
 }
 
 Server::LoginStatus Server::loginStatus()

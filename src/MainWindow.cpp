@@ -132,10 +132,9 @@ void MainWindow::createCamera()
     // Position it at 500 in Z direction
     m_camera->setPosition(Ogre::Vector3(0,0,0));
     // Look back along -Z
-    m_camera->lookAt(Ogre::Vector3(1,1,-0.1));
+    m_camera->lookAt(Ogre::Vector3(1,1,0));
     m_camera->roll(Ogre::Degree(-90));
     m_camera->setNearClipDistance(0.1);
-
 }
 
 void MainWindow::createFrameListener()
@@ -512,5 +511,5 @@ QSharedPointer<Chunk> MainWindow::getChunk(const Int3D & key)
 
 void MainWindow::movePlayerPosition(Server::EntityPosition position)
 {
-    m_camera->setPosition(Ogre::Vector3(position.x, position.y, position.z));
+    m_camera->setPosition(Ogre::Vector3(position.x, position.y, position.z + position.stance));
 }

@@ -59,8 +59,6 @@ public:
         Transaction=0x6A,
         UpdateSign=(qint8)0x82,
         DisconnectOrKick=(qint8)0xFF,
-
-        DummyDisconnect=(qint8)0xFE,
     };
 
 
@@ -222,12 +220,6 @@ public:
     WindowClickRequest(qint8 window_id, qint16 slot, bool is_right_click, qint16 action_id, Item item) : OutgoingRequest(WindowClick),
         window_id(window_id), slot(slot), is_right_click(is_right_click), action_id(action_id), item(item) {}
     virtual void writeMessageBody(QDataStream &stream);
-};
-
-class DummyDisconnectRequest : public OutgoingRequest {
-public:
-    DummyDisconnectRequest() : OutgoingRequest(DummyDisconnect) {}
-    virtual void writeMessageBody(QDataStream &);
 };
 
 class IncomingResponse : public Message {
