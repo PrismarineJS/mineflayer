@@ -4,6 +4,8 @@
  * Vocabulary
  *
  * meter - a block is 1 meter cubed, or 1x1x1.
+ * x, y, z - East, North, Up respectively. Coordinates are always specified in meters.
+ *          NOTE: this coordinate system is different from Notch's South-Up-East system.
  *
  * Enums
  * 
@@ -11,10 +13,10 @@
  *     NoDirection
  *     NegativeY
  *     PositiveY
- *     NegativeZ
- *     PositiveZ
  *     NegativeX
  *     PositiveX
+ *     NegativeZ
+ *     PositiveZ
  *
  * mf.Mob
  *     Pig
@@ -22,11 +24,11 @@
  *     Cow
  *     Chicken
  *     Squid
- *     Zombie Pigman
+ *     ZombiePigman
  *     Spider
  *     Zombie
  *     Skeleton
- *     Spider Jockey
+ *     SpiderJockey
  *     Creeper
  *     Slime
  *     Ghast
@@ -54,11 +56,24 @@ print(line)
  * @param {String} message The message to send to everyone on the server.
  */
 chat(message)
+// TODO: /kill and /tell as separate functions
+// TODO: op commands such as /give as separate functions
 
 // NOT YET IMPLEMENTED
 
 /**
- * Looks in a direction.
+ * Returns the block at the absolute x,y,z location in the world
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} z
+ * @return {Object} block object with these fields:
+ *          type {Number} - block type id
+ *          metadata {Number} - Notch's metadata for the block
+ */
+blockAt(x, y, z)
+
+/**
+ * Looks in a direction. Probably strictly asthetic.
  * @param {Number} yaw The number of radians to rotate around the Z axis, starting from due east. Counter clockwise.
  * @param {Number} pitch Number of radians to point up or down. 0 means straight forward. pi / 2 means straight up. -pi / 2 means straight down.
  */
@@ -66,17 +81,17 @@ look(yaw, pitch)
 
 /**
  * Begin digging into a block with the currently equipped item. When you finally break through the block, or you are interrupted for any reason, you will get an onStoppedDigging() event.
- * @param {Number} x X coordinate in meters.
- * @param {Number} y Y coordinate in meters.
- * @param {Number} z Z coordinate in meters.
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} z
  */
 startDigging(x, y, z)
 
 /**
  * Place the currently equipped item, with some exceptions. If the block at x, y, z is a chest, furnace, workbench, etc, you will "activate" the block. If the equipped item is food, you will eat it.
- * @param {Number} x X coordinate in meters.
- * @param {Number} y Y coordinate in meters.
- * @param {Number} z Z coordinate in meters.
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} z
  * @param {Number} face The side of the block you want to start digging into. See the mf.Face enum.
  */
 placeBlock(x, y, z, face)
@@ -152,9 +167,9 @@ onChat(user, message)
 
 /**
  * Called when blocks are updated.
- * @param {Number} start_x The x position in absolute meters of the first block that was updated.
- * @param {Number} start_y The y position in absolute meters of the first block that was updated.
- * @param {Number} start_z The z position in absolute meters of the first block that was updated.
+ * @param {Number} start_x The absolute x position of the first block that was updated.
+ * @param {Number} start_y The absolute y position of the first block that was updated.
+ * @param {Number} start_z The absolute z position of the first block that was updated.
  * @param {Number} x_count The number of blocks in the x direction that were updated.
  * @param {Number} y_count The number of blocks in the y direction that were updated.
  * @param {Number} z_count The number of blocks in the z direction that were updated.
@@ -165,18 +180,18 @@ onChunkUpdate(start_x, start_y, start_z, x_count, y_count, z_count)
  * Called when a mob (Cow, Spider, Squid, etc) is created.
  * @param {Number} id A unique identifier for this specific mob.
  * @param {Number} type The class of mob that was spawned. See the mf.Mob enum.
- * @param {Number} x The absolute x position in meters where the mob spawned.
- * @param {Number} y The absolute y position in meters where the mob spawned.
- * @param {Number} z The absolute z position in meters where the mob spawned.
+ * @param {Number} x The absolute x position where the mob spawned.
+ * @param {Number} y The absolute y position where the mob spawned.
+ * @param {Number} z The absolute z position where the mob spawned.
  */
 onMobSpawn(id, type, x, y, z)
 
 /**
  * Called when a mob moves.
  * @param {Number} id The unique identifier for this specific mob.
- * @param {Number} x The absolute x position in meters where the mob has just moved to.
- * @param {Number} y The absolute y position in meters where the mob has just moved to.
- * @param {Number} z The absolute z position in meters where the mob has just moved to.
+ * @param {Number} x The absolute x position where the mob has just moved to.
+ * @param {Number} y The absolute y position where the mob has just moved to.
+ * @param {Number} z The absolute z position where the mob has just moved to.
  */
 onMobMovement(id, x, y, z)
 
@@ -220,7 +235,7 @@ onUserJoined(username)
  */
 onUserQuit(username)
 
-// TODO: other non-chat type messages
+// TODO: other non-chat type messages such as whispers.
 
 
 
