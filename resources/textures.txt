@@ -28,7 +28,7 @@ ChestBottom         144 16  16  16
 SmallChestBack      160 16  16  16
 SmallChestFront     176 16  16  16
 RedMushroom         192 16  16  16
-TanMushroom         208 16  16  16
+BrownMushroom       208 16  16  16
 
 GoldOre             0   32  16  16
 IronOre             16  32  16  16

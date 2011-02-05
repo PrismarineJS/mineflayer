@@ -1,5 +1,6 @@
 Core:
  * support physics / walking around
+ * authenticated login
 
 3D client:
  * partial transparency (ice, water)
