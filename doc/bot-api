@@ -5,7 +5,7 @@
  *
  * meter - a block is 1 meter cubed, or 1x1x1.
  * x, y, z - East, North, Up respectively. Coordinates are always specified in meters.
- *          NOTE: this coordinate system is different from Notch's South-Up-East system.
+ *          NOTE: this coordinate system is different from Notch's South-Up-West system.
  *
  * Enums
  * 

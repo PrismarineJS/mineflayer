@@ -274,7 +274,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
 void Server::fromNotchianXyz(EntityPosition &destination, double notchian_x, double notchian_y, double notchian_z)
 {
     // east
-    destination.x = notchian_z;
+    destination.x = -notchian_z;
     // north
     destination.y = -notchian_x;
     // up
@@ -284,7 +284,7 @@ Int3D Server::fromNotchianXyz(int notchian_x, int notchian_y, int notchian_z)
 {
     Int3D result;
     // east
-    result.x = notchian_z;
+    result.x = -notchian_z;
     // north
     result.y = -notchian_x;
     // up
@@ -299,7 +299,7 @@ Int3D Server::fromNotchianXyz(Int3D notchian_xyz)
 void Server::toNotchianXyz(const EntityPosition &source, double &destination_notchian_x, double &destination_notchian_y, double &destination_notchian_z)
 {
     // east
-    destination_notchian_z = source.x;
+    destination_notchian_z = -source.x;
     // north
     destination_notchian_x = -source.y;
     // up
