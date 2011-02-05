@@ -10,6 +10,8 @@
 #include <QSharedPointer>
 #include <QUrl>
 #include <QTimer>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 
 // use it to send messages and connect to it to hear it emit incoming messages.
 // this object runs in its own thread which it manages for you.
@@ -22,6 +24,8 @@ public:
         Disconnected,
         Connecting,
         WaitingForHandshakeResponse,
+        WaitingForSessionId,
+        WaitingForNameVerification,
         WaitingForLoginResponse,
         WaitingForPlayerPositionAndLook,
         Success,
@@ -68,12 +72,14 @@ public:
     void updateNextPlayerPosition(EntityPosition next_player_position);
 
 private:
+    static const QString c_auth_server;
     QUrl m_connection_info;
 
     QThread * m_socket_thread;
     QTcpSocket * m_socket;
     IncomingMessageParser * m_parser;
     QTimer * m_position_update_timer;
+    QNetworkAccessManager * m_network;
 
     static const float c_walking_speed; // m/s
     static const int c_notchian_tick_ms;
@@ -86,6 +92,8 @@ private:
     EntityPosition m_canonical_player_position;
     EntityPosition m_next_player_position;
 
+    QString m_connection_hash;
+
 private:
     void changeLoginState(LoginStatus state);
     void gotFirstPlayerPositionAndLookResponse();
@@ -97,6 +105,7 @@ private:
     static void toNotchianXyz(const EntityPosition &source, double & destination_notchian_x, double & destination_notchian_y, double & destination_notchian_z);
     static void fromNotchianYawPitch(EntityPosition & destination, float notchian_yaw, float notchian_pitch);
     static void toNotchianYawPitch(const EntityPosition &source, float & destination_notchian_yaw, float & destination_notchian_pitch);
+    QByteArray notchUrlEncode(QString param);
 
 private slots:
     void initialize();
@@ -109,6 +118,7 @@ private slots:
     void doPhysics();
     void internalUpdateNextPlayerPosition(EntityPosition next_player_position);
     void sendMessage(QSharedPointer<OutgoingRequest> message);
+    void handleFinishedRequest(QNetworkReply *);
 };
 
 

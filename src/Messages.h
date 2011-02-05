@@ -268,7 +268,7 @@ public:
 
 class HandshakeResponse : public IncomingResponse {
 public:
-    static const QString AuthenticationRequired;
+    static const QString PasswordAuthenticationRequired;
     static const QString AuthenticationNotRequired;
     QString connectionHash;
     HandshakeResponse() : IncomingResponse(Handshake) {}

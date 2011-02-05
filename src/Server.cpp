@@ -10,11 +10,14 @@ const int Server::c_notchian_tick_ms = 200;
 const int Server::c_physics_fps = 60;
 const float Server::c_gravity = -9.81;
 
+const QString Server::c_auth_server = "www.minecraft.net";
+
 Server::Server(QUrl connection_info) :
     m_connection_info(connection_info),
     m_socket_thread(NULL),
     m_parser(NULL),
     m_position_update_timer(NULL),
+    m_network(NULL),
     m_physics_timer(NULL),
     m_login_state(Disconnected)
 {
@@ -39,17 +42,18 @@ void Server::initialize()
 {
     Q_ASSERT(QThread::currentThread() == m_socket_thread);
 
-    m_socket = new QTcpSocket(this);
-
     bool success;
 
+    m_socket = new QTcpSocket(this);
     success = connect(m_socket, SIGNAL(connected()), this, SLOT(handleConnected()));
     Q_ASSERT(success);
-
     success = connect(m_socket, SIGNAL(disconnected()), this, SLOT(cleanUpAfterDisconnect()));
     Q_ASSERT(success);
-
     success = connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(handleSocketError(QAbstractSocket::SocketError)));
+    Q_ASSERT(success);
+
+    m_network = new QNetworkAccessManager(this);
+    success = connect(m_network, SIGNAL(finished(QNetworkReply*)), this, SLOT(handleFinishedRequest(QNetworkReply*)));
     Q_ASSERT(success);
 }
 
@@ -117,17 +121,78 @@ void Server::terminate()
     emit socketDisconnected();
 }
 
+void Server::handleFinishedRequest(QNetworkReply * reply)
+{
+    QString new_url = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toString();
+    if (! new_url.isEmpty()) {
+        // redirect
+        qDebug() << "Redirecting to" << new_url;
+        m_network->get(QNetworkRequest(QUrl(new_url)));
+        return;
+    }
+    if (m_login_state == WaitingForSessionId) {
+        QByteArray data = reply->readAll();
+        QString response = QString::fromUtf8(data.constData(), data.size());
+        if(response == "Old Version") {
+            qWarning() << "Minecraft.net says our version of the launcher is old.";
+            return;
+        }
+        QStringList values = response.split(':', QString::SkipEmptyParts);
+        if (values.size() != 4) {
+            qWarning() << "Minecraft.net gave unexpected response:" << response;
+            return;
+        }
+        m_connection_info.setUserName(values.at(2));
+        QString session_id = values.at(3);
+
+        QUrl request_url(QString("http://") + c_auth_server + QString("/game/joinserver.jsp"));
+        request_url.addEncodedQueryItem("user", notchUrlEncode(m_connection_info.userName()));
+        request_url.addEncodedQueryItem("sessionId", notchUrlEncode(session_id));
+        request_url.addEncodedQueryItem("serverId", notchUrlEncode(m_connection_hash));
+        qDebug() << "sending joinserver: " << request_url.toString();
+        m_network->get(QNetworkRequest(request_url));
+        changeLoginState(WaitingForNameVerification);
+    } else if (m_login_state == WaitingForNameVerification) {
+        QByteArray data = reply->readAll();
+        QString response = QString::fromUtf8(data.constData(), data.size());
+        if (response != "OK") {
+            qWarning() << "Error authenticating with minecraft.net:" << response;
+            return;
+        }
+
+        qDebug() << "Authentication success. sending login request.";
+        changeLoginState(WaitingForPlayerPositionAndLook);
+        sendMessage(QSharedPointer<OutgoingRequest>(new LoginRequest(m_connection_info.userName(), m_connection_info.password())));
+    }
+}
+
+QByteArray Server::notchUrlEncode(QString param)
+{
+    return QUrl::toPercentEncoding(param, QByteArray(), QByteArray("-._~"));
+}
+
 void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMessage)
 {
     switch (incomingMessage.data()->messageType) {
         case Message::Handshake: {
             HandshakeResponse * message = (HandshakeResponse *)incomingMessage.data();
+            m_connection_hash = message->connectionHash;
             Q_ASSERT(m_login_state == WaitingForHandshakeResponse);
-            // we don't support authenticated logging in yet.
-            Q_ASSERT_X(message->connectionHash == HandshakeResponse::AuthenticationNotRequired, "",
-                       (QString("unexpected connection hash: ") + message->connectionHash).toStdString().c_str());
-            changeLoginState(WaitingForPlayerPositionAndLook);
-            sendMessage(QSharedPointer<OutgoingRequest>(new LoginRequest(m_connection_info.userName(), m_connection_info.password())));
+            if (m_connection_hash == HandshakeResponse::AuthenticationNotRequired ||
+                m_connection_hash == HandshakeResponse::PasswordAuthenticationRequired)
+            {
+                changeLoginState(WaitingForPlayerPositionAndLook);
+                sendMessage(QSharedPointer<OutgoingRequest>(new LoginRequest(m_connection_info.userName(), m_connection_info.password())));
+            } else {
+                // authentication with minecraft.net required
+                QUrl request_url(QString("http://") + c_auth_server + QString("/game/getversion.jsp"));
+                request_url.addEncodedQueryItem("user", notchUrlEncode(m_connection_info.userName()));
+                request_url.addEncodedQueryItem("password", notchUrlEncode(m_connection_info.password()));
+                request_url.addEncodedQueryItem("version", "12");
+                qDebug() << "Sending authentication request: " << request_url.toString();
+                m_network->get(QNetworkRequest(request_url));
+                changeLoginState(WaitingForSessionId);
+            }
             break;
         }
         case Message::Chat: {
