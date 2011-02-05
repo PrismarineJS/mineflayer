@@ -106,10 +106,23 @@ private:
         int h;
     };
 
+    struct BlockData {
+        QString name;
+        QVector<QString> side_textures;
+        bool see_through;
+        bool partial_alpha;
+    };
+
+    struct ChunkData {
+        QSharedPointer<Chunk> chunk;
+        Ogre::SceneNode * node;
+        Ogre::ManualObject * manual_object;
+    };
+
     Server * m_server;
 
     // key is the meter coordinates of the min corner
-    QHash<Int3D, QSharedPointer<Chunk> > m_chunks;
+    QHash<Int3D, ChunkData> m_chunks;
     QHash<qint32, QSharedPointer<Mob> > m_entities;
 
     Mob * m_player;
@@ -121,7 +134,13 @@ private:
     // maps texture name to coordinates in terrain.png
     QHash<QString, BlockTextureCoord> m_terrain_tex_coords;
     // maps item type to texture name for each side
-    QHash<Chunk::ItemType, QVector<QString> > m_side_texture_names;
+    QHash<Chunk::ItemType, BlockData> m_block_data;
+    BlockData m_air;
+
+    Ogre::SceneNode * m_pass[2];
+
+
+    char wtf[50]; // can't let our object be certain sizes or unknown, undocumented, terrible things happen
 
 private:
     void loadControls();
@@ -136,8 +155,8 @@ private:
 
     Chunk::ItemType blockTypeAt(const Int3D & coord);
     Int3D chunkKey(const Int3D & coord);
-    void generateChunkMesh(QSharedPointer<Chunk>);
-    QSharedPointer<Chunk> getChunk(const Int3D & );
+    void generateChunkMesh(ChunkData & chunk_data);
+    ChunkData getChunk(const Int3D & coord, bool * made_new_chunk = NULL);
     bool controlPressed(Control control);
 
 private slots:

@@ -67,6 +67,13 @@ MainWindow::MainWindow() :
 {
     loadControls();
 
+    Q_ASSERT(sizeof(MainWindow) != 216 && sizeof(MainWindow) != 336);
+    qDebug() << sizeof(MainWindow);
+
+    m_air.see_through = true;
+    m_air.partial_alpha = false;
+    m_air.name = "Air";
+
     QUrl connection_settings;
     connection_settings.setHost("localhost");
     connection_settings.setPort(25565);
@@ -191,18 +198,32 @@ void MainWindow::loadResources()
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
     // create the terrain material
-    Ogre::MaterialPtr materal = Ogre::MaterialManager::getSingleton().create("Terrain", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-    Ogre::Technique* first_technique = materal->getTechnique(0);
-    Ogre::Pass* first_pass = first_technique->getPass(0);
-    first_pass->setAlphaRejectFunction(Ogre::CMPF_GREATER_EQUAL);
-    first_pass->setAlphaRejectValue(128);
-    first_pass->setDepthWriteEnabled(true);
-    first_pass->setDepthCheckEnabled(true);
-    Ogre::TextureUnitState* texture_unit = first_pass->createTextureUnitState();
-    texture_unit->setTextureName("terrain.png");
-    texture_unit->setTextureCoordSet(0);
-    texture_unit->setTextureFiltering(Ogre::TFO_NONE);
-    texture_unit->setAlphaOperation(Ogre::LBX_SOURCE1);
+    {
+        Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create("TerrainOpaque", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        Ogre::Technique* first_technique = material->getTechnique(0);
+        Ogre::Pass* first_pass = first_technique->getPass(0);
+        first_pass->setAlphaRejectFunction(Ogre::CMPF_GREATER_EQUAL);
+        first_pass->setAlphaRejectValue(128);
+        first_pass->setDepthWriteEnabled(true);
+        first_pass->setDepthCheckEnabled(true);
+        Ogre::TextureUnitState* texture_unit = first_pass->createTextureUnitState();
+        texture_unit->setTextureName("terrain.png");
+        texture_unit->setTextureCoordSet(0);
+        texture_unit->setTextureFiltering(Ogre::TFO_NONE);
+    }
+
+    {
+        Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create("TerrainTransparent", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        Ogre::Technique* first_technique = material->getTechnique(0);
+        Ogre::Pass* first_pass = first_technique->getPass(0);
+        first_pass->setDepthWriteEnabled(false);
+        first_pass->setDepthCheckEnabled(true);
+        first_pass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+        Ogre::TextureUnitState* texture_unit = first_pass->createTextureUnitState();
+        texture_unit->setTextureName("terrain.png");
+        texture_unit->setTextureCoordSet(0);
+        texture_unit->setTextureFiltering(Ogre::TFO_NONE);
+    }
 
     {
         // grab all the textures from resources
@@ -236,13 +257,17 @@ void MainWindow::loadResources()
             if (line.isEmpty() || line.startsWith("#"))
                 continue;
             QStringList parts = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-            Q_ASSERT(parts.size() == 8);
-            QVector<QString> side_texture(6);
-            Chunk::ItemType id = (Chunk::ItemType) parts.at(0).toInt();
-            // parts.at(1) is the name but we'll ignore that.
+            Q_ASSERT(parts.size() == 10);
+            BlockData block_data;
+            block_data.side_textures.resize(6);
+            int index = 0;
+            Chunk::ItemType id = (Chunk::ItemType) parts.at(index++).toInt();
+            block_data.name = parts.at(index++);
             for (int i = 0; i < 6; i++)
-                side_texture.replace(i, parts.at(i+2));
-            m_side_texture_names.insert(id, side_texture);
+                block_data.side_textures.replace(i, parts.at(index++));
+            block_data.see_through = (bool)parts.at(index++).toInt();
+            block_data.partial_alpha = (bool)parts.at(index++).toInt();
+            m_block_data.insert(id, block_data);
         }
         blocks_file.close();
     }
@@ -274,7 +299,7 @@ bool MainWindow::setup()
     if (!carryOn) return false;
 
     // Get the SceneManager, in this case a generic one
-    m_scene_manager = m_root->createSceneManager(Ogre::ST_GENERIC);
+    m_scene_manager = m_root->createSceneManager(Ogre::ST_EXTERIOR_FAR);
 
     createCamera();
     createViewports();
@@ -287,6 +312,9 @@ bool MainWindow::setup()
 
     // create the scene
     m_scene_manager->setAmbientLight(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
+    Ogre::SceneNode * node = m_scene_manager->getRootSceneNode();
+    m_pass[0] = node->createChildSceneNode();
+    m_pass[1] = node->createChildSceneNode();
 
     createFrameListener();
 
@@ -417,7 +445,9 @@ void MainWindow::updateChunk(QSharedPointer<Chunk> update)
     Int3D chunk_key = chunkKey(update->position());
 
     // update our chunk with update
-    QSharedPointer<Chunk> chunk = getChunk(chunk_key);
+    bool chunk_is_new;
+    ChunkData chunk_data = getChunk(chunk_key, &chunk_is_new);
+    QSharedPointer<Chunk> chunk = chunk_data.chunk;
     Int3D offset;
     Int3D size = update.data()->size();
     for (offset.x = 0; offset.x < size.x; offset.x++) {
@@ -428,66 +458,80 @@ void MainWindow::updateChunk(QSharedPointer<Chunk> update)
         }
     }
 
-    generateChunkMesh(chunk);
+    generateChunkMesh(chunk_data);
 }
 
-void MainWindow::generateChunkMesh(QSharedPointer<Chunk> chunk)
+void MainWindow::generateChunkMesh(ChunkData & chunk_data)
 {
-    // delete old mesh
-    // TODO
+    // delete old stuff
+    if (chunk_data.manual_object)
+        m_scene_manager->destroyManualObject(chunk_data.manual_object);
+    if (chunk_data.node)
+        m_scene_manager->destroySceneNode(chunk_data.node);
 
-    Ogre::ManualObject * obj = new Ogre::ManualObject(Ogre::String());
-    obj->begin("Terrain", Ogre::RenderOperation::OT_TRIANGLE_LIST);
-
+    QSharedPointer<Chunk> chunk = chunk_data.chunk;
     Int3D offset;
     Int3D size = chunk.data()->size();
-    for (offset.x = 0; offset.x < size.x; offset.x++) {
-        for (offset.y = 0; offset.y < size.y; offset.y++) {
-            for (offset.z = 0; offset.z < size.z; offset.z++) {
-                Chunk::Block block = chunk.data()->getBlock(offset);
+    for (int pass = 0; pass < 2; pass++) {
+        Ogre::ManualObject * obj = new Ogre::ManualObject(Ogre::String());
+        obj->begin(pass == 0 ? "TerrainOpaque" : "TerrainTransparent", Ogre::RenderOperation::OT_TRIANGLE_LIST);
+        for (offset.x = 0; offset.x < size.x; offset.x++) {
+            for (offset.y = 0; offset.y < size.y; offset.y++) {
+                for (offset.z = 0; offset.z < size.z; offset.z++) {
+                    Chunk::Block block = chunk.data()->getBlock(offset);
 
-                if (block.type == Chunk::Air)
-                    continue;
+                    BlockData block_data = m_block_data.value(block.type, m_air);
 
-                QVector<QString> side_textures = m_side_texture_names.value(block.type, QVector<QString>());
-                if (side_textures.isEmpty())
-                    continue;
-
-                // for every side
-                for (int i = 0; i < 6; i++) {
-                    // if the block on this side is opaque, skip
-                    Chunk::ItemType side_type = blockTypeAt(chunk.data()->position()+offset+c_side_offset[i]);
-                    if (side_type != Chunk::Air)
+                    // skip air
+                    if (block_data.side_textures.isEmpty())
                         continue;
 
-                    // add this side to mesh
-                    Int3D abs_block_loc = chunk.data()->position() + offset;
-                    QString texture_name = side_textures.at(i);
-                    BlockTextureCoord btc = m_terrain_tex_coords.value(texture_name);
+                    // first pass, skip partially transparent stuff
+                    if (pass == 0 && block_data.partial_alpha)
+                        continue;
 
-                    for (int triangle_index = 0; triangle_index < 2; triangle_index++) {
-                        for (int point_index = 0; point_index < 3; point_index++) {
-                            Ogre::Vector3 side_coord = c_side_coord[i][triangle_index][point_index];
-                            Ogre::Vector2 tex_coord = c_tex_coord[triangle_index][point_index];
-                            obj->position(abs_block_loc.x+side_coord.x, abs_block_loc.y+side_coord.y, abs_block_loc.z+side_coord.z);
-                            obj->textureCoord((btc.x+tex_coord.x*btc.w) / 256.f, (btc.y+tex_coord.y*btc.h) / 256.0f);
+                    // second pass, only do partially transparent stuff
+                    if (pass == 1 && !block_data.partial_alpha)
+                        continue;
+
+                    // for every side
+                    for (int i = 0; i < 6; i++) {
+                        // if the block on this side is opaque or the same block, skip
+                        Chunk::ItemType side_type = blockTypeAt(chunk.data()->position()+offset+c_side_offset[i]);
+                        if (side_type == block.type || ! m_block_data.value(side_type, m_air).see_through)
+                            continue;
+
+                        // add this side to mesh
+                        Int3D abs_block_loc = chunk.data()->position() + offset;
+                        QString texture_name = block_data.side_textures.at(i);
+                        BlockTextureCoord btc = m_terrain_tex_coords.value(texture_name);
+
+                        for (int triangle_index = 0; triangle_index < 2; triangle_index++) {
+                            for (int point_index = 0; point_index < 3; point_index++) {
+                                Ogre::Vector3 side_coord = c_side_coord[i][triangle_index][point_index];
+                                Ogre::Vector2 tex_coord = c_tex_coord[triangle_index][point_index];
+                                obj->position(abs_block_loc.x+side_coord.x, abs_block_loc.y+side_coord.y, abs_block_loc.z+side_coord.z);
+                                obj->textureCoord((btc.x+tex_coord.x*btc.w) / 256.f, (btc.y+tex_coord.y*btc.h) / 256.0f);
+                            }
                         }
                     }
                 }
             }
         }
-    }
-    obj->end();
+        obj->end();
+        Ogre::SceneNode * chunk_node = m_pass[pass]->createChildSceneNode();
+        chunk_node->attachObject(obj);
 
-    Ogre::SceneNode * node = m_scene_manager->getRootSceneNode();
-    Ogre::SceneNode * chunk_node = node->createChildSceneNode();
-    chunk_node->attachObject(obj);
+        chunk_data.node = chunk_node;
+        chunk_data.manual_object = obj;
+    }
 }
 
 Chunk::ItemType MainWindow::blockTypeAt(const Int3D & coord)
 {
     Int3D chunk_key = chunkKey(coord);
-    QSharedPointer<Chunk> chunk = m_chunks.value(chunk_key, QSharedPointer<Chunk>());
+    ChunkData chunk_data = m_chunks.value(chunk_key, ChunkData());
+    QSharedPointer<Chunk> chunk = chunk_data.chunk;
     if (chunk.isNull())
         return Chunk::Air;
     Int3D offset = coord - chunk_key;
@@ -499,14 +543,22 @@ Int3D MainWindow::chunkKey(const Int3D & coord)
     return coord - (coord % c_chunk_size);
 }
 
-QSharedPointer<Chunk> MainWindow::getChunk(const Int3D & key)
+MainWindow::ChunkData MainWindow::getChunk(const Int3D & key, bool * made_new_chunk)
 {
-    QSharedPointer<Chunk> chunk = m_chunks.value(key, QSharedPointer<Chunk>());
-    if (! chunk.isNull())
-        return chunk;
-    chunk = QSharedPointer<Chunk>(new Chunk(key, c_chunk_size));
-    m_chunks.insert(key, chunk);
-    return chunk;
+    ChunkData chunk_data = m_chunks.value(key, ChunkData());
+    QSharedPointer<Chunk> chunk = chunk_data.chunk;
+    if (! chunk.isNull()) {
+        if (made_new_chunk)
+            *made_new_chunk = false;
+        return chunk_data;
+    }
+    chunk_data.node = NULL;
+    chunk_data.manual_object = NULL;
+    chunk_data.chunk = QSharedPointer<Chunk>(new Chunk(key, c_chunk_size));
+    m_chunks.insert(key, chunk_data);
+    if (made_new_chunk)
+        *made_new_chunk = true;
+    return chunk_data;
 }
 
 void MainWindow::movePlayerPosition(Server::EntityPosition position)
