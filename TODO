@@ -3,12 +3,11 @@ Core:
  * authenticated login
 
 3D client:
- * partial transparency (ice, water)
+ * chunk seams look ugly
  * water/lava animation
  * cactus rendering
  * flower rendering
  * water / lava flow
- * the entire world is mirrored
  * lighting
  * sky, sun, moon, clouds)
  * mobs
