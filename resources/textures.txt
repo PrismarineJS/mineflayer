@@ -11,7 +11,7 @@ TntSide             128 0   16  16
 TntTop              144 0   16  16
 TntBottom           160 0   16  16
 SpiderWeb           176 0   16  16
-RedFlower           192 0   16  16
+RedRose             192 0   16  16
 YellowFlower        208 0   16  16
 Sapling             240 0   16  16
 
