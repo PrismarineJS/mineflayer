@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QCoreApplication>
 
+const int Server::c_notchian_tick_ms = 200;
 const int Server::c_physics_fps = 60;
 const float Server::c_gravity = -9.81;
 
@@ -346,7 +347,7 @@ void Server::gotFirstPlayerPositionAndLookResponse()
 
     delete m_position_update_timer;
     m_position_update_timer = new QTimer;
-    m_position_update_timer->setInterval(200);
+    m_position_update_timer->setInterval(c_notchian_tick_ms);
 
     bool success;
     success = connect(m_position_update_timer, SIGNAL(timeout()), this, SLOT(sendPosition()));

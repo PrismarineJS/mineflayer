@@ -81,6 +81,7 @@ private:
     IncomingMessageParser * m_parser;
     QTimer * m_position_update_timer;
 
+    static const int c_notchian_tick_ms;
     static const int c_physics_fps;
     static const float c_gravity; // m/s^2
     QTimer * m_physics_timer;

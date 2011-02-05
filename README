@@ -4,6 +4,7 @@ mineflayer - Minecraft client and bot.
 Current features:
  * logs in (no authentication support yet)
  * renders all the chunks around spawn in an Ogre 3d fly-around viewer
+ * runs javascript bot scripts with a limited api
 
 Planned features:
  * bot that builds stuff
@@ -17,8 +18,4 @@ Setting up build:
  3. Open .pro file in QtCreator
  4. Build
  5. Manually copy resources/ to build directory
-
-TODO include somewhere:
-    int tick_ms = 200;
-
 
