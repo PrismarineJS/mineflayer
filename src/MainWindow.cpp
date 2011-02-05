@@ -68,7 +68,6 @@ MainWindow::MainWindow() :
     loadControls();
 
     Q_ASSERT(sizeof(MainWindow) != 216 && sizeof(MainWindow) != 336);
-    qDebug() << sizeof(MainWindow);
 
     m_air.see_through = true;
     m_air.partial_alpha = false;
