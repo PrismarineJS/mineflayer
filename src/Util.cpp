@@ -20,6 +20,10 @@ float Util::euclideanMod(float numerator, float denominator)
     return result;
 }
 
+int Util::sign(double value)
+{
+    return value < 0 ? -1 : value > 0 ? 1 : 0;
+}
 int Util::sign(int value)
 {
     return value < 0 ? -1 : value == 0 ? 0 : 1;

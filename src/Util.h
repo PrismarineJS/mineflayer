@@ -13,6 +13,7 @@ namespace Util
 
     float euclideanMod(float numerator, float denominator);
 
+    int sign(double value);
     int sign(int value);
 
     int abs(int number);
