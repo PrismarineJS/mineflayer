@@ -28,17 +28,19 @@ public:
     Game(QUrl connection_info);
     ~Game();
 
+
+    // call every frame passing it the amount of time since the last frame
     void start();
-    Chunk::Block blockAt(Int3D absolute_location);
+    void doPhysics(float delta_seconds);
 
     // equivalent to pressing a button.
     void setControlActivated(Control control, bool activated = true);
 
-    // Hax:
+    Chunk::Block blockAt(const Int3D & absolute_location);
+
+    // if you want you can cheat and override the default physics settings:
     void setInputAcceleration(float value) { m_input_acceleration = value; }
     void setGravity(float value) { m_gravity = value; }
-
-    void doPhysics(float delta_seconds);
 
 signals:
     void chatReceived(QString username, QString message);

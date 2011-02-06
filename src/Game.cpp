@@ -50,8 +50,6 @@ Game::~Game()
 void Game::setControlActivated(Control control, bool activated)
 {
     m_control_state[control] = activated;
-
-    qDebug() << "Control activated: " << control;
 }
 
 void Game::start()
@@ -59,7 +57,7 @@ void Game::start()
     m_server.socketConnect();
 }
 
-Chunk::Block Game::blockAt(Int3D absolute_location)
+Chunk::Block Game::blockAt(const Int3D & absolute_location)
 {
     Int3D chunk_key = chunkKey(absolute_location);
     QSharedPointer<Chunk> chunk = m_chunks.value(chunk_key, QSharedPointer<Chunk>());
@@ -159,6 +157,10 @@ void Game::sendPosition()
 
 void Game::doPhysics(float delta_seconds)
 {
+    // apply velocity to previous frame
+
+
+
     // derive xy movement vector from controls
     int movement_right = 0;
     if (m_control_state.at(Right))
@@ -170,9 +172,6 @@ void Game::doPhysics(float delta_seconds)
         movement_forward += 1;
     if (m_control_state.at(Back))
         movement_forward -= 1;
-
-    qDebug() << "sec: " << delta_seconds;
-    qDebug() << "move: " << movement_right << movement_forward;
 
     // acceleration is m/s/s
     Ogre::Vector3 acceleration = Ogre::Vector3::ZERO;
@@ -220,8 +219,6 @@ void Game::doPhysics(float delta_seconds)
     m_player_position.dy += acceleration.y * delta_seconds;
     m_player_position.dz += acceleration.z * delta_seconds;
 
-    qDebug() << m_player_position.dx<< m_player_position.dy<< m_player_position.dz;
-
 
     // limit speed
     double ground_speed_squared = groundSpeedSquared();
@@ -238,13 +235,17 @@ void Game::doPhysics(float delta_seconds)
 
 
     // calculate new positions and resolve collisions
-    Int3D start((int)(m_player_position.x - c_player_apothem), (int)(m_player_position.y - c_player_apothem), (int)(m_player_position.z + 0));
-    Int3D  stop((int)(m_player_position.x + c_player_apothem), (int)(m_player_position.y + c_player_apothem), (int)(m_player_position.z + c_player_height));
+    Int3D start((int)std::floor(m_player_position.x + c_player_apothem),
+                (int)std::floor(m_player_position.y - c_player_apothem),
+                (int)std::floor(m_player_position.z + 0));
+    Int3D  stop((int)std::floor(m_player_position.x + c_player_apothem),
+                (int)std::floor(m_player_position.y + c_player_apothem),
+                (int)std::floor(m_player_position.z + c_player_height));
 
     bool x = false, y = false, z = false;
     if (m_player_position.dx != 0) {
         m_player_position.x += m_player_position.dx * delta_seconds;
-        int block_x = (int)(m_player_position.x + Util::sign(m_player_position.dx) * c_player_apothem);
+        int block_x = (int)std::floor(m_player_position.x + Util::sign(m_player_position.dx) * c_player_apothem);
         if (collisionInRange(Int3D(block_x, start.y, start.z), Int3D(block_x, stop.y, stop.z))) {
             x = true;
             m_player_position.x = block_x + (m_player_position.dx < 0 ? 1 + c_player_apothem : -c_player_apothem);
@@ -254,7 +255,7 @@ void Game::doPhysics(float delta_seconds)
 
     if (m_player_position.dy != 0) {
         m_player_position.y += m_player_position.dy * delta_seconds;
-        int block_y = (int)(m_player_position.y + Util::sign(m_player_position.dy) * c_player_apothem);
+        int block_y = (int)std::floor(m_player_position.y + Util::sign(m_player_position.dy) * c_player_apothem);
         if (collisionInRange(Int3D(start.x, block_y, start.z), Int3D(stop.x, block_y, stop.z))) {
             y = true;
             m_player_position.y = block_y + (m_player_position.dy < 0 ? 1 + c_player_apothem : -c_player_apothem);
@@ -263,7 +264,7 @@ void Game::doPhysics(float delta_seconds)
     }
 
     m_player_position.z += m_player_position.dz * delta_seconds;
-    int block_z = (int)(m_player_position.z + c_player_half_height + Util::sign(m_player_position.dz) * c_player_half_height);
+    int block_z = (int)std::floor(m_player_position.z + c_player_half_height + Util::sign(m_player_position.dz) * c_player_half_height);
     if (collisionInRange(Int3D(start.x, start.y, block_z), Int3D(stop.x, stop.y, block_z))) {
         z = true;
         m_player_position.z = block_z + (m_player_position.dz < 0 ? 1 : -c_player_height);

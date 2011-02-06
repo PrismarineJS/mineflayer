@@ -613,8 +613,8 @@ void MainWindow::movePlayerPosition(Server::EntityPosition position)
     m_camera->setPosition(cameraPosition);
 
     // deal with looking
-    m_camera->lookAt(cameraPosition + Ogre::Vector3(-1, 0, 0));
-    m_camera->roll(Ogre::Degree(90));
-    m_camera->yaw(Ogre::Radian(position.yaw));
+//    m_camera->lookAt(cameraPosition + Ogre::Vector3(-1, 0, 0));
+//    m_camera->roll(Ogre::Degree(90));
+//    m_camera->yaw(Ogre::Radian(position.yaw));
     // TODO: pitch
 }

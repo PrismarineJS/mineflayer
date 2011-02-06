@@ -14,8 +14,15 @@ namespace Util
 
     float euclideanMod(float numerator, float denominator);
 
-    int sign(double value);
-    int sign(int value);
+    template <class T>
+    int sign(T value) {
+        if (value < 0)
+            return -1;
+        else if (value > 0)
+            return 1;
+        else
+            return 0;
+    }
 
     int abs(int number);
 }
