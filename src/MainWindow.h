@@ -33,21 +33,6 @@ class MainWindow :
 {
     Q_OBJECT
 public:
-    enum Control {
-        Forward,
-        Back,
-        Left,
-        Right,
-        Jump,
-        Crouch,
-        DiscardItem,
-        Action1, // left click
-        Action2, // right click
-        Inventory,
-        Chat,
-    };
-
-public:
     MainWindow();
     ~MainWindow();
 
@@ -132,8 +117,8 @@ private:
     Mob * m_player;
 
     // maps OIS::KeyCode to Control and vice versa
-    QHash<OIS::KeyCode, Control> m_key_to_control;
-    QHash<Control, OIS::KeyCode> m_control_to_key;
+    QHash<OIS::KeyCode, Game::Control> m_key_to_control;
+    QHash<Game::Control, OIS::KeyCode> m_control_to_key;
 
     // maps texture name to coordinates in terrain.png
     QHash<QString, BlockTextureCoord> m_terrain_tex_coords;
@@ -160,7 +145,6 @@ private:
     Int3D chunkKey(const Int3D & coord);
     void generateChunkMesh(ChunkData & chunk_data);
     ChunkData getChunk(const Int3D & coord);
-    bool controlPressed(Control control);
 
 private slots:
     void handleChunkUpdated(Int3D start, Int3D size);

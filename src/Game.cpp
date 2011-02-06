@@ -15,6 +15,7 @@ const float Game::c_standard_ground_friction = 0.1f; // guess
 const float Game::c_player_apothem = 0.3; // measured
 const float Game::c_player_height = 1.62; // according to spawn stance
 const float Game::c_player_half_height = Game::c_player_height / 2;
+const float Game::c_jump_speed = 8.0f;
 
 const int Game::c_notchian_tick_ms = 200;
 const int Game::c_physics_fps = 60;
@@ -26,8 +27,8 @@ Game::Game(QUrl connection_info) :
     m_userName(connection_info.userName()),
     m_position_update_timer(NULL),
     m_physics_timer(NULL),
-    m_movement_input_forward(0), m_movement_input_right(0),
     m_max_ground_speed(c_standard_max_ground_speed),
+    m_terminal_velocity(c_standard_terminal_velocity),
     m_input_acceleration(c_standard_walking_acceleration),
     m_gravity(c_standard_gravity),
     m_ground_friction(c_standard_ground_friction)
@@ -39,11 +40,21 @@ Game::Game(QUrl connection_info) :
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(mapChunkUpdated(QSharedPointer<Chunk>)), this, SLOT(handleMapChunkUpdated(QSharedPointer<Chunk>)));
     Q_ASSERT(success);
+
+    m_control_state.fill(false, (int)ControlCount);
 }
+
 Game::~Game()
 {
     delete m_position_update_timer;
     delete m_physics_timer;
+}
+
+void Game::setControlActivated(Control control, bool activated)
+{
+    m_control_state[control] = activated;
+
+
 }
 
 void Game::start()
@@ -156,19 +167,35 @@ void Game::sendPosition()
 
 void Game::doPhysics()
 {
-    m_player_position.x = 0.5;
-    m_player_position.y = 0.5;
+    // derive xy movement vector from controls
+    int movement_right = 0;
+    if (m_control_state.at(Right))
+        movement_right += 1;
+    if (m_control_state.at(Left))
+        movement_right -= 1;
+    int movement_forward = 0;
+    if (m_control_state.at(Forward))
+        movement_forward += 1;
+    if (m_control_state.at(Back))
+        movement_forward -= 1;
+
     // acceleration is m/s/s
     Ogre::Vector3 acceleration = Ogre::Vector3::ZERO;
-    if (m_movement_input_forward || m_movement_input_right) {
+    if (movement_forward || movement_right) {
         // input acceleration
-        float rotation_from_input = std::atan2(m_movement_input_right, m_movement_input_forward);
+        float rotation_from_input = std::atan2(movement_right, movement_forward);
         float input_yaw = m_player_position.yaw + rotation_from_input;
         acceleration.x += Ogre::Math::Cos(input_yaw) * m_input_acceleration;
         acceleration.y += Ogre::Math::Sin(input_yaw) * m_input_acceleration;
     }
-    // TODO: jumping
-    // grabity
+
+    // jumping
+    if (m_control_state.at(Jump) && m_player_position.on_ground) {
+        m_player_position.on_ground = false;
+        m_player_position.dz = c_jump_speed;
+    }
+
+    // gravity
     acceleration.z += m_gravity;
 
     float old_ground_speed_squared = groundSpeedSquared();
@@ -198,6 +225,7 @@ void Game::doPhysics()
     m_player_position.dy += acceleration.y / c_physics_fps;
     m_player_position.dz += acceleration.z / c_physics_fps;
 
+
     // limit speed
     double ground_speed_squared = groundSpeedSquared();
     if (ground_speed_squared > m_max_ground_speed * m_max_ground_speed) {
@@ -207,7 +235,7 @@ void Game::doPhysics()
         m_player_position.dy *= correction_scale;
     }
     if (m_player_position.dz < -m_terminal_velocity)
-        m_player_position.dy = m_terminal_velocity;
+        m_player_position.dz = -m_terminal_velocity;
     else if (m_player_position.dz > m_terminal_velocity)
         m_player_position.dz = m_terminal_velocity;
 

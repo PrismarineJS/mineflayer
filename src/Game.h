@@ -7,14 +7,32 @@ class Game : public QObject
 {
     Q_OBJECT
 public:
+    enum Control {
+        NoControl,
+        Forward,
+        Back,
+        Left,
+        Right,
+        Jump,
+        Crouch,
+        DiscardItem,
+        Action1, // left click
+        Action2, // right click
+        Inventory,
+        Chat,
+
+        ControlCount
+    };
+
+public:
     Game(QUrl connection_info);
     ~Game();
 
     void start();
     Chunk::Block blockAt(Int3D absolute_location);
 
-    // params are -1, 0, or 1, indicating backward/left, neutral, forward/right.
-    void setMovementInput(int forward, int right) { m_movement_input_forward = forward; m_movement_input_right = right; }
+    // equivalent to pressing a button.
+    void setControlActivated(Control control, bool activated = true);
 
     // Hax:
     void setInputAcceleration(float value) { m_input_acceleration = value; }
@@ -34,6 +52,7 @@ private:
     static const float c_player_apothem;
     static const float c_player_height;
     static const float c_player_half_height;
+    static const float c_jump_speed;
     static const int c_notchian_tick_ms;
     static const int c_physics_fps;
     static const Int3D c_chunk_size;
@@ -49,14 +68,15 @@ private:
     Server::EntityPosition m_player_position;
     QHash<Int3D, QSharedPointer<Chunk> > m_chunks;
 
-    int m_movement_input_forward, m_movement_input_right;
-
     float m_max_ground_speed;
     float m_terminal_velocity;
     float m_input_acceleration;
     float m_gravity;
     float m_ground_friction;
 
+    QVector<bool> m_control_state;
+
+private:
     void gotFirstPlayerPositionAndLookResponse();
     float groundSpeedSquared() { return m_player_position.dx * m_player_position.dx + m_player_position.dy * m_player_position.dy; }
     bool collisionInRange(Int3D start, Int3D stop);

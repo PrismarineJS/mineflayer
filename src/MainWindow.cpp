@@ -102,19 +102,19 @@ void MainWindow::loadControls()
 {
     QDir dir(QCoreApplication::applicationDirPath());
     QSettings settings(dir.absoluteFilePath("mineflayer.ini"), QSettings::IniFormat);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/forward", OIS::KC_W).toInt(), Forward);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/back", OIS::KC_S).toInt(), Back);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/left", OIS::KC_A).toInt(), Left);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/right", OIS::KC_D).toInt(), Right);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/jump", OIS::KC_SPACE).toInt(), Jump);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/crouch", OIS::KC_Z).toInt(), Crouch);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/discard_item", OIS::KC_Q).toInt(), DiscardItem);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/action_1", OIS::KC_NUMPAD0).toInt(), Action1);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/action_2", OIS::KC_NUMPAD1).toInt(), Action2);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/inventory", OIS::KC_I).toInt(), Inventory);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/chat", OIS::KC_T).toInt(), Chat);
+    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/forward", OIS::KC_W).toInt(), Game::Forward);
+    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/back", OIS::KC_S).toInt(), Game::Back);
+    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/left", OIS::KC_A).toInt(), Game::Left);
+    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/right", OIS::KC_D).toInt(), Game::Right);
+    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/jump", OIS::KC_SPACE).toInt(), Game::Jump);
+    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/crouch", OIS::KC_Z).toInt(), Game::Crouch);
+    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/discard_item", OIS::KC_Q).toInt(), Game::DiscardItem);
+    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/action_1", OIS::KC_NUMPAD0).toInt(), Game::Action1);
+    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/action_2", OIS::KC_NUMPAD1).toInt(), Game::Action2);
+    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/inventory", OIS::KC_I).toInt(), Game::Inventory);
+    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/chat", OIS::KC_T).toInt(), Game::Chat);
 
-    QHashIterator<OIS::KeyCode, Control> it(m_key_to_control);
+    QHashIterator<OIS::KeyCode, Game::Control> it(m_key_to_control);
     while (it.hasNext()) {
         it.next();
         m_control_to_key.insert(it.value(), it.key());
@@ -348,12 +348,7 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
     // compute next frame
 
     // update the camera
-    int forward = controlPressed(Forward);
-    int backward = controlPressed(Back);
-    int left = controlPressed(Left);
-    int right = controlPressed(Right);
-    m_game->setMovementInput(forward - backward, right - left);
-    bool crouch = controlPressed(Crouch);
+
 
     return true;
 }
@@ -363,11 +358,13 @@ bool MainWindow::keyPressed(const OIS::KeyEvent &arg )
     if (arg.key == OIS::KC_ESCAPE || (m_keyboard->isModifierDown(OIS::Keyboard::Alt) && arg.key == OIS::KC_F4))
         m_shut_down = true;
 
+    m_game->setControlActivated(m_key_to_control.value(arg.key, Game::NoControl), true);
     return true;
 }
 
 bool MainWindow::keyReleased(const OIS::KeyEvent &arg )
 {
+    m_game->setControlActivated(m_key_to_control.value(arg.key, Game::NoControl), false);
     return true;
 }
 
@@ -412,13 +409,6 @@ void MainWindow::windowClosed(Ogre::RenderWindow* rw)
         OIS::InputManager::destroyInputSystem(m_input_manager);
         m_input_manager = NULL;
     }
-}
-
-bool MainWindow::controlPressed(Control control)
-{
-    OIS::KeyCode key_code = m_control_to_key.value(control);
-    return m_keyboard->isKeyDown(key_code) ||
-            m_keyboard->isModifierDown((OIS::Keyboard::Modifier) key_code);
 }
 
 void MainWindow::handleChunkUpdated(Int3D start, Int3D size)
