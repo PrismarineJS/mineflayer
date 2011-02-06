@@ -38,9 +38,9 @@ public:
         double x; // east
         double y; // north
         double z; // up
-        double dx;
-        double dy;
-        double dz;
+        double dx; // m/s
+        double dy; // m/s
+        double dz; // m/s
         double stance; // [0.1, 1.65] how tall you are.
         float yaw; // [0, 2pi] rotation around z axis. 0 is +x. pi/2 is +y. pi is -x. 3pi/2 is -y.
         float pitch; // [-pi/2, pi/2] 0 is parallel to the ground. pi/2 is up. -pi/2 is down.

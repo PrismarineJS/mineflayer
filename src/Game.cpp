@@ -2,10 +2,22 @@
 
 #include <QApplication>
 
-const float Game::c_walking_speed = 4.27;
+#include <OGRE/OgreVector3.h>
+#include <OGRE/OgreVector2.h>
+
+#include <cmath>
+
+const float Game::c_standard_max_ground_speed = 4.27; // according to the internet
+const float Game::c_standard_terminal_velocity = 20.0; // guess
+const float Game::c_standard_walking_acceleration = 5.0f; // guess
+const float Game::c_standard_gravity = -9.81;
+const float Game::c_standard_ground_friction = 0.1f; // guess
+const float Game::c_player_apothem = 0.3; // measured
+const float Game::c_player_height = 1.62; // according to spawn stance
+const float Game::c_player_half_height = Game::c_player_height / 2;
+
 const int Game::c_notchian_tick_ms = 200;
 const int Game::c_physics_fps = 60;
-const float Game::c_gravity = -9.81;
 const Int3D Game::c_chunk_size(16, 16, 128);
 const Chunk::Block Game::c_air(Chunk::Air, 0, 0, 0);
 
@@ -13,7 +25,12 @@ Game::Game(QUrl connection_info) :
     m_server(connection_info),
     m_userName(connection_info.userName()),
     m_position_update_timer(NULL),
-    m_physics_timer(NULL)
+    m_physics_timer(NULL),
+    m_max_ground_speed(c_standard_max_ground_speed),
+    m_movement_input_forward(0), m_movement_input_right(0),
+    m_input_acceleration(c_standard_walking_acceleration),
+    m_gravity(c_standard_gravity),
+    m_ground_friction(c_standard_ground_friction)
 {
     bool success;
     success = connect(&m_server, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SLOT(handleLoginStatusChanged(Server::LoginStatus)));
@@ -139,18 +156,97 @@ void Game::sendPosition()
 
 void Game::doPhysics()
 {
-//    if (true && m_canonical_player_position.z <= 64) {
-//        m_canonical_player_position.z = 64.0;
-//        m_canonical_player_position.on_ground = true;
-//        m_canonical_player_position.dz = 0;
-//        m_canonical_player_position.x += c_walking_speed / c_physics_fps;
-//    } else {
-//        m_canonical_player_position.z -= 0.05;
-//    }
-//    m_next_player_position.x = m_canonical_player_position.x;
-//    m_next_player_position.y = m_canonical_player_position.y;
-//    m_next_player_position.z = m_canonical_player_position.z;
-//    m_next_player_position.on_ground = m_canonical_player_position.on_ground;
-//    emit playerPositionUpdated(m_canonical_player_position);
+    // acceleration is m/s/s
+    Ogre::Vector3 acceleration = Ogre::Vector3::ZERO;
+    if (m_movement_input_forward || m_movement_input_right) {
+        // input acceleration
+        float rotation_from_input = std::atan2(m_movement_input_right, m_movement_input_forward);
+        float input_yaw = m_player_position.yaw + rotation_from_input;
+        acceleration.x += Ogre::Math::Cos(input_yaw) * m_input_acceleration;
+        acceleration.y += Ogre::Math::Sin(input_yaw) * m_input_acceleration;
+    }
+    // TODO: jumping
+    // grabity
+    acceleration.z += m_gravity;
+
+    float old_ground_speed_squared = groundSpeedSquared();
+    if (old_ground_speed_squared < std::numeric_limits<float>::epsilon()) {
+        // stopped
+        m_player_position.dx = 0;
+        m_player_position.dy = 0;
+    } else {
+        // non-zero ground speed
+        if (m_player_position.on_ground) {
+            // friction
+            float old_ground_speed = std::sqrt(old_ground_speed_squared);
+            float friction_magnitude;
+            if (m_ground_friction > old_ground_speed * c_physics_fps) {
+                // friction will stop the motion
+                friction_magnitude = old_ground_speed * c_physics_fps;
+            } else {
+                friction_magnitude = m_ground_friction;
+            }
+            acceleration.x += -m_player_position.dx / old_ground_speed * friction_magnitude;
+            acceleration.y += -m_player_position.dy / old_ground_speed * friction_magnitude;
+        }
+    }
+
+    // calculate new speed
+    m_player_position.dx += acceleration.x / c_physics_fps;
+    m_player_position.dy += acceleration.y / c_physics_fps;
+    m_player_position.dz += acceleration.z / c_physics_fps;
+
+    // limit speed
+    double ground_speed_squared = groundSpeedSquared();
+    if (ground_speed_squared > m_max_ground_speed * m_max_ground_speed) {
+        float ground_speed = std::sqrt(ground_speed_squared);
+        float correction_scale = m_max_ground_speed / ground_speed;
+        m_player_position.dx *= correction_scale;
+        m_player_position.dy *= correction_scale;
+    }
+    if (m_player_position.dz < -m_terminal_velocity)
+        m_player_position.dy = m_terminal_velocity;
+    else if (m_player_position.dz > m_terminal_velocity)
+        m_player_position.dz = m_terminal_velocity;
+
+    // calculate new positions and resolve collisions
+    Int3D start((int)(m_player_position.x - c_player_apothem), (int)(m_player_position.y - c_player_apothem), (int)(m_player_position.z + 0));
+    Int3D  stop((int)(m_player_position.x + c_player_apothem), (int)(m_player_position.y + c_player_apothem), (int)(m_player_position.z + c_player_height));
+
+    m_player_position.x += m_player_position.dx / c_physics_fps;
+    int block_x = (int)(m_player_position.x + Util::sign(m_player_position.dx) * c_player_apothem);
+    if (collisionInRange(Int3D(block_x, start.y, start.z), Int3D(block_x, stop.y, stop.z))) {
+        m_player_position.x = block_x + (m_player_position.dx < 0 ? 1 + c_player_apothem : -c_player_apothem);
+        m_player_position.dx = 0;
+    }
+
+    m_player_position.y += m_player_position.dy / c_physics_fps;
+    int block_y = (int)(m_player_position.y + Util::sign(m_player_position.dy) * c_player_apothem);
+    if (collisionInRange(Int3D(start.x, block_y, start.z), Int3D(stop.x, block_y, stop.z))) {
+        m_player_position.y = block_y + (m_player_position.dy < 0 ? 1 + c_player_apothem : -c_player_apothem);
+        m_player_position.dy = 0;
+    }
+
+    m_player_position.z += m_player_position.dz / c_physics_fps;
+    int block_z = (int)(m_player_position.z + c_player_half_height + Util::sign(m_player_position.dy) * c_player_half_height);
+    if (collisionInRange(Int3D(start.x, start.y, block_z), Int3D(stop.x, stop.y, block_z))) {
+        m_player_position.z = block_z + (m_player_position.dz < 0 ? 1 : -c_player_height);
+        m_player_position.dz = 0;
+        m_player_position.on_ground = true;
+    } else {
+        m_player_position.on_ground = false;
+    }
+
+    // always emit update
+    emit playerPositionUpdated(m_player_position);
 }
 
+bool Game::collisionInRange(Int3D start, Int3D stop)
+{
+    Int3D cursor;
+    for (cursor.x = start.x; cursor.x <= stop.x; cursor.x++)
+        for (cursor.y = start.y; cursor.y <= stop.y; cursor.y++)
+            for (cursor.z = start.z; cursor.z <= stop.z; cursor.z++)
+                if (blockAt(cursor).type != Chunk::Air)
+                    return true;
+}

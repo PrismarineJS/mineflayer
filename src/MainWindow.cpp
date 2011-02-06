@@ -334,41 +334,13 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
 
     // compute next frame
 
-
     // update the camera
-    bool forward = controlPressed(Forward);
-    bool backward = controlPressed(Back);
-    bool left = controlPressed(Left);
-    bool right = controlPressed(Right);
+    int forward = controlPressed(Forward);
+    int backward = controlPressed(Back);
+    int left = controlPressed(Left);
+    int right = controlPressed(Right);
+    m_game->setMovementInput(forward - backward, right - left);
     bool crouch = controlPressed(Crouch);
-
-    Ogre::Vector3 accel = Ogre::Vector3::ZERO;
-    if (forward) accel += m_camera->getDirection();
-    if (backward) accel -= m_camera->getDirection();
-    if (left) accel -= m_camera->getRight();
-    if (right) accel += m_camera->getRight();
-
-    float top_speed = 20;
-    if (crouch)
-        top_speed *= 20;
-
-    if (accel.squaredLength() != 0) {
-        accel.normalise();
-        m_camera_velocity += accel * top_speed * evt.timeSinceLastFrame * 10;
-    } else {
-        m_camera_velocity -= m_camera_velocity * evt.timeSinceLastFrame * 10;
-    }
-
-    float too_small = std::numeric_limits<float>::epsilon();
-
-    if (m_camera_velocity.squaredLength() > top_speed * top_speed) {
-        m_camera_velocity.normalise();
-        m_camera_velocity *= top_speed;
-    } else if (m_camera_velocity.squaredLength() < too_small * too_small) {
-        m_camera_velocity = Ogre::Vector3::ZERO;
-    }
-    if (m_camera_velocity != Ogre::Vector3::ZERO)
-        m_camera->move(m_camera_velocity * evt.timeSinceLastFrame);
 
     return true;
 }
