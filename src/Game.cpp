@@ -101,6 +101,7 @@ void Game::handlePlayerPositionAndLookUpdated(Server::EntityPosition position)
     m_player_position.on_ground = position.on_ground;
 
     // apologize to the notchian server by echoing an identical position back
+
     m_server.sendPositionAndLook(m_player_position);
 
     if (m_position_update_timer == NULL) {
@@ -156,8 +157,6 @@ void Game::sendPosition()
 
 void Game::doPhysics()
 {
-    m_player_position.x = 0.5;
-    m_player_position.y = 0.5;
     // acceleration is m/s/s
     Ogre::Vector3 acceleration = Ogre::Vector3::ZERO;
     if (m_movement_input_forward || m_movement_input_right) {
@@ -210,6 +209,7 @@ void Game::doPhysics()
         m_player_position.dy = m_terminal_velocity;
     else if (m_player_position.dz > m_terminal_velocity)
         m_player_position.dz = m_terminal_velocity;
+
 
     // calculate new positions and resolve collisions
     Int3D start((int)(m_player_position.x - c_player_apothem), (int)(m_player_position.y - c_player_apothem), (int)(m_player_position.z + 0));

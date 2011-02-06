@@ -86,6 +86,7 @@ private:
     Ogre::RenderWindow* m_window;
     Ogre::String m_resources_config;
 
+    Ogre::Vector3 m_camera_velocity;
     bool m_shut_down;
 
     //OIS Input devices
