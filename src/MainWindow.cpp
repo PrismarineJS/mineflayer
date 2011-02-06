@@ -135,9 +135,8 @@ void MainWindow::createCamera()
     // Create the camera
     m_camera = m_scene_manager->createCamera("PlayerCam");
 
-    // Position it at 500 in Z direction
+    // sit and look somewhere while we wait for our real orientation
     m_camera->setPosition(Ogre::Vector3(0,0,0));
-    // Look back along -Z
     m_camera->lookAt(Ogre::Vector3(1,1,0));
     m_camera->roll(Ogre::Degree(-90));
     m_camera->setNearClipDistance(0.1);
@@ -525,6 +524,7 @@ MainWindow::ChunkData MainWindow::getChunk(const Int3D & key)
     ChunkData chunk_data = m_chunks.value(key, default_chunk_data);
     if (chunk_data.node != NULL)
         return chunk_data;
+    chunk_data.position = key;
     chunk_data.manual_object = NULL;
     m_chunks.insert(key, chunk_data);
     return chunk_data;
@@ -534,7 +534,10 @@ void MainWindow::movePlayerPosition(Server::EntityPosition position)
 {
     Ogre::Vector3 cameraPosition(position.x, position.y, position.z + position.stance);
     m_camera->setPosition(cameraPosition);
+
+    // deal with looking
+    m_camera->lookAt(cameraPosition + Ogre::Vector3(-1, 0, 0));
+    m_camera->roll(Ogre::Degree(90));
+    m_camera->yaw(Ogre::Radian(position.yaw));
     // TODO: pitch
-    Ogre::Vector3 lookingVector(Ogre::Math::Cos(position.yaw), Ogre::Math::Sin(position.yaw), 0);
-    m_camera->lookAt(cameraPosition + lookingVector);
 }
