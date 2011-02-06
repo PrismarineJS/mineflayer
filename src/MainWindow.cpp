@@ -65,6 +65,7 @@ MainWindow::MainWindow() :
     m_resources_config(Ogre::StringUtil::BLANK),
     m_camera_velocity(0, 0, 0),
     m_shut_down(false),
+    m_free_look_mode(false),
     m_input_manager(NULL),
     m_mouse(NULL),
     m_keyboard(NULL),
@@ -348,42 +349,44 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
 
     // compute next frame
 
-    // update the camera
     int forward = controlPressed(Forward);
     int backward = controlPressed(Back);
     int left = controlPressed(Left);
     int right = controlPressed(Right);
-    m_game->setMovementInput(forward - backward, right - left);
-    bool crouch = controlPressed(Crouch);
-
-    Ogre::Vector3 accel = Ogre::Vector3::ZERO;
-    if (forward) accel += m_camera->getDirection();
-    if (backward) accel -= m_camera->getDirection();
-    if (left) accel -= m_camera->getRight();
-    if (right) accel += m_camera->getRight();
-
-    float top_speed = 20;
-    if (crouch)
-        top_speed *= 20;
-
-    if (accel.squaredLength() != 0) {
-        accel.normalise();
-        m_camera_velocity += accel * top_speed * evt.timeSinceLastFrame * 10;
+    if (!m_free_look_mode) {
+        m_game->setMovementInput(forward - backward, right - left);
     } else {
-        m_camera_velocity -= m_camera_velocity * evt.timeSinceLastFrame * 10;
+        // update the camera
+        bool crouch = controlPressed(Crouch);
+
+        Ogre::Vector3 accel = Ogre::Vector3::ZERO;
+        if (forward) accel += m_camera->getDirection();
+        if (backward) accel -= m_camera->getDirection();
+        if (left) accel -= m_camera->getRight();
+        if (right) accel += m_camera->getRight();
+
+        float top_speed = 20;
+        if (crouch)
+            top_speed *= 20;
+
+        if (accel.squaredLength() != 0) {
+            accel.normalise();
+            m_camera_velocity += accel * top_speed * evt.timeSinceLastFrame * 10;
+        } else {
+            m_camera_velocity -= m_camera_velocity * evt.timeSinceLastFrame * 10;
+        }
+
+        float too_small = std::numeric_limits<float>::epsilon();
+
+        if (m_camera_velocity.squaredLength() > top_speed * top_speed) {
+            m_camera_velocity.normalise();
+            m_camera_velocity *= top_speed;
+        } else if (m_camera_velocity.squaredLength() < too_small * too_small) {
+            m_camera_velocity = Ogre::Vector3::ZERO;
+        }
+        if (m_camera_velocity != Ogre::Vector3::ZERO)
+            m_camera->move(m_camera_velocity * evt.timeSinceLastFrame);
     }
-
-    float too_small = std::numeric_limits<float>::epsilon();
-
-    if (m_camera_velocity.squaredLength() > top_speed * top_speed) {
-        m_camera_velocity.normalise();
-        m_camera_velocity *= top_speed;
-    } else if (m_camera_velocity.squaredLength() < too_small * too_small) {
-        m_camera_velocity = Ogre::Vector3::ZERO;
-    }
-    if (m_camera_velocity != Ogre::Vector3::ZERO)
-        m_camera->move(m_camera_velocity * evt.timeSinceLastFrame);
-
     return true;
 }
 
@@ -391,6 +394,8 @@ bool MainWindow::keyPressed(const OIS::KeyEvent &arg )
 {
     if (arg.key == OIS::KC_ESCAPE || (m_keyboard->isModifierDown(OIS::Keyboard::Alt) && arg.key == OIS::KC_F4))
         m_shut_down = true;
+    else if (arg.key == OIS::KC_F2)
+        m_free_look_mode = !m_free_look_mode;
 
     return true;
 }
@@ -402,10 +407,13 @@ bool MainWindow::keyReleased(const OIS::KeyEvent &arg )
 
 bool MainWindow::mouseMoved(const OIS::MouseEvent &arg )
 {
-    // move camera
-    m_camera->rotate(Ogre::Vector3(0, 0, 1), Ogre::Degree(-arg.state.X.rel * 0.25f));
-    m_camera->pitch(Ogre::Degree(-arg.state.Y.rel * 0.25f));
-    // TODO: tell the game where we're looking
+    if (m_free_look_mode) {
+        // move camera
+        m_camera->rotate(Ogre::Vector3(0, 0, 1), Ogre::Degree(-arg.state.X.rel * 0.25f));
+        m_camera->pitch(Ogre::Degree(-arg.state.Y.rel * 0.25f));
+    } else {
+        // TODO: tell the game where we're looking
+    }
     return true;
 }
 
@@ -558,12 +566,14 @@ MainWindow::ChunkData MainWindow::getChunk(const Int3D & key)
 
 void MainWindow::movePlayerPosition(Server::EntityPosition position)
 {
+    if (m_free_look_mode)
+        return;
     Ogre::Vector3 cameraPosition(position.x, position.y, position.z + position.stance);
     m_camera->setPosition(cameraPosition);
 
     // deal with looking
-//    m_camera->lookAt(cameraPosition + Ogre::Vector3(-1, 0, 0));
-//    m_camera->roll(Ogre::Degree(90));
-//    m_camera->yaw(Ogre::Radian(position.yaw));
+    m_camera->lookAt(cameraPosition + Ogre::Vector3(-1, 0, 0));
+    m_camera->roll(Ogre::Degree(90));
+    m_camera->yaw(Ogre::Radian(position.yaw));
     // TODO: pitch
 }

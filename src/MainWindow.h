@@ -88,6 +88,7 @@ private:
 
     Ogre::Vector3 m_camera_velocity;
     bool m_shut_down;
+    bool m_free_look_mode;
 
     //OIS Input devices
     OIS::InputManager* m_input_manager;
