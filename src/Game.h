@@ -38,6 +38,8 @@ public:
     void setInputAcceleration(float value) { m_input_acceleration = value; }
     void setGravity(float value) { m_gravity = value; }
 
+    void doPhysics(float delta_seconds);
+
 signals:
     void chatReceived(QString username, QString message);
     void chunkUpdated(Int3D start, Int3D size);
@@ -54,7 +56,6 @@ private:
     static const float c_player_half_height;
     static const float c_jump_speed;
     static const int c_notchian_tick_ms;
-    static const int c_physics_fps;
     static const Int3D c_chunk_size;
     static const Chunk::Block c_air;
     static Int3D chunkKey(const Int3D & coord);
@@ -64,7 +65,6 @@ private:
 
     QTimer * m_position_update_timer;
 
-    QTimer * m_physics_timer;
     Server::EntityPosition m_player_position;
     QHash<Int3D, QSharedPointer<Chunk> > m_chunks;
 
@@ -88,7 +88,6 @@ private slots:
     void handleMapChunkUpdated(QSharedPointer<Chunk> update);
 
     void sendPosition();
-    void doPhysics();
 };
 
 #endif // GAME_H

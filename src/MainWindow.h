@@ -141,7 +141,7 @@ private:
 
     // maps input to Control and vice versa
     QHash<PhysicalInput, Game::Control> m_key_to_control;
-    QHash<Game::Control, PhysicalInput> m_control_to_key;
+    QVector<PhysicalInput> m_control_to_key;
 
     // maps texture name to coordinates in terrain.png
     QHash<QString, BlockTextureCoord> m_terrain_tex_coords;

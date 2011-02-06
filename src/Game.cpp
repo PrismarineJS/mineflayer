@@ -18,7 +18,6 @@ const float Game::c_player_half_height = Game::c_player_height / 2;
 const float Game::c_jump_speed = 8.0f;
 
 const int Game::c_notchian_tick_ms = 200;
-const int Game::c_physics_fps = 60;
 const Int3D Game::c_chunk_size(16, 16, 128);
 const Chunk::Block Game::c_air(Chunk::Air, 0, 0, 0);
 
@@ -26,7 +25,6 @@ Game::Game(QUrl connection_info) :
     m_server(connection_info),
     m_userName(connection_info.userName()),
     m_position_update_timer(NULL),
-    m_physics_timer(NULL),
     m_max_ground_speed(c_standard_max_ground_speed),
     m_terminal_velocity(c_standard_terminal_velocity),
     m_input_acceleration(c_standard_walking_acceleration),
@@ -47,14 +45,13 @@ Game::Game(QUrl connection_info) :
 Game::~Game()
 {
     delete m_position_update_timer;
-    delete m_physics_timer;
 }
 
 void Game::setControlActivated(Control control, bool activated)
 {
     m_control_state[control] = activated;
 
-
+    qDebug() << "Control activated: " << control;
 }
 
 void Game::start()
@@ -124,12 +121,6 @@ void Game::handlePlayerPositionAndLookUpdated(Server::EntityPosition position)
         success = connect(m_position_update_timer, SIGNAL(timeout()), this, SLOT(sendPosition()));
         Q_ASSERT(success);
         m_position_update_timer->start();
-
-        m_physics_timer = new QTimer;
-        m_physics_timer->setInterval(1000 / c_physics_fps);
-        success = connect(m_physics_timer, SIGNAL(timeout()), this, SLOT(doPhysics()));
-        Q_ASSERT(success);
-        m_physics_timer->start();
     }
     emit playerPositionUpdated(m_player_position);
 }
@@ -166,7 +157,7 @@ void Game::sendPosition()
     m_server.sendPositionAndLook(m_player_position);
 }
 
-void Game::doPhysics()
+void Game::doPhysics(float delta_seconds)
 {
     // derive xy movement vector from controls
     int movement_right = 0;
@@ -179,6 +170,9 @@ void Game::doPhysics()
         movement_forward += 1;
     if (m_control_state.at(Back))
         movement_forward -= 1;
+
+    qDebug() << "sec: " << delta_seconds;
+    qDebug() << "move: " << movement_right << movement_forward;
 
     // acceleration is m/s/s
     Ogre::Vector3 acceleration = Ogre::Vector3::ZERO;
@@ -210,9 +204,9 @@ void Game::doPhysics()
             // friction
             float old_ground_speed = std::sqrt(old_ground_speed_squared);
             float friction_magnitude;
-            if (m_ground_friction > old_ground_speed * c_physics_fps) {
+            if (m_ground_friction > old_ground_speed / delta_seconds) {
                 // friction will stop the motion
-                friction_magnitude = old_ground_speed * c_physics_fps;
+                friction_magnitude = old_ground_speed / delta_seconds;
             } else {
                 friction_magnitude = m_ground_friction;
             }
@@ -222,9 +216,11 @@ void Game::doPhysics()
     }
 
     // calculate new speed
-    m_player_position.dx += acceleration.x / c_physics_fps;
-    m_player_position.dy += acceleration.y / c_physics_fps;
-    m_player_position.dz += acceleration.z / c_physics_fps;
+    m_player_position.dx += acceleration.x * delta_seconds;
+    m_player_position.dy += acceleration.y * delta_seconds;
+    m_player_position.dz += acceleration.z * delta_seconds;
+
+    qDebug() << m_player_position.dx<< m_player_position.dy<< m_player_position.dz;
 
 
     // limit speed
@@ -247,7 +243,7 @@ void Game::doPhysics()
 
     bool x = false, y = false, z = false;
     if (m_player_position.dx != 0) {
-        m_player_position.x += m_player_position.dx / c_physics_fps;
+        m_player_position.x += m_player_position.dx * delta_seconds;
         int block_x = (int)(m_player_position.x + Util::sign(m_player_position.dx) * c_player_apothem);
         if (collisionInRange(Int3D(block_x, start.y, start.z), Int3D(block_x, stop.y, stop.z))) {
             x = true;
@@ -257,7 +253,7 @@ void Game::doPhysics()
     }
 
     if (m_player_position.dy != 0) {
-        m_player_position.y += m_player_position.dy / c_physics_fps;
+        m_player_position.y += m_player_position.dy * delta_seconds;
         int block_y = (int)(m_player_position.y + Util::sign(m_player_position.dy) * c_player_apothem);
         if (collisionInRange(Int3D(start.x, block_y, start.z), Int3D(stop.x, block_y, stop.z))) {
             y = true;
@@ -266,7 +262,7 @@ void Game::doPhysics()
         }
     }
 
-    m_player_position.z += m_player_position.dz / c_physics_fps;
+    m_player_position.z += m_player_position.dz * delta_seconds;
     int block_z = (int)(m_player_position.z + c_player_half_height + Util::sign(m_player_position.dz) * c_player_half_height);
     if (collisionInRange(Int3D(start.x, start.y, block_z), Int3D(stop.x, stop.y, block_z))) {
         z = true;

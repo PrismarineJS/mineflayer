@@ -74,7 +74,8 @@ MainWindow::MainWindow() :
     m_input_manager(NULL),
     m_mouse(NULL),
     m_keyboard(NULL),
-    m_game(NULL)
+    m_game(NULL),
+    m_control_to_key(Game::ControlCount)
 {
     loadControls();
 
@@ -109,23 +110,21 @@ void MainWindow::loadControls()
 {
     QDir dir(QCoreApplication::applicationDirPath());
     QSettings settings(dir.absoluteFilePath("mineflayer.ini"), QSettings::IniFormat);
-    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/forward", QString("key_%1").arg(QString::number(OIS::KC_W))).toString()), Game::Forward);
-    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/back", QString("key_%1").arg(QString::number(OIS::KC_S))).toString()), Game::Back);
-    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/left", QString("key_%1").arg(QString::number(OIS::KC_A))).toString()), Game::Left);
-    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/right", QString("key_%1").arg(QString::number(OIS::KC_D))).toString()), Game::Right);
-    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/jump", QString("key_%1").arg(QString::number(OIS::KC_SPACE))).toString()), Game::Jump);
-    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/crouch", QString("mod_%1").arg(QString::number(OIS::Keyboard::Shift))).toString()), Game::Crouch);
-    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/discard_item", QString("key_%1").arg(QString::number(OIS::KC_Q))).toString()), Game::DiscardItem);
-    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/action_1", QString("mouse_%1").arg(QString::number(OIS::MB_Left))).toString()), Game::Action1);
-    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/action_2", QString("mouse_%1").arg(QString::number(OIS::MB_Right))).toString()), Game::Action2);
-    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/inventory", QString("key_%1").arg(QString::number(OIS::KC_I))).toString()), Game::Inventory);
-    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/chat", QString("key_%1").arg(QString::number(OIS::KC_T))).toString()), Game::Chat);
 
-    QHashIterator<PhysicalInput, Game::Control> it(m_key_to_control);
-    while (it.hasNext()) {
-        it.next();
-        m_control_to_key.insert(it.value(), it.key());
-    }
+    m_control_to_key[Game::Forward] = configKeyToPhysInput(settings.value("controls/forward", QString("key_%1").arg(QString::number(OIS::KC_W))).toString());
+    m_control_to_key[Game::Back] = configKeyToPhysInput(settings.value("controls/back", QString("key_%1").arg(QString::number(OIS::KC_S))).toString());
+    m_control_to_key[Game::Left] = configKeyToPhysInput(settings.value("controls/left", QString("key_%1").arg(QString::number(OIS::KC_A))).toString());
+    m_control_to_key[Game::Right] = configKeyToPhysInput(settings.value("controls/right", QString("key_%1").arg(QString::number(OIS::KC_D))).toString());
+    m_control_to_key[Game::Jump] = configKeyToPhysInput(settings.value("controls/jump", QString("key_%1").arg(QString::number(OIS::KC_SPACE))).toString());
+    m_control_to_key[Game::Crouch] = configKeyToPhysInput(settings.value("controls/crouch", QString("mod_%1").arg(QString::number(OIS::Keyboard::Shift))).toString());
+    m_control_to_key[Game::DiscardItem] = configKeyToPhysInput(settings.value("controls/discard_item", QString("key_%1").arg(QString::number(OIS::KC_Q))).toString());
+    m_control_to_key[Game::Action1] = configKeyToPhysInput(settings.value("controls/action_1", QString("mouse_%1").arg(QString::number(OIS::MB_Left))).toString());
+    m_control_to_key[Game::Action2] = configKeyToPhysInput(settings.value("controls/action_2", QString("mouse_%1").arg(QString::number(OIS::MB_Right))).toString());
+    m_control_to_key[Game::Inventory] = configKeyToPhysInput(settings.value("controls/inventory", QString("key_%1").arg(QString::number(OIS::KC_I))).toString());
+    m_control_to_key[Game::Chat] = configKeyToPhysInput(settings.value("controls/chat", QString("key_%1").arg(QString::number(OIS::KC_T))).toString());
+
+    for (int i = 0; i < m_control_to_key.size(); i++)
+        m_key_to_control.insert(m_control_to_key[i], (Game::Control) i);
 }
 
 MainWindow::PhysicalInput MainWindow::configKeyToPhysInput(QString config_value)
@@ -137,9 +136,9 @@ MainWindow::PhysicalInput MainWindow::configKeyToPhysInput(QString config_value)
     if (parts.at(0) == "key")
         value.location = KeyboardKey;
     else if (parts.at(0) == "mod")
-        value.location = KeyboardKey;
+        value.location = KeyboardModifier;
     else if (parts.at(0) == "mouse")
-        value.location = KeyboardKey;
+        value.location = Mouse;
     else
         Q_ASSERT(false);
 
@@ -183,8 +182,8 @@ void MainWindow::createFrameListener()
     windowHndStr << windowHnd;
     pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
 #ifdef OIS_LINUX_PLATFORM
-    //pl.insert(std::make_pair(std::string("x11_mouse_grab"), std::string("false")));
-    //pl.insert(std::make_pair(std::string("x11_keyboard_grab"), std::string("false")));
+    pl.insert(std::make_pair(std::string("x11_mouse_grab"), std::string("false")));
+    pl.insert(std::make_pair(std::string("x11_keyboard_grab"), std::string("false")));
 #endif
 
     m_input_manager = OIS::InputManager::createInputSystem( pl );
@@ -372,6 +371,7 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
     QCoreApplication::processEvents();
 
     // compute next frame
+    m_game->doPhysics(evt.timeSinceLastFrame);
 
     // update the camera
     if (m_free_look_mode) {
