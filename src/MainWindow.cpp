@@ -57,13 +57,20 @@ const float MainWindow::c_terrain_png_height = 256.0f;
 const float MainWindow::c_terrain_png_width = 256.0f;
 const float MainWindow::c_terrain_block_size = 16.0f;
 
+uint qHash(const MainWindow::PhysicalInput & value)
+{
+    return value.id;
+}
+
 MainWindow::MainWindow() :
     m_root(NULL),
     m_camera(NULL),
     m_scene_manager(NULL),
     m_window(NULL),
     m_resources_config(Ogre::StringUtil::BLANK),
+    m_camera_velocity(0, 0, 0),
     m_shut_down(false),
+    m_free_look_mode(false),
     m_input_manager(NULL),
     m_mouse(NULL),
     m_keyboard(NULL),
@@ -102,23 +109,42 @@ void MainWindow::loadControls()
 {
     QDir dir(QCoreApplication::applicationDirPath());
     QSettings settings(dir.absoluteFilePath("mineflayer.ini"), QSettings::IniFormat);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/forward", OIS::KC_W).toInt(), Game::Forward);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/back", OIS::KC_S).toInt(), Game::Back);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/left", OIS::KC_A).toInt(), Game::Left);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/right", OIS::KC_D).toInt(), Game::Right);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/jump", OIS::KC_SPACE).toInt(), Game::Jump);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/crouch", OIS::KC_Z).toInt(), Game::Crouch);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/discard_item", OIS::KC_Q).toInt(), Game::DiscardItem);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/action_1", OIS::KC_NUMPAD0).toInt(), Game::Action1);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/action_2", OIS::KC_NUMPAD1).toInt(), Game::Action2);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/inventory", OIS::KC_I).toInt(), Game::Inventory);
-    m_key_to_control.insert((OIS::KeyCode)settings.value("controls/chat", OIS::KC_T).toInt(), Game::Chat);
+    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/forward", QString("key_%1").arg(QString::number(OIS::KC_W))).toString()), Game::Forward);
+    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/back", QString("key_%1").arg(QString::number(OIS::KC_S))).toString()), Game::Back);
+    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/left", QString("key_%1").arg(QString::number(OIS::KC_A))).toString()), Game::Left);
+    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/right", QString("key_%1").arg(QString::number(OIS::KC_D))).toString()), Game::Right);
+    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/jump", QString("key_%1").arg(QString::number(OIS::KC_SPACE))).toString()), Game::Jump);
+    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/crouch", QString("mod_%1").arg(QString::number(OIS::Keyboard::Shift))).toString()), Game::Crouch);
+    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/discard_item", QString("key_%1").arg(QString::number(OIS::KC_Q))).toString()), Game::DiscardItem);
+    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/action_1", QString("mouse_%1").arg(QString::number(OIS::MB_Left))).toString()), Game::Action1);
+    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/action_2", QString("mouse_%1").arg(QString::number(OIS::MB_Right))).toString()), Game::Action2);
+    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/inventory", QString("key_%1").arg(QString::number(OIS::KC_I))).toString()), Game::Inventory);
+    m_key_to_control.insert(configKeyToPhysInput(settings.value("controls/chat", QString("key_%1").arg(QString::number(OIS::KC_T))).toString()), Game::Chat);
 
-    QHashIterator<OIS::KeyCode, Game::Control> it(m_key_to_control);
+    QHashIterator<PhysicalInput, Game::Control> it(m_key_to_control);
     while (it.hasNext()) {
         it.next();
         m_control_to_key.insert(it.value(), it.key());
     }
+}
+
+MainWindow::PhysicalInput MainWindow::configKeyToPhysInput(QString config_value)
+{
+    PhysicalInput value;
+    config_value = config_value.toLower();
+    QStringList parts = config_value.split("_");
+    Q_ASSERT(parts.size() == 2);
+    if (parts.at(0) == "key")
+        value.location = KeyboardKey;
+    else if (parts.at(0) == "mod")
+        value.location = KeyboardKey;
+    else if (parts.at(0) == "mouse")
+        value.location = KeyboardKey;
+    else
+        Q_ASSERT(false);
+
+    value.id = parts.at(1).toInt();
+    return value;
 }
 
 bool MainWindow::configure()
@@ -348,8 +374,43 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
     // compute next frame
 
     // update the camera
+    if (m_free_look_mode) {
+        bool forward = controlPressed(Game::Forward);
+        bool backward = controlPressed(Game::Back);
+        bool left = controlPressed(Game::Left);
+        bool right = controlPressed(Game::Right);
 
+        // update the camera
+        bool crouch = controlPressed(Game::Crouch);
 
+        Ogre::Vector3 accel = Ogre::Vector3::ZERO;
+        if (forward) accel += m_camera->getDirection();
+        if (backward) accel -= m_camera->getDirection();
+        if (left) accel -= m_camera->getRight();
+        if (right) accel += m_camera->getRight();
+
+        float top_speed = 20;
+        if (crouch)
+            top_speed *= 20;
+
+        if (accel.squaredLength() != 0) {
+            accel.normalise();
+            m_camera_velocity += accel * top_speed * evt.timeSinceLastFrame * 10;
+        } else {
+            m_camera_velocity -= m_camera_velocity * evt.timeSinceLastFrame * 10;
+        }
+
+        float too_small = std::numeric_limits<float>::epsilon();
+
+        if (m_camera_velocity.squaredLength() > top_speed * top_speed) {
+            m_camera_velocity.normalise();
+            m_camera_velocity *= top_speed;
+        } else if (m_camera_velocity.squaredLength() < too_small * too_small) {
+            m_camera_velocity = Ogre::Vector3::ZERO;
+        }
+        if (m_camera_velocity != Ogre::Vector3::ZERO)
+            m_camera->move(m_camera_velocity * evt.timeSinceLastFrame);
+    }
     return true;
 }
 
@@ -357,33 +418,61 @@ bool MainWindow::keyPressed(const OIS::KeyEvent &arg )
 {
     if (arg.key == OIS::KC_ESCAPE || (m_keyboard->isModifierDown(OIS::Keyboard::Alt) && arg.key == OIS::KC_F4))
         m_shut_down = true;
+    else if (arg.key == OIS::KC_F2)
+        m_free_look_mode = !m_free_look_mode;
 
-    m_game->setControlActivated(m_key_to_control.value(arg.key, Game::NoControl), true);
+    activateInput(arg.key, true);
     return true;
 }
 
 bool MainWindow::keyReleased(const OIS::KeyEvent &arg )
 {
-    m_game->setControlActivated(m_key_to_control.value(arg.key, Game::NoControl), false);
+    activateInput(arg.key, false);
     return true;
 }
 
 bool MainWindow::mouseMoved(const OIS::MouseEvent &arg )
 {
-    // move camera
-    m_camera->rotate(Ogre::Vector3(0, 0, 1), Ogre::Degree(-arg.state.X.rel * 0.25f));
-    m_camera->pitch(Ogre::Degree(-arg.state.Y.rel * 0.25f));
+    if (m_free_look_mode) {
+        // move camera
+        m_camera->rotate(Ogre::Vector3(0, 0, 1), Ogre::Degree(-arg.state.X.rel * 0.25f));
+        m_camera->pitch(Ogre::Degree(-arg.state.Y.rel * 0.25f));
+    } else {
+        // TODO: tell the game where we're looking
+    }
     return true;
 }
 
-bool MainWindow::mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+bool MainWindow::mousePressed(const OIS::MouseEvent &, OIS::MouseButtonID id )
 {
+    activateInput(id, true);
     return true;
 }
 
-bool MainWindow::mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id )
+bool MainWindow::mouseReleased(const OIS::MouseEvent &, OIS::MouseButtonID id )
 {
+    activateInput(id, false);
     return true;
+}
+
+bool MainWindow::controlPressed(Game::Control control)
+{
+    PhysicalInput input = m_control_to_key.value(control);
+    switch (input.location) {
+    case Mouse:
+        return m_mouse->getMouseState().buttonDown((OIS::MouseButtonID)input.id);
+    case KeyboardKey:
+        return m_keyboard->isKeyDown((OIS::KeyCode)input.id);
+    case KeyboardModifier:
+        return m_keyboard->isModifierDown((OIS::Keyboard::Modifier)input.id);
+    }
+    Q_ASSERT(false);
+    return false;
+}
+
+void MainWindow::activateInput(PhysicalInput input, bool activated)
+{
+    m_game->setControlActivated(m_key_to_control.value(input, Game::NoControl), activated);
 }
 
 void MainWindow::windowResized(Ogre::RenderWindow* rw)
@@ -518,6 +607,8 @@ MainWindow::ChunkData MainWindow::getChunk(const Int3D & key)
 
 void MainWindow::movePlayerPosition(Server::EntityPosition position)
 {
+    if (m_free_look_mode)
+        return;
     Ogre::Vector3 cameraPosition(position.x, position.y, position.z + position.stance);
     m_camera->setPosition(cameraPosition);
 

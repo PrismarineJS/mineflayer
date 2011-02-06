@@ -33,6 +33,26 @@ class MainWindow :
 {
     Q_OBJECT
 public:
+    enum InputLocation {
+        KeyboardKey,
+        KeyboardModifier,
+        Mouse,
+    };
+
+    struct PhysicalInput {
+        InputLocation location;
+        int id;
+        PhysicalInput() {}
+        PhysicalInput(OIS::MouseButtonID mouse_button) : location(Mouse), id(mouse_button) {}
+        PhysicalInput(OIS::Keyboard::Modifier modifier_button) : location(KeyboardModifier), id(modifier_button) {}
+        PhysicalInput(OIS::KeyCode key_code) : location(KeyboardKey), id(key_code) {}
+
+        bool operator ==(const PhysicalInput & other) const {
+            return other.id == id;
+        }
+    };
+
+public:
     MainWindow();
     ~MainWindow();
 
@@ -71,7 +91,9 @@ private:
     Ogre::RenderWindow* m_window;
     Ogre::String m_resources_config;
 
+    Ogre::Vector3 m_camera_velocity;
     bool m_shut_down;
+    bool m_free_look_mode;
 
     //OIS Input devices
     OIS::InputManager* m_input_manager;
@@ -108,6 +130,7 @@ private:
         Ogre::ManualObject * manual_object;
     };
 
+
     Game * m_game;
 
     // key is the meter coordinates of the min corner
@@ -116,9 +139,9 @@ private:
 
     Mob * m_player;
 
-    // maps OIS::KeyCode to Control and vice versa
-    QHash<OIS::KeyCode, Game::Control> m_key_to_control;
-    QHash<Game::Control, OIS::KeyCode> m_control_to_key;
+    // maps input to Control and vice versa
+    QHash<PhysicalInput, Game::Control> m_key_to_control;
+    QHash<Game::Control, PhysicalInput> m_control_to_key;
 
     // maps texture name to coordinates in terrain.png
     QHash<QString, BlockTextureCoord> m_terrain_tex_coords;
@@ -145,11 +168,16 @@ private:
     Int3D chunkKey(const Int3D & coord);
     void generateChunkMesh(ChunkData & chunk_data);
     ChunkData getChunk(const Int3D & coord);
+    PhysicalInput configKeyToPhysInput(QString config_value);
+    bool controlPressed(Game::Control control);
+    void activateInput(PhysicalInput input, bool activated = true);
 
 private slots:
     void handleChunkUpdated(Int3D start, Int3D size);
     void movePlayerPosition(Server::EntityPosition position);
 
 };
+
+uint qHash(const MainWindow::PhysicalInput & value);
 
 #endif // MAINWINDOW_H

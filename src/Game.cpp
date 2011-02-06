@@ -112,6 +112,7 @@ void Game::handlePlayerPositionAndLookUpdated(Server::EntityPosition position)
     m_player_position.on_ground = position.on_ground;
 
     // apologize to the notchian server by echoing an identical position back
+
     m_server.sendPositionAndLook(m_player_position);
 
     if (m_position_update_timer == NULL) {
@@ -183,7 +184,7 @@ void Game::doPhysics()
     Ogre::Vector3 acceleration = Ogre::Vector3::ZERO;
     if (movement_forward || movement_right) {
         // input acceleration
-        float rotation_from_input = std::atan2(movement_right, movement_forward);
+        float rotation_from_input = std::atan2(movement_forward, movement_right);
         float input_yaw = m_player_position.yaw + rotation_from_input;
         acceleration.x += Ogre::Math::Cos(input_yaw) * m_input_acceleration;
         acceleration.y += Ogre::Math::Sin(input_yaw) * m_input_acceleration;
@@ -238,6 +239,7 @@ void Game::doPhysics()
         m_player_position.dz = -m_terminal_velocity;
     else if (m_player_position.dz > m_terminal_velocity)
         m_player_position.dz = m_terminal_velocity;
+
 
     // calculate new positions and resolve collisions
     Int3D start((int)(m_player_position.x - c_player_apothem), (int)(m_player_position.y - c_player_apothem), (int)(m_player_position.z + 0));
