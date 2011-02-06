@@ -40,6 +40,15 @@ public:
     const Int3D operator/(int divisor) const {
         return Int3D(*this) /= divisor;
     }
+    Int3D & operator*=(int n) {
+        x *= n;
+        y *= n;
+        z *= n;
+        return *this;
+    }
+    const Int3D operator*(int n) const {
+        return Int3D(*this) *= n;
+    }
     Int3D & operator%=(const Int3D & other) {
         x = Util::euclideanMod(x, other.x);
         y = Util::euclideanMod(y, other.y);

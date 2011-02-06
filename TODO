@@ -2,7 +2,6 @@ Core:
  * support physics / walking around
 
 3D client:
- * cactus, flower, torch, wheat, etc
  * chunk seams look ugly
  * water/lava animation
  * water / lava flow

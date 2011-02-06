@@ -53,6 +53,10 @@ const Ogre::Vector2 MainWindow::c_tex_coord[2][3] = {
 };
 const Int3D MainWindow::c_chunk_size(16, 16, 128);
 
+const float MainWindow::c_terrain_png_height = 256.0f;
+const float MainWindow::c_terrain_png_width = 256.0f;
+const float MainWindow::c_terrain_block_size = 16.0f;
+
 MainWindow::MainWindow() :
     m_root(NULL),
     m_camera(NULL),
@@ -256,16 +260,25 @@ void MainWindow::loadResources()
             if (line.isEmpty() || line.startsWith("#"))
                 continue;
             QStringList parts = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-            Q_ASSERT(parts.size() == 10);
+            Q_ASSERT(parts.size() == 17);
             BlockData block_data;
             block_data.side_textures.resize(6);
+            block_data.squish_amount.resize(6);
             int index = 0;
             Chunk::ItemType id = (Chunk::ItemType) parts.at(index++).toInt();
             block_data.name = parts.at(index++);
-            for (int i = 0; i < 6; i++)
-                block_data.side_textures.replace(i, parts.at(index++));
+            for (int i = 0; i < 6; i++) {
+                QString texture = parts.at(index++);
+                if (texture != "-")
+                    block_data.side_textures.replace(i, texture);
+            }
             block_data.see_through = (bool)parts.at(index++).toInt();
             block_data.partial_alpha = (bool)parts.at(index++).toInt();
+            for (int i = 0; i < 6; i++) {
+                Int3D squish = c_side_offset[i] * parts.at(index++).toInt();
+                block_data.squish_amount.replace(i, Ogre::Vector3(squish.x, squish.y, squish.z)/c_terrain_block_size);
+            }
+            block_data.rotate = (bool)parts.at(index++).toInt();
             m_block_data.insert(id, block_data);
         }
         blocks_file.close();
@@ -494,23 +507,36 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                         continue;
 
                     // for every side
-                    for (int i = 0; i < 6; i++) {
+                    for (int side_index = 0; side_index < 6; side_index++) {
+                        if (block_data.side_textures.at(side_index).isEmpty())
+                            continue;
+
                         // if the block on this side is opaque or the same block, skip
-                        Chunk::ItemType side_type = blockTypeAt(chunk.data()->position()+offset+c_side_offset[i]);
+                        Chunk::ItemType side_type = blockTypeAt(chunk.data()->position()+offset+c_side_offset[side_index]);
                         if (side_type == block.type || ! m_block_data.value(side_type, m_air).see_through)
                             continue;
 
                         // add this side to mesh
-                        Int3D abs_block_loc = chunk.data()->position() + offset;
-                        QString texture_name = block_data.side_textures.at(i);
+                        Ogre::Vector3 abs_block_loc(chunk.data()->position().x + offset.x,
+                                                    chunk.data()->position().y + offset.y,
+                                                    chunk.data()->position().z + offset.z);
+                        QString texture_name = block_data.side_textures.at(side_index);
                         BlockTextureCoord btc = m_terrain_tex_coords.value(texture_name);
+                        Ogre::Vector3 squish = block_data.squish_amount.at(side_index);
 
                         for (int triangle_index = 0; triangle_index < 2; triangle_index++) {
                             for (int point_index = 0; point_index < 3; point_index++) {
-                                Ogre::Vector3 side_coord = c_side_coord[i][triangle_index][point_index];
+                                Ogre::Vector3 pos = c_side_coord[side_index][triangle_index][point_index] - squish;
+                                if (block_data.rotate) {
+                                    pos -= 0.5f;
+                                    pos = Ogre::Quaternion(Ogre::Degree(45), Ogre::Vector3::UNIT_Z) * pos;
+                                    pos += 0.5f;
+                                }
+
+                                obj->position(pos + abs_block_loc);
+
                                 Ogre::Vector2 tex_coord = c_tex_coord[triangle_index][point_index];
-                                obj->position(abs_block_loc.x+side_coord.x, abs_block_loc.y+side_coord.y, abs_block_loc.z+side_coord.z);
-                                obj->textureCoord((btc.x+tex_coord.x*btc.w) / 256.f, (btc.y+tex_coord.y*btc.h) / 256.0f);
+                                obj->textureCoord((btc.x+tex_coord.x*btc.w) / c_terrain_png_width, (btc.y+tex_coord.y*btc.h) / c_terrain_png_height);
                             }
                         }
                     }
