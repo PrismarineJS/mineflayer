@@ -5,6 +5,7 @@ Dirt                32  0   16  16
 GrassDirtSide       48  0   16  16          
 WoodenPlank         64  0   16  16
 DoubleStoneSlab     80  0   16  16
+SingleStoneSlab     80  8   16  8
 StoneSlabTop        96  0   16  16
 Brick               112 0   16  16
 TntSide             128 0   16  16
@@ -107,8 +108,8 @@ PumpkinBack         96  112 16  16
 PumpkinFront        112 112 16  16
 JackOLanternFront   128 112 16  16
 CakeTop             144 112 16  16
-CakeSide            160 112 16  16
-CakeInside          176 112 16  16
+CakeSide            160 112 16  8
+CakeInside          176 112 16  8
 CakeBottom          192 112 16  16
 
 TrackStraight       0   128 16  16

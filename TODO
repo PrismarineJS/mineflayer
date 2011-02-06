@@ -1,16 +1,13 @@
 Core:
  * support physics / walking around
- * authenticated login
 
 3D client:
  * chunk seams look ugly
  * water/lava animation
- * cactus rendering
- * flower rendering
  * water / lava flow
  * lighting
- * sky, sun, moon, clouds)
- * mobs
+ * sky, sun, moon, clouds
+ * mobs/players
 
 Bot framework:
  * implement the functions in doc/bot-api

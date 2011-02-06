@@ -76,6 +76,9 @@ private:
     static const Int3D c_chunk_size;
     static const Ogre::Vector3 c_side_coord[6][2][3];
     static const Ogre::Vector2 c_tex_coord[2][3];
+    static const float c_terrain_png_width;
+    static const float c_terrain_png_height;
+    static const float c_terrain_block_size;
 
     Ogre::Root *m_root;
     Ogre::Camera* m_camera;
@@ -110,6 +113,8 @@ private:
         QVector<QString> side_textures;
         bool see_through;
         bool partial_alpha;
+        QVector<Ogre::Vector3> squish_amount;
+        bool rotate;
     };
 
     struct ChunkData {
