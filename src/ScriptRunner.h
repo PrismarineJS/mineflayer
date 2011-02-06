@@ -41,6 +41,7 @@ private slots:
     void updateChunk(QSharedPointer<Chunk> chunk);
     void movePlayerPosition(Server::EntityPosition position);
     void handleChatReceived(QString username, QString message);
+    void handleLoginStatusUpdated(Server::LoginStatus status);
 };
 
 #endif // SCRIPTRUNNER_H

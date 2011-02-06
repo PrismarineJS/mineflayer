@@ -200,8 +200,17 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             break;
         }
         case Message::Chat: {
-            ChatResponse * message = (ChatResponse *) incomingMessage.data();
-            emit chatReceived(message->content);
+            ChatResponse * message = (ChatResponse *)incomingMessage.data();
+            if (message->content.startsWith("<")) {
+                int pos = message->content.indexOf(">");
+                Q_ASSERT(pos != -1);
+                QString username = message->content.mid(1, pos-1);
+                QString content = message->content.mid(pos+2);
+                if (username != m_connection_info.userName())
+                    emit chatReceived(username, content);
+            } else {
+                // TODO
+            }
             break;
         }
         case Message::PlayerPositionAndLook: {

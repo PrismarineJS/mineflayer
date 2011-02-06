@@ -3,6 +3,7 @@
 #include <QTimer>
 #include <QMainWindow>
 #include <QDebug>
+#include <QCoreApplication>
 
 ScriptRunner::ScriptRunner(QString script_file, bool debug, bool headless, QObject *parent) :
     QObject(parent),
@@ -57,7 +58,7 @@ bool ScriptRunner::go()
     bool success;
     success = connect(m_server, SIGNAL(mapChunkUpdated(QSharedPointer<Chunk>)), this, SLOT(updateChunk(QSharedPointer<Chunk>)));
     Q_ASSERT(success);
-    success = connect(m_server, SIGNAL(playerPositionUpdated(Server::EntityPosition)), this, SLOT(movePlayerPosition(Server::EntityPosition)));
+    success = connect(m_server, SIGNAL(playerPositionAndLookUpdated(Server::EntityPosition)), this, SLOT(movePlayerPosition(Server::EntityPosition)));
     Q_ASSERT(success);
     success = connect(m_server, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SLOT(handleLoginStatusUpdated(Server::LoginStatus)));
     Q_ASSERT(success);
@@ -111,4 +112,23 @@ void ScriptRunner::movePlayerPosition(Server::EntityPosition position)
 void ScriptRunner::handleChatReceived(QString username, QString message)
 {
     callBotMethod("onChat", QScriptValueList() << username << message);
+}
+
+void ScriptRunner::handleLoginStatusUpdated(Server::LoginStatus status)
+{
+    switch (status) {
+        case Server::Disconnected:
+            qWarning() << "Got disconnected from server";
+            QCoreApplication::instance()->quit();
+            break;
+        case Server::Success:
+            callBotMethod("onConnected");
+            QTimer::singleShot(1, this, SLOT(process()));
+            break;
+        case Server::SocketError:
+            qWarning() << "Unable to connect to server";
+            QCoreApplication::instance()->quit();
+            break;
+        default:;
+    }
 }
