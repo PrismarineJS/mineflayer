@@ -3,6 +3,7 @@
 
 namespace Util
 {
+    const float half_pi = 1.57079633f;
     const float pi = 3.14159265f;
     const float two_pi = 6.28318531f;
     const float degrees_per_radian = 57.2957795f;

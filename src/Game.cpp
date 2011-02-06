@@ -184,7 +184,7 @@ void Game::doPhysics()
     Ogre::Vector3 acceleration = Ogre::Vector3::ZERO;
     if (movement_forward || movement_right) {
         // input acceleration
-        float rotation_from_input = std::atan2(movement_forward, movement_right);
+        float rotation_from_input = std::atan2(movement_forward, movement_right) + Util::half_pi;
         float input_yaw = m_player_position.yaw + rotation_from_input;
         acceleration.x += Ogre::Math::Cos(input_yaw) * m_input_acceleration;
         acceleration.y += Ogre::Math::Sin(input_yaw) * m_input_acceleration;
