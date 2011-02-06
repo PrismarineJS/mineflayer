@@ -7,7 +7,6 @@ Current features:
  * runs javascript bot scripts with a limited api
 
 Planned features:
- * authenticated login.
  * the rest of the bot api. see doc/bot-api for further details.
  * examples of bot scripts with AI.
 
