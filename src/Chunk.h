@@ -206,6 +206,9 @@ public:
         int metadata;
         int light;
         int sky_light;
+        Block() {}
+        Block(ItemType type, int metadata, int light, int sky_light) :
+            type(type), metadata(metadata), light(light), sky_light(sky_light) {}
     };
 
 public:

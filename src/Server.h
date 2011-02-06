@@ -13,7 +13,9 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
-// use it to send messages and connect to it to hear it emit incoming messages.
+// sends and receives messages and translates to/from notch's data formats and coordinate system.
+// abstracts data format, but not semantics and policies.
+// you have to know how often to send a player position and look, but you don't need to how the data is stored in the message.
 // this object runs in its own thread which it manages for you.
 class Server : public QObject
 {
@@ -27,7 +29,6 @@ public:
         WaitingForSessionId,
         WaitingForNameVerification,
         WaitingForLoginResponse,
-        WaitingForPlayerPositionAndLook,
         Success,
         SocketError,
     };
@@ -55,21 +56,20 @@ signals:
     void loginStatusUpdated(Server::LoginStatus status);
     void socketDisconnected();
 
-    void chatReceived(QString username, QString message);
+    void chatReceived(QString content);
     void mapChunkUpdated(QSharedPointer<Chunk> chunk);
     void unloadChunk(Int3D coord);
-    void playerPositionUpdated(Server::EntityPosition position);
+    void playerPositionAndLookUpdated(Server::EntityPosition position);
     void inventoryUpdated(QVector<Message::Item> inventory);
 
 public slots:
-    // use this to actually connect to the server
+    // actually connect to the server
     void socketConnect();
 
-    // sends a chat
-    void sendChat(QString message);
 public:
-    LoginStatus loginStatus();
-    void updateNextPlayerPosition(EntityPosition next_player_position);
+    void sendPositionAndLook(EntityPosition positionAndLook);
+    // sends a chat message. can start with '/' to be a command.
+    void sendChat(QString message);
 
 private:
     static const QString c_auth_server;
@@ -89,15 +89,11 @@ private:
 
     LoginStatus m_login_state;
 
-    EntityPosition m_canonical_player_position;
-    EntityPosition m_next_player_position;
 
     QString m_connection_hash;
 
 private:
     void changeLoginState(LoginStatus state);
-    void gotFirstPlayerPositionAndLookResponse();
-
 
     static void fromNotchianXyz(EntityPosition & destination, double notchian_x, double notchian_y, double notchian_z);
     static Int3D fromNotchianXyz(int notchian_x, int notchian_y, int notchian_z);
@@ -114,9 +110,6 @@ private slots:
     void cleanUpAfterDisconnect();
     void processIncomingMessage(QSharedPointer<IncomingResponse>);
     void handleSocketError(QAbstractSocket::SocketError);
-    void sendPosition();
-    void doPhysics();
-    void internalUpdateNextPlayerPosition(EntityPosition next_player_position);
     void sendMessage(QSharedPointer<OutgoingRequest> message);
     void handleFinishedRequest(QNetworkReply *);
 };

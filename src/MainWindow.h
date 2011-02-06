@@ -22,7 +22,7 @@
 #include <QSharedPointer>
 
 #include "Chunk.h"
-#include "Server.h"
+#include "Game.h"
 
 class MainWindow :
     public QObject,
@@ -119,12 +119,12 @@ private:
     };
 
     struct ChunkData {
-        QSharedPointer<Chunk> chunk;
+        Int3D position;
         Ogre::SceneNode * node;
         Ogre::ManualObject * manual_object;
     };
 
-    Server * m_server;
+    Game * m_game;
 
     // key is the meter coordinates of the min corner
     QHash<Int3D, ChunkData> m_chunks;
@@ -158,14 +158,13 @@ private:
     void setupResources();
     void loadResources();
 
-    Chunk::ItemType blockTypeAt(const Int3D & coord);
     Int3D chunkKey(const Int3D & coord);
     void generateChunkMesh(ChunkData & chunk_data);
-    ChunkData getChunk(const Int3D & coord, bool * made_new_chunk = NULL);
+    ChunkData getChunk(const Int3D & coord);
     bool controlPressed(Control control);
 
 private slots:
-    void updateChunk(QSharedPointer<Chunk> chunk);
+    void handleChunkUpdated(Int3D start, Int3D size);
     void movePlayerPosition(Server::EntityPosition position);
 
 };
