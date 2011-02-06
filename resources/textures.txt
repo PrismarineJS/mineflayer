@@ -117,11 +117,11 @@ LightRedWool        32  128 16  16
 BirchLeaves         64  128 16  16
 RedwoodLeaves       80  128 16  16
 
-BlueStuffBlock      0   144 16  16
+LapisLazuliBlock    0   144 16  16
 DarkGreenWool       16  144 16  16
 LightGreenWool      32  144 16  16
 
-BlueStuffOre        0   160 16  16
+LapisLazuliOre      0   160 16  16
 DarkBrownWool       16  160 16  16
 YellowWool          32  160 16  16
 

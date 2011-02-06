@@ -255,7 +255,7 @@ int LoginResponse::parse(QByteArray buffer)
     return index;
 }
 
-const QString HandshakeResponse::AuthenticationRequired = "+";
+const QString HandshakeResponse::PasswordAuthenticationRequired = "+";
 const QString HandshakeResponse::AuthenticationNotRequired = "-";
 int HandshakeResponse::parse(QByteArray buffer)
 {

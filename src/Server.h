@@ -10,6 +10,8 @@
 #include <QSharedPointer>
 #include <QUrl>
 #include <QTimer>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 
 // sends and receives messages and translates to/from notch's data formats and coordinate system.
 // abstracts data format, but not semantics and policies.
@@ -24,6 +26,8 @@ public:
         Disconnected,
         Connecting,
         WaitingForHandshakeResponse,
+        WaitingForSessionId,
+        WaitingForNameVerification,
         WaitingForLoginResponse,
         Success,
         SocketError,
@@ -68,14 +72,25 @@ public:
     void sendChat(QString message);
 
 private:
+    static const QString c_auth_server;
     QUrl m_connection_info;
 
     QThread * m_socket_thread;
     QTcpSocket * m_socket;
     IncomingMessageParser * m_parser;
+    QTimer * m_position_update_timer;
+    QNetworkAccessManager * m_network;
+
+    static const float c_walking_speed; // m/s
+    static const int c_notchian_tick_ms;
+    static const int c_physics_fps;
+    static const float c_gravity; // m/s^2
+    QTimer * m_physics_timer;
 
     LoginStatus m_login_state;
 
+
+    QString m_connection_hash;
 
 private:
     void changeLoginState(LoginStatus state);
@@ -86,6 +101,7 @@ private:
     static void toNotchianXyz(const EntityPosition &source, double & destination_notchian_x, double & destination_notchian_y, double & destination_notchian_z);
     static void fromNotchianYawPitch(EntityPosition & destination, float notchian_yaw, float notchian_pitch);
     static void toNotchianYawPitch(const EntityPosition &source, float & destination_notchian_yaw, float & destination_notchian_pitch);
+    QByteArray notchUrlEncode(QString param);
 
 private slots:
     void initialize();
@@ -95,6 +111,7 @@ private slots:
     void processIncomingMessage(QSharedPointer<IncomingResponse>);
     void handleSocketError(QAbstractSocket::SocketError);
     void sendMessage(QSharedPointer<OutgoingRequest> message);
+    void handleFinishedRequest(QNetworkReply *);
 };
 
 
