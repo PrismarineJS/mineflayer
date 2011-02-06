@@ -136,6 +136,29 @@ inventorySpaceLeft(item)
  */
 inventorySlotsLeft()
 
+/**
+ * Returns an object representing your state in the world.
+ * @returns {Object} An object with these properties:
+ *                      x {Number} Where center of the bottom of your feet is
+ *                      y {Number} Where center of the bottom of your feet is
+ *                      z {Number} Where center of the bottom of your feet is
+ *                      dx {Number} Your velocity in meters per second squared
+ *                      dy {Number} Your velocity in meters per second squared
+ *                      dz {Number} Your velocity in meters per second squared
+ *                      stance {Number} [0.1, 1.65] How tall you are. For example if you crouch you are shorter.
+ *                      yaw {Number} [0, 2pi] Rotation around z axis. 0 is +x. pi/2 is +y. pi is -x. 3pi/2 is -y.
+ *                      pitch {Number} [-pi/2, pi/2] 0 is parallel to the ground. pi/2 is up. -pi/2 is down.
+ *                      roll {Number} [-pi, pi] Usually ignored. 0 is level. pi/2 is left ear pointing downward.
+ *                      on_ground {Boolean} True if you are not free-falling.
+ */
+myPosition()
+
+/**
+ * Tells what time it is, also known as where the sun or moon is in the sky.
+ * @returns {Number} The number of real life seconds since dawn. This ranges from 0 to 1200.
+ */
+timeOfDay()
+
 // TODO: moving around
 // TODO: using items. same as place block?
 // TODO: crafting
@@ -222,6 +245,11 @@ onEquippedItemChanged(new_item_id)
  * Called when anything in your inventory changes. Use inventory() to get a list of everything.
  */
 onInventoryUpdated()
+
+/**
+ * @param {Number} time The number of real life seconds since dawn. This ranges from 0 to 1200.
+ */
+onTimeUpdated(time)
 
 /**
  * Called when another user joins the server.
