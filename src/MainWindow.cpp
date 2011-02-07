@@ -57,6 +57,26 @@ const float MainWindow::c_terrain_png_height = 256.0f;
 const float MainWindow::c_terrain_png_width = 256.0f;
 const float MainWindow::c_terrain_block_size = 16.0f;
 
+const float MainWindow::c_decay_rate = 0.80f;
+const float MainWindow::c_light_brightness[] = {
+    0.0351843720888,
+    0.043980465111,
+    0.0549755813888,
+    0.068719476736,
+    0.08589934592,
+    0.1073741824,
+    0.134217728,
+    0.16777216,
+    0.2097152,
+    0.262144,
+    0.32768,
+    0.4096,
+    0.512,
+    0.64,
+    0.8,
+    1.0
+};
+
 uint qHash(const MainWindow::PhysicalInput & value)
 {
     return value.id;
@@ -229,10 +249,13 @@ void MainWindow::loadResources()
         first_pass->setAlphaRejectValue(128);
         first_pass->setDepthWriteEnabled(true);
         first_pass->setDepthCheckEnabled(true);
+        first_pass->setColourWriteEnabled(true);
+        first_pass->setVertexColourTracking(Ogre::TVC_AMBIENT);
         Ogre::TextureUnitState* texture_unit = first_pass->createTextureUnitState();
         texture_unit->setTextureName("terrain.png");
         texture_unit->setTextureCoordSet(0);
         texture_unit->setTextureFiltering(Ogre::TFO_NONE);
+        texture_unit->setColourOperation(Ogre::LBO_MODULATE);
     }
 
     {
@@ -241,11 +264,14 @@ void MainWindow::loadResources()
         Ogre::Pass* first_pass = first_technique->getPass(0);
         first_pass->setDepthWriteEnabled(false);
         first_pass->setDepthCheckEnabled(true);
+        first_pass->setColourWriteEnabled(true);
+        first_pass->setVertexColourTracking(Ogre::TVC_AMBIENT);
         first_pass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
         Ogre::TextureUnitState* texture_unit = first_pass->createTextureUnitState();
         texture_unit->setTextureName("terrain.png");
         texture_unit->setTextureCoordSet(0);
         texture_unit->setTextureFiltering(Ogre::TFO_NONE);
+        texture_unit->setColourOperation(Ogre::LBO_MODULATE);
     }
 
     {
@@ -545,7 +571,8 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                             continue;
 
                         // if the block on this side is opaque or the same block, skip
-                        Block::ItemType side_type = m_game->blockAt(absolute_position + c_side_offset[side_index]).type();
+                        Block neighbor_block = m_game->blockAt(absolute_position + c_side_offset[side_index]);
+                        Block::ItemType side_type = neighbor_block.type();
                         if (side_type == block.type() || ! m_block_data.value(side_type, m_air).see_through)
                             continue;
 
@@ -554,6 +581,10 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                         QString texture_name = block_data.side_textures.at(side_index);
                         BlockTextureCoord btc = m_terrain_tex_coords.value(texture_name);
                         Ogre::Vector3 squish = block_data.squish_amount.at(side_index);
+
+                        float brightness;
+                        int night_darkness = 0;
+                        brightness = c_light_brightness[qMax(neighbor_block.skyLight() - night_darkness, neighbor_block.light())];
 
                         for (int triangle_index = 0; triangle_index < 2; triangle_index++) {
                             for (int point_index = 0; point_index < 3; point_index++) {
@@ -567,6 +598,8 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
 
                                 Ogre::Vector2 tex_coord = c_tex_coord[triangle_index][point_index];
                                 obj->textureCoord((btc.x+tex_coord.x*btc.w) / c_terrain_png_width, (btc.y+tex_coord.y*btc.h) / c_terrain_png_height);
+
+                                obj->colour(brightness, brightness, brightness);
                             }
                         }
                     }
