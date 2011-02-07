@@ -11,6 +11,7 @@ ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headl
     m_script_filename(script_file),
     m_debug(debug),
     m_headless(headless),
+    m_engine(NULL),
     m_server(NULL),
     m_exiting(false)
 {
@@ -18,9 +19,10 @@ ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headl
 
 bool ScriptRunner::go()
 {
+    m_engine = new QScriptEngine(this);
     if (m_debug) {
         QScriptEngineDebugger debugger;
-        debugger.attachTo(&m_engine);
+        debugger.attachTo(m_engine);
         QMainWindow * debug_window = debugger.standardWindow();
         debug_window->resize(1024, 640);
         debug_window->show();
@@ -28,17 +30,19 @@ bool ScriptRunner::go()
 
     QFile script_file(m_script_filename);
     script_file.open(QIODevice::ReadOnly);
-    m_engine.evaluate(script_file.readAll(), m_script_filename);
+    m_engine->evaluate(script_file.readAll(), m_script_filename);
     script_file.close();
-    if (m_engine.hasUncaughtException()) {
-        qWarning() << "Error while evaluating script file:" << m_engine.uncaughtException().toString();
-        qWarning() << m_engine.uncaughtExceptionBacktrace();
+    if (m_engine->hasUncaughtException()) {
+        qWarning() << "Error while evaluating script file:" << m_engine->uncaughtException().toString();
+        qWarning() << m_engine->uncaughtExceptionBacktrace();
         return false;
     }
 
     // initialize the MF object before we run any user code
-    m_engine.globalObject().setProperty("mf", m_engine.newQObject(this));
+    m_engine->globalObject().setProperty("mf", m_engine->newQObject(this));
+    QScriptValue mf_obj = m_engine->globalObject().property("mf");
 
+    // create JavaScript enums from C++ enums
     QFile enum_file(":/enums/ItemTypeEnum.h");
     enum_file.open(QIODevice::ReadOnly);
     QString enum_contents = QString::fromUtf8(enum_file.readAll()).trimmed();
@@ -52,27 +56,29 @@ bool ScriptRunner::go()
     Q_ASSERT(enum_contents.endsWith(";"));
     enum_contents.chop(1);
     QString json = QString("(") + enum_contents.replace("=", ":") + QString(")");
-    m_engine.globalObject().property("mf").setProperty(prop_name, m_engine.evaluate(json));
+    mf_obj.setProperty(prop_name, m_engine->evaluate(json));
 
-    QScriptValue ctor = m_engine.evaluate("MineflayerBot");
-    if (m_engine.hasUncaughtException()) {
-        qWarning() << "Error while evaluating MineflayerBot constructor:" << m_engine.uncaughtException().toString();
-        qWarning() << m_engine.uncaughtExceptionBacktrace();
+    // create functions
+    mf_obj.setProperty("username", m_engine->newFunction(username));
+
+    QScriptValue ctor = m_engine->evaluate("MineflayerBot");
+    if (m_engine->hasUncaughtException()) {
+        qWarning() << "Error while evaluating MineflayerBot constructor:" << m_engine->uncaughtException().toString();
+        qWarning() << m_engine->uncaughtExceptionBacktrace();
         return false;
     }
     if (m_exiting)
         return false;
     m_bot = ctor.construct();
-    if (m_engine.hasUncaughtException()) {
-        qWarning() << "Error while calling MineflayerBot constructor:" << m_engine.uncaughtException().toString();
-        qWarning() << m_engine.uncaughtExceptionBacktrace();
+    if (m_engine->hasUncaughtException()) {
+        qWarning() << "Error while calling MineflayerBot constructor:" << m_engine->uncaughtException().toString();
+        qWarning() << m_engine->uncaughtExceptionBacktrace();
         return false;
     }
     if (m_exiting)
         return false;
 
     // connect to server
-    // TODO: this data should be passed in through config or command line
     m_server = new Server(m_url);
     bool success;
     success = connect(m_server, SIGNAL(mapChunkUpdated(QSharedPointer<Chunk>)), this, SLOT(updateChunk(QSharedPointer<Chunk>)));
@@ -99,11 +105,11 @@ void ScriptRunner::callBotMethod(QString method_name, const QScriptValueList &ar
     QScriptValue method = m_bot.property(method_name);
     if (method.isValid()) {
         method.call(m_bot, args);
-        if (m_engine.hasUncaughtException()) {
+        if (m_engine->hasUncaughtException()) {
             qWarning() << "Error while calling method" << method_name;
-            qWarning() << m_engine.uncaughtException().toString();
-            qWarning() << m_engine.uncaughtExceptionBacktrace();
-            m_engine.clearExceptions();
+            qWarning() << m_engine->uncaughtException().toString();
+            qWarning() << m_engine->uncaughtExceptionBacktrace();
+            m_engine->clearExceptions();
         }
     }
 }
@@ -122,6 +128,12 @@ void ScriptRunner::exit()
 {
     m_exiting = true;
     QCoreApplication::instance()->quit();
+}
+
+QScriptValue ScriptRunner::username(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    return me->m_url.userName();
 }
 
 void ScriptRunner::updateChunk(QSharedPointer<Chunk> chunk)

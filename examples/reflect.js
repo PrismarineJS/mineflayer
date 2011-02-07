@@ -1,4 +1,4 @@
-// reflect mineflayer program: reveals what nameerties the mf object has.
+// reflect mineflayer program: reveals what properties the mf object has.
 function MineflayerBot() {
     function reflect(obj) {
         for (name in obj) {

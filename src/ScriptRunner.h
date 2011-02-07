@@ -22,7 +22,9 @@ public slots:
     void chat(QString message);
     void exit();
 
-signals:
+public:
+    // functions that JavaScript uses
+    static QScriptValue username(QScriptContext * context, QScriptEngine * engine);
 
 private:
     QUrl m_url;
@@ -30,7 +32,7 @@ private:
     bool m_debug;
     bool m_headless;
 
-    QScriptEngine m_engine;
+    QScriptEngine * m_engine;
     QScriptValue m_bot;
 
     Server * m_server;

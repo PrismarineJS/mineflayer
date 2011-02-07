@@ -7,7 +7,7 @@
  * x, y, z - East, North, Up respectively. Coordinates are always specified in meters.
  *          NOTE: this coordinate system is different from Notch's South-Up-West system.
  *
- * Enums
+ * Enums (NOT YET IMPLEMENTED)
  * 
  * mf.Face - Which side of a block, if any.
  *     NoDirection
@@ -62,13 +62,21 @@ chat(message)
  */
 exit()
 
+/**
+ * @returns {String} The name you are logged in as.
+ */
+username()
+
 // NOT YET IMPLEMENTED
 
 // TODO: /kill and /tell as separate functions
 // TODO: op commands such as /give as separate functions
 
 
-/** @return {Number} health out of 20 */
+/**
+ * Tells your health.
+ * @return {Number} health The number of half-hearts that you have, out of 20.
+ */
 health()
 
 /**
@@ -111,6 +119,12 @@ placeBlock(x, y, z, face)
  * @param {Number} item The item ID of the item you want to equip.
  */
 equipItem(item)
+
+/**
+ * Gets the id of item you are holding.
+ * @returns {Number} item_id What you are now equipped with.
+ */
+equippedItem()
 
 /**
  * Looks for armor in your inventory and equips it. If you don't have the armor, nothing happens.
@@ -161,11 +175,11 @@ inventorySlotsLeft()
  *                      roll {Number} [-pi, pi] Usually ignored. 0 is level. pi/2 is left ear pointing downward.
  *                      on_ground {Boolean} True if you are not free-falling.
  */
-myPosition()
+position()
 
 /**
  * Tells what time it is, also known as where the sun or moon is in the sky.
- * @returns {Number} The number of real life seconds since dawn. This ranges from 0 to 1200.
+ * @returns {Number} The number of real life seconds since dawn. This ranges from 0 to 1200 since a day is 20 minutes. See also onTimeUpdated().
  */
 timeOfDay()
 
@@ -232,10 +246,9 @@ onMobSpawn(id, type, x, y, z)
 onMobMovement(id, x, y, z)
 
 /**
- * Called when you get hit, take fall damage, eat food, etc.
- * @param {Number} health The number of half-hearts that you have, out of 20.
+ * Called when you get hit, take fall damage, eat food, etc. See also health().
  */
-onHealthChanged(new_health)
+onHealthChanged()
 
 /**
  * Called when you have spawned and can start moving about.
@@ -249,20 +262,19 @@ onSpawn()
 onStoppedDigging(reason)
 
 /**
- * Called when what you are currently equipped with has changed. For example, if your pickaxe breaks or you eat food.
- * @param {Number} new_item_id What you are now equipped with, if anything.
+ * Called when what you are currently equipped with has changed. For example, if your pickaxe breaks or you eat food. See also equippedItem().
  */
-onEquippedItemChanged(new_item_id)
+onEquippedItemChanged()
 
 /**
- * Called when anything in your inventory changes. Use inventory() to get a list of everything.
+ * Called when anything in your inventory changes. See also inventory().
  */
 onInventoryUpdated()
 
 /**
- * @param {Number} time The number of real life seconds since dawn. This ranges from 0 to 1200 since a day is 20 minutes.
+ * Called when the time of day changes. See also timeOfDay().
  */
-onTimeUpdated(time)
+onTimeUpdated()
 
 /**
  * Called when another user joins the server.
