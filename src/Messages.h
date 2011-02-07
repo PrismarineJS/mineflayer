@@ -120,13 +120,6 @@ protected:
     static void writeValue(QDataStream & stream, Item value);
 };
 
-class KeepAliveRequest : public OutgoingRequest {
-public:
-    KeepAliveRequest() : OutgoingRequest(KeepAlive) {}
-protected:
-    virtual void writeMessageBody(QDataStream &) {}
-};
-
 class LoginRequest : public OutgoingRequest {
 public:
     QString username;
@@ -151,6 +144,12 @@ public:
     ChatRequest(QString message) : OutgoingRequest(Chat),
         message(message) {}
     virtual void writeMessageBody(QDataStream &stream);
+};
+
+class RespawnRequest : public OutgoingRequest {
+public:
+    RespawnRequest() : OutgoingRequest(Respawn) {}
+    virtual void writeMessageBody(QDataStream &) {}
 };
 
 class PlayerPositionAndLookRequest : public OutgoingRequest {

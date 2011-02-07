@@ -1,8 +1,10 @@
 Core:
- * support physics / walking around
+ * fix physics glitches
  * support digging / placing blocks / attacking
- * crafting / inventory manipulation
- * time updates (day / night)
+ * support time updates (day / night)
+ * support crafting / inventory manipulation
+ * support respawning
+ * support entity tracking
 
 3D client:
  * mobs/players

@@ -2,7 +2,7 @@ o  = outgoing is implemented
  i = incoming is implemented
 -- = N/A
 
-oi:KeepAlive=0x00,
+ i:KeepAlive=0x00,
 oi:Login=0x01,
 oi:Handshake=0x02,
 oi:Chat=0x03,
@@ -11,7 +11,7 @@ oi:Chat=0x03,
 -i:SpawnPosition=0x06,
  i:UseEntity=0x07,
 -i:UpdateHealth=0x08,
- i:Respawn=0x09,
+oi:Respawn=0x09,
  -:Player=0x0A,
  -:PlayerPosition=0x0B,
  -:PlayerLook=0x0C,

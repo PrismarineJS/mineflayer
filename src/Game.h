@@ -38,6 +38,8 @@ public:
     void setControlActivated(Control control, bool activated = true);
     // immediately emits a position update
     void updatePlayerLook(float delta_yaw, float delta_pitch);
+    // only valid to call this after you die
+    void respawn();
 
     Block blockAt(const Int3D & absolute_location);
     int playerHealth() { return m_player_health; }
