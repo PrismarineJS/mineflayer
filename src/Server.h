@@ -59,7 +59,6 @@ signals:
 
     void chatReceived(QString username, QString content);
     void playerHealthUpdated(int new_health);
-    void playerDied();
     void mapChunkUpdated(QSharedPointer<Chunk> chunk);
     void unloadChunk(Int3D coord);
     void playerPositionAndLookUpdated(Server::EntityPosition position);

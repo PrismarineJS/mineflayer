@@ -36,6 +36,8 @@ Game::Game(QUrl connection_info) :
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(playerPositionAndLookUpdated(Server::EntityPosition)), this, SLOT(handlePlayerPositionAndLookUpdated(Server::EntityPosition)));
     Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(playerHealthUpdated(int)), this, SLOT(handlePlayerHealthUpdated(int)));
+    Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(mapChunkUpdated(QSharedPointer<Chunk>)), this, SLOT(handleMapChunkUpdated(QSharedPointer<Chunk>)));
     Q_ASSERT(success);
 
@@ -50,6 +52,13 @@ Game::~Game()
 void Game::setControlActivated(Control control, bool activated)
 {
     m_control_state[control] = activated;
+}
+
+void Game::updatePlayerLook(float delta_yaw, float delta_pitch)
+{
+    m_player_position.yaw += delta_yaw;
+    m_player_position.pitch += delta_pitch;
+    emit playerPositionUpdated(m_player_position);
 }
 
 void Game::start()
@@ -123,6 +132,17 @@ void Game::handlePlayerPositionAndLookUpdated(Server::EntityPosition position)
     emit playerPositionUpdated(m_player_position);
 }
 
+void Game::handlePlayerHealthUpdated(int new_health)
+{
+    m_player_health = new_health;
+    if (m_player_health <= 0) {
+        m_player_health = 0;
+    }
+    emit playerHealthUpdated();
+    if (m_player_health == 0)
+        emit playerDied();
+}
+
 void Game::handleMapChunkUpdated(QSharedPointer<Chunk>update)
 {
     // update can be smaller than a full size chunk, but cannot exceed the bounds of a chunk.
@@ -173,7 +193,7 @@ void Game::doPhysics(float delta_seconds)
     Ogre::Vector3 acceleration = Ogre::Vector3::ZERO;
     if (movement_forward || movement_right) {
         // input acceleration
-        float rotation_from_input = std::atan2(movement_forward, movement_right) + Util::half_pi;
+        float rotation_from_input = std::atan2(movement_forward, movement_right) - Util::half_pi;
         float input_yaw = m_player_position.yaw + rotation_from_input;
         acceleration.x += Ogre::Math::Cos(input_yaw) * m_input_acceleration;
         acceleration.y += Ogre::Math::Sin(input_yaw) * m_input_acceleration;

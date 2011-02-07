@@ -215,11 +215,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         }
         case Message::UpdateHealth: {
             UpdateHealthResponse * message = (UpdateHealthResponse*) incomingMessage.data();
-            if (message->health > 0) {
-                emit playerHealthUpdated(message->health);
-            } else {
-                emit playerDied();
-            }
+            emit playerHealthUpdated(message->health);
             break;
         }
         case Message::PlayerPositionAndLook: {
@@ -279,9 +275,9 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
 
             // parse and store the data
             Chunk * chunk = new Chunk(position, positive_size);
-            int metadata_offset = volume;
+            int metadata_offset = volume * 2 / 2;
             int light_offset = volume * 3 / 2;
-            int sky_light_offest = volume * 2;
+            int sky_light_offest = volume * 4 / 2;
             int array_index = 0;
             int nibble_shifter = 0; // start with low nibble
             Int3D notchian_relative_pos;
@@ -371,15 +367,14 @@ void Server::toNotchianXyz(const EntityPosition &source, double &destination_not
 
 void Server::fromNotchianYawPitch(EntityPosition &destination, float notchian_yaw, float notchian_pitch)
 {
-    // amazingly, yaw is oriented properly.
-    destination.yaw = Util::euclideanMod(Util::degreesToRadians(notchian_yaw), Util::two_pi);
-    destination.pitch = Util::euclideanMod(Util::degreesToRadians(notchian_pitch) + Util::pi, Util::two_pi) - Util::pi;
+    destination.yaw = Util::euclideanMod(Util::pi - Util::degreesToRadians(notchian_yaw), Util::two_pi);
+    destination.pitch = Util::euclideanMod(Util::degreesToRadians(-notchian_pitch) + Util::pi, Util::two_pi) - Util::pi;
 }
 
 void Server::toNotchianYawPitch(const EntityPosition &source, float &destination_notchian_yaw, float &destination_notchian_pitch)
 {
-    destination_notchian_yaw = Util::radiansToDegrees(source.yaw);
-    destination_notchian_pitch = Util::radiansToDegrees(source.pitch);
+    destination_notchian_yaw = Util::radiansToDegrees(Util::pi - source.yaw);
+    destination_notchian_pitch = Util::radiansToDegrees(-source.pitch);
 }
 
 void Server::sendPositionAndLook(EntityPosition positionAndLook)

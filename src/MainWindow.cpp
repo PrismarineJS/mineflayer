@@ -434,10 +434,15 @@ bool MainWindow::keyReleased(const OIS::KeyEvent &arg )
 bool MainWindow::mouseMoved(const OIS::MouseEvent &arg )
 {
     // move camera
-    m_camera->rotate(Ogre::Vector3(0, 0, 1), Ogre::Degree(-arg.state.X.rel * 0.25f));
-    m_camera->pitch(Ogre::Degree(-arg.state.Y.rel * 0.25f));
-    if (!m_free_look_mode) {
-        // TODO: tell the game where we're looking
+    Ogre::Degree delta_yaw = Ogre::Degree(-arg.state.X.rel * 0.25f);
+    Ogre::Degree delta_pitch = Ogre::Degree(-arg.state.Y.rel * 0.25f);
+    if (m_free_look_mode) {
+        // update camera directly
+        m_camera->rotate(Ogre::Vector3::UNIT_Z, delta_yaw);
+        m_camera->pitch(delta_pitch);
+    } else {
+        // update the camera indirectly by updating the player's look
+        m_game->updatePlayerLook(delta_yaw.valueRadians(), delta_pitch.valueRadians());
     }
     return true;
 }
@@ -611,9 +616,11 @@ void MainWindow::movePlayerPosition(Server::EntityPosition position)
     Ogre::Vector3 cameraPosition(position.x, position.y, position.z + position.stance);
     m_camera->setPosition(cameraPosition);
 
-    // deal with looking
-//    m_camera->lookAt(cameraPosition + Ogre::Vector3(-1, 0, 0));
-//    m_camera->roll(Ogre::Degree(90));
-//    m_camera->yaw(Ogre::Radian(position.yaw));
-    // TODO: pitch
+    // look due east
+    m_camera->lookAt(cameraPosition + Ogre::Vector3::UNIT_X);
+    m_camera->roll(Ogre::Degree(-90));
+    // then rotate to where we're looking
+    qDebug() << position.pitch;
+    m_camera->rotate(Ogre::Vector3::UNIT_Z, Ogre::Radian(position.yaw));
+    m_camera->rotate(m_camera->getRight(), Ogre::Radian(position.pitch));
 }

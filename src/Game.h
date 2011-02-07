@@ -36,8 +36,11 @@ public:
 
     // equivalent to pressing a button.
     void setControlActivated(Control control, bool activated = true);
+    // immediately emits a position update
+    void updatePlayerLook(float delta_yaw, float delta_pitch);
 
     Block blockAt(const Int3D & absolute_location);
+    int playerHealth() { return m_player_health; }
 
     // if you want you can cheat and override the default physics settings:
     void setInputAcceleration(float value) { m_input_acceleration = value; }
@@ -47,6 +50,8 @@ signals:
     void chatReceived(QString username, QString message);
     void chunkUpdated(Int3D start, Int3D size);
     void playerPositionUpdated(Server::EntityPosition position);
+    void playerHealthUpdated();
+    void playerDied();
 
 private:
     static const float c_standard_max_ground_speed; // m/s
@@ -69,6 +74,7 @@ private:
     QTimer * m_position_update_timer;
 
     Server::EntityPosition m_player_position;
+    int m_player_health;
     QHash<Int3D, QSharedPointer<Chunk> > m_chunks;
 
     float m_max_ground_speed;
@@ -89,6 +95,7 @@ private slots:
     void handleLoginStatusChanged(Server::LoginStatus status);
     void handleChatReceived(QString content);
     void handlePlayerPositionAndLookUpdated(Server::EntityPosition position);
+    void handlePlayerHealthUpdated(int new_health);
     void handleMapChunkUpdated(QSharedPointer<Chunk> update);
 
     void sendPosition();
