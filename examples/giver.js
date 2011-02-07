@@ -1,13 +1,15 @@
 /**
  * syntax:
- * give <item name> [<count>]
+ * gimme <item name> [<count>]
+ * give <username> <item name> [<count>]
  *
  * <item name> can have spaces. very loose matching is used to look it up.
  * <count> defaults to 1 and represents the number of stacks.
  *
  * examples:
- * give dirt        - gives 64 dirt
- * give dim swo 3   - gives 3 diamond swords
+ * gimme dirt                   - gives you 64 dirt
+ * gimme dim swo 3              - gives you 3 diamond swords
+ * give OtherGuy feathers 36    - gives OtherGuy enough feathers to fill his inventory
  */
 
 function MineflayerBot() {
@@ -15,9 +17,26 @@ function MineflayerBot() {
 }
 
 MineflayerBot.prototype.onChat = function(username, message) {
-    command = message.toLowerCase();
-    var parts = command.trim().split(" ");
-    if (parts.length < 2 || parts[0] !== "give") {
+    var parts = message.toLowerCase().trim().split(" ");
+    var command = parts[0];
+    var name_start = 1;
+    if (command === "gimme") {
+        // target user is self
+    } else if (command === "give") {
+        // extract username
+        var different_username = parts[name_start];
+        if (different_username === undefined) return;
+        different_username = different_username.toLowerCase();
+        if (different_username !== "me") {
+            different_username = this.lookupUser(different_username);
+            if (different_username === undefined) {
+                mf.chat("can't find player: " + parts[name_start]);
+                return;
+            }
+            username = different_username;
+        }
+        name_start++;
+    } else {
         return;
     }
     var name_end = parts.length;
@@ -29,22 +48,29 @@ MineflayerBot.prototype.onChat = function(username, message) {
         // count specified
         name_end--;
     }
-    var item_name = parts.slice(1, name_end).join(" ");
+    if (!(name_start < name_end)) {
+        return;
+    }
+    var item_name = parts.slice(name_start, name_end).join(" ");
     this.give(username, item_name, count);
-}
+};
 MineflayerBot.prototype.give = function(username, item_name, count) {
-    var item_id = this.lookupItemType(item_name);
-    if (item_id === -1) {
-        mf.chat("can't find item name: " + item_name);
-        return;
-    } else if (item_id === -2) {
+    var item_id_or_ambiguous_results = this.lookupItemType(item_name);
+    if (typeof item_id_or_ambiguous_results === "number") {
+        var item_id = item_id_or_ambiguous_results;
+        if (item_id === -1) {
+            mf.chat("can't find item name: " + item_name);
+            return;
+        }
+        for (var i = 0; i < count; i++) {
+            mf.chat("/give " + username + " " + item_id + " " + mf.itemStackHeight(item_id));
+        }
+    } else {
+        var ambiguous_results = item_id_or_ambiguous_results;
         mf.chat("item name is ambiguous: " + item_name);
-        return;
+        mf.chat("candidates: " + ambiguous_results);
     }
-    for (var i = 0; i < count; i++) {
-        mf.chat("/give " + username + " " + item_id + " " + mf.itemStackHeight(item_id));
-    }
-}
+};
 
 MineflayerBot.prototype.initCache = function() {
     var item_database = [];
@@ -52,7 +78,11 @@ MineflayerBot.prototype.initCache = function() {
         item_database.push([this.splitCamelCase(formal_name), mf.ItemType[formal_name]]);
     }
     return item_database;
-}
+};
+MineflayerBot.prototype.lookupUser = function(name) {
+    // TODO
+    return name;
+};
 MineflayerBot.prototype.lookupItemType = function(item_name) {
     var item_name_parts = item_name.split(" ");
     function lookup_using_comparator(item_database, comparator) {
@@ -98,28 +128,42 @@ MineflayerBot.prototype.lookupItemType = function(item_name) {
         }
         if (better_matches.length !== 1) {
             // unable to resolve ambiguity
-            return -2;
+            return matches;
         }
         return better_matches[0][1];
     }
     var result
-    // try to find matches with startsWith()
+    // try to find matches with exact match
     result = lookup_using_comparator(this.item_database, function(s1, s2) { return s1 === s2;});
-    if (result >= 0 || result === -2) {
-        // found or ambiguous
+    if (typeof result !== "number") {
+        // ambiguous
+        return result;
+    }
+    if (result >= 0) {
+        // found
         return result;
     }
     // not found yet
     // try to find matches with startsWith()
     result = lookup_using_comparator(this.item_database, function(s1, s2) { return s1.startsWith(s2);});
-    if (result >= 0 || result === -2) {
-        // found or ambiguous
+    if (typeof result !== "number") {
+        // ambiguous
+        return result;
+    }
+    if (result >= 0) {
+        // found
         return result;
     }
     // not found yet
     // try to find contains() matches
-    return lookup_using_comparator(this.item_database, function(s1, s2) { return s1.contains(s2);});
-}
+    result =  lookup_using_comparator(this.item_database, function(s1, s2) { return s1.contains(s2);});
+    if (typeof result !== "number") {
+        // ambiguous
+        return result;
+    }
+    // found or not found
+    return result;
+};
 MineflayerBot.prototype.splitCamelCase = function(s) {
     if (s.length === 0) {
         return [];
@@ -136,14 +180,14 @@ MineflayerBot.prototype.splitCamelCase = function(s) {
     }
     result.push(s.substr(word_start).toLowerCase());
     return result;
-}
+};
 
 String.prototype.contains = function(s) {
     return this.indexOf(s) !== -1;
-}
+};
 String.prototype.startsWith = function(s) {
     return this.lastIndexOf(s, 0) === 0;
-}
+};
 /**
  * only trims spaces, not tabs or newlines or anything else.
  */
@@ -156,4 +200,4 @@ String.prototype.trim = function() {
         end--;
     }
     return this.substr(start, end);
-}
+};
