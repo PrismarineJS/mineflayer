@@ -28,6 +28,7 @@ public slots:
 
 public:
     // functions that JavaScript uses
+    static QScriptValue include(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue username(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue itemStackHeight(QScriptContext * context, QScriptEngine * engine);
 

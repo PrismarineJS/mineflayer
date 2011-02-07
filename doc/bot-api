@@ -43,9 +43,14 @@
  *     Interrupted
  */
 
-// Methods. All properties of the mf object, e.g. mf.print("hi");
-
 // IMPLEMENTED
+
+/**
+ * runs a script with a path relative to the current script.
+ * modularize your bot by using this function to import components.
+ * @param {String} path The filepath to the script including the extension.
+ */
+include(path)
 
 /**
  * Call a function later.
@@ -78,36 +83,36 @@ clearInterval(id)
  * Simply prints a line of text to stderr. useful for debugging.
  * @param {String} line The line to print to stdout.
  */
-debug(line)
+mf.debug(line)
 
 /**
  * Prints a string to stdout. Does not put a newline character at the end.
  * @param {String} string The string to print to stdout.
  */
-print(string)
+mf.print(string)
 
 /**
  * Sends a message over chat. breaks up big messages for you
  * @param {String} message The message to send to everyone on the server.
  */
-chat(message)
+mf.chat(message)
 
 /**
  * Disconnects from server and exits the program.
  */
-exit()
+mf.exit()
 
 /**
  * @returns {String} The name you are logged in as.
  */
-username()
+mf.username()
 
 /**
  * Gets the number of items you can stack together.
  * @param {Number} item The ID of the item you want to check the stack height of. See the mf.ItemType enum.
  * @returns {Number} The number of items of type item you can stack together, or-1 if that item doesn't exist.
  */
-itemStackHeight(item)
+mf.itemStackHeight(item)
 
 // NOT YET IMPLEMENTED
 
@@ -119,7 +124,7 @@ itemStackHeight(item)
  * Tells your health.
  * @return {Number} health The number of half-hearts that you have, out of 20.
  */
-health()
+mf.health()
 
 /**
  * Returns the block at the absolute x,y,z location in the world
@@ -130,14 +135,14 @@ health()
  *          type {Number} - block type id
  *          metadata {Number} - Notch's metadata for the block
  */
-blockAt(x, y, z)
+mf.blockAt(x, y, z)
 
 /**
  * Looks in a direction. Probably strictly asthetic.
  * @param {Number} yaw The number of radians to rotate around the Z axis, starting from due east. Counter clockwise.
  * @param {Number} pitch Number of radians to point up or down. 0 means straight forward. pi / 2 means straight up. -pi / 2 means straight down.
  */
-look(yaw, pitch)
+mf.look(yaw, pitch)
 
 /**
  * Begin digging into a block with the currently equipped item. When you finally break through the block, or you are interrupted for any reason, you will get an onStoppedDigging() event.
@@ -145,7 +150,7 @@ look(yaw, pitch)
  * @param {Number} y
  * @param {Number} z
  */
-startDigging(x, y, z)
+mf.startDigging(x, y, z)
 
 /**
  * Place the currently equipped item, with some exceptions. If the block at x, y, z is a chest, furnace, workbench, etc, you will "activate" the block. If the equipped item is food, you will eat it.
@@ -154,32 +159,32 @@ startDigging(x, y, z)
  * @param {Number} z
  * @param {Number} face The side of the block you want to start digging into. See the mf.Face enum.
  */
-placeBlock(x, y, z, face)
+mf.placeBlock(x, y, z, face)
 
 /**
  * Looks for an item in your inventory and equips it. If you don't have the item, nothing happens.
  * @param {Number} item The item ID of the item you want to equip.
  */
-equipItem(item)
+mf.equipItem(item)
 
 /**
  * Gets the id of item you are holding.
  * @returns {Number} item_id What you are now equipped with.
  */
-equippedItem()
+mf.equippedItem()
 
 /**
  * Looks for armor in your inventory and equips it. If you don't have the armor, nothing happens.
  * @param {Number} item The item ID of the armor you want to equip.
  */
-equipArmor(item)
+mf.equipArmor(item)
 
 /**
  * Counts how many of a certain type of item you have.
  * @param {Number} item The item ID of the item you want to count.
  * @returns {Number} The number of items of that type that you have in all of your inventory slots combined. 
  */
-countInventoryItemsOfType(item)
+mf.countInventoryItemsOfType(item)
 
 /**
  * Lists all of your inventory
@@ -187,20 +192,20 @@ countInventoryItemsOfType(item)
  *                   items - an Array of item ids
  *                   count - an object with every item id from items as a property name, and the property value is the total number of those items that you have.
  */
-inventory()
+mf.inventory()
 
 /**
  * Tells how much room you have left in your inventory. No need to worry about merging stacks; this function takes that into account automatically.
  * @param {Number} item The item ID that you want to see how many more will fit in your inventory.
  * @returns {Number} How many more of those items will fit.
  */
-inventorySpaceLeft(item)
+mf.inventorySpaceLeft(item)
 
 /**
  * Tells how many free slots you have open in your inventory. No need to worry about merging stacks; this method takes that into account automatically.
  * @returns {Number} The total number of empty inventory slots.
  */
-inventorySlotsLeft()
+mf.inventorySlotsLeft()
 
 /**
  * Returns an object representing your state in the world.
@@ -217,13 +222,13 @@ inventorySlotsLeft()
  *                      roll {Number} [-pi, pi] Usually ignored. 0 is level. pi/2 is left ear pointing downward.
  *                      on_ground {Boolean} True if you are not free-falling.
  */
-position()
+mf.position()
 
 /**
  * Tells what time it is, also known as where the sun or moon is in the sky.
  * @returns {Number} The number of real life seconds since dawn. This ranges from 0 to 1200 since a day is 20 minutes. See also onTimeUpdated().
  */
-timeOfDay()
+mf.timeOfDay()
 
 // TODO: moving around
 // TODO: using items. same as place block?

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QDebug>
 #include <QCoreApplication>
+#include <QDir>
 
 ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headless, QObject *parent) :
     QObject(parent),
@@ -31,16 +32,6 @@ bool ScriptRunner::go()
         debug_window->show();
     }
 
-    QFile script_file(m_script_filename);
-    script_file.open(QIODevice::ReadOnly);
-    m_engine->evaluate(script_file.readAll(), m_script_filename);
-    script_file.close();
-    if (m_engine->hasUncaughtException()) {
-        qWarning() << "Error while evaluating script file:" << m_engine->uncaughtException().toString();
-        qWarning() << m_engine->uncaughtExceptionBacktrace().join("\n");
-        return false;
-    }
-
     // initialize the MF object before we run any user code
     m_engine->globalObject().setProperty("mf", m_engine->newQObject(this));
     QScriptValue mf_obj = m_engine->globalObject().property("mf");
@@ -66,11 +57,22 @@ bool ScriptRunner::go()
     mf_obj.setProperty("itemStackHeight", m_engine->newFunction(itemStackHeight, 1));
 
     // add some javascript utility classes
+    m_engine->globalObject().setProperty("include", m_engine->newFunction(include, 1));
     m_engine->globalObject().setProperty("setTimeout", m_engine->newFunction(setTimeout, 2));
     m_engine->globalObject().setProperty("clearTimeout", m_engine->newFunction(clearTimeout, 1));
     m_engine->globalObject().setProperty("setInterval", m_engine->newFunction(setInterval, 2));
     m_engine->globalObject().setProperty("clearInterval", m_engine->newFunction(clearTimeout, 1));
 
+
+    QFile script_file(m_script_filename);
+    script_file.open(QIODevice::ReadOnly);
+    m_engine->evaluate(script_file.readAll(), m_script_filename);
+    script_file.close();
+    if (m_engine->hasUncaughtException()) {
+        qWarning() << "Error while evaluating script file:" << m_engine->uncaughtException().toString();
+        qWarning() << m_engine->uncaughtExceptionBacktrace().join("\n");
+        return false;
+    }
 
     QScriptValue ctor = m_engine->evaluate("MineflayerBot");
     if (m_engine->hasUncaughtException()) {
@@ -226,6 +228,36 @@ void ScriptRunner::exit()
 {
     m_exiting = true;
     QCoreApplication::instance()->quit();
+}
+
+QScriptValue ScriptRunner::include(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    if (! me->argCount(context, 1))
+        return QScriptValue();
+
+    QScriptValue file_name_value = context->argument(0);
+    if (! file_name_value.isString()) {
+        qWarning() << "include: invalid argument at" << context->backtrace().join("\n");
+        return QScriptValue();
+    }
+    QString file_name = file_name_value.toString();
+
+    QString absolute_name = QFileInfo(me->m_script_filename).dir().absoluteFilePath(file_name);
+    QFile file(absolute_name);
+    if (!file.open(QFile::ReadOnly)) {
+        qWarning() << "Cannot open included file:" << absolute_name;
+        me->exit();
+    }
+    QByteArray contents = file.readAll();
+    file.close();
+    engine->evaluate(QString::fromUtf8(contents), file_name);
+    if (engine->hasUncaughtException()) {
+        qWarning() << "Error while evaluating script file:" << engine->uncaughtException().toString();
+        qWarning() << engine->uncaughtExceptionBacktrace().join("\n");
+        me->exit();
+    }
+    return QScriptValue();
 }
 
 QScriptValue ScriptRunner::username(QScriptContext *context, QScriptEngine *engine)
