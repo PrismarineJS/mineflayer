@@ -1,7 +1,9 @@
 Core:
- * support physics / walking around
+ * fix physics glitches
  * support digging / placing blocks / attacking
- * crafting / inventory manipulation
+ * support crafting / inventory manipulation
+ * support respawning
+ * support entity tracking
 
 3D client:
  * lighting
