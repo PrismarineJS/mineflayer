@@ -13,7 +13,9 @@ ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headl
     m_headless(headless),
     m_engine(NULL),
     m_server(NULL),
-    m_exiting(false)
+    m_exiting(false),
+    m_stderr(stderr),
+    m_stdout(stdout)
 {
 }
 
@@ -114,9 +116,14 @@ void ScriptRunner::callBotMethod(QString method_name, const QScriptValueList &ar
     }
 }
 
-void ScriptRunner::print(QString line)
+void ScriptRunner::print(QString text)
 {
-    qDebug() << line;
+    m_stdout << text;
+}
+
+void ScriptRunner::debug(QString line)
+{
+    m_stderr << line << "\n";
 }
 
 void ScriptRunner::chat(QString message)

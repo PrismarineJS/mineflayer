@@ -46,10 +46,16 @@
 // IMPLEMENTED
 
 /**
- * Simply prints a string to stdout. useful for debugging.
+ * Simply prints a line of text to stderr. useful for debugging.
  * @param {String} line The line to print to stdout.
  */
-print(line)
+debug(line)
+
+/**
+ * Prints a string to stdout. Does not put a newline character at the end.
+ * @param {String} string The string to print to stdout.
+ */
+print(string)
 
 /**
  * Sends a message over chat. breaks up big messages for you

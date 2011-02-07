@@ -7,6 +7,7 @@
 #include <QScriptEngine>
 #include <QScriptEngineDebugger>
 #include <QUrl>
+#include <QTextStream>
 
 class ScriptRunner : public QObject
 {
@@ -18,7 +19,8 @@ public:
     bool go();
 
 public slots:
-    void print(QString line);
+    void print(QString text);
+    void debug(QString line);
     void chat(QString message);
     void exit();
 
@@ -38,6 +40,9 @@ private:
     Server * m_server;
 
     bool m_exiting;
+
+    QTextStream m_stderr;
+    QTextStream m_stdout;
 private:
 
     void callBotMethod(QString method_name, const QScriptValueList & args = QScriptValueList());
