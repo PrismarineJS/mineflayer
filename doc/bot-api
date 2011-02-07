@@ -59,10 +59,10 @@ chat(message)
 // TODO: /kill and /tell as separate functions
 // TODO: op commands such as /give as separate functions
 
+// NOT YET IMPLEMENTED
+
 /** @return {Number} health out of 20 */
 health()
-
-// NOT YET IMPLEMENTED
 
 /**
  * Returns the block at the absolute x,y,z location in the world
@@ -189,13 +189,10 @@ onNextFrame()
  */
 onChat(user, message)
 
-/** Called when the bot's health changes. */
-onHealthUpdate()
+// NOT YET IMPLEMENTED
 
 /** Called when the bot dies. */
 onDeath()
-
-// NOT YET IMPLEMENTED
 
 /**
  * Called when blocks are updated.
@@ -256,7 +253,7 @@ onEquippedItemChanged(new_item_id)
 onInventoryUpdated()
 
 /**
- * @param {Number} time The number of real life seconds since dawn. This ranges from 0 to 1200.
+ * @param {Number} time The number of real life seconds since dawn. This ranges from 0 to 1200 since a day is 20 minutes.
  */
 onTimeUpdated(time)
 
