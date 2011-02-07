@@ -433,11 +433,10 @@ bool MainWindow::keyReleased(const OIS::KeyEvent &arg )
 
 bool MainWindow::mouseMoved(const OIS::MouseEvent &arg )
 {
-    if (m_free_look_mode) {
-        // move camera
-        m_camera->rotate(Ogre::Vector3(0, 0, 1), Ogre::Degree(-arg.state.X.rel * 0.25f));
-        m_camera->pitch(Ogre::Degree(-arg.state.Y.rel * 0.25f));
-    } else {
+    // move camera
+    m_camera->rotate(Ogre::Vector3(0, 0, 1), Ogre::Degree(-arg.state.X.rel * 0.25f));
+    m_camera->pitch(Ogre::Degree(-arg.state.Y.rel * 0.25f));
+    if (!m_free_look_mode) {
         // TODO: tell the game where we're looking
     }
     return true;
