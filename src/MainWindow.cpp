@@ -596,7 +596,7 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                         brightness = c_light_brightness[qMax(neighbor_block.skyLight() - night_darkness, neighbor_block.light())];
 
                         Ogre::ColourValue color = Ogre::ColourValue::White;
-                        if (block.type() == Block::Grass && side_index == Message::PositiveZ)
+                        if (block.type() == Block::Grass && side_index == PositiveZ)
                             color.setAsRGBA(0x8DD55EFF);
                         else if (block.type() == Block::Leaves)
                             color.setAsRGBA(0x8DD55EFF);
