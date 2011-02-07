@@ -28,14 +28,22 @@ int main(int argc, char *argv[])
             headless = false;
         } else if (arg == "--url") {
             if (i+1 >= args.size()) {
+                qWarning() << "Need url parameter after --url option.";
                 printUsage(args.at(0));
                 return -1;
             }
-            url = QUrl::fromUserInput(args.at(++i));
-            if (! url.password().isEmpty())
-                password = url.password();
+            QUrl new_url = QUrl::fromUserInput(args.at(++i));
+            if (new_url.userName().isEmpty())
+                new_url.setUserName(url.userName());
+            if (new_url.host().isEmpty())
+                new_url.setHost(url.host());
+            new_url.setPort(new_url.port(url.port()));
+            if (! new_url.password().isEmpty())
+                password = new_url.password();
+            url = new_url;
         } else if (arg == "--password") {
             if (i+1 >= args.size()) {
+                qWarning() << "Need password parameter after --password option.";
                 printUsage(args.at(0));
                 return -1;
             }
@@ -55,7 +63,6 @@ int main(int argc, char *argv[])
         }
     }
     url.setPassword(password);
-    url.setPort(url.port(25565));
 
     MetaTypes::registerMetaTypes();
 
