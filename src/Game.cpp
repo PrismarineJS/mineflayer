@@ -9,9 +9,9 @@
 
 const float Game::c_standard_max_ground_speed = 4.27; // according to the internet
 const float Game::c_standard_terminal_velocity = 20.0; // guess
-const float Game::c_standard_walking_acceleration = 5.0f; // guess
-const float Game::c_standard_gravity = -9.81;
-const float Game::c_standard_ground_friction = 0.1f; // guess
+const float Game::c_standard_walking_acceleration = 35.0; // guess
+const float Game::c_standard_gravity = 9.81;
+const float Game::c_standard_ground_friction = Game::c_standard_walking_acceleration / 4.0; // guess
 const float Game::c_player_apothem = 0.3; // measured
 const float Game::c_player_height = 1.62; // according to spawn stance
 const float Game::c_player_half_height = Game::c_player_height / 2;
@@ -186,7 +186,7 @@ void Game::doPhysics(float delta_seconds)
     }
 
     // gravity
-    acceleration.z += m_gravity;
+    acceleration.z -= m_gravity;
 
     float old_ground_speed_squared = groundSpeedSquared();
     if (old_ground_speed_squared < std::numeric_limits<float>::epsilon()) {
