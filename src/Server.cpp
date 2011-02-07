@@ -292,6 +292,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
                         block.setLight(   (decompressed.at(    light_offset + array_index / 2) >> nibble_shifter) & 0xf);
                         block.setSkyLight((decompressed.at(sky_light_offest + array_index / 2) >> nibble_shifter) & 0xf);
 
+
                         array_index++;
                         nibble_shifter = 4 - nibble_shifter; // toggle between 0 and 4.
 

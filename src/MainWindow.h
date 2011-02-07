@@ -20,6 +20,7 @@
 #include <QObject>
 #include <QHash>
 #include <QSharedPointer>
+#include <QUrl>
 
 #include "Chunk.h"
 #include "Game.h"
@@ -53,7 +54,7 @@ public:
     };
 
 public:
-    MainWindow();
+    MainWindow(QUrl url);
     ~MainWindow();
 
     int exec();
@@ -84,6 +85,8 @@ private:
     static const float c_terrain_png_width;
     static const float c_terrain_png_height;
     static const float c_terrain_block_size;
+    static const float c_decay_rate;
+    static const float c_light_brightness[];
 
     Ogre::Root *m_root;
     Ogre::Camera* m_camera;

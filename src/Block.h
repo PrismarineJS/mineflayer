@@ -493,7 +493,7 @@ public:
         m_type(type), m_metadata(metadata), m_light(light), m_sky_light(sky_light) {}
 
 private:
-    // There are usually > 13 million of these guys, so keep it compact.
+    // There are usually > 13 million Blocks in memory, so keep it compact.
     unsigned m_type : 8;
     unsigned m_metadata : 4;
     unsigned m_light : 4;

@@ -6,12 +6,13 @@
 #include <QObject>
 #include <QScriptEngine>
 #include <QScriptEngineDebugger>
+#include <QUrl>
 
 class ScriptRunner : public QObject
 {
     Q_OBJECT
 public:
-    ScriptRunner(QString script_file, bool debug, bool headless, QObject * parent = NULL);
+    ScriptRunner(QUrl url, QString script_file, bool debug, bool headless, QObject * parent = NULL);
 
     // start the engine. returns success
     bool go();
@@ -23,6 +24,7 @@ public slots:
 signals:
 
 private:
+    QUrl m_url;
     QString m_script_filename;
     bool m_debug;
     bool m_headless;
