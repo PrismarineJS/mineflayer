@@ -68,7 +68,11 @@ MineflayerBot.prototype.give = function(username, item_name, count) {
     } else {
         var ambiguous_results = item_id_or_ambiguous_results;
         mf.chat("item name is ambiguous: " + item_name);
-        mf.chat("candidates: " + ambiguous_results);
+        var ambiguous_candidates = [];
+        for (var i = 0; i < ambiguous_results.length; i++) {
+            ambiguous_candidates.push(ambiguous_results[i][0].join(" "));
+        }
+        mf.chat("candidates: " + ambiguous_candidates.join(", "));
     }
 };
 
