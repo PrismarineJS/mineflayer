@@ -11,7 +11,8 @@ ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headl
     m_script_filename(script_file),
     m_debug(debug),
     m_headless(headless),
-    m_server(NULL)
+    m_server(NULL),
+    m_exiting(false)
 {
 }
 
@@ -35,19 +36,24 @@ bool ScriptRunner::go()
         return false;
     }
 
+    m_engine.globalObject().setProperty("mf", m_engine.newQObject(this));
+
     QScriptValue ctor = m_engine.evaluate("MineflayerBot");
     if (m_engine.hasUncaughtException()) {
         qWarning() << "Error while evaluating MineflayerBot constructor:" << m_engine.uncaughtException().toString();
         qWarning() << m_engine.uncaughtExceptionBacktrace();
         return false;
     }
+    if (m_exiting)
+        return false;
     m_bot = ctor.construct();
     if (m_engine.hasUncaughtException()) {
         qWarning() << "Error while calling MineflayerBot constructor:" << m_engine.uncaughtException().toString();
         qWarning() << m_engine.uncaughtExceptionBacktrace();
         return false;
     }
-    m_engine.globalObject().setProperty("mf", m_engine.newQObject(this));
+    if (m_exiting)
+        return false;
 
     // connect to server
     // TODO: this data should be passed in through config or command line
@@ -96,6 +102,12 @@ void ScriptRunner::chat(QString message)
     m_server->sendChat(message);
 }
 
+void ScriptRunner::exit()
+{
+    m_exiting = true;
+    QCoreApplication::instance()->quit();
+}
+
 void ScriptRunner::updateChunk(QSharedPointer<Chunk> chunk)
 {
     // TODO
@@ -116,7 +128,7 @@ void ScriptRunner::handleLoginStatusUpdated(Server::LoginStatus status)
     switch (status) {
         case Server::Disconnected:
             qWarning() << "Got disconnected from server";
-            QCoreApplication::instance()->quit();
+            exit();
             break;
         case Server::Success:
             callBotMethod("onConnected");
@@ -124,7 +136,7 @@ void ScriptRunner::handleLoginStatusUpdated(Server::LoginStatus status)
             break;
         case Server::SocketError:
             qWarning() << "Unable to connect to server";
-            QCoreApplication::instance()->quit();
+            exit();
             break;
         default:;
     }

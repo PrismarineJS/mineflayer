@@ -20,6 +20,7 @@ public:
 public slots:
     void print(QString line);
     void chat(QString message);
+    void exit();
 
 signals:
 
@@ -33,6 +34,8 @@ private:
     QScriptValue m_bot;
 
     Server * m_server;
+
+    bool m_exiting;
 private:
 
     void callBotMethod(QString method_name, const QScriptValueList & args = QScriptValueList());

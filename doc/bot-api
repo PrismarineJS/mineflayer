@@ -56,10 +56,17 @@ print(line)
  * @param {String} message The message to send to everyone on the server.
  */
 chat(message)
+
+/**
+ * Disconnects from server and exits the program.
+ */
+exit()
+
+// NOT YET IMPLEMENTED
+
 // TODO: /kill and /tell as separate functions
 // TODO: op commands such as /give as separate functions
 
-// NOT YET IMPLEMENTED
 
 /** @return {Number} health out of 20 */
 health()
