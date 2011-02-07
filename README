@@ -1,10 +1,9 @@
 
-mineflayer - Minecraft client and bot scripting interface.
+mineflayer - Minecraft multiplayer client and bot scripting interface.
 
 Current features:
- * logs in (no authentication support yet)
  * 3d client renders the map and allows you to walk/jump around
- * runs javascript bot scripts with a limited api
+ * runs javascript bot scripts
 
 Planned features:
  * the rest of the bot api. see doc/bot-api for further details.
