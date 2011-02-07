@@ -36,7 +36,23 @@ bool ScriptRunner::go()
         return false;
     }
 
+    // initialize the MF object before we run any user code
     m_engine.globalObject().setProperty("mf", m_engine.newQObject(this));
+
+    QFile enum_file(":/enums/ItemTypeEnum.h");
+    enum_file.open(QIODevice::ReadOnly);
+    QString enum_contents = QString::fromUtf8(enum_file.readAll()).trimmed();
+    enum_file.close();
+    QStringList lines = enum_contents.split("\n");
+    QStringList values = lines.takeFirst().split(" ");
+    Q_ASSERT(values.size() == 2);
+    QString prop_name = values.at(1);
+    Q_ASSERT(values.at(0) == "enum");
+    enum_contents = lines.join("\n");
+    Q_ASSERT(enum_contents.endsWith(";"));
+    enum_contents.chop(1);
+    QString json = QString("(") + enum_contents.replace("=", ":") + QString(")");
+    m_engine.globalObject().property("mf").setProperty(prop_name, m_engine.evaluate(json));
 
     QScriptValue ctor = m_engine.evaluate("MineflayerBot");
     if (m_engine.hasUncaughtException()) {

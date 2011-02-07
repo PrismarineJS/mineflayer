@@ -7,6 +7,7 @@ Core:
  * support entity tracking
 
 3D client:
+ * darker seams
  * mobs/players
  * chatting 
  * health display

@@ -3,4 +3,7 @@
         <file alias="textures.txt">resources/textures.txt</file>
         <file alias="blocks.txt">resources/blocks.txt</file>
     </qresource>
+    <qresource prefix="/enums">
+        <file alias="ItemTypeEnum.h">src/ItemTypeEnum.h</file>
+    </qresource>
 </RCC>

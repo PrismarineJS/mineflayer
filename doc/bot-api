@@ -11,12 +11,12 @@
  * 
  * mf.Face - Which side of a block, if any.
  *     NoDirection
- *     NegativeY
- *     PositiveY
- *     NegativeX
- *     PositiveX
- *     NegativeZ
- *     PositiveZ
+ *     NegativeX (West)
+ *     PositiveX (East)
+ *     NegativeY (South)
+ *     PositiveY (North)
+ *     NegativeZ (Down)
+ *     PositiveZ (Up)
  *
  * mf.Mob
  *     Pig

@@ -27,7 +27,8 @@ HEADERS += src/Server.h \
     src/Util.h \
     src/ScriptRunner.h \
     src/Game.h \
-    src/Block.h
+    src/Block.h \
+    src/ItemTypeEnum.h
 RESOURCES += mineflayer.qrc
 LIBS += -lOgreMain \
     -lOIS
