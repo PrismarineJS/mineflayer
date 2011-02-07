@@ -18,6 +18,7 @@ const float Game::c_player_half_height = Game::c_player_height / 2;
 const float Game::c_jump_speed = 8.0f;
 
 const int Game::c_notchian_tick_ms = 200;
+const int Game::c_chat_length_limit = 100;
 const Int3D Game::c_chunk_size(16, 16, 128);
 const Block Game::c_air(Block::Air, 0, 0, 0);
 
@@ -528,7 +529,9 @@ bool Game::collisionInRange(const Int3D & boundingBoxMin, const Int3D & bounding
 
 void Game::sendChat(QString message)
 {
-    m_server.sendChat(message);
+    // limit chat length. split it up if necessary.
+    for (int i = 0; i < message.length(); i += c_chat_length_limit)
+        m_server.sendChat(message.mid(i, c_chat_length_limit));
 }
 
 int Game::itemStackHeight(Block::ItemType item)

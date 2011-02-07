@@ -70,6 +70,7 @@ private:
     static const float c_player_height;
     static const float c_player_half_height;
     static const float c_jump_speed;
+    static const int c_chat_length_limit;
     static const int c_notchian_tick_ms;
     static const Int3D c_chunk_size;
     static const Block c_air;
