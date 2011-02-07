@@ -1,14 +1,14 @@
 // reflect mineflayer program: reveals what properties the mf object has.
 function MineflayerBot() {
-    function reflect(obj) {
+    function reflect(prefix, obj) {
         for (name in obj) {
             child = obj[name];
-            mf.debug("'" + name + "'" + "["+ typeof child + "] = " + child);
+            mf.debug(prefix + name + "<"+ typeof child + "> = " + child);
             if (typeof obj == 'object') {
-                reflect(child);
+                reflect(prefix + name + ".", child);
             }
         }
     }
-    reflect(mf);
+    reflect("mf.", mf);
     mf.exit();
 }

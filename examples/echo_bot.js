@@ -1,6 +1,4 @@
-function MineflayerBot() {
-    
-}
+function MineflayerBot() { }
 
 MineflayerBot.prototype.onChat = function(username, message) {
     mf.debug("Got chat message: " + message);

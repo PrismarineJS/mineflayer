@@ -185,7 +185,7 @@ private:
     void activateInput(PhysicalInput input, bool activated = true);
 
 private slots:
-    void handleChunkUpdated(Int3D start, Int3D size);
+    void handleChunkUpdated(const Int3D &start, const Int3D &size);
     void movePlayerPosition(Server::EntityPosition position);
     void handlePlayerHealthUpdated();
     void handlePlayerDied();

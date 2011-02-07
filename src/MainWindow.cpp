@@ -530,7 +530,7 @@ void MainWindow::windowClosed(Ogre::RenderWindow* rw)
     }
 }
 
-void MainWindow::handleChunkUpdated(Int3D start, Int3D size)
+void MainWindow::handleChunkUpdated(const Int3D &start, const Int3D &size)
 {
     // build a mesh for the chunk
     // find the chunk coordinates for this updated stuff.

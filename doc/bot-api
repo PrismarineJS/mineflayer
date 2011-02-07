@@ -225,11 +225,6 @@ onNextFrame()
  */
 onChat(user, message)
 
-// NOT YET IMPLEMENTED
-
-/** Called when the bot dies. */
-onDeath()
-
 /**
  * Called when blocks are updated.
  * @param {Number} start_x The absolute x position of the first block that was updated.
@@ -239,7 +234,24 @@ onDeath()
  * @param {Number} y_count The number of blocks in the y direction that were updated.
  * @param {Number} z_count The number of blocks in the z direction that were updated.
  */
-onChunkUpdate(start_x, start_y, start_z, x_count, y_count, z_count)
+onChunkUpdated(start_x, start_y, start_z, x_count, y_count, z_count)
+
+/**
+ * Called when your position is changed. See also position().
+ */
+onPositionUpdated()
+
+/**
+ * Called when you get hit, take fall damage, eat food, etc. See also health().
+ */
+onHealthChanged()
+
+/**
+ * Called when the bot dies.
+ */
+onDeath()
+
+// NOT YET IMPLEMENTED
 
 /**
  * Called when a mob (Cow, Spider, Squid, etc) is created.
@@ -249,7 +261,7 @@ onChunkUpdate(start_x, start_y, start_z, x_count, y_count, z_count)
  * @param {Number} y The absolute y position where the mob spawned.
  * @param {Number} z The absolute z position where the mob spawned.
  */
-onMobSpawn(id, type, x, y, z)
+onMobSpawned(id, type, x, y, z)
 
 /**
  * Called when a mob moves.
@@ -259,11 +271,6 @@ onMobSpawn(id, type, x, y, z)
  * @param {Number} z The absolute z position where the mob has just moved to.
  */
 onMobMovement(id, x, y, z)
-
-/**
- * Called when you get hit, take fall damage, eat food, etc. See also health().
- */
-onHealthChanged()
 
 /**
  * Called when you have spawned and can start moving about.

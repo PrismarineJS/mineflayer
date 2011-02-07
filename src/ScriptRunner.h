@@ -1,7 +1,7 @@
 #ifndef SCRIPTRUNNER_H
 #define SCRIPTRUNNER_H
 
-#include "Server.h"
+#include "Game.h"
 
 #include <QObject>
 #include <QScriptEngine>
@@ -30,9 +30,6 @@ public:
     static QScriptValue itemStackHeight(QScriptContext * context, QScriptEngine * engine);
 
 private:
-    // TODO: move this to Game class and make static
-    QHash<Block::ItemType, int> m_item_stack_height;
-
     QUrl m_url;
     QString m_script_filename;
     bool m_debug;
@@ -41,7 +38,7 @@ private:
     QScriptEngine * m_engine;
     QScriptValue m_bot;
 
-    Server * m_server;
+    Game * m_game;
 
     bool m_exiting;
 
@@ -55,8 +52,11 @@ private:
 private slots:
     // call when we want to spend some CPU cycles on the bot
     void process();
-    void updateChunk(QSharedPointer<Chunk> chunk);
+
     void movePlayerPosition(Server::EntityPosition position);
+    void handleChunkUpdated(const Int3D &start, const Int3D &size);
+    void handlePlayerHealthUpdated();
+    void handlePlayerDied();
     void handleChatReceived(QString username, QString message);
     void handleLoginStatusUpdated(Server::LoginStatus status);
 };

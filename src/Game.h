@@ -44,16 +44,21 @@ public:
     Block blockAt(const Int3D & absolute_location);
     int playerHealth() { return m_player_health; }
 
+    void sendChat(QString message);
+
+    static int itemStackHeight(Block::ItemType item);
+
     // if you want you can cheat and override the default physics settings:
     void setInputAcceleration(float value) { m_input_acceleration = value; }
     void setGravity(float value) { m_gravity = value; }
 
 signals:
     void chatReceived(QString username, QString message);
-    void chunkUpdated(Int3D start, Int3D size);
+    void chunkUpdated(const Int3D &start, const Int3D &size);
     void playerPositionUpdated(Server::EntityPosition position);
     void playerHealthUpdated();
     void playerDied();
+    void loginStatusUpdated(Server::LoginStatus status);
 
 private:
     static const float c_standard_max_ground_speed; // m/s
@@ -69,6 +74,7 @@ private:
     static const Int3D c_chunk_size;
     static const Block c_air;
     static Int3D chunkKey(const Int3D & coord);
+    static QHash<Block::ItemType, int> s_item_stack_height;
 
     Server m_server;
     QString m_userName;
@@ -87,11 +93,15 @@ private:
 
     QVector<bool> m_control_state;
 
+    static bool s_initialized;
+
 private:
     void gotFirstPlayerPositionAndLookResponse();
     float groundSpeedSquared() { return m_player_position.dx * m_player_position.dx + m_player_position.dy * m_player_position.dy; }
     void getPlayerBoundingBox(Int3D & boundingBoxMin, Int3D & boundingBoxMax);
     bool collisionInRange(const Int3D & boundingBoxMin, const Int3D & boundingBoxMax);
+
+    static void initializeStaticData();
 
 private slots:
     void handleLoginStatusChanged(Server::LoginStatus status);

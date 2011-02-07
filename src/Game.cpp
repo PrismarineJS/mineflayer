@@ -21,6 +21,9 @@ const int Game::c_notchian_tick_ms = 200;
 const Int3D Game::c_chunk_size(16, 16, 128);
 const Block Game::c_air(Block::Air, 0, 0, 0);
 
+bool Game::s_initialized = false;
+QHash<Block::ItemType, int> Game::s_item_stack_height;
+
 Game::Game(QUrl connection_info) :
     m_server(connection_info),
     m_userName(connection_info.userName()),
@@ -31,6 +34,8 @@ Game::Game(QUrl connection_info) :
     m_gravity(c_standard_gravity),
     m_ground_friction(c_standard_ground_friction)
 {
+    initializeStaticData();
+
     bool success;
     success = connect(&m_server, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SLOT(handleLoginStatusChanged(Server::LoginStatus)));
     Q_ASSERT(success);
@@ -40,6 +45,11 @@ Game::Game(QUrl connection_info) :
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(mapChunkUpdated(QSharedPointer<Chunk>)), this, SLOT(handleMapChunkUpdated(QSharedPointer<Chunk>)));
     Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SIGNAL(loginStatusUpdated(Server::LoginStatus)));
+    Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(chatReceived(QString)), this, SLOT(handleChatReceived(QString)));
+    Q_ASSERT(success);
+
 
     m_control_state.fill(false, (int)ControlCount);
 }
@@ -47,6 +57,200 @@ Game::Game(QUrl connection_info) :
 Game::~Game()
 {
     delete m_position_update_timer;
+}
+
+void Game::initializeStaticData()
+{
+    if (s_initialized)
+        return;
+    s_initialized = true;
+
+    s_item_stack_height.insert(Block::NoItem, 0);
+    s_item_stack_height.insert(Block::Air, 0);
+    s_item_stack_height.insert(Block::Stone, 64);
+    s_item_stack_height.insert(Block::Grass, 64);
+    s_item_stack_height.insert(Block::Dirt, 64);
+    s_item_stack_height.insert(Block::Cobblestone, 64);
+    s_item_stack_height.insert(Block::WoodenPlank, 64);
+    s_item_stack_height.insert(Block::Sapling, 64);
+    s_item_stack_height.insert(Block::Bedrock, 64);
+    s_item_stack_height.insert(Block::Water, 64);
+    s_item_stack_height.insert(Block::StationaryWater, 64);
+    s_item_stack_height.insert(Block::Lava, 64);
+    s_item_stack_height.insert(Block::StationaryLava, 64);
+    s_item_stack_height.insert(Block::Sand, 64);
+    s_item_stack_height.insert(Block::Gravel, 64);
+    s_item_stack_height.insert(Block::GoldOre, 64);
+    s_item_stack_height.insert(Block::IronOre, 64);
+    s_item_stack_height.insert(Block::CoalOre, 64);
+    s_item_stack_height.insert(Block::Wood, 64);
+    s_item_stack_height.insert(Block::Leaves, 64);
+    s_item_stack_height.insert(Block::Sponge, 64);
+    s_item_stack_height.insert(Block::Glass, 64);
+    s_item_stack_height.insert(Block::LapisLazuliOre, 64);
+    s_item_stack_height.insert(Block::LapisLazuliBlock, 64);
+    s_item_stack_height.insert(Block::Dispenser, 64);
+    s_item_stack_height.insert(Block::Sandstone, 64);
+    s_item_stack_height.insert(Block::NoteBlock, 64);
+    s_item_stack_height.insert(Block::Wool, 64);
+    s_item_stack_height.insert(Block::YellowFlower, 64);
+    s_item_stack_height.insert(Block::RedRose, 64);
+    s_item_stack_height.insert(Block::BrownMushroom, 64);
+    s_item_stack_height.insert(Block::RedMushroom, 64);
+    s_item_stack_height.insert(Block::GoldBlock, 64);
+    s_item_stack_height.insert(Block::IronBlock, 64);
+    s_item_stack_height.insert(Block::DoubleStoneSlab, 64);
+    s_item_stack_height.insert(Block::StoneSlab, 64);
+    s_item_stack_height.insert(Block::Brick, 64);
+    s_item_stack_height.insert(Block::TNT, 64);
+    s_item_stack_height.insert(Block::Bookshelf, 64);
+    s_item_stack_height.insert(Block::MossStone, 64);
+    s_item_stack_height.insert(Block::Obsidian, 64);
+    s_item_stack_height.insert(Block::Torch, 64);
+    s_item_stack_height.insert(Block::Fire, 64);
+    s_item_stack_height.insert(Block::MonsterSpawner, 64);
+    s_item_stack_height.insert(Block::WoodenStairs, 64);
+    s_item_stack_height.insert(Block::Chest, 64);
+    s_item_stack_height.insert(Block::RedstoneWire_placed, 64);
+    s_item_stack_height.insert(Block::DiamondOre, 64);
+    s_item_stack_height.insert(Block::DiamondBlock, 64);
+    s_item_stack_height.insert(Block::Workbench, 64);
+    s_item_stack_height.insert(Block::Crops, 64);
+    s_item_stack_height.insert(Block::Farmland, 64);
+    s_item_stack_height.insert(Block::Furnace, 64);
+    s_item_stack_height.insert(Block::BurningFurnace, 64);
+    s_item_stack_height.insert(Block::SignPost_placed, 1);
+    s_item_stack_height.insert(Block::WoodenDoor_placed, 1);
+    s_item_stack_height.insert(Block::Ladder, 64);
+    s_item_stack_height.insert(Block::MinecartTracks, 64);
+    s_item_stack_height.insert(Block::CobblestoneStairs, 64);
+    s_item_stack_height.insert(Block::WallSign_placed, 1);
+    s_item_stack_height.insert(Block::Lever, 64);
+    s_item_stack_height.insert(Block::StonePressurePlate, 64);
+    s_item_stack_height.insert(Block::IronDoor_placed, 1);
+    s_item_stack_height.insert(Block::WoodenPressurePlate, 64);
+    s_item_stack_height.insert(Block::RedstoneOre, 64);
+    s_item_stack_height.insert(Block::GlowingRedstoneOre, 64);
+    s_item_stack_height.insert(Block::RedstoneTorchOff_placed, 64);
+    s_item_stack_height.insert(Block::RedstoneTorchOn, 64);
+    s_item_stack_height.insert(Block::StoneButton, 64);
+    s_item_stack_height.insert(Block::Snow, 64);
+    s_item_stack_height.insert(Block::Ice, 64);
+    s_item_stack_height.insert(Block::SnowBlock, 64);
+    s_item_stack_height.insert(Block::Cactus, 64);
+    s_item_stack_height.insert(Block::Clay, 64);
+    s_item_stack_height.insert(Block::SugarCane_place, 64);
+    s_item_stack_height.insert(Block::Jukebox, 64);
+    s_item_stack_height.insert(Block::Fence, 64);
+    s_item_stack_height.insert(Block::Pumpkin, 64);
+    s_item_stack_height.insert(Block::Netherrack, 64);
+    s_item_stack_height.insert(Block::SoulSand, 64);
+    s_item_stack_height.insert(Block::Glowstone, 64);
+    s_item_stack_height.insert(Block::Portal, 0);
+    s_item_stack_height.insert(Block::JackOLantern, 64);
+    s_item_stack_height.insert(Block::CakeBlock, 1);
+
+    s_item_stack_height.insert(Block::IronShovel, 1);
+    s_item_stack_height.insert(Block::IronPickaxe, 1);
+    s_item_stack_height.insert(Block::IronAxe, 1);
+    s_item_stack_height.insert(Block::FlintAndSteel, 1);
+    s_item_stack_height.insert(Block::Apple, 1);
+    s_item_stack_height.insert(Block::Bow, 1);
+    s_item_stack_height.insert(Block::Arrow, 64);
+    s_item_stack_height.insert(Block::Coal, 64);
+    s_item_stack_height.insert(Block::Diamond, 64);
+    s_item_stack_height.insert(Block::IronIngot, 64);
+    s_item_stack_height.insert(Block::GoldIngot, 64);
+    s_item_stack_height.insert(Block::IronSword, 1);
+    s_item_stack_height.insert(Block::WoodenSword, 1);
+    s_item_stack_height.insert(Block::WoodenShovel, 1);
+    s_item_stack_height.insert(Block::WoodenPickaxe, 1);
+    s_item_stack_height.insert(Block::WoodenAxe, 1);
+    s_item_stack_height.insert(Block::StoneSword, 1);
+    s_item_stack_height.insert(Block::StoneShovel, 1);
+    s_item_stack_height.insert(Block::StonePickaxe, 1);
+    s_item_stack_height.insert(Block::StoneAxe, 1);
+    s_item_stack_height.insert(Block::DiamondSword, 1);
+    s_item_stack_height.insert(Block::DiamondShovel, 1);
+    s_item_stack_height.insert(Block::DiamondPickaxe, 1);
+    s_item_stack_height.insert(Block::DiamondAxe, 1);
+    s_item_stack_height.insert(Block::Stick, 64);
+    s_item_stack_height.insert(Block::Bowl, 64);
+    s_item_stack_height.insert(Block::MushroomSoup, 1);
+    s_item_stack_height.insert(Block::GoldSword, 1);
+    s_item_stack_height.insert(Block::GoldShovel, 1);
+    s_item_stack_height.insert(Block::GoldPickaxe, 1);
+    s_item_stack_height.insert(Block::GoldAxe, 1);
+    s_item_stack_height.insert(Block::String, 64);
+    s_item_stack_height.insert(Block::Feather, 64);
+    s_item_stack_height.insert(Block::Sulphur, 64);
+    s_item_stack_height.insert(Block::WoodenHoe, 1);
+    s_item_stack_height.insert(Block::StoneHoe, 1);
+    s_item_stack_height.insert(Block::IronHoe, 1);
+    s_item_stack_height.insert(Block::DiamondHoe, 1);
+    s_item_stack_height.insert(Block::GoldHoe, 1);
+    s_item_stack_height.insert(Block::Seeds, 64);
+    s_item_stack_height.insert(Block::Wheat, 64);
+    s_item_stack_height.insert(Block::Bread, 1);
+    s_item_stack_height.insert(Block::LeatherHelmet, 1);
+    s_item_stack_height.insert(Block::LeatherChestplate, 1);
+    s_item_stack_height.insert(Block::LeatherLeggings, 1);
+    s_item_stack_height.insert(Block::LeatherBoots, 1);
+    s_item_stack_height.insert(Block::ChainmailHelmet, 1);
+    s_item_stack_height.insert(Block::ChainmailChestplate, 1);
+    s_item_stack_height.insert(Block::ChainmailLeggings, 1);
+    s_item_stack_height.insert(Block::ChainmailBoots, 1);
+    s_item_stack_height.insert(Block::IronHelmet, 1);
+    s_item_stack_height.insert(Block::IronChestplate, 1);
+    s_item_stack_height.insert(Block::IronLeggings, 1);
+    s_item_stack_height.insert(Block::IronBoots, 1);
+    s_item_stack_height.insert(Block::DiamondHelmet, 1);
+    s_item_stack_height.insert(Block::DiamondChestplate, 1);
+    s_item_stack_height.insert(Block::DiamondLeggings, 1);
+    s_item_stack_height.insert(Block::DiamondBoots, 1);
+    s_item_stack_height.insert(Block::GoldHelmet, 1);
+    s_item_stack_height.insert(Block::GoldChestplate, 1);
+    s_item_stack_height.insert(Block::GoldLeggings, 1);
+    s_item_stack_height.insert(Block::GoldBoots, 1);
+    s_item_stack_height.insert(Block::Flint, 1);
+    s_item_stack_height.insert(Block::RawPorkchop, 1);
+    s_item_stack_height.insert(Block::CookedPorkchop, 1);
+    s_item_stack_height.insert(Block::Paintings, 64);
+    s_item_stack_height.insert(Block::GoldenApple, 1);
+    s_item_stack_height.insert(Block::Sign, 1);
+    s_item_stack_height.insert(Block::WoodenDoor, 1);
+    s_item_stack_height.insert(Block::Bucket, 1);
+    s_item_stack_height.insert(Block::WaterBucket, 1);
+    s_item_stack_height.insert(Block::LavaBucket, 1);
+    s_item_stack_height.insert(Block::Minecart, 1);
+    s_item_stack_height.insert(Block::Saddle, 1);
+    s_item_stack_height.insert(Block::IronDoor, 1);
+    s_item_stack_height.insert(Block::Redstone, 64);
+    s_item_stack_height.insert(Block::Snowball, 16);
+    s_item_stack_height.insert(Block::Boat, 1);
+    s_item_stack_height.insert(Block::Leather, 1);
+    s_item_stack_height.insert(Block::Milk, 1);
+    s_item_stack_height.insert(Block::ClayBrick, 64);
+    s_item_stack_height.insert(Block::ClayBalls, 64);
+    s_item_stack_height.insert(Block::SugarCane, 64);
+    s_item_stack_height.insert(Block::Paper, 64);
+    s_item_stack_height.insert(Block::Book, 64);
+    s_item_stack_height.insert(Block::Slimeball, 64);
+    s_item_stack_height.insert(Block::StorageMinecart, 1);
+    s_item_stack_height.insert(Block::PoweredMinecart, 1);
+    s_item_stack_height.insert(Block::Egg, 16);
+    s_item_stack_height.insert(Block::Compass, 64);
+    s_item_stack_height.insert(Block::FishingRod, 64);
+    s_item_stack_height.insert(Block::Clock, 64);
+    s_item_stack_height.insert(Block::GlowstoneDust, 64);
+    s_item_stack_height.insert(Block::RawFish, 1);
+    s_item_stack_height.insert(Block::CookedFish, 1);
+    s_item_stack_height.insert(Block::InkSac, 64);
+    s_item_stack_height.insert(Block::Bone, 64);
+    s_item_stack_height.insert(Block::Sugar, 64);
+    s_item_stack_height.insert(Block::Cake, 1);
+    s_item_stack_height.insert(Block::GoldMusicDisc, 1);
+    s_item_stack_height.insert(Block::GreenMusicDisc, 1);
 }
 
 void Game::setControlActivated(Control control, bool activated)
@@ -96,13 +300,13 @@ void Game::handleLoginStatusChanged(Server::LoginStatus status)
     }
 }
 
-void Game::handleChatReceived(QString content)
+void Game::handleChatReceived(QString message)
 {
-    if (content.startsWith("<")) {
-        int pos = content.indexOf(">");
+    if (message.startsWith("<")) {
+        int pos = message.indexOf(">");
         Q_ASSERT(pos != -1);
-        QString username = content.mid(1, pos-1);
-        QString content = content.mid(pos+2);
+        QString username = message.mid(1, pos-1);
+        QString content = message.mid(pos+2);
         // suppress talking to yourself
         if (username != m_userName)
             emit chatReceived(username, content);
@@ -320,4 +524,15 @@ bool Game::collisionInRange(const Int3D & boundingBoxMin, const Int3D & bounding
                 if (blockAt(cursor).type() != Block::Air)
                     return true;
     return false;
+}
+
+void Game::sendChat(QString message)
+{
+    m_server.sendChat(message);
+}
+
+int Game::itemStackHeight(Block::ItemType item)
+{
+    initializeStaticData();
+    return s_item_stack_height.value(item, -1);
 }
