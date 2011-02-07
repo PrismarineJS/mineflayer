@@ -61,6 +61,12 @@ void Game::updatePlayerLook(float delta_yaw, float delta_pitch)
     emit playerPositionUpdated(m_player_position);
 }
 
+void Game::respawn()
+{
+    Q_ASSERT(m_player_health == 0);
+    m_server.sendRespawnRequest();
+}
+
 void Game::start()
 {
     m_server.socketConnect();

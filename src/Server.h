@@ -72,6 +72,7 @@ public:
     void sendPositionAndLook(EntityPosition positionAndLook);
     // sends a chat message. can start with '/' to be a command.
     void sendChat(QString message);
+    void sendRespawnRequest();
 
 private:
     static const QString c_auth_server;

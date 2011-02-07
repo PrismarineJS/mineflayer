@@ -85,6 +85,10 @@ void Server::sendChat(QString message)
 {
     sendMessage(QSharedPointer<OutgoingRequest>(new ChatRequest(message)));
 }
+void Server::sendRespawnRequest()
+{
+    sendMessage(QSharedPointer<OutgoingRequest>(new RespawnRequest));
+}
 
 void Server::handleConnected()
 {

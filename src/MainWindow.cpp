@@ -111,6 +111,10 @@ MainWindow::MainWindow(QUrl url) :
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(playerPositionUpdated(Server::EntityPosition)), this, SLOT(movePlayerPosition(Server::EntityPosition)));
     Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(playerHealthUpdated()), this, SLOT(handlePlayerHealthUpdated()));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(playerDied()), this, SLOT(handlePlayerDied()));
+    Q_ASSERT(success);
     m_game->start();
 }
 
@@ -649,7 +653,15 @@ void MainWindow::movePlayerPosition(Server::EntityPosition position)
     m_camera->lookAt(cameraPosition + Ogre::Vector3::UNIT_X);
     m_camera->roll(Ogre::Degree(-90));
     // then rotate to where we're looking
-    qDebug() << position.pitch;
     m_camera->rotate(Ogre::Vector3::UNIT_Z, Ogre::Radian(position.yaw));
     m_camera->rotate(m_camera->getRight(), Ogre::Radian(position.pitch));
+}
+
+void MainWindow::handlePlayerHealthUpdated()
+{
+}
+void MainWindow::handlePlayerDied()
+{
+    // TODO: ask the user first
+    m_game->respawn();
 }
