@@ -24,23 +24,6 @@ public:
         CharCoal = 1,
     };
 
-    // Sapling Metadata: 0x0 is a freshly planted sapling. The data value is
-    // incremented at random intervals. When it becomes 15, a new tree is created in its place.
-
-    // Cactus Metadata: 0x0 is a freshly planted cactus. The data value is
-    // incremented at random intervals. When it becomes 15, a new cactus block
-    // is created on top as long as the total height does not exceed 3.
-
-    // Water and Lava Metadata: 0x0 is a full block. Water goes up to 0x7, Lava
-    // can only go up to 0x3. If bit 0x8 is set, this liquid is "falling" and
-    // only spreads downward.
-
-    // Farmland Metadata: 0x0 is dry land, 0x1-0x8 are increasing levels of
-    // wetness. The wetness value depends on how far the block is away
-    // from water.
-
-    // Crops Metadata: Crops grow from 0x0 to 0x7.
-
     enum WoolMetadata {
         WhiteWool = 0,
         OrangeWool = 1,
@@ -197,26 +180,45 @@ public:
         Q_ASSERT(type() == Coal);
         return (CoalMetadata) m_metadata;
     }
+
+    // 0x0 is a freshly planted sapling. The data value is
+    // incremented at random intervals. When it becomes 15, a new tree is created in its place.
     inline int saplingMetadata() const {
         Q_ASSERT(type() == Sapling);
         return m_metadata;
     }
+
+    // 0x0 is a freshly planted cactus. The data value is
+    // incremented at random intervals. When it becomes 15, a new cactus block
+    // is created on top as long as the total height does not exceed 3.
     inline int cactusMetadata() const {
         Q_ASSERT(type() == Cactus);
         return m_metadata;
     }
+
+    // 0x0 is a full block. Goes up to 0x7, If bit 0x8 is set,
+    // this liquid is "falling" and only spreads downward.
     inline int waterMetadata() const {
         Q_ASSERT(type() == Water);
         return m_metadata;
     }
+
+    // 0x0 is a full block. Can only go up to 0x3. If bit 0x8 is set,
+    // this liquid is "falling" and only spreads downward.
     inline int lavaMetadata() const {
         Q_ASSERT(type() == Lava);
         return m_metadata;
     }
+
+    // 0x0 is dry land, 0x1-0x8 are increasing levels of
+    // wetness. The wetness value depends on how far the block is away
+    // from water.
     inline int farmlandMetadata() const {
         Q_ASSERT(type() == Farmland);
         return m_metadata;
     }
+
+    // Crops Metadata: Crops grow from 0x0 to 0x7.
     inline int cropsMetadata() const {
         Q_ASSERT(type() == Crops);
         return m_metadata;

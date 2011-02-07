@@ -7,6 +7,8 @@
  * x, y, z - East, North, Up respectively. Coordinates are always specified in meters.
  *          NOTE: this coordinate system is different from Notch's South-Up-West system.
  *
+ * mf.ItemType - the id of blocks and items. See the output of
+ *               examples/reflect.js for a full listing of names.
  * Enums (NOT YET IMPLEMENTED)
  * 
  * mf.Face - Which side of a block, if any.
@@ -72,6 +74,13 @@ exit()
  * @returns {String} The name you are logged in as.
  */
 username()
+
+/**
+ * Gets the number of items you can stack together.
+ * @param {Number} item The ID of the item you want to check the stack height of. See the mf.ItemType enum.
+ * @returns {Number} The number of items of type item you can stack together, or-1 if that item doesn't exist.
+ */
+itemStackHeight(item)
 
 // NOT YET IMPLEMENTED
 

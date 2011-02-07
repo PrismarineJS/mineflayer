@@ -27,8 +27,12 @@ public slots:
 public:
     // functions that JavaScript uses
     static QScriptValue username(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue itemStackHeight(QScriptContext * context, QScriptEngine * engine);
 
 private:
+    // TODO: move this to Game class and make static
+    QHash<int, int> m_item_stack_height;
+
     QUrl m_url;
     QString m_script_filename;
     bool m_debug;
@@ -46,6 +50,7 @@ private:
 private:
 
     void callBotMethod(QString method_name, const QScriptValueList & args = QScriptValueList());
+    bool argCount(QScriptContext *context, int arg_count);
 
 private slots:
     // call when we want to spend some CPU cycles on the bot
