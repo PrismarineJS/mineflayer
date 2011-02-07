@@ -591,6 +591,14 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                         int night_darkness = 0;
                         brightness = c_light_brightness[qMax(neighbor_block.skyLight() - night_darkness, neighbor_block.light())];
 
+                        Ogre::ColourValue color = Ogre::ColourValue::White;
+                        if (block.type() == Block::Grass && side_index == Message::PositiveZ)
+                            color.setAsRGBA(0x8DD55EFF);
+                        else if (block.type() == Block::Leaves)
+                            color.setAsRGBA(0x8DD55EFF);
+
+                        color *= brightness;
+
                         for (int triangle_index = 0; triangle_index < 2; triangle_index++) {
                             for (int point_index = 0; point_index < 3; point_index++) {
                                 Ogre::Vector3 pos = c_side_coord[side_index][triangle_index][point_index] - squish;
@@ -604,7 +612,7 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                                 Ogre::Vector2 tex_coord = c_tex_coord[triangle_index][point_index];
                                 obj->textureCoord((btc.x+tex_coord.x*btc.w) / c_terrain_png_width, (btc.y+tex_coord.y*btc.h) / c_terrain_png_height);
 
-                                obj->colour(brightness, brightness, brightness);
+                                obj->colour(color);
                             }
                         }
                     }
@@ -649,7 +657,6 @@ void MainWindow::movePlayerPosition(Server::EntityPosition position)
     m_camera->lookAt(cameraPosition + Ogre::Vector3::UNIT_X);
     m_camera->roll(Ogre::Degree(-90));
     // then rotate to where we're looking
-    qDebug() << position.pitch;
     m_camera->rotate(Ogre::Vector3::UNIT_Z, Ogre::Radian(position.yaw));
     m_camera->rotate(m_camera->getRight(), Ogre::Radian(position.pitch));
 }

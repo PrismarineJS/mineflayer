@@ -2,15 +2,17 @@ Core:
  * support physics / walking around
  * support digging / placing blocks / attacking
  * crafting / inventory manipulation
+ * time updates (day / night)
 
 3D client:
- * lighting
  * mobs/players
  * chatting 
+ * health display
  * chunk seams look ugly
  * water/lava animation
  * water / lava flow
- * sky, sun, moon, clouds
+ * sky, sun, moon, day/night
+ * clouds
 
 Bot framework:
  * implement the functions in doc/bot-api
