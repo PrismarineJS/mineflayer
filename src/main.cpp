@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     // parse arguments
     bool script_debug = false;
     bool headless = true;
-    QString script_file;
+    QString script_filename;
     QUrl url = QUrl::fromUserInput("mineflayer@localhost:25565");
     QString password;
 
@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
             printUsage(args.at(0));
             return -1;
         } else {
-            if (script_file.isEmpty()) {
-                script_file = arg;
+            if (script_filename.isEmpty()) {
+                script_filename = arg;
             } else {
                 qWarning() << "Don't know what to do with 2 input files.";
                 printUsage(args.at(0));
@@ -66,8 +66,8 @@ int main(int argc, char *argv[])
 
     MetaTypes::registerMetaTypes();
 
-    if (! script_file.isEmpty()) {
-        ScriptRunner runner(url, script_file, script_debug, headless);
+    if (! script_filename.isEmpty()) {
+        ScriptRunner runner(url, script_filename, script_debug, headless);
         if (! runner.go())
             return -1;
         if (headless)
