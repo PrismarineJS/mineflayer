@@ -3,7 +3,7 @@ mineflayer - Minecraft client and bot scripting interface.
 
 Current features:
  * logs in (no authentication support yet)
- * renders all the chunks around spawn in an Ogre 3d fly-around viewer
+ * 3d client renders the map and allows you to walk/jump around
  * runs javascript bot scripts with a limited api
 
 Planned features:
