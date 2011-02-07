@@ -82,7 +82,8 @@ private:
 private:
     void gotFirstPlayerPositionAndLookResponse();
     float groundSpeedSquared() { return m_player_position.dx * m_player_position.dx + m_player_position.dy * m_player_position.dy; }
-    bool collisionInRange(Int3D start, Int3D stop);
+    void getPlayerBoundingBox(Int3D & boundingBoxMin, Int3D & boundingBoxMax);
+    bool collisionInRange(const Int3D & boundingBoxMin, const Int3D & boundingBoxMax);
 
 private slots:
     void handleLoginStatusChanged(Server::LoginStatus status);

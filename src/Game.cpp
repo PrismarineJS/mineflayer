@@ -157,10 +157,6 @@ void Game::sendPosition()
 
 void Game::doPhysics(float delta_seconds)
 {
-    // apply velocity to previous frame
-
-
-
     // derive xy movement vector from controls
     int movement_right = 0;
     if (m_control_state.at(Right))
@@ -235,55 +231,66 @@ void Game::doPhysics(float delta_seconds)
 
 
     // calculate new positions and resolve collisions
-    Int3D start((int)std::floor(m_player_position.x + c_player_apothem),
-                (int)std::floor(m_player_position.y - c_player_apothem),
-                (int)std::floor(m_player_position.z + 0));
-    Int3D  stop((int)std::floor(m_player_position.x + c_player_apothem),
-                (int)std::floor(m_player_position.y + c_player_apothem),
-                (int)std::floor(m_player_position.z + c_player_height));
+    Int3D boundingBoxMin, boundingBoxMax;
+    getPlayerBoundingBox(boundingBoxMin, boundingBoxMax);
 
     bool x = false, y = false, z = false;
     if (m_player_position.dx != 0) {
         m_player_position.x += m_player_position.dx * delta_seconds;
         int block_x = (int)std::floor(m_player_position.x + Util::sign(m_player_position.dx) * c_player_apothem);
-        if (collisionInRange(Int3D(block_x, start.y, start.z), Int3D(block_x, stop.y, stop.z))) {
+        if (collisionInRange(Int3D(block_x, boundingBoxMin.y, boundingBoxMin.z), Int3D(block_x, boundingBoxMax.y, boundingBoxMax.z))) {
             x = true;
             m_player_position.x = block_x + (m_player_position.dx < 0 ? 1 + c_player_apothem : -c_player_apothem);
             m_player_position.dx = 0;
+            getPlayerBoundingBox(boundingBoxMin, boundingBoxMax);
         }
     }
 
     if (m_player_position.dy != 0) {
         m_player_position.y += m_player_position.dy * delta_seconds;
         int block_y = (int)std::floor(m_player_position.y + Util::sign(m_player_position.dy) * c_player_apothem);
-        if (collisionInRange(Int3D(start.x, block_y, start.z), Int3D(stop.x, block_y, stop.z))) {
+        if (collisionInRange(Int3D(boundingBoxMin.x, block_y, boundingBoxMin.z), Int3D(boundingBoxMax.x, block_y, boundingBoxMax.z))) {
             y = true;
             m_player_position.y = block_y + (m_player_position.dy < 0 ? 1 + c_player_apothem : -c_player_apothem);
             m_player_position.dy = 0;
+            getPlayerBoundingBox(boundingBoxMin, boundingBoxMax);
         }
     }
 
-    m_player_position.z += m_player_position.dz * delta_seconds;
-    int block_z = (int)std::floor(m_player_position.z + c_player_half_height + Util::sign(m_player_position.dz) * c_player_half_height);
-    if (collisionInRange(Int3D(start.x, start.y, block_z), Int3D(stop.x, stop.y, block_z))) {
-        z = true;
-        m_player_position.z = block_z + (m_player_position.dz < 0 ? 1 : -c_player_height);
-        m_player_position.dz = 0;
-        m_player_position.on_ground = true;
-    } else {
-        m_player_position.on_ground = false;
+    if (m_player_position.dz != 0) {
+        m_player_position.z += m_player_position.dz * delta_seconds;
+        int block_z = (int)std::floor(m_player_position.z + c_player_half_height + Util::sign(m_player_position.dz) * c_player_half_height);
+        if (collisionInRange(Int3D(boundingBoxMin.x, boundingBoxMin.y, block_z), Int3D(boundingBoxMax.x, boundingBoxMax.y, block_z))) {
+            z = true;
+            m_player_position.z = block_z + (m_player_position.dz < 0 ? 1 : -c_player_height);
+            m_player_position.dz = 0;
+            m_player_position.on_ground = true;
+        } else {
+            m_player_position.on_ground = false;
+        }
     }
 
     // always emit update
     emit playerPositionUpdated(m_player_position);
 }
 
-bool Game::collisionInRange(Int3D start, Int3D stop)
+void Game::getPlayerBoundingBox(Int3D & boundingBoxMin, Int3D & boundingBoxMax)
+{
+    boundingBoxMin.x = (int)std::floor(m_player_position.x - c_player_apothem);
+    boundingBoxMin.y = (int)std::floor(m_player_position.y - c_player_apothem);
+    boundingBoxMin.z = (int)std::floor(m_player_position.z - 0);
+    boundingBoxMax.x = (int)std::floor(m_player_position.x + c_player_apothem);
+    boundingBoxMax.y = (int)std::floor(m_player_position.y + c_player_apothem);
+    boundingBoxMax.z = (int)std::floor(m_player_position.z + c_player_height);
+}
+
+// TODO: check partial blocks
+bool Game::collisionInRange(const Int3D & boundingBoxMin, const Int3D & boundingBoxMax)
 {
     Int3D cursor;
-    for (cursor.x = start.x; cursor.x <= stop.x; cursor.x++)
-        for (cursor.y = start.y; cursor.y <= stop.y; cursor.y++)
-            for (cursor.z = start.z; cursor.z <= stop.z; cursor.z++)
+    for (cursor.x = boundingBoxMin.x; cursor.x <= boundingBoxMax.x; cursor.x++)
+        for (cursor.y = boundingBoxMin.y; cursor.y <= boundingBoxMax.y; cursor.y++)
+            for (cursor.z = boundingBoxMin.z; cursor.z <= boundingBoxMax.z; cursor.z++)
                 if (blockAt(cursor).type() != Block::Air)
                     return true;
     return false;

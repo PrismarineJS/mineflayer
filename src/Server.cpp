@@ -213,6 +213,15 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             }
             break;
         }
+        case Message::UpdateHealth: {
+            UpdateHealthResponse * message = (UpdateHealthResponse*) incomingMessage.data();
+            if (message->health > 0) {
+                emit playerHealthUpdated(message->health);
+            } else {
+                emit playerDied();
+            }
+            break;
+        }
         case Message::PlayerPositionAndLook: {
             PlayerPositionAndLookResponse * message = (PlayerPositionAndLookResponse *) incomingMessage.data();
             EntityPosition player_position;
