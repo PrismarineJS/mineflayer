@@ -117,8 +117,6 @@ void Game::handlePlayerPositionAndLookUpdated(Server::EntityPosition position)
     m_player_position.y = position.y;
     m_player_position.z = position.z;
     m_player_position.stance = position.stance;
-    m_player_position.yaw = position.yaw;
-    m_player_position.pitch = position.pitch;
     m_player_position.on_ground = position.on_ground;
 
     // apologize to the notchian server by echoing an identical position back
@@ -127,10 +125,12 @@ void Game::handlePlayerPositionAndLookUpdated(Server::EntityPosition position)
 
     if (m_position_update_timer == NULL) {
         // got first 0x0D. start the clocks
-        bool success;
+        m_player_position.yaw = position.yaw;
+        m_player_position.pitch = position.pitch;
 
         m_position_update_timer = new QTimer;
         m_position_update_timer->setInterval(c_notchian_tick_ms);
+        bool success;
         success = connect(m_position_update_timer, SIGNAL(timeout()), this, SLOT(sendPosition()));
         Q_ASSERT(success);
         m_position_update_timer->start();
