@@ -289,7 +289,7 @@ void MainWindow::loadResources()
             block_data.side_textures.resize(6);
             block_data.squish_amount.resize(6);
             int index = 0;
-            Chunk::ItemType id = (Chunk::ItemType) parts.at(index++).toInt();
+            Block::ItemType id = (Block::ItemType) parts.at(index++).toInt();
             block_data.name = parts.at(index++);
             for (int i = 0; i < 6; i++) {
                 QString texture = parts.at(index++);
@@ -527,9 +527,9 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
         for (offset.x = 0, absolute_position.x = chunk_data.position.x; offset.x < size.x; offset.x++, absolute_position.x++) {
             for (offset.y = 0, absolute_position.y = chunk_data.position.y; offset.y < size.y; offset.y++, absolute_position.y++) {
                 for (offset.z = 0, absolute_position.z = chunk_data.position.z; offset.z < size.z; offset.z++, absolute_position.z++) {
-                    Chunk::Block block = m_game->blockAt(absolute_position);
+                    Block block = m_game->blockAt(absolute_position);
 
-                    BlockData block_data = m_block_data.value(block.type, m_air);
+                    BlockData block_data = m_block_data.value(block.type(), m_air);
 
                     // skip air
                     if (block_data.side_textures.isEmpty())
@@ -549,8 +549,8 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                             continue;
 
                         // if the block on this side is opaque or the same block, skip
-                        Chunk::ItemType side_type = m_game->blockAt(absolute_position + c_side_offset[side_index]).type;
-                        if (side_type == block.type || ! m_block_data.value(side_type, m_air).see_through)
+                        Block::ItemType side_type = m_game->blockAt(absolute_position + c_side_offset[side_index]).type();
+                        if (side_type == block.type() || ! m_block_data.value(side_type, m_air).see_through)
                             continue;
 
                         // add this side to mesh

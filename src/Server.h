@@ -3,6 +3,7 @@
 
 #include "Messages.h"
 #include "IncomingMessageParser.h"
+#include "Chunk.h"
 
 #include <QObject>
 #include <QThread>

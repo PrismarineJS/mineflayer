@@ -1,7 +1,8 @@
 #ifndef MESSAGES_H
 #define MESSAGES_H
 
-#include "Chunk.h"
+#include "Block.h"
+#include "Int3D.h"
 
 #include <QString>
 #include <QDataStream>
@@ -63,7 +64,7 @@ public:
 
 
     struct Item {
-        Chunk::ItemType type;
+        Block::ItemType type;
         qint8 count;
         qint16 uses;
     };
@@ -293,7 +294,7 @@ class EntityEquipmentResponse : public IncomingResponse {
 public:
     qint32 entity_id;
     qint16 slot;
-    Chunk::ItemType item_type;
+    Block::ItemType item_type;
     qint16 unknown;
     EntityEquipmentResponse() : IncomingResponse(EntityEquipment) {}
     virtual int parse(QByteArray buffer);
@@ -408,7 +409,7 @@ public:
     qint32 z;
     qint8 yaw;
     qint8 pitch;
-    Chunk::ItemType held_item;
+    Block::ItemType held_item;
     NamedEntitySpawnResponse() : IncomingResponse(NamedEntitySpawn) {}
     virtual int parse(QByteArray buffer);
 };
@@ -416,7 +417,7 @@ public:
 class PickupSpawnResponse : public IncomingResponse {
 public:
     qint32 entity_id;
-    Chunk::ItemType item_type;
+    Block::ItemType item_type;
     qint8 count;
     qint16 damage;
     qint32 x;
@@ -623,7 +624,7 @@ public:
     qint32 chunk_x;
     qint32 chunk_z;
     QVector<Int3D> block_coords;
-    QVector<Chunk::ItemType> new_block_types;
+    QVector<Block::ItemType> new_block_types;
     QVector<qint8> new_block_metadatas;
     MultiBlockChangeResponse() : IncomingResponse(MultiBlockChange) {}
     virtual int parse(QByteArray buffer);
@@ -634,7 +635,7 @@ public:
     qint32 x;
     qint8 y;
     qint32 z;
-    Chunk::ItemType new_block_type;
+    Block::ItemType new_block_type;
     qint8 metadata;
     BlockChangeResponse() : IncomingResponse(BlockChange) {}
     virtual int parse(QByteArray buffer);

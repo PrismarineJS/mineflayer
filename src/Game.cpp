@@ -19,7 +19,7 @@ const float Game::c_jump_speed = 8.0f;
 
 const int Game::c_notchian_tick_ms = 200;
 const Int3D Game::c_chunk_size(16, 16, 128);
-const Chunk::Block Game::c_air(Chunk::Air, 0, 0, 0);
+const Block Game::c_air(Block::Air, 0, 0, 0);
 
 Game::Game(QUrl connection_info) :
     m_server(connection_info),
@@ -57,7 +57,7 @@ void Game::start()
     m_server.socketConnect();
 }
 
-Chunk::Block Game::blockAt(const Int3D & absolute_location)
+Block Game::blockAt(const Int3D & absolute_location)
 {
     Int3D chunk_key = chunkKey(absolute_location);
     QSharedPointer<Chunk> chunk = m_chunks.value(chunk_key, QSharedPointer<Chunk>());
@@ -284,7 +284,7 @@ bool Game::collisionInRange(Int3D start, Int3D stop)
     for (cursor.x = start.x; cursor.x <= stop.x; cursor.x++)
         for (cursor.y = start.y; cursor.y <= stop.y; cursor.y++)
             for (cursor.z = start.z; cursor.z <= stop.z; cursor.z++)
-                if (blockAt(cursor).type != Chunk::Air)
+                if (blockAt(cursor).type() != Block::Air)
                     return true;
     return false;
 }

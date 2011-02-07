@@ -281,11 +281,11 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
                 for (notchian_relative_pos.z = 0; notchian_relative_pos.z < notchian_size.z; notchian_relative_pos.z++) {
                     for (notchian_relative_pos.y = 0; notchian_relative_pos.y < notchian_size.y; notchian_relative_pos.y++) {
                         // grab all the fields for each block at once even though they're strewn accross the data structure.
-                        Chunk::Block block;
-                        block.type = (Chunk::ItemType) decompressed.at(array_index);
-                        block.metadata  = (decompressed.at( metadata_offset + array_index / 2) >> nibble_shifter) & 0xf;
-                        block.light     = (decompressed.at(    light_offset + array_index / 2) >> nibble_shifter) & 0xf;
-                        block.sky_light = (decompressed.at(sky_light_offest + array_index / 2) >> nibble_shifter) & 0xf;
+                        Block block;
+                        block.setType((Block::ItemType)decompressed.at(array_index));
+                        block.setMetadata((decompressed.at( metadata_offset + array_index / 2) >> nibble_shifter) & 0xf);
+                        block.setLight(   (decompressed.at(    light_offset + array_index / 2) >> nibble_shifter) & 0xf);
+                        block.setSkyLight((decompressed.at(sky_light_offest + array_index / 2) >> nibble_shifter) & 0xf);
 
                         array_index++;
                         nibble_shifter = 4 - nibble_shifter; // toggle between 0 and 4.

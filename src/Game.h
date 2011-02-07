@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include "Server.h"
+#include "Block.h"
 
 class Game : public QObject
 {
@@ -36,7 +37,7 @@ public:
     // equivalent to pressing a button.
     void setControlActivated(Control control, bool activated = true);
 
-    Chunk::Block blockAt(const Int3D & absolute_location);
+    Block blockAt(const Int3D & absolute_location);
 
     // if you want you can cheat and override the default physics settings:
     void setInputAcceleration(float value) { m_input_acceleration = value; }
@@ -59,7 +60,7 @@ private:
     static const float c_jump_speed;
     static const int c_notchian_tick_ms;
     static const Int3D c_chunk_size;
-    static const Chunk::Block c_air;
+    static const Block c_air;
     static Int3D chunkKey(const Int3D & coord);
 
     Server m_server;

@@ -146,7 +146,7 @@ private:
     // maps texture name to coordinates in terrain.png
     QHash<QString, BlockTextureCoord> m_terrain_tex_coords;
     // maps item type to texture name for each side
-    QHash<Chunk::ItemType, BlockData> m_block_data;
+    QHash<Block::ItemType, BlockData> m_block_data;
     BlockData m_air;
 
     Ogre::SceneNode * m_pass[2];
