@@ -349,7 +349,7 @@ QScriptValue ScriptRunner::itemStackHeight(QScriptContext *context, QScriptEngin
         qWarning() << "itemStackHeight: invalid argument at" << context->backtrace().join("\n");
         return -1;
     }
-    return me->m_item_stack_height.value(val.toInteger(), -1);
+    return me->m_item_stack_height.value((Block::ItemType)val.toInteger(), -1);
 }
 
 bool ScriptRunner::argCount(QScriptContext *context, int arg_count)

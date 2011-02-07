@@ -31,7 +31,7 @@ public:
 
 private:
     // TODO: move this to Game class and make static
-    QHash<int, int> m_item_stack_height;
+    QHash<Block::ItemType, int> m_item_stack_height;
 
     QUrl m_url;
     QString m_script_filename;
