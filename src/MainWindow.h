@@ -20,6 +20,7 @@
 #include <QObject>
 #include <QHash>
 #include <QSharedPointer>
+#include <QUrl>
 
 #include "Chunk.h"
 #include "Game.h"
@@ -53,7 +54,7 @@ public:
     };
 
 public:
-    MainWindow();
+    MainWindow(QUrl url);
     ~MainWindow();
 
     int exec();

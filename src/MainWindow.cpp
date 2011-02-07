@@ -62,7 +62,7 @@ uint qHash(const MainWindow::PhysicalInput & value)
     return value.id;
 }
 
-MainWindow::MainWindow() :
+MainWindow::MainWindow(QUrl url) :
     m_root(NULL),
     m_camera(NULL),
     m_scene_manager(NULL),
@@ -85,11 +85,7 @@ MainWindow::MainWindow() :
     m_air.partial_alpha = false;
     m_air.name = "Air";
 
-    QUrl connection_settings;
-    connection_settings.setHost("localhost");
-    connection_settings.setPort(25565);
-    connection_settings.setUserName("superbot");
-    m_game = new Game(connection_settings);
+    m_game = new Game(url);
     bool success;
     success = connect(m_game, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(handleChunkUpdated(Int3D,Int3D)));
     Q_ASSERT(success);

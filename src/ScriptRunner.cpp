@@ -5,8 +5,9 @@
 #include <QDebug>
 #include <QCoreApplication>
 
-ScriptRunner::ScriptRunner(QString script_file, bool debug, bool headless, QObject *parent) :
+ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headless, QObject *parent) :
     QObject(parent),
+    m_url(url),
     m_script_filename(script_file),
     m_debug(debug),
     m_headless(headless),
@@ -50,11 +51,7 @@ bool ScriptRunner::go()
 
     // connect to server
     // TODO: this data should be passed in through config or command line
-    QUrl connection_settings;
-    connection_settings.setHost("localhost");
-    connection_settings.setPort(25565);
-    connection_settings.setUserName("superbot");
-    m_server = new Server(connection_settings);
+    m_server = new Server(m_url);
     bool success;
     success = connect(m_server, SIGNAL(mapChunkUpdated(QSharedPointer<Chunk>)), this, SLOT(updateChunk(QSharedPointer<Chunk>)));
     Q_ASSERT(success);
