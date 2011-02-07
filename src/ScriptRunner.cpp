@@ -15,7 +15,8 @@ ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headl
     m_game(NULL),
     m_exiting(false),
     m_stderr(stderr),
-    m_stdout(stdout)
+    m_stdout(stdout),
+    m_timer_count(0)
 {
 }
 
@@ -64,6 +65,13 @@ bool ScriptRunner::go()
     mf_obj.setProperty("username", m_engine->newFunction(username));
     mf_obj.setProperty("itemStackHeight", m_engine->newFunction(itemStackHeight, 1));
 
+    // add some javascript utility classes
+    m_engine->globalObject().setProperty("setTimeout", m_engine->newFunction(setTimeout, 2));
+    m_engine->globalObject().setProperty("clearTimeout", m_engine->newFunction(clearTimeout, 1));
+    m_engine->globalObject().setProperty("setInterval", m_engine->newFunction(setInterval, 2));
+    m_engine->globalObject().setProperty("clearInterval", m_engine->newFunction(clearTimeout, 1));
+
+
     QScriptValue ctor = m_engine->evaluate("MineflayerBot");
     if (m_engine->hasUncaughtException()) {
         qWarning() << "Error while evaluating MineflayerBot constructor:" << m_engine->uncaughtException().toString();
@@ -101,10 +109,87 @@ bool ScriptRunner::go()
     return true;
 }
 
-void ScriptRunner::process()
+void ScriptRunner::dispatchTimeout()
 {
-    callBotMethod("onNextFrame");
-    QTimer::singleShot(1, this, SLOT(process()));
+    QTimer * timer = (QTimer *) sender();
+    TimedFunction tf = m_script_timers.value(timer);
+    if (! tf.repeat) {
+        m_timer_ptrs.remove(tf.id);
+        m_script_timers.remove(timer);
+        delete timer;
+    }
+    tf.function.call(tf.this_ref);
+}
+
+QScriptValue ScriptRunner::setTimeout(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    if (! me->argCount(context, 2))
+        return QScriptValue();
+
+    QScriptValue func = context->argument(0);
+    QScriptValue ms = context->argument(1);
+    if (! func.isFunction() || ! ms.isNumber()) {
+        qWarning() << "setTimeout: invalid argument at" << context->backtrace().join("\n");
+        return QScriptValue();
+    }
+
+    return me->setTimeout(func, ms.toInteger(), context->parentContext()->thisObject(), false);
+}
+
+QScriptValue ScriptRunner::setInterval(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    if (! me->argCount(context, 2))
+        return QScriptValue();
+
+    QScriptValue func = context->argument(0);
+    QScriptValue ms = context->argument(1);
+    if (! func.isFunction() || ! ms.isNumber()) {
+        qWarning() << "setInterval: invalid argument at" << context->backtrace().join("\n");
+        return QScriptValue();
+    }
+
+    return me->setTimeout(func, ms.toInteger(), context->parentContext()->thisObject(), true);
+}
+
+int ScriptRunner::setTimeout(QScriptValue func, int ms, QScriptValue this_obj, bool repeat)
+{
+    QTimer * new_timer = new QTimer(this);
+    new_timer->setInterval(ms);
+    bool success;
+    success = connect(new_timer, SIGNAL(timeout()), this, SLOT(dispatchTimeout()));
+    Q_ASSERT(success);
+    int timer_id = nextTimerId();
+    m_timer_ptrs.insert(timer_id, new_timer);
+    m_script_timers.insert(new_timer, TimedFunction(timer_id, repeat, this_obj, func));
+    new_timer->start();
+    return timer_id;
+}
+
+QScriptValue ScriptRunner::clearTimeout(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    if (! me->argCount(context, 1))
+        return QScriptValue();
+
+    QScriptValue id = context->argument(0);
+    if (! id.isNumber()) {
+        qWarning() << "clearTimeout: invalid argument at" << context->backtrace().join("\n");
+        return QScriptValue();
+    }
+
+    int int_id = id.toInteger();
+    QTimer * ptr = me->m_timer_ptrs.value(int_id, NULL);
+    me->m_timer_ptrs.remove(int_id);
+    me->m_script_timers.remove(ptr);
+    delete ptr;
+    return QScriptValue();
+}
+
+int ScriptRunner::nextTimerId()
+{
+    return m_timer_count++;
 }
 
 void ScriptRunner::callBotMethod(QString method_name, const QScriptValueList &args)
@@ -211,7 +296,6 @@ void ScriptRunner::handleLoginStatusUpdated(Server::LoginStatus status)
             break;
         case Server::Success:
             callBotMethod("onConnected");
-            QTimer::singleShot(1, this, SLOT(process()));
             break;
         case Server::SocketError:
             qWarning() << "Unable to connect to server";
