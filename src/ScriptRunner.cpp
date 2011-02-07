@@ -124,6 +124,7 @@ void ScriptRunner::print(QString text)
 void ScriptRunner::debug(QString line)
 {
     m_stderr << line << "\n";
+    m_stderr.flush();
 }
 
 void ScriptRunner::chat(QString message)
