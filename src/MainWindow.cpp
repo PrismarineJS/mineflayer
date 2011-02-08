@@ -678,6 +678,22 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                                 }
                             }
                             break;
+                            case Block::Pumpkin:
+                            case Block::JackOLantern:
+                            {
+                                if (side_index != NegativeZ && side_index != PositiveZ) {
+                                    if ((block.pumpkinMetadata() == Block::EastFacingPumpkin && side_index == PositiveX) ||
+                                        (block.pumpkinMetadata() == Block::WestFacingPumpkin && side_index == NegativeX) ||
+                                        (block.pumpkinMetadata() == Block::NorthFacingPumpkin && side_index == PositiveY) ||
+                                        (block.pumpkinMetadata() == Block::SouthFacingPumpkin && side_index == NegativeY))
+                                    {
+                                        texture_name = block_data.side_textures.value(NegativeY);
+                                    } else {
+                                        texture_name = "PumpkinBack";
+                                    }
+                                }
+                            }
+                            break;
                             default:;
                         }
                         BlockTextureCoord btc = m_terrain_tex_coords.value(texture_name);
