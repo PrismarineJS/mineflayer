@@ -8,8 +8,8 @@
  *
  * examples:
  * gimme dirt                   - gives you 64 dirt
- * gimme diam swo 3             - gives you 3 diamond swords
- * give OtherGuy feathers 36    - gives OtherGuy enough feathers to fill his inventory
+ * gimme 3 diam swo             - gives you 3 diamond swords
+ * give OtherGuy 36 feathers    - gives OtherGuy enough feathers to fill his inventory
  */
 
 include("strings.js");
@@ -22,40 +22,39 @@ var giver = function() {
             return;
         }
         var parts = message.toLowerCase().trim().split(" ");
-        var command = parts[0];
-        var name_start = 1;
+        var index = 0;
+        var command = parts[index++];
         if (command === "gimme") {
             // target user is self
         } else if (command === "give") {
             // extract username
-            var different_username = parts[name_start];
+            var different_username = parts[index];
             if (different_username === undefined) return;
             different_username = different_username.toLowerCase();
             if (different_username !== "me") {
                 different_username = lookupUser(different_username);
                 if (different_username === undefined) {
-                    mf.chat("can't find player: " + parts[name_start]);
+                    mf.chat("can't find player: " + parts[index]);
                     return;
                 }
                 username = different_username;
             }
-            name_start++;
+            index++;
         } else {
             return;
         }
-        var name_end = parts.length;
-        var count = parseInt(parts[parts.length - 1]);
+        var count = parseInt(parts[index]);
         if (isNaN(count)) {
             // no count specified
             count = 1;
         } else {
             // count specified
-            name_end--;
+            index++;
         }
-        if (!(name_start < name_end)) {
+        if (!(index < parts.length)) {
             return;
         }
-        var item_name = parts.slice(name_start, name_end).join(" ");
+        var item_name = parts.slice(index).join(" ");
         give(username, item_name, count);
     });
     function give(username, item_name, count) {
