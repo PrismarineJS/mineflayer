@@ -102,7 +102,7 @@ TrackCorner         0   112 16  16
 DarkBlackWool       16  112 16  16
 DarkGrayWool        32  112 16  16
 RedstoneTorchOff    48  112 16  16
-PineTrunkSide       64  112 16  16
+RedwoodTrunkSide    64  112 16  16
 BirchTrunkSide      80  112 16  16
 PumpkinBack         96  112 16  16
 PumpkinFront        112 112 16  16

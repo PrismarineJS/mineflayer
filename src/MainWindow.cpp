@@ -587,8 +587,33 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
 
                         // add this side to mesh
                         Ogre::Vector3 abs_block_loc(absolute_position.x, absolute_position.y, absolute_position.z);
-                        QString texture_name = block_data.side_textures.at(side_index);
-                        BlockTextureCoord btc = m_terrain_tex_coords.value(texture_name);
+
+                        // special cases for textures
+                        BlockTextureCoord btc;
+                        switch (block.type()) {
+                        case Block::Wood:
+                            if (side_index != NegativeZ && side_index != PositiveZ) {
+                                QString texture_name;
+                                switch (block.woodMetadata()) {
+                                case Block::NormalTrunkTexture:
+                                    texture_name = "WoodSide";
+                                    break;
+                                case Block::RedwoodTrunkTexture:
+                                    texture_name = "RedwoodTrunkSide";
+                                    break;
+                                case Block::BirchTrunkTexture:
+                                    texture_name = "BirchTrunkSide";
+                                    break;
+                                }
+                                btc = m_terrain_tex_coords.value(texture_name);
+                                break;
+                            } else {
+                                // fall through to default case
+                            }
+                        default:
+                            btc = m_terrain_tex_coords.value(block_data.side_textures.at(side_index));
+                        }
+
                         Ogre::Vector3 squish = block_data.squish_amount.at(side_index);
 
                         float brightness;
