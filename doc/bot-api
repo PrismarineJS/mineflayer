@@ -6,6 +6,7 @@
  * meter - a block is 1 meter cubed, or 1x1x1.
  * x, y, z - East, North, Up respectively. Coordinates are always specified in meters.
  *          NOTE: this coordinate system is different from Notch's South-Up-West system.
+ *          Use toNotchCoord() and fromNotchCoord() to translate between coordinate systems.
  *
  * mf.ItemType - the id of blocks and items. See the output of
  *               examples/reflect.js for a full listing of names.
@@ -132,6 +133,17 @@ mf.health()
 mf.blockAt(x, y, z)
 
 // NOT YET IMPLEMENTED
+
+/**
+ * @param {Object} An object with properties x, y, and z - the coordinates you want to translate.
+ * @returns {Object} An object with properties x, y, and z translated into Notch's coordinate system.
+ */
+mf.toNotchCoord(point)
+
+/**
+ * @returns {Object} An object with properties x, y, and z translated from Notch's coordinate system into something more sensical.
+ */
+mf.fromNotchCoord(point)
 
 // TODO: /kill and /tell as separate functions
 // TODO: op commands such as /give as separate functions
