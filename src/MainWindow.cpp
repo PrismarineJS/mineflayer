@@ -628,6 +628,9 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                             if (side_index == PositiveZ)
                                 texture_name = block.farmlandMetadata() == 0 ? "FarmlandDry" : "FarmlandWet";
                             break;
+                            case Block::Crops:
+                            texture_name = QString("Crops") + QString::number(block.cropsMetadata());
+                            break;
                             default:;
                         }
                         BlockTextureCoord btc = m_terrain_tex_coords.value(texture_name);

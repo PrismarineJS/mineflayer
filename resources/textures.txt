@@ -78,14 +78,14 @@ RedWire4wayOff      64  80  16  16
 RedWire2wayOff      80  80  16  16
 FarmlandWet         96  80  16  16
 FarmlandDry         112 80  16  16
-Wheat0              128 80  16  16
-Wheat1              144 80  16  16
-Wheat2              160 80  16  16
-Wheat3              176 80  16  16
-Wheat4              192 80  16  16
-Wheat5              208 80  16  16
-Wheat6              224 80  16  16
-Wheat7              240 80  16  16
+Crops0              128 80  16  16
+Crops1              144 80  16  16
+Crops2              160 80  16  16
+Crops3              176 80  16  16
+Crops4              192 80  16  16
+Crops5              208 80  16  16
+Crops6              224 80  16  16
+Crops7              240 80  16  16
 
 BurnedOutTorch      0   96  16  16
 WoodDoorBottom      16  96  16  16
