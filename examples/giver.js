@@ -17,6 +17,7 @@ include("strings.js");
 var giver = function() {
     var _public = {};
     _public.enabled = true;
+    _public.debug = true;
     mf.onChat(function(username, message) {
         if (!_public.enabled) {
             return;
@@ -65,8 +66,16 @@ var giver = function() {
                 mf.chat("can't find item name: " + item_name);
                 return;
             }
+            var command = "/give " + username + " " + item_id + " " + mf.itemStackHeight(item_id);
+            if (_public.debug) {
+                if (count === 1) {
+                    mf.debug("sending: " + command);
+                } else {
+                    mf.debug("sending " + count + " times: " + command);
+                }
+            }
             for (var i = 0; i < count; i++) {
-                mf.chat("/give " + username + " " + item_id + " " + mf.itemStackHeight(item_id));
+                mf.chat(command);
             }
         } else {
             var ambiguous_results = item_id_or_ambiguous_results;
