@@ -33,8 +33,8 @@ bool ScriptRunner::go()
     }
 
     // initialize the MF object before we run any user code
-    m_engine->globalObject().setProperty("mf", m_engine->newQObject(this));
-    QScriptValue mf_obj = m_engine->globalObject().property("mf");
+    QScriptValue mf_obj = m_engine->newQObject(this);
+    m_engine->globalObject().setProperty("mf", mf_obj);
 
     // init event handler framework
     {
@@ -55,16 +55,16 @@ bool ScriptRunner::go()
         mf_obj.setProperty(prop_name, evalJsonContents(enum_contents.replace("=", ":")));
     }
 
+    // add utility functions
+    mf_obj.setProperty("include", m_engine->newFunction(include, 1));
+    mf_obj.setProperty("setTimeout", m_engine->newFunction(setTimeout, 2));
+    mf_obj.setProperty("clearTimeout", m_engine->newFunction(clearTimeout, 1));
+    mf_obj.setProperty("setInterval", m_engine->newFunction(setInterval, 2));
+    mf_obj.setProperty("clearInterval", m_engine->newFunction(clearTimeout, 1));
+
     // hook up mf functions
     mf_obj.setProperty("username", m_engine->newFunction(username));
     mf_obj.setProperty("itemStackHeight", m_engine->newFunction(itemStackHeight, 1));
-
-    // add javascript utilities
-    m_engine->globalObject().setProperty("include", m_engine->newFunction(include, 1));
-    m_engine->globalObject().setProperty("setTimeout", m_engine->newFunction(setTimeout, 2));
-    m_engine->globalObject().setProperty("clearTimeout", m_engine->newFunction(clearTimeout, 1));
-    m_engine->globalObject().setProperty("setInterval", m_engine->newFunction(setInterval, 2));
-    m_engine->globalObject().setProperty("clearInterval", m_engine->newFunction(clearTimeout, 1));
 
 
     bool file_exists;

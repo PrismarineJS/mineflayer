@@ -50,7 +50,7 @@
  * modularize your bot by using this function to import components.
  * @param {String} path The filepath to the script including the extension.
  */
-include(path)
+mf.include(path)
 
 /**
  * Call a function later.
@@ -58,26 +58,26 @@ include(path)
  * @param {Number} time The amount of milliseconds you want to wait before executing func.
  * @returns {Number} an ID which you can use to cancel the timeout.
  */
-setTimeout(func, time)
+mf.setTimeout(func, time)
 
 /**
  * Stop a timeout that is in progress
  * @param {Number} id The ID which you got from setTimeout.
  */
-clearTimeout(id)
+mf.clearTimeout(id)
 
 /**
  * Execute a function on a set internal.
  * @param {Function} func The function that you want to execute every time milliseconds.
  * @param {Number} time The interval in milliseconds you want to wait between executing func.
  */
-setInterval(func, time)
+mf.setInterval(func, time)
 
 /**
  * Stop an interval that is in progress
  * @param {Number} id The ID which you got from setInterval.
  */
-clearInterval(id)
+mf.clearInterval(id)
 
 /**
  * Simply prints a line of text to stderr. useful for debugging.

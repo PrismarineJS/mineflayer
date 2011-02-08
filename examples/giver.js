@@ -12,8 +12,8 @@
  * give OtherGuy 36 feathers    - gives OtherGuy enough feathers to fill his inventory
  */
 
-include("strings.js");
-include("arrays.js");
+mf.include("strings.js");
+mf.include("arrays.js");
 
 var giver = function() {
     var _public = {};
