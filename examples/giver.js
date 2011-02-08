@@ -86,6 +86,11 @@ var giver = function() {
     };
     function lookupItemType(item_name) {
         var item_name_parts = item_name.split(" ");
+        // strip off any final 's' to tolerate plurals, sorta
+        for (var i = 0; i < item_name_parts.length; i++) {
+            if (item_name_parts[i].endsWith("s"))
+                item_name_parts[i] = item_name_parts[i].substr(0, item_name_parts[i].length - 1);
+        }
         function lookup_using_comparator(comparator) {
             var matches = [];
             for (var i = 0; i < item_database.length; i++) {
@@ -133,36 +138,23 @@ var giver = function() {
             }
             return better_matches[0][1];
         }
-        var result
-        // try to find matches with exact match
-        result = lookup_using_comparator(function(s1, s2) { return s1 === s2;});
-        if (typeof result !== "number") {
-            // ambiguous
-            return result;
+        var comparators = [
+            function(s1, s2) { return s1 === s2;},
+            function(s1, s2) { return s1.startsWith(s2);},
+            function(s1, s2) { return s1.contains(s2);},
+        ];
+        for (i = 0; i < comparators.length; i++) {
+            var result = lookup_using_comparator(comparators[i]);
+            if (typeof result !== "number") {
+                // ambiguous
+                return result;
+            }
+            if (result >= 0) {
+                // found
+                return result;
+            }
         }
-        if (result >= 0) {
-            // found
-            return result;
-        }
-        // not found yet
-        // try to find matches with startsWith()
-        result = lookup_using_comparator(function(s1, s2) { return s1.startsWith(s2);});
-        if (typeof result !== "number") {
-            // ambiguous
-            return result;
-        }
-        if (result >= 0) {
-            // found
-            return result;
-        }
-        // not found yet
-        // try to find contains() matches
-        result = lookup_using_comparator(function(s1, s2) { return s1.contains(s2);});
-        if (typeof result !== "number") {
-            // ambiguous
-            return result;
-        }
-        // found or not found
+        // not found
         return result;
     };
     var item_database = function() {

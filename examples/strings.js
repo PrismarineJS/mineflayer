@@ -6,6 +6,13 @@ String.prototype.contains = function(s) {
 String.prototype.startsWith = function(s) {
     return this.lastIndexOf(s, 0) === 0;
 };
+String.prototype.endsWith = function(s) {
+    var index = this.length - s.length;
+    if (index < 0) {
+        return false;
+    }
+    return this.indexOf(s, index) === index;
+};
 
 /**
  * only trims spaces, not tabs or newlines or anything else.
