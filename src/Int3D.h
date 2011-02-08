@@ -61,6 +61,9 @@ public:
     bool operator==(const Int3D & other) const {
         return other.x == x && other.y == y && other.z == z;
     }
+    bool operator!=(const Int3D & other) const {
+        return !(*this == other);
+    }
 };
 
 #endif // INT3D_H

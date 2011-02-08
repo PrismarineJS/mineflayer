@@ -744,6 +744,7 @@ void MainWindow::movePlayerPosition(Server::EntityPosition position)
 
 void MainWindow::handlePlayerHealthUpdated()
 {
+    qDebug() << "health: " << m_game->playerHealth();
 }
 void MainWindow::handlePlayerDied()
 {

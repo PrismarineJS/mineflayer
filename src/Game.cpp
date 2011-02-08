@@ -363,6 +363,11 @@ void Game::handleMapChunkUpdated(QSharedPointer<Chunk>update)
     Q_ASSERT(chunkKey(update_position + update_size - Int3D(1,1,1)) == chunk_position);
     QSharedPointer<Chunk> chunk = m_chunks.value(chunk_position, QSharedPointer<Chunk>());
     if (chunk.isNull()) {
+        // this better be a full chunk
+        if (update_size != c_chunk_size) {
+            // ignore initialization garbage fragments
+            return;
+        }
         chunk = QSharedPointer<Chunk>(new Chunk(chunk_position, c_chunk_size));
         m_chunks.insert(chunk_position, chunk);
     }
