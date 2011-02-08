@@ -6,6 +6,8 @@
 #include <QCoreApplication>
 #include <QDir>
 
+#include <cmath>
+
 ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headless, QObject *parent) :
     QObject(parent),
     m_url(url),
@@ -65,6 +67,9 @@ bool ScriptRunner::go()
     // hook up mf functions
     mf_obj.setProperty("username", m_engine->newFunction(username));
     mf_obj.setProperty("itemStackHeight", m_engine->newFunction(itemStackHeight, 1));
+    mf_obj.setProperty("health", m_engine->newFunction(health, 1));
+    mf_obj.setProperty("blockAt", m_engine->newFunction(blockAt, 1));
+
 
 
     bool file_exists;
@@ -308,6 +313,40 @@ QScriptValue ScriptRunner::itemStackHeight(QScriptContext *context, QScriptEngin
         return -1;
     }
     return me->m_game->itemStackHeight((Block::ItemType)val.toInteger());
+}
+
+QScriptValue ScriptRunner::health(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    if (! me->argCount(context, 0))
+        return QScriptValue();
+    return me->m_game->playerHealth();
+}
+
+QScriptValue ScriptRunner::blockAt(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    const int arg_count = 3;
+    if (! me->argCount(context, arg_count))
+        return QScriptValue();
+    for (int i = 0; i < arg_count; i++) {
+        if (! context->argument(i).isNumber()) {
+            qWarning() << "blockAt: invalid argument at" << context->backtrace().join("\n");
+            return QScriptValue();
+        }
+    }
+    int x = valueToNearestInt(context->argument(0));
+    int y = valueToNearestInt(context->argument(1));
+    int z = valueToNearestInt(context->argument(2));
+    Block block = me->m_game->blockAt(Int3D(x, y, z));
+    QScriptValue result = engine->newObject();
+    result.setProperty("type", block.type());
+    return result;
+}
+
+int ScriptRunner::valueToNearestInt(const QScriptValue &value)
+{
+    return (int)std::floor(value.toNumber() + 0.5);
 }
 
 bool ScriptRunner::argCount(QScriptContext *context, int arg_count)

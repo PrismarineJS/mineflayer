@@ -31,6 +31,8 @@ public:
     static QScriptValue include(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue username(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue itemStackHeight(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue health(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue blockAt(QScriptContext * context, QScriptEngine * engine);
 
     static QScriptValue setTimeout(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue clearTimeout(QScriptContext * context, QScriptEngine * engine);
@@ -80,6 +82,7 @@ private:
     QString readFile(const QString &path, bool * success = NULL);
     QScriptValue evalJsonContents(const QString &file_contents, const QString &file_name = QString());
     bool checkEngine(const QString & while_doing_what = QString());
+    static int valueToNearestInt(const QScriptValue & value);
 
 private slots:
 

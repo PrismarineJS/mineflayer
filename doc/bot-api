@@ -114,12 +114,6 @@ mf.username()
  */
 mf.itemStackHeight(item)
 
-// NOT YET IMPLEMENTED
-
-// TODO: /kill and /tell as separate functions
-// TODO: op commands such as /give as separate functions
-
-
 /**
  * Tells your health.
  * @return {Number} health The number of half-hearts that you have, out of 20.
@@ -133,9 +127,15 @@ mf.health()
  * @param {Number} z
  * @return {Object} block object with these fields:
  *          type {Number} - block type id
- *          metadata {Number} - Notch's metadata for the block
+ *          TODO: other fields as needed
  */
 mf.blockAt(x, y, z)
+
+// NOT YET IMPLEMENTED
+
+// TODO: /kill and /tell as separate functions
+// TODO: op commands such as /give as separate functions
+
 
 /**
  * Looks in a direction. Probably strictly asthetic.
