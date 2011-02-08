@@ -582,8 +582,11 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                         // if the block on this side is opaque or the same block, skip
                         Block neighbor_block = m_game->blockAt(absolute_position + c_side_offset[side_index]);
                         Block::ItemType side_type = neighbor_block.type();
-                        if (side_type == block.type() || ! m_block_data.value(side_type, m_air).see_through)
+                        if ((side_type == block.type() && (block_data.partial_alpha || side_type == Block::Glass)) ||
+                            ! m_block_data.value(side_type, m_air).see_through)
+                        {
                             continue;
+                        }
 
                         // add this side to mesh
                         Ogre::Vector3 abs_block_loc(absolute_position.x, absolute_position.y, absolute_position.z);
