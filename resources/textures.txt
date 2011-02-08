@@ -99,8 +99,8 @@ SoulSand            128 96  16  16
 Glowstone           144 96  16  16
 
 TrackCorner         0   112 16  16
-DarkBlackWool       16  112 16  16
-DarkGrayWool        32  112 16  16
+BlackWool           16  112 16  16
+GrayWool            32  112 16  16
 RedstoneTorchOff    48  112 16  16
 RedwoodTrunkSide    64  112 16  16
 BirchTrunkSide      80  112 16  16
@@ -113,8 +113,8 @@ CakeInside          176 112 16  8
 CakeBottom          192 112 16  16
 
 TrackStraight       0   128 16  16
-DarkRedWool         16  128 16  16
-LightRedWool        32  128 16  16
+RedWool             16  128 16  16
+PinkWool            32  128 16  16
 BirchLeaves         64  128 16  16
 RedwoodLeaves       80  128 16  16
 
@@ -123,16 +123,16 @@ DarkGreenWool       16  144 16  16
 LightGreenWool      32  144 16  16
 
 LapisLazuliOre      0   160 16  16
-DarkBrownWool       16  160 16  16
+BrownWool           16  160 16  16
 YellowWool          32  160 16  16
 
 SandstoneTop        0   176 16  16
-DarkBlueWool        16  176 16  16
+BlueWool            16  176 16  16
 LightBlueWool       32  176 16  16
 
 SandstoneSide       0   192 16  16
-DarkPurpleWool      16  192 16  16
-LightPurpleWool     32  192 16  16
+PurpleWool          16  192 16  16
+MagentaWool         32  192 16  16
 
 Water1              208 192 16  16
 Water2              224 192 16  16
@@ -145,7 +145,7 @@ OrangeWool          32  208 16  16
 Water4              224 208 16  16
 Water5              240 208 16  16
 
-GrayWool            16  224 16  16
+LightGrayWool       16  224 16  16
 
 Lava1               208 224 16  16
 Lava2               224 224 16  16

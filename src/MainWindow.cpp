@@ -77,6 +77,25 @@ const float MainWindow::c_light_brightness[] = {
     1.0
 };
 
+const char * MainWindow::c_wool_texture_names[] = {
+    "Wool",
+    "OrangeWool",
+    "MagentaWool",
+    "LightBlueWool",
+    "YellowWool",
+    "LightGreenWool",
+    "PinkWool",
+    "GrayWool",
+    "LightGrayWool",
+    "CyanWool",
+    "PurpleWool",
+    "BlueWool",
+    "BrownWool",
+    "DarkGreenWool",
+    "RedWool",
+    "BlackWool",
+};
+
 uint qHash(const MainWindow::PhysicalInput & value)
 {
     return value.id;
@@ -630,6 +649,9 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                             break;
                             case Block::Crops:
                             texture_name = QString("Crops") + QString::number(block.cropsMetadata());
+                            break;
+                            case Block::Wool:
+                            texture_name = c_wool_texture_names[block.woolMetadata()];
                             break;
                             default:;
                         }
