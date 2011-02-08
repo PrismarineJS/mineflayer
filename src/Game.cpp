@@ -26,6 +26,7 @@ bool Game::s_initialized = false;
 QHash<Block::ItemType, int> Game::s_item_stack_height;
 
 Game::Game(QUrl connection_info) :
+    m_mutex(QMutex::Recursive),
     m_server(connection_info),
     m_userName(connection_info.userName()),
     m_position_update_timer(NULL),
@@ -46,11 +47,13 @@ Game::Game(QUrl connection_info) :
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(mapChunkUpdated(QSharedPointer<Chunk>)), this, SLOT(handleMapChunkUpdated(QSharedPointer<Chunk>)));
     Q_ASSERT(success);
-    success = connect(&m_server, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SIGNAL(loginStatusUpdated(Server::LoginStatus)));
-    Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(chatReceived(QString)), this, SLOT(handleChatReceived(QString)));
     Q_ASSERT(success);
-
+    // pass some signals directly through
+    success = connect(&m_server, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SIGNAL(loginStatusUpdated(Server::LoginStatus)));
+    Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(unloadChunk(Int3D)), this, SLOT(handleUnloadChunk(Int3D)));
+    Q_ASSERT(success);
 
     m_control_state.fill(false, (int)ControlCount);
 }
@@ -256,11 +259,13 @@ void Game::initializeStaticData()
 
 void Game::setControlActivated(Control control, bool activated)
 {
+    QMutexLocker locker(&m_mutex);
     m_control_state[control] = activated;
 }
 
 void Game::updatePlayerLook(float delta_yaw, float delta_pitch)
 {
+    QMutexLocker locker(&m_mutex);
     m_player_position.yaw += delta_yaw;
     m_player_position.pitch += delta_pitch;
     emit playerPositionUpdated(m_player_position);
@@ -268,17 +273,20 @@ void Game::updatePlayerLook(float delta_yaw, float delta_pitch)
 
 void Game::respawn()
 {
+    QMutexLocker locker(&m_mutex);
     Q_ASSERT(m_player_health == 0);
     m_server.sendRespawnRequest();
 }
 
 void Game::start()
 {
+    QMutexLocker locker(&m_mutex);
     m_server.socketConnect();
 }
 
 Block Game::blockAt(const Int3D & absolute_location)
 {
+    QMutexLocker locker(&m_mutex);
     Int3D chunk_key = chunkKey(absolute_location);
     QSharedPointer<Chunk> chunk = m_chunks.value(chunk_key, QSharedPointer<Chunk>());
     if (chunk.isNull())
@@ -288,6 +296,7 @@ Block Game::blockAt(const Int3D & absolute_location)
 
 void Game::handleLoginStatusChanged(Server::LoginStatus status)
 {
+    QMutexLocker locker(&m_mutex);
     switch (status) {
         case Server::SocketError:
             qWarning() << "Unable to connect to server";
@@ -303,6 +312,7 @@ void Game::handleLoginStatusChanged(Server::LoginStatus status)
 
 void Game::handleChatReceived(QString message)
 {
+    QMutexLocker locker(&m_mutex);
     if (message.startsWith("<")) {
         int pos = message.indexOf(">");
         Q_ASSERT(pos != -1);
@@ -318,6 +328,7 @@ void Game::handleChatReceived(QString message)
 
 void Game::handlePlayerPositionAndLookUpdated(Server::EntityPosition position)
 {
+    QMutexLocker locker(&m_mutex);
     m_player_position.x = position.x;
     m_player_position.y = position.y;
     m_player_position.z = position.z;
@@ -345,6 +356,7 @@ void Game::handlePlayerPositionAndLookUpdated(Server::EntityPosition position)
 
 void Game::handlePlayerHealthUpdated(int new_health)
 {
+    QMutexLocker locker(&m_mutex);
     m_player_health = new_health;
     if (m_player_health <= 0) {
         m_player_health = 0;
@@ -354,13 +366,27 @@ void Game::handlePlayerHealthUpdated(int new_health)
         emit playerDied();
 }
 
+void Game::handleUnloadChunk(const Int3D &coord)
+{
+    QMutexLocker locker(&m_mutex);
+    m_chunks.remove(chunkKey(coord));
+    emit unloadChunk(coord);
+}
+
 void Game::handleMapChunkUpdated(QSharedPointer<Chunk>update)
 {
+    QMutexLocker locker(&m_mutex);
     // update can be smaller than a full size chunk, but cannot exceed the bounds of a chunk.
     Int3D update_position = update.data()->position();
     Int3D chunk_position = chunkKey(update_position);
     Int3D update_size = update.data()->size();
-    Q_ASSERT(chunkKey(update_position + update_size - Int3D(1,1,1)) == chunk_position);
+    //Q_ASSERT(chunkKey(update_position + update_size - Int3D(1,1,1)) == chunk_position);
+    if (chunkKey(update_position + update_size - Int3D(1,1,1)) != chunk_position) {
+        qWarning() << "Ignoring map chunk update with start" <<
+                update_position.x <<update_position.y <<update_position.z << "and size" <<
+                update_size.x <<update_size.y <<update_size.z << "and size";
+        return;
+    }
     QSharedPointer<Chunk> chunk = m_chunks.value(chunk_position, QSharedPointer<Chunk>());
     if (chunk.isNull()) {
         // this better be a full chunk
@@ -388,11 +414,13 @@ Int3D Game::chunkKey(const Int3D &coord)
 
 void Game::sendPosition()
 {
+    QMutexLocker locker(&m_mutex);
     m_server.sendPositionAndLook(m_player_position);
 }
 
 void Game::doPhysics(float delta_seconds)
 {
+    QMutexLocker locker(&m_mutex);
     // derive xy movement vector from controls
     int movement_right = 0;
     if (m_control_state.at(Right))
@@ -512,6 +540,7 @@ void Game::doPhysics(float delta_seconds)
 
 void Game::getPlayerBoundingBox(Int3D & boundingBoxMin, Int3D & boundingBoxMax)
 {
+    QMutexLocker locker(&m_mutex);
     boundingBoxMin.x = (int)std::floor(m_player_position.x - c_player_apothem);
     boundingBoxMin.y = (int)std::floor(m_player_position.y - c_player_apothem);
     boundingBoxMin.z = (int)std::floor(m_player_position.z - 0);
@@ -523,6 +552,7 @@ void Game::getPlayerBoundingBox(Int3D & boundingBoxMin, Int3D & boundingBoxMax)
 // TODO: check partial blocks
 bool Game::collisionInRange(const Int3D & boundingBoxMin, const Int3D & boundingBoxMax)
 {
+    QMutexLocker locker(&m_mutex);
     Int3D cursor;
     for (cursor.x = boundingBoxMin.x; cursor.x <= boundingBoxMax.x; cursor.x++)
         for (cursor.y = boundingBoxMin.y; cursor.y <= boundingBoxMax.y; cursor.y++)
@@ -534,6 +564,7 @@ bool Game::collisionInRange(const Int3D & boundingBoxMin, const Int3D & bounding
 
 void Game::sendChat(QString message)
 {
+    QMutexLocker locker(&m_mutex);
     // limit chat length. split it up if necessary.
     for (int i = 0; i < message.length(); i += c_chat_length_limit)
         m_server.sendChat(message.mid(i, c_chat_length_limit));

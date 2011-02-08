@@ -21,9 +21,13 @@
 #include <QHash>
 #include <QSharedPointer>
 #include <QUrl>
+#include <QQueue>
+#include <QMutex>
 
 #include "Chunk.h"
 #include "Game.h"
+
+class ChunkMeshGenerator;
 
 class MainWindow :
     public QObject,
@@ -105,6 +109,8 @@ private:
     OIS::Mouse* m_mouse;
     OIS::Keyboard* m_keyboard;
 
+    bool m_grab_mouse;
+
     struct Mob {
         Ogre::Vector3 pos;
         Ogre::Vector3 up;
@@ -130,9 +136,11 @@ private:
     };
 
     struct ChunkData {
+        bool is_null;
         Int3D position;
-        Ogre::SceneNode * node;
-        Ogre::ManualObject * manual_object;
+        Ogre::SceneNode * node[2]; // one for each pass
+        Ogre::ManualObject * obj[2]; // one for each pass
+        ChunkData() : is_null(true) {}
     };
 
     enum BlockFaceDirection {
@@ -165,6 +173,9 @@ private:
 
     Ogre::SceneNode * m_pass[2];
 
+    ChunkMeshGenerator * m_chunk_generator;
+
+    QMutex m_ogre_mutex;
 
     char wtf[50]; // can't let our object be certain sizes or unknown, undocumented, terrible things happen
 
@@ -181,17 +192,64 @@ private:
 
     Int3D chunkKey(const Int3D & coord);
     void generateChunkMesh(ChunkData & chunk_data);
-    ChunkData getChunk(const Int3D & coord);
     PhysicalInput configKeyToPhysInput(QString config_value);
     bool controlPressed(Game::Control control);
     void activateInput(PhysicalInput input, bool activated = true);
 
+    void grabMouse();
+
 private slots:
-    void handleChunkUpdated(const Int3D &start, const Int3D &size);
     void movePlayerPosition(Server::EntityPosition position);
     void handlePlayerHealthUpdated();
     void handlePlayerDied();
 
+    friend class ChunkMeshGenerator;
+};
+
+
+class ChunkMeshGenerator : public QObject {
+    Q_OBJECT
+public:
+    struct ReadyChunk {
+        int pass;
+        Ogre::ManualObject * obj;
+        Ogre::SceneNode * node;
+        Int3D chunk_key;
+        ReadyChunk(int pass, Ogre::ManualObject * obj, Ogre::SceneNode * node, Int3D chunk_key) :
+            pass(pass), obj(obj), node(node), chunk_key(chunk_key) {}
+    };
+
+public:
+    ChunkMeshGenerator(MainWindow * owner);
+    bool availableNewChunk() const {
+        QMutexLocker locker(&m_queue_mutex);
+        return !m_new_chunk_queue.isEmpty();
+    }
+    ReadyChunk nextNewChunk() {
+        QMutexLocker locker(&m_queue_mutex);
+        return m_new_chunk_queue.dequeue();
+    }
+    bool availableDoneChunk() const {
+        QMutexLocker locker(&m_queue_mutex);
+        return !m_done_chunk_queue.isEmpty();
+    }
+    ReadyChunk nextDoneChunk() {
+        QMutexLocker locker(&m_queue_mutex);
+        return m_done_chunk_queue.dequeue();
+    }
+    void shutDown();
+public slots:
+    void generateChunkMesh(const Int3D &start, const Int3D &size);
+    void queueDeleteChunkMesh(const Int3D & coord);
+private:
+
+    MainWindow * m_owner;
+    QQueue<ReadyChunk> m_new_chunk_queue;
+    QQueue<ReadyChunk> m_done_chunk_queue;
+    QThread * m_thread;
+    mutable QMutex m_queue_mutex;
+private slots:
+    void initialize();
 };
 
 uint qHash(const MainWindow::PhysicalInput & value);

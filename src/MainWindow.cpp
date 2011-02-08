@@ -10,6 +10,7 @@
 #include <QSettings>
 #include <QDir>
 #include <QDebug>
+#include <QCursor>
 
 const Int3D MainWindow::c_side_offset[] = {
     Int3D(0, -1, 0),
@@ -121,12 +122,14 @@ MainWindow::MainWindow(QUrl url) :
     m_input_manager(NULL),
     m_mouse(NULL),
     m_keyboard(NULL),
+    m_grab_mouse(false),
     m_game(NULL),
-    m_control_to_key(Game::ControlCount)
+    m_control_to_key(Game::ControlCount),
+    m_chunk_generator(NULL)
 {
-    loadControls();
-
     Q_ASSERT(sizeof(MainWindow) != 216 && sizeof(MainWindow) != 336);
+
+    loadControls();
 
     m_air.see_through = true;
     m_air.partial_alpha = false;
@@ -134,15 +137,14 @@ MainWindow::MainWindow(QUrl url) :
 
     m_game = new Game(url);
     bool success;
-    success = connect(m_game, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(handleChunkUpdated(Int3D,Int3D)));
-    Q_ASSERT(success);
     success = connect(m_game, SIGNAL(playerPositionUpdated(Server::EntityPosition)), this, SLOT(movePlayerPosition(Server::EntityPosition)));
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(playerHealthUpdated()), this, SLOT(handlePlayerHealthUpdated()));
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(playerDied()), this, SLOT(handlePlayerDied()));
     Q_ASSERT(success);
-    m_game->start();
+
+    m_chunk_generator = new ChunkMeshGenerator(this);
 }
 
 MainWindow::~MainWindow()
@@ -228,9 +230,14 @@ void MainWindow::createFrameListener()
     m_window->getCustomAttribute("WINDOW", &windowHnd);
     windowHndStr << windowHnd;
     pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
-#ifdef OIS_LINUX_PLATFORM
-    //pl.insert(std::make_pair(std::string("x11_mouse_grab"), std::string("false")));
-    //pl.insert(std::make_pair(std::string("x11_keyboard_grab"), std::string("false")));
+#if defined(OIS_WIN32_PLATFORM)
+    pl.insert(std::make_pair(std::string("w32_mouse"), std::string("DISCL_FOREGROUND" )));
+    pl.insert(std::make_pair(std::string("w32_mouse"), std::string("DISCL_NONEXCLUSIVE")));
+    pl.insert(std::make_pair(std::string("w32_keyboard"), std::string("DISCL_FOREGROUND")));
+    pl.insert(std::make_pair(std::string("w32_keyboard"), std::string("DISCL_NONEXCLUSIVE")));
+#elif defined(OIS_LINUX_PLATFORM)
+    pl.insert(std::make_pair(std::string("x11_mouse_grab"), std::string("false")));
+    pl.insert(std::make_pair(std::string("x11_keyboard_grab"), std::string("false")));
 #endif
 
     m_input_manager = OIS::InputManager::createInputSystem( pl );
@@ -248,6 +255,9 @@ void MainWindow::createFrameListener()
     Ogre::WindowEventUtilities::addWindowEventListener(m_window, this);
 
     m_root->addFrameListener(this);
+
+
+    grabMouse();
 }
 
 void MainWindow::createViewports()
@@ -377,7 +387,8 @@ int MainWindow::exec()
 bool MainWindow::setup()
 {
     // suppress debug output on stdout
-    Ogre::LogManager * logManager = new Ogre::LogManager;
+    Ogre::LogManager * logManager = new Ogre::LogManager();
+    logManager->setLogDetail(Ogre::LL_LOW);
     logManager->createLog("ogre.log", true, false, false);
 
     m_root = new Ogre::Root("resources/plugins.cfg");
@@ -412,17 +423,58 @@ bool MainWindow::setup()
 
 bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
 {
-    if (m_window->isClosed())
+    if (m_window->isClosed() || m_shut_down)
         return false;
 
-    if (m_shut_down)
-        return false;
+    // add the newly generated chunks to the scene
+    QCoreApplication::processEvents();
+    if (m_chunk_generator->availableNewChunk()) {
+        ChunkMeshGenerator::ReadyChunk ready_chunk = m_chunk_generator->nextNewChunk();
+        m_ogre_mutex.lock();
+        ready_chunk.obj->end();
+        m_ogre_mutex.unlock();
+        Ogre::SceneNode * chunk_node = ready_chunk.node->createChildSceneNode();
+        chunk_node->attachObject(ready_chunk.obj);
+        // save the scene node so we can delete it later
+        ChunkData chunk_data = m_chunks.value(ready_chunk.chunk_key);
+        if (! chunk_data.is_null) {
+            chunk_data.node[ready_chunk.pass] = chunk_node;
+            m_chunks.insert(ready_chunk.chunk_key, chunk_data);
+        }
+    } else if (m_chunk_generator->availableDoneChunk()) {
+        ChunkMeshGenerator::ReadyChunk done_chunk = m_chunk_generator->nextDoneChunk();
+        if (done_chunk.node != NULL) {
+            done_chunk.node->removeAndDestroyAllChildren();
+            m_scene_manager->destroySceneNode(done_chunk.node);
+        }
+    }
 
     // Need to capture/update each device
     m_keyboard->capture();
     m_mouse->capture();
-    QCoreApplication::processEvents();
+    if (m_grab_mouse) {
+        QPoint mouse_pos = QCursor::pos();
+        int window_left, window_top;
+        unsigned int window_width, window_height, trash;
+        m_window->getMetrics(window_width, window_height, trash, window_left, window_top);
+        QPoint center(window_left + window_width / 2, window_top + window_height / 2);
+        QPoint delta = center - mouse_pos;
+        if (delta.manhattanLength() != 0) {
+            QCursor::setPos(center);
 
+            // move camera
+            Ogre::Degree delta_yaw = Ogre::Degree(delta.x() * 0.25f);
+            Ogre::Degree delta_pitch = Ogre::Degree(delta.y() * 0.25f);
+            if (m_free_look_mode) {
+                // update camera directly
+                m_camera->rotate(Ogre::Vector3::UNIT_Z, delta_yaw);
+                m_camera->pitch(delta_pitch);
+            } else {
+                // update the camera indirectly by updating the player's look
+                m_game->updatePlayerLook(delta_yaw.valueRadians(), delta_pitch.valueRadians());
+            }
+        }
+    }
     // compute next frame
     m_game->doPhysics(evt.timeSinceLastFrame);
 
@@ -463,14 +515,20 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
         }
         if (m_camera_velocity != Ogre::Vector3::ZERO)
             m_camera->move(m_camera_velocity * evt.timeSinceLastFrame);
+    } else {
+        bool crouch = controlPressed(Game::Crouch);
+        m_game->setMaxGroundSpeed(Game::c_standard_max_ground_speed * (crouch ? 10 : 1));
     }
     return true;
 }
 
 bool MainWindow::keyPressed(const OIS::KeyEvent &arg )
 {
+    m_keyboard->capture();
+    if (m_keyboard->isModifierDown(OIS::Keyboard::Alt))
+        m_grab_mouse = false;
     if (arg.key == OIS::KC_ESCAPE || (m_keyboard->isModifierDown(OIS::Keyboard::Alt) && arg.key == OIS::KC_F4))
-        m_shut_down = true;
+        m_chunk_generator->shutDown();
     else if (arg.key == OIS::KC_F2)
         m_free_look_mode = !m_free_look_mode;
 
@@ -484,24 +542,9 @@ bool MainWindow::keyReleased(const OIS::KeyEvent &arg )
     return true;
 }
 
-bool MainWindow::mouseMoved(const OIS::MouseEvent &arg )
-{
-    // move camera
-    Ogre::Degree delta_yaw = Ogre::Degree(-arg.state.X.rel * 0.25f);
-    Ogre::Degree delta_pitch = Ogre::Degree(-arg.state.Y.rel * 0.25f);
-    if (m_free_look_mode) {
-        // update camera directly
-        m_camera->rotate(Ogre::Vector3::UNIT_Z, delta_yaw);
-        m_camera->pitch(delta_pitch);
-    } else {
-        // update the camera indirectly by updating the player's look
-        m_game->updatePlayerLook(delta_yaw.valueRadians(), delta_pitch.valueRadians());
-    }
-    return true;
-}
-
 bool MainWindow::mousePressed(const OIS::MouseEvent &, OIS::MouseButtonID id )
 {
+    grabMouse();
     activateInput(id, true);
     return true;
 }
@@ -510,6 +553,23 @@ bool MainWindow::mouseReleased(const OIS::MouseEvent &, OIS::MouseButtonID id )
 {
     activateInput(id, false);
     return true;
+}
+
+bool MainWindow::mouseMoved(const OIS::MouseEvent &)
+{
+    return true;
+}
+
+void MainWindow::grabMouse()
+{
+    m_grab_mouse = true;
+    // center mouse cursor
+
+    int window_left, window_top;
+    unsigned int window_width, window_height, trash;
+    m_window->getMetrics(window_width, window_height, trash, window_left, window_top);
+    QPoint center(window_left + window_width / 2, window_top + window_height / 2);
+    QCursor::setPos(center);
 }
 
 bool MainWindow::controlPressed(Game::Control control)
@@ -557,37 +617,82 @@ void MainWindow::windowClosed(Ogre::RenderWindow* rw)
     }
 }
 
-void MainWindow::handleChunkUpdated(const Int3D &start, const Int3D &size)
+ChunkMeshGenerator::ChunkMeshGenerator(MainWindow * owner) :
+    QObject(NULL),
+    m_owner(owner)
 {
-    // build a mesh for the chunk
-    // find the chunk coordinates for this updated stuff.
-    Int3D chunk_key = chunkKey(start);
-    // make sure it fits in one chunk
-    Q_ASSERT(chunkKey(start + size - Int3D(1,1,1)) == chunk_key);
-    ChunkData chunk_data = getChunk(chunk_key);
-    generateChunkMesh(chunk_data);
+    // run in our own thread
+    m_thread = new QThread(this);
+    m_thread->start();
+    this->moveToThread(m_thread);
+
+    bool success;
+    success = QMetaObject::invokeMethod(this, "initialize", Qt::QueuedConnection);
+    Q_ASSERT(success);
 }
 
-void MainWindow::generateChunkMesh(ChunkData & chunk_data)
+void ChunkMeshGenerator::initialize()
 {
-    // delete old stuff
-    if (chunk_data.manual_object)
-        m_scene_manager->destroyManualObject(chunk_data.manual_object);
-    if (chunk_data.node)
-        m_scene_manager->destroySceneNode(chunk_data.node);
+    bool success;
+    success = connect(m_owner->m_game, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(generateChunkMesh(Int3D,Int3D)));
+    Q_ASSERT(success);
+    success = connect(m_owner->m_game, SIGNAL(unloadChunk(Int3D)), this, SLOT(queueDeleteChunkMesh(Int3D)));
+    Q_ASSERT(success);
+    m_owner->m_game->start();
+}
+
+void ChunkMeshGenerator::shutDown()
+{
+    m_thread->exit();
+    m_thread->wait();
+    m_owner->m_shut_down = true;
+}
+
+void ChunkMeshGenerator::generateChunkMesh(const Int3D &start, const Int3D &update_size)
+{
+    Q_ASSERT(QThread::currentThread() == m_thread);
+    // build a mesh for the chunk
+    // find the chunk coordinates for this updated stuff.
+    Int3D chunk_key = m_owner->chunkKey(start);
+    // make sure it fits in one chunk
+    Q_ASSERT(m_owner->chunkKey(start + update_size - Int3D(1,1,1)) == chunk_key);
+
+    MainWindow::ChunkData chunk_data = m_owner->m_chunks.value(chunk_key);
+    bool replace_chunk = true;
+    if (chunk_data.is_null) {
+        // initialize chunk data
+        replace_chunk = false;
+        chunk_data.is_null = false;
+        chunk_data.position = chunk_key;
+        for (int i = 0; i < 2; i++) {
+            chunk_data.obj[i] = NULL;
+            chunk_data.node[i] = NULL;
+        }
+        m_owner->m_chunks.insert(chunk_key, chunk_data);
+
+    }
 
     Int3D offset;
-    Int3D size = c_chunk_size;
+    Int3D size = MainWindow::c_chunk_size;
     for (int pass = 0; pass < 2; pass++) {
+        // put delete old stuff on queue
+        if (replace_chunk) {
+            m_queue_mutex.lock();
+            m_done_chunk_queue.enqueue(ReadyChunk(pass, chunk_data.obj[pass], chunk_data.node[pass], chunk_key));
+            m_queue_mutex.unlock();
+        }
+
+        m_owner->m_ogre_mutex.lock();
         Ogre::ManualObject * obj = new Ogre::ManualObject(Ogre::String());
         obj->begin(pass == 0 ? "TerrainOpaque" : "TerrainTransparent", Ogre::RenderOperation::OT_TRIANGLE_LIST);
+        m_owner->m_ogre_mutex.unlock();
         Int3D absolute_position;
         for (offset.x = 0, absolute_position.x = chunk_data.position.x; offset.x < size.x; offset.x++, absolute_position.x++) {
             for (offset.y = 0, absolute_position.y = chunk_data.position.y; offset.y < size.y; offset.y++, absolute_position.y++) {
                 for (offset.z = 0, absolute_position.z = chunk_data.position.z; offset.z < size.z; offset.z++, absolute_position.z++) {
-                    Block block = m_game->blockAt(absolute_position);
+                    Block block = m_owner->m_game->blockAt(absolute_position);
 
-                    BlockData block_data = m_block_data.value(block.type(), m_air);
+                    MainWindow::BlockData block_data = m_owner->m_block_data.value(block.type(), m_owner->m_air);
 
                     // skip air
                     if (block_data.side_textures.isEmpty())
@@ -607,10 +712,10 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                             continue;
 
                         // if the block on this side is opaque or the same block, skip
-                        Block neighbor_block = m_game->blockAt(absolute_position + c_side_offset[side_index]);
+                        Block neighbor_block = m_owner->m_game->blockAt(absolute_position + MainWindow::c_side_offset[side_index]);
                         Block::ItemType side_type = neighbor_block.type();
                         if ((side_type == block.type() && (block_data.partial_alpha || side_type == Block::Glass)) ||
-                            ! m_block_data.value(side_type, m_air).see_through)
+                            ! m_owner->m_block_data.value(side_type, m_owner->m_air).see_through)
                         {
                             continue;
                         }
@@ -622,7 +727,7 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                         QString texture_name = block_data.side_textures.at(side_index);
                         switch (block.type()) {
                             case Block::Wood:
-                            if (side_index != NegativeZ && side_index != PositiveZ) {
+                            if (side_index != MainWindow::NegativeZ && side_index != MainWindow::PositiveZ) {
                                 switch (block.woodMetadata()) {
                                 case Block::NormalTrunkTexture:
                                     texture_name = "WoodSide";
@@ -652,26 +757,26 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                             }
                             break;
                             case Block::Farmland:
-                            if (side_index == PositiveZ)
+                            if (side_index == MainWindow::PositiveZ)
                                 texture_name = block.farmlandMetadata() == 0 ? "FarmlandDry" : "FarmlandWet";
                             break;
                             case Block::Crops:
                             texture_name = QString("Crops") + QString::number(block.cropsMetadata());
                             break;
                             case Block::Wool:
-                            texture_name = c_wool_texture_names[block.woolMetadata()];
+                            texture_name = MainWindow::c_wool_texture_names[block.woolMetadata()];
                             break;
                             case Block::Furnace:
                             case Block::BurningFurnace:
                             case Block::Dispenser:
                             {
-                                if (side_index != NegativeZ && side_index != PositiveZ) {
-                                    if ((block.furnaceMetadata() == Block::EastFacingFurnace && side_index == PositiveX) ||
-                                        (block.furnaceMetadata() == Block::WestFacingFurnace && side_index == NegativeX) ||
-                                        (block.furnaceMetadata() == Block::NorthFacingFurnace && side_index == PositiveY) ||
-                                        (block.furnaceMetadata() == Block::SouthFacingFurnace && side_index == NegativeY))
+                                if (side_index != MainWindow::NegativeZ && side_index != MainWindow::PositiveZ) {
+                                    if ((block.furnaceMetadata() == Block::EastFacingFurnace && side_index == MainWindow::PositiveX) ||
+                                        (block.furnaceMetadata() == Block::WestFacingFurnace && side_index == MainWindow::NegativeX) ||
+                                        (block.furnaceMetadata() == Block::NorthFacingFurnace && side_index == MainWindow::PositiveY) ||
+                                        (block.furnaceMetadata() == Block::SouthFacingFurnace && side_index == MainWindow::NegativeY))
                                     {
-                                        texture_name = block_data.side_textures.value(NegativeY);
+                                        texture_name = block_data.side_textures.value(MainWindow::NegativeY);
                                     } else {
                                         texture_name = "FurnaceBack";
                                     }
@@ -681,13 +786,13 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                             case Block::Pumpkin:
                             case Block::JackOLantern:
                             {
-                                if (side_index != NegativeZ && side_index != PositiveZ) {
-                                    if ((block.pumpkinMetadata() == Block::EastFacingPumpkin && side_index == PositiveX) ||
-                                        (block.pumpkinMetadata() == Block::WestFacingPumpkin && side_index == NegativeX) ||
-                                        (block.pumpkinMetadata() == Block::NorthFacingPumpkin && side_index == PositiveY) ||
-                                        (block.pumpkinMetadata() == Block::SouthFacingPumpkin && side_index == NegativeY))
+                                if (side_index != MainWindow::NegativeZ && side_index != MainWindow::PositiveZ) {
+                                    if ((block.pumpkinMetadata() == Block::EastFacingPumpkin && side_index == MainWindow::PositiveX) ||
+                                        (block.pumpkinMetadata() == Block::WestFacingPumpkin && side_index == MainWindow::NegativeX) ||
+                                        (block.pumpkinMetadata() == Block::NorthFacingPumpkin && side_index == MainWindow::PositiveY) ||
+                                        (block.pumpkinMetadata() == Block::SouthFacingPumpkin && side_index == MainWindow::NegativeY))
                                     {
-                                        texture_name = block_data.side_textures.value(NegativeY);
+                                        texture_name = block_data.side_textures.value(MainWindow::NegativeY);
                                     } else {
                                         texture_name = "PumpkinBack";
                                     }
@@ -705,26 +810,26 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                             break;
                             default:;
                         }
-                        BlockTextureCoord btc = m_terrain_tex_coords.value(texture_name);
+                        MainWindow::BlockTextureCoord btc = m_owner->m_terrain_tex_coords.value(texture_name);
 
                         Ogre::Vector3 squish = block_data.squish_amount.at(side_index);
 
                         float brightness;
                         int night_darkness = 0;
-                        brightness = c_light_brightness[qMax(neighbor_block.skyLight() - night_darkness, neighbor_block.light())];
+                        brightness = MainWindow::c_light_brightness[qMax(neighbor_block.skyLight() - night_darkness, neighbor_block.light())];
 
                         Ogre::ColourValue color = Ogre::ColourValue::White;
-                        if (block.type() == Block::Grass && side_index == PositiveZ)
+                        if (block.type() == Block::Grass && side_index == MainWindow::PositiveZ)
                             color.setAsRGBA(0x8DD55EFF);
                         else if (block.type() == Block::Leaves)
                             color.setAsRGBA(0x8DD55EFF);
 
                         color *= brightness;
-                        color *= c_brightness_bias[side_index];
+                        color *= MainWindow::c_brightness_bias[side_index];
 
                         for (int triangle_index = 0; triangle_index < 2; triangle_index++) {
                             for (int point_index = 0; point_index < 3; point_index++) {
-                                Ogre::Vector3 pos = c_side_coord[side_index][triangle_index][point_index] - squish;
+                                Ogre::Vector3 pos = MainWindow::c_side_coord[side_index][triangle_index][point_index] - squish;
                                 if (block_data.rotate) {
                                     pos -= 0.5f;
                                     pos = Ogre::Quaternion(Ogre::Degree(45), Ogre::Vector3::UNIT_Z) * pos;
@@ -732,8 +837,8 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                                 }
                                 obj->position(pos + abs_block_loc);
 
-                                Ogre::Vector2 tex_coord = c_tex_coord[triangle_index][point_index];
-                                obj->textureCoord((btc.x+tex_coord.x*btc.w) / c_terrain_png_width, (btc.y+tex_coord.y*btc.h) / c_terrain_png_height);
+                                Ogre::Vector2 tex_coord = MainWindow::c_tex_coord[triangle_index][point_index];
+                                obj->textureCoord((btc.x+tex_coord.x*btc.w) / MainWindow::c_terrain_png_width, (btc.y+tex_coord.y*btc.h) / MainWindow::c_terrain_png_height);
 
                                 obj->colour(color);
                             }
@@ -742,31 +847,39 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                 }
             }
         }
-        obj->end();
-        Ogre::SceneNode * chunk_node = m_pass[pass]->createChildSceneNode();
-        chunk_node->attachObject(obj);
+        m_queue_mutex.lock();
+        m_new_chunk_queue.enqueue(ReadyChunk(pass, obj, m_owner->m_pass[pass], chunk_key));
 
-        chunk_data.node = chunk_node;
-        chunk_data.manual_object = obj;
+
+        chunk_data = m_owner->m_chunks.value(chunk_key);
+        // chunk_data.node[pass] is set in frameRenderingQueued by the other thread after it creates it.
+        chunk_data.node[pass] = NULL;
+        chunk_data.obj[pass] = obj;
+        m_owner->m_chunks.insert(chunk_key, chunk_data);
+        m_queue_mutex.unlock();
     }
+}
+
+void ChunkMeshGenerator::queueDeleteChunkMesh(const Int3D &coord)
+{
+    Q_ASSERT(QThread::currentThread() == m_thread);
+    Int3D chunk_key = m_owner->chunkKey(coord);
+    MainWindow::ChunkData chunk_data = m_owner->m_chunks.value(chunk_key);
+    if (chunk_data.is_null) {
+        //qDebug() << "can't delete chunk at" << chunk_key.x << chunk_key.y << chunk_key.z << "- not loaded.";
+        return;
+    }
+
+    m_queue_mutex.lock();
+    for (int i = 0; i < 2; i++)
+        m_done_chunk_queue.enqueue(ReadyChunk(i, chunk_data.obj[i], chunk_data.node[i], chunk_key));
+    m_queue_mutex.unlock();
+    m_owner->m_chunks.remove(chunk_key);
 }
 
 Int3D MainWindow::chunkKey(const Int3D & coord)
 {
     return coord - (coord % c_chunk_size);
-}
-
-MainWindow::ChunkData MainWindow::getChunk(const Int3D & key)
-{
-    ChunkData default_chunk_data;
-    default_chunk_data.node = NULL;
-    ChunkData chunk_data = m_chunks.value(key, default_chunk_data);
-    if (chunk_data.node != NULL)
-        return chunk_data;
-    chunk_data.position = key;
-    chunk_data.manual_object = NULL;
-    m_chunks.insert(key, chunk_data);
-    return chunk_data;
 }
 
 void MainWindow::movePlayerPosition(Server::EntityPosition position)

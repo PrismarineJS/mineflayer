@@ -4,6 +4,10 @@
 #include "Server.h"
 #include "Block.h"
 
+#include <QMutex>
+#include <QMutexLocker>
+
+// This class is thread-safe.
 class Game : public QObject
 {
     Q_OBJECT
@@ -24,6 +28,16 @@ public:
 
         ControlCount
     };
+    static const float c_standard_max_ground_speed; // m/s
+    static const float c_standard_terminal_velocity; // m/s
+    static const float c_standard_walking_acceleration; // m/s/s
+    static const float c_standard_gravity; // m/s/s
+    static const float c_standard_ground_friction; // m/s/s
+    static const float c_player_apothem;
+    static const float c_player_height;
+    static const float c_player_half_height;
+    static const float c_jump_speed;
+    static const int c_chat_length_limit;
 
 public:
     Game(QUrl connection_info);
@@ -51,26 +65,20 @@ public:
     // if you want you can cheat and override the default physics settings:
     void setInputAcceleration(float value) { m_input_acceleration = value; }
     void setGravity(float value) { m_gravity = value; }
+    void setMaxGroundSpeed(float value) { m_max_ground_speed = value; }
 
 signals:
     void chatReceived(QString username, QString message);
     void chunkUpdated(const Int3D &start, const Int3D &size);
+    void unloadChunk(const Int3D & coord);
     void playerPositionUpdated(Server::EntityPosition position);
     void playerHealthUpdated();
     void playerDied();
     void loginStatusUpdated(Server::LoginStatus status);
 
 private:
-    static const float c_standard_max_ground_speed; // m/s
-    static const float c_standard_terminal_velocity; // m/s
-    static const float c_standard_walking_acceleration; // m/s/s
-    static const float c_standard_gravity; // m/s/s
-    static const float c_standard_ground_friction; // m/s/s
-    static const float c_player_apothem;
-    static const float c_player_height;
-    static const float c_player_half_height;
-    static const float c_jump_speed;
-    static const int c_chat_length_limit;
+    QMutex m_mutex;
+
     static const int c_notchian_tick_ms;
     static const Int3D c_chunk_size;
     static const Block c_air;
@@ -96,6 +104,7 @@ private:
 
     static bool s_initialized;
 
+
 private:
     void gotFirstPlayerPositionAndLookResponse();
     float groundSpeedSquared() { return m_player_position.dx * m_player_position.dx + m_player_position.dy * m_player_position.dy; }
@@ -110,6 +119,7 @@ private slots:
     void handlePlayerPositionAndLookUpdated(Server::EntityPosition position);
     void handlePlayerHealthUpdated(int new_health);
     void handleMapChunkUpdated(QSharedPointer<Chunk> update);
+    void handleUnloadChunk(const Int3D & coord);
 
     void sendPosition();
 };

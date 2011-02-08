@@ -226,7 +226,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::PreChunk: {
             PreChunkResponse * message = (PreChunkResponse *) incomingMessage.data();
             if (message->mode == PreChunkResponse::Unload) {
-                emit unloadChunk(fromNotchianXyz(message->x, 0, message->z));
+                emit unloadChunk(fromNotchianXyz(message->x*16, 0, message->z*16));
             } else {
                 // don't care about Load Chunk messages
             }

@@ -2,6 +2,7 @@
 #define METATYPES_H
 
 #include "Server.h"
+#include "Int3D.h"
 
 #include <QMetaType>
 #include <QAbstractSocket>
@@ -14,6 +15,7 @@ namespace MetaTypes {
         qRegisterMetaType<Server::LoginStatus>("Server::LoginStatus");
         qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError");
         qRegisterMetaType<Server::EntityPosition>("Server::EntityPosition");
+        qRegisterMetaType<Int3D>("Int3D");
     }
 }
 

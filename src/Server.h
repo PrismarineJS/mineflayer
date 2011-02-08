@@ -60,7 +60,7 @@ signals:
     void chatReceived(QString message);
     void playerHealthUpdated(int new_health);
     void mapChunkUpdated(QSharedPointer<Chunk> chunk);
-    void unloadChunk(Int3D coord);
+    void unloadChunk(const Int3D & coord);
     void playerPositionAndLookUpdated(Server::EntityPosition position);
     void inventoryUpdated(QVector<Message::Item> inventory);
 
