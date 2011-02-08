@@ -589,11 +589,10 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                         Ogre::Vector3 abs_block_loc(absolute_position.x, absolute_position.y, absolute_position.z);
 
                         // special cases for textures
-                        BlockTextureCoord btc;
+                        QString texture_name = block_data.side_textures.at(side_index);
                         switch (block.type()) {
-                        case Block::Wood:
+                            case Block::Wood:
                             if (side_index != NegativeZ && side_index != PositiveZ) {
-                                QString texture_name;
                                 switch (block.woodMetadata()) {
                                 case Block::NormalTrunkTexture:
                                     texture_name = "WoodSide";
@@ -605,14 +604,26 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                                     texture_name = "BirchTrunkSide";
                                     break;
                                 }
-                                btc = m_terrain_tex_coords.value(texture_name);
-                                break;
-                            } else {
-                                // fall through to default case
                             }
-                        default:
-                            btc = m_terrain_tex_coords.value(block_data.side_textures.at(side_index));
+                            break;
+                            case Block::Leaves:
+                            {
+                                switch (block.leavesMetadata()) {
+                                case Block::NormalLeavesTexture:
+                                    texture_name = "LeavesRegular";
+                                    break;
+                                case Block::RedwoodLeavesTexture:
+                                    texture_name = "RedwoodLeaves";
+                                    break;
+                                case Block::BirchLeavesTexture:
+                                    texture_name = "BirchLeaves";
+                                    break;
+                                }
+                                break;
+                            }
+                            default:;
                         }
+                        BlockTextureCoord btc = m_terrain_tex_coords.value(texture_name);
 
                         Ogre::Vector3 squish = block_data.squish_amount.at(side_index);
 
