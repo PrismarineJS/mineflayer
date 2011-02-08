@@ -582,13 +582,56 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                         // if the block on this side is opaque or the same block, skip
                         Block neighbor_block = m_game->blockAt(absolute_position + c_side_offset[side_index]);
                         Block::ItemType side_type = neighbor_block.type();
-                        if (side_type == block.type() || ! m_block_data.value(side_type, m_air).see_through)
+                        if ((side_type == block.type() && (block_data.partial_alpha || side_type == Block::Glass)) ||
+                            ! m_block_data.value(side_type, m_air).see_through)
+                        {
                             continue;
+                        }
 
                         // add this side to mesh
                         Ogre::Vector3 abs_block_loc(absolute_position.x, absolute_position.y, absolute_position.z);
+
+                        // special cases for textures
                         QString texture_name = block_data.side_textures.at(side_index);
+                        switch (block.type()) {
+                            case Block::Wood:
+                            if (side_index != NegativeZ && side_index != PositiveZ) {
+                                switch (block.woodMetadata()) {
+                                case Block::NormalTrunkTexture:
+                                    texture_name = "WoodSide";
+                                    break;
+                                case Block::RedwoodTrunkTexture:
+                                    texture_name = "RedwoodTrunkSide";
+                                    break;
+                                case Block::BirchTrunkTexture:
+                                    texture_name = "BirchTrunkSide";
+                                    break;
+                                }
+                            }
+                            break;
+                            case Block::Leaves:
+                            {
+                                switch (block.leavesMetadata()) {
+                                case Block::NormalLeavesTexture:
+                                    texture_name = "LeavesRegular";
+                                    break;
+                                case Block::RedwoodLeavesTexture:
+                                    texture_name = "RedwoodLeaves";
+                                    break;
+                                case Block::BirchLeavesTexture:
+                                    texture_name = "BirchLeaves";
+                                    break;
+                                }
+                            }
+                            break;
+                            case Block::Farmland:
+                            if (side_index == PositiveZ)
+                                texture_name = block.farmlandMetadata() == 0 ? "FarmlandDry" : "FarmlandWet";
+                            break;
+                            default:;
+                        }
                         BlockTextureCoord btc = m_terrain_tex_coords.value(texture_name);
+
                         Ogre::Vector3 squish = block_data.squish_amount.at(side_index);
 
                         float brightness;

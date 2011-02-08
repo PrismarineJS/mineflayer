@@ -54,7 +54,7 @@
 57  DiamondBlock        DiamondBlock        DiamondBlock        DiamondBlock        DiamondBlock        DiamondBlock        DiamondBlock        0   0   0   0   0   0   0   0   0
 58  Workbench           WorkbenchFront      WorkbenchFront      WoodenPlank         WorkbenchTop        WorkbenchBack       WorkbenchBack       0   0   0   0   0   0   0   0   0
 59  Crops               Wheat6              Wheat6              -                   -                   Wheat6              Wheat6              1   0   8   8   0   0   8   8   1
-60  Farmland            Dirt                Dirt                Dirt                DryTilledDirt       Dirt                Dirt                0   0   0   0   0   0   0   0   0
+60  Farmland            Dirt                Dirt                Dirt                FarmlandDry         Dirt                Dirt                0   0   0   0   0   0   0   0   0
 61  Furnace             FurnaceFront        FurnaceBack         FurnaceTop          FurnaceTop          FurnaceBack         FurnaceBack         0   0   0   0   0   0   0   0   0
 62  BurningFurnace      FurnaceFrontLit     FurnaceBack         FurnaceTop          FurnaceTop          FurnaceBack         FurnaceBack         0   0   0   0   0   0   0   0   0
 #63 SignPost            ?                   ?                   ?                   ?                   ?                   ?                       0   0   0   0   0   0   0   0
