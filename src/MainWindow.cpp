@@ -661,6 +661,23 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                             case Block::Wool:
                             texture_name = c_wool_texture_names[block.woolMetadata()];
                             break;
+                            case Block::Furnace:
+                            case Block::BurningFurnace:
+                            case Block::Dispenser:
+                            {
+                                if (side_index != NegativeZ && side_index != PositiveZ) {
+                                    if ((block.furnaceMetadata() == Block::EastFacingFurnace && side_index == PositiveX) ||
+                                        (block.furnaceMetadata() == Block::WestFacingFurnace && side_index == NegativeX) ||
+                                        (block.furnaceMetadata() == Block::NorthFacingFurnace && side_index == PositiveY) ||
+                                        (block.furnaceMetadata() == Block::SouthFacingFurnace && side_index == NegativeY))
+                                    {
+                                        texture_name = block_data.side_textures.value(NegativeY);
+                                    } else {
+                                        texture_name = "FurnaceBack";
+                                    }
+                                }
+                            }
+                            break;
                             default:;
                         }
                         BlockTextureCoord btc = m_terrain_tex_coords.value(texture_name);

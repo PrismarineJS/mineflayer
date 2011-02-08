@@ -137,12 +137,12 @@ private:
 
     enum BlockFaceDirection {
         NoDirection=-1,
-        NegativeY=0,
-        PositiveY=1,
-        NegativeZ=2,
-        PositiveZ=3,
-        NegativeX=4,
-        PositiveX=5,
+        NegativeY=0, // south
+        PositiveY=1, // north
+        NegativeZ=2, // down
+        PositiveZ=3, // up
+        NegativeX=4, // west
+        PositiveX=5, // east
     };
 
     Game * m_game;

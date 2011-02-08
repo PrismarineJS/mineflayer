@@ -295,7 +295,7 @@ public:
         return (WallSignMetadata) m_metadata;
     }
     inline FurnaceMetadata furnaceMetadata() const {
-        Q_ASSERT(type() == Furnace || type() == Dispenser);
+        Q_ASSERT(type() == Furnace || type() == BurningFurnace || type() == Dispenser);
         return (FurnaceMetadata) m_metadata;
     }
     inline PumpkinMetadata pumpkinMetadata() const {
