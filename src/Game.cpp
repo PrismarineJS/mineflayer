@@ -332,7 +332,7 @@ void Game::handlePlayerPositionAndLookUpdated(Server::EntityPosition position)
     m_player_position.x = position.x;
     m_player_position.y = position.y;
     m_player_position.z = position.z;
-    m_player_position.stance = position.stance;
+    m_player_position.height = position.height;
     m_player_position.on_ground = position.on_ground;
 
     // apologize to the notchian server by echoing an identical position back

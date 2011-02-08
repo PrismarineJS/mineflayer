@@ -217,7 +217,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             PlayerPositionAndLookResponse * message = (PlayerPositionAndLookResponse *) incomingMessage.data();
             EntityPosition player_position;
             fromNotchianXyz(player_position, message->x, message->y, message->z);
-            player_position.stance = message->stance - player_position.z;
+            player_position.height = message->stance - player_position.z;
             fromNotchianYawPitch(player_position, message->yaw, message->pitch);
             player_position.on_ground = message->on_ground;
             emit playerPositionAndLookUpdated(player_position);
@@ -377,7 +377,7 @@ void Server::sendPositionAndLook(EntityPosition positionAndLook)
 {
     PlayerPositionAndLookRequest * request = new PlayerPositionAndLookRequest;
     toNotchianXyz(positionAndLook, request->x, request->y, request->z);
-    request->stance = positionAndLook.stance + positionAndLook.z;
+    request->stance = positionAndLook.height + positionAndLook.z;
     toNotchianYawPitch(positionAndLook, request->yaw, request->pitch);
     request->on_ground = positionAndLook.on_ground;
     sendMessage(QSharedPointer<OutgoingRequest>(request));

@@ -18,24 +18,24 @@ public:
 
     // start the engine. returns success
     bool go();
-
-public slots:
-    // methods that JavaScript uses
-    void print(QString text);
-    void debug(QString line);
-    void chat(QString message);
-    void exit();
+    int returnCode() { return m_return_code; }
 
 public:
     // functions that JavaScript uses
     static QScriptValue include(QScriptContext *context, QScriptEngine *engine);
-    static QScriptValue username(QScriptContext * context, QScriptEngine * engine);
-    static QScriptValue itemStackHeight(QScriptContext * context, QScriptEngine * engine);
-
+    static QScriptValue exit(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue print(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue debug(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue setTimeout(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue clearTimeout(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue setInterval(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue clearInterval(QScriptContext * context, QScriptEngine * engine);
+
+    static QScriptValue chat(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue username(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue itemStackHeight(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue health(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue blockAt(QScriptContext * context, QScriptEngine * engine);
 
 
 private:
@@ -50,6 +50,7 @@ private:
     Game * m_game;
 
     bool m_exiting;
+    int m_return_code;
 
     QTextStream m_stderr;
     QTextStream m_stdout;
@@ -71,8 +72,9 @@ private:
     QHash<QTimer *, TimedFunction> m_script_timers;
     int m_timer_count;
 private:
+    void shutdown(int return_code);
     void raiseEvent(QString event_name, const QScriptValueList & args = QScriptValueList());
-    bool argCount(QScriptContext *context, int arg_count);
+    bool argCount(QScriptContext *context, int arg_count_min, int arg_count_max = -1);
     int nextTimerId();
 
     int setTimeout(QScriptValue func, int ms, QScriptValue this_obj, bool repeat);
@@ -80,6 +82,7 @@ private:
     QString readFile(const QString &path, bool * success = NULL);
     QScriptValue evalJsonContents(const QString &file_contents, const QString &file_name = QString());
     bool checkEngine(const QString & while_doing_what = QString());
+    static int valueToNearestInt(const QScriptValue & value);
 
 private slots:
 

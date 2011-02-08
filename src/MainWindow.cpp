@@ -886,7 +886,7 @@ void MainWindow::movePlayerPosition(Server::EntityPosition position)
 {
     if (m_free_look_mode)
         return;
-    Ogre::Vector3 cameraPosition(position.x, position.y, position.z + position.stance);
+    Ogre::Vector3 cameraPosition(position.x, position.y, position.z + position.height);
     m_camera->setPosition(cameraPosition);
 
     // look due east
