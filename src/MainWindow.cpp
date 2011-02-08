@@ -694,6 +694,15 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                                 }
                             }
                             break;
+                            case Block::RedstoneWire_placed:
+                            {
+                                if (block.redstoneMetadata() == 0) {
+                                    texture_name = "RedWire4wayOff";
+                                } else {
+                                    texture_name = "RedWire4wayOn";
+                                }
+                            }
+                            break;
                             default:;
                         }
                         BlockTextureCoord btc = m_terrain_tex_coords.value(texture_name);

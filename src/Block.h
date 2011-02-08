@@ -238,6 +238,11 @@ public:
         return (TorchMetadata) m_metadata;
     }
 
+    inline int redstoneMetadata() const {
+        Q_ASSERT(type() == RedstoneWire_placed);
+        return m_metadata;
+    }
+
     inline MinecartTrackMetadata minecartTrackMetadata() const {
         Q_ASSERT(type() == MinecartTracks);
         return (MinecartTrackMetadata) m_metadata;
