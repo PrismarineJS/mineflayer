@@ -76,8 +76,8 @@ IronDoorTop         32  80  16  16
 Ladder              48  80  16  16
 RedWire4wayOff      64  80  16  16
 RedWire2wayOff      80  80  16  16
-WetTilledDirt       96  80  16  16
-DryTilledDirt       112 80  16  16
+FarmlandWet         96  80  16  16
+FarmlandDry         112 80  16  16
 Wheat0              128 80  16  16
 Wheat1              144 80  16  16
 Wheat2              160 80  16  16

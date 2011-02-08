@@ -622,8 +622,12 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                                     texture_name = "BirchLeaves";
                                     break;
                                 }
-                                break;
                             }
+                            break;
+                            case Block::Farmland:
+                            if (side_index == PositiveZ)
+                                texture_name = block.farmlandMetadata() == 0 ? "FarmlandDry" : "FarmlandWet";
+                            break;
                             default:;
                         }
                         BlockTextureCoord btc = m_terrain_tex_coords.value(texture_name);
