@@ -236,21 +236,22 @@ mf.timeOfDay()
 // TODO: attacking
 // TODO: inventory manipulation
 
-// Events. To listen, use MineflayerBot.prototype.<event name> = function() {}
+
+// Events: fill in the ... part of the method.
 
 // IMPLEMENTED:
 
 /**
  * Called when the bot successfully logs into a server.
  */
-onConnected()
+mf.onConnected(function() {...})
 
 /**
  * Called when the bot receives a chat message.
  * @param {String} user The username of the person sending the message.
  * @param {String} message The content of the message.
  */
-onChat(user, message)
+mf.onChat(function(user, message) {...})
 
 /**
  * Called when blocks are updated.
@@ -261,22 +262,22 @@ onChat(user, message)
  * @param {Number} y_count The number of blocks in the y direction that were updated.
  * @param {Number} z_count The number of blocks in the z direction that were updated.
  */
-onChunkUpdated(start_x, start_y, start_z, x_count, y_count, z_count)
+mf.onChunkUpdated(function(start_x, start_y, start_z, x_count, y_count, z_count) {...})
 
 /**
  * Called when your position is changed. See also position().
  */
-onPositionUpdated()
+mf.onPositionUpdated(function() {...})
 
 /**
  * Called when you get hit, take fall damage, eat food, etc. See also health().
  */
-onHealthChanged()
+mf.onHealthChanged(function() {...})
 
 /**
  * Called when the bot dies.
  */
-onDeath()
+mf.onDeath(function() {...})
 
 // NOT YET IMPLEMENTED
 
@@ -288,7 +289,7 @@ onDeath()
  * @param {Number} y The absolute y position where the mob spawned.
  * @param {Number} z The absolute z position where the mob spawned.
  */
-onMobSpawned(id, type, x, y, z)
+mf.onMobSpawned(function(id, type, x, y, z) {...})
 
 /**
  * Called when a mob moves.
@@ -297,48 +298,61 @@ onMobSpawned(id, type, x, y, z)
  * @param {Number} y The absolute y position where the mob has just moved to.
  * @param {Number} z The absolute z position where the mob has just moved to.
  */
-onMobMovement(id, x, y, z)
+mf.onMobMovement(function(id, x, y, z) {...})
 
 /**
  * Called when you have spawned and can start moving about.
  */
-onSpawn()
+mf.onSpawn(function() {...})
 
 /**
  * Called when you have stopped digging for some reason.
  * @param {Number} reason Why you have stopped digging. See the mf.StoppedDiggingReason enum.
  */
-onStoppedDigging(reason)
+mf.onStoppedDigging(function(reason) {...})
 
 /**
  * Called when what you are currently equipped with has changed. For example, if your pickaxe breaks or you eat food. See also equippedItem().
  */
-onEquippedItemChanged()
+mf.onEquippedItemChanged(function() {...})
 
 /**
  * Called when anything in your inventory changes. See also inventory().
  */
-onInventoryUpdated()
+mf.onInventoryUpdated(function() {...})
 
 /**
  * Called when the time of day changes. See also timeOfDay().
  */
-onTimeUpdated()
+mf.onTimeUpdated(function() {...})
 
 /**
  * Called when another user joins the server.
  * @param {String} username The username of the person joining.
  */
-onUserJoined(username)
+mf.onUserJoined(function(username) {...})
 
 /**
  * Called when another user quits the server.
  * @param {String} username The username of the person quitting.
  */
-onUserQuit(username)
+mf.onUserQuit(function(username) {...})
 
 // TODO: other non-chat type messages such as whispers.
 
+/**
+ * removes the handler from the event.
+ *
+ * example:
+ * mf.onConnected(function handleConnected() {
+ *     mf.debug("connected first time");
+ *     mf.removeHandler(mf.onConnected, handleConnected);
+ * });
+ *
+ * @param {Object} event_registrar One of mf.on*
+ * @param {Function} handler function registered previously with the event
+ */
+mf.removeHandler(event_registrar, handler)
 
 
 

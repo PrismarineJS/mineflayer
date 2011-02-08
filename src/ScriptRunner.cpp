@@ -9,7 +9,7 @@
 ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headless, QObject *parent) :
     QObject(parent),
     m_url(url),
-    m_script_filename(script_file),
+    m_main_script_filename(script_file),
     m_debug(debug),
     m_headless(headless),
     m_engine(NULL),
@@ -36,27 +36,30 @@ bool ScriptRunner::go()
     m_engine->globalObject().setProperty("mf", m_engine->newQObject(this));
     QScriptValue mf_obj = m_engine->globalObject().property("mf");
 
+    // init event handler framework
+    {
+        QString file_name = ":/js/create_handlers.js";
+        m_handler_map = evalJsonContents(readFile(file_name), file_name);
+    }
     // create JavaScript enums from C++ enums
-    QFile enum_file(":/enums/ItemTypeEnum.h");
-    enum_file.open(QIODevice::ReadOnly);
-    QString enum_contents = QString::fromUtf8(enum_file.readAll()).trimmed();
-    enum_file.close();
-    QStringList lines = enum_contents.split("\n");
-    QStringList values = lines.takeFirst().split(" ");
-    Q_ASSERT(values.size() == 2);
-    QString prop_name = values.at(1);
-    Q_ASSERT(values.at(0) == "enum");
-    enum_contents = lines.join("\n");
-    Q_ASSERT(enum_contents.endsWith(";"));
-    enum_contents.chop(1);
-    QString json = QString("(") + enum_contents.replace("=", ":") + QString(")");
-    mf_obj.setProperty(prop_name, m_engine->evaluate(json));
+    {
+        QString enum_contents = readFile(":/enums/ItemTypeEnum.h").trimmed();
+        QStringList lines = enum_contents.split("\n");
+        QStringList values = lines.takeFirst().split(" ");
+        Q_ASSERT(values.size() == 2);
+        QString prop_name = values.at(1);
+        Q_ASSERT(values.at(0) == "enum");
+        enum_contents = lines.join("\n");
+        Q_ASSERT(enum_contents.endsWith(";"));
+        enum_contents.chop(1);
+        mf_obj.setProperty(prop_name, evalJsonContents(enum_contents.replace("=", ":")));
+    }
 
-    // create functions
+    // hook up mf functions
     mf_obj.setProperty("username", m_engine->newFunction(username));
     mf_obj.setProperty("itemStackHeight", m_engine->newFunction(itemStackHeight, 1));
 
-    // add some javascript utility classes
+    // add javascript utilities
     m_engine->globalObject().setProperty("include", m_engine->newFunction(include, 1));
     m_engine->globalObject().setProperty("setTimeout", m_engine->newFunction(setTimeout, 2));
     m_engine->globalObject().setProperty("clearTimeout", m_engine->newFunction(clearTimeout, 1));
@@ -64,30 +67,12 @@ bool ScriptRunner::go()
     m_engine->globalObject().setProperty("clearInterval", m_engine->newFunction(clearTimeout, 1));
 
 
-    QFile script_file(m_script_filename);
-    script_file.open(QIODevice::ReadOnly);
-    m_engine->evaluate(script_file.readAll(), m_script_filename);
-    script_file.close();
-    if (m_engine->hasUncaughtException()) {
-        qWarning() << "Error while evaluating script file:" << m_engine->uncaughtException().toString();
-        qWarning() << m_engine->uncaughtExceptionBacktrace().join("\n");
+    bool file_exists;
+    QString main_script_contents = readFile(m_main_script_filename, &file_exists);
+    m_engine->evaluate(main_script_contents, m_main_script_filename);
+    if (!checkEngine("evaluating main script"))
         return false;
-    }
 
-    QScriptValue ctor = m_engine->evaluate("MineflayerBot");
-    if (m_engine->hasUncaughtException()) {
-        qWarning() << "Error while evaluating MineflayerBot constructor:" << m_engine->uncaughtException().toString();
-        qWarning() << m_engine->uncaughtExceptionBacktrace().join("\n");
-        return false;
-    }
-    if (m_exiting)
-        return false;
-    m_bot = ctor.construct();
-    if (m_engine->hasUncaughtException()) {
-        qWarning() << "Error while calling MineflayerBot constructor:" << m_engine->uncaughtException().toString();
-        qWarning() << m_engine->uncaughtExceptionBacktrace().join("\n");
-        return false;
-    }
     if (m_exiting)
         return false;
 
@@ -109,6 +94,46 @@ bool ScriptRunner::go()
     m_game->start();
 
     return true;
+}
+
+QString ScriptRunner::readFile(const QString &path, bool * success)
+{
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly)) {
+        if (success == NULL) {
+            // crash
+            qWarning() << "cannot open file:" << path;
+            exit();
+        } else {
+            // report failure
+            *success = false;
+            return QString();
+        }
+    }
+    QString contents = QString::fromUtf8(file.readAll());
+    file.close();
+    if (success != NULL)
+        *success = true;
+    return contents;
+}
+
+QScriptValue ScriptRunner::evalJsonContents(const QString & file_contents, const QString & file_name)
+{
+    QScriptValue value = m_engine->evaluate(QString("(") + file_contents + QString(")"), file_name);
+    Q_ASSERT(checkEngine("evaluating json"));
+    return value;
+}
+
+bool ScriptRunner::checkEngine(const QString & while_doing_what)
+{
+    if (!m_engine->hasUncaughtException())
+        return true;
+    if (!while_doing_what.isEmpty())
+        qWarning() << "Error while" << while_doing_what.toStdString().c_str();
+    qWarning() << m_engine->uncaughtException().toString();
+    qWarning() << m_engine->uncaughtExceptionBacktrace().join("\n");
+    m_engine->clearExceptions();
+    return false;
 }
 
 void ScriptRunner::dispatchTimeout()
@@ -194,17 +219,21 @@ int ScriptRunner::nextTimerId()
     return m_timer_count++;
 }
 
-void ScriptRunner::callBotMethod(QString method_name, const QScriptValueList &args)
+void ScriptRunner::raiseEvent(QString event_name, const QScriptValueList &args)
 {
-    QScriptValue method = m_bot.property(method_name);
-    if (method.isValid()) {
-        method.call(m_bot, args);
-        if (m_engine->hasUncaughtException()) {
-            qWarning() << "Error while calling method" << method_name;
-            qWarning() << m_engine->uncaughtException().toString();
-            qWarning() << m_engine->uncaughtExceptionBacktrace().join("\n");
-            m_engine->clearExceptions();
-        }
+    QScriptValue handlers_value = m_handler_map.property(event_name);
+    Q_ASSERT(handlers_value.isArray());
+    int length = handlers_value.property("length").toInt32();
+    if (length == 0)
+        return;
+    // create copy so handlers can remove themselves
+    QList<QScriptValue> handlers_list;
+    for (int i = 0; i < length; i++)
+        handlers_list.append(handlers_value.property(i));
+    foreach (QScriptValue handler, handlers_list) {
+        Q_ASSERT(handler.isFunction());
+        handler.call(QScriptValue(), args);
+        checkEngine(QString("calling event handler") + event_name);
     }
 }
 
@@ -243,9 +272,9 @@ QScriptValue ScriptRunner::include(QScriptContext *context, QScriptEngine *engin
     }
     QString file_name = file_name_value.toString();
 
-    QString absolute_name = QFileInfo(me->m_script_filename).dir().absoluteFilePath(file_name);
+    QString absolute_name = QFileInfo(me->m_main_script_filename).dir().absoluteFilePath(file_name);
     QFile file(absolute_name);
-    if (!file.open(QFile::ReadOnly)) {
+    if (!file.open(QIODevice::ReadOnly)) {
         qWarning() << "Cannot open included file:" << absolute_name;
         me->exit();
     }
@@ -295,28 +324,28 @@ bool ScriptRunner::argCount(QScriptContext *context, int arg_count)
 
 void ScriptRunner::handleChunkUpdated(const Int3D &start, const Int3D &size)
 {
-    callBotMethod("onChunkUpdated", QScriptValueList() << start.x << start.y << start.z << size.x << size.y << size.z);
+    raiseEvent("onChunkUpdated", QScriptValueList() << start.x << start.y << start.z << size.x << size.y << size.z);
 }
 
 void ScriptRunner::movePlayerPosition(Server::EntityPosition position)
 {
     Q_UNUSED(position);
-    callBotMethod("onPositionUpdated");
+    raiseEvent("onPositionUpdated");
 }
 
 void ScriptRunner::handlePlayerHealthUpdated()
 {
-    callBotMethod("onHealthChanged");
+    raiseEvent("onHealthChanged");
 }
 
 void ScriptRunner::handlePlayerDied()
 {
-    callBotMethod("onDeath");
+    raiseEvent("onDeath");
 }
 
 void ScriptRunner::handleChatReceived(QString username, QString message)
 {
-    callBotMethod("onChat", QScriptValueList() << username << message);
+    raiseEvent("onChat", QScriptValueList() << username << message);
 }
 
 void ScriptRunner::handleLoginStatusUpdated(Server::LoginStatus status)
@@ -327,7 +356,7 @@ void ScriptRunner::handleLoginStatusUpdated(Server::LoginStatus status)
             exit();
             break;
         case Server::Success:
-            callBotMethod("onConnected");
+            raiseEvent("onConnected");
             break;
         case Server::SocketError:
             qWarning() << "Unable to connect to server";

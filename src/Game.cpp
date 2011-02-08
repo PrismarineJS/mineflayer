@@ -229,7 +229,7 @@ void Game::initializeStaticData()
     s_item_stack_height.insert(Block::Redstone, 64);
     s_item_stack_height.insert(Block::Snowball, 16);
     s_item_stack_height.insert(Block::Boat, 1);
-    s_item_stack_height.insert(Block::Leather, 1);
+    s_item_stack_height.insert(Block::Leather, 64);
     s_item_stack_height.insert(Block::Milk, 1);
     s_item_stack_height.insert(Block::ClayBrick, 64);
     s_item_stack_height.insert(Block::ClayBalls, 64);

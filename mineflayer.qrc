@@ -6,4 +6,7 @@
     <qresource prefix="/enums">
         <file alias="ItemTypeEnum.h">src/ItemTypeEnum.h</file>
     </qresource>
+    <qresource prefix="/js">
+        <file>create_handlers.js</file>
+    </qresource>
 </RCC>

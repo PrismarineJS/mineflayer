@@ -40,12 +40,12 @@ public:
 
 private:
     QUrl m_url;
-    QString m_script_filename;
+    QString m_main_script_filename;
     bool m_debug;
     bool m_headless;
 
     QScriptEngine * m_engine;
-    QScriptValue m_bot;
+    QScriptValue m_handler_map;
 
     Game * m_game;
 
@@ -71,11 +71,15 @@ private:
     QHash<QTimer *, TimedFunction> m_script_timers;
     int m_timer_count;
 private:
-    void callBotMethod(QString method_name, const QScriptValueList & args = QScriptValueList());
+    void raiseEvent(QString event_name, const QScriptValueList & args = QScriptValueList());
     bool argCount(QScriptContext *context, int arg_count);
     int nextTimerId();
 
     int setTimeout(QScriptValue func, int ms, QScriptValue this_obj, bool repeat);
+
+    QString readFile(const QString &path, bool * success = NULL);
+    QScriptValue evalJsonContents(const QString &file_contents, const QString &file_name = QString());
+    bool checkEngine(const QString & while_doing_what = QString());
 
 private slots:
 
