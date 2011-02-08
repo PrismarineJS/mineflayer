@@ -77,6 +77,33 @@ const float MainWindow::c_light_brightness[] = {
     1.0
 };
 
+const float MainWindow::c_brightness_bias[] = {
+    0.8f,
+    0.8f,
+    0.8f * 0.8f,
+    1.0f,
+    1.0f,
+    1.0f,
+};
+const char * MainWindow::c_wool_texture_names[] = {
+    "Wool",
+    "OrangeWool",
+    "MagentaWool",
+    "LightBlueWool",
+    "YellowWool",
+    "LightGreenWool",
+    "PinkWool",
+    "GrayWool",
+    "LightGrayWool",
+    "CyanWool",
+    "PurpleWool",
+    "BlueWool",
+    "BrownWool",
+    "DarkGreenWool",
+    "RedWool",
+    "BlackWool",
+};
+
 uint qHash(const MainWindow::PhysicalInput & value)
 {
     return value.id;
@@ -631,6 +658,9 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                             case Block::Crops:
                             texture_name = QString("Crops") + QString::number(block.cropsMetadata());
                             break;
+                            case Block::Wool:
+                            texture_name = c_wool_texture_names[block.woolMetadata()];
+                            break;
                             default:;
                         }
                         BlockTextureCoord btc = m_terrain_tex_coords.value(texture_name);
@@ -648,6 +678,7 @@ void MainWindow::generateChunkMesh(ChunkData & chunk_data)
                             color.setAsRGBA(0x8DD55EFF);
 
                         color *= brightness;
+                        color *= c_brightness_bias[side_index];
 
                         for (int triangle_index = 0; triangle_index < 2; triangle_index++) {
                             for (int point_index = 0; point_index < 3; point_index++) {
