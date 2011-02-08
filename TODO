@@ -7,7 +7,21 @@ Core:
  * support entity tracking
 
 3D client:
- * darker seams
+ * pumpkins and jack-o-lanterns
+ * doors
+
+ * torches and redstone torches
+ * minecart tracks
+ * ladders
+ * stairs
+ * levers
+ * buttons
+ * sign posts
+ * wall signs
+ * pressure plates
+ * stone slab
+ * cake
+
  * mobs/players
  * chatting 
  * health display
