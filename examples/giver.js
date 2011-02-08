@@ -1,10 +1,10 @@
 /**
  * syntax:
- * gimme <item name> [<count>]
- * give <username> <item name> [<count>]
+ * gimme [<count>] <item name>
+ * give <username> [<count>] <item name>
  *
- * <item name> can have spaces. very loose matching is used to look it up.
  * <count> defaults to 1 and represents the number of stacks.
+ * <item name> can have spaces. very loose matching is used to look it up.
  *
  * examples:
  * gimme dirt                   - gives you 64 dirt
@@ -13,6 +13,7 @@
  */
 
 include("strings.js");
+include("arrays.js");
 
 var giver = function() {
     var _public = {};
@@ -59,12 +60,31 @@ var giver = function() {
         give(username, item_name, count);
     });
     function give(username, item_name, count) {
+        // check for kits
+        var preview_name_parts = item_name.split(" ");
+        var kits = {
+            "tools": ["shovel", "pickaxe", "axe", "sword", "hoe"],
+            "suit":  ["helmet", "chestplate", "leggings", "boots"],
+        };
+        for (var kit_name in kits) {
+            if (preview_name_parts.remove(kit_name)) {
+                item_name = preview_name_parts.join(" ");
+                var kit_items = kits[kit_name];
+                for (var i = 0; i < kit_items.length; i++) {
+                    if (!give(username, item_name + " " + kit_items[i], count)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        // no kits
         var item_id_or_ambiguous_results = lookupItemType(item_name);
         if (typeof item_id_or_ambiguous_results === "number") {
             var item_id = item_id_or_ambiguous_results;
             if (item_id === -1) {
                 mf.chat("can't find item name: " + item_name);
-                return;
+                return false;
             }
             var command = "/give " + username + " " + item_id + " " + mf.itemStackHeight(item_id);
             if (_public.debug) {
@@ -77,6 +97,7 @@ var giver = function() {
             for (var i = 0; i < count; i++) {
                 mf.chat(command);
             }
+            return true;
         } else {
             var ambiguous_results = item_id_or_ambiguous_results;
             mf.chat("item name is ambiguous: " + item_name);
@@ -85,6 +106,7 @@ var giver = function() {
                 ambiguous_candidates.push(ambiguous_results[i][0].join(" "));
             }
             mf.chat("candidates: " + ambiguous_candidates.join(", "));
+            return false;
         }
     };
 
