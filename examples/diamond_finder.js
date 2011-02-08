@@ -1,4 +1,3 @@
-
 mf.onChunkUpdated(function(start_x, start_y, start_z, x_count, y_count, z_count) {
     for (var x = start_x; x < x_count; x++) {
         for (var y = start_y; y < y_count; y++) {
@@ -8,7 +7,6 @@ mf.onChunkUpdated(function(start_x, start_y, start_z, x_count, y_count, z_count)
                     mf.debug(message);
                     mf.chat(message);
                     mf.exit();
-                    return;
                 }
             }
         }

@@ -17,6 +17,7 @@ ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headl
     m_engine(NULL),
     m_game(NULL),
     m_exiting(false),
+    m_return_code(0),
     m_stderr(stderr),
     m_stdout(stdout),
     m_timer_count(0)
@@ -59,21 +60,28 @@ bool ScriptRunner::go()
 
     // add utility functions
     mf_obj.setProperty("include", m_engine->newFunction(include, 1));
+    mf_obj.setProperty("exit", m_engine->newFunction(exit, 1));
+    mf_obj.setProperty("print", m_engine->newFunction(print, 1));
+    mf_obj.setProperty("debug", m_engine->newFunction(debug, 1));
     mf_obj.setProperty("setTimeout", m_engine->newFunction(setTimeout, 2));
     mf_obj.setProperty("clearTimeout", m_engine->newFunction(clearTimeout, 1));
     mf_obj.setProperty("setInterval", m_engine->newFunction(setInterval, 2));
     mf_obj.setProperty("clearInterval", m_engine->newFunction(clearTimeout, 1));
 
     // hook up mf functions
+    mf_obj.setProperty("chat", m_engine->newFunction(chat, 1));
     mf_obj.setProperty("username", m_engine->newFunction(username));
     mf_obj.setProperty("itemStackHeight", m_engine->newFunction(itemStackHeight, 1));
     mf_obj.setProperty("health", m_engine->newFunction(health, 1));
     mf_obj.setProperty("blockAt", m_engine->newFunction(blockAt, 1));
 
 
-
     bool file_exists;
     QString main_script_contents = readFile(m_main_script_filename, &file_exists);
+    if (!file_exists) {
+        qWarning() << "file not found: " << m_main_script_filename;
+        shutdown(1);
+    }
     m_engine->evaluate(main_script_contents, m_main_script_filename);
     if (!checkEngine("evaluating main script"))
         return false;
@@ -108,7 +116,7 @@ QString ScriptRunner::readFile(const QString &path, bool * success)
         if (success == NULL) {
             // crash
             qWarning() << "cannot open file:" << path;
-            exit();
+            shutdown(1);
         } else {
             // report failure
             *success = false;
@@ -131,6 +139,8 @@ QScriptValue ScriptRunner::evalJsonContents(const QString & file_contents, const
 
 bool ScriptRunner::checkEngine(const QString & while_doing_what)
 {
+    if (m_exiting)
+        return false;
     if (!m_engine->hasUncaughtException())
         return true;
     if (!while_doing_what.isEmpty())
@@ -242,28 +252,6 @@ void ScriptRunner::raiseEvent(QString event_name, const QScriptValueList &args)
     }
 }
 
-void ScriptRunner::print(QString text)
-{
-    m_stdout << text;
-}
-
-void ScriptRunner::debug(QString line)
-{
-    m_stderr << line << "\n";
-    m_stderr.flush();
-}
-
-void ScriptRunner::chat(QString message)
-{
-    m_game->sendChat(message);
-}
-
-void ScriptRunner::exit()
-{
-    m_exiting = true;
-    QCoreApplication::instance()->quit();
-}
-
 QScriptValue ScriptRunner::include(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
@@ -281,7 +269,7 @@ QScriptValue ScriptRunner::include(QScriptContext *context, QScriptEngine *engin
     QFile file(absolute_name);
     if (!file.open(QIODevice::ReadOnly)) {
         qWarning() << "Cannot open included file:" << absolute_name;
-        me->exit();
+        me->shutdown(1);;
     }
     QByteArray contents = file.readAll();
     file.close();
@@ -289,8 +277,60 @@ QScriptValue ScriptRunner::include(QScriptContext *context, QScriptEngine *engin
     if (engine->hasUncaughtException()) {
         qWarning() << "Error while evaluating script file:" << engine->uncaughtException().toString();
         qWarning() << engine->uncaughtExceptionBacktrace().join("\n");
-        me->exit();
+        me->shutdown(1);;
     }
+    return QScriptValue();
+}
+
+QScriptValue ScriptRunner::exit(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    if (! me->argCount(context, 0, 1))
+        return QScriptValue();
+    int return_code = 0;
+    if (context->argumentCount() == 1)
+        return_code = context->argument(0).toInt32();
+    me->shutdown(return_code);
+    context->throwValue("SystemExit");
+    return QScriptValue();
+}
+
+QScriptValue ScriptRunner::print(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    if (! me->argCount(context, 1))
+        return QScriptValue();
+    QString text = context->argument(0).toString();
+    me->m_stdout << text;
+    me->m_stdout.flush();
+    return QScriptValue();
+}
+
+QScriptValue ScriptRunner::debug(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    if (! me->argCount(context, 1))
+        return QScriptValue();
+    QString line = context->argument(0).toString();
+    me->m_stderr << line << "\n";
+    me->m_stderr.flush();
+    return QScriptValue();
+}
+
+void ScriptRunner::shutdown(int return_code)
+{
+    m_exiting = true;
+    QCoreApplication::instance()->exit(return_code);
+    m_return_code = return_code;
+}
+
+QScriptValue ScriptRunner::chat(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    if (! me->argCount(context, 1))
+        return QScriptValue();
+    QString message = context->argument(0).toString();
+    me->m_game->sendChat(message);
     return QScriptValue();
 }
 
@@ -349,15 +389,20 @@ int ScriptRunner::valueToNearestInt(const QScriptValue &value)
     return (int)std::floor(value.toNumber() + 0.5);
 }
 
-bool ScriptRunner::argCount(QScriptContext *context, int arg_count)
+bool ScriptRunner::argCount(QScriptContext *context, int arg_count_min, int arg_count_max)
 {
-    if (context->argumentCount() == arg_count)
+    if (arg_count_max == -1)
+        arg_count_max = arg_count_min;
+    if (arg_count_min <= context->argumentCount() && context->argumentCount() <= arg_count_max)
         return true;
 
-    qWarning() << "Expected" << arg_count << "arguments. Received" << context->argumentCount();
+    if (arg_count_min == arg_count_max)
+        qWarning() << "Expected" << arg_count_min << "arguments. Received" << context->argumentCount();
+    else
+        qWarning() << "Expected between" << arg_count_min << "and" << arg_count_max << "arguments. Received" << context->argumentCount();
     qWarning() << m_engine->currentContext()->backtrace().join("\n");
     m_engine->abortEvaluation();
-    exit();
+    shutdown(1);
     return false;
 }
 
@@ -392,14 +437,14 @@ void ScriptRunner::handleLoginStatusUpdated(Server::LoginStatus status)
     switch (status) {
         case Server::Disconnected:
             qWarning() << "Got disconnected from server";
-            exit();
+            shutdown(0);
             break;
         case Server::Success:
             raiseEvent("onConnected");
             break;
         case Server::SocketError:
             qWarning() << "Unable to connect to server";
-            exit();
+            shutdown(1);
             break;
         default:;
     }
