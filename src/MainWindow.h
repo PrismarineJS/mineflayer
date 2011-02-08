@@ -88,6 +88,7 @@ private:
     static const float c_decay_rate;
     static const float c_light_brightness[];
     static const char * c_wool_texture_names[];
+    static const float c_brightness_bias[];
 
     Ogre::Root *m_root;
     Ogre::Camera* m_camera;
