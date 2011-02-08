@@ -12,7 +12,7 @@ Chunk::Chunk(const Int3D &pos, const Int3D &size) :
     m_size(size),
     m_blocks(m_size.x * m_size.y * m_size.z)
 {
-    m_blocks.fill(Block(Block::Air, 0, 0, 0));
+    // leave the vector full of garbage
 }
 
 int Chunk::indexOf(const Int3D & coord) const
