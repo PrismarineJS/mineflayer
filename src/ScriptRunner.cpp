@@ -59,22 +59,23 @@ bool ScriptRunner::go()
     }
 
     // add utility functions
-    mf_obj.setProperty("include", m_engine->newFunction(include, 1));
-    mf_obj.setProperty("exit", m_engine->newFunction(exit, 1));
-    mf_obj.setProperty("print", m_engine->newFunction(print, 1));
-    mf_obj.setProperty("debug", m_engine->newFunction(debug, 1));
-    mf_obj.setProperty("setTimeout", m_engine->newFunction(setTimeout, 2));
-    mf_obj.setProperty("clearTimeout", m_engine->newFunction(clearTimeout, 1));
-    mf_obj.setProperty("setInterval", m_engine->newFunction(setInterval, 2));
-    mf_obj.setProperty("clearInterval", m_engine->newFunction(clearTimeout, 1));
+    mf_obj.setProperty("include", m_engine->newFunction(include));
+    mf_obj.setProperty("exit", m_engine->newFunction(exit));
+    mf_obj.setProperty("print", m_engine->newFunction(print));
+    mf_obj.setProperty("debug", m_engine->newFunction(debug));
+    mf_obj.setProperty("setTimeout", m_engine->newFunction(setTimeout));
+    mf_obj.setProperty("clearTimeout", m_engine->newFunction(clearTimeout));
+    mf_obj.setProperty("setInterval", m_engine->newFunction(setInterval));
+    mf_obj.setProperty("clearInterval", m_engine->newFunction(clearTimeout));
 
     // hook up mf functions
-    mf_obj.setProperty("chat", m_engine->newFunction(chat, 1));
+    mf_obj.setProperty("chat", m_engine->newFunction(chat));
     mf_obj.setProperty("username", m_engine->newFunction(username));
-    mf_obj.setProperty("itemStackHeight", m_engine->newFunction(itemStackHeight, 1));
-    mf_obj.setProperty("health", m_engine->newFunction(health, 1));
-    mf_obj.setProperty("blockAt", m_engine->newFunction(blockAt, 1));
+    mf_obj.setProperty("itemStackHeight", m_engine->newFunction(itemStackHeight));
+    mf_obj.setProperty("health", m_engine->newFunction(health));
+    mf_obj.setProperty("blockAt", m_engine->newFunction(blockAt));
 
+    mf_obj.setProperty("Point", m_engine->newFunction(Point, 3));
 
     bool file_exists;
     QString main_script_contents = readFile(m_main_script_filename, &file_exists);
@@ -282,6 +283,19 @@ QScriptValue ScriptRunner::include(QScriptContext *context, QScriptEngine *engin
     return QScriptValue();
 }
 
+QScriptValue ScriptRunner::Point(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    if (! me->argCount(context, 3))
+        return QScriptValue();
+
+    QScriptValue pt = engine->newObject();
+    pt.setProperty("x", context->argument(0));
+    pt.setProperty("y", context->argument(1));
+    pt.setProperty("z", context->argument(2));
+    return pt;
+}
+
 QScriptValue ScriptRunner::exit(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
@@ -366,19 +380,13 @@ QScriptValue ScriptRunner::health(QScriptContext *context, QScriptEngine *engine
 QScriptValue ScriptRunner::blockAt(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
-    const int arg_count = 3;
-    if (! me->argCount(context, arg_count))
+    if (! me->argCount(context, 1))
         return QScriptValue();
-    for (int i = 0; i < arg_count; i++) {
-        if (! context->argument(i).isNumber()) {
-            qWarning() << "blockAt: invalid argument at" << context->backtrace().join("\n");
-            return QScriptValue();
-        }
-    }
-    int x = valueToNearestInt(context->argument(0));
-    int y = valueToNearestInt(context->argument(1));
-    int z = valueToNearestInt(context->argument(2));
-    Block block = me->m_game->blockAt(Int3D(x, y, z));
+    QScriptValue js_pt = context->argument(0);
+    Int3D pt(valueToNearestInt(js_pt.property("x").toNumber()),
+             valueToNearestInt(js_pt.property("y").toNumber()),
+             valueToNearestInt(js_pt.property("z").toNumber()));
+    Block block = me->m_game->blockAt(pt);
     QScriptValue result = engine->newObject();
     result.setProperty("type", block.type());
     return result;
@@ -406,9 +414,18 @@ bool ScriptRunner::argCount(QScriptContext *context, int arg_count_min, int arg_
     return false;
 }
 
+QScriptValue ScriptRunner::jsPoint(const Int3D &pt)
+{
+    QScriptValue obj = m_engine->newObject();
+    obj.setProperty("x", pt.x);
+    obj.setProperty("y", pt.y);
+    obj.setProperty("z", pt.z);
+    return obj;
+}
+
 void ScriptRunner::handleChunkUpdated(const Int3D &start, const Int3D &size)
 {
-    raiseEvent("onChunkUpdated", QScriptValueList() << start.x << start.y << start.z << size.x << size.y << size.z);
+    raiseEvent("onChunkUpdated", QScriptValueList() << jsPoint(start) << jsPoint(size));
 }
 
 void ScriptRunner::movePlayerPosition(Server::EntityPosition position)

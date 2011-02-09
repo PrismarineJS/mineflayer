@@ -20,24 +20,6 @@ public:
     bool go();
     int returnCode() { return m_return_code; }
 
-public:
-    // functions that JavaScript uses
-    static QScriptValue include(QScriptContext *context, QScriptEngine *engine);
-    static QScriptValue exit(QScriptContext *context, QScriptEngine *engine);
-    static QScriptValue print(QScriptContext *context, QScriptEngine *engine);
-    static QScriptValue debug(QScriptContext *context, QScriptEngine *engine);
-    static QScriptValue setTimeout(QScriptContext * context, QScriptEngine * engine);
-    static QScriptValue clearTimeout(QScriptContext * context, QScriptEngine * engine);
-    static QScriptValue setInterval(QScriptContext * context, QScriptEngine * engine);
-    static QScriptValue clearInterval(QScriptContext * context, QScriptEngine * engine);
-
-    static QScriptValue chat(QScriptContext *context, QScriptEngine *engine);
-    static QScriptValue username(QScriptContext * context, QScriptEngine * engine);
-    static QScriptValue itemStackHeight(QScriptContext * context, QScriptEngine * engine);
-    static QScriptValue health(QScriptContext * context, QScriptEngine * engine);
-    static QScriptValue blockAt(QScriptContext * context, QScriptEngine * engine);
-
-
 private:
     QUrl m_url;
     QString m_main_script_filename;
@@ -83,6 +65,26 @@ private:
     QScriptValue evalJsonContents(const QString &file_contents, const QString &file_name = QString());
     bool checkEngine(const QString & while_doing_what = QString());
     static int valueToNearestInt(const QScriptValue & value);
+    QScriptValue jsPoint(const Int3D &pt);
+
+
+    // functions that JavaScript uses
+    static QScriptValue include(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue exit(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue print(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue debug(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue setTimeout(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue clearTimeout(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue setInterval(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue clearInterval(QScriptContext * context, QScriptEngine * engine);
+
+    static QScriptValue chat(QScriptContext *context, QScriptEngine *engine);
+    static QScriptValue username(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue itemStackHeight(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue health(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue blockAt(QScriptContext * context, QScriptEngine * engine);
+
+    static QScriptValue Point(QScriptContext * context, QScriptEngine * engine);
 
 private slots:
 

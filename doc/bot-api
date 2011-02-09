@@ -8,8 +8,26 @@
  *          NOTE: this coordinate system is different from Notch's South-Up-West system.
  *          Use toNotchCoord() and fromNotchCoord() to translate between coordinate systems.
  *
+ * 
+ * Classes
+ *
+ * Point - You can instantiate one like this: mf.Point(x, y, z)
+ *      x - east coordinate
+ *      y - north coordinate
+ *      z - up coordinate
+ *
+ * EntityState
+ *      position {Point} The center of the bottom of of the entity.
+ *      velocity {Point} The entity's velocity in meters per second squared.
+ *      height {Number} [0.1, 1.65] How tall the entity is. For example if you crouch you are shorter.
+ *      yaw {Number} [0, 2pi] Rotation around z axis. 0 is +x. pi/2 is +y. pi is -x. 3pi/2 is -y.
+ *      pitch {Number} [-pi/2, pi/2] 0 is parallel to the ground. pi/2 is up. -pi/2 is down.
+ *      roll {Number} [-pi, pi] Usually ignored. 0 is level. pi/2 is left ear pointing downward.
+ *      on_ground {Boolean} True if you are not free-falling.
+ *
  * mf.ItemType - the id of blocks and items. See the output of
  *               examples/reflect.js for a full listing of names.
+ *
  * Enums (NOT YET IMPLEMENTED)
  * 
  * mf.Face - Which side of a block, if any.
@@ -122,26 +140,25 @@ mf.itemStackHeight(item)
 mf.health()
 
 /**
- * Returns the block at the absolute x,y,z location in the world
- * @param {Number} x
- * @param {Number} y
- * @param {Number} z
+ * Returns the block at the absolute location in the world. You don't need to worry about block alignment.
+ * @param {Number} point
  * @return {Object} block object with these fields:
- *          type {Number} - block type id
+ *          type {Number} - See mf.ItemType enum.
  *          TODO: other fields as needed
  */
-mf.blockAt(x, y, z)
+mf.blockAt(point)
 
 // NOT YET IMPLEMENTED
 
 /**
- * @param {Object} An object with properties x, y, and z - the coordinates you want to translate.
- * @returns {Object} An object with properties x, y, and z translated into Notch's coordinate system.
+ * @param {Point} point The coordinates you want to translate.
+ * @returns {Point} point translated into Notch's coordinate system.
  */
 mf.toNotchCoord(point)
 
 /**
- * @returns {Object} An object with properties x, y, and z translated from Notch's coordinate system into something more sensical.
+ * @param {Point} point The coordinates you want to translate.
+ * @returns {Object} point Notch's coordinate system into something more sensical.
  */
 mf.fromNotchCoord(point)
 
@@ -158,20 +175,18 @@ mf.look(yaw, pitch)
 
 /**
  * Begin digging into a block with the currently equipped item. When you finally break through the block, or you are interrupted for any reason, you will get an onStoppedDigging() event.
- * @param {Number} x
- * @param {Number} y
- * @param {Number} z
+ * @param {Point} point
  */
-mf.startDigging(x, y, z)
+mf.startDigging(point)
 
 /**
- * Place the currently equipped item, with some exceptions. If the block at x, y, z is a chest, furnace, workbench, etc, you will "activate" the block. If the equipped item is food, you will eat it.
- * @param {Number} x
- * @param {Number} y
- * @param {Number} z
- * @param {Number} face The side of the block you want to start digging into. See the mf.Face enum.
+ * Place the currently equipped item, with some exceptions. If the block at
+ * point is a chest, furnace, workbench, etc, you will "activate" the block.
+ * If the equipped item is food, you will eat it.
+ * @param {Point} block The coordinates of the block that you want to place the block on.
+ * @param {Number} face Which side of the block you want to place the block on. See the mf.Face enum.
  */
-mf.placeBlock(x, y, z, face)
+mf.placeBlock(block, face)
 
 /**
  * Looks for an item in your inventory and equips it. If you don't have the item, nothing happens.
@@ -221,20 +236,15 @@ mf.inventorySlotsLeft()
 
 /**
  * Returns an object representing your state in the world.
- * @returns {Object} An object with these properties:
- *                      x {Number} Where center of the bottom of your feet is
- *                      y {Number} Where center of the bottom of your feet is
- *                      z {Number} Where center of the bottom of your feet is
- *                      dx {Number} Your velocity in meters per second squared
- *                      dy {Number} Your velocity in meters per second squared
- *                      dz {Number} Your velocity in meters per second squared
- *                      stance {Number} [0.1, 1.65] How tall you are. For example if you crouch you are shorter.
- *                      yaw {Number} [0, 2pi] Rotation around z axis. 0 is +x. pi/2 is +y. pi is -x. 3pi/2 is -y.
- *                      pitch {Number} [-pi/2, pi/2] 0 is parallel to the ground. pi/2 is up. -pi/2 is down.
- *                      roll {Number} [-pi, pi] Usually ignored. 0 is level. pi/2 is left ear pointing downward.
- *                      on_ground {Boolean} True if you are not free-falling.
+ * @returns {EntityState} 
  */
-mf.position()
+mf.playerState()
+
+/**
+ * Tells you about a mob's state in the world.
+ * @returns {EntityState}
+ */
+mf.mobState(entity_id)
 
 /**
  * Tells what time it is, also known as where the sun or moon is in the sky.
@@ -267,14 +277,10 @@ mf.onChat(function(user, message) {...})
 
 /**
  * Called when blocks are updated.
- * @param {Number} start_x The absolute x position of the first block that was updated.
- * @param {Number} start_y The absolute y position of the first block that was updated.
- * @param {Number} start_z The absolute z position of the first block that was updated.
- * @param {Number} x_count The number of blocks in the x direction that were updated.
- * @param {Number} y_count The number of blocks in the y direction that were updated.
- * @param {Number} z_count The number of blocks in the z direction that were updated.
+ * @param {Point} start The absolute position of the first block that was updated.
+ * @param {Point} size The number of blocks that were updated.
  */
-mf.onChunkUpdated(function(start_x, start_y, start_z, x_count, y_count, z_count) {...})
+mf.onChunkUpdated(function(start, size) {...})
 
 /**
  * Called when your position is changed. See also position().
@@ -294,23 +300,16 @@ mf.onDeath(function() {...})
 // NOT YET IMPLEMENTED
 
 /**
- * Called when a mob (Cow, Spider, Squid, etc) is created.
+ * Called when a mob (Cow, Spider, Squid, etc) is created.  See also entityPosition().
  * @param {Number} id A unique identifier for this specific mob.
- * @param {Number} type The class of mob that was spawned. See the mf.Mob enum.
- * @param {Number} x The absolute x position where the mob spawned.
- * @param {Number} y The absolute y position where the mob spawned.
- * @param {Number} z The absolute z position where the mob spawned.
  */
-mf.onMobSpawned(function(id, type, x, y, z) {...})
+mf.onMobSpawned(function(id) {...})
 
 /**
  * Called when a mob moves.
  * @param {Number} id The unique identifier for this specific mob.
- * @param {Number} x The absolute x position where the mob has just moved to.
- * @param {Number} y The absolute y position where the mob has just moved to.
- * @param {Number} z The absolute z position where the mob has just moved to.
  */
-mf.onMobMovement(function(id, x, y, z) {...})
+mf.onMobMovement(function(id) {...})
 
 /**
  * Called when you have spawned and can start moving about.
