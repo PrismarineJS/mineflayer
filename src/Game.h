@@ -60,6 +60,8 @@ public:
     // only valid to call this after you die
     void respawn();
 
+    Server::EntityPosition playerPosition() const { return m_player_position; }
+
     Block blockAt(const Int3D & absolute_location);
     int playerHealth() { return m_player_health; }
 
@@ -79,7 +81,7 @@ signals:
     void chatReceived(QString username, QString message);
     void chunkUpdated(const Int3D &start, const Int3D &size);
     void unloadChunk(const Int3D & coord);
-    void playerPositionUpdated(Server::EntityPosition position);
+    void playerPositionUpdated();
     void playerHealthUpdated();
     void playerDied();
     void stoppedDigging(Game::StoppedDiggingReason reason);

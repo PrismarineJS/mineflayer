@@ -137,7 +137,7 @@ MainWindow::MainWindow(QUrl url) :
 
     m_game = new Game(url);
     bool success;
-    success = connect(m_game, SIGNAL(playerPositionUpdated(Server::EntityPosition)), this, SLOT(movePlayerPosition(Server::EntityPosition)));
+    success = connect(m_game, SIGNAL(playerPositionUpdated()), this, SLOT(movePlayerPosition()));
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(playerHealthUpdated()), this, SLOT(handlePlayerHealthUpdated()));
     Q_ASSERT(success);
@@ -882,10 +882,12 @@ Int3D MainWindow::chunkKey(const Int3D & coord)
     return coord - (coord % c_chunk_size);
 }
 
-void MainWindow::movePlayerPosition(Server::EntityPosition position)
+void MainWindow::movePlayerPosition()
 {
     if (m_free_look_mode)
         return;
+    Server::EntityPosition position = m_game->playerPosition();
+
     Ogre::Vector3 cameraPosition(position.x, position.y, position.z + position.height);
     m_camera->setPosition(cameraPosition);
 

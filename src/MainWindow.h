@@ -200,7 +200,7 @@ private:
     void grabMouse();
 
 private slots:
-    void movePlayerPosition(Server::EntityPosition position);
+    void movePlayerPosition();
     void handlePlayerHealthUpdated();
     void handlePlayerDied();
 

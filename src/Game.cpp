@@ -270,7 +270,7 @@ void Game::updatePlayerLook(float delta_yaw, float delta_pitch)
     QMutexLocker locker(&m_mutex);
     m_player_position.yaw += delta_yaw;
     m_player_position.pitch += delta_pitch;
-    emit playerPositionUpdated(m_player_position);
+    emit playerPositionUpdated();
 }
 
 void Game::respawn()
@@ -394,7 +394,7 @@ void Game::handlePlayerPositionAndLookUpdated(Server::EntityPosition position)
         Q_ASSERT(success);
         m_position_update_timer->start();
     }
-    emit playerPositionUpdated(m_player_position);
+    emit playerPositionUpdated();
 }
 
 void Game::handlePlayerHealthUpdated(int new_health)
@@ -578,7 +578,7 @@ void Game::doPhysics(float delta_seconds)
     }
 
     // always emit update
-    emit playerPositionUpdated(m_player_position);
+    emit playerPositionUpdated();
 }
 
 void Game::getPlayerBoundingBox(Int3D & boundingBoxMin, Int3D & boundingBoxMax)
