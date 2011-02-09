@@ -103,7 +103,7 @@ void Game::initializeStaticData()
     s_item_stack_height.insert(Block::DoubleStoneSlab, 64);
     s_item_stack_height.insert(Block::StoneSlab, 64);
     s_item_stack_height.insert(Block::Brick, 64);
-    s_item_stack_height.insert(Block::TNT, 64);
+    s_item_stack_height.insert(Block::Tnt, 64);
     s_item_stack_height.insert(Block::Bookshelf, 64);
     s_item_stack_height.insert(Block::MossStone, 64);
     s_item_stack_height.insert(Block::Obsidian, 64);

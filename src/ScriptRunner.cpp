@@ -266,19 +266,16 @@ QScriptValue ScriptRunner::include(QScriptContext *context, QScriptEngine *engin
     QString file_name = file_name_value.toString();
 
     QString absolute_name = QFileInfo(me->m_main_script_filename).dir().absoluteFilePath(file_name);
-    QFile file(absolute_name);
-    if (!file.open(QIODevice::ReadOnly)) {
+    bool success;
+    QString contents = me->readFile(absolute_name, &success);
+    if (!success) {
         qWarning() << "Cannot open included file:" << absolute_name;
-        me->shutdown(1);;
+        me->shutdown(1);
     }
-    QByteArray contents = file.readAll();
-    file.close();
-    engine->evaluate(QString::fromUtf8(contents), file_name);
-    if (engine->hasUncaughtException()) {
-        qWarning() << "Error while evaluating script file:" << engine->uncaughtException().toString();
-        qWarning() << engine->uncaughtExceptionBacktrace().join("\n");
-        me->shutdown(1);;
-    }
+    context->setActivationObject(engine->globalObject());
+    context->setThisObject(engine->globalObject());
+    engine->evaluate(contents, file_name);
+    me->checkEngine("evaluating included file");
     return QScriptValue();
 }
 
