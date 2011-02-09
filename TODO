@@ -34,6 +34,5 @@ Core:
  * clouds
 
 Bot framework:
- * calling undefined methods should crash with a stack trace.
  * use point objects rather than x,y,z
  * implement the functions in doc/bot-api

@@ -63,7 +63,7 @@ private:
 
     QString readFile(const QString &path, bool * success = NULL);
     QScriptValue evalJsonContents(const QString &file_contents, const QString &file_name = QString());
-    bool checkEngine(const QString & while_doing_what = QString());
+    void checkEngine(const QString & while_doing_what = QString());
     static int valueToNearestInt(const QScriptValue & value);
     QScriptValue jsPoint(const Int3D &pt);
     QScriptValue jsPoint(double x, double y, double z);

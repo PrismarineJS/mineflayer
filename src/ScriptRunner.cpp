@@ -84,8 +84,7 @@ bool ScriptRunner::go()
         shutdown(1);
     }
     m_engine->evaluate(main_script_contents, m_main_script_filename);
-    if (!checkEngine("evaluating main script"))
-        return false;
+    checkEngine("evaluating main script");
 
     if (m_exiting)
         return false;
@@ -134,22 +133,22 @@ QString ScriptRunner::readFile(const QString &path, bool * success)
 QScriptValue ScriptRunner::evalJsonContents(const QString & file_contents, const QString & file_name)
 {
     QScriptValue value = m_engine->evaluate(QString("(") + file_contents + QString(")"), file_name);
-    Q_ASSERT(checkEngine("evaluating json"));
+    checkEngine("evaluating json");
     return value;
 }
 
-bool ScriptRunner::checkEngine(const QString & while_doing_what)
+void ScriptRunner::checkEngine(const QString & while_doing_what)
 {
     if (m_exiting)
-        return false;
+        return;
     if (!m_engine->hasUncaughtException())
-        return true;
+        return;
     if (!while_doing_what.isEmpty())
         qWarning() << "Error while" << while_doing_what.toStdString().c_str();
     qWarning() << m_engine->uncaughtException().toString();
     qWarning() << m_engine->uncaughtExceptionBacktrace().join("\n");
     m_engine->clearExceptions();
-    return false;
+    shutdown(1);
 }
 
 void ScriptRunner::dispatchTimeout()
