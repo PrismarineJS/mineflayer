@@ -28,6 +28,11 @@ public:
 
         ControlCount
     };
+    enum StoppedDiggingReason {
+        DiggingAborted,
+        DiggingCompleted,
+    };
+
     static const float c_standard_max_ground_speed; // m/s
     static const float c_standard_terminal_velocity; // m/s
     static const float c_standard_walking_acceleration; // m/s/s
@@ -58,6 +63,9 @@ public:
     Block blockAt(const Int3D & absolute_location);
     int playerHealth() { return m_player_health; }
 
+    void startDigging(const Int3D &block);
+    void stopDigging();
+
     void sendChat(QString message);
 
     static int itemStackHeight(Block::ItemType item);
@@ -74,6 +82,7 @@ signals:
     void playerPositionUpdated(Server::EntityPosition position);
     void playerHealthUpdated();
     void playerDied();
+    void stoppedDigging(Game::StoppedDiggingReason reason);
     void loginStatusUpdated(Server::LoginStatus status);
 
 private:
@@ -89,6 +98,9 @@ private:
     QString m_userName;
 
     QTimer * m_position_update_timer;
+    QTimer * m_digging_timer;
+    Int3D m_digging_location;
+    int m_digging_counter;
 
     Server::EntityPosition m_player_position;
     int m_player_health;
@@ -122,6 +134,7 @@ private slots:
     void handleUnloadChunk(const Int3D & coord);
 
     void sendPosition();
+    void timeToContinueDigging();
 };
 
 #endif // GAME_H

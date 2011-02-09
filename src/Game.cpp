@@ -30,6 +30,7 @@ Game::Game(QUrl connection_info) :
     m_server(connection_info),
     m_userName(connection_info.userName()),
     m_position_update_timer(NULL),
+    m_digging_timer(NULL),
     m_max_ground_speed(c_standard_max_ground_speed),
     m_terminal_velocity(c_standard_terminal_velocity),
     m_input_acceleration(c_standard_walking_acceleration),
@@ -61,6 +62,7 @@ Game::Game(QUrl connection_info) :
 Game::~Game()
 {
     delete m_position_update_timer;
+    delete m_digging_timer;
 }
 
 void Game::initializeStaticData()
@@ -292,6 +294,47 @@ Block Game::blockAt(const Int3D & absolute_location)
     if (chunk.isNull())
         return c_air;
     return chunk.data()->getBlock(absolute_location - chunk_key);
+}
+
+void Game::startDigging(const Int3D &block)
+{
+    QMutexLocker locker(&m_mutex);
+    if (m_digging_timer != NULL)
+        stopDigging();
+    m_digging_location = block;
+    m_digging_counter = 0;
+    m_server.sendDiggingStatus(Message::StartDigging, m_digging_location);
+    m_digging_timer = new QTimer;
+    m_digging_timer->setInterval(10);
+    bool success;
+    success = connect(m_digging_timer, SIGNAL(timeout()), this, SLOT(timeToContinueDigging()));
+    Q_ASSERT(success);
+}
+void Game::stopDigging()
+{
+    QMutexLocker locker(&m_mutex);
+    if (m_digging_timer == NULL)
+        return;
+    m_digging_timer->stop();
+    m_server.sendDiggingStatus(Message::AbortDigging, m_digging_location);
+    delete m_digging_timer;
+    m_digging_timer = NULL;
+    emit stoppedDigging(DiggingAborted);
+}
+void Game::timeToContinueDigging()
+{
+    QMutexLocker locker(&m_mutex);
+    if (m_digging_timer == NULL)
+        return; // race conditions
+    m_server.sendDiggingStatus(Message::ContinueDigging, m_digging_location);
+    m_digging_counter++;
+    if (m_digging_counter >= 76) { // TODO: test this number and make it variable
+        // complete
+        m_server.sendDiggingStatus(Message::BlockBroken, m_digging_location);
+        delete m_digging_timer;
+        m_digging_timer = NULL;
+        emit stoppedDigging(DiggingCompleted);
+    }
 }
 
 void Game::handleLoginStatusChanged(Server::LoginStatus status)

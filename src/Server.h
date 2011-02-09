@@ -73,6 +73,7 @@ public:
     // sends a chat message. can start with '/' to be a command.
     void sendChat(QString message);
     void sendRespawnRequest();
+    void sendDiggingStatus(Message::DiggingStatus status, const Int3D & coord);
 
 private:
     static const QString c_auth_server;
@@ -81,7 +82,6 @@ private:
     QThread * m_socket_thread;
     QTcpSocket * m_socket;
     IncomingMessageParser * m_parser;
-    QTimer * m_position_update_timer;
     QNetworkAccessManager * m_network;
 
     static const float c_walking_speed; // m/s
@@ -102,6 +102,7 @@ private:
     static Int3D fromNotchianXyz(int notchian_x, int notchian_y, int notchian_z);
     static Int3D fromNotchianXyz(Int3D notchian_xyz);
     static void toNotchianXyz(const EntityPosition &source, double & destination_notchian_x, double & destination_notchian_y, double & destination_notchian_z);
+    static Int3D toNotchianXyz(const Int3D &source);
     static void fromNotchianYawPitch(EntityPosition & destination, float notchian_yaw, float notchian_pitch);
     static void toNotchianYawPitch(const EntityPosition &source, float & destination_notchian_yaw, float & destination_notchian_pitch);
     QByteArray notchUrlEncode(QString param);

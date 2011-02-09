@@ -69,9 +69,9 @@ public:
         qint16 uses;
     };
 
-    enum DiggingType {
+    enum DiggingStatus {
         StartDigging=0,
-        DiggingInProgress=1,
+        ContinueDigging=1,
         AbortDigging=2,
         BlockBroken=3,
         DropItem=4,
@@ -168,13 +168,13 @@ protected:
 
 class PlayerDiggingRequest : public OutgoingRequest {
 public:
-    DiggingType digging_type;
+    DiggingStatus status;
     qint32 x;
     qint8 y;
     qint32 z;
     BlockFaceDirection block_face;
-    PlayerDiggingRequest(DiggingType digging_type, qint32 x, qint8 y, qint32 z, BlockFaceDirection block_face) : OutgoingRequest(PlayerDigging),
-        digging_type(digging_type), x(x), y(y), z(z), block_face(block_face) {}
+    PlayerDiggingRequest(DiggingStatus status, qint32 x, qint8 y, qint32 z, BlockFaceDirection block_face) : OutgoingRequest(PlayerDigging),
+        status(status), x(x), y(y), z(z), block_face(block_face) {}
 protected:
     virtual void writeMessageBody(QDataStream &stream);
 };
@@ -345,7 +345,7 @@ public:
 
 class PlayerDiggingResponse : public IncomingResponse {
 public:
-    DiggingType digging_type;
+    DiggingStatus status;
     qint32 absolute_x;
     qint8 absolute_y;
     qint32 absolute_z;

@@ -90,7 +90,7 @@ void PlayerPositionAndLookRequest::writeMessageBody(QDataStream &stream)
 
 void PlayerDiggingRequest::writeMessageBody(QDataStream &stream)
 {
-    writeValue(stream, (qint8)digging_type);
+    writeValue(stream, (qint8)status);
     writeValue(stream, x);
     writeValue(stream, y);
     writeValue(stream, z);
@@ -361,7 +361,7 @@ int PlayerDiggingResponse::parse(QByteArray buffer)
     qint8 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    digging_type = (DiggingType)tmp;
+    status = (DiggingStatus)tmp;
     if ((index = parseValue(buffer, index, absolute_x)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, absolute_y)) == -1)

@@ -16,7 +16,6 @@ Server::Server(QUrl connection_info) :
     m_connection_info(connection_info),
     m_socket_thread(NULL),
     m_parser(NULL),
-    m_position_update_timer(NULL),
     m_network(NULL),
     m_physics_timer(NULL),
     m_login_state(Disconnected)
@@ -88,6 +87,11 @@ void Server::sendChat(QString message)
 void Server::sendRespawnRequest()
 {
     sendMessage(QSharedPointer<OutgoingRequest>(new RespawnRequest));
+}
+void Server::sendDiggingStatus(Message::DiggingStatus status, const Int3D &coord)
+{
+    Int3D notchian_coord = toNotchianXyz(coord);
+    sendMessage(QSharedPointer<OutgoingRequest>(new PlayerDiggingRequest(status, notchian_coord.x, notchian_coord.y, notchian_coord.z, Message::PositiveY)));
 }
 
 void Server::handleConnected()
@@ -359,6 +363,17 @@ void Server::toNotchianXyz(const EntityPosition &source, double &destination_not
     destination_notchian_x = -source.y;
     // up
     destination_notchian_y = source.z;
+}
+Int3D Server::toNotchianXyz(const Int3D &source)
+{
+    Int3D notchian;
+    // east
+    notchian.z = -source.x;
+    // north
+    notchian.x = -source.y;
+    // up
+    notchian.y = source.z;
+    return notchian;
 }
 
 void Server::fromNotchianYawPitch(EntityPosition &destination, float notchian_yaw, float notchian_pitch)
