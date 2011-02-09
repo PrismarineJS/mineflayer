@@ -9,13 +9,13 @@
 
 const float Game::c_standard_max_ground_speed = 4.27; // according to the internet
 const float Game::c_standard_terminal_velocity = 20.0; // guess
-const float Game::c_standard_walking_acceleration = 35.0; // guess
+const float Game::c_standard_walking_acceleration = 100.0; // seems good
 const float Game::c_standard_gravity = 9.81;
-const float Game::c_standard_ground_friction = Game::c_standard_walking_acceleration / 4.0; // guess
-const float Game::c_player_apothem = 0.3; // measured
-const float Game::c_player_height = 1.62; // according to spawn stance
+const float Game::c_standard_ground_friction = Game::c_standard_walking_acceleration; // seems good
+const float Game::c_player_apothem = 0.30; // measured with notche's client F3
+const float Game::c_player_height = 1.74; // tested with a binary search
 const float Game::c_player_half_height = Game::c_player_height / 2;
-const float Game::c_jump_speed = 8.0f;
+const float Game::c_jump_speed = 8.0f; // too high ... oh well :)
 
 const int Game::c_notchian_tick_ms = 200;
 const int Game::c_chat_length_limit = 100;
@@ -541,13 +541,12 @@ void Game::doPhysics(float delta_seconds)
     Int3D boundingBoxMin, boundingBoxMax;
     getPlayerBoundingBox(boundingBoxMin, boundingBoxMax);
 
-    bool x = false, y = false, z = false;
     if (m_player_position.dx != 0) {
         m_player_position.x += m_player_position.dx * delta_seconds;
-        int block_x = (int)std::floor(m_player_position.x + Util::sign(m_player_position.dx) * c_player_apothem);
+        double forward_x_edge = m_player_position.x + Util::sign(m_player_position.dx) * c_player_apothem;
+        int block_x = (int)std::floor(forward_x_edge);
         if (collisionInRange(Int3D(block_x, boundingBoxMin.y, boundingBoxMin.z), Int3D(block_x, boundingBoxMax.y, boundingBoxMax.z))) {
-            x = true;
-            m_player_position.x = block_x + (m_player_position.dx < 0 ? 1 + c_player_apothem : -c_player_apothem);
+            m_player_position.x = block_x + (m_player_position.dx < 0 ? 1 + c_player_apothem : -c_player_apothem) * 1.001;
             m_player_position.dx = 0;
             getPlayerBoundingBox(boundingBoxMin, boundingBoxMax);
         }
@@ -557,23 +556,21 @@ void Game::doPhysics(float delta_seconds)
         m_player_position.y += m_player_position.dy * delta_seconds;
         int block_y = (int)std::floor(m_player_position.y + Util::sign(m_player_position.dy) * c_player_apothem);
         if (collisionInRange(Int3D(boundingBoxMin.x, block_y, boundingBoxMin.z), Int3D(boundingBoxMax.x, block_y, boundingBoxMax.z))) {
-            y = true;
-            m_player_position.y = block_y + (m_player_position.dy < 0 ? 1 + c_player_apothem : -c_player_apothem);
+            m_player_position.y = block_y + (m_player_position.dy < 0 ? 1 + c_player_apothem : -c_player_apothem) * 1.001;
             m_player_position.dy = 0;
             getPlayerBoundingBox(boundingBoxMin, boundingBoxMax);
         }
     }
 
+    m_player_position.on_ground = false;
     if (m_player_position.dz != 0) {
         m_player_position.z += m_player_position.dz * delta_seconds;
         int block_z = (int)std::floor(m_player_position.z + c_player_half_height + Util::sign(m_player_position.dz) * c_player_half_height);
         if (collisionInRange(Int3D(boundingBoxMin.x, boundingBoxMin.y, block_z), Int3D(boundingBoxMax.x, boundingBoxMax.y, block_z))) {
-            z = true;
-            m_player_position.z = block_z + (m_player_position.dz < 0 ? 1 : -c_player_height);
+            m_player_position.z = block_z + (m_player_position.dz < 0 ? 1 : -c_player_height) * 1.001;
+            if (m_player_position.dz < 0)
+                m_player_position.on_ground = true;
             m_player_position.dz = 0;
-            m_player_position.on_ground = true;
-        } else {
-            m_player_position.on_ground = false;
         }
     }
 
