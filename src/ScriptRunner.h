@@ -66,6 +66,7 @@ private:
     bool checkEngine(const QString & while_doing_what = QString());
     static int valueToNearestInt(const QScriptValue & value);
     QScriptValue jsPoint(const Int3D &pt);
+    QScriptValue jsPoint(double x, double y, double z);
 
 
     // functions that JavaScript uses
@@ -83,12 +84,13 @@ private:
     static QScriptValue itemStackHeight(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue health(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue blockAt(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue playerState(QScriptContext * context, QScriptEngine * engine);
 
     static QScriptValue Point(QScriptContext * context, QScriptEngine * engine);
 
 private slots:
 
-    void movePlayerPosition(Server::EntityPosition position);
+    void movePlayerPosition();
     void handleChunkUpdated(const Int3D &start, const Int3D &size);
     void handlePlayerHealthUpdated();
     void handlePlayerDied();

@@ -148,6 +148,12 @@ mf.health()
  */
 mf.blockAt(point)
 
+/**
+ * Returns an object representing your state in the world.
+ * @returns {EntityState} 
+ */
+mf.playerState()
+
 // NOT YET IMPLEMENTED
 
 /**
@@ -233,12 +239,6 @@ mf.inventorySpaceLeft(item)
  * @returns {Number} The total number of empty inventory slots.
  */
 mf.inventorySlotsLeft()
-
-/**
- * Returns an object representing your state in the world.
- * @returns {EntityState} 
- */
-mf.playerState()
 
 /**
  * Tells you about a mob's state in the world.

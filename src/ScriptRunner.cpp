@@ -74,7 +74,7 @@ bool ScriptRunner::go()
     mf_obj.setProperty("itemStackHeight", m_engine->newFunction(itemStackHeight));
     mf_obj.setProperty("health", m_engine->newFunction(health));
     mf_obj.setProperty("blockAt", m_engine->newFunction(blockAt));
-
+    mf_obj.setProperty("playerState", m_engine->newFunction(playerState));
     mf_obj.setProperty("Point", m_engine->newFunction(Point, 3));
 
     bool file_exists;
@@ -95,7 +95,7 @@ bool ScriptRunner::go()
     bool success;
     success = connect(m_game, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(handleChunkUpdated(Int3D,Int3D)));
     Q_ASSERT(success);
-    success = connect(m_game, SIGNAL(playerPositionUpdated(Server::EntityPosition)), this, SLOT(movePlayerPosition(Server::EntityPosition)));
+    success = connect(m_game, SIGNAL(playerPositionUpdated()), this, SLOT(movePlayerPosition()));
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SLOT(handleLoginStatusUpdated(Server::LoginStatus)));
     Q_ASSERT(success);
@@ -389,6 +389,24 @@ QScriptValue ScriptRunner::blockAt(QScriptContext *context, QScriptEngine *engin
     return result;
 }
 
+QScriptValue ScriptRunner::playerState(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    if (! me->argCount(context, 0))
+        return QScriptValue();
+
+    Server::EntityPosition position = me->m_game->playerPosition();
+    QScriptValue result = engine->newObject();
+    result.setProperty("position", me->jsPoint(position.x, position.y, position.z));
+    result.setProperty("velocity", me->jsPoint(position.dx, position.dy, position.dz));
+    result.setProperty("height", position.height);
+    result.setProperty("yaw", position.yaw);
+    result.setProperty("pitch", position.pitch);
+    result.setProperty("roll", position.roll);
+    result.setProperty("on_ground", position.on_ground);
+    return result;
+}
+
 int ScriptRunner::valueToNearestInt(const QScriptValue &value)
 {
     return (int)std::floor(value.toNumber() + 0.5);
@@ -420,14 +438,22 @@ QScriptValue ScriptRunner::jsPoint(const Int3D &pt)
     return obj;
 }
 
+QScriptValue ScriptRunner::jsPoint(double x, double y, double z)
+{
+    QScriptValue obj = m_engine->newObject();
+    obj.setProperty("x", x);
+    obj.setProperty("y", y);
+    obj.setProperty("z", z);
+    return obj;
+}
+
 void ScriptRunner::handleChunkUpdated(const Int3D &start, const Int3D &size)
 {
     raiseEvent("onChunkUpdated", QScriptValueList() << jsPoint(start) << jsPoint(size));
 }
 
-void ScriptRunner::movePlayerPosition(Server::EntityPosition position)
+void ScriptRunner::movePlayerPosition()
 {
-    Q_UNUSED(position);
     raiseEvent("onPositionUpdated");
 }
 
