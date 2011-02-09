@@ -37,7 +37,7 @@ enum ItemType
     DoubleStoneSlab=0x2B,
     StoneSlab=0x2C,
     Brick=0x2D,
-    TNT=0x2E,
+    Tnt=0x2E,
     Bookshelf=0x2F,
     MossStone=0x30,
     Obsidian=0x31,
