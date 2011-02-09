@@ -11,6 +11,7 @@
 #include <OGRE/OgreConfigFile.h>
 #include <OGRE/OgreVector3.h>
 #include <OGRE/OgreWindowEventUtilities.h>
+#include <OGRE/OgreFrameListener.h>
 
 #include <OIS/OISEvents.h>
 #include <OIS/OISInputManager.h>
