@@ -439,7 +439,7 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
         // save the scene node so we can delete it later
         SubChunkData chunk_data = m_sub_chunks.value(ready_chunk.sub_chunk_key);
         if (! chunk_data.is_null) {
-            chunk_data.node[ready_chunk.pass] = chunk_node;
+            chunk_data.node[ready_chunk.face+1][ready_chunk.pass] = chunk_node;
             m_sub_chunks.insert(ready_chunk.sub_chunk_key, chunk_data);
         }
     }
@@ -678,28 +678,34 @@ void SubChunkMeshGenerator::generateSubChunkMesh(const Int3D & sub_chunk_key)
         replace_chunk = false;
         chunk_data.is_null = false;
         chunk_data.position = sub_chunk_key;
-        for (int i = 0; i < 2; i++) {
-            chunk_data.obj[i] = NULL;
-            chunk_data.node[i] = NULL;
+        // init pointers to NULL
+        for (int side = -1; side < 6; side++) {
+            for (int pass = 0; pass < 2; pass++) {
+                chunk_data.obj[side+1][pass] = NULL;
+                chunk_data.node[side+1][pass] = NULL;
+            }
         }
         m_owner->m_sub_chunks.insert(sub_chunk_key, chunk_data);
 
     }
 
-    ReadySubChunk done_chunks[2];
+    ReadySubChunk done_chunks[7][2];
 
-    Int3D offset;
     for (int pass = 0; pass < 2; pass++) {
-        done_chunks[pass] = ReadySubChunk(pass, chunk_data.obj[pass], chunk_data.node[pass], sub_chunk_key);
-
+        if (replace_chunk) {
+            done_chunks[MainWindow::NoDirection+1][pass] = ReadySubChunk(pass,
+                MainWindow::NoDirection, chunk_data.obj[MainWindow::NoDirection+1][pass],
+                chunk_data.node[MainWindow::NoDirection+1][pass], sub_chunk_key);
+        }
         m_owner->m_ogre_mutex.lock();
         Ogre::ManualObject * obj = new Ogre::ManualObject(Ogre::String());
         obj->begin(pass == 0 ? "TerrainOpaque" : "TerrainTransparent", Ogre::RenderOperation::OT_TRIANGLE_LIST);
         m_owner->m_ogre_mutex.unlock();
-        Int3D absolute_position;
-        for (offset.x = 0, absolute_position.x = chunk_data.position.x; offset.x < MainWindow::c_sub_chunk_mesh_size.x; offset.x++, absolute_position.x++) {
-            for (offset.y = 0, absolute_position.y = chunk_data.position.y; offset.y < MainWindow::c_sub_chunk_mesh_size.y; offset.y++, absolute_position.y++) {
-                for (offset.z = 0, absolute_position.z = chunk_data.position.z; offset.z < MainWindow::c_sub_chunk_mesh_size.z; offset.z++, absolute_position.z++) {
+        Int3D offset;
+        for (offset.x = 0; offset.x < MainWindow::c_sub_chunk_mesh_size.x; offset.x++) {
+            for (offset.y = 0; offset.y < MainWindow::c_sub_chunk_mesh_size.y; offset.y++) {
+                for (offset.z = 0; offset.z < MainWindow::c_sub_chunk_mesh_size.z; offset.z++) {
+                    Int3D absolute_position = chunk_data.position + offset;
                     Block block = m_owner->m_game->blockAt(absolute_position);
 
                     MainWindow::BlockData block_data = m_owner->m_block_data.value(block.type(), m_owner->m_air);
@@ -717,165 +723,174 @@ void SubChunkMeshGenerator::generateSubChunkMesh(const Int3D & sub_chunk_key)
                         continue;
 
                     // for every side
-                    for (int side_index = 0; side_index < 6; side_index++) {
-                        if (block_data.side_textures.at(side_index).isEmpty())
-                            continue;
-
-                        // if the block on this side is opaque or the same block, skip
-                        Block neighbor_block = m_owner->m_game->blockAt(absolute_position + MainWindow::c_side_offset[side_index]);
-                        Block::ItemType side_type = neighbor_block.type();
-                        if ((side_type == block.type() && (block_data.partial_alpha || side_type == Block::Glass)) ||
-                            ! m_owner->m_block_data.value(side_type, m_owner->m_air).see_through)
-                        {
-                            continue;
-                        }
-
-
-                        // add this side to mesh
-                        Ogre::Vector3 abs_block_loc(absolute_position.x, absolute_position.y, absolute_position.z);
-
-                        // special cases for textures
-                        QString texture_name = block_data.side_textures.at(side_index);
-                        switch (block.type()) {
-                            case Block::Wood:
-                            if (side_index != MainWindow::NegativeZ && side_index != MainWindow::PositiveZ) {
-                                switch (block.woodMetadata()) {
-                                case Block::NormalTrunkTexture:
-                                    texture_name = "WoodSide";
-                                    break;
-                                case Block::RedwoodTrunkTexture:
-                                    texture_name = "RedwoodTrunkSide";
-                                    break;
-                                case Block::BirchTrunkTexture:
-                                    texture_name = "BirchTrunkSide";
-                                    break;
-                                }
-                            }
-                            break;
-                            case Block::Leaves:
-                            {
-                                switch (block.leavesMetadata()) {
-                                case Block::NormalLeavesTexture:
-                                    texture_name = "LeavesRegular";
-                                    break;
-                                case Block::RedwoodLeavesTexture:
-                                    texture_name = "RedwoodLeaves";
-                                    break;
-                                case Block::BirchLeavesTexture:
-                                    texture_name = "BirchLeaves";
-                                    break;
-                                }
-                            }
-                            break;
-                            case Block::Farmland:
-                            if (side_index == MainWindow::PositiveZ)
-                                texture_name = block.farmlandMetadata() == 0 ? "FarmlandDry" : "FarmlandWet";
-                            break;
-                            case Block::Crops:
-                            texture_name = QString("Crops") + QString::number(block.cropsMetadata());
-                            break;
-                            case Block::Wool:
-                            texture_name = MainWindow::c_wool_texture_names[block.woolMetadata()];
-                            break;
-                            case Block::Furnace:
-                            case Block::BurningFurnace:
-                            case Block::Dispenser:
-                            {
-                                if (side_index != MainWindow::NegativeZ && side_index != MainWindow::PositiveZ) {
-                                    if ((block.furnaceMetadata() == Block::EastFacingFurnace && side_index == MainWindow::PositiveX) ||
-                                        (block.furnaceMetadata() == Block::WestFacingFurnace && side_index == MainWindow::NegativeX) ||
-                                        (block.furnaceMetadata() == Block::NorthFacingFurnace && side_index == MainWindow::PositiveY) ||
-                                        (block.furnaceMetadata() == Block::SouthFacingFurnace && side_index == MainWindow::NegativeY))
-                                    {
-                                        texture_name = block_data.side_textures.value(MainWindow::NegativeY);
-                                    } else {
-                                        texture_name = "FurnaceBack";
-                                    }
-                                }
-                            }
-                            break;
-                            case Block::Pumpkin:
-                            case Block::JackOLantern:
-                            {
-                                if (side_index != MainWindow::NegativeZ && side_index != MainWindow::PositiveZ) {
-                                    if ((block.pumpkinMetadata() == Block::EastFacingPumpkin && side_index == MainWindow::PositiveX) ||
-                                        (block.pumpkinMetadata() == Block::WestFacingPumpkin && side_index == MainWindow::NegativeX) ||
-                                        (block.pumpkinMetadata() == Block::NorthFacingPumpkin && side_index == MainWindow::PositiveY) ||
-                                        (block.pumpkinMetadata() == Block::SouthFacingPumpkin && side_index == MainWindow::NegativeY))
-                                    {
-                                        texture_name = block_data.side_textures.value(MainWindow::NegativeY);
-                                    } else {
-                                        texture_name = "PumpkinBack";
-                                    }
-                                }
-                            }
-                            break;
-                            case Block::RedstoneWire_placed:
-                            {
-                                if (block.redstoneMetadata() == 0) {
-                                    texture_name = "RedWire4wayOff";
-                                } else {
-                                    texture_name = "RedWire4wayOn";
-                                }
-                            }
-                            break;
-                            default:;
-                        }
-                        MainWindow::BlockTextureCoord btc = m_owner->m_terrain_tex_coords.value(texture_name);
-
-                        Ogre::Vector3 squish = block_data.squish_amount.at(side_index);
-
-                        float brightness;
-                        int night_darkness = 0;
-                        brightness = MainWindow::c_light_brightness[qMax(neighbor_block.skyLight() - night_darkness, neighbor_block.light())];
-
-                        Ogre::ColourValue color = Ogre::ColourValue::White;
-                        if (block.type() == Block::Grass && side_index == MainWindow::PositiveZ)
-                            color.setAsRGBA(0x8DD55EFF);
-                        else if (block.type() == Block::Leaves)
-                            color.setAsRGBA(0x8DD55EFF);
-
-                        color *= brightness;
-                        color *= MainWindow::c_brightness_bias[side_index];
-
-                        for (int triangle_index = 0; triangle_index < 2; triangle_index++) {
-                            for (int point_index = 0; point_index < 3; point_index++) {
-                                Ogre::Vector3 pos = MainWindow::c_side_coord[side_index][triangle_index][point_index] - squish;
-                                if (block_data.rotate) {
-                                    pos -= 0.5f;
-                                    pos = Ogre::Quaternion(Ogre::Degree(45), Ogre::Vector3::UNIT_Z) * pos;
-                                    pos += 0.5f;
-                                }
-                                obj->position(pos + abs_block_loc);
-
-                                Ogre::Vector2 tex_coord = MainWindow::c_tex_coord[triangle_index][point_index];
-                                obj->textureCoord((btc.x+tex_coord.x*btc.w) / MainWindow::c_terrain_png_width, (btc.y+tex_coord.y*btc.h) / MainWindow::c_terrain_png_height);
-
-                                obj->colour(color);
-                            }
-                        }
-                    }
+                    for (int side_index = 0; side_index < 6; side_index++)
+                        generateSideMesh(obj, absolute_position, block, block_data, side_index);
                 }
             }
         }
         m_queue_mutex.lock();
-        m_new_sub_chunk_queue.enqueue(ReadySubChunk(pass, obj, m_owner->m_pass[pass], sub_chunk_key));
+        m_new_sub_chunk_queue.enqueue(ReadySubChunk(pass, MainWindow::NoDirection, obj, m_owner->m_pass[pass], sub_chunk_key));
 
 
         chunk_data = m_owner->m_sub_chunks.value(sub_chunk_key);
         // chunk_data.node[pass] is set in frameRenderingQueued by the other thread after it creates it.
-        chunk_data.node[pass] = NULL;
-        chunk_data.obj[pass] = obj;
+        chunk_data.node[MainWindow::NoDirection+1][pass] = NULL;
+        chunk_data.obj[MainWindow::NoDirection+1][pass] = obj;
         m_owner->m_sub_chunks.insert(sub_chunk_key, chunk_data);
         m_queue_mutex.unlock();
     }
 
-    for (int pass = 0; pass < 2; pass++) {
+    if (replace_chunk) {
         // put delete old stuff on queue
-        if (replace_chunk) {
-            m_queue_mutex.lock();
-            m_done_sub_chunk_queue.enqueue(done_chunks[pass]);
-            m_queue_mutex.unlock();
+        m_queue_mutex.lock();
+        for (int pass = 0; pass < 2; pass++) {
+            m_done_sub_chunk_queue.enqueue(done_chunks[MainWindow::NoDirection+1][pass]);
+        }
+        m_queue_mutex.unlock();
+    }
+}
+
+void SubChunkMeshGenerator::generateSideMesh(Ogre::ManualObject * obj,
+    const Int3D & absolute_position, const Block & block, const MainWindow::BlockData &block_data, int side_index)
+{
+    if (block_data.side_textures.at(side_index).isEmpty())
+        return;
+
+
+    // skip chunk seams
+//    if (!m_owner->m_game->isBlockLoaded(absolute_position + MainWindow::c_side_offset[side_index]))
+//        return;
+
+    // if the block on this side is opaque or the same block, skip
+    Block neighbor_block = m_owner->m_game->blockAt(absolute_position + MainWindow::c_side_offset[side_index]);
+    Block::ItemType side_type = neighbor_block.type();
+    if ((side_type == block.type() && (block_data.partial_alpha || side_type == Block::Glass)) ||
+        ! m_owner->m_block_data.value(side_type, m_owner->m_air).see_through)
+    {
+        return;
+    }
+
+    // add this side to mesh
+    Ogre::Vector3 abs_block_loc(absolute_position.x, absolute_position.y, absolute_position.z);
+
+    // special cases for textures
+    QString texture_name = block_data.side_textures.at(side_index);
+    switch (block.type()) {
+        case Block::Wood:
+        if (side_index != MainWindow::NegativeZ && side_index != MainWindow::PositiveZ) {
+            switch (block.woodMetadata()) {
+            case Block::NormalTrunkTexture:
+                texture_name = "WoodSide";
+                break;
+            case Block::RedwoodTrunkTexture:
+                texture_name = "RedwoodTrunkSide";
+                break;
+            case Block::BirchTrunkTexture:
+                texture_name = "BirchTrunkSide";
+                break;
+            }
+        }
+        break;
+        case Block::Leaves:
+        {
+            switch (block.leavesMetadata()) {
+            case Block::NormalLeavesTexture:
+                texture_name = "LeavesRegular";
+                break;
+            case Block::RedwoodLeavesTexture:
+                texture_name = "RedwoodLeaves";
+                break;
+            case Block::BirchLeavesTexture:
+                texture_name = "BirchLeaves";
+                break;
+            }
+        }
+        break;
+        case Block::Farmland:
+        if (side_index == MainWindow::PositiveZ)
+            texture_name = block.farmlandMetadata() == 0 ? "FarmlandDry" : "FarmlandWet";
+        break;
+        case Block::Crops:
+        texture_name = QString("Crops") + QString::number(block.cropsMetadata());
+        break;
+        case Block::Wool:
+        texture_name = MainWindow::c_wool_texture_names[block.woolMetadata()];
+        break;
+        case Block::Furnace:
+        case Block::BurningFurnace:
+        case Block::Dispenser:
+        {
+            if (side_index != MainWindow::NegativeZ && side_index != MainWindow::PositiveZ) {
+                if ((block.furnaceMetadata() == Block::EastFacingFurnace && side_index == MainWindow::PositiveX) ||
+                    (block.furnaceMetadata() == Block::WestFacingFurnace && side_index == MainWindow::NegativeX) ||
+                    (block.furnaceMetadata() == Block::NorthFacingFurnace && side_index == MainWindow::PositiveY) ||
+                    (block.furnaceMetadata() == Block::SouthFacingFurnace && side_index == MainWindow::NegativeY))
+                {
+                    texture_name = block_data.side_textures.value(MainWindow::NegativeY);
+                } else {
+                    texture_name = "FurnaceBack";
+                }
+            }
+        }
+        break;
+        case Block::Pumpkin:
+        case Block::JackOLantern:
+        {
+            if (side_index != MainWindow::NegativeZ && side_index != MainWindow::PositiveZ) {
+                if ((block.pumpkinMetadata() == Block::EastFacingPumpkin && side_index == MainWindow::PositiveX) ||
+                    (block.pumpkinMetadata() == Block::WestFacingPumpkin && side_index == MainWindow::NegativeX) ||
+                    (block.pumpkinMetadata() == Block::NorthFacingPumpkin && side_index == MainWindow::PositiveY) ||
+                    (block.pumpkinMetadata() == Block::SouthFacingPumpkin && side_index == MainWindow::NegativeY))
+                {
+                    texture_name = block_data.side_textures.value(MainWindow::NegativeY);
+                } else {
+                    texture_name = "PumpkinBack";
+                }
+            }
+        }
+        break;
+        case Block::RedstoneWire_placed:
+        {
+            if (block.redstoneMetadata() == 0) {
+                texture_name = "RedWire4wayOff";
+            } else {
+                texture_name = "RedWire4wayOn";
+            }
+        }
+        break;
+        default:;
+    }
+    MainWindow::BlockTextureCoord btc = m_owner->m_terrain_tex_coords.value(texture_name);
+
+    Ogre::Vector3 squish = block_data.squish_amount.at(side_index);
+
+    float brightness;
+    int night_darkness = 0;
+    brightness = MainWindow::c_light_brightness[qMax(neighbor_block.skyLight() - night_darkness, neighbor_block.light())];
+
+    Ogre::ColourValue color = Ogre::ColourValue::White;
+    if (block.type() == Block::Grass && side_index == MainWindow::PositiveZ)
+        color.setAsRGBA(0x8DD55EFF);
+    else if (block.type() == Block::Leaves)
+        color.setAsRGBA(0x8DD55EFF);
+
+    color *= brightness;
+    color *= MainWindow::c_brightness_bias[side_index];
+
+    for (int triangle_index = 0; triangle_index < 2; triangle_index++) {
+        for (int point_index = 0; point_index < 3; point_index++) {
+            Ogre::Vector3 pos = MainWindow::c_side_coord[side_index][triangle_index][point_index] - squish;
+            if (block_data.rotate) {
+                pos -= 0.5f;
+                pos = Ogre::Quaternion(Ogre::Degree(45), Ogre::Vector3::UNIT_Z) * pos;
+                pos += 0.5f;
+            }
+            obj->position(pos + abs_block_loc);
+
+            Ogre::Vector2 tex_coord = MainWindow::c_tex_coord[triangle_index][point_index];
+            obj->textureCoord((btc.x+tex_coord.x*btc.w) / MainWindow::c_terrain_png_width, (btc.y+tex_coord.y*btc.h) / MainWindow::c_terrain_png_height);
+
+            obj->colour(color);
         }
     }
 }
@@ -895,8 +910,11 @@ void SubChunkMeshGenerator::queueDeleteSubChunkMesh(const Int3D &coord)
                 MainWindow::SubChunkData chunk_data = m_owner->m_sub_chunks.value(it);
                 if (chunk_data.is_null)
                     continue;
-                for (int i = 0; i < 2; i++)
-                    m_done_sub_chunk_queue.enqueue(ReadySubChunk(i, chunk_data.obj[i], chunk_data.node[i], it));
+                for (int i = 0; i < 2; i++) {
+                    m_done_sub_chunk_queue.enqueue(ReadySubChunk(i, MainWindow::NoDirection,
+                        chunk_data.obj[MainWindow::NoDirection+1][i],
+                        chunk_data.node[MainWindow::NoDirection+1][i], it));
+                }
                 m_owner->m_sub_chunks.remove(it);
             }
         }
