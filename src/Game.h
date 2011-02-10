@@ -64,6 +64,7 @@ public:
     Server::EntityPosition playerPosition() const { return m_player_position; }
 
     Block blockAt(const Int3D & absolute_location);
+    bool isBlockLoaded(const Int3D & absolute_location);
     int playerHealth() { return m_player_health; }
 
     void startDigging(const Int3D &block);

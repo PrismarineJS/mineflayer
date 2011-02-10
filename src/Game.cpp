@@ -302,6 +302,12 @@ Block Game::blockAt(const Int3D & absolute_location)
         return c_air;
     return chunk.data()->getBlock(absolute_location - chunk_key);
 }
+bool Game::isBlockLoaded(const Int3D &absolute_location)
+{
+    QMutexLocker locker(&m_mutex);
+    Int3D chunk_key = chunkKey(absolute_location);
+    return m_chunks.contains(chunk_key);
+}
 
 void Game::startDigging(const Int3D &block)
 {
