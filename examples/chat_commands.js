@@ -23,10 +23,14 @@ var chat_commands = function() {
         entry.max_arg_count = max_arg_count;
         commands_by_name[name] = entry;
     };
-
     var commands_by_name = {};
+    function debug(message) {
+        if (_public.debug) {
+            mf.debug(message);
+        }
+    }
+
     mf.onChat(function(username, message) {
-        mf.debug("handle chat");
         if (!_public.enabled) {
             return;
         }
@@ -37,17 +41,20 @@ var chat_commands = function() {
         if (parts.length === 0) {
             return;
         }
-        var name = parts.removeAt(0);
+        var name = parts.shift();
         var entry = commands_by_name[name];
         if (entry === undefined) {
             return;
         }
         if (!(entry.min_arg_count <= parts.length && parts.length <= entry.max_arg_count)) {
             // ignore wrong usage
+            debug("wrong number of args for command: " + name);
             return;
         }
+        debug("calling command: " + name);
         entry.callback(username, parts);
-    };
+    }
 
     return _public;
 }();
+

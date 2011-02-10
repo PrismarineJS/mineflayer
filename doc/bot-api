@@ -157,6 +157,20 @@ mf.playerState()
 // NOT YET IMPLEMENTED
 
 /**
+ * Returns the state of the entity with the given entity id or undefined if the entity id cannot be found.
+ * @param {Number} entity_id
+ * @return {EntityState} or undefined
+ */
+mf.entityState(entity_id)
+
+/**
+ * Returns the entity id of the player with the given username or undefined if the username is not visible.
+ * @param {String} username
+ * @return {Number} or undefined
+ */
+mf.userEntityId(username)
+
+/**
  * @param {Point} point The coordinates you want to translate.
  * @returns {Point} point translated into Notch's coordinate system.
  */
@@ -251,6 +265,11 @@ mf.mobState(entity_id)
  * @returns {Number} The number of real life seconds since dawn. This ranges from 0 to 1200 since a day is 20 minutes. See also onTimeUpdated().
  */
 mf.timeOfDay()
+
+/**
+ * Teleports you to the position specified.
+ */
+mf.hax.setPosition(point)
 
 // TODO: moving around
 // TODO: using items. same as place block?
