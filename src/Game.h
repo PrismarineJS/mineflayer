@@ -82,6 +82,11 @@ public:
 
 signals:
     void chatReceived(QString username, QString message);
+
+    void entitySpawned(int entity_id);
+    void entityDespawned(int entity_id);
+    void entityMoved(int entity_id);
+
     void chunkUpdated(const Int3D &start, const Int3D &size);
     void unloadChunk(const Int3D & coord);
     void playerPositionUpdated();
@@ -91,6 +96,43 @@ signals:
     void loginStatusUpdated(Server::LoginStatus status);
 
 private:
+    class Entity {
+    public:
+        enum EntityType {
+            NamedPlayer,
+            // TODO: ObjectOrVehicle,
+            Mob,
+            Pickup,
+        };
+        const EntityType type;
+        const int entity_id;
+        Server::EntityPosition position;
+        virtual ~Entity() {}
+    protected:
+        Entity(EntityType type, int entity_id, Server::EntityPosition position) :
+                type(type), entity_id(entity_id), position(position) {}
+    };
+    class NamedPlayerEntity : public Entity {
+    public:
+        const QString username;
+        Block::ItemType held_item;
+        NamedPlayerEntity(int entity_id, Server::EntityPosition position, QString username, Block::ItemType held_item) :
+                Entity(NamedPlayer, entity_id, position), username(username), held_item(held_item) {}
+    };
+    class MobEntity : public Entity {
+    public:
+        const MobSpawnResponse::MobType mob_type;
+        MobEntity(int entity_id, Server::EntityPosition position, MobSpawnResponse::MobType mob_type) :
+                Entity(Mob, entity_id, position), mob_type(mob_type) {}
+    };
+    class PickupEntity : public Entity {
+    public:
+        const Message::Item item;
+        PickupEntity(int entity_id, Server::EntityPosition position, Message::Item item) :
+                Entity(Pickup, entity_id, position), item(item) {}
+    };
+
+
     QMutex m_mutex;
 
     static const int c_notchian_tick_ms;
@@ -111,7 +153,7 @@ private:
     int m_player_health;
     int m_player_entity_id;
     QHash<Int3D, QSharedPointer<Chunk> > m_chunks;
-    QHash<int, Server::EntityPosition> m_entities;
+    QHash<int, QSharedPointer<Entity> > m_entities;
 
     float m_max_ground_speed;
     float m_terminal_velocity;
@@ -140,6 +182,17 @@ private slots:
     void handlePlayerPositionAndLookUpdated(Server::EntityPosition position);
     void handlePlayerHealthUpdated(int new_health);
     void handleUnloadChunk(const Int3D & coord);
+
+    void handleNamedPlayerSpawned(int entity_id, QString player_name, Server::EntityPosition position, Block::ItemType held_item);
+    void handlePickupSpawned(int entity_id, Message::Item item, Server::EntityPosition position);
+    void handleMobSpawned(int entity_id, MobSpawnResponse::MobType mob_type, Server::EntityPosition position);
+    void handleEntityDestroyed(int entity_id);
+    void handleEntityMovedRelatively(int entity_id, Server::EntityPosition movement);
+    void handleEntityLooked(int entity_id, Server::EntityPosition look);
+    void handleEntityLookedAndMovedRelatively(int entity_id, Server::EntityPosition position);
+    void handleEntityMoved(int entity_id, Server::EntityPosition position);
+
+
     void handleMapChunkUpdated(QSharedPointer<Chunk> update);
     void handleMultiBlockUpdate(Int3D chunk_key, QHash<Int3D,Block> new_blocks);
     void handleBlockUpdate(Int3D absolute_location, Block new_block);

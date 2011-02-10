@@ -60,7 +60,7 @@ signals:
     void chatReceived(QString message);
     void playerHealthUpdated(int new_health);
 
-    void namedPlayerSpawned(int entity_id, QString player_name, Server::EntityPosition position, int held_item);
+    void namedPlayerSpawned(int entity_id, QString player_name, Server::EntityPosition position, Block::ItemType held_item);
     void pickupSpawned(int entity_id, Message::Item item, Server::EntityPosition position);
     void mobSpawned(int entity_id, MobSpawnResponse::MobType mob_type, Server::EntityPosition position);
 

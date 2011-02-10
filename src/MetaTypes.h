@@ -18,6 +18,9 @@ namespace MetaTypes {
         qRegisterMetaType<Int3D>("Int3D");
         qRegisterMetaType<Block>("Block");
         qRegisterMetaType<QHash<Int3D,Block> >("QHash<Int3D,Block>");
+        qRegisterMetaType<MobSpawnResponse::MobType>("MobSpawnResponse::MobType");
+        qRegisterMetaType<Block::ItemType>("Block::ItemType");
+
     }
 }
 

@@ -50,6 +50,24 @@ Game::Game(QUrl connection_info) :
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(playerHealthUpdated(int)), this, SLOT(handlePlayerHealthUpdated(int)));
     Q_ASSERT(success);
+
+    success = connect(&m_server, SIGNAL(namedPlayerSpawned(int,QString,Server::EntityPosition,Block::ItemType)), this, SLOT(handleNamedPlayerSpawned(int,QString,Server::EntityPosition,Block::ItemType)));
+    Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(pickupSpawned(int,Message::Item,Server::EntityPosition)), this, SLOT(handlePickupSpawned(int,Message::Item,Server::EntityPosition)));
+    Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(mobSpawned(int,MobSpawnResponse::MobType,Server::EntityPosition)), this, SLOT(handleMobSpawned(int,MobSpawnResponse::MobType,Server::EntityPosition)));
+    Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(entityDestroyed(int)), this, SLOT(handleEntityDestroyed(int)));
+    Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(entityMovedRelatively(int,Server::EntityPosition)), this, SLOT(handleEntityMovedRelatively(int,Server::EntityPosition)));
+    Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(entityLooked(int,Server::EntityPosition)), this, SLOT(handleEntityLooked(int,Server::EntityPosition)));
+    Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(entityLookedAndMovedRelatively(int,Server::EntityPosition)), this, SLOT(handleEntityLookedAndMovedRelatively(int,Server::EntityPosition)));
+    Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(entityMoved(int,Server::EntityPosition)), this, SLOT(handleEntityMoved(int,Server::EntityPosition)));
+    Q_ASSERT(success);
+
     success = connect(&m_server, SIGNAL(mapChunkUpdated(QSharedPointer<Chunk>)), this, SLOT(handleMapChunkUpdated(QSharedPointer<Chunk>)));
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(multiBlockUpdate(Int3D,QHash<Int3D,Block>)), this, SLOT(handleMultiBlockUpdate(Int3D,QHash<Int3D,Block>)));
@@ -306,12 +324,10 @@ bool Game::entityPosition(int entity_id, Server::EntityPosition & output_positio
         output_position = m_player_position;
         return true;
     }
-    Server::EntityPosition not_found_position;
-    not_found_position.height = -1;
-    Server::EntityPosition position = m_entities.value(entity_id, not_found_position);
-    if (position.height < 0)
+    QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
+    if (entity.isNull())
         return false;
-    output_position = position;
+    output_position = entity.data()->position;
     return true;
 }
 
@@ -455,6 +471,68 @@ void Game::handlePlayerHealthUpdated(int new_health)
     emit playerHealthUpdated();
     if (m_player_health == 0)
         emit playerDied();
+}
+
+void Game::handleNamedPlayerSpawned(int entity_id, QString player_name, Server::EntityPosition position, Block::ItemType held_item)
+{
+    m_entities.insert(entity_id, QSharedPointer<Entity>(new NamedPlayerEntity(entity_id, position, player_name, held_item)));
+    emit entitySpawned(entity_id);
+}
+void Game::handlePickupSpawned(int entity_id, Message::Item item, Server::EntityPosition position)
+{
+    m_entities.insert(entity_id, QSharedPointer<Entity>(new PickupEntity(entity_id, position, item)));
+    emit entitySpawned(entity_id);
+}
+void Game::handleMobSpawned(int entity_id, MobSpawnResponse::MobType mob_type, Server::EntityPosition position)
+{
+    m_entities.insert(entity_id, QSharedPointer<Entity>(new MobEntity(entity_id, position, mob_type)));
+    emit entitySpawned(entity_id);
+}
+void Game::handleEntityDestroyed(int entity_id)
+{
+    m_entities.remove(entity_id);
+    emit entityDespawned(entity_id);
+}
+void Game::handleEntityMovedRelatively(int entity_id, Server::EntityPosition movement)
+{
+    QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
+    if (entity.isNull())
+        return;
+    entity.data()->position.x += movement.x;
+    entity.data()->position.y += movement.y;
+    entity.data()->position.z += movement.z;
+    emit entityMoved(entity_id);
+}
+void Game::handleEntityLooked(int entity_id, Server::EntityPosition look)
+{
+    QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
+    if (entity.isNull())
+        return;
+    entity.data()->position.yaw = look.yaw;
+    entity.data()->position.pitch = look.pitch;
+    emit entityMoved(entity_id);
+}
+void Game::handleEntityLookedAndMovedRelatively(int entity_id, Server::EntityPosition position)
+{
+    QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
+    if (entity.isNull())
+        return;
+    entity.data()->position.x += position.x;
+    entity.data()->position.y += position.y;
+    entity.data()->position.z += position.z;
+    entity.data()->position.yaw = position.yaw;
+    entity.data()->position.pitch = position.pitch;
+    emit entityMoved(entity_id);
+}
+void Game::handleEntityMoved(int entity_id, Server::EntityPosition position)
+{
+    QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
+    if (entity.isNull())
+        return;
+    entity.data()->position.x = position.x;
+    entity.data()->position.y = position.y;
+    entity.data()->position.z = position.z;
+    emit entityMoved(entity_id);
 }
 
 void Game::handleUnloadChunk(const Int3D &coord)
