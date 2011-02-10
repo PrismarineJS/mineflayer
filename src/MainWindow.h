@@ -69,12 +69,12 @@ protected:
     bool frameRenderingQueued(const Ogre::FrameEvent& evt);
 
     // OIS::KeyListener
-    bool keyPressed( const OIS::KeyEvent &arg );
-    bool keyReleased( const OIS::KeyEvent &arg );
+    bool keyPressed(const OIS::KeyEvent &arg);
+    bool keyReleased(const OIS::KeyEvent &arg);
     // OIS::MouseListener
-    bool mouseMoved( const OIS::MouseEvent &arg );
-    bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
-    bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id );
+    bool mouseMoved(const OIS::MouseEvent &arg);
+    bool mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
+    bool mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
 
     // Ogre::WindowEventListener
     //Adjust mouse clipping area
@@ -132,8 +132,11 @@ private:
     struct SubChunkData {
         bool is_null;
         Int3D position;
-        Ogre::SceneNode * node[2]; // one for each pass
-        Ogre::ManualObject * obj[2]; // one for each pass
+
+        // 2 passes for each seam, and a big one for the middle. index is face + 1 so you can do NoDirection as 0.
+        Ogre::SceneNode * node[6+1][2];
+        Ogre::ManualObject * obj[6+1][2];
+
         SubChunkData() : is_null(true) {}
     };
 
@@ -202,12 +205,15 @@ class SubChunkMeshGenerator : public QObject {
 public:
     struct ReadySubChunk {
         int pass;
+        MainWindow::BlockFaceDirection face;
         Ogre::ManualObject * obj;
         Ogre::SceneNode * node;
+
         Int3D sub_chunk_key;
         ReadySubChunk() {}
-        ReadySubChunk(int pass, Ogre::ManualObject * obj, Ogre::SceneNode * node, Int3D sub_chunk_key) :
-            pass(pass), obj(obj), node(node), sub_chunk_key(sub_chunk_key) {}
+        ReadySubChunk(int pass, MainWindow::BlockFaceDirection face, Ogre::ManualObject * obj,
+                      Ogre::SceneNode * node, Int3D sub_chunk_key) :
+            pass(pass), face(face), obj(obj), node(node), sub_chunk_key(sub_chunk_key) {}
     };
 
 public:
@@ -236,12 +242,17 @@ private:
     QQueue<ReadySubChunk> m_done_sub_chunk_queue;
     QThread * m_thread;
     mutable QMutex m_queue_mutex;
+
 private slots:
     void handleUpdatedChunk(const Int3D &start, const Int3D &size);
-    void generateSubChunkMesh(const Int3D & sub_chunk_key);
     void queueDeleteSubChunkMesh(const Int3D & coord);
 
     void initialize();
+private:
+    void generateSubChunkMesh(const Int3D & sub_chunk_key);
+    void generateSideMesh(Ogre::ManualObject * obj, const Int3D & absolute_position,
+        const Block & block, const MainWindow::BlockData &block_data, int side_index);
+
 };
 
 uint qHash(const MainWindow::PhysicalInput & value);
