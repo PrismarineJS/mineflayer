@@ -34,5 +34,4 @@ Core:
  * clouds
 
 Bot framework:
- * use point objects rather than x,y,z
  * implement the functions in doc/bot-api

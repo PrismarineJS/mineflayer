@@ -10,6 +10,8 @@
 class Message {
 public:
     enum MessageType {
+        DummyDisconnect=-2,
+
         KeepAlive=0x00,
         Login=0x01,
         Handshake=0x02,
@@ -220,6 +222,12 @@ public:
     WindowClickRequest(qint8 window_id, qint16 slot, bool is_right_click, qint16 action_id, Item item) : OutgoingRequest(WindowClick),
         window_id(window_id), slot(slot), is_right_click(is_right_click), action_id(action_id), item(item) {}
     virtual void writeMessageBody(QDataStream &stream);
+};
+
+class DummyDisconnectMessage : public OutgoingRequest {
+public:
+    DummyDisconnectMessage() : OutgoingRequest(DummyDisconnect) {}
+    virtual void writeMessageBody(QDataStream &) {}
 };
 
 class IncomingResponse : public Message {

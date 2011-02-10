@@ -1,6 +1,6 @@
 #include "Game.h"
 
-#include <QApplication>
+#include <QCoreApplication>
 
 #include <OGRE/OgreVector3.h>
 #include <OGRE/OgreVector2.h>
@@ -35,7 +35,8 @@ Game::Game(QUrl connection_info) :
     m_terminal_velocity(c_standard_terminal_velocity),
     m_input_acceleration(c_standard_walking_acceleration),
     m_gravity(c_standard_gravity),
-    m_ground_friction(c_standard_ground_friction)
+    m_ground_friction(c_standard_ground_friction),
+    m_return_code(0)
 {
     initializeStaticData();
 
@@ -51,8 +52,6 @@ Game::Game(QUrl connection_info) :
     success = connect(&m_server, SIGNAL(chatReceived(QString)), this, SLOT(handleChatReceived(QString)));
     Q_ASSERT(success);
     // pass some signals directly through
-    success = connect(&m_server, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SIGNAL(loginStatusUpdated(Server::LoginStatus)));
-    Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(unloadChunk(Int3D)), this, SLOT(handleUnloadChunk(Int3D)));
     Q_ASSERT(success);
 
@@ -286,6 +285,14 @@ void Game::start()
     m_server.socketConnect();
 }
 
+void Game::shutdown(int return_code)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_return_code = return_code;
+    m_server.finishWritingAndDisconnect();
+}
+
 Block Game::blockAt(const Int3D & absolute_location)
 {
     QMutexLocker locker(&m_mutex);
@@ -342,15 +349,17 @@ void Game::handleLoginStatusChanged(Server::LoginStatus status)
     QMutexLocker locker(&m_mutex);
     switch (status) {
         case Server::SocketError:
-            qWarning() << "Unable to connect to server";
-            QApplication::instance()->quit();
+            qWarning() << "Game: Unable to connect to server";
+            QCoreApplication::instance()->exit(-1);
             break;
         case Server::Disconnected:
-            qWarning() << "Got disconnected from server";
-            QApplication::instance()->quit();
+            qWarning() << "Game: Got disconnected from server";
+            QCoreApplication::instance()->exit(m_return_code);
             break;
         default:;
     }
+
+    emit loginStatusUpdated(status);
 }
 
 void Game::handleChatReceived(QString message)

@@ -67,6 +67,12 @@ void Server::socketConnect()
     m_socket->connectToHost(m_connection_info.host(), m_connection_info.port(25565));
 }
 
+void Server::finishWritingAndDisconnect()
+{
+    // put a dummy message on the queue
+    this->sendMessage(QSharedPointer<OutgoingRequest>(new DummyDisconnectMessage()));
+}
+
 void Server::sendMessage(QSharedPointer<OutgoingRequest> msg)
 {
     if (QThread::currentThread() != m_socket_thread) {
@@ -74,7 +80,13 @@ void Server::sendMessage(QSharedPointer<OutgoingRequest> msg)
         Q_ASSERT(success);
         return;
     }
+
     if (m_socket->isOpen()) {
+        if (msg.data()->messageType == Message::DummyDisconnect) {
+            m_socket->disconnectFromHost();
+            return;
+        }
+
         QDataStream stream(m_socket);
         msg.data()->writeToStream(stream);
     }
@@ -109,7 +121,6 @@ void Server::handleConnected()
 
 void Server::cleanUpAfterDisconnect()
 {
-    qDebug() << "Cleaning up, disconnected";
     m_socket_thread->exit();
     this->moveToThread(QCoreApplication::instance()->thread());
     bool success;
@@ -124,7 +135,6 @@ void Server::terminate()
     m_socket_thread->wait();
 
     changeLoginState(Disconnected);
-    emit socketDisconnected();
 }
 
 void Server::handleFinishedRequest(QNetworkReply * reply)
@@ -406,6 +416,15 @@ void Server::changeLoginState(LoginStatus state)
 
 void Server::handleSocketError(QAbstractSocket::SocketError error)
 {
-    qDebug() << "Socket error: " << error;
-    changeLoginState(SocketError);
+    switch (error) {
+    case QAbstractSocket::ConnectionRefusedError:
+    case QAbstractSocket::HostNotFoundError:
+    case QAbstractSocket::SocketAccessError:
+    case QAbstractSocket::ProxyConnectionRefusedError:
+    case QAbstractSocket::ProxyNotFoundError:
+        qDebug() << "Could not make connection: " << error;
+        changeLoginState(SocketError);
+        break;
+    default:;
+    }
 }

@@ -68,8 +68,7 @@ int main(int argc, char *argv[])
 
     if (! script_filename.isEmpty()) {
         ScriptRunner runner(url, script_filename, script_debug, headless);
-        if (! runner.go())
-            return runner.returnCode();
+        runner.go();
         if (headless)
             return a.exec();
     }

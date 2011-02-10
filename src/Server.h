@@ -55,7 +55,6 @@ public:
 
 signals:
     void loginStatusUpdated(Server::LoginStatus status);
-    void socketDisconnected();
 
     void chatReceived(QString message);
     void playerHealthUpdated(int new_health);
@@ -67,6 +66,8 @@ signals:
 public slots:
     // actually connect to the server
     void socketConnect();
+
+    void finishWritingAndDisconnect();
 
 public:
     void sendPositionAndLook(EntityPosition positionAndLook);

@@ -51,6 +51,7 @@ public:
 
     // call every frame passing it the amount of time since the last frame
     void start();
+    void shutdown(int return_code);
     void doPhysics(float delta_seconds);
 
     // equivalent to pressing a button.
@@ -118,6 +119,7 @@ private:
 
     static bool s_initialized;
 
+    int m_return_code;
 
 private:
     void gotFirstPlayerPositionAndLookResponse();

@@ -9,18 +9,20 @@
 #include <QUrl>
 #include <QTextStream>
 #include <QTimer>
+#include <QThread>
 
 class ScriptRunner : public QObject
 {
     Q_OBJECT
 public:
-    ScriptRunner(QUrl url, QString script_file, bool debug, bool headless, QObject * parent = NULL);
+    ScriptRunner(QUrl url, QString script_file, bool debug, bool headless);
 
-    // start the engine. returns success
-    bool go();
-    int returnCode() { return m_return_code; }
+public slots:
+    // start the engine
+    void go();
 
 private:
+    QThread * m_thread;
     QUrl m_url;
     QString m_main_script_filename;
     bool m_debug;
@@ -30,9 +32,9 @@ private:
     QScriptValue m_handler_map;
 
     Game * m_game;
+    bool m_started_game;
 
     bool m_exiting;
-    int m_return_code;
 
     QTextStream m_stderr;
     QTextStream m_stdout;

@@ -8,24 +8,35 @@
 
 #include <cmath>
 
-ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headless, QObject *parent) :
-    QObject(parent),
+ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headless) :
+    QObject(NULL),
     m_url(url),
     m_main_script_filename(script_file),
     m_debug(debug),
     m_headless(headless),
     m_engine(NULL),
-    m_game(NULL),
+    m_game(new Game(url)),
+    m_started_game(false),
     m_exiting(false),
-    m_return_code(0),
     m_stderr(stderr),
     m_stdout(stdout),
     m_timer_count(0)
 {
+    // run in our own thread
+    m_thread = new QThread();
+    m_thread->start();
+    this->moveToThread(m_thread);
 }
 
-bool ScriptRunner::go()
+void ScriptRunner::go()
 {
+    if (QThread::currentThread() != m_thread) {
+        bool success;
+        success = QMetaObject::invokeMethod(this, "go", Qt::QueuedConnection);
+        Q_ASSERT(success);
+        return;
+    }
+
     m_engine = new QScriptEngine(this);
     if (m_debug) {
         QScriptEngineDebugger debugger;
@@ -36,7 +47,7 @@ bool ScriptRunner::go()
     }
 
     // initialize the MF object before we run any user code
-    QScriptValue mf_obj = m_engine->newQObject(this);
+    QScriptValue mf_obj = m_engine->newObject();
     m_engine->globalObject().setProperty("mf", mf_obj);
 
     // init event handler framework
@@ -82,15 +93,15 @@ bool ScriptRunner::go()
     if (!file_exists) {
         qWarning() << "file not found: " << m_main_script_filename;
         shutdown(1);
+        return;
     }
     m_engine->evaluate(main_script_contents, m_main_script_filename);
     checkEngine("evaluating main script");
 
     if (m_exiting)
-        return false;
+        return;
 
     // connect to server
-    m_game = new Game(m_url);
     bool success;
     success = connect(m_game, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(handleChunkUpdated(Int3D,Int3D)));
     Q_ASSERT(success);
@@ -104,9 +115,8 @@ bool ScriptRunner::go()
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(playerHealthUpdated()), this, SLOT(handlePlayerHealthUpdated()));
     Q_ASSERT(success);
+    m_started_game = true;
     m_game->start();
-
-    return true;
 }
 
 QString ScriptRunner::readFile(const QString &path, bool * success)
@@ -330,8 +340,12 @@ QScriptValue ScriptRunner::debug(QScriptContext *context, QScriptEngine *engine)
 void ScriptRunner::shutdown(int return_code)
 {
     m_exiting = true;
-    QCoreApplication::instance()->exit(return_code);
-    m_return_code = return_code;
+    if (m_started_game) {
+        m_thread->exit(return_code);
+        m_game->shutdown(return_code);
+    } else {
+        QCoreApplication::exit(return_code);
+    }
 }
 
 QScriptValue ScriptRunner::chat(QScriptContext *context, QScriptEngine *engine)
@@ -473,17 +487,10 @@ void ScriptRunner::handleChatReceived(QString username, QString message)
 
 void ScriptRunner::handleLoginStatusUpdated(Server::LoginStatus status)
 {
+    // note that game class already handles shutting down for Disconnected and SocketError.
     switch (status) {
-        case Server::Disconnected:
-            qWarning() << "Got disconnected from server";
-            shutdown(0);
-            break;
         case Server::Success:
             raiseEvent("onConnected");
-            break;
-        case Server::SocketError:
-            qWarning() << "Unable to connect to server";
-            shutdown(1);
             break;
         default:;
     }
