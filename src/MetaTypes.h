@@ -16,6 +16,8 @@ namespace MetaTypes {
         qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError");
         qRegisterMetaType<Server::EntityPosition>("Server::EntityPosition");
         qRegisterMetaType<Int3D>("Int3D");
+        qRegisterMetaType<Block>("Block");
+        qRegisterMetaType<QHash<Int3D,Block> >("QHash<Int3D,Block>");
     }
 }
 

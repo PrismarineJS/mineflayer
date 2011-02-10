@@ -135,8 +135,10 @@ private slots:
     void handleChatReceived(QString content);
     void handlePlayerPositionAndLookUpdated(Server::EntityPosition position);
     void handlePlayerHealthUpdated(int new_health);
-    void handleMapChunkUpdated(QSharedPointer<Chunk> update);
     void handleUnloadChunk(const Int3D & coord);
+    void handleMapChunkUpdated(QSharedPointer<Chunk> update);
+    void handleMultiBlockUpdate(Int3D chunk_key, QHash<Int3D,Block> new_blocks);
+    void handleBlockUpdate(Int3D absolute_location, Block new_block);
 
     void sendPosition();
     void timeToContinueDigging();

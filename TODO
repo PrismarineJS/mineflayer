@@ -10,6 +10,7 @@ Core:
  * entity tracking
  * non-spoken chat interpretation (player joined, etc)
  * clean up stray chunks that didn't get unloaded
+ * recalculte light on block changes
 
 3D client:
  * doors

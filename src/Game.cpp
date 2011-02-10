@@ -1,6 +1,7 @@
 #include "Game.h"
 
 #include <QCoreApplication>
+#include <QHashIterator>
 
 #include <OGRE/OgreVector3.h>
 #include <OGRE/OgreVector2.h>
@@ -48,6 +49,10 @@ Game::Game(QUrl connection_info) :
     success = connect(&m_server, SIGNAL(playerHealthUpdated(int)), this, SLOT(handlePlayerHealthUpdated(int)));
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(mapChunkUpdated(QSharedPointer<Chunk>)), this, SLOT(handleMapChunkUpdated(QSharedPointer<Chunk>)));
+    Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(multiBlockUpdate(Int3D,QHash<Int3D,Block>)), this, SLOT(handleMultiBlockUpdate(Int3D,QHash<Int3D,Block>)));
+    Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(blockUpdate(Int3D,Block)), this, SLOT(handleBlockUpdate(Int3D,Block)));
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(chatReceived(QString)), this, SLOT(handleChatReceived(QString)));
     Q_ASSERT(success);
@@ -434,15 +439,14 @@ void Game::handleUnloadChunk(const Int3D &coord)
 void Game::handleMapChunkUpdated(QSharedPointer<Chunk>update)
 {
     QMutexLocker locker(&m_mutex);
-    // update can be smaller than a full size chunk, but cannot exceed the bounds of a chunk.
+    // update can be smaller than a full size chunk, and can exceed the bounds of a chunk.
     Int3D update_position = update.data()->position();
     Int3D chunk_position = chunkKey(update_position);
     Int3D update_size = update.data()->size();
-    //Q_ASSERT(chunkKey(update_position + update_size - Int3D(1,1,1)) == chunk_position);
     if (chunkKey(update_position + update_size - Int3D(1,1,1)) != chunk_position) {
-        qWarning() << "Ignoring map chunk update with start" <<
+        qWarning() << "Ignoring cross-chunk map chunk update with start" <<
                 update_position.x <<update_position.y <<update_position.z << "and size" <<
-                update_size.x <<update_size.y <<update_size.z << "and size";
+                update_size.x <<update_size.y <<update_size.z;
         return;
     }
     QSharedPointer<Chunk> chunk = m_chunks.value(chunk_position, QSharedPointer<Chunk>());
@@ -463,6 +467,48 @@ void Game::handleMapChunkUpdated(QSharedPointer<Chunk>update)
                 chunk.data()->setBlock(chunk_offset, update.data()->getBlock(update_offset));
 
     emit chunkUpdated(update_position, update_size);
+}
+void Game::handleMultiBlockUpdate(Int3D chunk_key, QHash<Int3D, Block> new_blocks)
+{
+    QMutexLocker locker(&m_mutex);
+    if (new_blocks.isEmpty())
+        return;
+    QSharedPointer<Chunk> chunk = m_chunks.value(chunk_key, QSharedPointer<Chunk>());
+    if (chunk.isNull())
+        return;
+    Int3D min_corner = chunk_key + c_chunk_size;
+    Int3D max_corner = chunk_key;
+    QHashIterator<Int3D, Block> iterator(new_blocks);
+    while (iterator.hasNext()) {
+        Int3D absolute_location = iterator.key();
+        Block new_block = iterator.value();
+        // TODO: recalculate lighting :(
+        new_block.setLight(7);
+        new_block.setSkyLight(0);
+        chunk.data()->setBlock(absolute_location - chunk_key, new_block);
+
+        min_corner.x = std::min(min_corner.x, absolute_location.x);
+        min_corner.y = std::min(min_corner.y, absolute_location.y);
+        min_corner.z = std::min(min_corner.z, absolute_location.z);
+        max_corner.x = std::max(max_corner.x, absolute_location.x);
+        max_corner.y = std::max(max_corner.y, absolute_location.y);
+        max_corner.z = std::max(max_corner.z, absolute_location.z);
+    }
+    emit chunkUpdated(min_corner, max_corner - min_corner + Int3D(1, 1, 1));
+}
+void Game::handleBlockUpdate(Int3D absolute_location, Block new_block)
+{
+    QMutexLocker locker(&m_mutex);
+    Int3D chunk_key =  chunkKey(absolute_location);
+    QSharedPointer<Chunk> chunk = m_chunks.value(chunk_key, QSharedPointer<Chunk>());
+    if (chunk.isNull())
+        return;
+    // TODO: recalculate lighting :(
+    new_block.setLight(7);
+    new_block.setSkyLight(0);
+    chunk.data()->setBlock(absolute_location - chunk_key, new_block);
+
+    emit chunkUpdated(absolute_location, Int3D(1, 1, 1));
 }
 
 Int3D Game::chunkKey(const Int3D &coord)

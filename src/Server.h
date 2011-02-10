@@ -59,6 +59,9 @@ signals:
     void chatReceived(QString message);
     void playerHealthUpdated(int new_health);
     void mapChunkUpdated(QSharedPointer<Chunk> chunk);
+    // will always be contained within a chunk
+    void multiBlockUpdate(Int3D chunk_corner, QHash<Int3D, Block> new_blocks);
+    void blockUpdate(Int3D absolute_location, Block new_block);
     void unloadChunk(const Int3D & coord);
     void playerPositionAndLookUpdated(Server::EntityPosition position);
     void inventoryUpdated(QVector<Message::Item> inventory);
@@ -99,11 +102,12 @@ private:
 private:
     void changeLoginState(LoginStatus state);
 
-    static void fromNotchianXyz(EntityPosition & destination, double notchian_x, double notchian_y, double notchian_z);
-    static Int3D fromNotchianXyz(int notchian_x, int notchian_y, int notchian_z);
-    static Int3D fromNotchianXyz(Int3D notchian_xyz);
-    static void toNotchianXyz(const EntityPosition &source, double & destination_notchian_x, double & destination_notchian_y, double & destination_notchian_z);
-    static Int3D toNotchianXyz(const Int3D &source);
+    static void fromNotchianDoubleMeters(EntityPosition & destination, double notchian_x, double notchian_y, double notchian_z);
+    static Int3D fromNotchianChunk(int notchian_chunk_x, int notchian_chunk_z);
+    static Int3D fromNotchianIntMeters(Int3D notchian_xyz);
+    static Int3D fromNotchianIntMetersWithoutOffByOneCorrection(Int3D notchian_xyz);
+    static void toNotchianDoubleMeters(const EntityPosition &source, double & destination_notchian_x, double & destination_notchian_y, double & destination_notchian_z);
+    static Int3D toNotchianIntMeters(const Int3D &source);
     static void fromNotchianYawPitch(EntityPosition & destination, float notchian_yaw, float notchian_pitch);
     static void toNotchianYawPitch(const EntityPosition &source, float & destination_notchian_yaw, float & destination_notchian_pitch);
     QByteArray notchUrlEncode(QString param);

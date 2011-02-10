@@ -102,7 +102,7 @@ void Server::sendRespawnRequest()
 }
 void Server::sendDiggingStatus(Message::DiggingStatus status, const Int3D &coord)
 {
-    Int3D notchian_coord = toNotchianXyz(coord);
+    Int3D notchian_coord = toNotchianIntMeters(coord);
     sendMessage(QSharedPointer<OutgoingRequest>(new PlayerDiggingRequest(status, notchian_coord.x, notchian_coord.y, notchian_coord.z, Message::PositiveY)));
 }
 
@@ -230,7 +230,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::PlayerPositionAndLook: {
             PlayerPositionAndLookResponse * message = (PlayerPositionAndLookResponse *) incomingMessage.data();
             EntityPosition player_position;
-            fromNotchianXyz(player_position, message->x, message->y, message->z);
+            fromNotchianDoubleMeters(player_position, message->x, message->y, message->z);
             player_position.height = message->stance - player_position.z;
             fromNotchianYawPitch(player_position, message->yaw, message->pitch);
             player_position.on_ground = message->on_ground;
@@ -240,7 +240,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::PreChunk: {
             PreChunkResponse * message = (PreChunkResponse *) incomingMessage.data();
             if (message->mode == PreChunkResponse::Unload) {
-                emit unloadChunk(fromNotchianXyz(message->x*16, 0, message->z*16));
+                emit unloadChunk(fromNotchianChunk(message->x, message->z));
             } else {
                 // don't care about Load Chunk messages
             }
@@ -254,7 +254,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             notchian_size.x = message->size_x_minus_one + 1;
             notchian_size.y = message->size_y_minus_one + 1;
             notchian_size.z = message->size_z_minus_one + 1;
-            Int3D rotated_size = fromNotchianXyz(notchian_size);
+            Int3D rotated_size = fromNotchianIntMetersWithoutOffByOneCorrection(notchian_size);
             Int3D positive_size;
             positive_size.x = Util::abs(rotated_size.x);
             positive_size.y = Util::abs(rotated_size.y);
@@ -263,13 +263,8 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
 
             // determin the position of the chunk
             Int3D rotated_size_minus_positive_size = rotated_size - positive_size;
-            // off by one corrector needs to subtract 1 from any axis that got negated
-            Int3D off_by_one_corrector = rotated_size_minus_positive_size;
-            off_by_one_corrector.x = Util::sign(off_by_one_corrector.x);
-            off_by_one_corrector.y = Util::sign(off_by_one_corrector.y);
-            off_by_one_corrector.z = Util::sign(off_by_one_corrector.z);
             Int3D notchian_pos(message->x, message->y, message->z);
-            Int3D rotated_position = fromNotchianXyz(notchian_pos);
+            Int3D rotated_position = fromNotchianIntMetersWithoutOffByOneCorrection(notchian_pos);
             Int3D position = rotated_position + rotated_size_minus_positive_size / 2;
 
             // decompress the data
@@ -301,18 +296,37 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
                         block.setLight(   (decompressed.at(    light_offset + array_index / 2) >> nibble_shifter) & 0xf);
                         block.setSkyLight((decompressed.at(sky_light_offest + array_index / 2) >> nibble_shifter) & 0xf);
 
-
                         array_index++;
                         nibble_shifter = 4 - nibble_shifter; // toggle between 0 and 4.
 
                         Int3D notchian_absolute_pos = notchian_pos + notchian_relative_pos;
-                        Int3D absolute_pos = fromNotchianXyz(notchian_absolute_pos) + off_by_one_corrector;
+                        Int3D absolute_pos = fromNotchianIntMeters(notchian_absolute_pos);
                         Int3D relative_pos = absolute_pos - position;
                         chunk->setBlock(relative_pos, block);
                     }
                 }
             }
             emit mapChunkUpdated(QSharedPointer<Chunk>(chunk));
+            break;
+        }
+        case Message::MultiBlockChange: {
+            MultiBlockChangeResponse * message = (MultiBlockChangeResponse *) incomingMessage.data();
+            Int3D notchian_chunk_corner(message->chunk_x * 16, 0, message->chunk_z * 16);
+            Int3D chunk_corner = fromNotchianChunk(message->chunk_x, message->chunk_z);
+            QHash<Int3D, Block> new_blocks;
+            for (int i = 0; i < message->block_coords.size(); i++) {
+                Int3D absolute_location = fromNotchianIntMeters(notchian_chunk_corner + message->block_coords.at(i));
+                Block block(message->new_block_types.at(i), message->new_block_metadatas.at(i), 0, 0);
+                new_blocks.insert(absolute_location, block);
+            }
+            emit multiBlockUpdate(chunk_corner, new_blocks);
+            break;
+        }
+        case Message::BlockChange: {
+            BlockChangeResponse * message = (BlockChangeResponse *) incomingMessage.data();
+            Int3D coord = fromNotchianIntMeters(Int3D(message->x, message->y, message->z));
+            Block block(message->new_block_type, message->metadata, 0, 0);
+            emit blockUpdate(coord, block);
             break;
         }
         case Message::WindowItems: {
@@ -340,7 +354,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
     }
 }
 
-void Server::fromNotchianXyz(EntityPosition &destination, double notchian_x, double notchian_y, double notchian_z)
+void Server::fromNotchianDoubleMeters(EntityPosition &destination, double notchian_x, double notchian_y, double notchian_z)
 {
     // east
     destination.x = -notchian_z;
@@ -349,23 +363,35 @@ void Server::fromNotchianXyz(EntityPosition &destination, double notchian_x, dou
     // up
     destination.z = notchian_y;
 }
-Int3D Server::fromNotchianXyz(int notchian_x, int notchian_y, int notchian_z)
+Int3D Server::fromNotchianChunk(int notchian_chunk_x, int notchian_chunk_z)
+{
+    // 8 * 16 = 128
+    return fromNotchianIntMeters(Int3D(notchian_chunk_x, 8, notchian_chunk_z)) * 16;
+}
+Int3D Server::fromNotchianIntMeters(Int3D notchian_xyz)
 {
     Int3D result;
     // east
-    result.x = -notchian_z;
+    result.x = -notchian_xyz.z - 1;
     // north
-    result.y = -notchian_x;
+    result.y = -notchian_xyz.x - 1;
     // up
-    result.z = notchian_y;
+    result.z = notchian_xyz.y;
     return result;
 }
-Int3D Server::fromNotchianXyz(Int3D notchian_xyz)
+Int3D Server::fromNotchianIntMetersWithoutOffByOneCorrection(Int3D notchian_xyz)
 {
-    return fromNotchianXyz(notchian_xyz.x, notchian_xyz.y, notchian_xyz.z);
+    Int3D result;
+    // east
+    result.x = -notchian_xyz.z;
+    // north
+    result.y = -notchian_xyz.x;
+    // up
+    result.z = notchian_xyz.y;
+    return result;
 }
 
-void Server::toNotchianXyz(const EntityPosition &source, double &destination_notchian_x, double &destination_notchian_y, double &destination_notchian_z)
+void Server::toNotchianDoubleMeters(const EntityPosition &source, double &destination_notchian_x, double &destination_notchian_y, double &destination_notchian_z)
 {
     // east
     destination_notchian_z = -source.x;
@@ -374,13 +400,13 @@ void Server::toNotchianXyz(const EntityPosition &source, double &destination_not
     // up
     destination_notchian_y = source.z;
 }
-Int3D Server::toNotchianXyz(const Int3D &source)
+Int3D Server::toNotchianIntMeters(const Int3D &source)
 {
     Int3D notchian;
     // east
-    notchian.z = -source.x;
+    notchian.z = -source.x - 1;
     // north
-    notchian.x = -source.y;
+    notchian.x = -source.y - 1;
     // up
     notchian.y = source.z;
     return notchian;
@@ -401,7 +427,7 @@ void Server::toNotchianYawPitch(const EntityPosition &source, float &destination
 void Server::sendPositionAndLook(EntityPosition positionAndLook)
 {
     PlayerPositionAndLookRequest * request = new PlayerPositionAndLookRequest;
-    toNotchianXyz(positionAndLook, request->x, request->y, request->z);
+    toNotchianDoubleMeters(positionAndLook, request->x, request->y, request->z);
     request->stance = positionAndLook.height + positionAndLook.z;
     toNotchianYawPitch(positionAndLook, request->yaw, request->pitch);
     request->on_ground = positionAndLook.on_ground;
