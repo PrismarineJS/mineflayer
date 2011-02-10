@@ -20,12 +20,34 @@ ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headl
     m_exiting(false),
     m_stderr(stderr),
     m_stdout(stdout),
-    m_timer_count(0)
+    m_timer_count(0),
+    m_debugger(new QScriptEngineDebugger())
 {
     // run in our own thread
     m_thread = new QThread();
     m_thread->start();
     this->moveToThread(m_thread);
+}
+
+LameGuiThreadThing::LameGuiThreadThing(ScriptRunner *m_owner, QScriptEngine *engine) :
+    m_owner(m_owner),
+    m_engine(engine)
+{
+    this->moveToThread(QCoreApplication::instance()->thread());
+
+    bool success;
+    success = QMetaObject::invokeMethod(this, "doIt", Qt::QueuedConnection);
+    Q_ASSERT(success);
+}
+
+void LameGuiThreadThing::doIt()
+{
+    m_owner->m_debugger->attachTo(m_engine);
+
+    bool success;
+    success = QMetaObject::invokeMethod(m_owner, "keepGoing", Qt::QueuedConnection);
+    Q_ASSERT(success);
+    return;
 }
 
 void ScriptRunner::go()
@@ -39,12 +61,15 @@ void ScriptRunner::go()
 
     m_engine = new QScriptEngine(this);
     if (m_debug) {
-        QScriptEngineDebugger debugger;
-        debugger.attachTo(m_engine);
-        QMainWindow * debug_window = debugger.standardWindow();
-        debug_window->resize(1024, 640);
-        debug_window->show();
+        LameGuiThreadThing(this, m_engine);
+        return;
     }
+    keepGoing();
+}
+
+void ScriptRunner::keepGoing()
+{
+    Q_ASSERT(QThread::currentThread() == m_thread);
 
     // initialize the MF object before we run any user code
     QScriptValue mf_obj = m_engine->newObject();

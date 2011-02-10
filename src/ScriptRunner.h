@@ -55,6 +55,8 @@ private:
     QHash<int, QTimer *> m_timer_ptrs;
     QHash<QTimer *, TimedFunction> m_script_timers;
     int m_timer_count;
+
+    QScriptEngineDebugger * m_debugger;
 private:
     void shutdown(int return_code);
     void raiseEvent(QString event_name, const QScriptValueList & args = QScriptValueList());
@@ -100,6 +102,21 @@ private slots:
     void handleLoginStatusUpdated(Server::LoginStatus status);
 
     void dispatchTimeout();
+
+    void keepGoing();
+
+    friend class LameGuiThreadThing;
+};
+
+class LameGuiThreadThing : public QObject {
+    Q_OBJECT
+public:
+    LameGuiThreadThing(ScriptRunner * m_owner, QScriptEngine * engine);
+public slots:
+    void doIt();
+private:
+    ScriptRunner * m_owner;
+    QScriptEngine * m_engine;
 };
 
 #endif // SCRIPTRUNNER_H
