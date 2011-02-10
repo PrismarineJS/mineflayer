@@ -428,7 +428,7 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
 
     // add the newly generated chunks to the scene
     QCoreApplication::processEvents();
-    if (m_chunk_generator->availableNewChunk()) {
+    while (m_chunk_generator->availableNewChunk()) {
         ChunkMeshGenerator::ReadyChunk ready_chunk = m_chunk_generator->nextNewChunk();
         m_ogre_mutex.lock();
         ready_chunk.obj->end();
@@ -441,7 +441,8 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
             chunk_data.node[ready_chunk.pass] = chunk_node;
             m_chunks.insert(ready_chunk.chunk_key, chunk_data);
         }
-    } else if (m_chunk_generator->availableDoneChunk()) {
+    }
+    while (m_chunk_generator->availableDoneChunk()) {
         ChunkMeshGenerator::ReadyChunk done_chunk = m_chunk_generator->nextDoneChunk();
         if (done_chunk.node != NULL) {
             done_chunk.node->removeAndDestroyAllChildren();
@@ -634,7 +635,7 @@ ChunkMeshGenerator::ChunkMeshGenerator(MainWindow * owner) :
 void ChunkMeshGenerator::initialize()
 {
     bool success;
-    success = connect(m_owner->m_game, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(generateChunkMesh(Int3D,Int3D)));
+    success = connect(m_owner->m_game, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(handleUpdatedChunk(Int3D,Int3D)));
     Q_ASSERT(success);
     success = connect(m_owner->m_game, SIGNAL(unloadChunk(Int3D)), this, SLOT(queueDeleteChunkMesh(Int3D)));
     Q_ASSERT(success);
@@ -648,14 +649,23 @@ void ChunkMeshGenerator::shutDown()
     m_owner->m_shut_down = true;
 }
 
-void ChunkMeshGenerator::generateChunkMesh(const Int3D &start, const Int3D &update_size)
+void ChunkMeshGenerator::handleUpdatedChunk(const Int3D &start, const Int3D &size)
 {
     Q_ASSERT(QThread::currentThread() == m_thread);
-    // build a mesh for the chunk
+
     // find the chunk coordinates for this updated stuff.
     Int3D chunk_key = m_owner->chunkKey(start);
+
     // make sure it fits in one chunk
-    Q_ASSERT(m_owner->chunkKey(start + update_size - Int3D(1,1,1)) == chunk_key);
+    Q_ASSERT(m_owner->chunkKey(start + size - Int3D(1,1,1)) == chunk_key);
+
+    generateChunkMesh(chunk_key);
+
+}
+
+void ChunkMeshGenerator::generateChunkMesh(const Int3D & chunk_key)
+{
+    Q_ASSERT(QThread::currentThread() == m_thread);
 
     MainWindow::ChunkData chunk_data = m_owner->m_chunks.value(chunk_key);
     bool replace_chunk = true;
@@ -672,15 +682,12 @@ void ChunkMeshGenerator::generateChunkMesh(const Int3D &start, const Int3D &upda
 
     }
 
+    ReadyChunk done_chunks[2];
+
     Int3D offset;
     Int3D size = MainWindow::c_chunk_size;
     for (int pass = 0; pass < 2; pass++) {
-        // put delete old stuff on queue
-        if (replace_chunk) {
-            m_queue_mutex.lock();
-            m_done_chunk_queue.enqueue(ReadyChunk(pass, chunk_data.obj[pass], chunk_data.node[pass], chunk_key));
-            m_queue_mutex.unlock();
-        }
+        done_chunks[pass] = ReadyChunk(pass, chunk_data.obj[pass], chunk_data.node[pass], chunk_key);
 
         m_owner->m_ogre_mutex.lock();
         Ogre::ManualObject * obj = new Ogre::ManualObject(Ogre::String());
@@ -719,6 +726,7 @@ void ChunkMeshGenerator::generateChunkMesh(const Int3D &start, const Int3D &upda
                         {
                             continue;
                         }
+
 
                         // add this side to mesh
                         Ogre::Vector3 abs_block_loc(absolute_position.x, absolute_position.y, absolute_position.z);
@@ -857,6 +865,15 @@ void ChunkMeshGenerator::generateChunkMesh(const Int3D &start, const Int3D &upda
         chunk_data.obj[pass] = obj;
         m_owner->m_chunks.insert(chunk_key, chunk_data);
         m_queue_mutex.unlock();
+    }
+
+    for (int pass = 0; pass < 2; pass++) {
+        // put delete old stuff on queue
+        if (replace_chunk) {
+            m_queue_mutex.lock();
+            m_done_chunk_queue.enqueue(done_chunks[pass]);
+            m_queue_mutex.unlock();
+        }
     }
 }
 

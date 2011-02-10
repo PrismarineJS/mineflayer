@@ -216,6 +216,7 @@ public:
         Ogre::ManualObject * obj;
         Ogre::SceneNode * node;
         Int3D chunk_key;
+        ReadyChunk() {}
         ReadyChunk(int pass, Ogre::ManualObject * obj, Ogre::SceneNode * node, Int3D chunk_key) :
             pass(pass), obj(obj), node(node), chunk_key(chunk_key) {}
     };
@@ -239,9 +240,6 @@ public:
         return m_done_chunk_queue.dequeue();
     }
     void shutDown();
-public slots:
-    void generateChunkMesh(const Int3D &start, const Int3D &size);
-    void queueDeleteChunkMesh(const Int3D & coord);
 private:
 
     MainWindow * m_owner;
@@ -250,6 +248,10 @@ private:
     QThread * m_thread;
     mutable QMutex m_queue_mutex;
 private slots:
+    void handleUpdatedChunk(const Int3D &start, const Int3D &size);
+    void generateChunkMesh(const Int3D & chunk_key);
+    void queueDeleteChunkMesh(const Int3D & coord);
+
     void initialize();
 };
 
