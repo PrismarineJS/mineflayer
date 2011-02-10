@@ -7,7 +7,6 @@ Core:
  * digging / placing blocks / attacking
  * time tracking (day / night)
  * crafting / inventory manipulation
- * entity tracking
  * non-spoken chat interpretation (player joined, etc)
  * clean up stray chunks that didn't get unloaded
  * recalculte light on block changes
