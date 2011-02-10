@@ -9,6 +9,7 @@ Core:
  * crafting / inventory manipulation
  * entity tracking
  * non-spoken chat interpretation (player joined, etc)
+ * clean up stray chunks that didn't get unloaded
 
 3D client:
  * doors
