@@ -354,9 +354,9 @@ public:
 class PlayerDiggingResponse : public IncomingResponse {
 public:
     DiggingStatus status;
-    qint32 absolute_x;
-    qint8 absolute_y;
-    qint32 absolute_z;
+    qint32 meters_x;
+    qint8 meters_y;
+    qint32 meters_z;
     BlockFaceDirection block_face;
     PlayerDiggingResponse() : IncomingResponse(PlayerDigging) {}
     virtual int parse(QByteArray buffer);
@@ -364,9 +364,9 @@ public:
 
 class PlayerBlockPlacementResponse : public IncomingResponse {
 public:
-    qint32 absolute_x;
-    qint8 absolute_y;
-    qint32 absolute_z;
+    qint32 meters_x;
+    qint8 meters_y;
+    qint32 meters_z;
     BlockFaceDirection block_face;
     Item item;
     PlayerBlockPlacementResponse() : IncomingResponse(PlayerBlockPlacement) {}
@@ -411,11 +411,11 @@ class NamedEntitySpawnResponse : public IncomingResponse {
 public:
     qint32 entity_id;
     QString player_name;
-    qint32 x;
-    qint32 y;
-    qint32 z;
-    qint8 yaw;
-    qint8 pitch;
+    qint32 pixels_x;
+    qint32 pixels_y;
+    qint32 pixels_z;
+    qint8 yaw_out_of_256;
+    qint8 pitch_out_of_256;
     Block::ItemType held_item;
     NamedEntitySpawnResponse() : IncomingResponse(NamedEntitySpawn) {}
     virtual int parse(QByteArray buffer);
@@ -424,15 +424,13 @@ public:
 class PickupSpawnResponse : public IncomingResponse {
 public:
     qint32 entity_id;
-    Block::ItemType item_type;
-    qint8 count;
-    qint16 damage;
-    qint32 x;
-    qint32 y;
-    qint32 z;
-    qint8 rotation;
-    qint8 pitch;
-    qint8 roll;
+    Item item;
+    qint32 pixels_x;
+    qint32 pixels_y;
+    qint32 pixels_z;
+    qint8 yaw_out_of_256;
+    qint8 pitch_out_of_256;
+    qint8 roll_out_of_256;
     PickupSpawnResponse() : IncomingResponse(PickupSpawn) {}
     virtual int parse(QByteArray buffer);
 };
@@ -462,9 +460,9 @@ public:
     };
     qint32 entity_id;
     ObjectOrVehicleType object_or_vehicle_type;
-    qint32 absolute_x;
-    qint32 absolute_y;
-    qint32 absolute_z;
+    qint32 pixels_x;
+    qint32 pixels_y;
+    qint32 pixels_z;
     AddObjectOrVehicleResponse() : IncomingResponse(AddObjectOrVehicle) {}
     virtual int parse(QByteArray buffer);
 };
@@ -487,9 +485,9 @@ public:
     };
     qint32 entity_id;
     MobType mob_type;
-    qint32 absolute_x;
-    qint32 absolute_y;
-    qint32 absolute_z;
+    qint32 pixels_x;
+    qint32 pixels_y;
+    qint32 pixels_z;
     qint8 yaw_out_of_256;
     qint8 pitch_out_of_256;
     QByteArray metadata;
@@ -536,9 +534,9 @@ public:
 class EntityRelativeMoveResponse : public IncomingResponse {
 public:
     qint32 entity_id;
-    qint8 absolute_dx;
-    qint8 absolute_dy;
-    qint8 absolute_dz;
+    qint8 pixels_dx;
+    qint8 pixels_dy;
+    qint8 pixels_dz;
     EntityRelativeMoveResponse() : IncomingResponse(EntityRelativeMove) {}
     virtual int parse(QByteArray buffer);
 };
@@ -555,9 +553,9 @@ public:
 class EntityLookAndRelativeMoveResponse : public IncomingResponse {
 public:
     qint32 entity_id;
-    qint8 absolute_dx;
-    qint8 absolute_dy;
-    qint8 absolute_dz;
+    qint8 pixels_dx;
+    qint8 pixels_dy;
+    qint8 pixels_dz;
     qint8 yaw_out_of_256;
     qint8 pitch_out_of_256;
     EntityLookAndRelativeMoveResponse() : IncomingResponse(EntityLookAndRelativeMove) {}
@@ -567,9 +565,9 @@ public:
 class EntityTeleportResponse : public IncomingResponse {
 public:
     qint32 entity_id;
-    qint32 absolute_x;
-    qint32 absolute_y;
-    qint32 absolute_z;
+    qint32 pixels_x;
+    qint32 pixels_y;
+    qint32 pixels_z;
     qint8 yaw_out_of_256;
     qint8 pitch_out_of_256;
     EntityTeleportResponse() : IncomingResponse(EntityTeleport) {}
@@ -657,9 +655,9 @@ public:
         BassDrum=4,
         Harp=5,
     };
-    qint32 absolute_x;
-    qint16 absolute_y;
-    qint32 absolute_z;
+    qint32 meters_x;
+    qint16 meters_y;
+    qint32 meters_z;
     InstrumentType instrument_type;
     qint8 pitch;
     PlayNoteBlockResponse() : IncomingResponse(PlayNoteBlock) {}
@@ -724,9 +722,9 @@ public:
 
 class UpdateSignResponse : public IncomingResponse {
 public:
-    qint32 absolute_x;
-    qint16 absolute_y;
-    qint32 absolute_z;
+    qint32 meters_x;
+    qint16 meters_y;
+    qint32 meters_z;
     QString line_1;
     QString line_2;
     QString line_3;

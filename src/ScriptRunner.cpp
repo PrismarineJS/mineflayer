@@ -407,7 +407,6 @@ QScriptValue ScriptRunner::playerState(QScriptContext *context, QScriptEngine *e
     ScriptRunner * me = (ScriptRunner *) engine->parent();
     if (! me->argCount(context, 0))
         return QScriptValue();
-
     Server::EntityPosition position = me->m_game->playerPosition();
     QScriptValue result = engine->newObject();
     result.setProperty("position", me->jsPoint(position.x, position.y, position.z));
@@ -415,7 +414,6 @@ QScriptValue ScriptRunner::playerState(QScriptContext *context, QScriptEngine *e
     result.setProperty("height", position.height);
     result.setProperty("yaw", position.yaw);
     result.setProperty("pitch", position.pitch);
-    result.setProperty("roll", position.roll);
     result.setProperty("on_ground", position.on_ground);
     return result;
 }

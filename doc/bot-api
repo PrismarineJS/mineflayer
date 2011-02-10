@@ -22,7 +22,6 @@
  *      height {Number} [0.1, 1.65] How tall the entity is. For example if you crouch you are shorter.
  *      yaw {Number} [0, 2pi] Rotation around z axis. 0 is +x. pi/2 is +y. pi is -x. 3pi/2 is -y.
  *      pitch {Number} [-pi/2, pi/2] 0 is parallel to the ground. pi/2 is up. -pi/2 is down.
- *      roll {Number} [-pi, pi] Usually ignored. 0 is level. pi/2 is left ear pointing downward.
  *      on_ground {Boolean} True if you are not free-falling.
  *
  * mf.ItemType - the id of blocks and items. See the output of

@@ -44,6 +44,8 @@ Game::Game(QUrl connection_info) :
     bool success;
     success = connect(&m_server, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SLOT(handleLoginStatusChanged(Server::LoginStatus)));
     Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(loginCompleted(int)), this, SLOT(handleLoginCompleted(int)));
+    Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(playerPositionAndLookUpdated(Server::EntityPosition)), this, SLOT(handlePlayerPositionAndLookUpdated(Server::EntityPosition)));
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(playerHealthUpdated(int)), this, SLOT(handlePlayerHealthUpdated(int)));
@@ -297,6 +299,27 @@ void Game::shutdown(int return_code)
     m_return_code = return_code;
     m_server.finishWritingAndDisconnect();
 }
+bool Game::entityPosition(int entity_id, Server::EntityPosition & output_position)
+{
+    QMutexLocker locker(&m_mutex);
+    if (entity_id == m_player_entity_id) {
+        output_position = m_player_position;
+        return true;
+    }
+    Server::EntityPosition not_found_position;
+    not_found_position.height = -1;
+    Server::EntityPosition position = m_entities.value(entity_id, not_found_position);
+    if (position.height < 0)
+        return false;
+    output_position = position;
+    return true;
+}
+
+Server::EntityPosition Game::playerPosition()
+{
+    QMutexLocker locker(&m_mutex);
+    return m_player_position;
+}
 
 Block Game::blockAt(const Int3D & absolute_location)
 {
@@ -371,6 +394,11 @@ void Game::handleLoginStatusChanged(Server::LoginStatus status)
     }
 
     emit loginStatusUpdated(status);
+}
+void Game::handleLoginCompleted(int entity_id)
+{
+    QMutexLocker locker(&m_mutex);
+    m_player_entity_id = entity_id;
 }
 
 void Game::handleChatReceived(QString message)

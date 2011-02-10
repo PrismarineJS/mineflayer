@@ -61,7 +61,8 @@ public:
     // only valid to call this after you die
     void respawn();
 
-    Server::EntityPosition playerPosition() const { return m_player_position; }
+    bool entityPosition(int entity_id, Server::EntityPosition & position);
+    Server::EntityPosition playerPosition();
 
     Block blockAt(const Int3D & absolute_location);
     bool isBlockLoaded(const Int3D & absolute_location);
@@ -108,7 +109,9 @@ private:
 
     Server::EntityPosition m_player_position;
     int m_player_health;
+    int m_player_entity_id;
     QHash<Int3D, QSharedPointer<Chunk> > m_chunks;
+    QHash<int, Server::EntityPosition> m_entities;
 
     float m_max_ground_speed;
     float m_terminal_velocity;
@@ -132,6 +135,7 @@ private:
 
 private slots:
     void handleLoginStatusChanged(Server::LoginStatus status);
+    void handleLoginCompleted(int entity_id);
     void handleChatReceived(QString content);
     void handlePlayerPositionAndLookUpdated(Server::EntityPosition position);
     void handlePlayerHealthUpdated(int new_health);

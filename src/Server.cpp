@@ -191,8 +191,10 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
 {
     switch (incomingMessage.data()->messageType) {
         case Message::Login: {
+            LoginResponse * message = (LoginResponse *)incomingMessage.data();
             Q_ASSERT(m_login_state == WaitingForLoginResponse);
             changeLoginState(Success);
+            emit loginCompleted((int)message->entity_id);
             break;
         }
         case Message::Handshake: {
@@ -235,6 +237,65 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             fromNotchianYawPitch(player_position, message->yaw, message->pitch);
             player_position.on_ground = message->on_ground;
             emit playerPositionAndLookUpdated(player_position);
+            break;
+        }
+        case Message::NamedEntitySpawn: {
+            NamedEntitySpawnResponse * message = (NamedEntitySpawnResponse *) incomingMessage.data();
+            EntityPosition position;
+            fromNotchianIntPixels(position, message->pixels_x, message->pixels_y, message->pixels_z);
+            fromNotchianYawPitchBytes(position, message->yaw_out_of_256, message->pitch_out_of_256);
+            emit namedPlayerSpawned(message->entity_id, message->player_name, position, message->held_item);
+            break;
+        }
+        case Message::PickupSpawn: {
+            PickupSpawnResponse * message = (PickupSpawnResponse *) incomingMessage.data();
+            EntityPosition position;
+            fromNotchianIntPixels(position, message->pixels_x, message->pixels_y, message->pixels_z);
+            fromNotchianYawPitchBytes(position, message->yaw_out_of_256, message->pitch_out_of_256);
+            // ignore roll
+            emit pickupSpawned(message->entity_id, message->item, position);
+            break;
+        }
+        case Message::MobSpawn: {
+            MobSpawnResponse * message = (MobSpawnResponse *) incomingMessage.data();
+            EntityPosition position;
+            fromNotchianIntPixels(position, message->pixels_x, message->pixels_y, message->pixels_z);
+            fromNotchianYawPitchBytes(position, message->yaw_out_of_256, message->pitch_out_of_256);
+            emit mobSpawned(message->entity_id, message->mob_type, position);
+            break;
+        }
+        case Message::DestroyEntity: {
+            DestroyEntityResponse * message = (DestroyEntityResponse *) incomingMessage.data();
+            emit entityDestroyed(message->entity_id);
+            break;
+        }
+        case Message::EntityRelativeMove: {
+            EntityRelativeMoveResponse * message = (EntityRelativeMoveResponse *) incomingMessage.data();
+            EntityPosition movement;
+            fromNotchianIntPixels(movement, message->pixels_dx, message->pixels_dy, message->pixels_dz);
+            emit entityMovedRelatively(message->entity_id, movement);
+            break;
+        }
+        case Message::EntityLook: {
+            EntityLookResponse * message = (EntityLookResponse *) incomingMessage.data();
+            EntityPosition look;
+            fromNotchianYawPitchBytes(look, message->yaw_out_of_256, message->pitch_out_of_256);
+            emit entityLooked(message->entity_id, look);
+            break;
+        }
+        case Message::EntityLookAndRelativeMove: {
+            EntityLookAndRelativeMoveResponse * message = (EntityLookAndRelativeMoveResponse *) incomingMessage.data();
+            EntityPosition position;
+            fromNotchianIntPixels(position, message->pixels_dx, message->pixels_dy, message->pixels_dz);
+            fromNotchianYawPitchBytes(position, message->yaw_out_of_256, message->pitch_out_of_256);
+            emit entityLookedAndMovedRelatively(message->entity_id, position);
+            break;
+        }
+        case Message::EntityTeleport: {
+            EntityTeleportResponse * message = (EntityTeleportResponse *) incomingMessage.data();
+            EntityPosition position;
+            fromNotchianIntPixels(position, message->pixels_x, message->pixels_y, message->pixels_z);
+            emit entityMoved(message->entity_id, position);
             break;
         }
         case Message::PreChunk: {
@@ -363,6 +424,11 @@ void Server::fromNotchianDoubleMeters(EntityPosition &destination, double notchi
     // up
     destination.z = notchian_y;
 }
+void Server::fromNotchianIntPixels(EntityPosition &destination, int pixels_x, int pixels_y, int pixels_z)
+{
+    fromNotchianDoubleMeters(destination, pixels_x * 16, pixels_y * 16, pixels_z * 16);
+}
+
 Int3D Server::fromNotchianChunk(int notchian_chunk_x, int notchian_chunk_z)
 {
     // 8 * 16 = 128
@@ -416,6 +482,10 @@ void Server::fromNotchianYawPitch(EntityPosition &destination, float notchian_ya
 {
     destination.yaw = Util::euclideanMod(Util::pi - Util::degreesToRadians(notchian_yaw), Util::two_pi);
     destination.pitch = Util::euclideanMod(Util::degreesToRadians(-notchian_pitch) + Util::pi, Util::two_pi) - Util::pi;
+}
+void Server::fromNotchianYawPitchBytes(EntityPosition &destination, qint8 yaw_out_of_255, qint8 pitch_out_of_255)
+{
+    fromNotchianYawPitch(destination, yaw_out_of_255 * 360.0 / 256.0, pitch_out_of_255 * 360.0 / 256.0);
 }
 
 void Server::toNotchianYawPitch(const EntityPosition &source, float &destination_notchian_yaw, float &destination_notchian_pitch)

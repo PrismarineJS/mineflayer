@@ -45,7 +45,6 @@ public:
         double height; // [0.1, 1.65] how tall you are.
         float yaw; // [0, 2pi] rotation around z axis. 0 is +x. pi/2 is +y. pi is -x. 3pi/2 is -y.
         float pitch; // [-pi/2, pi/2] 0 is parallel to the ground. pi/2 is up. -pi/2 is down.
-        float roll; // [-pi, pi] usually ignored. 0 is level. pi/2 is left ear pointing downward.
         bool on_ground;
     };
 
@@ -55,9 +54,26 @@ public:
 
 signals:
     void loginStatusUpdated(Server::LoginStatus status);
+    // emitted in addition to login status
+    void loginCompleted(int entity_id);
 
     void chatReceived(QString message);
     void playerHealthUpdated(int new_health);
+
+    void namedPlayerSpawned(int entity_id, QString player_name, Server::EntityPosition position, int held_item);
+    void pickupSpawned(int entity_id, Message::Item item, Server::EntityPosition position);
+    void mobSpawned(int entity_id, MobSpawnResponse::MobType mob_type, Server::EntityPosition position);
+
+    void entityDestroyed(int entity_id);
+    // use the .x .y .z for relative motion
+    void entityMovedRelatively(int entity_id, Server::EntityPosition movement);
+    // use .yaw and .pitch
+    void entityLooked(int entity_id, Server::EntityPosition look);
+    // use .x .y .z for relative motion and .yaw and .pitch
+    void entityLookedAndMovedRelatively(int entity_id, Server::EntityPosition position);
+    // use .x .y .z for absolute position
+    void entityMoved(int entity_id, Server::EntityPosition position);
+
     void mapChunkUpdated(QSharedPointer<Chunk> chunk);
     // will always be contained within a chunk
     void multiBlockUpdate(Int3D chunk_corner, QHash<Int3D, Block> new_blocks);
@@ -103,12 +119,14 @@ private:
     void changeLoginState(LoginStatus state);
 
     static void fromNotchianDoubleMeters(EntityPosition & destination, double notchian_x, double notchian_y, double notchian_z);
+    static void fromNotchianIntPixels(EntityPosition & destination, int pixels_x, int pixels_y, int pixels_z);
     static Int3D fromNotchianChunk(int notchian_chunk_x, int notchian_chunk_z);
     static Int3D fromNotchianIntMeters(Int3D notchian_xyz);
     static Int3D fromNotchianIntMetersWithoutOffByOneCorrection(Int3D notchian_xyz);
     static void toNotchianDoubleMeters(const EntityPosition &source, double & destination_notchian_x, double & destination_notchian_y, double & destination_notchian_z);
     static Int3D toNotchianIntMeters(const Int3D &source);
     static void fromNotchianYawPitch(EntityPosition & destination, float notchian_yaw, float notchian_pitch);
+    static void fromNotchianYawPitchBytes(EntityPosition & destination, qint8 yaw_out_of_255, qint8 pitch_out_of_255);
     static void toNotchianYawPitch(const EntityPosition &source, float & destination_notchian_yaw, float & destination_notchian_pitch);
     QByteArray notchUrlEncode(QString param);
 

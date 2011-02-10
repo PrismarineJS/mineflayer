@@ -362,11 +362,11 @@ int PlayerDiggingResponse::parse(QByteArray buffer)
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
     status = (DiggingStatus)tmp;
-    if ((index = parseValue(buffer, index, absolute_x)) == -1)
+    if ((index = parseValue(buffer, index, meters_x)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_y)) == -1)
+    if ((index = parseValue(buffer, index, meters_y)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_z)) == -1)
+    if ((index = parseValue(buffer, index, meters_z)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
@@ -377,11 +377,11 @@ int PlayerDiggingResponse::parse(QByteArray buffer)
 int PlayerBlockPlacementResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseValue(buffer, index, absolute_x)) == -1)
+    if ((index = parseValue(buffer, index, meters_x)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_y)) == -1)
+    if ((index = parseValue(buffer, index, meters_y)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_z)) == -1)
+    if ((index = parseValue(buffer, index, meters_z)) == -1)
         return -1;
     qint8 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
@@ -431,15 +431,15 @@ int NamedEntitySpawnResponse::parse(QByteArray buffer)
         return -1;
     if ((index = parseValue(buffer, index, player_name)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, x)) == -1)
+    if ((index = parseValue(buffer, index, pixels_x)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, y)) == -1)
+    if ((index = parseValue(buffer, index, pixels_y)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, z)) == -1)
+    if ((index = parseValue(buffer, index, pixels_z)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, yaw)) == -1)
+    if ((index = parseValue(buffer, index, yaw_out_of_256)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, pitch)) == -1)
+    if ((index = parseValue(buffer, index, pitch_out_of_256)) == -1)
         return -1;
     qint16 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
@@ -453,25 +453,19 @@ int PickupSpawnResponse::parse(QByteArray buffer)
     int index = 1;
     if ((index = parseValue(buffer, index, entity_id)) == -1)
         return -1;
-    qint16 tmp;
-    if ((index = parseValue(buffer, index, tmp)) == -1)
+    if ((index = parseValue(buffer, index, item)) == -1)
         return -1;
-    item_type = (Block::ItemType)tmp;
-    if ((index = parseValue(buffer, index, count)) == -1)
+    if ((index = parseValue(buffer, index, pixels_x)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, damage)) == -1)
+    if ((index = parseValue(buffer, index, pixels_y)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, x)) == -1)
+    if ((index = parseValue(buffer, index, pixels_z)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, y)) == -1)
+    if ((index = parseValue(buffer, index, yaw_out_of_256)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, z)) == -1)
+    if ((index = parseValue(buffer, index, pitch_out_of_256)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, rotation)) == -1)
-        return -1;
-    if ((index = parseValue(buffer, index, pitch)) == -1)
-        return -1;
-    if ((index = parseValue(buffer, index, roll)) == -1)
+    if ((index = parseValue(buffer, index, roll_out_of_256)) == -1)
         return -1;
     return index;
 }
@@ -495,11 +489,11 @@ int AddObjectOrVehicleResponse::parse(QByteArray buffer)
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
     object_or_vehicle_type = (ObjectOrVehicleType)tmp;
-    if ((index = parseValue(buffer, index, absolute_x)) == -1)
+    if ((index = parseValue(buffer, index, pixels_x)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_y)) == -1)
+    if ((index = parseValue(buffer, index, pixels_y)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_z)) == -1)
+    if ((index = parseValue(buffer, index, pixels_z)) == -1)
         return -1;
     return index;
 }
@@ -513,11 +507,11 @@ int MobSpawnResponse::parse(QByteArray buffer)
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
     mob_type = (MobType)tmp;
-    if ((index = parseValue(buffer, index, absolute_x)) == -1)
+    if ((index = parseValue(buffer, index, pixels_x)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_y)) == -1)
+    if ((index = parseValue(buffer, index, pixels_y)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_z)) == -1)
+    if ((index = parseValue(buffer, index, pixels_z)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, yaw_out_of_256)) == -1)
         return -1;
@@ -581,11 +575,11 @@ int EntityRelativeMoveResponse::parse(QByteArray buffer)
     int index = 1;
     if ((index = parseValue(buffer, index, entity_id)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_dx)) == -1)
+    if ((index = parseValue(buffer, index, pixels_dx)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_dy)) == -1)
+    if ((index = parseValue(buffer, index, pixels_dy)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_dz)) == -1)
+    if ((index = parseValue(buffer, index, pixels_dz)) == -1)
         return -1;
     return index;
 }
@@ -607,11 +601,11 @@ int EntityLookAndRelativeMoveResponse::parse(QByteArray buffer)
     int index = 1;
     if ((index = parseValue(buffer, index, entity_id)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_dx)) == -1)
+    if ((index = parseValue(buffer, index, pixels_dx)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_dy)) == -1)
+    if ((index = parseValue(buffer, index, pixels_dy)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_dz)) == -1)
+    if ((index = parseValue(buffer, index, pixels_dz)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, yaw_out_of_256)) == -1)
         return -1;
@@ -625,11 +619,11 @@ int EntityTeleportResponse::parse(QByteArray buffer)
     int index = 1;
     if ((index = parseValue(buffer, index, entity_id)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_x)) == -1)
+    if ((index = parseValue(buffer, index, pixels_x)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_y)) == -1)
+    if ((index = parseValue(buffer, index, pixels_y)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_z)) == -1)
+    if ((index = parseValue(buffer, index, pixels_z)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, yaw_out_of_256)) == -1)
         return -1;
@@ -769,11 +763,11 @@ int BlockChangeResponse::parse(QByteArray buffer)
 int PlayNoteBlockResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseValue(buffer, index, absolute_x)) == -1)
+    if ((index = parseValue(buffer, index, meters_x)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_y)) == -1)
+    if ((index = parseValue(buffer, index, meters_y)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_z)) == -1)
+    if ((index = parseValue(buffer, index, meters_z)) == -1)
         return -1;
     qint8 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
@@ -889,11 +883,11 @@ int WindowItemsResponse::parse(QByteArray buffer)
 int UpdateSignResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseValue(buffer, index, absolute_x)) == -1)
+    if ((index = parseValue(buffer, index, meters_x)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_y)) == -1)
+    if ((index = parseValue(buffer, index, meters_y)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, absolute_z)) == -1)
+    if ((index = parseValue(buffer, index, meters_z)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, line_1)) == -1)
         return -1;
