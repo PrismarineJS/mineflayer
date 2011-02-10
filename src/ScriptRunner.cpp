@@ -35,13 +35,17 @@ LameGuiThreadThing::LameGuiThreadThing(ScriptRunner *m_owner, QScriptEngine *eng
 {
     this->moveToThread(QCoreApplication::instance()->thread());
 
+    qDebug() << "If you don't see a message below this 'yay, debugging will work', then you need to kill and restart.";
+
     bool success;
     success = QMetaObject::invokeMethod(this, "doIt", Qt::QueuedConnection);
     Q_ASSERT(success);
+
 }
 
 void LameGuiThreadThing::doIt()
 {
+    qDebug() << "yay, debugging will work";
     m_owner->m_debugger->attachTo(m_engine);
 
     bool success;
