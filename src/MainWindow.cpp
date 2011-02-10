@@ -52,6 +52,7 @@ const Ogre::Vector2 MainWindow::c_tex_coord[2][3] = {
     {Ogre::Vector2(0, 0), Ogre::Vector2(0, 1), Ogre::Vector2(1, 0)},
     {Ogre::Vector2(1, 0), Ogre::Vector2(0, 1), Ogre::Vector2(1, 1)},
 };
+const Int3D MainWindow::c_sub_chunk_mesh_size(16, 16, 16);
 const Int3D MainWindow::c_chunk_size(16, 16, 128);
 
 const float MainWindow::c_terrain_png_height = 256.0f;
@@ -125,7 +126,7 @@ MainWindow::MainWindow(QUrl url) :
     m_grab_mouse(false),
     m_game(NULL),
     m_control_to_key(Game::ControlCount),
-    m_chunk_generator(NULL)
+    m_sub_chunk_generator(NULL)
 {
     Q_ASSERT(sizeof(MainWindow) != 216 && sizeof(MainWindow) != 336);
 
@@ -144,7 +145,7 @@ MainWindow::MainWindow(QUrl url) :
     success = connect(m_game, SIGNAL(playerDied()), this, SLOT(handlePlayerDied()));
     Q_ASSERT(success);
 
-    m_chunk_generator = new ChunkMeshGenerator(this);
+    m_sub_chunk_generator = new SubChunkMeshGenerator(this);
 }
 
 MainWindow::~MainWindow()
@@ -428,22 +429,22 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
 
     // add the newly generated chunks to the scene
     QCoreApplication::processEvents();
-    while (m_chunk_generator->availableNewChunk()) {
-        ChunkMeshGenerator::ReadyChunk ready_chunk = m_chunk_generator->nextNewChunk();
+    while (m_sub_chunk_generator->availableNewSubChunk()) {
+        SubChunkMeshGenerator::ReadySubChunk ready_chunk = m_sub_chunk_generator->nextNewSubChunk();
         m_ogre_mutex.lock();
         ready_chunk.obj->end();
         m_ogre_mutex.unlock();
         Ogre::SceneNode * chunk_node = ready_chunk.node->createChildSceneNode();
         chunk_node->attachObject(ready_chunk.obj);
         // save the scene node so we can delete it later
-        ChunkData chunk_data = m_chunks.value(ready_chunk.chunk_key);
+        SubChunkData chunk_data = m_sub_chunks.value(ready_chunk.sub_chunk_key);
         if (! chunk_data.is_null) {
             chunk_data.node[ready_chunk.pass] = chunk_node;
-            m_chunks.insert(ready_chunk.chunk_key, chunk_data);
+            m_sub_chunks.insert(ready_chunk.sub_chunk_key, chunk_data);
         }
     }
-    while (m_chunk_generator->availableDoneChunk()) {
-        ChunkMeshGenerator::ReadyChunk done_chunk = m_chunk_generator->nextDoneChunk();
+    while (m_sub_chunk_generator->availableDoneSubChunk()) {
+        SubChunkMeshGenerator::ReadySubChunk done_chunk = m_sub_chunk_generator->nextDoneSubChunk();
         if (done_chunk.node != NULL) {
             done_chunk.node->removeAndDestroyAllChildren();
             m_scene_manager->destroySceneNode(done_chunk.node);
@@ -529,7 +530,7 @@ bool MainWindow::keyPressed(const OIS::KeyEvent &arg )
     if (m_keyboard->isModifierDown(OIS::Keyboard::Alt))
         m_grab_mouse = false;
     if (arg.key == OIS::KC_ESCAPE || (m_keyboard->isModifierDown(OIS::Keyboard::Alt) && arg.key == OIS::KC_F4))
-        m_chunk_generator->shutDown();
+        m_sub_chunk_generator->shutDown();
     else if (arg.key == OIS::KC_F2)
         m_free_look_mode = !m_free_look_mode;
 
@@ -618,7 +619,7 @@ void MainWindow::windowClosed(Ogre::RenderWindow* rw)
     }
 }
 
-ChunkMeshGenerator::ChunkMeshGenerator(MainWindow * owner) :
+SubChunkMeshGenerator::SubChunkMeshGenerator(MainWindow * owner) :
     QObject(NULL),
     m_owner(owner)
 {
@@ -632,71 +633,73 @@ ChunkMeshGenerator::ChunkMeshGenerator(MainWindow * owner) :
     Q_ASSERT(success);
 }
 
-void ChunkMeshGenerator::initialize()
+void SubChunkMeshGenerator::initialize()
 {
     bool success;
     success = connect(m_owner->m_game, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(handleUpdatedChunk(Int3D,Int3D)));
     Q_ASSERT(success);
-    success = connect(m_owner->m_game, SIGNAL(unloadChunk(Int3D)), this, SLOT(queueDeleteChunkMesh(Int3D)));
+    success = connect(m_owner->m_game, SIGNAL(unloadChunk(Int3D)), this, SLOT(queueDeleteSubChunkMesh(Int3D)));
     Q_ASSERT(success);
     m_owner->m_game->start();
 }
 
-void ChunkMeshGenerator::shutDown()
+void SubChunkMeshGenerator::shutDown()
 {
     m_thread->exit();
     m_thread->wait();
     m_owner->m_shut_down = true;
 }
 
-void ChunkMeshGenerator::handleUpdatedChunk(const Int3D &start, const Int3D &size)
+void SubChunkMeshGenerator::handleUpdatedChunk(const Int3D &start, const Int3D &size)
 {
     Q_ASSERT(QThread::currentThread() == m_thread);
 
-    // find the chunk coordinates for this updated stuff.
-    Int3D chunk_key = m_owner->chunkKey(start);
-
-    // make sure it fits in one chunk
-    Q_ASSERT(m_owner->chunkKey(start + size - Int3D(1,1,1)) == chunk_key);
-
-    generateChunkMesh(chunk_key);
-
+    // update every sub chunk that the updated region touches
+    Int3D min = m_owner->subChunkKey(start);
+    Int3D max = m_owner->subChunkKey(start+size);
+    Int3D it;
+    for (it.x = min.x; it.x < max.x; it.x+=MainWindow::c_sub_chunk_mesh_size.x) {
+        for (it.y = min.y; it.y < max.y; it.y+=MainWindow::c_sub_chunk_mesh_size.y) {
+            for (it.z = min.z; it.z < max.z; it.z+=MainWindow::c_sub_chunk_mesh_size.z) {
+                generateSubChunkMesh(it);
+            }
+        }
+    }
 }
 
-void ChunkMeshGenerator::generateChunkMesh(const Int3D & chunk_key)
+void SubChunkMeshGenerator::generateSubChunkMesh(const Int3D & sub_chunk_key)
 {
     Q_ASSERT(QThread::currentThread() == m_thread);
 
-    MainWindow::ChunkData chunk_data = m_owner->m_chunks.value(chunk_key);
+    MainWindow::SubChunkData chunk_data = m_owner->m_sub_chunks.value(sub_chunk_key);
     bool replace_chunk = true;
     if (chunk_data.is_null) {
         // initialize chunk data
         replace_chunk = false;
         chunk_data.is_null = false;
-        chunk_data.position = chunk_key;
+        chunk_data.position = sub_chunk_key;
         for (int i = 0; i < 2; i++) {
             chunk_data.obj[i] = NULL;
             chunk_data.node[i] = NULL;
         }
-        m_owner->m_chunks.insert(chunk_key, chunk_data);
+        m_owner->m_sub_chunks.insert(sub_chunk_key, chunk_data);
 
     }
 
-    ReadyChunk done_chunks[2];
+    ReadySubChunk done_chunks[2];
 
     Int3D offset;
-    Int3D size = MainWindow::c_chunk_size;
     for (int pass = 0; pass < 2; pass++) {
-        done_chunks[pass] = ReadyChunk(pass, chunk_data.obj[pass], chunk_data.node[pass], chunk_key);
+        done_chunks[pass] = ReadySubChunk(pass, chunk_data.obj[pass], chunk_data.node[pass], sub_chunk_key);
 
         m_owner->m_ogre_mutex.lock();
         Ogre::ManualObject * obj = new Ogre::ManualObject(Ogre::String());
         obj->begin(pass == 0 ? "TerrainOpaque" : "TerrainTransparent", Ogre::RenderOperation::OT_TRIANGLE_LIST);
         m_owner->m_ogre_mutex.unlock();
         Int3D absolute_position;
-        for (offset.x = 0, absolute_position.x = chunk_data.position.x; offset.x < size.x; offset.x++, absolute_position.x++) {
-            for (offset.y = 0, absolute_position.y = chunk_data.position.y; offset.y < size.y; offset.y++, absolute_position.y++) {
-                for (offset.z = 0, absolute_position.z = chunk_data.position.z; offset.z < size.z; offset.z++, absolute_position.z++) {
+        for (offset.x = 0, absolute_position.x = chunk_data.position.x; offset.x < MainWindow::c_sub_chunk_mesh_size.x; offset.x++, absolute_position.x++) {
+            for (offset.y = 0, absolute_position.y = chunk_data.position.y; offset.y < MainWindow::c_sub_chunk_mesh_size.y; offset.y++, absolute_position.y++) {
+                for (offset.z = 0, absolute_position.z = chunk_data.position.z; offset.z < MainWindow::c_sub_chunk_mesh_size.z; offset.z++, absolute_position.z++) {
                     Block block = m_owner->m_game->blockAt(absolute_position);
 
                     MainWindow::BlockData block_data = m_owner->m_block_data.value(block.type(), m_owner->m_air);
@@ -856,14 +859,14 @@ void ChunkMeshGenerator::generateChunkMesh(const Int3D & chunk_key)
             }
         }
         m_queue_mutex.lock();
-        m_new_chunk_queue.enqueue(ReadyChunk(pass, obj, m_owner->m_pass[pass], chunk_key));
+        m_new_sub_chunk_queue.enqueue(ReadySubChunk(pass, obj, m_owner->m_pass[pass], sub_chunk_key));
 
 
-        chunk_data = m_owner->m_chunks.value(chunk_key);
+        chunk_data = m_owner->m_sub_chunks.value(sub_chunk_key);
         // chunk_data.node[pass] is set in frameRenderingQueued by the other thread after it creates it.
         chunk_data.node[pass] = NULL;
         chunk_data.obj[pass] = obj;
-        m_owner->m_chunks.insert(chunk_key, chunk_data);
+        m_owner->m_sub_chunks.insert(sub_chunk_key, chunk_data);
         m_queue_mutex.unlock();
     }
 
@@ -871,32 +874,39 @@ void ChunkMeshGenerator::generateChunkMesh(const Int3D & chunk_key)
         // put delete old stuff on queue
         if (replace_chunk) {
             m_queue_mutex.lock();
-            m_done_chunk_queue.enqueue(done_chunks[pass]);
+            m_done_sub_chunk_queue.enqueue(done_chunks[pass]);
             m_queue_mutex.unlock();
         }
     }
 }
 
-void ChunkMeshGenerator::queueDeleteChunkMesh(const Int3D &coord)
+void SubChunkMeshGenerator::queueDeleteSubChunkMesh(const Int3D &coord)
 {
     Q_ASSERT(QThread::currentThread() == m_thread);
-    Int3D chunk_key = m_owner->chunkKey(coord);
-    MainWindow::ChunkData chunk_data = m_owner->m_chunks.value(chunk_key);
-    if (chunk_data.is_null) {
-        //qDebug() << "can't delete chunk at" << chunk_key.x << chunk_key.y << chunk_key.z << "- not loaded.";
-        return;
-    }
 
+    // queue for deletion every sub chunk within the chunk.
+    Int3D min = m_owner->subChunkKey(coord);
+    Int3D max = m_owner->subChunkKey(coord+MainWindow::c_chunk_size);
+    Int3D it;
     m_queue_mutex.lock();
-    for (int i = 0; i < 2; i++)
-        m_done_chunk_queue.enqueue(ReadyChunk(i, chunk_data.obj[i], chunk_data.node[i], chunk_key));
+    for (it.x = min.x; it.x < max.x; it.x+=MainWindow::c_sub_chunk_mesh_size.x) {
+        for (it.y = min.y; it.y < max.y; it.y+=MainWindow::c_sub_chunk_mesh_size.y) {
+            for (it.z = min.z; it.z < max.z; it.z+=MainWindow::c_sub_chunk_mesh_size.z) {
+                MainWindow::SubChunkData chunk_data = m_owner->m_sub_chunks.value(it);
+                if (chunk_data.is_null)
+                    continue;
+                for (int i = 0; i < 2; i++)
+                    m_done_sub_chunk_queue.enqueue(ReadySubChunk(i, chunk_data.obj[i], chunk_data.node[i], it));
+                m_owner->m_sub_chunks.remove(it);
+            }
+        }
+    }
     m_queue_mutex.unlock();
-    m_owner->m_chunks.remove(chunk_key);
 }
 
-Int3D MainWindow::chunkKey(const Int3D & coord)
+Int3D MainWindow::subChunkKey(const Int3D & coord)
 {
-    return coord - (coord % c_chunk_size);
+    return coord - (coord % c_sub_chunk_mesh_size);
 }
 
 void MainWindow::movePlayerPosition()

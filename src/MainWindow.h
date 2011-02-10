@@ -28,7 +28,7 @@
 #include "Chunk.h"
 #include "Game.h"
 
-class ChunkMeshGenerator;
+class SubChunkMeshGenerator;
 
 class MainWindow :
     public QObject,
@@ -84,6 +84,7 @@ protected:
 
 private:
     static const Int3D c_side_offset[];
+    static const Int3D c_sub_chunk_mesh_size;
     static const Int3D c_chunk_size;
     static const Ogre::Vector3 c_side_coord[6][2][3];
     static const Ogre::Vector2 c_tex_coord[2][3];
@@ -112,14 +113,6 @@ private:
 
     bool m_grab_mouse;
 
-    struct Mob {
-        Ogre::Vector3 pos;
-        Ogre::Vector3 up;
-        Ogre::Vector3 look;
-        double stance;
-        bool on_ground;
-    };
-
     struct BlockTextureCoord {
         int x;
         int y;
@@ -136,12 +129,12 @@ private:
         bool rotate;
     };
 
-    struct ChunkData {
+    struct SubChunkData {
         bool is_null;
         Int3D position;
         Ogre::SceneNode * node[2]; // one for each pass
         Ogre::ManualObject * obj[2]; // one for each pass
-        ChunkData() : is_null(true) {}
+        SubChunkData() : is_null(true) {}
     };
 
     enum BlockFaceDirection {
@@ -157,10 +150,7 @@ private:
     Game * m_game;
 
     // key is the meter coordinates of the min corner
-    QHash<Int3D, ChunkData> m_chunks;
-    QHash<qint32, QSharedPointer<Mob> > m_entities;
-
-    Mob * m_player;
+    QHash<Int3D, SubChunkData> m_sub_chunks;
 
     // maps input to Control and vice versa
     QHash<PhysicalInput, Game::Control> m_key_to_control;
@@ -174,7 +164,7 @@ private:
 
     Ogre::SceneNode * m_pass[2];
 
-    ChunkMeshGenerator * m_chunk_generator;
+    SubChunkMeshGenerator * m_sub_chunk_generator;
 
     QMutex m_ogre_mutex;
 
@@ -191,8 +181,7 @@ private:
     void setupResources();
     void loadResources();
 
-    Int3D chunkKey(const Int3D & coord);
-    void generateChunkMesh(ChunkData & chunk_data);
+    Int3D subChunkKey(const Int3D & coord);
     PhysicalInput configKeyToPhysInput(QString config_value);
     bool controlPressed(Game::Control control);
     void activateInput(PhysicalInput input, bool activated = true);
@@ -204,53 +193,53 @@ private slots:
     void handlePlayerHealthUpdated();
     void handlePlayerDied();
 
-    friend class ChunkMeshGenerator;
+    friend class SubChunkMeshGenerator;
 };
 
 
-class ChunkMeshGenerator : public QObject {
+class SubChunkMeshGenerator : public QObject {
     Q_OBJECT
 public:
-    struct ReadyChunk {
+    struct ReadySubChunk {
         int pass;
         Ogre::ManualObject * obj;
         Ogre::SceneNode * node;
-        Int3D chunk_key;
-        ReadyChunk() {}
-        ReadyChunk(int pass, Ogre::ManualObject * obj, Ogre::SceneNode * node, Int3D chunk_key) :
-            pass(pass), obj(obj), node(node), chunk_key(chunk_key) {}
+        Int3D sub_chunk_key;
+        ReadySubChunk() {}
+        ReadySubChunk(int pass, Ogre::ManualObject * obj, Ogre::SceneNode * node, Int3D sub_chunk_key) :
+            pass(pass), obj(obj), node(node), sub_chunk_key(sub_chunk_key) {}
     };
 
 public:
-    ChunkMeshGenerator(MainWindow * owner);
-    bool availableNewChunk() const {
+    SubChunkMeshGenerator(MainWindow * owner);
+    bool availableNewSubChunk() const {
         QMutexLocker locker(&m_queue_mutex);
-        return !m_new_chunk_queue.isEmpty();
+        return !m_new_sub_chunk_queue.isEmpty();
     }
-    ReadyChunk nextNewChunk() {
+    ReadySubChunk nextNewSubChunk() {
         QMutexLocker locker(&m_queue_mutex);
-        return m_new_chunk_queue.dequeue();
+        return m_new_sub_chunk_queue.dequeue();
     }
-    bool availableDoneChunk() const {
+    bool availableDoneSubChunk() const {
         QMutexLocker locker(&m_queue_mutex);
-        return !m_done_chunk_queue.isEmpty();
+        return !m_done_sub_chunk_queue.isEmpty();
     }
-    ReadyChunk nextDoneChunk() {
+    ReadySubChunk nextDoneSubChunk() {
         QMutexLocker locker(&m_queue_mutex);
-        return m_done_chunk_queue.dequeue();
+        return m_done_sub_chunk_queue.dequeue();
     }
     void shutDown();
 private:
 
     MainWindow * m_owner;
-    QQueue<ReadyChunk> m_new_chunk_queue;
-    QQueue<ReadyChunk> m_done_chunk_queue;
+    QQueue<ReadySubChunk> m_new_sub_chunk_queue;
+    QQueue<ReadySubChunk> m_done_sub_chunk_queue;
     QThread * m_thread;
     mutable QMutex m_queue_mutex;
 private slots:
     void handleUpdatedChunk(const Int3D &start, const Int3D &size);
-    void generateChunkMesh(const Int3D & chunk_key);
-    void queueDeleteChunkMesh(const Int3D & coord);
+    void generateSubChunkMesh(const Int3D & sub_chunk_key);
+    void queueDeleteSubChunkMesh(const Int3D & coord);
 
     void initialize();
 };
