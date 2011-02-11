@@ -67,11 +67,13 @@ mf.Entity
 // Enums
 
 /**
+ * Members:
  * Player
  * Mob
  * Pickup
  */
 mf.EntityType
+
 /**
  * The id of blocks and items. See the output of examples/reflect.js for a full listing of names.
  */
@@ -80,7 +82,7 @@ mf.ItemType
 /**
  * Which side of a block, if any.
  *
- * Properties:
+ * Members:
  * NoDirection
  * NegativeX (West)
  * PositiveX (East)
@@ -91,11 +93,10 @@ mf.ItemType
  *
  * NOT IMPLEMENTED
  */
-
 mf.Face
 
 /**
- * Properties:
+ * Members:
  * Pig
  * Sheep
  * Cow
@@ -118,7 +119,7 @@ mf.Face
 mf.Mob
 
 /**
- * Properties:
+ * Members:
  * BlockBroken
  * Interrupted
  *
@@ -173,6 +174,24 @@ mf.debug(line)
  * @param {String} string The string to print to stdout.
  */
 mf.print(string)
+
+/**
+ * Reads a text file and returns the contents as a string or undefined.
+ * @param {String} path The path to the file
+ * @return {String} or undefined
+ *
+ * NOT IMPLEMENTED
+ */
+mf.readFile(path)
+
+/**
+ * Writes a text file with the specified contents.
+ * @param {String} path The path to the file
+ * @param {String} contents the contents
+ *
+ * NOT IMPLEMENTED
+ */
+mf.writeFile(path)
 
 /**
  * Sends a message over chat. breaks up big messages for you
