@@ -123,11 +123,11 @@ void ScriptRunner::go()
 
     // connect to server
     bool success;
-    success = connect(m_game, SIGNAL(entitySpawned(int)), this, SLOT(handleEntitySpawned(int)));
+    success = connect(m_game, SIGNAL(entitySpawned(QSharedPointer<Game::Entity>)), this, SLOT(handleEntitySpawned(QSharedPointer<Game::Entity>)));
     Q_ASSERT(success);
-    success = connect(m_game, SIGNAL(entityMoved(int)), this, SLOT(handleEntityMoved(int)));
+    success = connect(m_game, SIGNAL(entityMoved(QSharedPointer<Game::Entity>)), this, SLOT(handleEntityMoved(QSharedPointer<Game::Entity>)));
     Q_ASSERT(success);
-    success = connect(m_game, SIGNAL(entityDespawned(int)), this, SLOT(handleEntityDespawned(int)));
+    success = connect(m_game, SIGNAL(entityDespawned(QSharedPointer<Game::Entity>)), this, SLOT(handleEntityDespawned(QSharedPointer<Game::Entity>)));
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(handleChunkUpdated(Int3D,Int3D)));
     Q_ASSERT(success);
@@ -488,13 +488,10 @@ QScriptValue ScriptRunner::self(QScriptContext *context, QScriptEngine *engine)
     if (!me->argCount(context, error, 0))
         return error;
     int entity_id = me->m_game->playerEntityId();
-    return me->jsEntity(entity_id);
+    return me->jsEntity(me->m_game->entity(entity_id));
 }
-QScriptValue ScriptRunner::jsEntity(int entity_id)
+QScriptValue ScriptRunner::jsEntity(QSharedPointer<Game::Entity> entity)
 {
-    QSharedPointer<Game::Entity> entity = m_game->entity(entity_id);
-    if (entity.isNull())
-        return QScriptValue();
     QScriptValue result = m_entity_class.construct();
     result.setProperty("entity_id", entity.data()->entity_id);
     Server::EntityPosition position = entity.data()->position;
@@ -579,7 +576,10 @@ QScriptValue ScriptRunner::entity(QScriptContext *context, QScriptEngine *engine
     if (!me->maybeThrowArgumentError(context, error, entity_id_value.isNumber()))
         return error;
     int entity_id = entity_id_value.toInt32();
-    return me->jsEntity(entity_id);
+    QSharedPointer<Game::Entity> entity = me->m_game->entity(entity_id);
+    if (entity.isNull())
+        return QScriptValue();
+    return me->jsEntity(entity);
 }
 
 QScriptValue ScriptRunner::setPosition(QScriptContext *context, QScriptEngine *engine)
@@ -653,17 +653,17 @@ QScriptValue ScriptRunner::jsItem(Message::Item item)
     return m_item_class.construct(QScriptValueList() << item.type << item.count);
 }
 
-void ScriptRunner::handleEntitySpawned(int entity_id)
+void ScriptRunner::handleEntitySpawned(QSharedPointer<Game::Entity>entity)
 {
-    raiseEvent("onEntitySpawned", QScriptValueList() << entity_id);
+    raiseEvent("onEntitySpawned", QScriptValueList() << jsEntity(entity));
 }
-void ScriptRunner::handleEntityMoved(int entity_id)
+void ScriptRunner::handleEntityMoved(QSharedPointer<Game::Entity>entity)
 {
-    raiseEvent("onEntityMoved", QScriptValueList() << entity_id);
+    raiseEvent("onEntityMoved", QScriptValueList() << jsEntity(entity));
 }
-void ScriptRunner::handleEntityDespawned(int entity_id)
+void ScriptRunner::handleEntityDespawned(QSharedPointer<Game::Entity>entity)
 {
-    raiseEvent("onEntityDespawned", QScriptValueList() << entity_id);
+    raiseEvent("onEntityDespawned", QScriptValueList() << jsEntity(entity));
 }
 
 void ScriptRunner::handleChunkUpdated(const Int3D &start, const Int3D &size)

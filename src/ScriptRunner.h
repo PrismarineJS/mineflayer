@@ -86,7 +86,7 @@ private:
     QScriptValue jsPoint(double x, double y, double z);
     bool fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, QVector3D &point);
     QScriptValue jsItem(Message::Item item);
-    QScriptValue jsEntity(int entity_id);
+    QScriptValue jsEntity(QSharedPointer<Game::Entity> entity);
 
 
 
@@ -120,9 +120,9 @@ private:
 private slots:
 
     void movePlayerPosition();
-    void handleEntitySpawned(int entity_id);
-    void handleEntityMoved(int entity_id);
-    void handleEntityDespawned(int entity_id);
+    void handleEntitySpawned(QSharedPointer<Game::Entity> entity);
+    void handleEntityDespawned(QSharedPointer<Game::Entity> entity);
+    void handleEntityMoved(QSharedPointer<Game::Entity> entity);
     void handleChunkUpdated(const Int3D &start, const Int3D &size);
     void handlePlayerHealthUpdated();
     void handlePlayerDied();

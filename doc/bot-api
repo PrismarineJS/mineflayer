@@ -439,23 +439,20 @@ mf.onDeath(function() {...})
 /**
  * Called when an entity is discovered.
  * This can happen when an entity is created or when it comes into view.
- * See also mf.entity(entity_id).
- * @param {Number} entity_id The id of the entity
+ * @param {Entity} entity
  */
-mf.onEntitySpawned(function(entity_id) {...})
+mf.onEntitySpawned(function(entity) {...})
 
 /**
  * Called when an entity vanishes from known existence.
  * This can happen when an entity is destroyed or when it goes out of view.
- * Calling mf.entity(entity_id) will return undefined once this event occurs.
- * @param {Number} entity_id The id of the entity
+ * @param {Entity} entity
  */
-mf.onEntityDespawned(function(entity_id) {...})
+mf.onEntityDespawned(function(entity) {...})
 
 /**
  * Called when an entity moves.
- * See also mf.entity(entity_id).
- * @param {Number} entity_id The id of the entity
+ * @param {Entity} entity
  */
 mf.onEntityMoved(function(entity_id) {...})
 
