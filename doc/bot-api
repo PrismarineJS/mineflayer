@@ -60,9 +60,9 @@ mf.Entity
 
 /**
  * Members:
- * Player
- * Mob
- * Pickup
+ *      Player
+ *      Mob
+ *      Pickup
  */
 mf.EntityType
 
@@ -75,13 +75,13 @@ mf.ItemType
  * Which side of a block, if any.
  *
  * Members:
- * NoDirection
- * NegativeX (West)
- * PositiveX (East)
- * NegativeY (South)
- * PositiveY (North)
- * NegativeZ (Down)
- * PositiveZ (Up)
+ *      NoDirection
+ *      NegativeX (West)
+ *      PositiveX (East)
+ *      NegativeY (South)
+ *      PositiveY (North)
+ *      NegativeZ (Down)
+ *      PositiveZ (Up)
  *
  * NOT IMPLEMENTED
  */
@@ -89,22 +89,22 @@ mf.Face
 
 /**
  * Members:
- * Pig
- * Sheep
- * Cow
- * Chicken
- * Squid
- * ZombiePigman
- * Spider
- * Zombie
- * Skeleton
- * SpiderJockey
- * Creeper
- * Slime
- * Ghast
- * Human
- * Pigman
- * Giant
+ *      Pig
+ *      Sheep
+ *      Cow
+ *      Chicken
+ *      Squid
+ *      ZombiePigman
+ *      Spider
+ *      Zombie
+ *      Skeleton
+ *      SpiderJockey
+ *      Creeper
+ *      Slime
+ *      Ghast
+ *      Human
+ *      Pigman
+ *      Giant
  *
  * NOT IMPLEMENTED
  */
@@ -112,8 +112,8 @@ mf.Mob
 
 /**
  * Members:
- * BlockBroken
- * Interrupted
+ *      BlockBroken
+ *      Interrupted
  *
  * NOT IMPLEMENTED
  */
@@ -125,6 +125,24 @@ mf.StoppedDiggingReason
  * NOT IMPLEMENTED
  */
 mf.serializableTypeNames
+
+/**
+ * NOT IMPLEMENTED
+ * Represents an input action as if you were pressing buttons on a keyboard.
+ * Members:
+ *      NoControl
+ *      Forward
+ *      Back
+ *      Left
+ *      Right
+ *      Jump
+ *      Crouch - NOT HOOKED UP
+ *      DiscardItem - NOT HOOKED UP
+ *      Action1 (left click) - NOT HOOKED UP
+ *      Action2 (right click) - NOT HOOKED UP
+ */
+mf.Control
+
 
 // IMPLEMENTED
 
@@ -235,6 +253,16 @@ mf.blockAt(point)
  * @returns {Entity}
  */
 mf.self()
+
+
+/**
+ * Sets the input state of control to state. Use this to move around and jump. It is as if you are 
+ * virtually pressing keys on a keyboard. Your actions will be bound by the physics engine, unless you
+ * use the mf.hax methods to mess with it.
+ * @param {Number} control See the mf.Control enum.
+ * @param {Boolean} state Whether or not you are activating this control. E.g. whether or not the virtual button is held down.
+ */
+mf.setControlState(control, state)
 
 // NOT YET IMPLEMENTED
 
@@ -471,6 +499,4 @@ mf.onUserQuit(function(username) {...})
  * @param {Function} handler function registered previously with the event
  */
 mf.removeHandler(event_registrar, handler)
-
-
 
