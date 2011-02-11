@@ -12,6 +12,7 @@ class Game : public QObject
 {
     Q_OBJECT
 public:
+    // must be valid array indexes
     enum Control {
         NoControl,
         Forward,

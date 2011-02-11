@@ -73,9 +73,9 @@ mf.Item(type, count)
 
 /**
  * Members:
- * Player
- * Mob
- * Pickup
+ *      Player
+ *      Mob
+ *      Pickup
  */
 mf.EntityType
 
@@ -88,40 +88,60 @@ mf.ItemType
  * Which side of a block, if any.
  *
  * Members:
- * NoDirection
- * NegativeX (West)
- * PositiveX (East)
- * NegativeY (South)
- * PositiveY (North)
- * NegativeZ (Down)
- * PositiveZ (Up)
+ *      NoDirection
+ *      NegativeX (West)
+ *      PositiveX (East)
+ *      NegativeY (South)
+ *      PositiveY (North)
+ *      NegativeZ (Down)
+ *      PositiveZ (Up)
  */
 mf.Face
 
 /**
  * Members:
- * Creeper
- * Skeleton
- * Spider
- * GiantZombie
- * Zombie
- * Slime
- * Ghast
- * ZombiePigman
- * Pig
- * Sheep
- * Cow
- * Chicken
+ *      Creeper
+ *      Skeleton
+ *      Spider
+ *      GiantZombie
+ *      Zombie
+ *      Slime
+ *      Ghast
+ *      ZombiePigman
+ *      Pig
+ *      Sheep
+ *      Cow
+ *      Chicken
  */
 mf.Mob
 
 /**
  * Members:
- * BlockBroken
- * Interrupted
+ *      BlockBroken
+ *      Interrupted
  */
 mf.StoppedDiggingReason
 
+/**
+ * NOT IMPLEMENTED
+ * Represents an input action as if you were pressing buttons on a keyboard.
+ * Members:
+ *      NoControl
+ *      Forward
+ *      Back
+ *      Left
+ *      Right
+ *      Jump
+ *      Crouch - NOT HOOKED UP
+ *      DiscardItem - NOT HOOKED UP
+ *      Action1 (left click) - NOT HOOKED UP
+ *      Action2 (right click) - NOT HOOKED UP
+ */
+mf.Control
+
+
+// IMPLEMENTED
+>>>>>>> origin/master
 
 /**
  * runs a script with a path relative to the current script.
@@ -230,6 +250,16 @@ mf.blockAt(point)
  * @returns {Entity}
  */
 mf.self()
+
+
+/**
+ * Sets the input state of control to state. Use this to move around and jump. It is as if you are 
+ * virtually pressing keys on a keyboard. Your actions will be bound by the physics engine, unless you
+ * use the mf.hax methods to mess with it.
+ * @param {Number} control See the mf.Control enum.
+ * @param {Boolean} state Whether or not you are activating this control. E.g. whether or not the virtual button is held down.
+ */
+mf.setControlState(control, state)
 
 // NOT YET IMPLEMENTED
 

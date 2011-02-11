@@ -1,12 +1,13 @@
 #include "ScriptRunner.h"
 #include <QFile>
-#include <QTimer>
 #include <QMainWindow>
 #include <QDebug>
 #include <QCoreApplication>
 #include <QDir>
 
 #include <cmath>
+
+const int ScriptRunner::c_physics_fps = 10;
 
 ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headless) :
     QObject(NULL),
@@ -23,35 +24,15 @@ ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headl
     m_timer_count(0),
     m_debugger(new QScriptEngineDebugger())
 {
+    m_engine = new QScriptEngine(this);
+
+    if (m_debug)
+        m_debugger->attachTo(m_engine);
+
     // run in our own thread
     m_thread = new QThread();
     m_thread->start();
     this->moveToThread(m_thread);
-}
-
-LameGuiThreadThing::LameGuiThreadThing(ScriptRunner *m_owner, QScriptEngine *engine) :
-    m_owner(m_owner),
-    m_engine(engine)
-{
-    this->moveToThread(QCoreApplication::instance()->thread());
-
-    qDebug() << "If you don't see a message below this 'yay, debugging will work', then you need to kill and restart.";
-
-    bool success;
-    success = QMetaObject::invokeMethod(this, "doIt", Qt::QueuedConnection);
-    Q_ASSERT(success);
-
-}
-
-void LameGuiThreadThing::doIt()
-{
-    qDebug() << "yay, debugging will work";
-    m_owner->m_debugger->attachTo(m_engine);
-
-    bool success;
-    success = QMetaObject::invokeMethod(m_owner, "keepGoing", Qt::QueuedConnection);
-    Q_ASSERT(success);
-    return;
 }
 
 void ScriptRunner::go()
@@ -62,18 +43,6 @@ void ScriptRunner::go()
         Q_ASSERT(success);
         return;
     }
-
-    m_engine = new QScriptEngine(this);
-    if (m_debug) {
-        LameGuiThreadThing(this, m_engine);
-        return;
-    }
-    keepGoing();
-}
-
-void ScriptRunner::keepGoing()
-{
-    Q_ASSERT(QThread::currentThread() == m_thread);
 
     // initialize the MF object before we run any user code
     QScriptValue mf_obj = m_engine->newObject();
@@ -126,6 +95,7 @@ void ScriptRunner::keepGoing()
     mf_obj.setProperty("health", m_engine->newFunction(health));
     mf_obj.setProperty("blockAt", m_engine->newFunction(blockAt));
     mf_obj.setProperty("self", m_engine->newFunction(self));
+    mf_obj.setProperty("setControlState", m_engine->newFunction(setControlState));
 
     QString main_script_contents = internalReadFile(m_main_script_filename);
     if (main_script_contents.isNull()) {
@@ -153,8 +123,17 @@ void ScriptRunner::keepGoing()
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(playerHealthUpdated()), this, SLOT(handlePlayerHealthUpdated()));
     Q_ASSERT(success);
+    success = connect(&m_physics_timer, SIGNAL(timeout()), this, SLOT(doPhysics()));
+    Q_ASSERT(success);
+
     m_started_game = true;
     m_game->start();
+}
+
+void ScriptRunner::doPhysics()
+{
+    float elapsed_time = m_physics_time.restart() / 1000.0f;
+    m_game->doPhysics(elapsed_time);
 }
 
 QString ScriptRunner::internalReadFile(const QString &path)
@@ -530,6 +509,23 @@ QScriptValue ScriptRunner::jsEntity(QSharedPointer<Game::Entity> entity)
     return result;
 }
 
+QScriptValue ScriptRunner::setControlState(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 2))
+        return error;
+    QScriptValue control = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, control.isNumber()))
+        return error;
+    QScriptValue state = context->argument(1);
+    if (!me->maybeThrowArgumentError(context, error, state.isBool()))
+        return error;
+
+    me->m_game->setControlActivated((Game::Control) control.toInteger(), state.toBool());
+    return QScriptValue();
+}
+
 int ScriptRunner::valueToNearestInt(const QScriptValue &value)
 {
     return (int)std::floor(value.toNumber() + 0.5);
@@ -603,6 +599,9 @@ void ScriptRunner::handleLoginStatusUpdated(Server::LoginStatus status)
     // note that game class already handles shutting down for Disconnected and SocketError.
     switch (status) {
         case Server::Success:
+            m_physics_time.start();
+            doPhysics();
+            m_physics_timer.start(1000 / c_physics_fps);
             raiseEvent("onConnected");
             break;
         default:;

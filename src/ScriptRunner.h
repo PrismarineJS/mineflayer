@@ -9,6 +9,7 @@
 #include <QUrl>
 #include <QTextStream>
 #include <QTimer>
+#include <QTime>
 #include <QThread>
 
 class ScriptRunner : public QObject
@@ -22,6 +23,8 @@ public slots:
     void go();
 
 private:
+    static const int c_physics_fps;
+
     QThread * m_thread;
     QUrl m_url;
     QString m_main_script_filename;
@@ -60,6 +63,9 @@ private:
     int m_timer_count;
 
     QScriptEngineDebugger * m_debugger;
+
+    QTimer m_physics_timer;
+    QTime m_physics_time;
 private:
     void shutdown(int return_code);
     void raiseEvent(QString event_name, const QScriptValueList & args = QScriptValueList());
@@ -98,8 +104,10 @@ private:
     static QScriptValue health(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue blockAt(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue self(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue setControlState(QScriptContext * context, QScriptEngine * engine);
 
     static QScriptValue Point(QScriptContext * context, QScriptEngine * engine);
+
 
 private slots:
 
@@ -112,20 +120,7 @@ private slots:
 
     void dispatchTimeout();
 
-    void keepGoing();
-
-    friend class LameGuiThreadThing;
-};
-
-class LameGuiThreadThing : public QObject {
-    Q_OBJECT
-public:
-    LameGuiThreadThing(ScriptRunner * m_owner, QScriptEngine * engine);
-public slots:
-    void doIt();
-private:
-    ScriptRunner * m_owner;
-    QScriptEngine * m_engine;
+    void doPhysics();
 };
 
 #endif // SCRIPTRUNNER_H
