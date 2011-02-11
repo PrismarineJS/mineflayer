@@ -1,3 +1,4 @@
+# terrain.png
 # name              x   y   w   h
 GrassTop            0   0   16  16
 Stone               16  0   16  16
@@ -65,7 +66,7 @@ SnowDirtSide        64  64  16  16
 CactusTop           80  64  16  16
 CactusSide          96  64  16  16
 CactusBottom        112 64  16  16
-Clay                128 64  16  16
+ClayBlock           128 64  16  16
 SugarCane           144 64  16  16
 NoteBlock           160 64  16  16
 JukeBoxTop          176 64  16  16
@@ -164,3 +165,159 @@ Crack9              144 240 16  16
 
 Lava4               224 240 16  16
 Lava5               240 240 16  16
+
+
+# /gui/icons.png
+# name              x   y   w   h
+BlackHeartOutline   16  0   9   9
+WhiteHeartOutline   25  0   9   9
+RedHeartOutline     34  0   9   9
+RedHeartInner       52  0   9   9
+RedHalfHeartInner   61  0   9   9
+PinkHeartInner      70  0   9   9
+PinkHalfHeartInner  79  0   9   9
+
+ArmorSlotEmpty      16  9   9   9
+ArmorSlotHalf       25  9   9   9
+ArmorSlotFull       34  9   9   9
+
+BubbleFull          16  18  9   9
+BubblePop           25  18  9   9
+
+# /gui/gui.png
+# name              x   y   w   h
+EquippableSlots     0   0   182 22
+CrossHair           243 3   9   9
+SelectedSlot        0   22  24  24
+
+# /gui/items.png
+# name              x   y   w   h
+HelmetLeather       0   0   16  16
+HelmetChain         16  0   16  16
+HelmetIron          32  0   16  16
+HelmetDiamond       48  0   16  16
+HelmetGold          64  0   16  16
+FlintAndSteel       80  0   16  16
+Flint               96  0   16  16
+Coal                112 0   16  16
+String              128 0   16  16
+Seeds               144 0   16  16
+RedApple            160 0   16  16
+GoldApple           176 0   16  16
+Egg                 192 0   16  16
+Sugar               208 0   16  16
+Snowball            224 0   16  16
+
+ChestLeather        0   16  16  16
+ChestChain          16  16  16  16
+ChestIron           32  16  16  16
+ChestDiamond        48  16  16  16
+ChestGold           64  16  16  16
+Bow                 80  16  16  16
+Brick               96  16  16  16
+IronBar             112 16  16  16
+Feather             128 16  16  16
+Wheat               144 16  16  16
+PictureFrame        160 16  16  16             
+SugarCane           176 16  16  16
+Bone                192 16  16  16
+Cake                208 16  16  16
+SlimeBall           224 16  16  16
+
+PantsLeather        0   32  16  16
+PantsChain          16  32  16  16
+PantsIron           32  32  16  16
+PantsDiamond        48  32  16  16
+PantsGold           64  32  16  16
+Arrow               80  32  16  16
+Quiver              96  32  16  16
+GoldBar             112 32  16  16
+Sulfur              128 32  16  16
+Bread               144 32  16  16
+Sign                160 32  16  16
+WoodDoor            176 32  16  16
+IronDoor            192 32  16  16
+
+BootsLeather        0   48  16  16
+BootsChain          16  48  16  16
+BootsIron           32  48  16  16
+BootsDiamond        48  48  16  16
+BootsGold           64  48  16  16
+Stick               80  48  16  16
+Compass             96  48  16  16
+Diamond             112 48  16  16
+Redstone            128 48  16  16
+Clay                144 48  16  16
+Paper               160 48  16  16
+Book                176 48  16  16
+
+SwordWood           0   64  16  16
+SwordStone          16  64  16  16
+SwordIron           32  64  16  16
+SwordDiamond        48  64  16  16
+SwordGold           64  64  16  16
+FishingRod          80  64  16  16
+Clock               96  64  16  16
+Bowl                112 64  16  16
+Stew                128 64  16  16
+GlowstoneDust       144 64  16  16
+BucketEmpty         160 64  16  16
+BucketWater         176 64  16  16
+BucketLava          192 64  16  16
+BucketMilk          208 64  16  16
+DyeBlack            224 64  16  16
+DyeDarkGray         240 64  16  16
+
+ShovelWood          0   80  16  16
+ShovelStone         16  80  16  16
+ShovelIron          32  80  16  16
+ShovelDiamond       48  80  16  16
+ShovelGold          64  80  16  16
+PorkRaw             112 80  16  16
+PorkCooked          128 80  16  16
+FishRaw             144 80  16  16
+FishCooked          160 80  16  16
+DyeRed              224 80  16  16
+DyePink             240 80  16  16
+
+PickWood            0   96  16  16
+PickStone           16  96  16  16
+PickIron            32  96  16  16
+PickDiamond         48  96  16  16
+PickGold            64  96  16  16
+Leather             112 96  16  16
+Saddle              128 96  16  16
+DyeDarkGreen        224 96  16  16
+DyeLightGreen       240 96  16  16
+
+AxeWood             0   112 16  16
+AxeStone            16  112 16  16
+AxeIron             32  112 16  16
+AxeDiamond          48  112 16  16
+AxeGold             64  112 16  16
+DyeBrown            224 112 16  16
+DyeYellow           240 112 16  16
+
+HoeWood             0   128 16  16
+HoeStone            16  128 16  16
+HoeIron             32  128 16  16
+HoeDiamond          48  128 16  16
+HoeGold             64  128 16  16
+MineCart            112 128 16  16
+Boat                128 128 16  16
+DyeDarkBlue         224 128 16  16
+DyeLightBlue        240 128 16  16
+
+MineCartChest       112 144 16  16
+DyeDarkPurple       224 144 16  16
+DyeLightPurple      240 144 16  16
+
+MineCartFurnace     112 160 16  16
+DyeCyan             224 160 16  16
+DyeOrange           240 160 16  16
+
+DyeLightGray        224 176 16  16
+DyeWhite            240 176 16  16
+
+MusicDiscYellow     0   240 16  16
+MusicDiskGreen      16  240 16  16

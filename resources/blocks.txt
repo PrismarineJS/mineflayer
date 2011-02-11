@@ -76,7 +76,7 @@
 79  Ice                 Ice                 Ice                 Ice                 Ice                 Ice                 Ice                 1   1   0   0   0   0   0   0   0
 80  SnowBlock           Snow                Snow                Snow                Snow                Snow                Snow                0   0   0   0   0   0   0   0   0
 81  Cactus              CactusSide          CactusSide          CactusBottom        CactusTop           CactusSide          CactusSide          1   0   1   1   0   0   1   1   0
-82  Clay                Clay                Clay                Clay                Clay                Clay                Clay                0   0   0   0   0   0   0   0   0
+82  ClayBlock           ClayBlock           ClayBlock           ClayBlock           ClayBlock           ClayBlock           ClayBlock           0   0   0   0   0   0   0   0   0
 83  SugarCane           SugarCane           SugarCane           -                   -                   SugarCane           SugarCane           1   0   8   8   0   0   8   8   1
 84  Jukebox             NoteBlock           NoteBlock           NoteBlock           JukeBoxTop          NoteBlock           NoteBlock           0   0   0   0   0   0   0   0   0
 #85 Fence               ?                   ?                   ?                   ?                   ?                   ?                       0   0   0   0   0   0   0   0
