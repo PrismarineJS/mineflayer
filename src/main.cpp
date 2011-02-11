@@ -121,6 +121,6 @@ void printUsage(QString app_name)
     QString headless_text = "";
 #endif
     std::cout << "Usage: " << app_name.toStdString() << " [--debug] " <<
-        headless_text.toStdString() << "[--url user@server.com:25565] [--password 12345] [script.js]"
+        headless_text.toStdString() << "[--url user@server.com:25565] [--password 12345] [-I<path/to/libs>] [script.js]"
         << std::endl;
 }
