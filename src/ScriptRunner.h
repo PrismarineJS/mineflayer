@@ -105,21 +105,6 @@ private slots:
     void handleLoginStatusUpdated(Server::LoginStatus status);
 
     void dispatchTimeout();
-
-    void keepGoing();
-
-    friend class LameGuiThreadThing;
-};
-
-class LameGuiThreadThing : public QObject {
-    Q_OBJECT
-public:
-    LameGuiThreadThing(ScriptRunner * m_owner, QScriptEngine * engine);
-public slots:
-    void doIt();
-private:
-    ScriptRunner * m_owner;
-    QScriptEngine * m_engine;
 };
 
 #endif // SCRIPTRUNNER_H

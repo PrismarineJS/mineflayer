@@ -23,35 +23,15 @@ ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headl
     m_timer_count(0),
     m_debugger(new QScriptEngineDebugger())
 {
+    m_engine = new QScriptEngine(this);
+
+    if (m_debug)
+        m_debugger->attachTo(m_engine);
+
     // run in our own thread
     m_thread = new QThread();
     m_thread->start();
     this->moveToThread(m_thread);
-}
-
-LameGuiThreadThing::LameGuiThreadThing(ScriptRunner *m_owner, QScriptEngine *engine) :
-    m_owner(m_owner),
-    m_engine(engine)
-{
-    this->moveToThread(QCoreApplication::instance()->thread());
-
-    qDebug() << "If you don't see a message below this 'yay, debugging will work', then you need to kill and restart.";
-
-    bool success;
-    success = QMetaObject::invokeMethod(this, "doIt", Qt::QueuedConnection);
-    Q_ASSERT(success);
-
-}
-
-void LameGuiThreadThing::doIt()
-{
-    qDebug() << "yay, debugging will work";
-    m_owner->m_debugger->attachTo(m_engine);
-
-    bool success;
-    success = QMetaObject::invokeMethod(m_owner, "keepGoing", Qt::QueuedConnection);
-    Q_ASSERT(success);
-    return;
 }
 
 void ScriptRunner::go()
@@ -62,18 +42,6 @@ void ScriptRunner::go()
         Q_ASSERT(success);
         return;
     }
-
-    m_engine = new QScriptEngine(this);
-    if (m_debug) {
-        LameGuiThreadThing(this, m_engine);
-        return;
-    }
-    keepGoing();
-}
-
-void ScriptRunner::keepGoing()
-{
-    Q_ASSERT(QThread::currentThread() == m_thread);
 
     // initialize the MF object before we run any user code
     QScriptValue mf_obj = m_engine->newObject();
