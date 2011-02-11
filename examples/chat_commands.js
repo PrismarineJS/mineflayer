@@ -10,7 +10,7 @@ var chat_commands = function() {
             min_arg_count = 0;
         }
         if (max_arg_count === undefined) {
-            max_arg_count = Infinity;
+            max_arg_count = min_arg_count;
         }
         assert.isString(name);
         assert.isFunction(callback);

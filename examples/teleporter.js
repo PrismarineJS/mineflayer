@@ -10,6 +10,7 @@ if (teleporter === undefined) {
     teleporter = function() {
         var _public = {};
         _public.debug = true;
+        _public.delay = 400;
 
         function respond(message) {
             if (_public.debug) {
@@ -38,7 +39,7 @@ if (teleporter === undefined) {
             message = ["point", point_name, created_or_updated, "at", point.x, point.y, point.z].join(" ");
             respond(message);
         }
-        chat_commands.register("hereis", hereis, 1, 1);
+        chat_commands.register("hereis", hereis, 1);
 
         function zapto(username, args) {
             var point_name = args[0];
@@ -60,10 +61,10 @@ if (teleporter === undefined) {
                 mf.chat("/tp " + username + " " + mf.username());
                 mf.setTimeout(function() {
                     mf.hax.setPosition(old_position);
-                }, 400);
-            }, 400);
+                }, _public.delay);
+            }, _public.delay);
         }
-        chat_commands.register("zapto", zapto, 1, 1);
+        chat_commands.register("zapto", zapto, 1);
 
         var name_to_point;
         var database_file_name = "teleport_points.json";
