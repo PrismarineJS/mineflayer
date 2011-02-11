@@ -81,11 +81,10 @@ private:
     QString internalReadFile(const QString &path);
     QScriptValue evalJsonContents(const QString &file_contents, const QString &file_name = QString());
     void checkEngine(const QString & while_doing_what = QString());
-    static int valueToNearestInt(const QScriptValue & value);
     QScriptValue jsPoint(const Int3D &pt);
     QScriptValue jsPoint(double x, double y, double z);
     QScriptValue jsItem(Message::Item item);
-    QScriptValue jsEntity(QSharedPointer<Game::Entity> entity);
+    QScriptValue jsEntity(int entity_id);
 
 
 
@@ -108,6 +107,7 @@ private:
     static QScriptValue blockAt(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue self(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue setControlState(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue entity(QScriptContext * context, QScriptEngine * engine);
 
     static QScriptValue Point(QScriptContext * context, QScriptEngine * engine);
 
@@ -115,6 +115,9 @@ private:
 private slots:
 
     void movePlayerPosition();
+    void handleEntitySpawned(int entity_id);
+    void handleEntityMoved(int entity_id);
+    void handleEntityDespawned(int entity_id);
     void handleChunkUpdated(const Int3D &start, const Int3D &size);
     void handlePlayerHealthUpdated();
     void handlePlayerDied();

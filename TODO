@@ -36,3 +36,4 @@ Core:
 
 Bot framework:
  * implement the functions in doc/bot-api
+ * command line parameters

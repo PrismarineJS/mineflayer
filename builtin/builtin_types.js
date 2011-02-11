@@ -8,6 +8,9 @@ mf.Point = function(x, y, z) {
     this.y = y;
     this.z = z;
 };
+mf.Point.prototype.toString = function() {
+    return "(" + this.x + ", " + this.y + ", " + this.z + ")";
+};
 
 mf.Entity = function() {
 };

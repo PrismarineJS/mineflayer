@@ -372,7 +372,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         }
         case Message::MultiBlockChange: {
             MultiBlockChangeResponse * message = (MultiBlockChangeResponse *) incomingMessage.data();
-            Int3D notchian_chunk_corner(message->chunk_x * 16, 0, message->chunk_z * 16);
+            Int3D notchian_chunk_corner(message->chunk_x, 0, message->chunk_z);
             Int3D chunk_corner = fromNotchianChunk(message->chunk_x, message->chunk_z);
             QHash<Int3D, Block> new_blocks;
             for (int i = 0; i < message->block_coords.size(); i++) {
@@ -426,13 +426,13 @@ void Server::fromNotchianDoubleMeters(EntityPosition &destination, double notchi
 }
 void Server::fromNotchianIntPixels(EntityPosition &destination, int pixels_x, int pixels_y, int pixels_z)
 {
-    fromNotchianDoubleMeters(destination, pixels_x * 16, pixels_y * 16, pixels_z * 16);
+    fromNotchianDoubleMeters(destination, pixels_x / 32.0, pixels_y / 32.0, pixels_z / 32.0);
 }
 
 Int3D Server::fromNotchianChunk(int notchian_chunk_x, int notchian_chunk_z)
 {
-    // 8 * 16 = 128
-    return fromNotchianIntMeters(Int3D(notchian_chunk_x, 8, notchian_chunk_z)) * 16;
+    // 4 * 32 = 128
+    return fromNotchianIntMeters(Int3D(notchian_chunk_x, 4, notchian_chunk_z)) * 32;
 }
 Int3D Server::fromNotchianIntMeters(Int3D notchian_xyz)
 {
