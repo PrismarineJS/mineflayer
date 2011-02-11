@@ -99,6 +99,7 @@ void ScriptRunner::go()
     mf_obj.setProperty("self", m_engine->newFunction(self));
     mf_obj.setProperty("setControlState", m_engine->newFunction(setControlState));
     mf_obj.setProperty("lookAt", m_engine->newFunction(lookAt));
+    mf_obj.setProperty("respawn", m_engine->newFunction(respawn));
     mf_obj.setProperty("entity", m_engine->newFunction(entity));
 
     // hook up hax functions
@@ -555,6 +556,16 @@ QScriptValue ScriptRunner::lookAt(QScriptContext *context, QScriptEngine *engine
     float ground_distance = std::sqrt(delta.x() * delta.x() + delta.y() * delta.y());
     float pitch = std::atan2(delta.z(), ground_distance);
     me->m_game->setPlayerLook(yaw, pitch);
+    return QScriptValue();
+}
+
+QScriptValue ScriptRunner::respawn(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 0))
+        return error;
+    me->m_game->respawn();
     return QScriptValue();
 }
 

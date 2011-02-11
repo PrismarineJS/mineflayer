@@ -267,6 +267,11 @@ mf.setControlState(control, state)
 mf.lookAt(point)
 
 /**
+ * call this when you're dead to respawn.
+ */
+mf.respawn()
+
+/**
  * Teleports you to the position specified.
  * @param {Point} point
  */
