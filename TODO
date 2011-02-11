@@ -34,7 +34,5 @@ Core:
  * sky, sun, moon, day/night
  * clouds
 
- * refactor ChunkMeshGenerator to its own file
-
 Bot framework:
  * implement the functions in doc/bot-api

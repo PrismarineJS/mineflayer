@@ -3,126 +3,12 @@
 #include <OGRE/OgreMaterialManager.h>
 #include <OGRE/OgreManualObject.h>
 
-#include <QtGlobal>
-#include <QTimer>
-#include <QCoreApplication>
-#include <QDateTime>
 #include <QSettings>
 #include <QDir>
-#include <QDebug>
+#include <QCoreApplication>
 #include <QCursor>
+#include <QDebug>
 
-const Int3D MainWindow::c_side_offset[] = {
-    Int3D(0, -1, 0),
-    Int3D(0, 1, 0),
-    Int3D(0, 0, -1),
-    Int3D(0, 0, 1),
-    Int3D(-1, 0, 0),
-    Int3D(1, 0, 0),
-};
-
-const Int3D MainWindow::c_side_offset_zero[] = {
-    Int3D(0, 0, 0),
-    Int3D(0, 1, 0),
-    Int3D(0, 0, 0),
-    Int3D(0, 0, 1),
-    Int3D(0, 0, 0),
-    Int3D(1, 0, 0),
-};
-
-const Int3D MainWindow::c_zero_face[] = {
-    Int3D(1, 0, 1),
-    Int3D(1, 0, 1),
-    Int3D(1, 1, 0),
-    Int3D(1, 1, 0),
-    Int3D(0, 1, 1),
-    Int3D(0, 1, 1),
-};
-
-const Ogre::Vector3 MainWindow::c_side_coord[6][2][3] = {
-    {
-        {Ogre::Vector3(0, 0, 1), Ogre::Vector3(0, 0, 0), Ogre::Vector3(1, 0, 1)},
-        {Ogre::Vector3(1, 0, 1), Ogre::Vector3(0, 0, 0), Ogre::Vector3(1, 0, 0)},
-    },
-    {
-        {Ogre::Vector3(1, 1, 1), Ogre::Vector3(1, 1, 0), Ogre::Vector3(0, 1, 1)},
-        {Ogre::Vector3(0, 1, 1), Ogre::Vector3(1, 1, 0), Ogre::Vector3(0, 1, 0)},
-    },
-    {
-        {Ogre::Vector3(0, 0, 0), Ogre::Vector3(0, 1, 0), Ogre::Vector3(1, 0, 0)},
-        {Ogre::Vector3(1, 0, 0), Ogre::Vector3(0, 1, 0), Ogre::Vector3(1, 1, 0)},
-    },
-    {
-        {Ogre::Vector3(0, 1, 1), Ogre::Vector3(0, 0, 1), Ogre::Vector3(1, 1, 1)},
-        {Ogre::Vector3(1, 1, 1), Ogre::Vector3(0, 0, 1), Ogre::Vector3(1, 0, 1)},
-    },
-    {
-        {Ogre::Vector3(0, 1, 1), Ogre::Vector3(0, 1, 0), Ogre::Vector3(0, 0, 1)},
-        {Ogre::Vector3(0, 0, 1), Ogre::Vector3(0, 1, 0), Ogre::Vector3(0, 0, 0)},
-    },
-    {
-        {Ogre::Vector3(1, 0, 1), Ogre::Vector3(1, 0, 0), Ogre::Vector3(1, 1, 1)},
-        {Ogre::Vector3(1, 1, 1), Ogre::Vector3(1, 0, 0), Ogre::Vector3(1, 1, 0)},
-    },
-
-};
-const Ogre::Vector2 MainWindow::c_tex_coord[2][3] = {
-    {Ogre::Vector2(0, 0), Ogre::Vector2(0, 1), Ogre::Vector2(1, 0)},
-    {Ogre::Vector2(1, 0), Ogre::Vector2(0, 1), Ogre::Vector2(1, 1)},
-};
-const Int3D MainWindow::c_sub_chunk_mesh_size(16, 16, 16);
-const Int3D MainWindow::c_chunk_size(16, 16, 128);
-
-const float MainWindow::c_terrain_png_height = 256.0f;
-const float MainWindow::c_terrain_png_width = 256.0f;
-const float MainWindow::c_terrain_block_size = 16.0f;
-
-const float MainWindow::c_decay_rate = 0.80f;
-const float MainWindow::c_light_brightness[] = {
-    0.0351843720888,
-    0.043980465111,
-    0.0549755813888,
-    0.068719476736,
-    0.08589934592,
-    0.1073741824,
-    0.134217728,
-    0.16777216,
-    0.2097152,
-    0.262144,
-    0.32768,
-    0.4096,
-    0.512,
-    0.64,
-    0.8,
-    1.0
-};
-
-const float MainWindow::c_brightness_bias[] = {
-    0.8f,
-    0.8f,
-    0.8f * 0.8f,
-    1.0f,
-    1.0f,
-    1.0f,
-};
-const char * MainWindow::c_wool_texture_names[] = {
-    "Wool",
-    "OrangeWool",
-    "MagentaWool",
-    "LightBlueWool",
-    "YellowWool",
-    "LightGreenWool",
-    "PinkWool",
-    "GrayWool",
-    "LightGrayWool",
-    "CyanWool",
-    "PurpleWool",
-    "BlueWool",
-    "BrownWool",
-    "DarkGreenWool",
-    "RedWool",
-    "BlackWool",
-};
 
 uint qHash(const MainWindow::PhysicalInput & value)
 {
@@ -146,13 +32,10 @@ MainWindow::MainWindow(QUrl url) :
     m_control_to_key(Game::ControlCount),
     m_sub_chunk_generator(NULL)
 {
-    Q_ASSERT(sizeof(MainWindow) != 216 && sizeof(MainWindow) != 336);
+    // TODO: figure out wtf is going on and delete this assertion.
+    Q_ASSERT(sizeof(MainWindow) != 216);
 
     loadControls();
-
-    m_air.see_through = true;
-    m_air.partial_alpha = false;
-    m_air.name = "Air";
 
     m_game = new Game(url);
     bool success;
@@ -163,7 +46,6 @@ MainWindow::MainWindow(QUrl url) :
     success = connect(m_game, SIGNAL(playerDied()), this, SLOT(handlePlayerDied()));
     Q_ASSERT(success);
 
-    m_sub_chunk_generator = new SubChunkMeshGenerator(this);
 }
 
 MainWindow::~MainWindow()
@@ -333,62 +215,6 @@ void MainWindow::loadResources()
         texture_unit->setTextureFiltering(Ogre::TFO_NONE);
         texture_unit->setColourOperation(Ogre::LBO_MODULATE);
     }
-
-    {
-        // grab all the textures from resources
-        QFile texture_index_file(":/textures/textures.txt");
-        texture_index_file.open(QFile::ReadOnly);
-        QTextStream stream(&texture_index_file);
-        while (! stream.atEnd()) {
-            QString line = stream.readLine().trimmed();
-            if (line.isEmpty() || line.startsWith("#"))
-                continue;
-            QStringList parts = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-            Q_ASSERT(parts.size() == 5);
-            BlockTextureCoord texture_data;
-            QString name = parts.at(0);
-            texture_data.x = parts.at(1).toInt();
-            texture_data.y = parts.at(2).toInt();
-            texture_data.w = parts.at(3).toInt();
-            texture_data.h = parts.at(4).toInt();
-            m_terrain_tex_coords.insert(name, texture_data);
-        }
-        texture_index_file.close();
-    }
-
-    {
-        // grab all the solid block data from resources
-        QFile blocks_file(":/textures/blocks.txt");
-        blocks_file.open(QFile::ReadOnly);
-        QTextStream stream(&blocks_file);
-        while(! stream.atEnd()) {
-            QString line = stream.readLine().trimmed();
-            if (line.isEmpty() || line.startsWith("#"))
-                continue;
-            QStringList parts = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-            Q_ASSERT(parts.size() == 17);
-            BlockData block_data;
-            block_data.side_textures.resize(6);
-            block_data.squish_amount.resize(6);
-            int index = 0;
-            Block::ItemType id = (Block::ItemType) parts.at(index++).toInt();
-            block_data.name = parts.at(index++);
-            for (int i = 0; i < 6; i++) {
-                QString texture = parts.at(index++);
-                if (texture != "-")
-                    block_data.side_textures.replace(i, texture);
-            }
-            block_data.see_through = (bool)parts.at(index++).toInt();
-            block_data.partial_alpha = (bool)parts.at(index++).toInt();
-            for (int i = 0; i < 6; i++) {
-                Int3D squish = c_side_offset[i] * parts.at(index++).toInt();
-                block_data.squish_amount.replace(i, Ogre::Vector3(squish.x, squish.y, squish.z)/c_terrain_block_size);
-            }
-            block_data.rotate = (bool)parts.at(index++).toInt();
-            m_block_data.insert(id, block_data);
-        }
-        blocks_file.close();
-    }
 }
 
 int MainWindow::exec()
@@ -397,6 +223,8 @@ int MainWindow::exec()
 
     if (!setup())
         return -1;
+
+    m_sub_chunk_generator = new SubChunkMeshGenerator(this);
 
     m_root->startRendering();
 
@@ -455,11 +283,7 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
         Ogre::SceneNode * chunk_node = ready_chunk.node->createChildSceneNode();
         chunk_node->attachObject(ready_chunk.obj);
         // save the scene node so we can delete it later
-        SubChunkData chunk_data = m_sub_chunks.value(ready_chunk.sub_chunk_key);
-        if (! chunk_data.is_null) {
-            chunk_data.node[ready_chunk.face+1][ready_chunk.pass] = chunk_node;
-            m_sub_chunks.insert(ready_chunk.sub_chunk_key, chunk_data);
-        }
+        m_sub_chunk_generator->saveSubChunkNode(ready_chunk, chunk_node);
     }
     while (m_sub_chunk_generator->availableDoneSubChunk()) {
         SubChunkMeshGenerator::ReadySubChunk done_chunk = m_sub_chunk_generator->nextDoneSubChunk();
@@ -545,12 +369,16 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
 bool MainWindow::keyPressed(const OIS::KeyEvent &arg )
 {
     m_keyboard->capture();
+
     if (m_keyboard->isModifierDown(OIS::Keyboard::Alt))
         m_grab_mouse = false;
-    if (arg.key == OIS::KC_ESCAPE || (m_keyboard->isModifierDown(OIS::Keyboard::Alt) && arg.key == OIS::KC_F4))
+
+    if (arg.key == OIS::KC_ESCAPE || (m_keyboard->isModifierDown(OIS::Keyboard::Alt) && arg.key == OIS::KC_F4)) {
         m_sub_chunk_generator->shutDown();
-    else if (arg.key == OIS::KC_F2)
+        m_shut_down = true;
+    } else if (arg.key == OIS::KC_F2) {
         m_free_look_mode = !m_free_look_mode;
+    }
 
     activateInput(arg.key, true);
     return true;
@@ -637,373 +465,6 @@ void MainWindow::windowClosed(Ogre::RenderWindow* rw)
     }
 }
 
-SubChunkMeshGenerator::SubChunkMeshGenerator(MainWindow * owner) :
-    QObject(NULL),
-    m_owner(owner),
-    m_shutdown(false)
-{
-    // run in our own thread
-    m_thread = new QThread(this);
-    m_thread->start();
-    this->moveToThread(m_thread);
-
-    bool success;
-    success = QMetaObject::invokeMethod(this, "initialize", Qt::QueuedConnection);
-    Q_ASSERT(success);
-}
-
-void SubChunkMeshGenerator::initialize()
-{
-    bool success;
-    success = connect(m_owner->m_game, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(handleUpdatedChunk(Int3D,Int3D)));
-    Q_ASSERT(success);
-    success = connect(m_owner->m_game, SIGNAL(unloadChunk(Int3D)), this, SLOT(queueDeleteSubChunkMesh(Int3D)));
-    Q_ASSERT(success);
-    m_owner->m_game->start();
-}
-
-void SubChunkMeshGenerator::shutDown()
-{
-    m_shutdown = true;
-    m_thread->exit();
-    m_thread->wait();
-    m_owner->m_shut_down = true;
-}
-
-void SubChunkMeshGenerator::handleUpdatedChunk(const Int3D &start, const Int3D &size)
-{
-    Q_ASSERT(QThread::currentThread() == m_thread);
-
-    // update every sub chunk that the updated region touches
-    Int3D min = m_owner->subChunkKey(start);
-    Int3D max = m_owner->subChunkKey(start+size);
-    Int3D it;
-    for (it.x = min.x; it.x <= max.x; it.x+=MainWindow::c_sub_chunk_mesh_size.x) {
-        for (it.y = min.y; it.y <= max.y; it.y+=MainWindow::c_sub_chunk_mesh_size.y) {
-            for (it.z = min.z; it.z <= max.z; it.z+=MainWindow::c_sub_chunk_mesh_size.z) {
-                if (m_shutdown)
-                    return;
-                // regenerate the seams if this chunk is new
-                if (! m_owner->m_sub_chunks.contains(it)) {
-                    for (int side = 0; side < 6; side++) {
-                        generateSubChunkMesh(it, (MainWindow::BlockFaceDirection)side);
-                    }
-                }
-                generateSubChunkMesh(it);
-            }
-        }
-    }
-}
-
-
-void SubChunkMeshGenerator::generateSubChunkMesh(const Int3D & sub_chunk_key, MainWindow::BlockFaceDirection seam)
-{
-    Q_ASSERT(QThread::currentThread() == m_thread);
-
-    MainWindow::SubChunkData chunk_data = m_owner->m_sub_chunks.value(sub_chunk_key);
-    bool replace_chunk = true;
-    if (chunk_data.is_null) {
-        // initialize chunk data
-        replace_chunk = false;
-        chunk_data.is_null = false;
-        chunk_data.position = sub_chunk_key;
-        // init pointers to NULL
-        for (int side = -1; side < 6; side++) {
-            for (int pass = 0; pass < 2; pass++) {
-                chunk_data.obj[side+1][pass] = NULL;
-                chunk_data.node[side+1][pass] = NULL;
-            }
-        }
-        m_owner->m_sub_chunks.insert(sub_chunk_key, chunk_data);
-
-    }
-
-    ReadySubChunk done_chunks[7][2];
-
-    int face_min, face_max;
-    if (seam == MainWindow::NoDirection) {
-        face_min = -1;
-        face_max = 5;
-    } else {
-        face_min = face_max = seam;
-    }
-    for (int face = face_min; face <= face_max; face++) {
-        if (seam != MainWindow::NoDirection && face != seam)
-            continue;
-        for (int pass = 0; pass < 2; pass++) {
-            if (replace_chunk) {
-                done_chunks[face+1][pass] = ReadySubChunk(pass,
-                    (MainWindow::BlockFaceDirection)face, chunk_data.obj[face+1][pass],
-                    chunk_data.node[face+1][pass], sub_chunk_key);
-            }
-            m_owner->m_ogre_mutex.lock();
-            Ogre::ManualObject * obj = new Ogre::ManualObject(Ogre::String());
-            obj->begin(pass == 0 ? "TerrainOpaque" : "TerrainTransparent", Ogre::RenderOperation::OT_TRIANGLE_LIST);
-            m_owner->m_ogre_mutex.unlock();
-
-            Int3D offset;
-            if (face == MainWindow::NoDirection) {
-                for (offset.x = 0; offset.x < MainWindow::c_sub_chunk_mesh_size.x; offset.x++) {
-                    for (offset.y = 0; offset.y < MainWindow::c_sub_chunk_mesh_size.y; offset.y++) {
-                        for (offset.z = 0; offset.z < MainWindow::c_sub_chunk_mesh_size.z; offset.z++) {
-                            generateBlockMesh(obj, chunk_data, offset, MainWindow::NoDirection, pass);
-                        }
-                    }
-                }
-            } else {
-                for (offset.x = 0; offset.x <= (MainWindow::c_sub_chunk_mesh_size.x-1) * MainWindow::c_zero_face[face].x; offset.x++) {
-                    for (offset.y = 0; offset.y <= (MainWindow::c_sub_chunk_mesh_size.y-1) * MainWindow::c_zero_face[face].y; offset.y++) {
-                        for (offset.z = 0; offset.z <= (MainWindow::c_sub_chunk_mesh_size.z-1) * MainWindow::c_zero_face[face].z; offset.z++) {
-                            Int3D offset2 = offset + MainWindow::c_side_offset_zero[face] * (MainWindow::c_sub_chunk_mesh_size - 1);
-                            generateBlockMesh(obj, chunk_data, offset2, (MainWindow::BlockFaceDirection)face, pass);
-                        }
-                    }
-                }
-            }
-
-            m_queue_mutex.lock();
-            m_new_sub_chunk_queue.enqueue(ReadySubChunk(pass,
-                (MainWindow::BlockFaceDirection)face, obj,
-                m_owner->m_pass[pass], sub_chunk_key));
-
-            chunk_data = m_owner->m_sub_chunks.value(sub_chunk_key);
-            // chunk_data.node[pass] is set in frameRenderingQueued by the other thread after it creates it.
-            chunk_data.node[face+1][pass] = NULL;
-            chunk_data.obj[face+1][pass] = obj;
-            m_owner->m_sub_chunks.insert(sub_chunk_key, chunk_data);
-            m_queue_mutex.unlock();
-        }
-    }
-
-    if (replace_chunk) {
-        // put delete old stuff on queue
-        m_queue_mutex.lock();
-        for (int face = face_min; face <= face_max; face++) {
-            if (seam != MainWindow::NoDirection && face != seam)
-                continue;
-            for (int pass = 0; pass < 2; pass++)
-                m_done_sub_chunk_queue.enqueue(done_chunks[face+1][pass]);
-        }
-        m_queue_mutex.unlock();
-    }
-}
-
-void SubChunkMeshGenerator::generateBlockMesh(Ogre::ManualObject * obj,
-    const MainWindow::SubChunkData & chunk_data, const Int3D & offset,
-    MainWindow::BlockFaceDirection face, int pass)
-{
-    Int3D absolute_position = chunk_data.position + offset;
-    Block block = m_owner->m_game->blockAt(absolute_position);
-
-    MainWindow::BlockData block_data = m_owner->m_block_data.value(block.type(), m_owner->m_air);
-
-    // skip air
-    if (block_data.side_textures.isEmpty())
-        return;
-
-    // first pass, skip partially transparent stuff
-    if (pass == 0 && block_data.partial_alpha)
-        return;
-
-    // second pass, only do partially transparent stuff
-    if (pass == 1 && !block_data.partial_alpha)
-        return;
-
-    if (face == MainWindow::NoDirection) {
-        // for every side
-        for (int side_index = 0; side_index < 6; side_index++) {
-            // skip chunk seams
-            if ((offset.x == 0 && side_index == MainWindow::NegativeX) ||
-                (offset.y == 0 && side_index == MainWindow::NegativeY) ||
-                (offset.z == 0 && side_index == MainWindow::NegativeZ) ||
-                (offset.x == MainWindow::c_sub_chunk_mesh_size.x && side_index == MainWindow::PositiveX) ||
-                (offset.y == MainWindow::c_sub_chunk_mesh_size.y && side_index == MainWindow::PositiveY) ||
-                (offset.z == MainWindow::c_sub_chunk_mesh_size.z && side_index == MainWindow::PositiveZ))
-            {
-                continue;
-            }
-            generateSideMesh(obj, absolute_position, block, block_data, (MainWindow::BlockFaceDirection)side_index);
-        }
-    } else {
-        // only the one side
-        generateSideMesh(obj, absolute_position, block, block_data, face);
-    }
-}
-
-void SubChunkMeshGenerator::generateSideMesh(Ogre::ManualObject * obj,
-    const Int3D & absolute_position, const Block & block,
-    const MainWindow::BlockData & block_data, MainWindow::BlockFaceDirection side_index)
-{
-    if (block_data.side_textures.at(side_index).isEmpty())
-        return;
-
-
-    // if the block on this side is opaque or the same block, skip
-    Block neighbor_block = m_owner->m_game->blockAt(absolute_position + MainWindow::c_side_offset[side_index]);
-    Block::ItemType side_type = neighbor_block.type();
-    if ((side_type == block.type() && (block_data.partial_alpha || side_type == Block::Glass)) ||
-        ! m_owner->m_block_data.value(side_type, m_owner->m_air).see_through)
-    {
-        return;
-    }
-
-    // add this side to mesh
-    Ogre::Vector3 abs_block_loc(absolute_position.x, absolute_position.y, absolute_position.z);
-
-    // special cases for textures
-    QString texture_name = block_data.side_textures.at(side_index);
-    switch (block.type()) {
-        case Block::Wood:
-        if (side_index != MainWindow::NegativeZ && side_index != MainWindow::PositiveZ) {
-            switch (block.woodMetadata()) {
-            case Block::NormalTrunkTexture:
-                texture_name = "WoodSide";
-                break;
-            case Block::RedwoodTrunkTexture:
-                texture_name = "RedwoodTrunkSide";
-                break;
-            case Block::BirchTrunkTexture:
-                texture_name = "BirchTrunkSide";
-                break;
-            }
-        }
-        break;
-        case Block::Leaves:
-        {
-            switch (block.leavesMetadata()) {
-            case Block::NormalLeavesTexture:
-                texture_name = "LeavesRegular";
-                break;
-            case Block::RedwoodLeavesTexture:
-                texture_name = "RedwoodLeaves";
-                break;
-            case Block::BirchLeavesTexture:
-                texture_name = "BirchLeaves";
-                break;
-            }
-        }
-        break;
-        case Block::Farmland:
-        if (side_index == MainWindow::PositiveZ)
-            texture_name = block.farmlandMetadata() == 0 ? "FarmlandDry" : "FarmlandWet";
-        break;
-        case Block::Crops:
-        texture_name = QString("Crops") + QString::number(block.cropsMetadata());
-        break;
-        case Block::Wool:
-        texture_name = MainWindow::c_wool_texture_names[block.woolMetadata()];
-        break;
-        case Block::Furnace:
-        case Block::BurningFurnace:
-        case Block::Dispenser:
-        {
-            if (side_index != MainWindow::NegativeZ && side_index != MainWindow::PositiveZ) {
-                if ((block.furnaceMetadata() == Block::EastFacingFurnace && side_index == MainWindow::PositiveX) ||
-                    (block.furnaceMetadata() == Block::WestFacingFurnace && side_index == MainWindow::NegativeX) ||
-                    (block.furnaceMetadata() == Block::NorthFacingFurnace && side_index == MainWindow::PositiveY) ||
-                    (block.furnaceMetadata() == Block::SouthFacingFurnace && side_index == MainWindow::NegativeY))
-                {
-                    texture_name = block_data.side_textures.value(MainWindow::NegativeY);
-                } else {
-                    texture_name = "FurnaceBack";
-                }
-            }
-        }
-        break;
-        case Block::Pumpkin:
-        case Block::JackOLantern:
-        {
-            if (side_index != MainWindow::NegativeZ && side_index != MainWindow::PositiveZ) {
-                if ((block.pumpkinMetadata() == Block::EastFacingPumpkin && side_index == MainWindow::PositiveX) ||
-                    (block.pumpkinMetadata() == Block::WestFacingPumpkin && side_index == MainWindow::NegativeX) ||
-                    (block.pumpkinMetadata() == Block::NorthFacingPumpkin && side_index == MainWindow::PositiveY) ||
-                    (block.pumpkinMetadata() == Block::SouthFacingPumpkin && side_index == MainWindow::NegativeY))
-                {
-                    texture_name = block_data.side_textures.value(MainWindow::NegativeY);
-                } else {
-                    texture_name = "PumpkinBack";
-                }
-            }
-        }
-        break;
-        case Block::RedstoneWire_placed:
-        {
-            if (block.redstoneMetadata() == 0) {
-                texture_name = "RedWire4wayOff";
-            } else {
-                texture_name = "RedWire4wayOn";
-            }
-        }
-        break;
-        default:;
-    }
-    MainWindow::BlockTextureCoord btc = m_owner->m_terrain_tex_coords.value(texture_name);
-
-    Ogre::Vector3 squish = block_data.squish_amount.at(side_index);
-
-    float brightness;
-    int night_darkness = 0;
-    brightness = MainWindow::c_light_brightness[qMax(neighbor_block.skyLight() - night_darkness, neighbor_block.light())];
-
-    Ogre::ColourValue color = Ogre::ColourValue::White;
-    if (block.type() == Block::Grass && side_index == MainWindow::PositiveZ)
-        color.setAsRGBA(0x8DD55EFF);
-    else if (block.type() == Block::Leaves)
-        color.setAsRGBA(0x8DD55EFF);
-
-    color *= brightness;
-    color *= MainWindow::c_brightness_bias[side_index];
-
-    for (int triangle_index = 0; triangle_index < 2; triangle_index++) {
-        for (int point_index = 0; point_index < 3; point_index++) {
-            Ogre::Vector3 pos = MainWindow::c_side_coord[side_index][triangle_index][point_index] - squish;
-            if (block_data.rotate) {
-                pos -= 0.5f;
-                pos = Ogre::Quaternion(Ogre::Degree(45), Ogre::Vector3::UNIT_Z) * pos;
-                pos += 0.5f;
-            }
-            obj->position(pos + abs_block_loc);
-
-            Ogre::Vector2 tex_coord = MainWindow::c_tex_coord[triangle_index][point_index];
-            obj->textureCoord((btc.x+tex_coord.x*btc.w) / MainWindow::c_terrain_png_width, (btc.y+tex_coord.y*btc.h) / MainWindow::c_terrain_png_height);
-
-            obj->colour(color);
-        }
-    }
-}
-
-void SubChunkMeshGenerator::queueDeleteSubChunkMesh(const Int3D &coord)
-{
-    Q_ASSERT(QThread::currentThread() == m_thread);
-
-    // queue for deletion every sub chunk within the chunk.
-    Int3D min = m_owner->subChunkKey(coord);
-    Int3D max = m_owner->subChunkKey(coord+MainWindow::c_chunk_size);
-    Int3D it;
-    m_queue_mutex.lock();
-    for (it.x = min.x; it.x < max.x; it.x+=MainWindow::c_sub_chunk_mesh_size.x) {
-        for (it.y = min.y; it.y < max.y; it.y+=MainWindow::c_sub_chunk_mesh_size.y) {
-            for (it.z = min.z; it.z < max.z; it.z+=MainWindow::c_sub_chunk_mesh_size.z) {
-                MainWindow::SubChunkData chunk_data = m_owner->m_sub_chunks.value(it);
-                if (chunk_data.is_null)
-                    continue;
-                for (int i = 0; i < 2; i++) {
-                    m_done_sub_chunk_queue.enqueue(ReadySubChunk(i, MainWindow::NoDirection,
-                        chunk_data.obj[MainWindow::NoDirection+1][i],
-                        chunk_data.node[MainWindow::NoDirection+1][i], it));
-                }
-                m_owner->m_sub_chunks.remove(it);
-            }
-        }
-    }
-    m_queue_mutex.unlock();
-}
-
-Int3D MainWindow::subChunkKey(const Int3D & coord)
-{
-    return coord - (coord % c_sub_chunk_mesh_size);
-}
-
 void MainWindow::movePlayerPosition()
 {
     if (m_free_look_mode)
@@ -1030,3 +491,4 @@ void MainWindow::handlePlayerDied()
     // TODO: ask the user first
     m_game->respawn();
 }
+

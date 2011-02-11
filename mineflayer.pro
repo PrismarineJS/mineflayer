@@ -18,7 +18,8 @@ SOURCES += src/main.cpp \
     src/MainWindow.cpp \
     src/Util.cpp \
     src/ScriptRunner.cpp \
-    src/Game.cpp
+    src/Game.cpp \
+    src/SubChunkMeshGenerator.cpp
 HEADERS += src/Server.h \
     src/Messages.h \
     src/Chunk.h \
@@ -30,7 +31,9 @@ HEADERS += src/Server.h \
     src/ScriptRunner.h \
     src/Game.h \
     src/Block.h \
-    src/ItemTypeEnum.h
+    src/ItemTypeEnum.h \
+    src/BlockingPriorityQueue.h \
+    src/SubChunkMeshGenerator.h
 RESOURCES += mineflayer.qrc
 LIBS += \
     -lOgreMain \
@@ -39,10 +42,8 @@ DEFINES += MINEFLAYER_3D_ON
 
 
 # ---------if you want 3D off, uncomment ----------
-# LIBS -= \
-#     -lOgreMain \
-#     -lOIS
+# LIBS -= -lOgreMain -lOIS
 # DEFINES -= MINEFLAYER_3D_ON
-# SOURCES -= src/MainWindow.cpp
-# HEADERS -= src/MainWindow.h
+# SOURCES -= src/MainWindow.cpp src/SubChunkMeshGenerator.cpp
+# HEADERS -= src/MainWindow.h src/BlockingPriorityQueue.h src/SubChunkMeshGenerator.h
 # --------------------------------------
