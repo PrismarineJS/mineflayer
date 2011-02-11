@@ -96,10 +96,12 @@ void ScriptRunner::go()
     mf_obj.setProperty("blockAt", m_engine->newFunction(blockAt));
     mf_obj.setProperty("self", m_engine->newFunction(self));
     mf_obj.setProperty("setControlState", m_engine->newFunction(setControlState));
+    mf_obj.setProperty("entity", m_engine->newFunction(entity));
 
     QString main_script_contents = internalReadFile(m_main_script_filename);
     if (main_script_contents.isNull()) {
-        qWarning() << "file not found: " << m_main_script_filename;
+        m_stderr << "file not found: " << m_main_script_filename << "\n";
+        m_stderr.flush();
         shutdown(1);
         return;
     }
@@ -111,6 +113,8 @@ void ScriptRunner::go()
 
     // connect to server
     bool success;
+    success = connect(m_game, SIGNAL(entitySpawned(int)), this, SLOT(handleEntitySpawned(int)));
+    Q_ASSERT(success);
     success = connect(m_game, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(handleChunkUpdated(Int3D,Int3D)));
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(playerPositionUpdated()), this, SLOT(movePlayerPosition()));
@@ -161,9 +165,10 @@ void ScriptRunner::checkEngine(const QString & while_doing_what)
         return;
     if (m_engine->uncaughtException().toString() != "Error: SystemExit") {
         if (!while_doing_what.isEmpty())
-            qWarning() << "Error while" << while_doing_what.toStdString().c_str();
-        qWarning() << m_engine->uncaughtException().toString();
-        qWarning() << m_engine->uncaughtExceptionBacktrace().join("\n");
+            m_stderr << "Error while " << while_doing_what << "\n";
+        m_stderr << m_engine->uncaughtException().toString() << "\n";
+        m_stderr << m_engine->uncaughtExceptionBacktrace().join("\n") << "\n";
+        m_stderr.flush();
     }
     shutdown(1);
 }
@@ -310,7 +315,7 @@ void ScriptRunner::raiseEvent(QString event_name, const QScriptValueList &args)
     foreach (QScriptValue handler, handlers_list) {
         Q_ASSERT(handler.isFunction());
         handler.call(QScriptValue(), args);
-        checkEngine(QString("calling event handler") + event_name);
+        checkEngine(QString("calling event handler ") + event_name);
     }
 }
 
@@ -460,9 +465,9 @@ QScriptValue ScriptRunner::blockAt(QScriptContext *context, QScriptEngine *engin
     QScriptValue js_pt = context->argument(0);
     if (!me->maybeThrowArgumentError(context, error, js_pt.isObject()))
         return error;
-    Int3D pt(valueToNearestInt(js_pt.property("x").toNumber()),
-             valueToNearestInt(js_pt.property("y").toNumber()),
-             valueToNearestInt(js_pt.property("z").toNumber()));
+    Int3D pt(Util::euclideanMod(js_pt.property("x").toNumber(), 1),
+             Util::euclideanMod(js_pt.property("y").toNumber(), 1),
+             Util::euclideanMod(js_pt.property("z").toNumber(), 1));
     Block block = me->m_game->blockAt(pt);
     QScriptValue result = engine->newObject();
     result.setProperty("type", block.type());
@@ -476,10 +481,11 @@ QScriptValue ScriptRunner::self(QScriptContext *context, QScriptEngine *engine)
     if (!me->argCount(context, error, 0))
         return error;
     int entity_id = me->m_game->playerEntityId();
-    return me->jsEntity(me->m_game->entity(entity_id));
+    return me->jsEntity(entity_id);
 }
-QScriptValue ScriptRunner::jsEntity(QSharedPointer<Game::Entity> entity)
+QScriptValue ScriptRunner::jsEntity(int entity_id)
 {
+    QSharedPointer<Game::Entity> entity = m_game->entity(entity_id);
     if (entity.isNull())
         return QScriptValue();
     QScriptValue result = m_entity_class.construct();
@@ -526,9 +532,17 @@ QScriptValue ScriptRunner::setControlState(QScriptContext *context, QScriptEngin
     return QScriptValue();
 }
 
-int ScriptRunner::valueToNearestInt(const QScriptValue &value)
+QScriptValue ScriptRunner::entity(QScriptContext *context, QScriptEngine *engine)
 {
-    return (int)std::floor(value.toNumber() + 0.5);
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
+    QScriptValue entity_id_value = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, entity_id_value.isNumber()))
+        return error;
+    int entity_id = entity_id_value.toInt32();
+    return me->jsEntity(entity_id);
 }
 
 bool ScriptRunner::argCount(QScriptContext *context, QScriptValue &error, int arg_count_min, int arg_count_max)
@@ -562,11 +576,24 @@ QScriptValue ScriptRunner::jsPoint(const Int3D &pt)
 
 QScriptValue ScriptRunner::jsPoint(double x, double y, double z)
 {
-    return m_entity_class.construct(QScriptValueList() << x << y << z);
+    return m_point_class.construct(QScriptValueList() << x << y << z);
 }
 QScriptValue ScriptRunner::jsItem(Message::Item item)
 {
     return m_item_class.construct(QScriptValueList() << item.type << item.count);
+}
+
+void ScriptRunner::handleEntitySpawned(int entity_id)
+{
+    raiseEvent("onEntitySpawned", QScriptValueList() << entity_id);
+}
+void ScriptRunner::handleEntityMoved(int entity_id)
+{
+    raiseEvent("onEntityMoved", QScriptValueList() << entity_id);
+}
+void ScriptRunner::handleEntityDespawned(int entity_id)
+{
+    raiseEvent("onEntityDespawned", QScriptValueList() << entity_id);
 }
 
 void ScriptRunner::handleChunkUpdated(const Int3D &start, const Int3D &size)

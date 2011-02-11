@@ -49,7 +49,7 @@ if (teleporter === undefined) {
             }
             //check point is accessible
             for (var z = point.z; z < point.z + 2; z++) {
-                if (mf.pointAt(mf.Point(point.x, point.y, z)).type != mf.ItemType.Air) {
+                if (mf.blockAt(new mf.Point(point.x, point.y, z)).type != mf.ItemType.Air) {
                     respond("that's not air. can't go there");
                     return;
                 }
@@ -77,14 +77,15 @@ if (teleporter === undefined) {
 
         // track user's entity_id's
         var username_to_entity_id = {};
-        mf.onEntitySpawn(function(entity_id) {
+        mf.onEntitySpawned(function(entity_id) {
             var entity = mf.entity(entity_id);
-            if (entity.type !== mf.EntityType.Player) {
+            if (entity === undefined || entity.type !== mf.EntityType.Player) {
                 return;
             }
+            mf.debug("i see " + entity.username);
             username_to_entity_id[entity.username] = entity_id;
         });
-        mf.onEntityDespawn(function(entity_id) {
+        mf.onEntityDespawned(function(entity_id) {
             delete username_to_entity_id[entity_id];
         });
         function namedEntity(username) {

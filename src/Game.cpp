@@ -476,26 +476,31 @@ void Game::handlePlayerHealthUpdated(int new_health)
 
 void Game::handleNamedPlayerSpawned(int entity_id, QString player_name, Server::EntityPosition position, Block::ItemType held_item)
 {
+    QMutexLocker locker(&m_mutex);
     m_entities.insert(entity_id, QSharedPointer<Entity>(new NamedPlayerEntity(entity_id, position, player_name, held_item)));
     emit entitySpawned(entity_id);
 }
 void Game::handlePickupSpawned(int entity_id, Message::Item item, Server::EntityPosition position)
 {
+    QMutexLocker locker(&m_mutex);
     m_entities.insert(entity_id, QSharedPointer<Entity>(new PickupEntity(entity_id, position, item)));
     emit entitySpawned(entity_id);
 }
 void Game::handleMobSpawned(int entity_id, MobSpawnResponse::MobType mob_type, Server::EntityPosition position)
 {
+    QMutexLocker locker(&m_mutex);
     m_entities.insert(entity_id, QSharedPointer<Entity>(new MobEntity(entity_id, position, mob_type)));
     emit entitySpawned(entity_id);
 }
 void Game::handleEntityDestroyed(int entity_id)
 {
+    QMutexLocker locker(&m_mutex);
     m_entities.remove(entity_id);
     emit entityDespawned(entity_id);
 }
 void Game::handleEntityMovedRelatively(int entity_id, Server::EntityPosition movement)
 {
+    QMutexLocker locker(&m_mutex);
     QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
     if (entity.isNull())
         return;
@@ -506,6 +511,7 @@ void Game::handleEntityMovedRelatively(int entity_id, Server::EntityPosition mov
 }
 void Game::handleEntityLooked(int entity_id, Server::EntityPosition look)
 {
+    QMutexLocker locker(&m_mutex);
     QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
     if (entity.isNull())
         return;
@@ -515,6 +521,7 @@ void Game::handleEntityLooked(int entity_id, Server::EntityPosition look)
 }
 void Game::handleEntityLookedAndMovedRelatively(int entity_id, Server::EntityPosition position)
 {
+    QMutexLocker locker(&m_mutex);
     QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
     if (entity.isNull())
         return;
@@ -527,6 +534,7 @@ void Game::handleEntityLookedAndMovedRelatively(int entity_id, Server::EntityPos
 }
 void Game::handleEntityMoved(int entity_id, Server::EntityPosition position)
 {
+    QMutexLocker locker(&m_mutex);
     QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
     if (entity.isNull())
         return;
