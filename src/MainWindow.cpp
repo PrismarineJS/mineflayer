@@ -21,6 +21,24 @@ const Int3D MainWindow::c_side_offset[] = {
     Int3D(1, 0, 0),
 };
 
+const Int3D MainWindow::c_side_offset_zero[] = {
+    Int3D(0, 0, 0),
+    Int3D(0, 1, 0),
+    Int3D(0, 0, 0),
+    Int3D(0, 0, 1),
+    Int3D(0, 0, 0),
+    Int3D(1, 0, 0),
+};
+
+const Int3D MainWindow::c_zero_face[] = {
+    Int3D(1, 0, 1),
+    Int3D(1, 0, 1),
+    Int3D(1, 1, 0),
+    Int3D(1, 1, 0),
+    Int3D(0, 1, 1),
+    Int3D(0, 1, 1),
+};
+
 const Ogre::Vector3 MainWindow::c_side_coord[6][2][3] = {
     {
         {Ogre::Vector3(0, 0, 1), Ogre::Vector3(0, 0, 0), Ogre::Vector3(1, 0, 1)},
@@ -645,9 +663,9 @@ void SubChunkMeshGenerator::initialize()
 
 void SubChunkMeshGenerator::shutDown()
 {
+    m_owner->m_shut_down = true;
     m_thread->exit();
     m_thread->wait();
-    m_owner->m_shut_down = true;
 }
 
 void SubChunkMeshGenerator::handleUpdatedChunk(const Int3D &start, const Int3D &size)
@@ -658,16 +676,25 @@ void SubChunkMeshGenerator::handleUpdatedChunk(const Int3D &start, const Int3D &
     Int3D min = m_owner->subChunkKey(start);
     Int3D max = m_owner->subChunkKey(start+size);
     Int3D it;
-    for (it.x = min.x; it.x < max.x; it.x+=MainWindow::c_sub_chunk_mesh_size.x) {
-        for (it.y = min.y; it.y < max.y; it.y+=MainWindow::c_sub_chunk_mesh_size.y) {
-            for (it.z = min.z; it.z < max.z; it.z+=MainWindow::c_sub_chunk_mesh_size.z) {
+    for (it.x = min.x; it.x <= max.x; it.x+=MainWindow::c_sub_chunk_mesh_size.x) {
+        for (it.y = min.y; it.y <= max.y; it.y+=MainWindow::c_sub_chunk_mesh_size.y) {
+            for (it.z = min.z; it.z <= max.z; it.z+=MainWindow::c_sub_chunk_mesh_size.z) {
+                if (m_owner->m_shut_down)
+                    return;
+                // regenerate the seams if this chunk is new
+                if (! m_owner->m_sub_chunks.contains(it)) {
+                    for (int side = 0; side < 6; side++) {
+                        generateSubChunkMesh(it, (MainWindow::BlockFaceDirection)side);
+                    }
+                }
                 generateSubChunkMesh(it);
             }
         }
     }
 }
 
-void SubChunkMeshGenerator::generateSubChunkMesh(const Int3D & sub_chunk_key)
+
+void SubChunkMeshGenerator::generateSubChunkMesh(const Int3D & sub_chunk_key, MainWindow::BlockFaceDirection seam)
 {
     Q_ASSERT(QThread::currentThread() == m_thread);
 
@@ -691,75 +718,123 @@ void SubChunkMeshGenerator::generateSubChunkMesh(const Int3D & sub_chunk_key)
 
     ReadySubChunk done_chunks[7][2];
 
-    for (int pass = 0; pass < 2; pass++) {
-        if (replace_chunk) {
-            done_chunks[MainWindow::NoDirection+1][pass] = ReadySubChunk(pass,
-                MainWindow::NoDirection, chunk_data.obj[MainWindow::NoDirection+1][pass],
-                chunk_data.node[MainWindow::NoDirection+1][pass], sub_chunk_key);
-        }
-        m_owner->m_ogre_mutex.lock();
-        Ogre::ManualObject * obj = new Ogre::ManualObject(Ogre::String());
-        obj->begin(pass == 0 ? "TerrainOpaque" : "TerrainTransparent", Ogre::RenderOperation::OT_TRIANGLE_LIST);
-        m_owner->m_ogre_mutex.unlock();
-        Int3D offset;
-        for (offset.x = 0; offset.x < MainWindow::c_sub_chunk_mesh_size.x; offset.x++) {
-            for (offset.y = 0; offset.y < MainWindow::c_sub_chunk_mesh_size.y; offset.y++) {
-                for (offset.z = 0; offset.z < MainWindow::c_sub_chunk_mesh_size.z; offset.z++) {
-                    Int3D absolute_position = chunk_data.position + offset;
-                    Block block = m_owner->m_game->blockAt(absolute_position);
+    int face_min, face_max;
+    if (seam == MainWindow::NoDirection) {
+        face_min = -1;
+        face_max = 5;
+    } else {
+        face_min = face_max = seam;
+    }
+    for (int face = face_min; face <= face_max; face++) {
+        if (seam != MainWindow::NoDirection && face != seam)
+            continue;
+        for (int pass = 0; pass < 2; pass++) {
+            if (replace_chunk) {
+                done_chunks[face+1][pass] = ReadySubChunk(pass,
+                    (MainWindow::BlockFaceDirection)face, chunk_data.obj[face+1][pass],
+                    chunk_data.node[face+1][pass], sub_chunk_key);
+            }
+            m_owner->m_ogre_mutex.lock();
+            Ogre::ManualObject * obj = new Ogre::ManualObject(Ogre::String());
+            obj->begin(pass == 0 ? "TerrainOpaque" : "TerrainTransparent", Ogre::RenderOperation::OT_TRIANGLE_LIST);
+            m_owner->m_ogre_mutex.unlock();
 
-                    MainWindow::BlockData block_data = m_owner->m_block_data.value(block.type(), m_owner->m_air);
-
-                    // skip air
-                    if (block_data.side_textures.isEmpty())
-                        continue;
-
-                    // first pass, skip partially transparent stuff
-                    if (pass == 0 && block_data.partial_alpha)
-                        continue;
-
-                    // second pass, only do partially transparent stuff
-                    if (pass == 1 && !block_data.partial_alpha)
-                        continue;
-
-                    // for every side
-                    for (int side_index = 0; side_index < 6; side_index++)
-                        generateSideMesh(obj, absolute_position, block, block_data, side_index);
+            Int3D offset;
+            if (face == MainWindow::NoDirection) {
+                for (offset.x = 0; offset.x < MainWindow::c_sub_chunk_mesh_size.x; offset.x++) {
+                    for (offset.y = 0; offset.y < MainWindow::c_sub_chunk_mesh_size.y; offset.y++) {
+                        for (offset.z = 0; offset.z < MainWindow::c_sub_chunk_mesh_size.z; offset.z++) {
+                            generateBlockMesh(obj, chunk_data, offset, MainWindow::NoDirection, pass);
+                        }
+                    }
+                }
+            } else {
+                for (offset.x = 0; offset.x <= (MainWindow::c_sub_chunk_mesh_size.x-1) * MainWindow::c_zero_face[face].x; offset.x++) {
+                    for (offset.y = 0; offset.y <= (MainWindow::c_sub_chunk_mesh_size.y-1) * MainWindow::c_zero_face[face].y; offset.y++) {
+                        for (offset.z = 0; offset.z <= (MainWindow::c_sub_chunk_mesh_size.z-1) * MainWindow::c_zero_face[face].z; offset.z++) {
+                            Int3D offset2 = offset + MainWindow::c_side_offset_zero[face] * (MainWindow::c_sub_chunk_mesh_size - 1);
+                            generateBlockMesh(obj, chunk_data, offset2, (MainWindow::BlockFaceDirection)face, pass);
+                        }
+                    }
                 }
             }
+
+            m_queue_mutex.lock();
+            m_new_sub_chunk_queue.enqueue(ReadySubChunk(pass,
+                (MainWindow::BlockFaceDirection)face, obj,
+                m_owner->m_pass[pass], sub_chunk_key));
+
+            chunk_data = m_owner->m_sub_chunks.value(sub_chunk_key);
+            // chunk_data.node[pass] is set in frameRenderingQueued by the other thread after it creates it.
+            chunk_data.node[face+1][pass] = NULL;
+            chunk_data.obj[face+1][pass] = obj;
+            m_owner->m_sub_chunks.insert(sub_chunk_key, chunk_data);
+            m_queue_mutex.unlock();
         }
-        m_queue_mutex.lock();
-        m_new_sub_chunk_queue.enqueue(ReadySubChunk(pass, MainWindow::NoDirection, obj, m_owner->m_pass[pass], sub_chunk_key));
-
-
-        chunk_data = m_owner->m_sub_chunks.value(sub_chunk_key);
-        // chunk_data.node[pass] is set in frameRenderingQueued by the other thread after it creates it.
-        chunk_data.node[MainWindow::NoDirection+1][pass] = NULL;
-        chunk_data.obj[MainWindow::NoDirection+1][pass] = obj;
-        m_owner->m_sub_chunks.insert(sub_chunk_key, chunk_data);
-        m_queue_mutex.unlock();
     }
 
     if (replace_chunk) {
         // put delete old stuff on queue
         m_queue_mutex.lock();
-        for (int pass = 0; pass < 2; pass++) {
-            m_done_sub_chunk_queue.enqueue(done_chunks[MainWindow::NoDirection+1][pass]);
+        for (int face = face_min; face <= face_max; face++) {
+            if (seam != MainWindow::NoDirection && face != seam)
+                continue;
+            for (int pass = 0; pass < 2; pass++)
+                m_done_sub_chunk_queue.enqueue(done_chunks[face+1][pass]);
         }
         m_queue_mutex.unlock();
     }
 }
 
+void SubChunkMeshGenerator::generateBlockMesh(Ogre::ManualObject * obj,
+    const MainWindow::SubChunkData & chunk_data, const Int3D & offset,
+    MainWindow::BlockFaceDirection face, int pass)
+{
+    Int3D absolute_position = chunk_data.position + offset;
+    Block block = m_owner->m_game->blockAt(absolute_position);
+
+    MainWindow::BlockData block_data = m_owner->m_block_data.value(block.type(), m_owner->m_air);
+
+    // skip air
+    if (block_data.side_textures.isEmpty())
+        return;
+
+    // first pass, skip partially transparent stuff
+    if (pass == 0 && block_data.partial_alpha)
+        return;
+
+    // second pass, only do partially transparent stuff
+    if (pass == 1 && !block_data.partial_alpha)
+        return;
+
+    if (face == MainWindow::NoDirection) {
+        // for every side
+        for (int side_index = 0; side_index < 6; side_index++) {
+            // skip chunk seams
+            if ((offset.x == 0 && side_index == MainWindow::NegativeX) ||
+                (offset.y == 0 && side_index == MainWindow::NegativeY) ||
+                (offset.z == 0 && side_index == MainWindow::NegativeZ) ||
+                (offset.x == MainWindow::c_sub_chunk_mesh_size.x && side_index == MainWindow::PositiveX) ||
+                (offset.y == MainWindow::c_sub_chunk_mesh_size.y && side_index == MainWindow::PositiveY) ||
+                (offset.z == MainWindow::c_sub_chunk_mesh_size.z && side_index == MainWindow::PositiveZ))
+            {
+                continue;
+            }
+            generateSideMesh(obj, absolute_position, block, block_data, (MainWindow::BlockFaceDirection)side_index);
+        }
+    } else {
+        // only the one side
+        generateSideMesh(obj, absolute_position, block, block_data, face);
+    }
+}
+
 void SubChunkMeshGenerator::generateSideMesh(Ogre::ManualObject * obj,
-    const Int3D & absolute_position, const Block & block, const MainWindow::BlockData &block_data, int side_index)
+    const Int3D & absolute_position, const Block & block,
+    const MainWindow::BlockData & block_data, MainWindow::BlockFaceDirection side_index)
 {
     if (block_data.side_textures.at(side_index).isEmpty())
         return;
 
-
-    // skip chunk seams
-//    if (!m_owner->m_game->isBlockLoaded(absolute_position + MainWindow::c_side_offset[side_index]))
-//        return;
 
     // if the block on this side is opaque or the same block, skip
     Block neighbor_block = m_owner->m_game->blockAt(absolute_position + MainWindow::c_side_offset[side_index]);

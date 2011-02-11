@@ -84,6 +84,8 @@ protected:
 
 private:
     static const Int3D c_side_offset[];
+    static const Int3D c_side_offset_zero[];
+    static const Int3D c_zero_face[];
     static const Int3D c_sub_chunk_mesh_size;
     static const Int3D c_chunk_size;
     static const Ogre::Vector3 c_side_coord[6][2][3];
@@ -249,10 +251,11 @@ private slots:
 
     void initialize();
 private:
-    void generateSubChunkMesh(const Int3D & sub_chunk_key);
+    void generateSubChunkMesh(const Int3D & sub_chunk_key, MainWindow::BlockFaceDirection seam = MainWindow::NoDirection);
+    void generateBlockMesh(Ogre::ManualObject * obj, const MainWindow::SubChunkData & chunk_data,
+        const Int3D & offset, MainWindow::BlockFaceDirection face, int pass);
     void generateSideMesh(Ogre::ManualObject * obj, const Int3D & absolute_position,
-        const Block & block, const MainWindow::BlockData &block_data, int side_index);
-
+        const Block & block, const MainWindow::BlockData & block_data, MainWindow::BlockFaceDirection face);
 };
 
 uint qHash(const MainWindow::PhysicalInput & value);

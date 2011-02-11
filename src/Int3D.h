@@ -31,6 +31,15 @@ public:
     const Int3D operator-(const Int3D & other) const {
         return Int3D(*this) -= other;
     }
+    Int3D & operator-=(int offset) {
+    x -= offset;
+    y -= offset;
+    z -= offset;
+    return *this;
+    }
+    const Int3D operator-(int offset) const {
+        return Int3D(*this) -= offset;
+    }
     Int3D & operator/=(int divisor) {
         x /= divisor;
         y /= divisor;
@@ -48,6 +57,15 @@ public:
     }
     const Int3D operator*(int n) const {
         return Int3D(*this) *= n;
+    }
+    Int3D & operator*=(const Int3D & other) {
+        x *= other.x;
+        y *= other.y;
+        z *= other.z;
+        return *this;
+    }
+    const Int3D operator*(const Int3D &other) const {
+        return Int3D(*this) *= other;
     }
     Int3D & operator%=(const Int3D & other) {
         x = Util::euclideanMod(x, other.x);
