@@ -3,10 +3,11 @@
 #include <QCoreApplication>
 #include <QHashIterator>
 
-#include <OGRE/OgreVector3.h>
-#include <OGRE/OgreVector2.h>
+#include <QVector3D>
+#include <QVector2D>
 
 #include <cmath>
+#include <limits>
 
 const float Game::c_standard_max_ground_speed = 4.27; // according to the internet
 const float Game::c_standard_terminal_velocity = 20.0; // guess
@@ -403,7 +404,7 @@ void Game::handleLoginStatusChanged(Server::LoginStatus status)
             QCoreApplication::instance()->exit(-1);
             break;
         case Server::Disconnected:
-            qWarning() << "Game: Got disconnected from server";
+            qWarning() << "Game: Disconnected from server";
             QCoreApplication::instance()->exit(m_return_code);
             break;
         default:;
@@ -644,13 +645,12 @@ void Game::doPhysics(float delta_seconds)
         movement_forward -= 1;
 
     // acceleration is m/s/s
-    Ogre::Vector3 acceleration = Ogre::Vector3::ZERO;
+    QVector3D acceleration;
     if (movement_forward || movement_right) {
         // input acceleration
         float rotation_from_input = std::atan2(movement_forward, movement_right) - Util::half_pi;
         float input_yaw = m_player_position.yaw + rotation_from_input;
-        acceleration.x += Ogre::Math::Cos(input_yaw) * m_input_acceleration;
-        acceleration.y += Ogre::Math::Sin(input_yaw) * m_input_acceleration;
+        acceleration += QVector3D(std::cos(input_yaw), std::sin(input_yaw), 0) * m_input_acceleration;
     }
 
     // jumping
@@ -660,7 +660,7 @@ void Game::doPhysics(float delta_seconds)
     }
 
     // gravity
-    acceleration.z -= m_gravity;
+    acceleration += QVector3D(0, 0, -m_gravity);
 
     float old_ground_speed_squared = groundSpeedSquared();
     if (old_ground_speed_squared < std::numeric_limits<float>::epsilon()) {
@@ -679,15 +679,14 @@ void Game::doPhysics(float delta_seconds)
             } else {
                 friction_magnitude = m_ground_friction;
             }
-            acceleration.x += -m_player_position.dx / old_ground_speed * friction_magnitude;
-            acceleration.y += -m_player_position.dy / old_ground_speed * friction_magnitude;
+            acceleration += QVector3D(-m_player_position.dx, -m_player_position.dy, 0) / old_ground_speed * friction_magnitude;
         }
     }
 
     // calculate new speed
-    m_player_position.dx += acceleration.x * delta_seconds;
-    m_player_position.dy += acceleration.y * delta_seconds;
-    m_player_position.dz += acceleration.z * delta_seconds;
+    m_player_position.dx += acceleration.x() * delta_seconds;
+    m_player_position.dy += acceleration.y() * delta_seconds;
+    m_player_position.dz += acceleration.z() * delta_seconds;
 
 
     // limit speed

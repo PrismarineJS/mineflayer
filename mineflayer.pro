@@ -1,6 +1,8 @@
 # -------------------------------------------------
 # Project created by QtCreator 2011-01-23T00:47:29
 # -------------------------------------------------
+# TODO: use cmake.
+
 QT += core \
     network \
     script \
@@ -30,5 +32,17 @@ HEADERS += src/Server.h \
     src/Block.h \
     src/ItemTypeEnum.h
 RESOURCES += mineflayer.qrc
-LIBS += -lOgreMain \
+LIBS += \
+    -lOgreMain \
     -lOIS
+DEFINES += MINEFLAYER_3D_ON
+
+
+# ---------if you want 3D off, uncomment ----------
+# LIBS -= \
+#     -lOgreMain \
+#     -lOIS
+# DEFINES -= MINEFLAYER_3D_ON
+# SOURCES -= src/MainWindow.cpp
+# HEADERS -= src/MainWindow.h
+# --------------------------------------

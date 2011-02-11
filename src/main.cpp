@@ -2,9 +2,14 @@
 #include <QStringList>
 #include <QUrl>
 
-#include "MetaTypes.h"
+#ifdef MINEFLAYER_3D_ON
 #include "MainWindow.h"
+#endif
+
+#include "MetaTypes.h"
 #include "ScriptRunner.h"
+
+#include <iostream>
 
 void printUsage(QString app_name);
 
@@ -66,17 +71,35 @@ int main(int argc, char *argv[])
 
     MetaTypes::registerMetaTypes();
 
+#ifndef MINEFLAYER_3D_ON
+    if (! headless)
+        qWarning() << "3D support was not compiled in. You can only use headless mode.";
+#endif
+
     if (! script_filename.isEmpty()) {
         ScriptRunner runner(url, script_filename, script_debug, headless);
         runner.go();
         if (headless)
             return a.exec();
     }
+
+#ifdef MINEFLAYER_3D_ON
     MainWindow w(url);
     return w.exec();
+#else
+    printUsage(args.at(0));
+    return 1;
+#endif
 }
 
 void printUsage(QString app_name)
 {
-    qWarning() << "Usage:" << app_name << "[--debug] [--3d] [--url user@server.com:25565] [--password 12345] [script.js]";
+#ifdef MINEFLAYER_3D_ON
+    QString headless_text = "[--3d] ";
+#else
+    QString headless_text = "";
+#endif
+    std::cout << "Usage: " << app_name.toStdString() << " [--debug] " <<
+        headless_text.toStdString() << "[--url user@server.com:25565] [--password 12345] [script.js]"
+        << std::endl;
 }
