@@ -4,62 +4,127 @@
  * Vocabulary
  *
  * meter - a block is 1 meter cubed, or 1x1x1.
- * x, y, z - East, North, Up respectively. Coordinates are always specified in meters.
- *          NOTE: this coordinate system is different from Notch's South-Up-West system.
- *          Use toNotchCoord() and fromNotchCoord() to translate between coordinate systems.
- *
- * 
- * Classes
- *
- * Point - You can instantiate one like this: mf.Point(x, y, z)
- *      x - east coordinate
- *      y - north coordinate
- *      z - up coordinate
- *
- * EntityState
- *      position {Point} The center of the bottom of of the entity.
- *      velocity {Point} The entity's velocity in meters per second squared.
- *      height {Number} [0.1, 1.65] How tall the entity is. For example if you crouch you are shorter.
- *      yaw {Number} [0, 2pi] Rotation around z axis. 0 is +x. pi/2 is +y. pi is -x. 3pi/2 is -y.
- *      pitch {Number} [-pi/2, pi/2] 0 is parallel to the ground. pi/2 is up. -pi/2 is down.
- *      on_ground {Boolean} True if you are not free-falling.
- *
- * mf.ItemType - the id of blocks and items. See the output of
- *               examples/reflect.js for a full listing of names.
- *
- * Enums (NOT YET IMPLEMENTED)
- * 
- * mf.Face - Which side of a block, if any.
- *     NoDirection
- *     NegativeX (West)
- *     PositiveX (East)
- *     NegativeY (South)
- *     PositiveY (North)
- *     NegativeZ (Down)
- *     PositiveZ (Up)
- *
- * mf.Mob
- *     Pig
- *     Sheep
- *     Cow
- *     Chicken
- *     Squid
- *     ZombiePigman
- *     Spider
- *     Zombie
- *     Skeleton
- *     SpiderJockey
- *     Creeper
- *     Slime
- *     Ghast
- *     Human
- *     Pigman
- *     Giant
- *
- * mf.StoppedDiggingReason
- *     BlockBroken
- *     Interrupted
  */
+
+// Classes
+
+/**
+ * Represents a 3D coordinate/location in meters.
+ * NOTE: this coordinate system is different from Notch's South-Up-West system.
+ * Use toNotchCoord() and fromNotchCoord() to translate between coordinate systems.
+ * 
+ * Example:
+ * var point = new mf.Point(0, 0, 0);
+ *
+ * Properties:
+ * x {Number}
+ * y {Number}
+ * z {Number}
+ *
+ * @param {Number} x east
+ * @param {Number} y north
+ * @param {Number} z up
+ *
+ * NOT IMPLEMENTED
+ */
+mf.Point(x, y, z)
+
+/**
+ * returns a Point with each coordinate rounded to the nearest integer.
+ * @return {Point}
+ *
+ * NOT IMPLEMENTED
+ */
+mf.Point.rounded()
+
+/**
+ * Contains a snapshot of an entity's state.
+ *
+ * Properties:
+ * entity_id {Number} the id of this entity.
+ * type {EntityType}
+ * position {Point} The center of the bottom of of the entity.
+ * velocity {Point} The entity's velocity in meters per second squared.
+ * yaw {Number} [0, 2pi] Rotation around z axis. 0 is +x. pi/2 is +y. pi is -x. 3pi/2 is -y.
+ * pitch {Number} [-pi/2, pi/2] 0 is parallel to the ground. pi/2 is up. -pi/2 is down.
+ * on_ground {Boolean} True if you are not free-falling.
+ *
+ * Additional properties when type is Player:
+ * username {String}
+ * held_item {ItemType} the item the player is holding in their hand
+ *
+ * Additional properties when type is Mob:
+ * mob_type {MobType}
+ *
+ * Additional properties when type is Pickup:
+ * item {Item}
+ *
+ * NOT IMPLEMENTED
+ */
+mf.Entity
+
+
+// Enums
+
+/**
+ * Player
+ * Mob
+ * Pickup
+ */
+mf.EntityType
+/**
+ * The id of blocks and items. See the output of examples/reflect.js for a full listing of names.
+ */
+mf.ItemType 
+
+/**
+ * Which side of a block, if any.
+ *
+ * Properties:
+ * NoDirection
+ * NegativeX (West)
+ * PositiveX (East)
+ * NegativeY (South)
+ * PositiveY (North)
+ * NegativeZ (Down)
+ * PositiveZ (Up)
+ *
+ * NOT IMPLEMENTED
+ */
+
+mf.Face
+
+/**
+ * Properties:
+ * Pig
+ * Sheep
+ * Cow
+ * Chicken
+ * Squid
+ * ZombiePigman
+ * Spider
+ * Zombie
+ * Skeleton
+ * SpiderJockey
+ * Creeper
+ * Slime
+ * Ghast
+ * Human
+ * Pigman
+ * Giant
+ *
+ * NOT IMPLEMENTED
+ */
+mf.Mob
+
+/**
+ * Properties:
+ * BlockBroken
+ * Interrupted
+ *
+ * NOT IMPLEMENTED
+ */
+mf.StoppedDiggingReason
 
 // IMPLEMENTED
 
@@ -148,19 +213,20 @@ mf.health()
 mf.blockAt(point)
 
 /**
- * Returns an object representing your state in the world.
- * @returns {EntityState} 
+ * Returns a snapshot of your state in the world as an entity. Modifying the object does nothing.
+ * @returns {Entity}
  */
-mf.playerState()
+mf.self()
 
 // NOT YET IMPLEMENTED
 
 /**
- * Returns the state of the entity with the given entity id or undefined if the entity id cannot be found.
+ * Returns a snapshot of the entity with the given entity id or undefined if the entity id cannot be found.
+ * Modifying the object does nothing.
  * @param {Number} entity_id
- * @return {EntityState} or undefined
+ * @return {Entity} or undefined
  */
-mf.entityState(entity_id)
+mf.entity(entity_id)
 
 /**
  * Returns the entity id of the player with the given username or undefined if the username is not visible.
@@ -254,12 +320,6 @@ mf.inventorySpaceLeft(item)
 mf.inventorySlotsLeft()
 
 /**
- * Tells you about a mob's state in the world.
- * @returns {EntityState}
- */
-mf.mobState(entity_id)
-
-/**
  * Tells what time it is, also known as where the sun or moon is in the sky.
  * @returns {Number} The number of real life seconds since dawn. This ranges from 0 to 1200 since a day is 20 minutes. See also onTimeUpdated().
  */
@@ -318,16 +378,27 @@ mf.onDeath(function() {...})
 // NOT YET IMPLEMENTED
 
 /**
- * Called when a mob (Cow, Spider, Squid, etc) is created.  See also entityPosition().
- * @param {Number} id A unique identifier for this specific mob.
+ * Called when an entity is discovered.
+ * This can happen when an entity is created or when it comes into view.
+ * See also mf.entity(entity_id).
+ * @param {Number} entity_id The id of the entity
  */
-mf.onMobSpawned(function(id) {...})
+mf.onEntitySpawned(function(entity_id) {...})
 
 /**
- * Called when a mob moves.
- * @param {Number} id The unique identifier for this specific mob.
+ * Called when an entity vanishes from known existence.
+ * This can happen when an entity is destroyed or when it goes out of view.
+ * Calling mf.entity(entity_id) will return undefined once this event occurs.
+ * @param {Number} entity_id The id of the entity
  */
-mf.onMobMovement(function(id) {...})
+mf.onEntityDespawned(function(entity_id) {...})
+
+/**
+ * Called when an entity moves.
+ * See also mf.entity(entity_id).
+ * @param {Number} entity_id The id of the entity
+ */
+mf.onEntityMoved(function(entity_id) {...})
 
 /**
  * Called when you have spawned and can start moving about.

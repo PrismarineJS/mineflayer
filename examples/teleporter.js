@@ -1,4 +1,5 @@
 
+mf.include("json.js");
 mf.include("chat_commands.js");
 mf.include("assert.js");
 
@@ -8,7 +9,6 @@ var teleporter;
 if (teleporter === undefined) {
     teleporter = function() {
         var _public = {};
-        _public.enabled = true;
         _public.debug = true;
 
         function respond(message) {
@@ -20,21 +20,12 @@ if (teleporter === undefined) {
 
         function hereis(username, args) {
             var point_name = args[0];
-            var entity_id = mf.userEntityId(username);
-            if (entity_id === undefined) {
-                // TODO: teleport to them first
+            var entity = namedEntity(username);
+            if (entity === undefined) {
                 respond("sorry, can't see user: " + username);
                 return;
             }
-            var entity_state = mf.entityState(entity_id);
-            if (entity_state === undefined) {
-                respond("wtf. entity state is undefined");
-                return;
-            }
-            var point = entity_state.position;
-            point.x = Math.round(point.x);
-            point.y = Math.round(point.y);
-            point.z = Math.round(point.z);
+            var point = entity.position.rounded();
             var old_point = name_to_point[point_name];
             name_to_point[point_name] = point;
             save_database();
@@ -45,7 +36,7 @@ if (teleporter === undefined) {
                 created_or_updated = "updated";
             }
             message = ["point", point_name, created_or_updated, "at", point.x, point.y, point.z].join(" ");
-            mf.chat(message);
+            respond(message);
         }
         chat_commands.register("hereis", hereis, 1, 1);
 
@@ -72,15 +63,35 @@ if (teleporter === undefined) {
         var name_to_point;
         var database_file_name = "teleport_points.json";
         function save_database() {
-            mf.write(database_file_name, name_to_point);
+            mf.writeFile(database_file_name, json.stringify(name_to_point));
         }
         function load_database() {
-            name_to_point = mf.read(database_file_name);
+            name_to_point = json.parse(mf.readFile(database_file_name));
             if (name_to_point === undefined) {
                 name_to_point = {};
             }
         }
         load_database();
+
+        // track user's entity_id's
+        var username_to_entity_id = {};
+        mf.onEntitySpawn(function(entity_id) {
+            var entity = mf.entity(entity_id);
+            if (entity.type !== mf.EntityType.Player) {
+                return;
+            }
+            username_to_entity_id[entity.username] = entity_id;
+        });
+        mf.onEntityDespawn(function(entity_id) {
+            delete username_to_entity_id[entity_id];
+        });
+        function namedEntity(username) {
+            var entity_id = username_to_entity_id[username];
+            if (entity_id === undefined) {
+                return undefined;
+            }
+            return mf.entity(entity_id);
+        }
     }();
 }
 
