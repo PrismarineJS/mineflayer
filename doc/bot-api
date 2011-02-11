@@ -30,14 +30,6 @@
 mf.Point(x, y, z)
 
 /**
- * returns a Point with each coordinate rounded to the nearest integer.
- * @return {Point}
- *
- * NOT IMPLEMENTED
- */
-mf.Point.rounded()
-
-/**
  * Contains a snapshot of an entity's state.
  *
  * Properties:
@@ -126,6 +118,13 @@ mf.Mob
  * NOT IMPLEMENTED
  */
 mf.StoppedDiggingReason
+
+/**
+ * An array of all the serializeable type names in the mf object.
+ *
+ * NOT IMPLEMENTED
+ */
+mf.serializableTypeNames
 
 // IMPLEMENTED
 

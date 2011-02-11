@@ -25,7 +25,7 @@ if (teleporter === undefined) {
                 respond("sorry, can't see user: " + username);
                 return;
             }
-            var point = entity.position.rounded();
+            var point = entity.position;
             var old_point = name_to_point[point_name];
             name_to_point[point_name] = point;
             save_database();

@@ -60,12 +60,13 @@ private:
 private:
     void shutdown(int return_code);
     void raiseEvent(QString event_name, const QScriptValueList & args = QScriptValueList());
-    bool argCount(QScriptContext *context, int arg_count_min, int arg_count_max = -1);
+    bool argCount(QScriptContext *context, QScriptValue & error, int arg_count_min, int arg_count_max = -1);
+    bool maybeThrowArgumentError(QScriptContext *context, QScriptValue & error, bool arg_is_valid);
     int nextTimerId();
 
     int setTimeout(QScriptValue func, int ms, QScriptValue this_obj, bool repeat);
 
-    QString readFile(const QString &path, bool * success = NULL);
+    QString internalReadFile(const QString &path);
     QScriptValue evalJsonContents(const QString &file_contents, const QString &file_name = QString());
     void checkEngine(const QString & while_doing_what = QString());
     static int valueToNearestInt(const QScriptValue & value);
@@ -82,6 +83,8 @@ private:
     static QScriptValue clearTimeout(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue setInterval(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue clearInterval(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue readFile(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue writeFile(QScriptContext * context, QScriptEngine * engine);
 
     static QScriptValue chat(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue username(QScriptContext * context, QScriptEngine * engine);

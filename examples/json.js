@@ -33,7 +33,8 @@ if (json === undefined) {
         var name_to_type = {};
         // register builtin mf types
         (function() {
-            for (var type_name in mf.types) {
+            for (var i = 0; i < mf.serializableTypeNames.length; i++) {
+                var type_name = mf.serializableTypeNames[i];
                 _public.registerType(type_name, mf[type_name]);
             }
         })();

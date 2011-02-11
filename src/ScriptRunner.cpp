@@ -82,11 +82,11 @@ void ScriptRunner::keepGoing()
     // init event handler framework
     {
         QString file_name = ":/js/create_handlers.js";
-        m_handler_map = evalJsonContents(readFile(file_name), file_name);
+        m_handler_map = evalJsonContents(internalReadFile(file_name), file_name);
     }
     // create JavaScript enums from C++ enums
     {
-        QString enum_contents = readFile(":/enums/ItemTypeEnum.h").trimmed();
+        QString enum_contents = internalReadFile(":/enums/ItemTypeEnum.h").trimmed();
         QStringList lines = enum_contents.split("\n");
         QStringList values = lines.takeFirst().split(" ");
         Q_ASSERT(values.size() == 2);
@@ -107,6 +107,8 @@ void ScriptRunner::keepGoing()
     mf_obj.setProperty("clearTimeout", m_engine->newFunction(clearTimeout));
     mf_obj.setProperty("setInterval", m_engine->newFunction(setInterval));
     mf_obj.setProperty("clearInterval", m_engine->newFunction(clearTimeout));
+    mf_obj.setProperty("readFile", m_engine->newFunction(readFile));
+    mf_obj.setProperty("writeFile", m_engine->newFunction(writeFile));
 
     // hook up mf functions
     mf_obj.setProperty("chat", m_engine->newFunction(chat));
@@ -117,9 +119,8 @@ void ScriptRunner::keepGoing()
     mf_obj.setProperty("playerState", m_engine->newFunction(playerState));
     mf_obj.setProperty("Point", m_engine->newFunction(Point, 3));
 
-    bool file_exists;
-    QString main_script_contents = readFile(m_main_script_filename, &file_exists);
-    if (!file_exists) {
+    QString main_script_contents = internalReadFile(m_main_script_filename);
+    if (main_script_contents.isNull()) {
         qWarning() << "file not found: " << m_main_script_filename;
         shutdown(1);
         return;
@@ -148,24 +149,13 @@ void ScriptRunner::keepGoing()
     m_game->start();
 }
 
-QString ScriptRunner::readFile(const QString &path, bool * success)
+QString ScriptRunner::internalReadFile(const QString &path)
 {
     QFile file(path);
-    if (!file.open(QIODevice::ReadOnly)) {
-        if (success == NULL) {
-            // crash
-            qWarning() << "cannot open file:" << path;
-            shutdown(1);
-        } else {
-            // report failure
-            *success = false;
-            return QString();
-        }
-    }
+    if (!file.open(QIODevice::ReadOnly))
+        return QString();
     QString contents = QString::fromUtf8(file.readAll());
     file.close();
-    if (success != NULL)
-        *success = true;
     return contents;
 }
 
@@ -206,15 +196,15 @@ void ScriptRunner::dispatchTimeout()
 QScriptValue ScriptRunner::setTimeout(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
-    if (! me->argCount(context, 2))
-        return QScriptValue();
-
+    QScriptValue error;
+    if (!me->argCount(context, error, 2))
+        return error;
     QScriptValue func = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, func.isFunction()))
+        return error;
     QScriptValue ms = context->argument(1);
-    if (! func.isFunction() || ! ms.isNumber()) {
-        qWarning() << "setTimeout: invalid argument at" << context->backtrace().join("\n");
-        return QScriptValue();
-    }
+    if (!me->maybeThrowArgumentError(context, error, ms.isNumber()))
+        return error;
 
     return me->setTimeout(func, ms.toInteger(), context->parentContext()->thisObject(), false);
 }
@@ -222,15 +212,15 @@ QScriptValue ScriptRunner::setTimeout(QScriptContext *context, QScriptEngine *en
 QScriptValue ScriptRunner::setInterval(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
-    if (! me->argCount(context, 2))
-        return QScriptValue();
-
+    QScriptValue error;
+    if (!me->argCount(context, error, 2))
+        return error;
     QScriptValue func = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, func.isFunction()))
+        return error;
     QScriptValue ms = context->argument(1);
-    if (! func.isFunction() || ! ms.isNumber()) {
-        qWarning() << "setInterval: invalid argument at" << context->backtrace().join("\n");
-        return QScriptValue();
-    }
+    if (!me->maybeThrowArgumentError(context, error, ms.isNumber()))
+        return error;
 
     return me->setTimeout(func, ms.toInteger(), context->parentContext()->thisObject(), true);
 }
@@ -252,20 +242,65 @@ int ScriptRunner::setTimeout(QScriptValue func, int ms, QScriptValue this_obj, b
 QScriptValue ScriptRunner::clearTimeout(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
-    if (! me->argCount(context, 1))
-        return QScriptValue();
-
+    QScriptValue error;
+    if (!me->argCount(context, error, 2))
+        return error;
     QScriptValue id = context->argument(0);
-    if (! id.isNumber()) {
-        qWarning() << "clearTimeout: invalid argument at" << context->backtrace().join("\n");
-        return QScriptValue();
-    }
+    if (!me->maybeThrowArgumentError(context, error, id.isNumber()))
+        return error;
 
     int int_id = id.toInteger();
     QTimer * ptr = me->m_timer_ptrs.value(int_id, NULL);
     me->m_timer_ptrs.remove(int_id);
     me->m_script_timers.remove(ptr);
     delete ptr;
+    return QScriptValue();
+}
+
+QScriptValue ScriptRunner::readFile(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
+    QScriptValue path_value = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, path_value.isString()))
+        return error;
+
+    QString path = path_value.toString();
+    QString contents = me->internalReadFile(path);
+    if (contents.isNull())
+        return QScriptValue();
+    return contents;
+}
+QScriptValue ScriptRunner::writeFile(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 2))
+        return error;
+    QScriptValue path_value = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, path_value.isString()))
+        return error;
+    QScriptValue contents_value = context->argument(1);
+    if (!me->maybeThrowArgumentError(context, error, contents_value.isString()))
+        return error;
+
+    QString path = path_value.toString();
+    QFile file(path);
+    if (!file.open(QIODevice::WriteOnly))
+        return context->throwError(tr("Unable to write file: %1").arg(path));
+    QByteArray contents = contents_value.toString().toUtf8();
+    int index = 0;
+    while (index < contents.size()) {
+        int written_size = file.write(contents.mid(index));
+        if (written_size == -1) {
+            file.close();
+            return context->throwError(tr("Unable to write file: %1").arg(path));
+        }
+        index += written_size;
+    }
+    file.close();
     return QScriptValue();
 }
 
@@ -295,22 +330,18 @@ void ScriptRunner::raiseEvent(QString event_name, const QScriptValueList &args)
 QScriptValue ScriptRunner::include(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
-    if (! me->argCount(context, 1))
-        return QScriptValue();
-
+    QScriptValue error;
+    if (! me->argCount(context, error, 1))
+        return error;
     QScriptValue file_name_value = context->argument(0);
-    if (! file_name_value.isString()) {
-        qWarning() << "include: invalid argument at" << context->backtrace().join("\n");
-        return QScriptValue();
-    }
+    if (!me->maybeThrowArgumentError(context, error, file_name_value.isString()))
+        return error;
     QString file_name = file_name_value.toString();
 
     QString absolute_name = QFileInfo(me->m_main_script_filename).dir().absoluteFilePath(file_name);
-    bool success;
-    QString contents = me->readFile(absolute_name, &success);
-    if (!success) {
+    QString contents = me->internalReadFile(absolute_name);
+    if (contents.isNull())
         return context->throwError(tr("Connot open included file: %1").arg(absolute_name));
-    }
     context->setActivationObject(engine->globalObject());
     context->setThisObject(engine->globalObject());
     engine->evaluate(contents, file_name);
@@ -320,9 +351,11 @@ QScriptValue ScriptRunner::include(QScriptContext *context, QScriptEngine *engin
 
 QScriptValue ScriptRunner::Point(QScriptContext *context, QScriptEngine *engine)
 {
+    // TODO: replace this method with a js Point class
     ScriptRunner * me = (ScriptRunner *) engine->parent();
-    if (! me->argCount(context, 3))
-        return QScriptValue();
+    QScriptValue error;
+    if (! me->argCount(context, error, 3))
+        return error;
 
     QScriptValue pt = engine->newObject();
     pt.setProperty("x", context->argument(0));
@@ -334,20 +367,30 @@ QScriptValue ScriptRunner::Point(QScriptContext *context, QScriptEngine *engine)
 QScriptValue ScriptRunner::exit(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
-    if (! me->argCount(context, 0, 1))
-        return QScriptValue();
+    QScriptValue error;
+    if (! me->argCount(context, error, 0, 1))
+        return error;
     int return_code = 0;
-    if (context->argumentCount() == 1)
-        return_code = context->argument(0).toInt32();
+    if (context->argumentCount() == 1) {
+        QScriptValue return_code_value = context->argument(0);
+        if (!me->maybeThrowArgumentError(context, error, return_code_value.isNumber()))
+            return error;
+        return_code = return_code_value.toInt32();
+    }
+    // TODO: care about the return code
     return context->throwError("SystemExit");
 }
 
 QScriptValue ScriptRunner::print(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
-    if (! me->argCount(context, 1))
-        return QScriptValue();
-    QString text = context->argument(0).toString();
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
+    QScriptValue arg_value = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, arg_value.isString()))
+        return error;
+    QString text = arg_value.toString();
     me->m_stdout << text;
     me->m_stdout.flush();
     return QScriptValue();
@@ -356,8 +399,10 @@ QScriptValue ScriptRunner::print(QScriptContext *context, QScriptEngine *engine)
 QScriptValue ScriptRunner::debug(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
-    if (! me->argCount(context, 1))
-        return QScriptValue();
+    QScriptValue error;
+    if (! me->argCount(context, error, 1))
+        return error;
+    // argument can be anything
     QString line = context->argument(0).toString();
     me->m_stderr << line << "\n";
     me->m_stderr.flush();
@@ -378,9 +423,13 @@ void ScriptRunner::shutdown(int return_code)
 QScriptValue ScriptRunner::chat(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
-    if (! me->argCount(context, 1))
-        return QScriptValue();
-    QString message = context->argument(0).toString();
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
+    QScriptValue message_value = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, message_value.isString()))
+        return error;
+    QString message = message_value.toString();
     me->m_game->sendChat(message);
     return QScriptValue();
 }
@@ -388,38 +437,42 @@ QScriptValue ScriptRunner::chat(QScriptContext *context, QScriptEngine *engine)
 QScriptValue ScriptRunner::username(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
-    if (! me->argCount(context, 0))
-        return QScriptValue();
+    QScriptValue error;
+    if (!me->argCount(context, error, 0))
+        return error;
     return me->m_url.userName();
 }
 
 QScriptValue ScriptRunner::itemStackHeight(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
-    if (! me->argCount(context, 1))
-        return QScriptValue();
-    QScriptValue val = context->argument(0);
-    if (! val.isNumber()) {
-        qWarning() << "itemStackHeight: invalid argument at" << context->backtrace().join("\n");
-        return -1;
-    }
-    return me->m_game->itemStackHeight((Block::ItemType)val.toInteger());
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
+    QScriptValue value = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, value.isNumber()))
+        return error;
+    return me->m_game->itemStackHeight((Block::ItemType)value.toInteger());
 }
 
 QScriptValue ScriptRunner::health(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
-    if (! me->argCount(context, 0))
-        return QScriptValue();
+    QScriptValue error;
+    if (!me->argCount(context, error, 0))
+        return error;
     return me->m_game->playerHealth();
 }
 
 QScriptValue ScriptRunner::blockAt(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
-    if (! me->argCount(context, 1))
-        return QScriptValue();
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
     QScriptValue js_pt = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, js_pt.isObject()))
+        return error;
     Int3D pt(valueToNearestInt(js_pt.property("x").toNumber()),
              valueToNearestInt(js_pt.property("y").toNumber()),
              valueToNearestInt(js_pt.property("z").toNumber()));
@@ -432,13 +485,13 @@ QScriptValue ScriptRunner::blockAt(QScriptContext *context, QScriptEngine *engin
 QScriptValue ScriptRunner::playerState(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
-    if (! me->argCount(context, 0))
-        return QScriptValue();
+    QScriptValue error;
+    if (!me->argCount(context, error, 0))
+        return error;
     Server::EntityPosition position = me->m_game->playerPosition();
     QScriptValue result = engine->newObject();
     result.setProperty("position", me->jsPoint(position.x, position.y, position.z));
     result.setProperty("velocity", me->jsPoint(position.dx, position.dy, position.dz));
-    result.setProperty("height", position.height);
     result.setProperty("yaw", position.yaw);
     result.setProperty("pitch", position.pitch);
     result.setProperty("on_ground", position.on_ground);
@@ -450,20 +503,27 @@ int ScriptRunner::valueToNearestInt(const QScriptValue &value)
     return (int)std::floor(value.toNumber() + 0.5);
 }
 
-bool ScriptRunner::argCount(QScriptContext *context, int arg_count_min, int arg_count_max)
+bool ScriptRunner::argCount(QScriptContext *context, QScriptValue &error, int arg_count_min, int arg_count_max)
 {
     if (arg_count_max == -1)
         arg_count_max = arg_count_min;
     if (arg_count_min <= context->argumentCount() && context->argumentCount() <= arg_count_max)
         return true;
 
+    QString message;
     if (arg_count_min == arg_count_max)
-        qWarning() << "Expected" << arg_count_min << "arguments. Received" << context->argumentCount();
+        message = tr("Expected %1 arguments. Received %2").arg(arg_count_min, context->argumentCount());
     else
-        qWarning() << "Expected between" << arg_count_min << "and" << arg_count_max << "arguments. Received" << context->argumentCount();
-    qWarning() << m_engine->currentContext()->backtrace().join("\n");
-    m_engine->abortEvaluation();
-    shutdown(1);
+        message = tr("Expected between %1 and %2 arguments. Received %3").arg(arg_count_min, arg_count_max, context->argumentCount());
+    error = context->throwError(message);
+    return false;
+}
+
+bool ScriptRunner::maybeThrowArgumentError(QScriptContext *context, QScriptValue &error, bool arg_is_valid)
+{
+    if (arg_is_valid)
+        return true;
+    error = context->throwError("Invalid Argument");
     return false;
 }
 
