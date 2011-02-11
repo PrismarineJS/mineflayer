@@ -99,6 +99,8 @@ public:
     // immediately emits a position update
     void updatePlayerLook(float delta_yaw, float delta_pitch);
     void setPlayerLook(float yaw, float pitch);
+    // this one is cheating
+    void setPlayerPosition(double x, double y, double z);
     // only valid to call this after you die
     void respawn();
 

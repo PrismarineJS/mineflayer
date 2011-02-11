@@ -266,6 +266,12 @@ mf.setControlState(control, state)
  */
 mf.lookAt(point)
 
+/**
+ * Teleports you to the position specified.
+ * @param {Point} point
+ */
+mf.hax.setPosition(point)
+
 // NOT YET IMPLEMENTED
 
 /**
@@ -372,11 +378,6 @@ mf.inventorySlotsLeft()
  * @returns {Number} The number of real life seconds since dawn. This ranges from 0 to 1200 since a day is 20 minutes. See also onTimeUpdated().
  */
 mf.timeOfDay()
-
-/**
- * Teleports you to the position specified.
- */
-mf.hax.setPosition(point)
 
 // TODO: moving around
 // TODO: using items. same as place block?

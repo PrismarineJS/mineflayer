@@ -101,6 +101,12 @@ void ScriptRunner::go()
     mf_obj.setProperty("lookAt", m_engine->newFunction(lookAt));
     mf_obj.setProperty("entity", m_engine->newFunction(entity));
 
+    // hook up hax functions
+    QScriptValue hax_obj = m_engine->newObject();
+    mf_obj.setProperty("hax", hax_obj);
+    hax_obj.setProperty("setPosition", m_engine->newFunction(setPosition));
+
+    // run main script
     QString main_script_contents = internalReadFile(m_main_script_filename);
     if (main_script_contents.isNull()) {
         m_stderr << "file not found: " << m_main_script_filename << "\n";
@@ -356,21 +362,6 @@ QScriptValue ScriptRunner::include(QScriptContext *context, QScriptEngine *engin
     return QScriptValue();
 }
 
-QScriptValue ScriptRunner::Point(QScriptContext *context, QScriptEngine *engine)
-{
-    // TODO: replace this method with a js Point class
-    ScriptRunner * me = (ScriptRunner *) engine->parent();
-    QScriptValue error;
-    if (! me->argCount(context, error, 3))
-        return error;
-
-    QScriptValue pt = engine->newObject();
-    pt.setProperty("x", context->argument(0));
-    pt.setProperty("y", context->argument(1));
-    pt.setProperty("z", context->argument(2));
-    return pt;
-}
-
 QScriptValue ScriptRunner::exit(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
@@ -480,9 +471,9 @@ QScriptValue ScriptRunner::blockAt(QScriptContext *context, QScriptEngine *engin
     QScriptValue js_pt = context->argument(0);
     if (!me->maybeThrowArgumentError(context, error, js_pt.isObject()))
         return error;
-    Int3D pt(Util::euclideanMod(js_pt.property("x").toNumber(), 1),
-             Util::euclideanMod(js_pt.property("y").toNumber(), 1),
-             Util::euclideanMod(js_pt.property("z").toNumber(), 1));
+    Int3D pt(std::floor(js_pt.property("x").toNumber()),
+             std::floor(js_pt.property("y").toNumber()),
+             std::floor(js_pt.property("z").toNumber()));
     Block block = me->m_game->blockAt(pt);
     QScriptValue result = engine->newObject();
     result.setProperty("type", block.type());
@@ -579,6 +570,22 @@ QScriptValue ScriptRunner::entity(QScriptContext *context, QScriptEngine *engine
     int entity_id = entity_id_value.toInt32();
     return me->jsEntity(entity_id);
 }
+
+QScriptValue ScriptRunner::setPosition(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
+    QScriptValue point_value = context->argument(0);
+    QVector3D point;
+    if (!me->fromJsPoint(context, error, point_value, point))
+        return error;
+
+    me->m_game->setPlayerPosition(point.x(), point.y(), point.z());
+    return QScriptValue();
+}
+
 
 bool ScriptRunner::argCount(QScriptContext *context, QScriptValue &error, int arg_count_min, int arg_count_max)
 {

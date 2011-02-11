@@ -54,9 +54,14 @@ if (teleporter === undefined) {
                     return;
                 }
             }
+            var old_position = mf.self().position;
             mf.hax.setPosition(point);
-            mf.chat("/tp " + username + " " + mf.username());
-            mf.hax.setPosition(mf.Point(0, 0, 0));
+            mf.setTimeout(function() {
+                mf.chat("/tp " + username + " " + mf.username());
+                mf.setTimeout(function() {
+                    mf.hax.setPosition(old_position);
+                }, 400);
+            }, 400);
         }
         chat_commands.register("zapto", zapto, 1, 1);
 

@@ -305,6 +305,14 @@ void Game::setPlayerLook(float yaw, float pitch)
     m_player_position.pitch = pitch;
     emit playerPositionUpdated();
 }
+void Game::setPlayerPosition(double x, double y, double z)
+{
+    QMutexLocker locker(&m_mutex);
+    m_player_position.x = x;
+    m_player_position.y = y;
+    m_player_position.z = z;
+    emit playerPositionUpdated();
+}
 
 void Game::respawn()
 {

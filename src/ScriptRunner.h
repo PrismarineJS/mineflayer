@@ -90,7 +90,7 @@ private:
 
 
 
-    // functions that JavaScript uses
+    // JavaScript utils
     static QScriptValue include(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue exit(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue print(QScriptContext *context, QScriptEngine *engine);
@@ -102,6 +102,7 @@ private:
     static QScriptValue readFile(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue writeFile(QScriptContext * context, QScriptEngine * engine);
 
+    // mf functions
     static QScriptValue chat(QScriptContext *context, QScriptEngine *engine);
     static QScriptValue username(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue itemStackHeight(QScriptContext * context, QScriptEngine * engine);
@@ -112,8 +113,8 @@ private:
     static QScriptValue lookAt(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue entity(QScriptContext * context, QScriptEngine * engine);
 
-    static QScriptValue Point(QScriptContext * context, QScriptEngine * engine);
-
+    // hax functions
+    static QScriptValue setPosition(QScriptContext * context, QScriptEngine * engine);
 
 private slots:
 
