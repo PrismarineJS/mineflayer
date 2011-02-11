@@ -141,7 +141,6 @@ mf.Control
 
 
 // IMPLEMENTED
->>>>>>> origin/master
 
 /**
  * runs a script with a path relative to the current script.
