@@ -1,6 +1,8 @@
 #include <QApplication>
 #include <QStringList>
 #include <QUrl>
+#include <QDir>
+#include <QFileInfo>
 
 #ifdef MINEFLAYER_3D_ON
 #include "MainWindow.h"
@@ -10,6 +12,7 @@
 #include "ScriptRunner.h"
 
 #include <iostream>
+#include <cstdlib>
 
 void printUsage(QString app_name);
 
@@ -24,6 +27,15 @@ int main(int argc, char *argv[])
     QUrl url = QUrl::fromUserInput("mineflayer@localhost:25565");
     QString password;
 
+    // set up lib path
+    QStringList lib_path;
+    lib_path << QDir::currentPath();
+
+    QString env_path = QString::fromAscii(std::getenv("MINEFLAYER_LIB"));
+    if (! env_path.isNull()) {
+        lib_path << env_path.split(":");
+    }
+
     QStringList args = a.arguments();
     for (int i = 1; i < args.size(); i++) {
         QString arg = args.at(i);
@@ -31,6 +43,8 @@ int main(int argc, char *argv[])
             script_debug = true;
         } else if (arg == "--3d") {
             headless = false;
+        } else if (arg.startsWith("-I")) {
+            lib_path.append(arg.mid(2));
         } else if (arg == "--url") {
             if (i+1 >= args.size()) {
                 qWarning() << "Need url parameter after --url option.";
@@ -67,6 +81,13 @@ int main(int argc, char *argv[])
             }
         }
     }
+    lib_path.prepend(QFileInfo(script_filename).dir().absolutePath());
+    if (env_path.isNull()) {
+       // default lib path
+       lib_path << "/usr/lib/mineflayer"; // linux
+       lib_path << a.applicationDirPath() + "/lib"; // windows
+   }
+
     url.setPassword(password);
 
     MetaTypes::registerMetaTypes();
@@ -77,7 +98,7 @@ int main(int argc, char *argv[])
 #endif
 
     if (! script_filename.isEmpty()) {
-        ScriptRunner runner(url, script_filename, script_debug, headless);
+        ScriptRunner runner(url, script_filename, script_debug, headless, lib_path);
         runner.go();
         if (headless)
             return a.exec();

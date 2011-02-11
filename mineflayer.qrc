@@ -7,7 +7,7 @@
         <file alias="ItemTypeEnum.h">src/ItemTypeEnum.h</file>
     </qresource>
     <qresource prefix="/js">
-        <file>create_handlers.js</file>
-        <file>builtin_types.js</file>
+        <file alias="builtin_types.js">builtin/builtin_types.js</file>
+        <file alias="create_handlers.js">builtin/create_handlers.js</file>
     </qresource>
 </RCC>

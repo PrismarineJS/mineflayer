@@ -11,12 +11,13 @@
 #include <QTimer>
 #include <QTime>
 #include <QThread>
+#include <QStringList>
 
 class ScriptRunner : public QObject
 {
     Q_OBJECT
 public:
-    ScriptRunner(QUrl url, QString script_file, bool debug, bool headless);
+    ScriptRunner(QUrl url, QString script_file, bool debug, bool headless, QStringList lib_path);
 
 public slots:
     // start the engine
@@ -66,6 +67,8 @@ private:
 
     QTimer m_physics_timer;
     QTime m_physics_time;
+
+    QStringList m_lib_path;
 private:
     void shutdown(int return_code);
     void raiseEvent(QString event_name, const QScriptValueList & args = QScriptValueList());

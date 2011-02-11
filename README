@@ -1,5 +1,6 @@
-
 mineflayer - Minecraft multiplayer client and bot scripting interface.
+
+Some screenshots and information at http://mc.kev009.com/Mineflayer
 
 Current features:
  * 3d client renders the map and allows you to walk/jump around
@@ -15,4 +16,15 @@ Setting up build:
  3. Open .pro file in QtCreator
  4. Build
  5. Manually copy resources/ to build directory
+
+
+Running bots:
+
+./mineflayer bot.js
+
+If the bot depends on any of the lib files you'll need to pass the lib folder
+like this:
+
+./mineflayer -I<path_to_lib> bot.js
+
 

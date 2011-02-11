@@ -9,7 +9,7 @@
 
 const int ScriptRunner::c_physics_fps = 10;
 
-ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headless) :
+ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headless, QStringList lib_path) :
     QObject(NULL),
     m_url(url),
     m_main_script_filename(script_file),
@@ -22,7 +22,8 @@ ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headl
     m_stderr(stderr),
     m_stdout(stdout),
     m_timer_count(0),
-    m_debugger(new QScriptEngineDebugger())
+    m_debugger(new QScriptEngineDebugger()),
+    m_lib_path(lib_path)
 {
     m_engine = new QScriptEngine(this);
 
@@ -52,6 +53,7 @@ void ScriptRunner::go()
     {
         QString file_name = ":/js/create_handlers.js";
         m_handler_map = evalJsonContents(internalReadFile(file_name), file_name);
+        checkEngine("creating event handlers");
     }
     // init builtin types
     {
@@ -325,10 +327,18 @@ QScriptValue ScriptRunner::include(QScriptContext *context, QScriptEngine *engin
         return error;
     QString file_name = file_name_value.toString();
 
-    QString absolute_name = QFileInfo(me->m_main_script_filename).dir().absoluteFilePath(file_name);
-    QString contents = me->internalReadFile(absolute_name);
+    // look in all lib paths for the file
+    QString contents;
+    foreach (QString lib_path, me->m_lib_path) {
+        QString absolute_file_path = QDir(lib_path).absoluteFilePath(file_name);
+        contents = me->internalReadFile(absolute_file_path);
+        if (! contents.isNull())
+            break;
+    }
+
     if (contents.isNull())
-        return context->throwError(tr("Connot open included file: %1").arg(absolute_name));
+        return context->throwError(tr("Connot open included file: %1\nLooked in %2\n").arg(file_name, me->m_lib_path.join(":")));
+
     context->setActivationObject(engine->globalObject());
     context->setThisObject(engine->globalObject());
     engine->evaluate(contents, file_name);
