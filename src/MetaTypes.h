@@ -20,7 +20,7 @@ namespace MetaTypes {
         qRegisterMetaType<QHash<Int3D,Block> >("QHash<Int3D,Block>");
         qRegisterMetaType<MobSpawnResponse::MobType>("MobSpawnResponse::MobType");
         qRegisterMetaType<Block::ItemType>("Block::ItemType");
-
+        qRegisterMetaType<Message::Item>("Message::Item");
     }
 }
 
