@@ -98,6 +98,7 @@ public:
     void setControlActivated(Control control, bool activated = true);
     // immediately emits a position update
     void updatePlayerLook(float delta_yaw, float delta_pitch);
+    void setPlayerLook(float yaw, float pitch);
     // only valid to call this after you die
     void respawn();
 

@@ -1,5 +1,4 @@
 function() {
-    var registrar_to_handlers = {};
     var name_to_handlers = {};
     function createEventRegistrar(name) {
         var handlers = [];
@@ -9,8 +8,8 @@ function() {
             }
             handlers.push(handler);
         };
+        registrar._name = name;
         name_to_handlers[name] = handlers;
-        registrar_to_handlers[registrar] = handlers;
         mf[name] = registrar;
     }
     var registrar_names = [
@@ -35,14 +34,14 @@ function() {
         createEventRegistrar(registrar_names[i]);
     }
     mf.removeHandler = function(registrar, handler) {
-        var handlers = registrar_to_handlers[registrar];
+        var handlers = name_to_handlers[registrar._name];
         for (var i = 0; i < handlers.length; i++) {
             if (handlers[i] === handler) {
                 handlers.splice(i, 1);
-                return true;
+                return;
             }
         }
-        return false;
+        throw "IllegalArgument";
     };
     return name_to_handlers;
 }()

@@ -260,6 +260,12 @@ mf.self()
  */
 mf.setControlState(control, state)
 
+/**
+ * Looks at the given point specified in absolute coordinates
+ * @param {Point} point
+ */
+mf.lookAt(point)
+
 // NOT YET IMPLEMENTED
 
 /**
@@ -487,9 +493,9 @@ mf.onUserQuit(function(username) {...})
  * removes the handler from the event.
  *
  * example:
- * mf.onConnected(function handleConnected() {
- *     mf.debug("connected first time");
- *     mf.removeHandler(mf.onConnected, handleConnected);
+ * mf.onChat(function handleChat(username, message) {
+ *     mf.debug("got first chat");
+ *     mf.removeHandler(mf.onChat, handleChat);
  * });
  *
  * @param {Object} event_registrar One of mf.on*

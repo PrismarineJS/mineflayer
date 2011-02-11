@@ -49,6 +49,18 @@ void ScriptRunner::go()
     QScriptValue mf_obj = m_engine->newObject();
     m_engine->globalObject().setProperty("mf", mf_obj);
 
+    // add utility functions
+    mf_obj.setProperty("include", m_engine->newFunction(include));
+    mf_obj.setProperty("exit", m_engine->newFunction(exit));
+    mf_obj.setProperty("print", m_engine->newFunction(print));
+    mf_obj.setProperty("debug", m_engine->newFunction(debug));
+    mf_obj.setProperty("setTimeout", m_engine->newFunction(setTimeout));
+    mf_obj.setProperty("clearTimeout", m_engine->newFunction(clearTimeout));
+    mf_obj.setProperty("setInterval", m_engine->newFunction(setInterval));
+    mf_obj.setProperty("clearInterval", m_engine->newFunction(clearTimeout));
+    mf_obj.setProperty("readFile", m_engine->newFunction(readFile));
+    mf_obj.setProperty("writeFile", m_engine->newFunction(writeFile));
+
     // init event handler framework
     {
         QString file_name = ":/js/create_handlers.js";
@@ -78,18 +90,6 @@ void ScriptRunner::go()
         mf_obj.setProperty(prop_name, evalJsonContents(enum_contents.replace("=", ":")));
     }
 
-    // add utility functions
-    mf_obj.setProperty("include", m_engine->newFunction(include));
-    mf_obj.setProperty("exit", m_engine->newFunction(exit));
-    mf_obj.setProperty("print", m_engine->newFunction(print));
-    mf_obj.setProperty("debug", m_engine->newFunction(debug));
-    mf_obj.setProperty("setTimeout", m_engine->newFunction(setTimeout));
-    mf_obj.setProperty("clearTimeout", m_engine->newFunction(clearTimeout));
-    mf_obj.setProperty("setInterval", m_engine->newFunction(setInterval));
-    mf_obj.setProperty("clearInterval", m_engine->newFunction(clearTimeout));
-    mf_obj.setProperty("readFile", m_engine->newFunction(readFile));
-    mf_obj.setProperty("writeFile", m_engine->newFunction(writeFile));
-
     // hook up mf functions
     mf_obj.setProperty("chat", m_engine->newFunction(chat));
     mf_obj.setProperty("username", m_engine->newFunction(username));
@@ -98,6 +98,7 @@ void ScriptRunner::go()
     mf_obj.setProperty("blockAt", m_engine->newFunction(blockAt));
     mf_obj.setProperty("self", m_engine->newFunction(self));
     mf_obj.setProperty("setControlState", m_engine->newFunction(setControlState));
+    mf_obj.setProperty("lookAt", m_engine->newFunction(lookAt));
     mf_obj.setProperty("entity", m_engine->newFunction(entity));
 
     QString main_script_contents = internalReadFile(m_main_script_filename);
@@ -116,6 +117,10 @@ void ScriptRunner::go()
     // connect to server
     bool success;
     success = connect(m_game, SIGNAL(entitySpawned(int)), this, SLOT(handleEntitySpawned(int)));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(entityMoved(int)), this, SLOT(handleEntityMoved(int)));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(entityDespawned(int)), this, SLOT(handleEntityDespawned(int)));
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(handleChunkUpdated(Int3D,Int3D)));
     Q_ASSERT(success);
@@ -542,6 +547,26 @@ QScriptValue ScriptRunner::setControlState(QScriptContext *context, QScriptEngin
     return QScriptValue();
 }
 
+QScriptValue ScriptRunner::lookAt(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
+    QScriptValue point_value = context->argument(0);
+    QVector3D point;
+    if (!me->fromJsPoint(context, error, point_value, point))
+        return error;
+
+    Server::EntityPosition my_position = me->m_game->playerPosition();
+    QVector3D delta = point - QVector3D(my_position.x, my_position.y, my_position.z);
+    float yaw = std::atan2(delta.y(), delta.x());
+    float ground_distance = std::sqrt(delta.x() * delta.x() + delta.y() * delta.y());
+    float pitch = std::atan2(delta.z(), ground_distance);
+    me->m_game->setPlayerLook(yaw, pitch);
+    return QScriptValue();
+}
+
 QScriptValue ScriptRunner::entity(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
@@ -564,9 +589,9 @@ bool ScriptRunner::argCount(QScriptContext *context, QScriptValue &error, int ar
 
     QString message;
     if (arg_count_min == arg_count_max)
-        message = tr("Expected %1 arguments. Received %2").arg(arg_count_min, context->argumentCount());
+        message = tr("Expected %1 arguments. Received %2").arg(arg_count_min).arg(context->argumentCount());
     else
-        message = tr("Expected between %1 and %2 arguments. Received %3").arg(arg_count_min, arg_count_max, context->argumentCount());
+        message = tr("Expected between %1 and %2 arguments. Received %3").arg(arg_count_min).arg(arg_count_max).arg(context->argumentCount());
     error = context->throwError(message);
     return false;
 }
@@ -583,11 +608,28 @@ QScriptValue ScriptRunner::jsPoint(const Int3D &pt)
 {
     return jsPoint(pt.x, pt.y, pt.z);
 }
-
 QScriptValue ScriptRunner::jsPoint(double x, double y, double z)
 {
     return m_point_class.construct(QScriptValueList() << x << y << z);
 }
+bool ScriptRunner::fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, QVector3D &point)
+{
+    QScriptValue property;
+    property = point_value.property("x");
+    if (!maybeThrowArgumentError(context, error, property.isNumber()))
+        return false;
+    point.setX(property.toNumber());
+    property = point_value.property("y");
+    if (!maybeThrowArgumentError(context, error, property.isNumber()))
+        return false;
+    point.setY(property.toNumber());
+    property = point_value.property("z");
+    if (!maybeThrowArgumentError(context, error, property.isNumber()))
+        return false;
+    point.setZ(property.toNumber());
+    return true;
+}
+
 QScriptValue ScriptRunner::jsItem(Message::Item item)
 {
     return m_item_class.construct(QScriptValueList() << item.type << item.count);
