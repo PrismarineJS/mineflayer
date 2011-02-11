@@ -182,11 +182,12 @@ void ScriptRunner::checkEngine(const QString & while_doing_what)
         return;
     if (!m_engine->hasUncaughtException())
         return;
-    if (!while_doing_what.isEmpty())
-        qWarning() << "Error while" << while_doing_what.toStdString().c_str();
-    qWarning() << m_engine->uncaughtException().toString();
-    qWarning() << m_engine->uncaughtExceptionBacktrace().join("\n");
-    m_engine->clearExceptions();
+    if (m_engine->uncaughtException().toString() != "Error: SystemExit") {
+        if (!while_doing_what.isEmpty())
+            qWarning() << "Error while" << while_doing_what.toStdString().c_str();
+        qWarning() << m_engine->uncaughtException().toString();
+        qWarning() << m_engine->uncaughtExceptionBacktrace().join("\n");
+    }
     shutdown(1);
 }
 
@@ -308,8 +309,7 @@ QScriptValue ScriptRunner::include(QScriptContext *context, QScriptEngine *engin
     bool success;
     QString contents = me->readFile(absolute_name, &success);
     if (!success) {
-        qWarning() << "Cannot open included file:" << absolute_name;
-        me->shutdown(1);
+        return context->throwError(tr("Connot open included file: %1").arg(absolute_name));
     }
     context->setActivationObject(engine->globalObject());
     context->setThisObject(engine->globalObject());
@@ -339,9 +339,7 @@ QScriptValue ScriptRunner::exit(QScriptContext *context, QScriptEngine *engine)
     int return_code = 0;
     if (context->argumentCount() == 1)
         return_code = context->argument(0).toInt32();
-    me->shutdown(return_code);
-    context->throwValue("SystemExit");
-    return QScriptValue();
+    return context->throwError("SystemExit");
 }
 
 QScriptValue ScriptRunner::print(QScriptContext *context, QScriptEngine *engine)
