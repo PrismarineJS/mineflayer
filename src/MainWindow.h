@@ -245,6 +245,8 @@ private:
     QThread * m_thread;
     mutable QMutex m_queue_mutex;
 
+    bool m_shutdown;
+
 private slots:
     void handleUpdatedChunk(const Int3D &start, const Int3D &size);
     void queueDeleteSubChunkMesh(const Int3D & coord);

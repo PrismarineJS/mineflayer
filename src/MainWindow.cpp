@@ -639,7 +639,8 @@ void MainWindow::windowClosed(Ogre::RenderWindow* rw)
 
 SubChunkMeshGenerator::SubChunkMeshGenerator(MainWindow * owner) :
     QObject(NULL),
-    m_owner(owner)
+    m_owner(owner),
+    m_shutdown(false)
 {
     // run in our own thread
     m_thread = new QThread(this);
@@ -663,9 +664,10 @@ void SubChunkMeshGenerator::initialize()
 
 void SubChunkMeshGenerator::shutDown()
 {
-    m_owner->m_shut_down = true;
+    m_shutdown = true;
     m_thread->exit();
     m_thread->wait();
+    m_owner->m_shut_down = true;
 }
 
 void SubChunkMeshGenerator::handleUpdatedChunk(const Int3D &start, const Int3D &size)
@@ -679,7 +681,7 @@ void SubChunkMeshGenerator::handleUpdatedChunk(const Int3D &start, const Int3D &
     for (it.x = min.x; it.x <= max.x; it.x+=MainWindow::c_sub_chunk_mesh_size.x) {
         for (it.y = min.y; it.y <= max.y; it.y+=MainWindow::c_sub_chunk_mesh_size.y) {
             for (it.z = min.z; it.z <= max.z; it.z+=MainWindow::c_sub_chunk_mesh_size.z) {
-                if (m_owner->m_shut_down)
+                if (m_shutdown)
                     return;
                 // regenerate the seams if this chunk is new
                 if (! m_owner->m_sub_chunks.contains(it)) {
