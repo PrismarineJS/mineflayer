@@ -12,6 +12,13 @@ Core:
  * recalculte light on block changes
 
 3D client:
+ * chunk seams are broken
+ * deleting chunks is broken
+ * TOO SLOW
+ * health display
+ * chatting 
+ * digging
+ * mobs/players/pickups
  * doors
  * torches and redstone torches
  * minecart tracks
@@ -24,11 +31,6 @@ Core:
  * pressure plates
  * stone slab
  * cake
-
- * mobs/players/pickups
- * chatting 
- * health display
- * chunk seams look ugly
  * water/lava animation
  * water / lava flow
  * sky, sun, moon, day/night

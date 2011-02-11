@@ -126,13 +126,12 @@ private:
     QHash<Block::ItemType, BlockData> m_block_data;
     BlockData m_air;
 
-
-
 private slots:
     void handleUpdatedChunk(const Int3D &start, const Int3D &size);
     void queueDeleteSubChunkMesh(const Int3D & coord);
 
     void initialize();
+
 private:
     void generateSubChunkMesh(const Int3D & sub_chunk_key, BlockFaceDirection seam = NoDirection);
     void generateBlockMesh(Ogre::ManualObject * obj, const SubChunkData & chunk_data,

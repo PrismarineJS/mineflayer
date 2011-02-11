@@ -139,7 +139,6 @@ void SubChunkMeshGenerator::initialize()
 
     loadResources();
 
-
     bool success;
     success = connect(m_owner->game(), SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(handleUpdatedChunk(Int3D,Int3D)));
     Q_ASSERT(success);
@@ -221,12 +220,16 @@ void SubChunkMeshGenerator::handleUpdatedChunk(const Int3D &start, const Int3D &
     // update every sub chunk that the updated region touches
     Int3D min = subChunkKey(start);
     Int3D max = subChunkKey(start+size);
+    if (min == max)
+        max += c_sub_chunk_mesh_size;
     Int3D it;
-    for (it.x = min.x; it.x <= max.x; it.x+=c_sub_chunk_mesh_size.x) {
-        for (it.y = min.y; it.y <= max.y; it.y+=c_sub_chunk_mesh_size.y) {
-            for (it.z = min.z; it.z <= max.z; it.z+=c_sub_chunk_mesh_size.z) {
-                if (m_shutdown)
+    for (it.x = min.x; it.x < max.x; it.x+=c_sub_chunk_mesh_size.x) {
+        for (it.y = min.y; it.y < max.y; it.y+=c_sub_chunk_mesh_size.y) {
+            for (it.z = min.z; it.z < max.z; it.z+=c_sub_chunk_mesh_size.z) {
+                if (m_shutdown) {
+                    qDebug() << "Skipping chunk update; shutting down";
                     return;
+                }
                 // regenerate the seams if this chunk is new
                 if (! m_sub_chunks.contains(it)) {
                     for (int side = 0; side < 6; side++) {
@@ -360,9 +363,9 @@ void SubChunkMeshGenerator::generateBlockMesh(Ogre::ManualObject * obj,
             if ((offset.x == 0 && side_index == NegativeX) ||
                 (offset.y == 0 && side_index == NegativeY) ||
                 (offset.z == 0 && side_index == NegativeZ) ||
-                (offset.x == c_sub_chunk_mesh_size.x && side_index == PositiveX) ||
-                (offset.y == c_sub_chunk_mesh_size.y && side_index == PositiveY) ||
-                (offset.z == c_sub_chunk_mesh_size.z && side_index == PositiveZ))
+                (offset.x == c_sub_chunk_mesh_size.x-1 && side_index == PositiveX) ||
+                (offset.y == c_sub_chunk_mesh_size.y-1 && side_index == PositiveY) ||
+                (offset.z == c_sub_chunk_mesh_size.z-1 && side_index == PositiveZ))
             {
                 continue;
             }
@@ -531,10 +534,12 @@ void SubChunkMeshGenerator::queueDeleteSubChunkMesh(const Int3D &coord)
                 SubChunkData chunk_data = m_sub_chunks.value(it);
                 if (chunk_data.is_null)
                     continue;
-                for (int i = 0; i < 2; i++) {
-                    m_done_sub_chunk_queue.enqueue(ReadySubChunk(i, NoDirection,
-                        chunk_data.obj[NoDirection+1][i],
-                        chunk_data.node[NoDirection+1][i], it));
+                for (int side = -1; side < 6; side++) {
+                    for (int i = 0; i < 2; i++) {
+                        m_done_sub_chunk_queue.enqueue(ReadySubChunk(i, (BlockFaceDirection) side,
+                            chunk_data.obj[side+1][i],
+                            chunk_data.node[side+1][i], it));
+                    }
                 }
                 m_sub_chunks.remove(it);
             }

@@ -287,6 +287,9 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
     }
     while (m_sub_chunk_generator->availableDoneSubChunk()) {
         SubChunkMeshGenerator::ReadySubChunk done_chunk = m_sub_chunk_generator->nextDoneSubChunk();
+        if (done_chunk.obj != NULL) {
+            m_scene_manager->destroyManualObject(done_chunk.obj);
+        }
         if (done_chunk.node != NULL) {
             done_chunk.node->removeAndDestroyAllChildren();
             m_scene_manager->destroySceneNode(done_chunk.node);

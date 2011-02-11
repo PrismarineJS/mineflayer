@@ -32,7 +32,6 @@ HEADERS += src/Server.h \
     src/Game.h \
     src/Block.h \
     src/ItemTypeEnum.h \
-    src/BlockingPriorityQueue.h \
     src/SubChunkMeshGenerator.h
 RESOURCES += mineflayer.qrc
 LIBS += \
