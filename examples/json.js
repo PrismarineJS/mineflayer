@@ -1,4 +1,6 @@
 
+mf.include("assert.js");
+
 var json;
 if (json === undefined) {
     json = {};
@@ -8,6 +10,7 @@ if (json === undefined) {
             name_to_type[type_name] = type;
         };
         json.parse = function(string_data) {
+            assert.isString(string_data);
             return JSON.parse(string_data, function(key, value) {
                 if (typeof value !== "object") {
                     return value;
@@ -35,7 +38,7 @@ if (json === undefined) {
         (function() {
             for (var i = 0; i < mf.serializableTypeNames.length; i++) {
                 var type_name = mf.serializableTypeNames[i];
-                _public.registerType(type_name, mf[type_name]);
+                json.registerType(type_name, mf[type_name]);
             }
         })();
     })();

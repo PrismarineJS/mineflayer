@@ -33,6 +33,7 @@ Game::Game(QUrl connection_info) :
     m_userName(connection_info.userName()),
     m_position_update_timer(NULL),
     m_digging_timer(NULL),
+    m_player_held_item(Block::NoItem),
     m_max_ground_speed(c_standard_max_ground_speed),
     m_terminal_velocity(c_standard_terminal_velocity),
     m_input_acceleration(c_standard_walking_acceleration),
@@ -318,18 +319,17 @@ void Game::shutdown(int return_code)
     m_return_code = return_code;
     m_server.finishWritingAndDisconnect();
 }
-bool Game::entityPosition(int entity_id, Server::EntityPosition & output_position)
+QSharedPointer<Game::Entity> Game::entity(int entity_id)
 {
     QMutexLocker locker(&m_mutex);
     if (entity_id == m_player_entity_id) {
-        output_position = m_player_position;
-        return true;
+        // construct a named player entity for the player
+        return QSharedPointer<Entity>(new NamedPlayerEntity(entity_id, m_player_position, m_userName, m_player_held_item));
     }
     QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
     if (entity.isNull())
-        return false;
-    output_position = entity.data()->position;
-    return true;
+        return entity;
+    return QSharedPointer<Entity>(entity.data()->clone());
 }
 
 Server::EntityPosition Game::playerPosition()

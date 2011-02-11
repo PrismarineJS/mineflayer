@@ -84,6 +84,15 @@ void ScriptRunner::keepGoing()
         QString file_name = ":/js/create_handlers.js";
         m_handler_map = evalJsonContents(internalReadFile(file_name), file_name);
     }
+    // init builtin types
+    {
+        QString file_name = ":/js/builtin_types.js";
+        m_engine->evaluate(internalReadFile(file_name), file_name);
+        checkEngine("evaluating builtin type");
+        m_point_class = mf_obj.property("Point");
+        m_entity_class = mf_obj.property("Entity");
+        m_item_class = mf_obj.property("Item");
+    }
     // create JavaScript enums from C++ enums
     {
         QString enum_contents = internalReadFile(":/enums/ItemTypeEnum.h").trimmed();
@@ -116,8 +125,7 @@ void ScriptRunner::keepGoing()
     mf_obj.setProperty("itemStackHeight", m_engine->newFunction(itemStackHeight));
     mf_obj.setProperty("health", m_engine->newFunction(health));
     mf_obj.setProperty("blockAt", m_engine->newFunction(blockAt));
-    mf_obj.setProperty("playerState", m_engine->newFunction(playerState));
-    mf_obj.setProperty("Point", m_engine->newFunction(Point, 3));
+    mf_obj.setProperty("self", m_engine->newFunction(self));
 
     QString main_script_contents = internalReadFile(m_main_script_filename);
     if (main_script_contents.isNull()) {
@@ -482,19 +490,43 @@ QScriptValue ScriptRunner::blockAt(QScriptContext *context, QScriptEngine *engin
     return result;
 }
 
-QScriptValue ScriptRunner::playerState(QScriptContext *context, QScriptEngine *engine)
+QScriptValue ScriptRunner::self(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
     QScriptValue error;
     if (!me->argCount(context, error, 0))
         return error;
-    Server::EntityPosition position = me->m_game->playerPosition();
-    QScriptValue result = engine->newObject();
-    result.setProperty("position", me->jsPoint(position.x, position.y, position.z));
-    result.setProperty("velocity", me->jsPoint(position.dx, position.dy, position.dz));
+    int entity_id = me->m_game->playerEntityId();
+    return me->jsEntity(me->m_game->entity(entity_id));
+}
+QScriptValue ScriptRunner::jsEntity(QSharedPointer<Game::Entity> entity)
+{
+    if (entity.isNull())
+        return QScriptValue();
+    QScriptValue result = m_entity_class.construct();
+    result.setProperty("entity_id", entity.data()->entity_id);
+    Server::EntityPosition position = entity.data()->position;
+    result.setProperty("position", jsPoint(position.x, position.y, position.z));
+    result.setProperty("velocity", jsPoint(position.dx, position.dy, position.dz));
     result.setProperty("yaw", position.yaw);
     result.setProperty("pitch", position.pitch);
     result.setProperty("on_ground", position.on_ground);
+    Game::Entity::EntityType type = entity.data()->type;
+    result.setProperty("type", (int)type);
+    switch (type) {
+        case Game::Entity::NamedPlayer:
+            result.setProperty("username", ((Game::NamedPlayerEntity*)entity.data())->username);
+            result.setProperty("held_item", (int)((Game::NamedPlayerEntity*)entity.data())->held_item);
+            break;
+        case Game::Entity::Mob:
+            result.setProperty("mob_type", (int)((Game::MobEntity*)entity.data())->mob_type);
+            break;
+        case Game::Entity::Pickup:
+            result.setProperty("item", jsItem(((Game::PickupEntity*)entity.data())->item));
+            break;
+        default:
+            Q_ASSERT(false);
+    }
     return result;
 }
 
@@ -529,20 +561,16 @@ bool ScriptRunner::maybeThrowArgumentError(QScriptContext *context, QScriptValue
 
 QScriptValue ScriptRunner::jsPoint(const Int3D &pt)
 {
-    QScriptValue obj = m_engine->newObject();
-    obj.setProperty("x", pt.x);
-    obj.setProperty("y", pt.y);
-    obj.setProperty("z", pt.z);
-    return obj;
+    return jsPoint(pt.x, pt.y, pt.z);
 }
 
 QScriptValue ScriptRunner::jsPoint(double x, double y, double z)
 {
-    QScriptValue obj = m_engine->newObject();
-    obj.setProperty("x", x);
-    obj.setProperty("y", y);
-    obj.setProperty("z", z);
-    return obj;
+    return m_entity_class.construct(QScriptValueList() << x << y << z);
+}
+QScriptValue ScriptRunner::jsItem(Message::Item item)
+{
+    return m_item_class.construct(QScriptValueList() << item.type << item.count);
 }
 
 void ScriptRunner::handleChunkUpdated(const Int3D &start, const Int3D &size)
@@ -552,7 +580,7 @@ void ScriptRunner::handleChunkUpdated(const Int3D &start, const Int3D &size)
 
 void ScriptRunner::movePlayerPosition()
 {
-    raiseEvent("onPositionUpdated");
+    raiseEvent("onSelfMoved");
 }
 
 void ScriptRunner::handlePlayerHealthUpdated()

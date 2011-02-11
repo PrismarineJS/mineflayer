@@ -14,16 +14,16 @@ function() {
         mf[name] = registrar;
     }
     var registrar_names = [
-        "onChat",
         "onConnected",
         "onChat",
         "onChunkUpdated",
-        "onPositionUpdated",
+        "onSpawn",
+        "onSelfMoved",
         "onHealthChanged",
         "onDeath",
-        "onMobSpawned",
-        "onMobMovement",
-        "onSpawn",
+        "onEntitySpawned",
+        "onEntityDespawned",
+        "onEntityMoved",
         "onStoppedDigging",
         "onEquippedItemChanged",
         "onInventoryUpdated",

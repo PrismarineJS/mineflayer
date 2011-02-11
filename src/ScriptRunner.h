@@ -30,6 +30,9 @@ private:
 
     QScriptEngine * m_engine;
     QScriptValue m_handler_map;
+    QScriptValue m_point_class;
+    QScriptValue m_entity_class;
+    QScriptValue m_item_class;
 
     Game * m_game;
     bool m_started_game;
@@ -72,6 +75,9 @@ private:
     static int valueToNearestInt(const QScriptValue & value);
     QScriptValue jsPoint(const Int3D &pt);
     QScriptValue jsPoint(double x, double y, double z);
+    QScriptValue jsItem(Message::Item item);
+    QScriptValue jsEntity(QSharedPointer<Game::Entity> entity);
+
 
 
     // functions that JavaScript uses
@@ -91,7 +97,7 @@ private:
     static QScriptValue itemStackHeight(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue health(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue blockAt(QScriptContext * context, QScriptEngine * engine);
-    static QScriptValue playerState(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue self(QScriptContext * context, QScriptEngine * engine);
 
     static QScriptValue Point(QScriptContext * context, QScriptEngine * engine);
 

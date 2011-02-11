@@ -24,8 +24,6 @@
  * @param {Number} x east
  * @param {Number} y north
  * @param {Number} z up
- *
- * NOT IMPLEMENTED
  */
 mf.Point(x, y, z)
 
@@ -50,11 +48,26 @@ mf.Point(x, y, z)
  *
  * Additional properties when type is Pickup:
  * item {Item}
- *
- * NOT IMPLEMENTED
  */
 mf.Entity
 
+/**
+ * Represents a block or item or stack of blocks or items.
+ *
+ * Examples:
+ * var item1 = new mf.Item(mf.ItemType.Dirt, 64)
+ * var item2 = new mf.Item(mf.ItemType.StoneSword)
+ *
+ * Properties:
+ * type {ItemType}
+ * count {Number}
+ *
+ * TODO: include the uses/data field somehow
+ *
+ * @param {ItemType}
+ * @param {Number} optional, defaults to 1
+ */
+mf.Item(type, count)
 
 // Enums
 
@@ -82,31 +95,23 @@ mf.ItemType
  * PositiveY (North)
  * NegativeZ (Down)
  * PositiveZ (Up)
- *
- * NOT IMPLEMENTED
  */
 mf.Face
 
 /**
  * Members:
+ * Creeper
+ * Skeleton
+ * Spider
+ * GiantZombie
+ * Zombie
+ * Slime
+ * Ghast
+ * ZombiePigman
  * Pig
  * Sheep
  * Cow
  * Chicken
- * Squid
- * ZombiePigman
- * Spider
- * Zombie
- * Skeleton
- * SpiderJockey
- * Creeper
- * Slime
- * Ghast
- * Human
- * Pigman
- * Giant
- *
- * NOT IMPLEMENTED
  */
 mf.Mob
 
@@ -114,19 +119,9 @@ mf.Mob
  * Members:
  * BlockBroken
  * Interrupted
- *
- * NOT IMPLEMENTED
  */
 mf.StoppedDiggingReason
 
-/**
- * An array of all the serializeable type names in the mf object.
- *
- * NOT IMPLEMENTED
- */
-mf.serializableTypeNames
-
-// IMPLEMENTED
 
 /**
  * runs a script with a path relative to the current script.
@@ -379,9 +374,14 @@ mf.onChat(function(user, message) {...})
 mf.onChunkUpdated(function(start, size) {...})
 
 /**
- * Called when your position is changed. See also position().
+ * Called when you spawn. Happens after connecting and after respawning after death.
  */
-mf.onPositionUpdated(function() {...})
+mf.onSpawn(function() {...})
+
+/**
+ * Called when you move. See also self().
+ */
+mf.onSelfMoved(function() {...})
 
 /**
  * Called when you get hit, take fall damage, eat food, etc. See also health().
@@ -419,11 +419,6 @@ mf.onEntityDespawned(function(entity_id) {...})
 mf.onEntityMoved(function(entity_id) {...})
 
 /**
- * Called when you have spawned and can start moving about.
- */
-mf.onSpawn(function() {...})
-
-/**
  * Called when you have stopped digging for some reason.
  * @param {Number} reason Why you have stopped digging. See the mf.StoppedDiggingReason enum.
  */
@@ -458,6 +453,7 @@ mf.onUserQuit(function(username) {...})
 
 // TODO: other non-chat type messages such as whispers.
 
+
 /**
  * removes the handler from the event.
  *
@@ -472,5 +468,8 @@ mf.onUserQuit(function(username) {...})
  */
 mf.removeHandler(event_registrar, handler)
 
-
+/**
+ * An array of all the serializeable type names in the mf object.
+ */
+mf.serializableTypeNames
 

@@ -29,8 +29,47 @@ public:
         ControlCount
     };
     enum StoppedDiggingReason {
-        DiggingAborted,
-        DiggingCompleted,
+        DiggingCompleted=1,
+        DiggingAborted=2,
+    };
+    class Entity {
+    public:
+        enum EntityType {
+            NamedPlayer = 1,
+            // TODO: ObjectOrVehicle,
+            Mob = 3,
+            Pickup = 4,
+        };
+        const EntityType type;
+        const int entity_id;
+        Server::EntityPosition position;
+        virtual ~Entity() {}
+        virtual Entity * clone() = 0;
+    protected:
+        Entity(EntityType type, int entity_id, Server::EntityPosition position) :
+                type(type), entity_id(entity_id), position(position) {}
+    };
+    class NamedPlayerEntity : public Entity {
+    public:
+        const QString username;
+        Block::ItemType held_item;
+        NamedPlayerEntity(int entity_id, Server::EntityPosition position, QString username, Block::ItemType held_item) :
+                Entity(NamedPlayer, entity_id, position), username(username), held_item(held_item) {}
+        Entity * clone() { return new NamedPlayerEntity(entity_id, position, username, held_item); }
+    };
+    class MobEntity : public Entity {
+    public:
+        const MobSpawnResponse::MobType mob_type;
+        MobEntity(int entity_id, Server::EntityPosition position, MobSpawnResponse::MobType mob_type) :
+                Entity(Mob, entity_id, position), mob_type(mob_type) {}
+        Entity * clone() { return new MobEntity(entity_id, position, mob_type); }
+    };
+    class PickupEntity : public Entity {
+    public:
+        const Message::Item item;
+        PickupEntity(int entity_id, Server::EntityPosition position, Message::Item item) :
+                Entity(Pickup, entity_id, position), item(item) {}
+        Entity * clone() { return new PickupEntity(entity_id, position, item); }
     };
 
     static const float c_standard_max_ground_speed; // m/s
@@ -61,8 +100,9 @@ public:
     // only valid to call this after you die
     void respawn();
 
-    bool entityPosition(int entity_id, Server::EntityPosition & position);
+    int playerEntityId() const { return m_player_entity_id; }
     Server::EntityPosition playerPosition();
+    QSharedPointer<Entity> entity(int entity_id);
 
     Block blockAt(const Int3D & absolute_location);
     bool isBlockLoaded(const Int3D & absolute_location);
@@ -96,42 +136,6 @@ signals:
     void loginStatusUpdated(Server::LoginStatus status);
 
 private:
-    class Entity {
-    public:
-        enum EntityType {
-            NamedPlayer,
-            // TODO: ObjectOrVehicle,
-            Mob,
-            Pickup,
-        };
-        const EntityType type;
-        const int entity_id;
-        Server::EntityPosition position;
-        virtual ~Entity() {}
-    protected:
-        Entity(EntityType type, int entity_id, Server::EntityPosition position) :
-                type(type), entity_id(entity_id), position(position) {}
-    };
-    class NamedPlayerEntity : public Entity {
-    public:
-        const QString username;
-        Block::ItemType held_item;
-        NamedPlayerEntity(int entity_id, Server::EntityPosition position, QString username, Block::ItemType held_item) :
-                Entity(NamedPlayer, entity_id, position), username(username), held_item(held_item) {}
-    };
-    class MobEntity : public Entity {
-    public:
-        const MobSpawnResponse::MobType mob_type;
-        MobEntity(int entity_id, Server::EntityPosition position, MobSpawnResponse::MobType mob_type) :
-                Entity(Mob, entity_id, position), mob_type(mob_type) {}
-    };
-    class PickupEntity : public Entity {
-    public:
-        const Message::Item item;
-        PickupEntity(int entity_id, Server::EntityPosition position, Message::Item item) :
-                Entity(Pickup, entity_id, position), item(item) {}
-    };
-
 
     QMutex m_mutex;
 
@@ -152,6 +156,7 @@ private:
     Server::EntityPosition m_player_position;
     int m_player_health;
     int m_player_entity_id;
+    Block::ItemType m_player_held_item;
     QHash<Int3D, QSharedPointer<Chunk> > m_chunks;
     QHash<int, QSharedPointer<Entity> > m_entities;
 

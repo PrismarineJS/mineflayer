@@ -481,7 +481,7 @@ public:
         Pig=90,
         Sheep=91,
         Cow=92,
-        Hen=93,
+        Chicken=93,
     };
     qint32 entity_id;
     MobType mob_type;

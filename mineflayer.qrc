@@ -8,5 +8,6 @@
     </qresource>
     <qresource prefix="/js">
         <file>create_handlers.js</file>
+        <file>builtin_types.js</file>
     </qresource>
 </RCC>

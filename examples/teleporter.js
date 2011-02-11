@@ -66,8 +66,10 @@ if (teleporter === undefined) {
             mf.writeFile(database_file_name, json.stringify(name_to_point));
         }
         function load_database() {
-            name_to_point = json.parse(mf.readFile(database_file_name));
-            if (name_to_point === undefined) {
+            var database_contents = mf.readFile(database_file_name);
+            if (database_contents !== undefined) {
+                name_to_point = json.parse(database_contents);
+            } else {
                 name_to_point = {};
             }
         }
