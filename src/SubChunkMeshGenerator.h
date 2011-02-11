@@ -12,6 +12,7 @@
 #include "Int3D.h"
 #include "Block.h"
 
+class Game;
 class MainWindow;
 
 class SubChunkMeshGenerator : public QObject {
@@ -108,6 +109,7 @@ private:
     static const float c_brightness_bias[];
 
     MainWindow * m_owner;
+    Game * m_game;
     QQueue<ReadySubChunk> m_new_sub_chunk_queue;
     QQueue<ReadySubChunk> m_done_sub_chunk_queue;
     QThread * m_thread;

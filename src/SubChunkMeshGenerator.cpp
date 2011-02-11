@@ -141,11 +141,11 @@ void SubChunkMeshGenerator::initialize()
 
 
     bool success;
-    success = connect(m_owner->m_game, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(handleUpdatedChunk(Int3D,Int3D)));
+    success = connect(m_owner->game(), SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(handleUpdatedChunk(Int3D,Int3D)));
     Q_ASSERT(success);
-    success = connect(m_owner->m_game, SIGNAL(unloadChunk(Int3D)), this, SLOT(queueDeleteSubChunkMesh(Int3D)));
+    success = connect(m_owner->game(), SIGNAL(unloadChunk(Int3D)), this, SLOT(queueDeleteSubChunkMesh(Int3D)));
     Q_ASSERT(success);
-    m_owner->m_game->start();
+    m_owner->game()->start();
 }
 
 void SubChunkMeshGenerator::loadResources()
@@ -212,7 +212,6 @@ void SubChunkMeshGenerator::shutDown()
     m_shutdown = true;
     m_thread->exit();
     m_thread->wait();
-    m_owner->m_shut_down = true;
 }
 
 void SubChunkMeshGenerator::handleUpdatedChunk(const Int3D &start, const Int3D &size)
@@ -281,10 +280,10 @@ void SubChunkMeshGenerator::generateSubChunkMesh(const Int3D & sub_chunk_key, Bl
                     (BlockFaceDirection)face, chunk_data.obj[face+1][pass],
                     chunk_data.node[face+1][pass], sub_chunk_key);
             }
-            m_owner->m_ogre_mutex.lock();
+            m_owner->ogreMutex()->lock();
             Ogre::ManualObject * obj = new Ogre::ManualObject(Ogre::String());
             obj->begin(pass == 0 ? "TerrainOpaque" : "TerrainTransparent", Ogre::RenderOperation::OT_TRIANGLE_LIST);
-            m_owner->m_ogre_mutex.unlock();
+            m_owner->ogreMutex()->unlock();
 
             Int3D offset;
             if (face == NoDirection) {
@@ -309,7 +308,7 @@ void SubChunkMeshGenerator::generateSubChunkMesh(const Int3D & sub_chunk_key, Bl
             m_queue_mutex.lock();
             m_new_sub_chunk_queue.enqueue(ReadySubChunk(pass,
                 (BlockFaceDirection)face, obj,
-                m_owner->m_pass[pass], sub_chunk_key));
+                m_owner->sceneNodeForPass(pass), sub_chunk_key));
 
             chunk_data = m_sub_chunks.value(sub_chunk_key);
             // chunk_data.node[pass] is set in frameRenderingQueued by the other thread after it creates it.
@@ -338,7 +337,7 @@ void SubChunkMeshGenerator::generateBlockMesh(Ogre::ManualObject * obj,
     BlockFaceDirection face, int pass)
 {
     Int3D absolute_position = chunk_data.position + offset;
-    Block block = m_owner->m_game->blockAt(absolute_position);
+    Block block = m_owner->game()->blockAt(absolute_position);
 
     BlockData block_data = m_block_data.value(block.type(), m_air);
 
@@ -384,7 +383,7 @@ void SubChunkMeshGenerator::generateSideMesh(Ogre::ManualObject * obj,
 
 
     // if the block on this side is opaque or the same block, skip
-    Block neighbor_block = m_owner->m_game->blockAt(absolute_position + c_side_offset[side_index]);
+    Block neighbor_block = m_owner->game()->blockAt(absolute_position + c_side_offset[side_index]);
     Block::ItemType side_type = neighbor_block.type();
     if ((side_type == block.type() && (block_data.partial_alpha || side_type == Block::Glass)) ||
         ! m_block_data.value(side_type, m_air).see_through)

@@ -59,6 +59,10 @@ public:
 
     int exec();
 
+    Game * game() const { return m_game; }
+    QMutex * ogreMutex() { return &m_ogre_mutex; }
+    Ogre::SceneNode * sceneNodeForPass(int pass_index) const { return m_pass[pass_index]; }
+
 protected:
     // Ogre::FrameListener
     bool frameRenderingQueued(const Ogre::FrameEvent& evt);
@@ -72,9 +76,9 @@ protected:
     bool mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
 
     // Ogre::WindowEventListener
-    //Adjust mouse clipping area
+    // Adjust mouse clipping area
     void windowResized(Ogre::RenderWindow* rw);
-    //Unattach OIS before window shutdown (very important under Linux)
+    // unattach OIS before window shutdown
     void windowClosed(Ogre::RenderWindow* rw);
 
 private:
@@ -129,7 +133,6 @@ private slots:
     void handlePlayerHealthUpdated();
     void handlePlayerDied();
 
-    friend class SubChunkMeshGenerator;
 };
 
 uint qHash(const MainWindow::PhysicalInput & value);
