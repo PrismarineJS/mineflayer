@@ -8,6 +8,11 @@
 #include <QCoreApplication>
 #include <QCursor>
 #include <QDebug>
+#include <QRectF>
+
+
+const float MainWindow::c_gui_png_width = 256.0f;
+const float MainWindow::c_gui_png_height = 256.0f;
 
 
 uint qHash(const MainWindow::PhysicalInput & value)
@@ -182,6 +187,28 @@ void MainWindow::loadResources()
 {
     Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
 
+    {
+        // grab all the textures from resources
+        QFile texture_index_file(":/textures/textures.txt");
+        texture_index_file.open(QFile::ReadOnly);
+        QTextStream stream(&texture_index_file);
+        while (! stream.atEnd()) {
+            QString line = stream.readLine().trimmed();
+            if (line.isEmpty() || line.startsWith("#"))
+                continue;
+            QStringList parts = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+            Q_ASSERT(parts.size() == 5);
+            BlockTextureCoord texture_data;
+            QString name = parts.at(0);
+            texture_data.x = parts.at(1).toInt();
+            texture_data.y = parts.at(2).toInt();
+            texture_data.w = parts.at(3).toInt();
+            texture_data.h = parts.at(4).toInt();
+            m_terrain_tex_coords.insert(name, texture_data);
+        }
+        texture_index_file.close();
+    }
+
     // create the terrain material
     {
         Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create("TerrainOpaque", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
@@ -195,7 +222,6 @@ void MainWindow::loadResources()
         first_pass->setVertexColourTracking(Ogre::TVC_AMBIENT);
         Ogre::TextureUnitState* texture_unit = first_pass->createTextureUnitState();
         texture_unit->setTextureName("terrain.png");
-        texture_unit->setTextureCoordSet(0);
         texture_unit->setTextureFiltering(Ogre::TFO_NONE);
         texture_unit->setColourOperation(Ogre::LBO_MODULATE);
     }
@@ -211,10 +237,37 @@ void MainWindow::loadResources()
         first_pass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
         Ogre::TextureUnitState* texture_unit = first_pass->createTextureUnitState();
         texture_unit->setTextureName("terrain.png");
-        texture_unit->setTextureCoordSet(0);
         texture_unit->setTextureFiltering(Ogre::TFO_NONE);
         texture_unit->setColourOperation(Ogre::LBO_MODULATE);
     }
+
+    // create the item material
+    {
+        Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create("Items", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        Ogre::Technique * first_technique = material->getTechnique(0);
+        Ogre::Pass * first_pass = first_technique->getPass(0);
+        first_pass->setDepthWriteEnabled(false);
+        first_pass->setDepthCheckEnabled(false);
+        first_pass->setLightingEnabled(false);
+        Ogre::TextureUnitState * texture_unit = first_pass->createTextureUnitState();
+        texture_unit->setTextureName("gui/items.png");
+        texture_unit->setTextureFiltering(Ogre::TFO_NONE);
+    }
+
+    // create the gui material
+    {
+        Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create("Hud", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        Ogre::Technique * first_technique = material->getTechnique(0);
+        Ogre::Pass * first_pass = first_technique->getPass(0);
+        first_pass->setDepthWriteEnabled(false);
+        first_pass->setDepthCheckEnabled(false);
+        first_pass->setLightingEnabled(false);
+        first_pass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+        Ogre::TextureUnitState * texture_unit = first_pass->createTextureUnitState();
+        texture_unit->setTextureName("gui/gui.png");
+        texture_unit->setTextureFiltering(Ogre::TFO_NONE);
+    }
+
 }
 
 int MainWindow::exec()
@@ -262,11 +315,61 @@ bool MainWindow::setup()
     Ogre::SceneNode * node = m_scene_manager->getRootSceneNode();
     m_pass[0] = node->createChildSceneNode();
     m_pass[1] = node->createChildSceneNode();
+    createHud();
 
     createFrameListener();
 
     return true;
 };
+
+void MainWindow::createHud()
+{
+    m_hud = m_scene_manager->getRootSceneNode()->createChildSceneNode();
+
+    // inventory slots
+    float width = 0.42225f;
+    float height = width / 8.27f * 2;
+    Ogre::SceneNode * inv_slots = m_hud->createChildSceneNode("Hud");
+    inv_slots->attachObject(create2DObject("Hud",
+        QSizeF(c_gui_png_width, c_gui_png_height), "EquippableSlots", QSizeF(width, height)));
+    inv_slots->setPosition(-width*2 / 2, -1.0f, 0.0f);
+
+    // selected inventory slot
+
+}
+
+Ogre::ManualObject * MainWindow::create2DObject(const Ogre::String & material_name,
+    const QSizeF & material_size_pixels, const QString & texture_name, const QSizeF & size)
+{
+    Ogre::ManualObject * obj = m_scene_manager->createManualObject();
+    obj->setUseIdentityProjection(true);
+    obj->setUseIdentityView(true);
+
+    obj->begin(material_name, Ogre::RenderOperation::OT_TRIANGLE_LIST);
+
+    BlockTextureCoord btc = m_terrain_tex_coords.value(texture_name);
+    for (int triangle_index = 0; triangle_index < 2; triangle_index++) {
+        for (int point_index = 0; point_index < 3; point_index++) {
+            Ogre::Vector3 pos = SubChunkMeshGenerator::c_side_coord[SubChunkMeshGenerator::PositiveZ][triangle_index][point_index];
+            obj->position(pos.x * size.width()*2, pos.y * size.height()*2, 0);
+
+            Ogre::Vector2 tex_coord = SubChunkMeshGenerator::c_tex_coord[triangle_index][point_index];
+            obj->textureCoord((btc.x+tex_coord.x*btc.w) / material_size_pixels.width(),
+                              (btc.y+tex_coord.y*btc.h) / material_size_pixels.height());
+        }
+    }
+    obj->end();
+
+    Ogre::AxisAlignedBox aab_inf;
+    aab_inf.setInfinite();
+    obj->setBoundingBox(aab_inf);
+
+    // Render just before overlays
+    obj->setRenderQueueGroup(Ogre::RENDER_QUEUE_OVERLAY - 1);
+
+    return obj;
+
+}
 
 bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
 {

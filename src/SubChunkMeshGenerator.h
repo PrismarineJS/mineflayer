@@ -19,12 +19,8 @@ class SubChunkMeshGenerator : public QObject {
     Q_OBJECT
 public:
 
-    struct BlockTextureCoord {
-        int x;
-        int y;
-        int w;
-        int h;
-    };
+    static const Ogre::Vector3 c_side_coord[6][2][3];
+    static const Ogre::Vector2 c_tex_coord[2][3];
 
     struct BlockData {
         QString name;
@@ -98,8 +94,6 @@ private:
     static const Int3D c_zero_face[];
     static const Int3D c_sub_chunk_mesh_size;
     static const Int3D c_chunk_size;
-    static const Ogre::Vector3 c_side_coord[6][2][3];
-    static const Ogre::Vector2 c_tex_coord[2][3];
     static const float c_terrain_png_width;
     static const float c_terrain_png_height;
     static const float c_terrain_block_size;
@@ -120,8 +114,6 @@ private:
 
     // key is the meter coordinates of the min corner
     QHash<Int3D, SubChunkData> m_sub_chunks;
-    // maps texture name to coordinates in terrain.png
-    QHash<QString, BlockTextureCoord> m_terrain_tex_coords;
     // maps item type to texture name for each side
     QHash<Block::ItemType, BlockData> m_block_data;
     BlockData m_air;
@@ -142,6 +134,7 @@ private:
     void loadResources();
 
     Int3D subChunkKey(const Int3D & coord);
+
 };
 
 

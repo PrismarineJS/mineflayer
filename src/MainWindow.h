@@ -53,6 +53,13 @@ public:
         }
     };
 
+    struct BlockTextureCoord {
+        int x;
+        int y;
+        int w;
+        int h;
+    };
+
 public:
     MainWindow(QUrl url);
     ~MainWindow();
@@ -62,6 +69,7 @@ public:
     Game * game() const { return m_game; }
     QMutex * ogreMutex() { return &m_ogre_mutex; }
     Ogre::SceneNode * sceneNodeForPass(int pass_index) const { return m_pass[pass_index]; }
+    BlockTextureCoord texCoords(QString name) const { return m_terrain_tex_coords.value(name); }
 
 protected:
     // Ogre::FrameListener
@@ -82,6 +90,10 @@ protected:
     void windowClosed(Ogre::RenderWindow* rw);
 
 private:
+    static const float c_gui_png_width;
+    static const float c_gui_png_height;
+
+
     Ogre::Root *m_root;
     Ogre::Camera* m_camera;
     Ogre::SceneManager* m_scene_manager;
@@ -106,10 +118,15 @@ private:
     QVector<PhysicalInput> m_control_to_key;
 
     Ogre::SceneNode * m_pass[2];
+    Ogre::SceneNode * m_hud;
 
     SubChunkMeshGenerator * m_sub_chunk_generator;
 
     QMutex m_ogre_mutex;
+
+
+    // maps texture name to coordinates in terrain.png
+    QHash<QString, BlockTextureCoord> m_terrain_tex_coords;
 
 private:
     void loadControls();
@@ -127,6 +144,10 @@ private:
     void activateInput(PhysicalInput input, bool activated = true);
 
     void grabMouse();
+
+    Ogre::ManualObject * create2DObject(const Ogre::String & material_name,
+        const QSizeF & material_size_pixels, const QString & texture_name, const QSizeF & size);
+    void createHud();
 
 private slots:
     void movePlayerPosition();

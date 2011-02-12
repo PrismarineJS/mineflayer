@@ -121,6 +121,7 @@ SubChunkMeshGenerator::SubChunkMeshGenerator(MainWindow * owner) :
     m_owner(owner),
     m_shutdown(false)
 {
+
     // run in our own thread
     m_thread = new QThread(this);
     m_thread->start();
@@ -149,61 +150,37 @@ void SubChunkMeshGenerator::initialize()
 
 void SubChunkMeshGenerator::loadResources()
 {
-    {
-        // grab all the textures from resources
-        QFile texture_index_file(":/textures/textures.txt");
-        texture_index_file.open(QFile::ReadOnly);
-        QTextStream stream(&texture_index_file);
-        while (! stream.atEnd()) {
-            QString line = stream.readLine().trimmed();
-            if (line.isEmpty() || line.startsWith("#"))
-                continue;
-            QStringList parts = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-            Q_ASSERT(parts.size() == 5);
-            BlockTextureCoord texture_data;
-            QString name = parts.at(0);
-            texture_data.x = parts.at(1).toInt();
-            texture_data.y = parts.at(2).toInt();
-            texture_data.w = parts.at(3).toInt();
-            texture_data.h = parts.at(4).toInt();
-            m_terrain_tex_coords.insert(name, texture_data);
+    // grab all the solid block data from resources
+    QFile blocks_file(":/textures/blocks.txt");
+    blocks_file.open(QFile::ReadOnly);
+    QTextStream stream(&blocks_file);
+    while(! stream.atEnd()) {
+        QString line = stream.readLine().trimmed();
+        if (line.isEmpty() || line.startsWith("#"))
+            continue;
+        QStringList parts = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+        Q_ASSERT(parts.size() == 17);
+        BlockData block_data;
+        block_data.side_textures.resize(6);
+        block_data.squish_amount.resize(6);
+        int index = 0;
+        Block::ItemType id = (Block::ItemType) parts.at(index++).toInt();
+        block_data.name = parts.at(index++);
+        for (int i = 0; i < 6; i++) {
+            QString texture = parts.at(index++);
+            if (texture != "-")
+                block_data.side_textures.replace(i, texture);
         }
-        texture_index_file.close();
-    }
-
-    {
-        // grab all the solid block data from resources
-        QFile blocks_file(":/textures/blocks.txt");
-        blocks_file.open(QFile::ReadOnly);
-        QTextStream stream(&blocks_file);
-        while(! stream.atEnd()) {
-            QString line = stream.readLine().trimmed();
-            if (line.isEmpty() || line.startsWith("#"))
-                continue;
-            QStringList parts = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-            Q_ASSERT(parts.size() == 17);
-            BlockData block_data;
-            block_data.side_textures.resize(6);
-            block_data.squish_amount.resize(6);
-            int index = 0;
-            Block::ItemType id = (Block::ItemType) parts.at(index++).toInt();
-            block_data.name = parts.at(index++);
-            for (int i = 0; i < 6; i++) {
-                QString texture = parts.at(index++);
-                if (texture != "-")
-                    block_data.side_textures.replace(i, texture);
-            }
-            block_data.see_through = (bool)parts.at(index++).toInt();
-            block_data.partial_alpha = (bool)parts.at(index++).toInt();
-            for (int i = 0; i < 6; i++) {
-                Int3D squish = c_side_offset[i] * parts.at(index++).toInt();
-                block_data.squish_amount.replace(i, Ogre::Vector3(squish.x, squish.y, squish.z)/c_terrain_block_size);
-            }
-            block_data.rotate = (bool)parts.at(index++).toInt();
-            m_block_data.insert(id, block_data);
+        block_data.see_through = (bool)parts.at(index++).toInt();
+        block_data.partial_alpha = (bool)parts.at(index++).toInt();
+        for (int i = 0; i < 6; i++) {
+            Int3D squish = c_side_offset[i] * parts.at(index++).toInt();
+            block_data.squish_amount.replace(i, Ogre::Vector3(squish.x, squish.y, squish.z)/c_terrain_block_size);
         }
-        blocks_file.close();
+        block_data.rotate = (bool)parts.at(index++).toInt();
+        m_block_data.insert(id, block_data);
     }
+    blocks_file.close();
 }
 
 void SubChunkMeshGenerator::shutDown()
@@ -484,7 +461,7 @@ void SubChunkMeshGenerator::generateSideMesh(Ogre::ManualObject * obj,
         break;
         default:;
     }
-    BlockTextureCoord btc = m_terrain_tex_coords.value(texture_name);
+    MainWindow::BlockTextureCoord btc = m_owner->texCoords(texture_name);
 
     Ogre::Vector3 squish = block_data.squish_amount.at(side_index);
 
