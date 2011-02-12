@@ -126,6 +126,7 @@ void MainWindow::createCamera()
     m_camera->lookAt(Ogre::Vector3(1,1,0));
     m_camera->roll(Ogre::Degree(-90));
     m_camera->setNearClipDistance(0.1);
+    m_camera->setFOVy(Ogre::Degree(60));
 }
 
 void MainWindow::createFrameListener()

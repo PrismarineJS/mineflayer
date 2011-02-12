@@ -90,12 +90,12 @@ const float SubChunkMeshGenerator::c_light_brightness[] = {
 };
 
 const float SubChunkMeshGenerator::c_brightness_bias[] = {
-    0.8f,
-    0.8f,
     0.8f * 0.8f,
+    0.8f * 0.8f,
+    0.8f * 0.8f * 0.8f,
     1.0f,
-    1.0f,
-    1.0f,
+    0.8f,
+    0.8f,
 };
 const char * SubChunkMeshGenerator::c_wool_texture_names[] = {
     "Wool",
