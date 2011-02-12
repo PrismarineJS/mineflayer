@@ -41,6 +41,17 @@ if (teleporter === undefined) {
         }
         chat_commands.register("hereis", hereis, 1);
 
+        function zap(username, args) {
+            var target_user = args.shift();
+            if (target_user === "me") {
+                target_user = username;
+            } else if (target_user === "you" || target_user === "yourself") {
+                target_user = mf.username();
+            }
+            zapto(target_user, args);
+        }
+        chat_commands.register("zap", zap, 2);
+
         function zapto(username, args) {
             var point_name = args[0];
             var point = name_to_point[point_name];
