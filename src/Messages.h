@@ -68,7 +68,7 @@ public:
     struct Item {
         Block::ItemType type;
         qint8 count;
-        qint16 uses;
+        qint16 metadata;
     };
 
     enum DiggingStatus {

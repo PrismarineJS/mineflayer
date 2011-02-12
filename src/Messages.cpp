@@ -55,7 +55,7 @@ void OutgoingRequest::writeValue(QDataStream &stream, Item value)
     if (value.type == Block::NoItem)
         return;
     writeValue(stream, value.count);
-    writeValue(stream, value.uses);
+    writeValue(stream, value.metadata);
 }
 
 void LoginRequest::writeMessageBody(QDataStream &stream)
@@ -215,8 +215,11 @@ int IncomingResponse::parseValue(QByteArray buffer, int index, Item &item)
     if (item.type != Block::NoItem) {
         if ((index = parseValue(buffer, index, item.count)) == -1)
             return -1;
-        if ((index = parseValue(buffer, index, item.uses)) == -1)
+        if ((index = parseValue(buffer, index, item.metadata)) == -1)
             return -1;
+    } else {
+        item.count = 0;
+        item.metadata = 0;
     }
     return index;
 }
