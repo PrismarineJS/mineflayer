@@ -169,6 +169,7 @@ Lava5               240 240 16  16
 
 # /gui/icons.png
 # name              x   y   w   h
+CrossHair           3   3   9   9
 BlackHeartOutline   16  0   9   9
 WhiteHeartOutline   25  0   9   9
 RedHeartOutline     34  0   9   9
@@ -187,7 +188,6 @@ BubblePop           25  18  9   9
 # /gui/gui.png
 # name              x   y   w   h
 EquippableSlots     0   0   182 22
-CrossHair           243 3   9   9
 SelectedSlot        0   22  24  24
 
 # /gui/items.png
