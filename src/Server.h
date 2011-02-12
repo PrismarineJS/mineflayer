@@ -86,7 +86,8 @@ signals:
     void blockUpdate(Int3D absolute_location, Block new_block);
     void unloadChunk(const Int3D & coord);
     void playerPositionAndLookUpdated(Server::EntityPosition position);
-    void inventoryUpdated(QVector<Message::Item> inventory);
+    void windowItemsUpdated(int window_id, QVector<Message::Item> items);
+    void windowSlotUpdated(int window_id, int slot, Message::Item item);
 
 public slots:
     // actually connect to the server

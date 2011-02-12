@@ -143,7 +143,7 @@ private:
 
     QMutex m_mutex;
 
-    static const int c_notchian_tick_ms;
+    static const int c_position_update_interval_ms;
     static const Int3D c_chunk_size;
     static const Block c_air;
     static Int3D chunkKey(const Int3D & coord);

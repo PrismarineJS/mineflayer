@@ -336,7 +336,10 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             QDataStream(&decompressed_size_array, QIODevice::WriteOnly) << decompressed_size;
             uncrompressable_data.prepend(decompressed_size_array);
             QByteArray decompressed = qUncompress(uncrompressable_data);
-            Q_ASSERT(decompressed.size() == decompressed_size);
+            if (decompressed.size() != decompressed_size) {
+                qWarning() << "ignoring corrupt map chunk update";
+                return;
+            }
 
             // parse and store the data
             Chunk * chunk = new Chunk(position, positive_size);
@@ -390,15 +393,14 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             emit blockUpdate(coord, block);
             break;
         }
+        case Message::SetSlot: {
+            SetSlotResponse * message = (SetSlotResponse *) incomingMessage.data();
+            emit windowSlotUpdated(message->window_id, message->slot, message->item);
+            break;
+        }
         case Message::WindowItems: {
             WindowItemsResponse * message = (WindowItemsResponse *) incomingMessage.data();
-            if (message->window_id == 0) {
-                // inventory
-                emit inventoryUpdated(message->items);
-            } else {
-                // TODO: not inventory
-                qDebug() << "why'd we get a WindowItems?";
-            }
+            emit windowItemsUpdated(message->window_id, message->items);
             break;
         }
         case Message::DisconnectOrKick: {

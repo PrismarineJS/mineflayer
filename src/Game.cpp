@@ -19,7 +19,7 @@ const float Game::c_player_height = 1.74; // tested with a binary search
 const float Game::c_player_half_height = Game::c_player_height / 2;
 const float Game::c_jump_speed = 8.0f; // too high ... oh well :)
 
-const int Game::c_notchian_tick_ms = 200;
+const int Game::c_position_update_interval_ms = 50;
 const int Game::c_chat_length_limit = 100;
 const Int3D Game::c_chunk_size(16, 16, 128);
 const Block Game::c_air(Block::Air, 0, 0, 0);
@@ -468,7 +468,7 @@ void Game::handlePlayerPositionAndLookUpdated(Server::EntityPosition position)
         m_player_position.pitch = position.pitch;
 
         m_position_update_timer = new QTimer;
-        m_position_update_timer->setInterval(c_notchian_tick_ms);
+        m_position_update_timer->setInterval(c_position_update_interval_ms);
         bool success;
         success = connect(m_position_update_timer, SIGNAL(timeout()), this, SLOT(sendPosition()));
         Q_ASSERT(success);
