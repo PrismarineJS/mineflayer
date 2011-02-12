@@ -10,7 +10,7 @@
 
 /**
  * Represents a 3D coordinate/location in meters.
- * NOTE: this coordinate system is different from Notch's South-Up-West system.
+ * NOTE: this East-North-Up coordinate system is different from Notch's South-Up-West system.
  * Use toNotchCoord() and fromNotchCoord() to translate between coordinate systems.
  * 
  * Example:
@@ -69,6 +69,14 @@ mf.Entity
  */
 mf.Item(type, count)
 
+/**
+ * Represents a snapshot of your inventory.
+ * TODO: figure out how this is to be structured.
+ *
+ * NOT IMPLEMENTED
+ */
+mf.Inventory
+
 // Enums
 
 /**
@@ -123,7 +131,6 @@ mf.Mob
 mf.StoppedDiggingReason
 
 /**
- * NOT IMPLEMENTED
  * Represents an input action as if you were pressing buttons on a keyboard.
  * Members:
  *      NoControl
@@ -178,44 +185,41 @@ mf.clearInterval(id)
 
 /**
  * Simply prints a line of text to stderr. useful for debugging.
- * @param {String} line The line to print to stdout.
+ * @param {String} line
  */
 mf.debug(line)
 
 /**
  * Prints a string to stdout. Does not put a newline character at the end.
- * @param {String} string The string to print to stdout.
+ * @param {String} string
  */
 mf.print(string)
 
 /**
- * Reads a text file and returns the contents as a string or undefined.
+ * Reads a text file and returns the contents as a string. Returns undefined if the file cannot be opened.
  * @param {String} path The path to the file
  * @return {String} or undefined
- *
- * NOT IMPLEMENTED
  */
 mf.readFile(path)
 
 /**
  * Writes a text file with the specified contents.
  * @param {String} path The path to the file
- * @param {String} contents the contents
- *
- * NOT IMPLEMENTED
+ * @param {String} contents
  */
-mf.writeFile(path)
+mf.writeFile(path, contents)
 
 /**
- * Sends a message over chat. breaks up big messages for you
- * @param {String} message The message to send to everyone on the server.
+ * Sends a message over chat. Breaks up big messages for you into multiple chat messages.
+ * @param {String} message
  */
 mf.chat(message)
 
 /**
  * Disconnects from server and exits the program.
+ * @param {Number} return_code Optional. defaults to 0.
  */
-mf.exit()
+mf.exit(return_code)
 
 /**
  * @returns {String} The name you are logged in as.
@@ -223,9 +227,10 @@ mf.exit()
 mf.username()
 
 /**
+ * TODO: move to utility library.
  * Gets the number of items you can stack together.
- * @param {Number} item The ID of the item you want to check the stack height of. See the mf.ItemType enum.
- * @returns {Number} The number of items of type item you can stack together, or-1 if that item doesn't exist.
+ * @param {ItemType} item The ID of the item you want to check the stack height of.
+ * @returns {Number} The number of items of type item you can stack together, or -1 if that item doesn't exist.
  */
 mf.itemStackHeight(item)
 
@@ -236,11 +241,9 @@ mf.itemStackHeight(item)
 mf.health()
 
 /**
- * Returns the block at the absolute location in the world. You don't need to worry about block alignment.
- * @param {Number} point
- * @return {Object} block object with these fields:
- *          type {Number} - See mf.ItemType enum.
- *          TODO: other fields as needed
+ * Returns the block at the absolute location in the world.
+ * @param {Number} point Coordinates do not need to be rounded.
+ * @return {Item} block object
  */
 mf.blockAt(point)
 
@@ -252,16 +255,16 @@ mf.self()
 
 
 /**
- * Sets the input state of control to state. Use this to move around and jump. It is as if you are 
- * virtually pressing keys on a keyboard. Your actions will be bound by the physics engine, unless you
- * use the mf.hax methods to mess with it.
+ * Sets the input state of a control. Use this to move around and jump. It is as if you are
+ * virtually pressing keys on a keyboard. Your actions will be bound by the physics engine, (unless you
+ * use the mf.hax functions).
  * @param {Number} control See the mf.Control enum.
  * @param {Boolean} state Whether or not you are activating this control. E.g. whether or not the virtual button is held down.
  */
 mf.setControlState(control, state)
 
 /**
- * Looks at the given point specified in absolute coordinates
+ * Looks at the given point specified in absolute coordinates. See also mf.look.
  * @param {Point} point
  */
 mf.lookAt(point)
@@ -277,8 +280,6 @@ mf.respawn()
  */
 mf.hax.setPosition(point)
 
-// NOT YET IMPLEMENTED
-
 /**
  * Returns a snapshot of the entity with the given entity id or undefined if the entity id cannot be found.
  * Modifying the object does nothing.
@@ -287,12 +288,7 @@ mf.hax.setPosition(point)
  */
 mf.entity(entity_id)
 
-/**
- * Returns the entity id of the player with the given username or undefined if the username is not visible.
- * @param {String} username
- * @return {Number} or undefined
- */
-mf.userEntityId(username)
+// NOT YET IMPLEMENTED
 
 /**
  * @param {Point} point The coordinates you want to translate.
@@ -311,7 +307,7 @@ mf.fromNotchCoord(point)
 
 
 /**
- * Looks in a direction. Probably strictly asthetic.
+ * Looks in a direction.
  * @param {Number} yaw The number of radians to rotate around the Z axis, starting from due east. Counter clockwise.
  * @param {Number} pitch Number of radians to point up or down. 0 means straight forward. pi / 2 means straight up. -pi / 2 means straight down.
  */
@@ -319,7 +315,7 @@ mf.look(yaw, pitch)
 
 /**
  * Begin digging into a block with the currently equipped item. When you finally break through the block, or you are interrupted for any reason, you will get an onStoppedDigging() event.
- * @param {Point} point
+ * @param {Point} point The location of the block to dig.
  */
 mf.startDigging(point)
 
@@ -351,6 +347,7 @@ mf.equippedItem()
 mf.equipArmor(item)
 
 /**
+ * TODO: move to utility library.
  * Counts how many of a certain type of item you have.
  * @param {Number} item The item ID of the item you want to count.
  * @returns {Number} The number of items of that type that you have in all of your inventory slots combined. 
@@ -358,14 +355,13 @@ mf.equipArmor(item)
 mf.countInventoryItemsOfType(item)
 
 /**
- * Lists all of your inventory
- * @returns {Object} An object with two properties:
- *                   items - an Array of item ids
- *                   count - an object with every item id from items as a property name, and the property value is the total number of those items that you have.
+ * Returns a snapshot of your inventory. Modifying the object does nothing
+ * @returns {Inventory} 
  */
 mf.inventory()
 
 /**
+ * TODO: move to utility library.
  * Tells how much room you have left in your inventory. No need to worry about merging stacks; this function takes that into account automatically.
  * @param {Number} item The item ID that you want to see how many more will fit in your inventory.
  * @returns {Number} How many more of those items will fit.
@@ -373,6 +369,7 @@ mf.inventory()
 mf.inventorySpaceLeft(item)
 
 /**
+ * TODO: move to utility library.
  * Tells how many free slots you have open in your inventory. No need to worry about merging stacks; this method takes that into account automatically.
  * @returns {Number} The total number of empty inventory slots.
  */
@@ -384,14 +381,11 @@ mf.inventorySlotsLeft()
  */
 mf.timeOfDay()
 
-// TODO: moving around
-// TODO: using items. same as place block?
 // TODO: crafting
 // TODO: attacking
-// TODO: inventory manipulation
 
 
-// Events: fill in the ... part of the method.
+// Events: fill in the ... part of the function. See examples for more information.
 
 // IMPLEMENTED:
 
@@ -401,7 +395,7 @@ mf.timeOfDay()
 mf.onConnected(function() {...})
 
 /**
- * Called when the bot receives a chat message.
+ * Called when the bot hears a publicly broadcast chat message.
  * @param {String} user The username of the person sending the message.
  * @param {String} message The content of the message.
  */
@@ -430,7 +424,7 @@ mf.onSelfMoved(function() {...})
 mf.onHealthChanged(function() {...})
 
 /**
- * Called when the bot dies.
+ * Called when you die.
  */
 mf.onDeath(function() {...})
 
@@ -451,19 +445,19 @@ mf.onEntitySpawned(function(entity) {...})
 mf.onEntityDespawned(function(entity) {...})
 
 /**
- * Called when an entity moves.
+ * Called when an entity moves or in some other way changes state.
  * @param {Entity} entity
  */
 mf.onEntityMoved(function(entity_id) {...})
 
 /**
  * Called when you have stopped digging for some reason.
- * @param {Number} reason Why you have stopped digging. See the mf.StoppedDiggingReason enum.
+ * @param {StoppedDiggingReason} reason Why you have stopped digging.
  */
 mf.onStoppedDigging(function(reason) {...})
 
 /**
- * Called when what you are currently equipped with has changed. For example, if your pickaxe breaks or you eat food. See also equippedItem().
+ * Called when what you are currently equipped with changes. For example, if your pickaxe breaks or you eat food. See also equippedItem().
  */
 mf.onEquippedItemChanged(function() {...})
 
@@ -473,6 +467,7 @@ mf.onEquippedItemChanged(function() {...})
 mf.onInventoryUpdated(function() {...})
 
 /**
+ * TODO: do we need this?
  * Called when the time of day changes. See also timeOfDay().
  */
 mf.onTimeUpdated(function() {...})
