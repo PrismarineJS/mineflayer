@@ -285,6 +285,21 @@ void MainWindow::loadResources()
         texture_unit->setTextureFiltering(Ogre::TFO_NONE);
     }
 
+    // crosshair
+    {
+        Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create("IconsInverted", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        Ogre::Technique * first_technique = material->getTechnique(0);
+        Ogre::Pass * first_pass = first_technique->getPass(0);
+        first_pass->setAlphaRejectFunction(Ogre::CMPF_GREATER_EQUAL);
+        first_pass->setAlphaRejectValue(128);
+        first_pass->setDepthWriteEnabled(false);
+        first_pass->setDepthCheckEnabled(false);
+        first_pass->setLightingEnabled(false);
+        first_pass->setSceneBlending(Ogre::SBF_ONE_MINUS_DEST_COLOUR, Ogre::SBF_ZERO);
+        Ogre::TextureUnitState * texture_unit = first_pass->createTextureUnitState();
+        texture_unit->setTextureName("gui/icons.png");
+        texture_unit->setTextureFiltering(Ogre::TFO_NONE);
+    }
 }
 
 int MainWindow::exec()
@@ -372,6 +387,7 @@ void MainWindow::createHud()
         node->setPosition(i * heart_size.width(), 0, 0);
     }
 
+    // red inner hearts
     Ogre::SceneNode * red_inner_hearts = health_node->createChildSceneNode("RedHeartsInner");
     for (int i = 0; i < 10; i++) {
         Ogre::ManualObject * red_half_heart_obj = create2DObject("Icons",
@@ -386,6 +402,11 @@ void MainWindow::createHud()
         heart_node->attachObject(red_heart_obj);
         heart_node->setPosition(i * heart_size.width(), 0, 0);
     }
+
+    // crosshair
+    Ogre::SceneNode * crosshair_node = m_hud->createChildSceneNode("CrossHair");
+    crosshair_node->attachObject(create2DObject("IconsInverted", c_icons_png_size, "CrossHair", QSizeF(1, 1)));
+
 }
 
 Ogre::ManualObject * MainWindow::create2DObject(const Ogre::String & material_name,
@@ -615,6 +636,10 @@ void MainWindow::windowResized(Ogre::RenderWindow* rw)
     const OIS::MouseState &ms = m_mouse->getMouseState();
     ms.width = width;
     ms.height = height;
+
+    Ogre::SceneNode * crosshair_node = m_scene_manager->getSceneNode("CrossHair");
+    crosshair_node->setScale(18 * 2 / (float)width, 18 * 2 / (float)height, 1);
+    crosshair_node->setPosition(0, 0, 0);
 }
 
 void MainWindow::windowClosed(Ogre::RenderWindow* rw)
