@@ -13,7 +13,7 @@ const float Game::c_standard_max_ground_speed = 4.27; // according to the intern
 const float Game::c_standard_terminal_velocity = 20.0; // guess
 const float Game::c_standard_walking_acceleration = 100.0; // seems good
 const float Game::c_standard_gravity = 27.0; // seems good
-const float Game::c_standard_ground_friction = Game::c_standard_walking_acceleration; // seems good
+const float Game::c_standard_ground_friction = Game::c_standard_walking_acceleration * 0.9; // seems good
 const float Game::c_player_apothem = 0.30; // measured with notche's client F3
 const float Game::c_player_height = 1.74; // tested with a binary search
 const float Game::c_player_half_height = Game::c_player_height / 2;
@@ -659,6 +659,8 @@ void Game::sendPosition()
 
 void Game::doPhysics(float delta_seconds)
 {
+    if (delta_seconds < std::numeric_limits<float>::epsilon())
+        return; // too fast!!
     QMutexLocker locker(&m_mutex);
     // derive xy movement vector from controls
     int movement_right = 0;

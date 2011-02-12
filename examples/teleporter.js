@@ -10,7 +10,7 @@ if (teleporter === undefined) {
     teleporter = function() {
         var _public = {};
         _public.debug = true;
-        _public.delay = 400;
+        _public.delay = 100;
 
         function respond(message) {
             if (_public.debug) {
