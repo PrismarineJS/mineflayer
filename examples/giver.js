@@ -12,54 +12,45 @@
  * give OtherGuy 36 feathers    - gives OtherGuy enough feathers to fill his inventory
  */
 
+mf.include("chat_commands.js");
+
+mf.include("connection_notice.js");
+
 mf.include("strings.js");
 mf.include("arrays.js");
 
 var giver = function() {
     var _public = {};
-    _public.enabled = true;
     _public.debug = true;
-    mf.onChat(function(username, message) {
-        if (!_public.enabled) {
-            return;
+    function respond(message) {
+        if (_public.debug) {
+            mf.debug(message);
         }
-        var parts = message.toLowerCase().trim().split(" ");
-        var index = 0;
-        var command = parts[index++];
-        if (command === "gimme") {
-            // target user is self
-        } else if (command === "give") {
-            // extract username
-            var different_username = parts[index];
-            if (different_username === undefined) return;
-            different_username = different_username.toLowerCase();
-            if (different_username !== "me") {
-                different_username = lookupUser(different_username);
-                if (different_username === undefined) {
-                    mf.chat("can't find player: " + parts[index]);
-                    return;
-                }
-                username = different_username;
-            }
-            index++;
-        } else {
-            return;
+        mf.chat(message);
+    }
+    function give(username, args) {
+        var target_user = args.shift();
+        if (target_user === "me") {
+            target_user = username;
+        } else if (target_user === "yourself" || target_user === "you") {
+            target_user = mf.username();
         }
-        var count = parseInt(parts[index]);
+        gimme(target_user, args);
+    }
+    chat_commands.register("give", give, 2, Infinity);
+    function gimme(username, args) {
+        var count = parseInt(args[0]);
         if (isNaN(count)) {
             // no count specified
             count = 1;
         } else {
             // count specified
-            index++;
+            args.shift();
         }
-        if (!(index < parts.length)) {
-            return;
-        }
-        var item_name = parts.slice(index).join(" ");
-        give(username, item_name, count);
-    });
-    function give(username, item_name, count) {
+        give_items(username, args.join(" "), count);
+    }
+    chat_commands.register("gimme", gimme, 1, Infinity);
+    function give_items(username, item_name, count) {
         // check for kits
         var preview_name_parts = item_name.split(" ");
         var kits = {
@@ -71,7 +62,7 @@ var giver = function() {
                 item_name = preview_name_parts.join(" ");
                 var kit_items = kits[kit_name];
                 for (var i = 0; i < kit_items.length; i++) {
-                    if (!give(username, item_name + " " + kit_items[i], count)) {
+                    if (!give_items(username, item_name + " " + kit_items[i], count)) {
                         return false;
                     }
                 }
@@ -83,7 +74,7 @@ var giver = function() {
         if (typeof item_id_or_ambiguous_results === "number") {
             var item_id = item_id_or_ambiguous_results;
             if (item_id === -1) {
-                mf.chat("can't find item name: " + item_name);
+                respond("can't find item name: " + item_name);
                 return false;
             }
             var command = "/give " + username + " " + item_id + " " + mf.itemStackHeight(item_id);
@@ -100,20 +91,16 @@ var giver = function() {
             return true;
         } else {
             var ambiguous_results = item_id_or_ambiguous_results;
-            mf.chat("item name is ambiguous: " + item_name);
+            respond("item name is ambiguous: " + item_name);
             var ambiguous_candidates = [];
             for (var i = 0; i < ambiguous_results.length; i++) {
                 ambiguous_candidates.push(ambiguous_results[i][0].join(" "));
             }
-            mf.chat("candidates: " + ambiguous_candidates.join(", "));
+            respond("candidates: " + ambiguous_candidates.join(", "));
             return false;
         }
     };
 
-    function lookupUser(name) {
-        // TODO
-        return name;
-    };
     function lookupItemType(item_name) {
         var item_name_parts = item_name.split(" ");
         // strip off any final 's' to tolerate plurals, sorta

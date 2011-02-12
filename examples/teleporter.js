@@ -10,6 +10,7 @@ if (teleporter === undefined) {
     teleporter = function() {
         var _public = {};
         _public.debug = true;
+        _public.delay = 400;
 
         function respond(message) {
             if (_public.debug) {
@@ -38,7 +39,7 @@ if (teleporter === undefined) {
             message = ["point", point_name, created_or_updated, "at", point.x, point.y, point.z].join(" ");
             respond(message);
         }
-        chat_commands.register("hereis", hereis, 1, 1);
+        chat_commands.register("hereis", hereis, 1);
 
         function zapto(username, args) {
             var point_name = args[0];
@@ -60,10 +61,10 @@ if (teleporter === undefined) {
                 mf.chat("/tp " + username + " " + mf.username());
                 mf.setTimeout(function() {
                     mf.hax.setPosition(old_position);
-                }, 400);
-            }, 400);
+                }, _public.delay);
+            }, _public.delay);
         }
-        chat_commands.register("zapto", zapto, 1, 1);
+        chat_commands.register("zapto", zapto, 1);
 
         var name_to_point;
         var database_file_name = "teleport_points.json";
@@ -82,16 +83,19 @@ if (teleporter === undefined) {
 
         // track user's entity_id's
         var username_to_entity_id = {};
-        mf.onEntitySpawned(function(entity_id) {
-            var entity = mf.entity(entity_id);
-            if (entity === undefined || entity.type !== mf.EntityType.Player) {
+        mf.onEntitySpawned(function(entity) {
+            if (entity.type !== mf.EntityType.Player) {
                 return;
             }
             mf.debug("i see " + entity.username);
-            username_to_entity_id[entity.username] = entity_id;
+            username_to_entity_id[entity.username] = entity.entity_id;
         });
-        mf.onEntityDespawned(function(entity_id) {
-            delete username_to_entity_id[entity_id];
+        mf.onEntityDespawned(function(entity) {
+            if (entity.type !== mf.EntityType.Player) {
+                return;
+            }
+            mf.debug("i no longer see " + entity.username);
+            delete username_to_entity_id[entity.username];
         });
         function namedEntity(username) {
             var entity_id = username_to_entity_id[username];

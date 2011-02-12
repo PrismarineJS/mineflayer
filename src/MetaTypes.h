@@ -21,6 +21,8 @@ namespace MetaTypes {
         qRegisterMetaType<MobSpawnResponse::MobType>("MobSpawnResponse::MobType");
         qRegisterMetaType<Block::ItemType>("Block::ItemType");
         qRegisterMetaType<Message::Item>("Message::Item");
+        qRegisterMetaType<QSharedPointer<Game::Entity> >("QSharedPointer<Game::Entity>");
+
     }
 }
 

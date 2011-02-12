@@ -127,9 +127,9 @@ public:
 signals:
     void chatReceived(QString username, QString message);
 
-    void entitySpawned(int entity_id);
-    void entityDespawned(int entity_id);
-    void entityMoved(int entity_id);
+    void entitySpawned(QSharedPointer<Game::Entity> entity);
+    void entityDespawned(QSharedPointer<Game::Entity> entity);
+    void entityMoved(QSharedPointer<Game::Entity> entity);
 
     void chunkUpdated(const Int3D &start, const Int3D &size);
     void unloadChunk(const Int3D & coord);

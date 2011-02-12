@@ -1,8 +1,7 @@
 
 // find a human player
-mf.onEntitySpawned(function handleEntitySpawned(entity_id) {
-    var entity = mf.entity(entity_id);
-    if (entity === undefined || entity.type !== mf.EntityType.Player) {
+mf.onEntitySpawned(function handleEntitySpawned(entity) {
+    if (entity.type !== mf.EntityType.Player) {
         // not a human player
         return;
     }
@@ -13,16 +12,10 @@ mf.onEntitySpawned(function handleEntitySpawned(entity_id) {
 
     // detach this handler so we don't try to follow anyone else
     mf.removeHandler(mf.onEntitySpawned, handleEntitySpawned);
-    var get_him = entity_id;
     // add a handler to watch this guy moving around
-    mf.onEntityMoved(function(entity_id) {
-        if (entity_id !== get_him) {
+    mf.onEntityMoved(function(entity) {
+        if (entity.entity_id !== entity_id) {
             // this isn't our target
-            return;
-        }
-        var entity = mf.entity(entity_id);
-        if (entity === undefined) {
-            // entity is gone now
             return;
         }
         // face the target
@@ -30,8 +23,8 @@ mf.onEntitySpawned(function handleEntitySpawned(entity_id) {
         // move forward constantly
         mf.setControlState(mf.Control.Forward, true);
     });
-    mf.onEntityDespawned(function(entity_id) {
-        if (entity_id === get_him) {
+    mf.onEntityDespawned(function(entit) {
+        if (entity.entity_id === entity_id) {
             mf.chat("well, i'm outta here");
             mf.exit();
         }
