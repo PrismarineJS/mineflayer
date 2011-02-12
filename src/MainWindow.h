@@ -20,6 +20,7 @@
 
 #include <QObject>
 #include <QUrl>
+#include <QRectF>
 
 #include "Chunk.h"
 #include "Game.h"
@@ -128,6 +129,10 @@ private:
     // maps texture name to coordinates in terrain.png
     QHash<QString, BlockTextureCoord> m_terrain_tex_coords;
 
+    QRectF m_slots_position;
+
+    int m_selected_slot;
+
 private:
     void loadControls();
 
@@ -148,6 +153,8 @@ private:
     Ogre::ManualObject * create2DObject(const Ogre::String & material_name,
         const QSizeF & material_size_pixels, const QString & texture_name, const QSizeF & size);
     void createHud();
+
+    void mouseWheel(int direction);
 
 private slots:
     void movePlayerPosition();

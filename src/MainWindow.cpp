@@ -35,7 +35,8 @@ MainWindow::MainWindow(QUrl url) :
     m_grab_mouse(false),
     m_game(NULL),
     m_control_to_key(Game::ControlCount),
-    m_sub_chunk_generator(NULL)
+    m_sub_chunk_generator(NULL),
+    m_selected_slot(0)
 {
     // TODO: figure out wtf is going on and delete this assertion.
     Q_ASSERT(sizeof(MainWindow) != 216);
@@ -327,15 +328,19 @@ void MainWindow::createHud()
     m_hud = m_scene_manager->getRootSceneNode()->createChildSceneNode();
 
     // inventory slots
-    float width = 0.42225f;
+    float width = 0.42225f * 2;
     float height = width / 8.27f * 2;
-    Ogre::SceneNode * inv_slots = m_hud->createChildSceneNode("Hud");
+    m_slots_position = QRectF(-width / 2, -1.0f, width, height);
+    Ogre::SceneNode * inv_slots = m_hud->createChildSceneNode("EquippableSlots");
     inv_slots->attachObject(create2DObject("Hud",
-        QSizeF(c_gui_png_width, c_gui_png_height), "EquippableSlots", QSizeF(width, height)));
-    inv_slots->setPosition(-width*2 / 2, -1.0f, 0.0f);
+        QSizeF(c_gui_png_width, c_gui_png_height), "EquippableSlots", m_slots_position.size()));
+    inv_slots->setPosition(m_slots_position.left(), m_slots_position.top(), 0.0f);
 
     // selected inventory slot
-
+    Ogre::SceneNode * selected_slot = inv_slots->createChildSceneNode("SelectedSlot");
+    selected_slot->attachObject(create2DObject("Hud", QSizeF(c_gui_png_width, c_gui_png_height),
+        "SelectedSlot", QSizeF(m_slots_position.height()/2, m_slots_position.height())));
+    selected_slot->setPosition(0, 0, 0);
 }
 
 Ogre::ManualObject * MainWindow::create2DObject(const Ogre::String & material_name,
@@ -351,7 +356,7 @@ Ogre::ManualObject * MainWindow::create2DObject(const Ogre::String & material_na
     for (int triangle_index = 0; triangle_index < 2; triangle_index++) {
         for (int point_index = 0; point_index < 3; point_index++) {
             Ogre::Vector3 pos = SubChunkMeshGenerator::c_side_coord[SubChunkMeshGenerator::PositiveZ][triangle_index][point_index];
-            obj->position(pos.x * size.width()*2, pos.y * size.height()*2, 0);
+            obj->position(pos.x * size.width(), pos.y * size.height(), 0);
 
             Ogre::Vector2 tex_coord = SubChunkMeshGenerator::c_tex_coord[triangle_index][point_index];
             obj->textureCoord((btc.x+tex_coord.x*btc.w) / material_size_pixels.width(),
@@ -472,6 +477,12 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
     return true;
 }
 
+void MainWindow::mouseWheel(int direction)
+{
+    m_selected_slot = Util::euclideanMod(m_selected_slot-Util::sign(direction), 9);
+    m_scene_manager->getSceneNode("SelectedSlot")->setPosition(m_selected_slot * (m_slots_position.height()/2-0.009), 0, 0);
+}
+
 bool MainWindow::keyPressed(const OIS::KeyEvent &arg )
 {
     m_keyboard->capture();
@@ -509,8 +520,9 @@ bool MainWindow::mouseReleased(const OIS::MouseEvent &, OIS::MouseButtonID id )
     return true;
 }
 
-bool MainWindow::mouseMoved(const OIS::MouseEvent &)
+bool MainWindow::mouseMoved(const OIS::MouseEvent & event)
 {
+    mouseWheel(event.state.Z.rel);
     return true;
 }
 
