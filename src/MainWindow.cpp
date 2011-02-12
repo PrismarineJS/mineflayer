@@ -11,8 +11,9 @@
 #include <QRectF>
 
 
-const float MainWindow::c_gui_png_width = 256.0f;
-const float MainWindow::c_gui_png_height = 256.0f;
+const QSizeF MainWindow::c_gui_png_size(256.0f, 256.0f);
+const QSizeF MainWindow::c_icons_png_size(256.0f, 256.0f);
+const QSizeF MainWindow::c_items_png_size(256.0f, 256.0f);
 
 
 uint qHash(const MainWindow::PhysicalInput & value)
@@ -250,8 +251,23 @@ void MainWindow::loadResources()
         first_pass->setDepthWriteEnabled(false);
         first_pass->setDepthCheckEnabled(false);
         first_pass->setLightingEnabled(false);
+        first_pass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
         Ogre::TextureUnitState * texture_unit = first_pass->createTextureUnitState();
         texture_unit->setTextureName("gui/items.png");
+        texture_unit->setTextureFiltering(Ogre::TFO_NONE);
+    }
+
+    // create the icons material
+    {
+        Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create("Icons", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        Ogre::Technique * first_technique = material->getTechnique(0);
+        Ogre::Pass * first_pass = first_technique->getPass(0);
+        first_pass->setDepthWriteEnabled(false);
+        first_pass->setDepthCheckEnabled(false);
+        first_pass->setLightingEnabled(false);
+        first_pass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+        Ogre::TextureUnitState * texture_unit = first_pass->createTextureUnitState();
+        texture_unit->setTextureName("gui/icons.png");
         texture_unit->setTextureFiltering(Ogre::TFO_NONE);
     }
 
@@ -332,20 +348,51 @@ void MainWindow::createHud()
     float height = width / 8.27f * 2;
     m_slots_position = QRectF(-width / 2, -1.0f, width, height);
     Ogre::SceneNode * inv_slots = m_hud->createChildSceneNode("EquippableSlots");
-    inv_slots->attachObject(create2DObject("Hud",
-        QSizeF(c_gui_png_width, c_gui_png_height), "EquippableSlots", m_slots_position.size()));
+    inv_slots->attachObject(create2DObject("Hud", c_gui_png_size, "EquippableSlots", m_slots_position.size()));
     inv_slots->setPosition(m_slots_position.left(), m_slots_position.top(), 0.0f);
 
     // selected inventory slot
     Ogre::SceneNode * selected_slot = inv_slots->createChildSceneNode("SelectedSlot");
-    selected_slot->attachObject(create2DObject("Hud", QSizeF(c_gui_png_width, c_gui_png_height),
-        "SelectedSlot", QSizeF(m_slots_position.height()/2, m_slots_position.height())));
+    selected_slot->attachObject(create2DObject("Hud", c_gui_png_size, "SelectedSlot",
+        QSizeF(m_slots_position.height()/2, m_slots_position.height())));
     selected_slot->setPosition(0, 0, 0);
+
+    // health
+    Ogre::SceneNode * health_node = m_hud->createChildSceneNode("Health");
+    health_node->setPosition(m_slots_position.left(), m_slots_position.top() + m_slots_position.height(), 0);
+
+    // black heart outline
+    QSizeF heart_size(0.01873536299765808 * 2, 0.0375 * 2);
+    Ogre::SceneNode * black_hearts_outline = health_node->createChildSceneNode("BlackHeartsOutline");
+    for (int i = 0; i < 10; i++) {
+        Ogre::ManualObject * black_heart_outline_obj = create2DObject("Icons", c_icons_png_size,
+            "BlackHeartOutline", heart_size);
+        Ogre::SceneNode * node = black_hearts_outline->createChildSceneNode();
+        node->attachObject(black_heart_outline_obj);
+        node->setPosition(i * heart_size.width(), 0, 0);
+    }
+
+    Ogre::SceneNode * red_inner_hearts = health_node->createChildSceneNode("RedHeartsInner");
+    for (int i = 0; i < 10; i++) {
+        Ogre::ManualObject * red_half_heart_obj = create2DObject("Icons",
+            c_icons_png_size, "RedHalfHeartInner", heart_size);
+        Ogre::SceneNode * half_heart_node = red_inner_hearts->createChildSceneNode((QString("HalfHeart") + QString::number(i)).toStdString());
+        half_heart_node->attachObject(red_half_heart_obj);
+        half_heart_node->setPosition(i * heart_size.width(), 0, 0);
+
+        Ogre::ManualObject * red_heart_obj = create2DObject("Icons",
+            c_icons_png_size, "RedHeartInner", heart_size);
+        Ogre::SceneNode * heart_node = red_inner_hearts->createChildSceneNode((QString("Heart") + QString::number(i)).toStdString());
+        heart_node->attachObject(red_heart_obj);
+        heart_node->setPosition(i * heart_size.width(), 0, 0);
+    }
 }
 
 Ogre::ManualObject * MainWindow::create2DObject(const Ogre::String & material_name,
     const QSizeF & material_size_pixels, const QString & texture_name, const QSizeF & size)
 {
+    Q_ASSERT(m_terrain_tex_coords.contains(texture_name));
+
     Ogre::ManualObject * obj = m_scene_manager->createManualObject();
     obj->setUseIdentityProjection(true);
     obj->setUseIdentityView(true);
@@ -602,7 +649,10 @@ void MainWindow::movePlayerPosition()
 
 void MainWindow::handlePlayerHealthUpdated()
 {
-    qDebug() << "health: " << m_game->playerHealth();
+    for (int i = 0; i < 10; i++) {
+        m_scene_manager->getSceneNode((QString("Heart")+QString::number(i)).toStdString())->setVisible(m_game->playerHealth() - 1 > i * 2);
+        m_scene_manager->getSceneNode((QString("HalfHeart")+QString::number(i)).toStdString())->setVisible(m_game->playerHealth() > i * 2);
+    }
 }
 void MainWindow::handlePlayerDied()
 {

@@ -91,8 +91,9 @@ protected:
     void windowClosed(Ogre::RenderWindow* rw);
 
 private:
-    static const float c_gui_png_width;
-    static const float c_gui_png_height;
+    static const QSizeF c_gui_png_size;
+    static const QSizeF c_icons_png_size;
+    static const QSizeF c_items_png_size;
 
 
     Ogre::Root *m_root;

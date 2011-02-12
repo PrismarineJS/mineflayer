@@ -219,7 +219,7 @@ IronBar             112 16  16  16
 Feather             128 16  16  16
 Wheat               144 16  16  16
 PictureFrame        160 16  16  16             
-SugarCane           176 16  16  16
+SugarCaneItem       176 16  16  16
 Bone                192 16  16  16
 Cake                208 16  16  16
 SlimeBall           224 16  16  16
