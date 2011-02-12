@@ -12,12 +12,12 @@
 const float Game::c_standard_max_ground_speed = 4.27; // according to the internet
 const float Game::c_standard_terminal_velocity = 20.0; // guess
 const float Game::c_standard_walking_acceleration = 100.0; // seems good
-const float Game::c_standard_gravity = 9.81;
+const float Game::c_standard_gravity = 27.0; // seems good
 const float Game::c_standard_ground_friction = Game::c_standard_walking_acceleration; // seems good
 const float Game::c_player_apothem = 0.30; // measured with notche's client F3
 const float Game::c_player_height = 1.74; // tested with a binary search
 const float Game::c_player_half_height = Game::c_player_height / 2;
-const float Game::c_jump_speed = 8.0f; // too high ... oh well :)
+const float Game::c_jump_speed = 8.2f; // seems good
 
 const int Game::c_position_update_interval_ms = 50;
 const int Game::c_chat_length_limit = 100;
@@ -682,10 +682,8 @@ void Game::doPhysics(float delta_seconds)
     }
 
     // jumping
-    if (m_control_state.at(Jump) && m_player_position.on_ground) {
-        m_player_position.on_ground = false;
+    if (m_control_state.at(Jump) && m_player_position.on_ground)
         m_player_position.dz = c_jump_speed;
-    }
 
     // gravity
     acceleration += QVector3D(0, 0, -m_gravity);
@@ -697,18 +695,15 @@ void Game::doPhysics(float delta_seconds)
         m_player_position.dy = 0;
     } else {
         // non-zero ground speed
-        if (m_player_position.on_ground) {
-            // friction
-            float old_ground_speed = std::sqrt(old_ground_speed_squared);
-            float friction_magnitude;
-            if (m_ground_friction > old_ground_speed / delta_seconds) {
-                // friction will stop the motion
-                friction_magnitude = old_ground_speed / delta_seconds;
-            } else {
-                friction_magnitude = m_ground_friction;
-            }
-            acceleration += QVector3D(-m_player_position.dx, -m_player_position.dy, 0) / old_ground_speed * friction_magnitude;
+        float old_ground_speed = std::sqrt(old_ground_speed_squared);
+        float ground_friction = m_ground_friction;
+        if (!m_player_position.on_ground)
+            ground_friction *= 0.05; // half friction for the air
+        if (ground_friction > old_ground_speed / delta_seconds) {
+            // friction will stop the motion
+            ground_friction = old_ground_speed / delta_seconds;
         }
+        acceleration += QVector3D(-m_player_position.dx, -m_player_position.dy, 0) / old_ground_speed * ground_friction;
     }
 
     // calculate new speed
