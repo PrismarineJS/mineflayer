@@ -210,7 +210,7 @@ mf.readFile(path)
 mf.writeFile(path, contents)
 
 /**
- * Sends a message over chat. Breaks up big messages for you into multiple chat messages.
+ * Sends a publicly broadcast chat message. Breaks up big messages into multiple chat messages as necessary.
  * @param {String} message
  */
 mf.chat(message)
@@ -227,7 +227,6 @@ mf.exit(return_code)
 mf.username()
 
 /**
- * TODO: move to utility library.
  * Gets the number of items you can stack together.
  * @param {ItemType} item The ID of the item you want to check the stack height of.
  * @returns {Number} The number of items of type item you can stack together, or -1 if that item doesn't exist.
@@ -258,7 +257,7 @@ mf.self()
  * Sets the input state of a control. Use this to move around and jump. It is as if you are
  * virtually pressing keys on a keyboard. Your actions will be bound by the physics engine, (unless you
  * use the mf.hax functions).
- * @param {Number} control See the mf.Control enum.
+ * @param {Control} control
  * @param {Boolean} state Whether or not you are activating this control. E.g. whether or not the virtual button is held down.
  */
 mf.setControlState(control, state)
@@ -275,7 +274,8 @@ mf.lookAt(point)
 mf.respawn()
 
 /**
- * Teleports you to the position specified.
+ * Instatly moves you to the position specified.
+ * NOTE: Your movement may be rejected by the server. This can happen if you try to go through a wall.
  * @param {Point} point
  */
 mf.hax.setPosition(point)
@@ -291,20 +291,18 @@ mf.entity(entity_id)
 // NOT YET IMPLEMENTED
 
 /**
- * @param {Point} point The coordinates you want to translate.
- * @returns {Point} point translated into Notch's coordinate system.
+ * Useful for communicating with notchian clients.
+ * @param {Point} mf_point Point in mineflayer's coordinates.
+ * @returns {Point} Point in Notch's coordinates.
  */
-mf.toNotchCoord(point)
+mf.toNotchCoord(mf_point)
 
 /**
- * @param {Point} point The coordinates you want to translate.
- * @returns {Object} point Notch's coordinate system into something more sensical.
+ * I don't know why this would be useful.
+ * @param {Point} notch_point Point in Notch's coordinates.
+ * @returns {Object} Point in mineflayer's coordinates.
  */
-mf.fromNotchCoord(point)
-
-// TODO: /kill and /tell as separate functions
-// TODO: op commands such as /give as separate functions
-
+mf.fromNotchCoord(notch_point)
 
 /**
  * Looks in a direction.
@@ -314,7 +312,8 @@ mf.fromNotchCoord(point)
 mf.look(yaw, pitch)
 
 /**
- * Begin digging into a block with the currently equipped item. When you finally break through the block, or you are interrupted for any reason, you will get an onStoppedDigging() event.
+ * Begin digging into a block with the currently equipped item. When you finally break through the block,
+ * or you are interrupted for any reason, you will get an onStoppedDigging() event.
  * @param {Point} point The location of the block to dig.
  */
 mf.startDigging(point)
@@ -428,8 +427,6 @@ mf.onHealthChanged(function() {...})
  */
 mf.onDeath(function() {...})
 
-// NOT YET IMPLEMENTED
-
 /**
  * Called when an entity is discovered.
  * This can happen when an entity is created or when it comes into view.
@@ -448,16 +445,19 @@ mf.onEntityDespawned(function(entity) {...})
  * Called when an entity moves or in some other way changes state.
  * @param {Entity} entity
  */
-mf.onEntityMoved(function(entity_id) {...})
+mf.onEntityMoved(function(entity) {...})
+
+// NOT YET IMPLEMENTED
 
 /**
  * Called when you have stopped digging for some reason.
- * @param {StoppedDiggingReason} reason Why you have stopped digging.
+ * @param {StoppedDiggingReason} reason
  */
 mf.onStoppedDigging(function(reason) {...})
 
 /**
- * Called when what you are currently equipped with changes. For example, if your pickaxe breaks or you eat food. See also equippedItem().
+ * Called when what you are currently equipped with changes.
+ * For example, if your pickaxe breaks or you eat food. See also equippedItem().
  */
 mf.onEquippedItemChanged(function() {...})
 
