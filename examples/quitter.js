@@ -7,7 +7,8 @@ if (quitter === undefined) {
         var _public = {};
         _public.enabled = true;
         _public.debug = true;
-        function quit() {
+        chat_commands.registerModule("quitter", _public);
+        function quit(username, args) {
             if (_public.enabled) {
                 if (_public.debug) {
                     mf.debug("quitting");
@@ -15,7 +16,7 @@ if (quitter === undefined) {
                 mf.exit();
             }
         }
-        chat_commands.register("quit", quit, 0);
+        chat_commands.registerCommand("quit", quit);
         return _public;
     }();
 }

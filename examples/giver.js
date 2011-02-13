@@ -22,6 +22,8 @@ mf.include("arrays.js");
 var giver = function() {
     var _public = {};
     _public.debug = true;
+    chat_commands.registerModule("giver", _public);
+
     function respond(message) {
         if (_public.debug) {
             mf.debug(message);
@@ -37,7 +39,7 @@ var giver = function() {
         }
         gimme(target_user, args);
     }
-    chat_commands.register("give", give, 2, Infinity);
+    chat_commands.registerCommand("give", give, 2, Infinity);
     function gimme(username, args) {
         var count = parseInt(args[0]);
         if (isNaN(count)) {
@@ -49,7 +51,7 @@ var giver = function() {
         }
         give_items(username, args.join(" "), count);
     }
-    chat_commands.register("gimme", gimme, 1, Infinity);
+    chat_commands.registerCommand("gimme", gimme, 1, Infinity);
     function give_items(username, item_name, count) {
         // check for kits
         var preview_name_parts = item_name.split(" ");
