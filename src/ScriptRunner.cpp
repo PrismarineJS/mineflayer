@@ -553,9 +553,9 @@ QScriptValue ScriptRunner::lookAt(QScriptContext *context, QScriptEngine *engine
 
     Server::EntityPosition my_position = me->m_game->playerPosition();
     Double3D delta = point - my_position.pos;
-    float yaw = std::atan2(delta.y, delta.x);
-    float ground_distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
-    float pitch = std::atan2(delta.z, ground_distance);
+    double yaw = std::atan2(delta.y, delta.x);
+    double ground_distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
+    double pitch = std::atan2(delta.z, ground_distance);
     me->m_game->setPlayerLook(yaw, pitch);
     return QScriptValue();
 }
