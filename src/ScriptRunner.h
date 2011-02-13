@@ -12,7 +12,6 @@
 #include <QTime>
 #include <QThread>
 #include <QStringList>
-#include <QVector3D>
 
 class ScriptRunner : public QObject
 {
@@ -83,8 +82,8 @@ private:
     QScriptValue evalJsonContents(const QString &file_contents, const QString &file_name = QString());
     void checkEngine(const QString & while_doing_what = QString());
     QScriptValue jsPoint(const Int3D &pt);
-    QScriptValue jsPoint(double x, double y, double z);
-    bool fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, QVector3D &point);
+    QScriptValue jsPoint(const Double3D &pt);
+    bool fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, Double3D &point);
     QScriptValue jsItem(Message::Item item);
     QScriptValue jsEntity(QSharedPointer<Game::Entity> entity);
 

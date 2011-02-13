@@ -2,7 +2,7 @@
 #define MESSAGES_H
 
 #include "Block.h"
-#include "Int3D.h"
+#include "Vector3D.h"
 
 #include <QString>
 #include <QDataStream>

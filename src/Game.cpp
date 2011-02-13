@@ -3,9 +3,6 @@
 #include <QCoreApplication>
 #include <QHashIterator>
 
-#include <QVector3D>
-#include <QVector2D>
-
 #include <cmath>
 #include <limits>
 
@@ -305,12 +302,10 @@ void Game::setPlayerLook(float yaw, float pitch)
     m_player_position.pitch = pitch;
     emit playerPositionUpdated();
 }
-void Game::setPlayerPosition(double x, double y, double z)
+void Game::setPlayerPosition(const Double3D & pt)
 {
     QMutexLocker locker(&m_mutex);
-    m_player_position.x = x;
-    m_player_position.y = y;
-    m_player_position.z = z;
+    m_player_position.pos = pt;
     emit playerPositionUpdated();
 }
 
@@ -452,9 +447,7 @@ void Game::handleChatReceived(QString message)
 void Game::handlePlayerPositionAndLookUpdated(Server::EntityPosition position)
 {
     QMutexLocker locker(&m_mutex);
-    m_player_position.x = position.x;
-    m_player_position.y = position.y;
-    m_player_position.z = position.z;
+    m_player_position.pos = position.pos;
     m_player_position.height = position.height;
     m_player_position.on_ground = position.on_ground;
 
@@ -524,9 +517,7 @@ void Game::handleEntityMovedRelatively(int entity_id, Server::EntityPosition mov
     QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
     if (entity.isNull())
         return;
-    entity.data()->position.x += movement.x;
-    entity.data()->position.y += movement.y;
-    entity.data()->position.z += movement.z;
+    entity.data()->position.pos += movement.pos;
     emit entityMoved(QSharedPointer<Entity>(entity.data()->clone()));
 }
 void Game::handleEntityLooked(int entity_id, Server::EntityPosition look)
@@ -545,9 +536,7 @@ void Game::handleEntityLookedAndMovedRelatively(int entity_id, Server::EntityPos
     QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
     if (entity.isNull())
         return;
-    entity.data()->position.x += position.x;
-    entity.data()->position.y += position.y;
-    entity.data()->position.z += position.z;
+    entity.data()->position.pos += position.pos;
     entity.data()->position.yaw = position.yaw;
     entity.data()->position.pitch = position.pitch;
     emit entityMoved(QSharedPointer<Entity>(entity.data()->clone()));
@@ -558,9 +547,7 @@ void Game::handleEntityMoved(int entity_id, Server::EntityPosition position)
     QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
     if (entity.isNull())
         return;
-    entity.data()->position.x = position.x;
-    entity.data()->position.y = position.y;
-    entity.data()->position.z = position.z;
+    entity.data()->position.pos = position.pos;
     emit entityMoved(QSharedPointer<Entity>(entity.data()->clone()));
 }
 
@@ -675,26 +662,27 @@ void Game::doPhysics(float delta_seconds)
         movement_forward -= 1;
 
     // acceleration is m/s/s
-    QVector3D acceleration;
+    Double3D acceleration;
     if (movement_forward || movement_right) {
         // input acceleration
         float rotation_from_input = std::atan2(movement_forward, movement_right) - Util::half_pi;
         float input_yaw = m_player_position.yaw + rotation_from_input;
-        acceleration += QVector3D(std::cos(input_yaw), std::sin(input_yaw), 0) * m_input_acceleration;
+        acceleration.x += std::cos(input_yaw) * m_input_acceleration;
+        acceleration.y += std::sin(input_yaw) * m_input_acceleration;
     }
 
     // jumping
     if (m_control_state.at(Jump) && m_player_position.on_ground)
-        m_player_position.dz = c_jump_speed;
+        m_player_position.vel.z = c_jump_speed;
 
     // gravity
-    acceleration += QVector3D(0, 0, -m_gravity);
+    acceleration.z -= m_gravity;
 
     float old_ground_speed_squared = groundSpeedSquared();
     if (old_ground_speed_squared < std::numeric_limits<float>::epsilon()) {
         // stopped
-        m_player_position.dx = 0;
-        m_player_position.dy = 0;
+        m_player_position.vel.x = 0;
+        m_player_position.vel.y = 0;
     } else {
         // non-zero ground speed
         float old_ground_speed = std::sqrt(old_ground_speed_squared);
@@ -705,63 +693,61 @@ void Game::doPhysics(float delta_seconds)
             // friction will stop the motion
             ground_friction = old_ground_speed / delta_seconds;
         }
-        acceleration += QVector3D(-m_player_position.dx, -m_player_position.dy, 0) / old_ground_speed * ground_friction;
+        acceleration.x -= m_player_position.vel.x / old_ground_speed * ground_friction;
+        acceleration.y -= m_player_position.vel.y / old_ground_speed * ground_friction;
     }
 
     // calculate new speed
-    m_player_position.dx += acceleration.x() * delta_seconds;
-    m_player_position.dy += acceleration.y() * delta_seconds;
-    m_player_position.dz += acceleration.z() * delta_seconds;
-
+    m_player_position.vel += acceleration * delta_seconds;
 
     // limit speed
     double ground_speed_squared = groundSpeedSquared();
     if (ground_speed_squared > m_max_ground_speed * m_max_ground_speed) {
         float ground_speed = std::sqrt(ground_speed_squared);
         float correction_scale = m_max_ground_speed / ground_speed;
-        m_player_position.dx *= correction_scale;
-        m_player_position.dy *= correction_scale;
+        m_player_position.vel.x *= correction_scale;
+        m_player_position.vel.y *= correction_scale;
     }
-    if (m_player_position.dz < -m_terminal_velocity)
-        m_player_position.dz = -m_terminal_velocity;
-    else if (m_player_position.dz > m_terminal_velocity)
-        m_player_position.dz = m_terminal_velocity;
+    if (m_player_position.vel.z < -m_terminal_velocity)
+        m_player_position.vel.z = -m_terminal_velocity;
+    else if (m_player_position.vel.z > m_terminal_velocity)
+        m_player_position.vel.z = m_terminal_velocity;
 
 
     // calculate new positions and resolve collisions
     Int3D boundingBoxMin, boundingBoxMax;
     getPlayerBoundingBox(boundingBoxMin, boundingBoxMax);
 
-    if (m_player_position.dx != 0) {
-        m_player_position.x += m_player_position.dx * delta_seconds;
-        double forward_x_edge = m_player_position.x + Util::sign(m_player_position.dx) * c_player_apothem;
+    if (m_player_position.vel.x != 0) {
+        m_player_position.pos.x += m_player_position.vel.x * delta_seconds;
+        double forward_x_edge = m_player_position.pos.x + Util::sign(m_player_position.vel.x) * c_player_apothem;
         int block_x = (int)std::floor(forward_x_edge);
         if (collisionInRange(Int3D(block_x, boundingBoxMin.y, boundingBoxMin.z), Int3D(block_x, boundingBoxMax.y, boundingBoxMax.z))) {
-            m_player_position.x = block_x + (m_player_position.dx < 0 ? 1 + c_player_apothem : -c_player_apothem) * 1.001;
-            m_player_position.dx = 0;
+            m_player_position.pos.x = block_x + (m_player_position.vel.x < 0 ? 1 + c_player_apothem : -c_player_apothem) * 1.001;
+            m_player_position.vel.x = 0;
             getPlayerBoundingBox(boundingBoxMin, boundingBoxMax);
         }
     }
 
-    if (m_player_position.dy != 0) {
-        m_player_position.y += m_player_position.dy * delta_seconds;
-        int block_y = (int)std::floor(m_player_position.y + Util::sign(m_player_position.dy) * c_player_apothem);
+    if (m_player_position.vel.y != 0) {
+        m_player_position.pos.y += m_player_position.vel.y * delta_seconds;
+        int block_y = (int)std::floor(m_player_position.pos.y + Util::sign(m_player_position.vel.y) * c_player_apothem);
         if (collisionInRange(Int3D(boundingBoxMin.x, block_y, boundingBoxMin.z), Int3D(boundingBoxMax.x, block_y, boundingBoxMax.z))) {
-            m_player_position.y = block_y + (m_player_position.dy < 0 ? 1 + c_player_apothem : -c_player_apothem) * 1.001;
-            m_player_position.dy = 0;
+            m_player_position.pos.y = block_y + (m_player_position.vel.y < 0 ? 1 + c_player_apothem : -c_player_apothem) * 1.001;
+            m_player_position.vel.y = 0;
             getPlayerBoundingBox(boundingBoxMin, boundingBoxMax);
         }
     }
 
     m_player_position.on_ground = false;
-    if (m_player_position.dz != 0) {
-        m_player_position.z += m_player_position.dz * delta_seconds;
-        int block_z = (int)std::floor(m_player_position.z + c_player_half_height + Util::sign(m_player_position.dz) * c_player_half_height);
+    if (m_player_position.vel.z != 0) {
+        m_player_position.pos.z += m_player_position.vel.z * delta_seconds;
+        int block_z = (int)std::floor(m_player_position.pos.z + c_player_half_height + Util::sign(m_player_position.vel.z) * c_player_half_height);
         if (collisionInRange(Int3D(boundingBoxMin.x, boundingBoxMin.y, block_z), Int3D(boundingBoxMax.x, boundingBoxMax.y, block_z))) {
-            m_player_position.z = block_z + (m_player_position.dz < 0 ? 1 : -c_player_height) * 1.001;
-            if (m_player_position.dz < 0)
+            m_player_position.pos.z = block_z + (m_player_position.vel.z < 0 ? 1 : -c_player_height) * 1.001;
+            if (m_player_position.vel.z < 0)
                 m_player_position.on_ground = true;
-            m_player_position.dz = 0;
+            m_player_position.vel.z = 0;
         }
     }
 
@@ -772,12 +758,12 @@ void Game::doPhysics(float delta_seconds)
 void Game::getPlayerBoundingBox(Int3D & boundingBoxMin, Int3D & boundingBoxMax)
 {
     QMutexLocker locker(&m_mutex);
-    boundingBoxMin.x = (int)std::floor(m_player_position.x - c_player_apothem);
-    boundingBoxMin.y = (int)std::floor(m_player_position.y - c_player_apothem);
-    boundingBoxMin.z = (int)std::floor(m_player_position.z - 0);
-    boundingBoxMax.x = (int)std::floor(m_player_position.x + c_player_apothem);
-    boundingBoxMax.y = (int)std::floor(m_player_position.y + c_player_apothem);
-    boundingBoxMax.z = (int)std::floor(m_player_position.z + c_player_height);
+    boundingBoxMin.x = (int)std::floor(m_player_position.pos.x - c_player_apothem);
+    boundingBoxMin.y = (int)std::floor(m_player_position.pos.y - c_player_apothem);
+    boundingBoxMin.z = (int)std::floor(m_player_position.pos.z - 0);
+    boundingBoxMax.x = (int)std::floor(m_player_position.pos.x + c_player_apothem);
+    boundingBoxMax.y = (int)std::floor(m_player_position.pos.y + c_player_apothem);
+    boundingBoxMax.z = (int)std::floor(m_player_position.pos.z + c_player_height);
 }
 
 // TODO: check partial blocks

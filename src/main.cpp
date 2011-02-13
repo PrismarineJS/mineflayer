@@ -1,4 +1,9 @@
+#ifdef MINEFLAYER_GUI_ON
 #include <QApplication>
+#else
+#include <QCoreApplication>
+#endif
+
 #include <QStringList>
 #include <QUrl>
 #include <QDir>
@@ -18,7 +23,11 @@ void printUsage(QString app_name);
 
 int main(int argc, char *argv[])
 {
+#ifdef MINEFLAYER_GUI_ON
     QApplication a(argc, argv);
+#else
+    QCoreApplication a(argc, argv);
+#endif
 
     // parse arguments
     bool script_debug = false;
@@ -94,7 +103,13 @@ int main(int argc, char *argv[])
 
 #ifndef MINEFLAYER_3D_ON
     if (! headless)
-        qWarning() << "3D support was not compiled in. You can only use headless mode.";
+        qWarning() << "3D support was not compiled in. You cannot use the 3D client.";
+#endif
+#ifndef MINEFLAYER_GUI_ON
+    if (script_debug) {
+        qWarning() << "Gui support was not compiled in. You cannot use the debugger.";
+        script_debug = false;
+    }
 #endif
 
     if (! script_filename.isEmpty()) {
@@ -120,7 +135,12 @@ void printUsage(QString app_name)
 #else
     QString headless_text = "";
 #endif
-    std::cout << "Usage: " << app_name.toStdString() << " [--debug] " <<
+#ifdef MINEFLAYER_GUI_ON
+    QString debug_text = "[--debug] ";
+#else
+    QString debug_text = "";
+#endif
+    std::cout << "Usage: " << app_name.toStdString() << " " << debug_text.toStdString() <<
         headless_text.toStdString() << "[--url user@server.com:25565] [--password 12345] [-I<path/to/libs>] [script.js]"
         << std::endl;
 }

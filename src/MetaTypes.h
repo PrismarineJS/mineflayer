@@ -2,7 +2,7 @@
 #define METATYPES_H
 
 #include "Server.h"
-#include "Int3D.h"
+#include "Vector3D.h"
 #include "Game.h"
 
 #include <QMetaType>

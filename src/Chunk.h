@@ -7,7 +7,7 @@
 #include <QSharedPointer>
 #include <QHash>
 
-#include "Int3D.h"
+#include "Vector3D.h"
 #include "Block.h"
 
 class Chunk {

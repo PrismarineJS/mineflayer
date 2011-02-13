@@ -1,6 +1,8 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include <cmath>
+
 namespace Util
 {
     const float half_pi = 1.57079633f;
@@ -12,7 +14,14 @@ namespace Util
     float degreesToRadians(float degrees);
     float radiansToDegrees(float radians);
 
-    float euclideanMod(float numerator, float denominator);
+    template <class T>
+    T euclideanMod(T numerator, T denominator)
+    {
+        T result = std::fmod((double)numerator,(double)denominator);
+        if (result < 0)
+            result += denominator;
+        return result;
+    }
 
     template <class T>
     int sign(T value) {

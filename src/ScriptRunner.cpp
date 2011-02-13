@@ -1,6 +1,10 @@
 #include "ScriptRunner.h"
-#include <QFile>
+
+#ifdef MINEFLAYER_GUI_ON
 #include <QMainWindow>
+#endif
+
+#include <QFile>
 #include <QDebug>
 #include <QCoreApplication>
 #include <QDir>
@@ -495,8 +499,8 @@ QScriptValue ScriptRunner::jsEntity(QSharedPointer<Game::Entity> entity)
     QScriptValue result = m_entity_class.construct();
     result.setProperty("entity_id", entity.data()->entity_id);
     Server::EntityPosition position = entity.data()->position;
-    result.setProperty("position", jsPoint(position.x, position.y, position.z));
-    result.setProperty("velocity", jsPoint(position.dx, position.dy, position.dz));
+    result.setProperty("position", jsPoint(position.pos));
+    result.setProperty("velocity", jsPoint(position.vel));
     result.setProperty("yaw", position.yaw);
     result.setProperty("pitch", position.pitch);
     result.setProperty("on_ground", position.on_ground);
@@ -543,15 +547,15 @@ QScriptValue ScriptRunner::lookAt(QScriptContext *context, QScriptEngine *engine
     if (!me->argCount(context, error, 1))
         return error;
     QScriptValue point_value = context->argument(0);
-    QVector3D point;
+    Double3D point;
     if (!me->fromJsPoint(context, error, point_value, point))
         return error;
 
     Server::EntityPosition my_position = me->m_game->playerPosition();
-    QVector3D delta = point - QVector3D(my_position.x, my_position.y, my_position.z);
-    float yaw = std::atan2(delta.y(), delta.x());
-    float ground_distance = std::sqrt(delta.x() * delta.x() + delta.y() * delta.y());
-    float pitch = std::atan2(delta.z(), ground_distance);
+    Double3D delta = point - my_position.pos;
+    float yaw = std::atan2(delta.y, delta.x);
+    float ground_distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
+    float pitch = std::atan2(delta.z, ground_distance);
     me->m_game->setPlayerLook(yaw, pitch);
     return QScriptValue();
 }
@@ -589,11 +593,11 @@ QScriptValue ScriptRunner::setPosition(QScriptContext *context, QScriptEngine *e
     if (!me->argCount(context, error, 1))
         return error;
     QScriptValue point_value = context->argument(0);
-    QVector3D point;
+    Double3D point;
     if (!me->fromJsPoint(context, error, point_value, point))
         return error;
 
-    me->m_game->setPlayerPosition(point.x(), point.y(), point.z());
+    me->m_game->setPlayerPosition(point);
     return QScriptValue();
 }
 
@@ -624,27 +628,27 @@ bool ScriptRunner::maybeThrowArgumentError(QScriptContext *context, QScriptValue
 
 QScriptValue ScriptRunner::jsPoint(const Int3D &pt)
 {
-    return jsPoint(pt.x, pt.y, pt.z);
+    return jsPoint(Double3D(pt.x, pt.y, pt.z));
 }
-QScriptValue ScriptRunner::jsPoint(double x, double y, double z)
+QScriptValue ScriptRunner::jsPoint(const Double3D &pt)
 {
-    return m_point_class.construct(QScriptValueList() << x << y << z);
+    return m_point_class.construct(QScriptValueList() << pt.x << pt.y << pt.z);
 }
-bool ScriptRunner::fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, QVector3D &point)
+bool ScriptRunner::fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, Double3D &point)
 {
     QScriptValue property;
     property = point_value.property("x");
     if (!maybeThrowArgumentError(context, error, property.isNumber()))
         return false;
-    point.setX(property.toNumber());
+    point.x = property.toNumber();
     property = point_value.property("y");
     if (!maybeThrowArgumentError(context, error, property.isNumber()))
         return false;
-    point.setY(property.toNumber());
+    point.y = property.toNumber();
     property = point_value.property("z");
     if (!maybeThrowArgumentError(context, error, property.isNumber()))
         return false;
-    point.setZ(property.toNumber());
+    point.z = property.toNumber();
     return true;
 }
 

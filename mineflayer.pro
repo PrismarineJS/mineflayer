@@ -1,7 +1,7 @@
 # -------------------------------------------------
 # Project created by QtCreator 2011-01-23T00:47:29
 # -------------------------------------------------
-# TODO: use cmake.
+# TODO: use better build system.
 
 QT += core \
     network \
@@ -26,7 +26,7 @@ HEADERS += src/Server.h \
     src/IncomingMessageParser.h \
     src/MetaTypes.h \
     src/MainWindow.h \
-    src/Int3D.h \
+    src/Vector3D.h \
     src/Util.h \
     src/ScriptRunner.h \
     src/Game.h \
@@ -37,15 +37,24 @@ RESOURCES += mineflayer.qrc
 LIBS += \
     -lOgreMain \
     -lOIS
-DEFINES += MINEFLAYER_3D_ON
+DEFINES += MINEFLAYER_3D_ON MINEFLAYER_GUI_ON
 
 CONFIG += $$(EXTRA_CONFIG)
-# ---------if you want 3D off, set env EXTRA_CONFIG=headless or uncomment next line  ----------
+
+# if you want to run in headless mode, set environment variable EXTRA_CONFIG=headless or uncomment next line
 #CONFIG += headless
 headless {
+    CONFIG += no_3d
+    DEFINES -= MINEFLAYER_GUI_ON
+    QT -= gui
+}
+
+# if you want to run without depending on the 3D client but still have the
+# debugging features set environment variable EXTRA_CONFIG=no_3d or uncomment next line
+#CONFIG += no_3d
+no_3d {
     LIBS -= -lOgreMain -lOIS
     DEFINES -= MINEFLAYER_3D_ON
     SOURCES -= src/MainWindow.cpp src/SubChunkMeshGenerator.cpp
     HEADERS -= src/MainWindow.h src/SubChunkMeshGenerator.h
 }
-# --------------------------------------

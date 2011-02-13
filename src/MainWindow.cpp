@@ -662,7 +662,7 @@ void MainWindow::movePlayerPosition()
         return;
     Server::EntityPosition position = m_game->playerPosition();
 
-    Ogre::Vector3 cameraPosition(position.x, position.y, position.z + position.height);
+    Ogre::Vector3 cameraPosition(position.pos.x, position.pos.y, position.pos.z + position.height);
     m_camera->setPosition(cameraPosition);
 
     // look due east

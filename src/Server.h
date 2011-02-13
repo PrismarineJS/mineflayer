@@ -36,12 +36,8 @@ public:
 
     struct EntityPosition
     {
-        double x; // east
-        double y; // north
-        double z; // up
-        double dx; // m/s
-        double dy; // m/s
-        double dz; // m/s
+        Double3D pos; // east, north, up
+        Double3D vel; // m/s
         double height; // [0.1, 1.65] how tall you are.
         float yaw; // [0, 2pi] rotation around z axis. 0 is +x. pi/2 is +y. pi is -x. 3pi/2 is -y.
         float pitch; // [-pi/2, pi/2] 0 is parallel to the ground. pi/2 is up. -pi/2 is down.
@@ -125,8 +121,8 @@ private:
 private:
     void changeLoginState(LoginStatus state);
 
-    static void fromNotchianDoubleMeters(EntityPosition & destination, double notchian_x, double notchian_y, double notchian_z);
-    static void fromNotchianIntPixels(EntityPosition & destination, int pixels_x, int pixels_y, int pixels_z);
+    static void fromNotchianDoubleMeters(EntityPosition & destination, Double3D notchian);
+    static void fromNotchianIntPixels(EntityPosition & destination, Int3D pixels);
     static Int3D fromNotchianChunk(int notchian_chunk_x, int notchian_chunk_z);
     static Int3D fromNotchianIntMeters(Int3D notchian_xyz);
     static Int3D fromNotchianIntMetersWithoutOffByOneCorrection(Int3D notchian_xyz);

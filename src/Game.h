@@ -100,7 +100,7 @@ public:
     void updatePlayerLook(float delta_yaw, float delta_pitch);
     void setPlayerLook(float yaw, float pitch);
     // this one is cheating
-    void setPlayerPosition(double x, double y, double z);
+    void setPlayerPosition(const Double3D & pt);
     // only valid to call this after you die
     void respawn();
 
@@ -178,7 +178,8 @@ private:
 
 private:
     void gotFirstPlayerPositionAndLookResponse();
-    float groundSpeedSquared() { return m_player_position.dx * m_player_position.dx + m_player_position.dy * m_player_position.dy; }
+    float groundSpeedSquared() { return m_player_position.vel.x * m_player_position.vel.x +
+                                 m_player_position.vel.y * m_player_position.vel.y; }
     void getPlayerBoundingBox(Int3D & boundingBoxMin, Int3D & boundingBoxMax);
     bool collisionInRange(const Int3D & boundingBoxMin, const Int3D & boundingBoxMax);
 

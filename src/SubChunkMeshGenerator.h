@@ -9,7 +9,7 @@
 #include <OGRE/OgreVector3.h>
 #include <OGRE/OgreManualObject.h>
 
-#include "Int3D.h"
+#include "Vector3D.h"
 #include "Block.h"
 
 class Game;

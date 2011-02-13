@@ -232,8 +232,8 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::PlayerPositionAndLook: {
             PlayerPositionAndLookResponse * message = (PlayerPositionAndLookResponse *) incomingMessage.data();
             EntityPosition position = EntityPosition::ZERO();
-            fromNotchianDoubleMeters(position, message->x, message->y, message->z);
-            position.height = message->stance - position.z;
+            fromNotchianDoubleMeters(position, Double3D(message->x, message->y, message->z));
+            position.height = message->stance - position.pos.z;
             fromNotchianYawPitch(position, message->yaw, message->pitch);
             position.on_ground = message->on_ground;
             emit playerPositionAndLookUpdated(position);
@@ -242,7 +242,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::NamedEntitySpawn: {
             NamedEntitySpawnResponse * message = (NamedEntitySpawnResponse *) incomingMessage.data();
             EntityPosition position = EntityPosition::ZERO();
-            fromNotchianIntPixels(position, message->pixels_x, message->pixels_y, message->pixels_z);
+            fromNotchianIntPixels(position, Int3D(message->pixels_x, message->pixels_y, message->pixels_z));
             fromNotchianYawPitchBytes(position, message->yaw_out_of_256, message->pitch_out_of_256);
             emit namedPlayerSpawned(message->entity_id, message->player_name, position, message->held_item);
             break;
@@ -250,7 +250,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::PickupSpawn: {
             PickupSpawnResponse * message = (PickupSpawnResponse *) incomingMessage.data();
             EntityPosition position = EntityPosition::ZERO();
-            fromNotchianIntPixels(position, message->pixels_x, message->pixels_y, message->pixels_z);
+            fromNotchianIntPixels(position, Int3D(message->pixels_x, message->pixels_y, message->pixels_z));
             fromNotchianYawPitchBytes(position, message->yaw_out_of_256, message->pitch_out_of_256);
             // ignore roll
             emit pickupSpawned(message->entity_id, message->item, position);
@@ -259,7 +259,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::MobSpawn: {
             MobSpawnResponse * message = (MobSpawnResponse *) incomingMessage.data();
             EntityPosition position = EntityPosition::ZERO();
-            fromNotchianIntPixels(position, message->pixels_x, message->pixels_y, message->pixels_z);
+            fromNotchianIntPixels(position, Int3D(message->pixels_x, message->pixels_y, message->pixels_z));
             fromNotchianYawPitchBytes(position, message->yaw_out_of_256, message->pitch_out_of_256);
             emit mobSpawned(message->entity_id, message->mob_type, position);
             break;
@@ -272,7 +272,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::EntityRelativeMove: {
             EntityRelativeMoveResponse * message = (EntityRelativeMoveResponse *) incomingMessage.data();
             EntityPosition movement;
-            fromNotchianIntPixels(movement, message->pixels_dx, message->pixels_dy, message->pixels_dz);
+            fromNotchianIntPixels(movement, Int3D(message->pixels_dx, message->pixels_dy, message->pixels_dz));
             emit entityMovedRelatively(message->entity_id, movement);
             break;
         }
@@ -286,7 +286,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::EntityLookAndRelativeMove: {
             EntityLookAndRelativeMoveResponse * message = (EntityLookAndRelativeMoveResponse *) incomingMessage.data();
             EntityPosition position;
-            fromNotchianIntPixels(position, message->pixels_dx, message->pixels_dy, message->pixels_dz);
+            fromNotchianIntPixels(position, Int3D(message->pixels_dx, message->pixels_dy, message->pixels_dz));
             fromNotchianYawPitchBytes(position, message->yaw_out_of_256, message->pitch_out_of_256);
             emit entityLookedAndMovedRelatively(message->entity_id, position);
             break;
@@ -294,7 +294,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::EntityTeleport: {
             EntityTeleportResponse * message = (EntityTeleportResponse *) incomingMessage.data();
             EntityPosition position;
-            fromNotchianIntPixels(position, message->pixels_x, message->pixels_y, message->pixels_z);
+            fromNotchianIntPixels(position, Int3D(message->pixels_x, message->pixels_y, message->pixels_z));
             emit entityMoved(message->entity_id, position);
             break;
         }
@@ -417,18 +417,18 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
     }
 }
 
-void Server::fromNotchianDoubleMeters(EntityPosition &destination, double notchian_x, double notchian_y, double notchian_z)
+void Server::fromNotchianDoubleMeters(EntityPosition &destination, Double3D notchian)
 {
     // east
-    destination.x = -notchian_z;
+    destination.pos.x = -notchian.z;
     // north
-    destination.y = -notchian_x;
+    destination.pos.y = -notchian.x;
     // up
-    destination.z = notchian_y;
+    destination.pos.z = notchian.y;
 }
-void Server::fromNotchianIntPixels(EntityPosition &destination, int pixels_x, int pixels_y, int pixels_z)
+void Server::fromNotchianIntPixels(EntityPosition &destination, Int3D pixels)
 {
-    fromNotchianDoubleMeters(destination, pixels_x / 32.0, pixels_y / 32.0, pixels_z / 32.0);
+    fromNotchianDoubleMeters(destination, Double3D(pixels.x / 32.0, pixels.y / 32.0, pixels.z / 32.0));
 }
 
 Int3D Server::fromNotchianChunk(int notchian_chunk_x, int notchian_chunk_z)
@@ -462,11 +462,11 @@ Int3D Server::fromNotchianIntMetersWithoutOffByOneCorrection(Int3D notchian_xyz)
 void Server::toNotchianDoubleMeters(const EntityPosition &source, double &destination_notchian_x, double &destination_notchian_y, double &destination_notchian_z)
 {
     // east
-    destination_notchian_z = -source.x;
+    destination_notchian_z = -source.pos.x;
     // north
-    destination_notchian_x = -source.y;
+    destination_notchian_x = -source.pos.y;
     // up
-    destination_notchian_y = source.z;
+    destination_notchian_y = source.pos.z;
 }
 Int3D Server::toNotchianIntMeters(const Int3D &source)
 {
@@ -500,7 +500,7 @@ void Server::sendPositionAndLook(EntityPosition positionAndLook)
 {
     PlayerPositionAndLookRequest * request = new PlayerPositionAndLookRequest;
     toNotchianDoubleMeters(positionAndLook, request->x, request->y, request->z);
-    request->stance = positionAndLook.height + positionAndLook.z;
+    request->stance = positionAndLook.height + positionAndLook.pos.z;
     toNotchianYawPitch(positionAndLook, request->yaw, request->pitch);
     request->on_ground = positionAndLook.on_ground;
     sendMessage(QSharedPointer<OutgoingRequest>(request));
