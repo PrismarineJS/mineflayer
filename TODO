@@ -15,7 +15,6 @@ Core:
  * chunk seams are broken
  * deleting chunks is broken
  * TOO SLOW
- * health display
  * chatting 
  * digging
  * mobs/players/pickups
