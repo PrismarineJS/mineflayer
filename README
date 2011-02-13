@@ -1,6 +1,14 @@
 mineflayer - Minecraft multiplayer client and bot scripting interface.
 
-Some screenshots and information at http://wiki.vg/Mineflayer
+Some screenshots and information:
+    http://wiki.vg/Mineflayer
+
+ECMAScript reference:
+    http://doc.qt.nokia.com/latest/ecmascript.html
+
+See libs/ for more utility functions.
+
+See examples/ for examples of bot code.
 
 Current features:
  * 3d client renders the map and allows you to walk/jump around
