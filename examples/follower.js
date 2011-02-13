@@ -6,7 +6,8 @@ mf.onEntitySpawned(function handleEntitySpawned(entity) {
         return;
     }
     // found a human player
-    var message = "i'm following " + entity.username + " " + entity_id;
+    var target_entity_id = entity.entity_id;
+    var message = "i'm following " + entity.username + " " + target_entity_id;
     mf.chat(message);
     mf.debug(message);
 
@@ -14,7 +15,7 @@ mf.onEntitySpawned(function handleEntitySpawned(entity) {
     mf.removeHandler(mf.onEntitySpawned, handleEntitySpawned);
     // add a handler to watch this guy moving around
     mf.onEntityMoved(function(entity) {
-        if (entity.entity_id !== entity_id) {
+        if (entity.entity_id !== target_entity_id) {
             // this isn't our target
             return;
         }
@@ -23,8 +24,8 @@ mf.onEntitySpawned(function handleEntitySpawned(entity) {
         // move forward constantly
         mf.setControlState(mf.Control.Forward, true);
     });
-    mf.onEntityDespawned(function(entit) {
-        if (entity.entity_id === entity_id) {
+    mf.onEntityDespawned(function(entity) {
+        if (entity.entity_id === target_entity_id) {
             mf.chat("well, i'm outta here");
             mf.exit();
         }
