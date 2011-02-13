@@ -39,10 +39,13 @@ LIBS += \
     -lOIS
 DEFINES += MINEFLAYER_3D_ON
 
-
-# ---------if you want 3D off, uncomment ----------
-# LIBS -= -lOgreMain -lOIS
-# DEFINES -= MINEFLAYER_3D_ON
-# SOURCES -= src/MainWindow.cpp src/SubChunkMeshGenerator.cpp
-# HEADERS -= src/MainWindow.h src/BlockingPriorityQueue.h src/SubChunkMeshGenerator.h
+CONFIG += $$(EXTRA_CONFIG)
+# ---------if you want 3D off, set env EXTRA_CONFIG=headless or uncomment next line  ----------
+#CONFIG += headless
+headless {
+    LIBS -= -lOgreMain -lOIS
+    DEFINES -= MINEFLAYER_3D_ON
+    SOURCES -= src/MainWindow.cpp src/SubChunkMeshGenerator.cpp
+    HEADERS -= src/MainWindow.h src/SubChunkMeshGenerator.h
+}
 # --------------------------------------
