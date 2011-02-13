@@ -40,9 +40,18 @@ Setting up build:
 
         Same thing as no 3D support except use "headless" instead of "no_3d"
 
-    Mac:
+    Mac, no 3D support:
+
+        Important: Currently 3D via Ogre doesn't work!
         
-        TODO
+        1. Download the Qt SDK for Mac from http://qt.nokia.com/downloads/
+        2. Create a build folder OUTSIDE the source code tree and cd to it.
+        3. EXTRA_CONFIG=no_3d qmake path/to/mineflayer.pro
+        4. Now whenever you want to build, use make.
+        
+    Mac, headless mode (this removes dependency on user being logged in via UI):
+
+        Same thing as no 3D support except use "headless" instead of "no_3d"
 
     Windows:
 

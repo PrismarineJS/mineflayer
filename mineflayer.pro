@@ -57,4 +57,8 @@ no_3d {
     DEFINES -= MINEFLAYER_3D_ON
     SOURCES -= src/MainWindow.cpp src/SubChunkMeshGenerator.cpp
     HEADERS -= src/MainWindow.h src/SubChunkMeshGenerator.h
+
+    mac {
+        CONFIG -= app_bundle
+    }
 }
