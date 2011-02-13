@@ -3,6 +3,7 @@
 
 #include "Server.h"
 #include "Int3D.h"
+#include "Game.h"
 
 #include <QMetaType>
 #include <QAbstractSocket>
