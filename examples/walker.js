@@ -1,6 +1,7 @@
 mf.include("chat_commands.js");
+mf.include("player_tracker.js");
 
-// TODO: Jump up on blocks, find alternative paths
+// TODO: find alternative paths
 
 var walker;
 if (walker === undefined) {
@@ -8,6 +9,7 @@ if (walker === undefined) {
         var _public = {};
         _public.debug = true;
         var target_position, target_distance = 2, default_distance = 2;
+        var last_position;
         chat_commands.registerModule("walker", _public);
         
         /**
@@ -18,11 +20,12 @@ if (walker === undefined) {
         _public.walkTo = function(position, distance) {
             target_position = position;
             target_distance = distance || default_distance;
+            last_position = undefined;
 
             // politely face the target's face
             // mf.lookAt(target_position.modifyBy(new mf.Point(0, 0, 1.6)));
             mf.lookAt(target_position);
-            
+
             // register bot moved callback
             mf.onSelfMoved(botMoved);
             
@@ -40,38 +43,17 @@ if (walker === undefined) {
             mf.removeHandler(mf.onSelfMoved, botMoved);
         }
 
-        function respond(message) {
+        function debug(message) {
             if (_public.debug) {
                 mf.debug(message);
             }
+        }
+
+        function respond(message) {
+            debug(message)
             mf.chat(message);
         }
         
-        // copied from teleporter
-        // track user's entity_id's
-        var username_to_entity_id = {};
-        mf.onEntitySpawned(function(entity) {
-            if (entity.type !== mf.EntityType.Player) {
-                return;
-            }
-            mf.debug("i see " + entity.username);
-            username_to_entity_id[entity.username] = entity.entity_id;
-        });
-        mf.onEntityDespawned(function(entity) {
-            if (entity.type !== mf.EntityType.Player) {
-                return;
-            }
-            mf.debug("i no longer see " + entity.username);
-            delete username_to_entity_id[entity.username];
-        });
-        function namedEntity(username) {
-            var entity_id = username_to_entity_id[username];
-            if (entity_id === undefined) {
-                return undefined;
-            }
-            return mf.entity(entity_id);
-        }
-
         // Simplify modifying a point
         mf.Point.prototype.modifyBy = function(modifier) {
             return new mf.Point(this.x+modifier.x, this.y+modifier.y, this.z+modifier.z);
@@ -82,24 +64,57 @@ if (walker === undefined) {
             return Math.sqrt(Math.pow(Math.abs(this.x-other_point.x), 2) + Math.pow(Math.abs(this.y-other_point.y), 2) + Math.pow(Math.abs(this.z-other_point.z), 2));
         }
         
+        // Used for bad distance calculation
+        mf.Point.prototype.difference = function(other_point) {
+            return Math.abs(this.x-other_point.x) + Math.abs(this.y-other_point.y) + Math.abs(this.z-other_point.z);
+        }
+        
         // Faster? calculation to compare the distance
         mf.Point.prototype.distanceLessThan = function(other_point, distance) {
             return ((Math.pow(Math.abs(this.x-other_point.x), 2) + Math.pow(Math.abs(this.y-other_point.y), 2) + Math.pow(Math.abs(this.z-other_point.z), 2)) < Math.pow(distance, 2));
         }
+
+        function jump() {
+            mf.setControlState(mf.Control.Jump, true);
+            mf.setTimeout(function() {
+                mf.setControlState(mf.Control.Jump, false);
+            }, 200);
+        }
         
         function botMoved() {
-            var my_pos = mf.self().position;
+            var me = mf.self()
+            var my_pos = me.position;
             // See if we have arrived
             if (my_pos.distanceLessThan(target_position, target_distance)) {
                 respond("I've arrived!");
                 _public.stop()
             } else {
-                mf.debug("I'm now "+my_pos.distanceTo(target_position).toFixed(1)+"m away!")
+                // check if we are blocked and need to try to jump
+                var yaw = me.yaw;
+                var x = Math.cos(yaw)*0.6, y = Math.sin(yaw)*0.6;
+                var forward_pos = my_pos.modifyBy({x:x, y:y, z:0});
+                var block = mf.blockAt(forward_pos).type;
+                if (block !== 0) {
+                    jump();
+                }
+
+                // check that we are still moving
+                if (last_position !== undefined && my_pos.difference(last_position) < 0.01) {
+                    respond("I'm stuck!");
+                    // mf.debug("Diff: "+my_pos.difference(last_position));
+                    _public.stop();
+                }
+                last_position = my_pos;
+
+                // var direction = ((Math.abs(x) > Math.abs(y)) && ((x>0) && "east" || "west") || ((y>0) && "north" || "south"));
+                // mf.debug("heading mostly "+direction);
+
+                debug("I'm now "+my_pos.distanceTo(target_position).toFixed(1)+"m away!");
             }
         }
 
         function comeToMe(username) {
-            var entity = namedEntity(username);
+            var entity = player_tracker.entityForPlayer(username);
             if (entity === undefined) {
                 respond("sorry, can't see user: " + username);
                 return;
@@ -111,7 +126,6 @@ if (walker === undefined) {
         }
         chat_commands.registerCommand("come", comeToMe);
         chat_commands.registerCommand("stop", _public.stop);
-                
         return _public;
     }();
 }
