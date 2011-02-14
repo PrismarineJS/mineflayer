@@ -10,7 +10,12 @@ Core:
  * non-spoken chat interpretation (player joined, etc)
  * clean up stray chunks that didn't get unloaded
  * recalculte light on block changes
- * don't miss a jump press
+
+Bot framework:
+ * implement the functions in doc/bot-api
+ * metadata access for blocks
+ * command line parameters
+ * get stack traces when javascript throws things
 
 3D client:
  * chunk seams are broken
@@ -35,8 +40,3 @@ Core:
  * water / lava flow
  * sky, sun, moon, day/night
  * clouds
-
-Bot framework:
- * implement the functions in doc/bot-api
- * command line parameters
- * get stack traces when javascript throws things
