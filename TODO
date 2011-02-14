@@ -10,6 +10,7 @@ Core:
  * non-spoken chat interpretation (player joined, etc)
  * clean up stray chunks that didn't get unloaded
  * recalculte light on block changes
+ * don't miss a jump press
 
 3D client:
  * chunk seams are broken

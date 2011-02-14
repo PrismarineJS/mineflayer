@@ -168,7 +168,7 @@ void Game::initializeStaticData()
     s_item_stack_height.insert(Block::SnowBlock, 64);
     s_item_stack_height.insert(Block::Cactus, 64);
     s_item_stack_height.insert(Block::Clay, 64);
-    s_item_stack_height.insert(Block::SugarCane_place, 64);
+    s_item_stack_height.insert(Block::SugarCane_placed, 64);
     s_item_stack_height.insert(Block::Jukebox, 64);
     s_item_stack_height.insert(Block::Fence, 64);
     s_item_stack_height.insert(Block::Pumpkin, 64);

@@ -74,7 +74,7 @@ enum ItemType
     SnowBlock=0x50,
     Cactus=0x51,
     Clay=0x52,
-    SugarCane_place=0x53,
+    SugarCane_placed=0x53,
     Jukebox=0x54,
     Fence=0x55,
     Pumpkin=0x56,
