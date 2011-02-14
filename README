@@ -46,7 +46,7 @@ Setting up build:
         
         1. Download the Qt SDK for Mac from http://qt.nokia.com/downloads/
         2. Create a build folder OUTSIDE the source code tree and cd to it.
-        3. EXTRA_CONFIG=no_3d qmake path/to/mineflayer.pro
+        3. EXTRA_CONFIG=no_3d qmake -spec macx-g++ ../mineflayer/mineflayer.pro
         4. Now whenever you want to build, use make.
         
     Mac, headless mode (this removes dependency on user being logged in via UI):

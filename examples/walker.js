@@ -7,7 +7,38 @@ if (walker === undefined) {
     walker = function() {
         var _public = {};
         _public.debug = true;
+        var target_position, target_distance = 2, default_distance = 2;
         chat_commands.registerModule("walker", _public);
+        
+        /**
+         * Start walking to position
+         * @param {Point} position Position the bot should walk to
+         * @param {Number} distance How close to the target should the walk (2 appropriate when coming to a person)
+         */
+        _public.walkTo = function(position, distance) {
+            target_position = position;
+            target_distance = distance || default_distance;
+
+            // politely face the target's face
+            // mf.lookAt(target_position.modifyBy(new mf.Point(0, 0, 1.6)));
+            mf.lookAt(target_position);
+            
+            // register bot moved callback
+            mf.onSelfMoved(botMoved);
+            
+            // move forward constantly
+            mf.setControlState(mf.Control.Forward, true);
+        }
+        
+        /**
+         * Stop walking and stop listening to events
+         */
+        _public.stop = function() {
+            // Stop walking
+            mf.setControlState(mf.Control.Forward, false);
+            // Remove callbacks
+            mf.removeHandler(mf.onSelfMoved, botMoved);
+        }
 
         function respond(message) {
             if (_public.debug) {
@@ -61,16 +92,12 @@ if (walker === undefined) {
             // See if we have arrived
             if (my_pos.distanceLessThan(target_position, target_distance)) {
                 respond("I've arrived!");
-                // Stop walking
-                mf.setControlState(mf.Control.Forward, false);
-                // Remove callbacks
-                mf.removeHandler(mf.onSelfMoved, botMoved);
+                _public.stop()
             } else {
                 mf.debug("I'm now "+my_pos.distanceTo(target_position).toFixed(1)+"m away!")
             }
         }
 
-        var target_position, target_distance = 2;
         function comeToMe(username) {
             var entity = namedEntity(username);
             if (entity === undefined) {
@@ -79,21 +106,12 @@ if (walker === undefined) {
             }
             
             // save the target position
-            target_position = entity.position;
-            respond("Coming to "+username+". distance is "+mf.self().position.distanceTo(target_position).toFixed()+"m");
-            
-            // politely face the target's face
-            // mf.lookAt(target_position.modifyBy(new mf.Point(0, 0, 1.6)));
-            mf.lookAt(target_position);
-            
-            // register bot moved callback
-            mf.onSelfMoved(botMoved);
-            
-            // move forward constantly
-            mf.setControlState(mf.Control.Forward, true);
+            respond("Coming to "+username+". distance is "+mf.self().position.distanceTo(entity.position).toFixed()+"m");
+            _public.walkTo(entity.position)
         }
         chat_commands.registerCommand("come", comeToMe);
-        
+        chat_commands.registerCommand("stop", _public.stop);
+                
         return _public;
     }();
 }
