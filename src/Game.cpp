@@ -36,6 +36,7 @@ Game::Game(QUrl connection_info) :
     m_input_acceleration(c_standard_walking_acceleration),
     m_gravity(c_standard_gravity),
     m_ground_friction(c_standard_ground_friction),
+    m_jump_was_pressed(false),
     m_return_code(0)
 {
     initializeStaticData();
@@ -286,6 +287,8 @@ void Game::setControlActivated(Control control, bool activated)
 {
     QMutexLocker locker(&m_mutex);
     m_control_state[control] = activated;
+    if (control == Jump)
+        m_jump_was_pressed = true;
 }
 
 void Game::updatePlayerLook(float delta_yaw, float delta_pitch)
@@ -648,7 +651,9 @@ void Game::doPhysics(float delta_seconds)
 {
     if (delta_seconds < std::numeric_limits<float>::epsilon())
         return; // too fast!!
+
     QMutexLocker locker(&m_mutex);
+
     // derive xy movement vector from controls
     int movement_right = 0;
     if (m_control_state.at(Right))
@@ -672,8 +677,9 @@ void Game::doPhysics(float delta_seconds)
     }
 
     // jumping
-    if (m_control_state.at(Jump) && m_player_position.on_ground)
+    if ((m_control_state.at(Jump) || m_jump_was_pressed) && m_player_position.on_ground)
         m_player_position.vel.z = c_jump_speed;
+    m_jump_was_pressed = false;
 
     // gravity
     acceleration.z -= m_gravity;

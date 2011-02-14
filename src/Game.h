@@ -171,6 +171,7 @@ private:
     float m_ground_friction;
 
     QVector<bool> m_control_state;
+    bool m_jump_was_pressed;
 
     static bool s_initialized;
 
