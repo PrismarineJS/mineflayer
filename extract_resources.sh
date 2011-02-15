@@ -5,7 +5,7 @@ then
     echo "you must install unzip"
     exit
 fi
-if [ -z $1 ]
+if [ -z "$1" ]
 then
     echo usage:
     echo $0 path/to/minecraft.jar
@@ -15,7 +15,7 @@ fi
 resource_names="armor art environment font gui item misc mob terrain terrain.png"
 tmp_stash=$(mktemp -d)
 
-unzip -q -d $tmp_stash $1
+unzip -q -d $tmp_stash "$1"
 
 if [ ! -f "$tmp_stash/terrain.png" ]
 then
