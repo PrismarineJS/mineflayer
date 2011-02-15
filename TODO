@@ -39,4 +39,3 @@ Core:
 Bot framework:
  * implement the functions in doc/bot-api
  * command line parameters
- * get stack traces when javascript throws things
