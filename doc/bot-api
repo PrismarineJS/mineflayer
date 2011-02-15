@@ -73,7 +73,7 @@ mf.Item(type, count)
  * Represents a snapshot of your inventory.
  * TODO: figure out how this is to be structured.
  *
- * NOT IMPLEMENTED
+ * NOT YET IMPLEMENTED
  */
 mf.Inventory
 
@@ -274,7 +274,7 @@ mf.lookAt(point)
 mf.respawn()
 
 /**
- * Instatly moves you to the position specified.
+ * Instantly moves you to the position specified.
  * NOTE: Your movement may be rejected by the server. This can happen if you try to go through a wall.
  * @param {Point} point
  */
@@ -288,17 +288,19 @@ mf.hax.setPosition(point)
  */
 mf.entity(entity_id)
 
-// NOT YET IMPLEMENTED
-
 /**
  * Useful for communicating with notchian clients.
+ * NOT YET IMPLEMENTED
  * @param {Point} mf_point Point in mineflayer's coordinates.
  * @returns {Point} Point in Notch's coordinates.
  */
 mf.toNotchCoord(mf_point)
 
 /**
- * I don't know why this would be useful.
+ * If a player specifies coordinates to a bot, by looking at the numbers when
+ * he presses F3, he's probably talking about Notchian coordinates. This method
+ * translates them into our coordinate system (see top of this document)
+ * NOT YET IMPLEMENTED
  * @param {Point} notch_point Point in Notch's coordinates.
  * @returns {Object} Point in mineflayer's coordinates.
  */
@@ -306,6 +308,7 @@ mf.fromNotchCoord(notch_point)
 
 /**
  * Looks in a direction.
+ * NOT YET IMPLEMENTED
  * @param {Number} yaw The number of radians to rotate around the Z axis, starting from due east. Counter clockwise.
  * @param {Number} pitch Number of radians to point up or down. 0 means straight forward. pi / 2 means straight up. -pi / 2 means straight down.
  */
@@ -313,6 +316,7 @@ mf.look(yaw, pitch)
 
 /**
  * Begin digging into a block with the currently equipped item. When you finally break through the block,
+ * NOT YET IMPLEMENTED
  * or you are interrupted for any reason, you will get an onStoppedDigging() event.
  * @param {Point} point The location of the block to dig.
  */
@@ -322,6 +326,7 @@ mf.startDigging(point)
  * Place the currently equipped item, with some exceptions. If the block at
  * point is a chest, furnace, workbench, etc, you will "activate" the block.
  * If the equipped item is food, you will eat it.
+ * NOT YET IMPLEMENTED
  * @param {Point} block The coordinates of the block that you want to place the block on.
  * @param {Number} face Which side of the block you want to place the block on. See the mf.Face enum.
  */
@@ -329,24 +334,28 @@ mf.placeBlock(block, face)
 
 /**
  * Looks for an item in your inventory and equips it. If you don't have the item, nothing happens.
+ * NOT YET IMPLEMENTED
  * @param {Number} item The item ID of the item you want to equip.
  */
 mf.equipItem(item)
 
 /**
  * Gets the id of item you are holding.
+ * NOT YET IMPLEMENTED
  * @returns {Number} item_id What you are now equipped with.
  */
 mf.equippedItem()
 
 /**
  * Looks for armor in your inventory and equips it. If you don't have the armor, nothing happens.
+ * NOT YET IMPLEMENTED
  * @param {Number} item The item ID of the armor you want to equip.
  */
 mf.equipArmor(item)
 
 /**
  * TODO: move to utility library.
+ * NOT YET IMPLEMENTED
  * Counts how many of a certain type of item you have.
  * @param {Number} item The item ID of the item you want to count.
  * @returns {Number} The number of items of that type that you have in all of your inventory slots combined. 
@@ -354,7 +363,8 @@ mf.equipArmor(item)
 mf.countInventoryItemsOfType(item)
 
 /**
- * Returns a snapshot of your inventory. Modifying the object does nothing
+ * Returns a snapshot of your inventory. Modifying the object does nothing.
+ * NOT YET IMPLEMENTED
  * @returns {Inventory} 
  */
 mf.inventory()
@@ -362,6 +372,7 @@ mf.inventory()
 /**
  * TODO: move to utility library.
  * Tells how much room you have left in your inventory. No need to worry about merging stacks; this function takes that into account automatically.
+ * NOT YET IMPLEMENTED
  * @param {Number} item The item ID that you want to see how many more will fit in your inventory.
  * @returns {Number} How many more of those items will fit.
  */
@@ -369,6 +380,7 @@ mf.inventorySpaceLeft(item)
 
 /**
  * TODO: move to utility library.
+ * NOT YET IMPLEMENTED
  * Tells how many free slots you have open in your inventory. No need to worry about merging stacks; this method takes that into account automatically.
  * @returns {Number} The total number of empty inventory slots.
  */
@@ -376,17 +388,15 @@ mf.inventorySlotsLeft()
 
 /**
  * Tells what time it is, also known as where the sun or moon is in the sky.
- * @returns {Number} The number of real life seconds since dawn. This ranges from 0 to 1200 since a day is 20 minutes. See also onTimeUpdated().
+ * NOT YET IMPLEMENTED
+ * @returns {Number} The number of real life seconds since dawn. This ranges from 0 to 1200 since a day is 20 minutes.
  */
 mf.timeOfDay()
 
 // TODO: crafting
 // TODO: attacking
 
-
 // Events: fill in the ... part of the function. See examples for more information.
-
-// IMPLEMENTED:
 
 /**
  * Called when the bot successfully logs into a server.
@@ -447,10 +457,9 @@ mf.onEntityDespawned(function(entity) {...})
  */
 mf.onEntityMoved(function(entity) {...})
 
-// NOT YET IMPLEMENTED
-
 /**
  * Called when you have stopped digging for some reason.
+ * NOT YET IMPLEMENTED
  * @param {StoppedDiggingReason} reason
  */
 mf.onStoppedDigging(function(reason) {...})
@@ -458,28 +467,26 @@ mf.onStoppedDigging(function(reason) {...})
 /**
  * Called when what you are currently equipped with changes.
  * For example, if your pickaxe breaks or you eat food. See also equippedItem().
+ * NOT YET IMPLEMENTED
  */
 mf.onEquippedItemChanged(function() {...})
 
 /**
  * Called when anything in your inventory changes. See also inventory().
+ * NOT YET IMPLEMENTED
  */
 mf.onInventoryUpdated(function() {...})
 
 /**
- * TODO: do we need this?
- * Called when the time of day changes. See also timeOfDay().
- */
-mf.onTimeUpdated(function() {...})
-
-/**
  * Called when another user joins the server.
+ * NOT YET IMPLEMENTED
  * @param {String} username The username of the person joining.
  */
 mf.onUserJoined(function(username) {...})
 
 /**
  * Called when another user quits the server.
+ * NOT YET IMPLEMENTED
  * @param {String} username The username of the person quitting.
  */
 mf.onUserQuit(function(username) {...})
@@ -503,6 +510,7 @@ mf.removeHandler(event_registrar, handler)
 
 /**
  * An array of all the serializeable type names in the mf object.
+ * TODO: wtf is this and when would we ever use it?
  */
 mf.serializableTypeNames
 
