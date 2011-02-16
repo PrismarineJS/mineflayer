@@ -261,7 +261,7 @@ void SubChunkMeshGenerator::generateSubChunkMesh(const Int3D & sub_chunk_key, Bl
                     chunk_data.node[face+1][pass], sub_chunk_key);
             }
             m_owner->ogreMutex()->lock();
-            Ogre::ManualObject * obj = new Ogre::ManualObject(Ogre::String());
+            Ogre::ManualObject * obj = new Ogre::ManualObject(m_owner->nextManualObjectString());
             obj->begin(pass == 0 ? "TerrainOpaque" : "TerrainTransparent", Ogre::RenderOperation::OT_TRIANGLE_LIST);
             m_owner->ogreMutex()->unlock();
 
