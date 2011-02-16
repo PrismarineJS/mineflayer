@@ -72,6 +72,8 @@ public:
     Ogre::SceneNode * sceneNodeForPass(int pass_index) const { return m_pass[pass_index]; }
     BlockTextureCoord texCoords(QString name) const { return m_terrain_tex_coords.value(name); }
 
+    Ogre::String nextManualObjectString() { return Ogre::String(QString::number(m_next_manual_object_string++).toStdString()); }
+
 protected:
     // Ogre::FrameListener
     bool frameRenderingQueued(const Ogre::FrameEvent& evt);
@@ -134,6 +136,8 @@ private:
 
     int m_selected_slot;
 
+    int m_next_manual_object_string;
+
 private:
     void loadControls();
 
@@ -156,6 +160,7 @@ private:
     void createHud();
 
     void mouseWheel(int direction);
+
 
 private slots:
     void movePlayerPosition();

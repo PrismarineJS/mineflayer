@@ -37,7 +37,8 @@ MainWindow::MainWindow(QUrl url) :
     m_game(NULL),
     m_control_to_key(Game::ControlCount),
     m_sub_chunk_generator(NULL),
-    m_selected_slot(0)
+    m_selected_slot(0),
+    m_next_manual_object_string(0)
 {
     // TODO: figure out wtf is going on and delete this assertion.
     Q_ASSERT(sizeof(MainWindow) != 216);
@@ -415,7 +416,7 @@ Ogre::ManualObject * MainWindow::create2DObject(const Ogre::String & material_na
 {
     Q_ASSERT(m_terrain_tex_coords.contains(texture_name));
 
-    Ogre::ManualObject * obj = m_scene_manager->createManualObject();
+    Ogre::ManualObject * obj = m_scene_manager->createManualObject(nextManualObjectString());
     obj->setUseIdentityProjection(true);
     obj->setUseIdentityView(true);
 

@@ -15,7 +15,6 @@ Bot framework:
  * implement the functions in doc/bot-api
  * metadata access for blocks
  * command line parameters
- * get stack traces when javascript throws things
 
 3D client:
  * chunk seams are broken
