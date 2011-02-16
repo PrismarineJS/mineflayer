@@ -8,6 +8,27 @@ mf.Point = function(x, y, z) {
     this.y = y;
     this.z = z;
 };
+mf.Point.prototype.rounded = function() {
+    return new mf.Point(Math.floor(this.x), Math.floor(this.y), Math.floor(this.z));
+};
+/** returns a new point offset by the amount specified */
+mf.Point.prototype.offset = function(dx, dy, dz) {
+    return new mf.Point(this.x + dx, this.y + dy, this.z + dz);
+};
+/** returns a new point */
+mf.Point.prototype.plus = function(other) {
+    return this.offset(other.x, other.y, other.z);
+};
+/** euclidean distance */
+mf.Point.prototype.distanceTo = function(other) {
+    var dx = other.x - this.x;
+    var dy = other.y - this.y;
+    var dz = other.z - this.z;
+    return Math.sqrt(dx * dx + dy * dy + dz * dz);
+};
+mf.Point.prototype.equals = function(other) {
+    return this.x === other.x && this.y === other.y && this.z === other.z;
+};
 mf.Point.prototype.toString = function() {
     return "(" + this.x + ", " + this.y + ", " + this.z + ")";
 };

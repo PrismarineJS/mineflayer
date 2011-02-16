@@ -287,7 +287,7 @@ void Game::setControlActivated(Control control, bool activated)
 {
     QMutexLocker locker(&m_mutex);
     m_control_state[control] = activated;
-    if (control == Jump)
+    if (activated && control == Jump)
         m_jump_was_pressed = true;
 }
 

@@ -263,6 +263,11 @@ mf.self()
 mf.setControlState(control, state)
 
 /**
+ * Sets all control states to false
+ */
+mf.clearControlStates()
+
+/**
  * Looks at the given point specified in absolute coordinates. See also mf.look.
  * @param {Point} point
  */

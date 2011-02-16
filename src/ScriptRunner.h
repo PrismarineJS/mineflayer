@@ -109,6 +109,7 @@ private:
     static QScriptValue blockAt(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue self(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue setControlState(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue clearControlStates(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue lookAt(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue respawn(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue entity(QScriptContext * context, QScriptEngine * engine);

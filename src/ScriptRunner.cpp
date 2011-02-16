@@ -102,6 +102,7 @@ void ScriptRunner::go()
     mf_obj.setProperty("blockAt", m_engine->newFunction(blockAt));
     mf_obj.setProperty("self", m_engine->newFunction(self));
     mf_obj.setProperty("setControlState", m_engine->newFunction(setControlState));
+    mf_obj.setProperty("clearControlStates", m_engine->newFunction(clearControlStates));
     mf_obj.setProperty("lookAt", m_engine->newFunction(lookAt));
     mf_obj.setProperty("respawn", m_engine->newFunction(respawn));
     mf_obj.setProperty("entity", m_engine->newFunction(entity));
@@ -253,7 +254,7 @@ QScriptValue ScriptRunner::clearTimeout(QScriptContext *context, QScriptEngine *
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
     QScriptValue error;
-    if (!me->argCount(context, error, 2))
+    if (!me->argCount(context, error, 1))
         return error;
     QScriptValue id = context->argument(0);
     if (!me->maybeThrowArgumentError(context, error, id.isNumber()))
@@ -537,6 +538,17 @@ QScriptValue ScriptRunner::setControlState(QScriptContext *context, QScriptEngin
         return error;
 
     me->m_game->setControlActivated((Game::Control) control.toInteger(), state.toBool());
+    return QScriptValue();
+}
+QScriptValue ScriptRunner::clearControlStates(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 0))
+        return error;
+
+    for (int control = Game::NoControl; control < Game::ControlCount; control++)
+        me->m_game->setControlActivated((Game::Control)control, false);
     return QScriptValue();
 }
 
