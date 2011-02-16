@@ -66,4 +66,6 @@ like this:
 
 ./mineflayer -I<path_to_lib> bot.js
 
-
+Alternately, you can put the lib folder in an environment variable called
+MINEFLAYER_LIB. When we make an installer for this package, we'll have it set
+this stuff up automatically.

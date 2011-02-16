@@ -11,7 +11,7 @@
 
 #include <cmath>
 
-const int ScriptRunner::c_physics_fps = 10;
+const int ScriptRunner::c_physics_fps = 20;
 
 ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headless, QStringList lib_path) :
     QObject(NULL),
