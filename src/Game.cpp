@@ -591,3 +591,8 @@ void Game::sendChat(QString message)
     for (int i = 0; i < message.length(); i += c_chat_length_limit)
         m_server.sendChat(message.mid(i, c_chat_length_limit));
 }
+
+void Game::placeBlock(const Int3D &block, Message::BlockFaceDirection face)
+{
+    //m_server.sendBlockPlacement(block, face, equipped_item);
+}

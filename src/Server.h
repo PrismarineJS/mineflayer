@@ -97,6 +97,7 @@ public:
     void sendChat(QString message);
     void sendRespawnRequest();
     void sendDiggingStatus(Message::DiggingStatus status, const Int3D & coord);
+    void sendBlockPlacement(Int3D & coord, Message::BlockFaceDirection face, Item block);
 
 private:
     static const QString c_auth_server;

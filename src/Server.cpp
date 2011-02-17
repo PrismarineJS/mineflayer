@@ -106,6 +106,12 @@ void Server::sendDiggingStatus(Message::DiggingStatus status, const Int3D &coord
     sendMessage(QSharedPointer<OutgoingRequest>(new PlayerDiggingRequest(status, notchian_coord.x, notchian_coord.y, notchian_coord.z, Message::PositiveY)));
 }
 
+void Server::sendBlockPlacement(Int3D &coord, Message::BlockFaceDirection face, Item block)
+{
+    Int3D notchian_coord = toNotchianIntMeters(coord);
+    sendMessage(QSharedPointer<OutgoingRequest>(new PlayerBlockPlacementRequest(notchian_coord.x, notchian_coord.y, notchian_coord.z, face, block)));
+}
+
 void Server::handleConnected()
 {
     delete m_parser;
