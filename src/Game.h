@@ -86,7 +86,6 @@ public:
 
 public:
     Game(QUrl connection_info);
-    ~Game();
 
 
     // call every frame passing it the amount of time since the last frame
@@ -153,7 +152,7 @@ private:
     QString m_userName;
 
     QTimer * m_position_update_timer;
-    QTimer * m_digging_timer;
+    QTimer m_digging_timer;
     Int3D m_digging_location;
     int m_digging_counter;
 

@@ -30,7 +30,7 @@ Game::Game(QUrl connection_info) :
     m_userName(connection_info.userName()),
     m_position_update_timer(NULL),
     m_digging_timer(NULL),
-    m_player_held_item(Item::NoItem),
+    m_player_held_item(Block::NoItem),
     m_max_ground_speed(c_standard_max_ground_speed),
     m_terminal_velocity(c_standard_terminal_velocity),
     m_input_acceleration(c_standard_walking_acceleration),
@@ -40,6 +40,8 @@ Game::Game(QUrl connection_info) :
     m_return_code(0)
 {
     initializeStaticData();
+
+    m_digging_timer.setInterval(50);
 
     bool success;
     success = connect(&m_server, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SLOT(handleLoginStatusChanged(Server::LoginStatus)));
@@ -76,17 +78,15 @@ Game::Game(QUrl connection_info) :
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(chatReceived(QString)), this, SLOT(handleChatReceived(QString)));
     Q_ASSERT(success);
-    // pass some signals directly through
+
+    // pass directly through
     success = connect(&m_server, SIGNAL(unloadChunk(Int3D)), this, SLOT(handleUnloadChunk(Int3D)));
     Q_ASSERT(success);
 
-    m_control_state.fill(false, (int)ControlCount);
-}
+    success = connect(&m_digging_timer, SIGNAL(timeout()), this, SLOT(timeToContinueDigging()));
+    Q_ASSERT(success);
 
-Game::~Game()
-{
-    delete m_position_update_timer;
-    delete m_digging_timer;
+    m_control_state.fill(false, (int)ControlCount);
 }
 
 void Game::initializeStaticData()
@@ -370,45 +370,30 @@ bool Game::isBlockLoaded(const Int3D &absolute_location)
 void Game::startDigging(const Int3D &block)
 {
     QMutexLocker locker(&m_mutex);
-    if (m_digging_timer != NULL)
+    if (m_digging_timer.isActive())
         stopDigging();
     m_digging_location = block;
     m_digging_counter = 0;
     m_server.sendDiggingStatus(Message::StartDigging, m_digging_location);
-    m_digging_timer = new QTimer;
-    m_digging_timer->setInterval(10);
-    bool success;
-    success = connect(m_digging_timer, SIGNAL(timeout()), this, SLOT(timeToContinueDigging()));
-    Q_ASSERT(success);
-    m_digging_timer->start();
+    m_digging_timer.start();
 }
 void Game::stopDigging()
 {
     QMutexLocker locker(&m_mutex);
-    if (m_digging_timer == NULL)
+    if (! m_digging_timer.isActive())
         return;
-    m_digging_timer->stop();
+
+    m_digging_timer.stop();
     m_server.sendDiggingStatus(Message::AbortDigging, m_digging_location);
-    delete m_digging_timer;
-    m_digging_timer = NULL;
     emit stoppedDigging(Aborted);
 }
 void Game::timeToContinueDigging()
 {
     QMutexLocker locker(&m_mutex);
-    if (m_digging_timer == NULL)
+    if (! m_digging_timer.isActive())
         return; // race conditions
-    qDebug() << "sending time to continue digging";
     m_server.sendDiggingStatus(Message::ContinueDigging, m_digging_location);
     m_digging_counter++;
-    if (m_digging_counter >= 76) { // TODO: test this number and make it variable
-        // complete
-        qDebug() << "complete";
-        m_server.sendDiggingStatus(Message::BlockBroken, m_digging_location);
-        delete m_digging_timer;
-        m_digging_timer = NULL;
-        emit stoppedDigging(BlockBroken);
-    }
 }
 
 void Game::handleLoginStatusChanged(Server::LoginStatus status)
@@ -466,7 +451,7 @@ void Game::handlePlayerPositionAndLookUpdated(Server::EntityPosition position)
         m_player_position.yaw = position.yaw;
         m_player_position.pitch = position.pitch;
 
-        m_position_update_timer = new QTimer;
+        m_position_update_timer = new QTimer(this);
         m_position_update_timer->setInterval(c_position_update_interval_ms);
         bool success;
         success = connect(m_position_update_timer, SIGNAL(timeout()), this, SLOT(sendPosition()));
@@ -627,6 +612,13 @@ void Game::handleMultiBlockUpdate(Int3D chunk_key, QHash<Int3D, Block> new_block
 void Game::handleBlockUpdate(Int3D absolute_location, Block new_block)
 {
     QMutexLocker locker(&m_mutex);
+
+    if (m_digging_timer.isActive() && absolute_location == m_digging_location) {
+        m_digging_timer.stop();
+        m_server.sendDiggingStatus(Message::BlockBroken, m_digging_location);
+        emit stoppedDigging(BlockBroken);
+    }
+
     Int3D chunk_key =  chunkKey(absolute_location);
     QSharedPointer<Chunk> chunk = m_chunks.value(chunk_key, QSharedPointer<Chunk>());
     if (chunk.isNull())
