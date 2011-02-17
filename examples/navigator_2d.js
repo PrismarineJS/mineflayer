@@ -5,6 +5,7 @@ mf.include("player_tracker.js");
 mf.include("arrays.js");
 
 mf.include("connection_notice.js");
+mf.include("auto_respawn.js");
 mf.include("quitter.js");
 
 var path_finder_2d;
