@@ -30,8 +30,8 @@ public:
         ControlCount
     };
     enum StoppedDiggingReason {
-        DiggingCompleted=1,
-        DiggingAborted=2,
+        BlockBroken=0,
+        Aborted=1,
     };
     class Entity {
     public:

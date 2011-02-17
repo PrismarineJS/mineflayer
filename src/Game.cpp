@@ -380,6 +380,7 @@ void Game::startDigging(const Int3D &block)
     bool success;
     success = connect(m_digging_timer, SIGNAL(timeout()), this, SLOT(timeToContinueDigging()));
     Q_ASSERT(success);
+    m_digging_timer->start();
 }
 void Game::stopDigging()
 {
@@ -390,21 +391,23 @@ void Game::stopDigging()
     m_server.sendDiggingStatus(Message::AbortDigging, m_digging_location);
     delete m_digging_timer;
     m_digging_timer = NULL;
-    emit stoppedDigging(DiggingAborted);
+    emit stoppedDigging(Aborted);
 }
 void Game::timeToContinueDigging()
 {
     QMutexLocker locker(&m_mutex);
     if (m_digging_timer == NULL)
         return; // race conditions
+    qDebug() << "sending time to continue digging";
     m_server.sendDiggingStatus(Message::ContinueDigging, m_digging_location);
     m_digging_counter++;
     if (m_digging_counter >= 76) { // TODO: test this number and make it variable
         // complete
+        qDebug() << "complete";
         m_server.sendDiggingStatus(Message::BlockBroken, m_digging_location);
         delete m_digging_timer;
         m_digging_timer = NULL;
-        emit stoppedDigging(DiggingCompleted);
+        emit stoppedDigging(BlockBroken);
     }
 }
 
