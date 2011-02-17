@@ -21,9 +21,6 @@ const int Game::c_chat_length_limit = 100;
 const Int3D Game::c_chunk_size(16, 16, 128);
 const Block Game::c_air(Item::Air, 0, 0, 0);
 
-bool Game::s_initialized = false;
-QHash<Item::ItemType, int> Game::s_item_stack_height;
-
 Game::Game(QUrl connection_info) :
     m_mutex(QMutex::Recursive),
     m_server(connection_info),
@@ -39,7 +36,7 @@ Game::Game(QUrl connection_info) :
     m_jump_was_pressed(false),
     m_return_code(0)
 {
-    initializeStaticData();
+    Item::initializeStaticData();
 
     bool success;
     success = connect(&m_server, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SLOT(handleLoginStatusChanged(Server::LoginStatus)));
@@ -87,200 +84,6 @@ Game::~Game()
 {
     delete m_position_update_timer;
     delete m_digging_timer;
-}
-
-void Game::initializeStaticData()
-{
-    if (s_initialized)
-        return;
-    s_initialized = true;
-
-    s_item_stack_height.insert(Item::NoItem, 0);
-    s_item_stack_height.insert(Item::Air, 0);
-    s_item_stack_height.insert(Item::Stone, 64);
-    s_item_stack_height.insert(Item::Grass, 64);
-    s_item_stack_height.insert(Item::Dirt, 64);
-    s_item_stack_height.insert(Item::Cobblestone, 64);
-    s_item_stack_height.insert(Item::WoodenPlank, 64);
-    s_item_stack_height.insert(Item::Sapling, 64);
-    s_item_stack_height.insert(Item::Bedrock, 64);
-    s_item_stack_height.insert(Item::Water, 64);
-    s_item_stack_height.insert(Item::StationaryWater, 64);
-    s_item_stack_height.insert(Item::Lava, 64);
-    s_item_stack_height.insert(Item::StationaryLava, 64);
-    s_item_stack_height.insert(Item::Sand, 64);
-    s_item_stack_height.insert(Item::Gravel, 64);
-    s_item_stack_height.insert(Item::GoldOre, 64);
-    s_item_stack_height.insert(Item::IronOre, 64);
-    s_item_stack_height.insert(Item::CoalOre, 64);
-    s_item_stack_height.insert(Item::Wood, 64);
-    s_item_stack_height.insert(Item::Leaves, 64);
-    s_item_stack_height.insert(Item::Sponge, 64);
-    s_item_stack_height.insert(Item::Glass, 64);
-    s_item_stack_height.insert(Item::LapisLazuliOre, 64);
-    s_item_stack_height.insert(Item::LapisLazuliBlock, 64);
-    s_item_stack_height.insert(Item::Dispenser, 64);
-    s_item_stack_height.insert(Item::Sandstone, 64);
-    s_item_stack_height.insert(Item::NoteBlock, 64);
-    s_item_stack_height.insert(Item::Wool, 64);
-    s_item_stack_height.insert(Item::YellowFlower, 64);
-    s_item_stack_height.insert(Item::RedRose, 64);
-    s_item_stack_height.insert(Item::BrownMushroom, 64);
-    s_item_stack_height.insert(Item::RedMushroom, 64);
-    s_item_stack_height.insert(Item::GoldBlock, 64);
-    s_item_stack_height.insert(Item::IronBlock, 64);
-    s_item_stack_height.insert(Item::DoubleStoneSlab, 64);
-    s_item_stack_height.insert(Item::StoneSlab, 64);
-    s_item_stack_height.insert(Item::Brick, 64);
-    s_item_stack_height.insert(Item::Tnt, 64);
-    s_item_stack_height.insert(Item::Bookshelf, 64);
-    s_item_stack_height.insert(Item::MossStone, 64);
-    s_item_stack_height.insert(Item::Obsidian, 64);
-    s_item_stack_height.insert(Item::Torch, 64);
-    s_item_stack_height.insert(Item::Fire, 64);
-    s_item_stack_height.insert(Item::MonsterSpawner, 64);
-    s_item_stack_height.insert(Item::WoodenStairs, 64);
-    s_item_stack_height.insert(Item::Chest, 64);
-    s_item_stack_height.insert(Item::RedstoneWire_placed, 64);
-    s_item_stack_height.insert(Item::DiamondOre, 64);
-    s_item_stack_height.insert(Item::DiamondBlock, 64);
-    s_item_stack_height.insert(Item::Workbench, 64);
-    s_item_stack_height.insert(Item::Crops, 64);
-    s_item_stack_height.insert(Item::Farmland, 64);
-    s_item_stack_height.insert(Item::Furnace, 64);
-    s_item_stack_height.insert(Item::BurningFurnace, 64);
-    s_item_stack_height.insert(Item::SignPost_placed, 1);
-    s_item_stack_height.insert(Item::WoodenDoor_placed, 1);
-    s_item_stack_height.insert(Item::Ladder, 64);
-    s_item_stack_height.insert(Item::MinecartTracks, 64);
-    s_item_stack_height.insert(Item::CobblestoneStairs, 64);
-    s_item_stack_height.insert(Item::WallSign_placed, 1);
-    s_item_stack_height.insert(Item::Lever, 64);
-    s_item_stack_height.insert(Item::StonePressurePlate, 64);
-    s_item_stack_height.insert(Item::IronDoor_placed, 1);
-    s_item_stack_height.insert(Item::WoodenPressurePlate, 64);
-    s_item_stack_height.insert(Item::RedstoneOre, 64);
-    s_item_stack_height.insert(Item::GlowingRedstoneOre, 64);
-    s_item_stack_height.insert(Item::RedstoneTorchOff_placed, 64);
-    s_item_stack_height.insert(Item::RedstoneTorchOn, 64);
-    s_item_stack_height.insert(Item::StoneButton, 64);
-    s_item_stack_height.insert(Item::Snow, 64);
-    s_item_stack_height.insert(Item::Ice, 64);
-    s_item_stack_height.insert(Item::SnowBlock, 64);
-    s_item_stack_height.insert(Item::Cactus, 64);
-    s_item_stack_height.insert(Item::Clay, 64);
-    s_item_stack_height.insert(Item::SugarCane_placed, 64);
-    s_item_stack_height.insert(Item::Jukebox, 64);
-    s_item_stack_height.insert(Item::Fence, 64);
-    s_item_stack_height.insert(Item::Pumpkin, 64);
-    s_item_stack_height.insert(Item::Netherrack, 64);
-    s_item_stack_height.insert(Item::SoulSand, 64);
-    s_item_stack_height.insert(Item::Glowstone, 64);
-    s_item_stack_height.insert(Item::Portal, 0);
-    s_item_stack_height.insert(Item::JackOLantern, 64);
-    s_item_stack_height.insert(Item::Cake_placed, 1);
-
-    s_item_stack_height.insert(Item::IronShovel, 1);
-    s_item_stack_height.insert(Item::IronPickaxe, 1);
-    s_item_stack_height.insert(Item::IronAxe, 1);
-    s_item_stack_height.insert(Item::FlintAndSteel, 1);
-    s_item_stack_height.insert(Item::Apple, 1);
-    s_item_stack_height.insert(Item::Bow, 1);
-    s_item_stack_height.insert(Item::Arrow, 64);
-    s_item_stack_height.insert(Item::Coal, 64);
-    s_item_stack_height.insert(Item::Diamond, 64);
-    s_item_stack_height.insert(Item::IronIngot, 64);
-    s_item_stack_height.insert(Item::GoldIngot, 64);
-    s_item_stack_height.insert(Item::IronSword, 1);
-    s_item_stack_height.insert(Item::WoodenSword, 1);
-    s_item_stack_height.insert(Item::WoodenShovel, 1);
-    s_item_stack_height.insert(Item::WoodenPickaxe, 1);
-    s_item_stack_height.insert(Item::WoodenAxe, 1);
-    s_item_stack_height.insert(Item::StoneSword, 1);
-    s_item_stack_height.insert(Item::StoneShovel, 1);
-    s_item_stack_height.insert(Item::StonePickaxe, 1);
-    s_item_stack_height.insert(Item::StoneAxe, 1);
-    s_item_stack_height.insert(Item::DiamondSword, 1);
-    s_item_stack_height.insert(Item::DiamondShovel, 1);
-    s_item_stack_height.insert(Item::DiamondPickaxe, 1);
-    s_item_stack_height.insert(Item::DiamondAxe, 1);
-    s_item_stack_height.insert(Item::Stick, 64);
-    s_item_stack_height.insert(Item::Bowl, 64);
-    s_item_stack_height.insert(Item::MushroomSoup, 1);
-    s_item_stack_height.insert(Item::GoldSword, 1);
-    s_item_stack_height.insert(Item::GoldShovel, 1);
-    s_item_stack_height.insert(Item::GoldPickaxe, 1);
-    s_item_stack_height.insert(Item::GoldAxe, 1);
-    s_item_stack_height.insert(Item::String, 64);
-    s_item_stack_height.insert(Item::Feather, 64);
-    s_item_stack_height.insert(Item::Sulphur, 64);
-    s_item_stack_height.insert(Item::WoodenHoe, 1);
-    s_item_stack_height.insert(Item::StoneHoe, 1);
-    s_item_stack_height.insert(Item::IronHoe, 1);
-    s_item_stack_height.insert(Item::DiamondHoe, 1);
-    s_item_stack_height.insert(Item::GoldHoe, 1);
-    s_item_stack_height.insert(Item::Seeds, 64);
-    s_item_stack_height.insert(Item::Wheat, 64);
-    s_item_stack_height.insert(Item::Bread, 1);
-    s_item_stack_height.insert(Item::LeatherHelmet, 1);
-    s_item_stack_height.insert(Item::LeatherChestplate, 1);
-    s_item_stack_height.insert(Item::LeatherLeggings, 1);
-    s_item_stack_height.insert(Item::LeatherBoots, 1);
-    s_item_stack_height.insert(Item::ChainmailHelmet, 1);
-    s_item_stack_height.insert(Item::ChainmailChestplate, 1);
-    s_item_stack_height.insert(Item::ChainmailLeggings, 1);
-    s_item_stack_height.insert(Item::ChainmailBoots, 1);
-    s_item_stack_height.insert(Item::IronHelmet, 1);
-    s_item_stack_height.insert(Item::IronChestplate, 1);
-    s_item_stack_height.insert(Item::IronLeggings, 1);
-    s_item_stack_height.insert(Item::IronBoots, 1);
-    s_item_stack_height.insert(Item::DiamondHelmet, 1);
-    s_item_stack_height.insert(Item::DiamondChestplate, 1);
-    s_item_stack_height.insert(Item::DiamondLeggings, 1);
-    s_item_stack_height.insert(Item::DiamondBoots, 1);
-    s_item_stack_height.insert(Item::GoldHelmet, 1);
-    s_item_stack_height.insert(Item::GoldChestplate, 1);
-    s_item_stack_height.insert(Item::GoldLeggings, 1);
-    s_item_stack_height.insert(Item::GoldBoots, 1);
-    s_item_stack_height.insert(Item::Flint, 1);
-    s_item_stack_height.insert(Item::RawPorkchop, 1);
-    s_item_stack_height.insert(Item::CookedPorkchop, 1);
-    s_item_stack_height.insert(Item::Paintings, 64);
-    s_item_stack_height.insert(Item::GoldenApple, 1);
-    s_item_stack_height.insert(Item::Sign, 1);
-    s_item_stack_height.insert(Item::WoodenDoor, 1);
-    s_item_stack_height.insert(Item::Bucket, 1);
-    s_item_stack_height.insert(Item::WaterBucket, 1);
-    s_item_stack_height.insert(Item::LavaBucket, 1);
-    s_item_stack_height.insert(Item::Minecart, 1);
-    s_item_stack_height.insert(Item::Saddle, 1);
-    s_item_stack_height.insert(Item::IronDoor, 1);
-    s_item_stack_height.insert(Item::Redstone, 64);
-    s_item_stack_height.insert(Item::Snowball, 16);
-    s_item_stack_height.insert(Item::Boat, 1);
-    s_item_stack_height.insert(Item::Leather, 64);
-    s_item_stack_height.insert(Item::Milk, 1);
-    s_item_stack_height.insert(Item::ClayBrick, 64);
-    s_item_stack_height.insert(Item::ClayBalls, 64);
-    s_item_stack_height.insert(Item::SugarCane, 64);
-    s_item_stack_height.insert(Item::Paper, 64);
-    s_item_stack_height.insert(Item::Book, 64);
-    s_item_stack_height.insert(Item::Slimeball, 64);
-    s_item_stack_height.insert(Item::StorageMinecart, 1);
-    s_item_stack_height.insert(Item::PoweredMinecart, 1);
-    s_item_stack_height.insert(Item::Egg, 16);
-    s_item_stack_height.insert(Item::Compass, 64);
-    s_item_stack_height.insert(Item::FishingRod, 64);
-    s_item_stack_height.insert(Item::Clock, 64);
-    s_item_stack_height.insert(Item::GlowstoneDust, 64);
-    s_item_stack_height.insert(Item::RawFish, 1);
-    s_item_stack_height.insert(Item::CookedFish, 1);
-    s_item_stack_height.insert(Item::InkSac, 64);
-    s_item_stack_height.insert(Item::Bone, 64);
-    s_item_stack_height.insert(Item::Sugar, 64);
-    s_item_stack_height.insert(Item::Cake, 1);
-    s_item_stack_height.insert(Item::GoldMusicDisc, 1);
-    s_item_stack_height.insert(Item::GreenMusicDisc, 1);
 }
 
 void Game::setControlActivated(Control control, bool activated)
@@ -783,7 +586,7 @@ bool Game::collisionInRange(const Int3D & boundingBoxMin, const Int3D & bounding
     for (cursor.x = boundingBoxMin.x; cursor.x <= boundingBoxMax.x; cursor.x++)
         for (cursor.y = boundingBoxMin.y; cursor.y <= boundingBoxMax.y; cursor.y++)
             for (cursor.z = boundingBoxMin.z; cursor.z <= boundingBoxMax.z; cursor.z++)
-                if (blockAt(cursor).type() != Item::Air)
+                if (Item::blockIsPhysical(blockAt(cursor).type()))
                     return true;
     return false;
 }
@@ -794,10 +597,4 @@ void Game::sendChat(QString message)
     // limit chat length. split it up if necessary.
     for (int i = 0; i < message.length(); i += c_chat_length_limit)
         m_server.sendChat(message.mid(i, c_chat_length_limit));
-}
-
-int Game::itemStackHeight(Item::ItemType item)
-{
-    initializeStaticData();
-    return s_item_stack_height.value(item, -1);
 }

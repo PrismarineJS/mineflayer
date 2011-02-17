@@ -460,7 +460,7 @@ QScriptValue ScriptRunner::itemStackHeight(QScriptContext *context, QScriptEngin
     QScriptValue value = context->argument(0);
     if (!me->maybeThrowArgumentError(context, error, value.isNumber()))
         return error;
-    return me->m_game->itemStackHeight((Item::ItemType)value.toInteger());
+    return Item::itemStackHeight((Item::ItemType)value.toInteger());
 }
 
 QScriptValue ScriptRunner::health(QScriptContext *context, QScriptEngine *engine)

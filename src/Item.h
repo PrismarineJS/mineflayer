@@ -1,7 +1,7 @@
 #ifndef ITEM_H
 #define ITEM_H
 
-#include <QDebug>
+#include <QHash>
 
 class Item {
 public:
@@ -145,6 +145,19 @@ public:
     ItemType type;
     qint8 count;
     qint16 metadata;
+
+
+private:
+    static bool s_initialized;
+
+    static QHash<Item::ItemType, int> s_item_stack_height;
+    static QHash<Item::ItemType, bool> s_block_is_physical;
+
+public:
+    static void initializeStaticData();
+    static int itemStackHeight(Item::ItemType item);
+    static bool blockIsPhysical(Item::ItemType item);
+
 };
 
 

@@ -117,7 +117,6 @@ public:
 
     void sendChat(QString message);
 
-    static int itemStackHeight(Item::ItemType item);
 
     // if you want you can cheat and override the default physics settings:
     void setInputAcceleration(float value) { m_input_acceleration = value; }
@@ -147,7 +146,6 @@ private:
     static const Int3D c_chunk_size;
     static const Block c_air;
     static Int3D chunkKey(const Int3D & coord);
-    static QHash<Item::ItemType, int> s_item_stack_height;
 
     Server m_server;
     QString m_userName;
@@ -173,8 +171,6 @@ private:
     QVector<bool> m_control_state;
     bool m_jump_was_pressed;
 
-    static bool s_initialized;
-
     int m_return_code;
 
 private:
@@ -183,8 +179,6 @@ private:
                                  m_player_position.vel.y * m_player_position.vel.y; }
     void getPlayerBoundingBox(Int3D & boundingBoxMin, Int3D & boundingBoxMax);
     bool collisionInRange(const Int3D & boundingBoxMin, const Int3D & boundingBoxMax);
-
-    static void initializeStaticData();
 
 private slots:
     void handleLoginStatusChanged(Server::LoginStatus status);
