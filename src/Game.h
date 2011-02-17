@@ -114,6 +114,8 @@ public:
     void startDigging(const Int3D &block);
     void stopDigging();
 
+    void placeBlock(const Int3D &block, Message::BlockFaceDirection face);
+
     void sendChat(QString message);
 
     static int itemStackHeight(Item::ItemType item);

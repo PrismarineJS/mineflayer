@@ -14,6 +14,8 @@ mf.onChat(function(username, message) {
         dig();
     } else if (message == "look") {
         mf.lookAt(player_tracker.entityForPlayer(username).position);
+    } else if (message == "c'mere") {
+        mf.chat("/tp " + mf.username() + " " + username);
     }
 });
 

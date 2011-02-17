@@ -30,7 +30,7 @@ Game::Game(QUrl connection_info) :
     m_userName(connection_info.userName()),
     m_position_update_timer(NULL),
     m_digging_timer(NULL),
-    m_player_held_item(Block::NoItem),
+    m_player_held_item(Item::NoItem),
     m_max_ground_speed(c_standard_max_ground_speed),
     m_terminal_velocity(c_standard_terminal_velocity),
     m_input_acceleration(c_standard_walking_acceleration),
@@ -375,6 +375,7 @@ void Game::startDigging(const Int3D &block)
     m_digging_location = block;
     m_digging_counter = 0;
     m_server.sendDiggingStatus(Message::StartDigging, m_digging_location);
+    m_server.sendDiggingStatus(Message::ContinueDigging, m_digging_location);
     m_digging_timer.start();
 }
 void Game::stopDigging()
