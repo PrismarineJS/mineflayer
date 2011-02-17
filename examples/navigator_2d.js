@@ -39,11 +39,11 @@ if (path_finder_2d === undefined) {
                     ].filtered(function(point) {
                         return (
                             // leg room
-                            mf.blockAt(point).type === mf.ItemType.Air &&
+                            !mf.isPhysical(mf.blockAt(point).type) &&
                             // head room
-                            mf.blockAt(point.offset(0, 0, 1)).type === mf.ItemType.Air &&
+                            !mf.isPhysical(mf.blockAt(point.offset(0, 0, 1)).type) &&
                             // stand on something
-                            mf.blockAt(point.offset(0, 0, -1)).type !== mf.ItemType.Air);
+                            mf.isPhysical(mf.blockAt(point.offset(0, 0, -1)).type));
                     });
                 },
                 "distance_func": function(a, b) { return 1; },

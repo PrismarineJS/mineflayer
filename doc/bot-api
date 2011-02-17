@@ -234,6 +234,19 @@ mf.username()
 mf.itemStackHeight(item)
 
 /**
+ * Returns whether the block has any physical presence with respect to physics.
+ * This is false for air, flowers, torches, etc.
+ *
+ * Examples:
+ * if (mf.isPhysical(mf.blockAt(some_point).type)) {
+ *     // water physics
+ * }
+ *
+ * @param {ItemType} block_type
+ */
+mf.isPhysical(block_type)
+
+/**
  * Tells your health.
  * @return {Number} health The number of half-hearts that you have, out of 20.
  */
