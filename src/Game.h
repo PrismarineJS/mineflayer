@@ -53,8 +53,8 @@ public:
     class NamedPlayerEntity : public Entity {
     public:
         const QString username;
-        Block::ItemType held_item;
-        NamedPlayerEntity(int entity_id, Server::EntityPosition position, QString username, Block::ItemType held_item) :
+        Item::ItemType held_item;
+        NamedPlayerEntity(int entity_id, Server::EntityPosition position, QString username, Item::ItemType held_item) :
                 Entity(NamedPlayer, entity_id, position), username(username), held_item(held_item) {}
         Entity * clone() { return new NamedPlayerEntity(entity_id, position, username, held_item); }
     };
@@ -67,8 +67,8 @@ public:
     };
     class PickupEntity : public Entity {
     public:
-        const Message::Item item;
-        PickupEntity(int entity_id, Server::EntityPosition position, Message::Item item) :
+        const Item item;
+        PickupEntity(int entity_id, Server::EntityPosition position, Item item) :
                 Entity(Pickup, entity_id, position), item(item) {}
         Entity * clone() { return new PickupEntity(entity_id, position, item); }
     };
@@ -117,7 +117,7 @@ public:
 
     void sendChat(QString message);
 
-    static int itemStackHeight(Block::ItemType item);
+    static int itemStackHeight(Item::ItemType item);
 
     // if you want you can cheat and override the default physics settings:
     void setInputAcceleration(float value) { m_input_acceleration = value; }
@@ -147,7 +147,7 @@ private:
     static const Int3D c_chunk_size;
     static const Block c_air;
     static Int3D chunkKey(const Int3D & coord);
-    static QHash<Block::ItemType, int> s_item_stack_height;
+    static QHash<Item::ItemType, int> s_item_stack_height;
 
     Server m_server;
     QString m_userName;
@@ -160,7 +160,7 @@ private:
     Server::EntityPosition m_player_position;
     int m_player_health;
     int m_player_entity_id;
-    Block::ItemType m_player_held_item;
+    Item::ItemType m_player_held_item;
     QHash<Int3D, QSharedPointer<Chunk> > m_chunks;
     QHash<int, QSharedPointer<Entity> > m_entities;
 
@@ -194,8 +194,8 @@ private slots:
     void handlePlayerHealthUpdated(int new_health);
     void handleUnloadChunk(const Int3D & coord);
 
-    void handleNamedPlayerSpawned(int entity_id, QString player_name, Server::EntityPosition position, Block::ItemType held_item);
-    void handlePickupSpawned(int entity_id, Message::Item item, Server::EntityPosition position);
+    void handleNamedPlayerSpawned(int entity_id, QString player_name, Server::EntityPosition position, Item::ItemType held_item);
+    void handlePickupSpawned(int entity_id, Item item, Server::EntityPosition position);
     void handleMobSpawned(int entity_id, MobSpawnResponse::MobType mob_type, Server::EntityPosition position);
     void handleEntityDestroyed(int entity_id);
     void handleEntityMovedRelatively(int entity_id, Server::EntityPosition movement);

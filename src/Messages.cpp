@@ -52,7 +52,7 @@ void OutgoingRequest::writeValue(QDataStream & stream, QString value)
 void OutgoingRequest::writeValue(QDataStream &stream, Item value)
 {
     writeValue(stream, (qint16)value.type);
-    if (value.type == Block::NoItem)
+    if (value.type == Item::NoItem)
         return;
     writeValue(stream, value.count);
     writeValue(stream, value.metadata);
@@ -211,8 +211,8 @@ int IncomingResponse::parseValue(QByteArray buffer, int index, Item &item)
     qint16 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    item.type = (Block::ItemType)tmp;
-    if (item.type != Block::NoItem) {
+    item.type = (Item::ItemType)tmp;
+    if (item.type != Item::NoItem) {
         if ((index = parseValue(buffer, index, item.count)) == -1)
             return -1;
         if ((index = parseValue(buffer, index, item.metadata)) == -1)
@@ -294,7 +294,7 @@ int EntityEquipmentResponse::parse(QByteArray buffer)
     qint16 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    item_type = (Block::ItemType)tmp;
+    item_type = (Item::ItemType)tmp;
     if ((index = parseValue(buffer, index, unknown)) == -1)
         return -1;
     return index;
@@ -447,7 +447,7 @@ int NamedEntitySpawnResponse::parse(QByteArray buffer)
     qint16 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    held_item = (Block::ItemType)tmp;
+    held_item = (Item::ItemType)tmp;
     return index;
 }
 
@@ -732,7 +732,7 @@ int MultiBlockChangeResponse::parse(QByteArray buffer)
         qint8 block_type;
         if ((index = parseValue(buffer, index, block_type)) == -1)
             return -1;
-        new_block_types.replace(i, (Block::ItemType)block_type);
+        new_block_types.replace(i, (Item::ItemType)block_type);
     }
     new_block_metadatas.clear();
     new_block_metadatas.resize(block_count);
@@ -757,7 +757,7 @@ int BlockChangeResponse::parse(QByteArray buffer)
     qint8 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    new_block_type = (Block::ItemType)tmp;
+    new_block_type = (Item::ItemType)tmp;
     if ((index = parseValue(buffer, index, metadata)) == -1)
         return -1;
     return index;

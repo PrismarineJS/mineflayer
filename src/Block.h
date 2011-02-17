@@ -2,151 +2,15 @@
 #define BLOCK_H
 
 #include <QDebug>
+#include "Item.h"
 
 class Block {
 public:
-    #include "ItemTypeEnum.h"
-
-    enum WoodMetadata {
-        NormalTrunkTexture = 0,
-        RedwoodTrunkTexture = 1,
-        BirchTrunkTexture = 2,
-    };
-
-    enum LeavesMetadata {
-        NormalLeavesTexture = 0,
-        RedwoodLeavesTexture = 1,
-        BirchLeavesTexture = 2,
-    };
-
-    enum CoalMetadata {
-        NormalCoal = 0,
-        CharCoal = 1,
-    };
-
-    enum WoolMetadata {
-        WhiteWool = 0,
-        OrangeWool = 1,
-        MagentaWool = 2,
-        LightBlueWool = 3,
-        YellowWool = 4,
-        LightGreenWool = 5,
-        PinkWool = 6,
-        GrayWool = 7,
-        LightGrayWool = 8,
-        CyanWool = 9,
-        PurpleWool = 10,
-        BlueWool = 11,
-        BrownWool = 12,
-        DarkGreenWool = 13,
-        RedWool = 14,
-        BlackWool = 15,
-    };
-
-    enum DyeMetadata {
-        InkSacDye = 0,
-        RoseRedDye = 1,
-        CactusGreenDye = 2,
-        CocoBeansDye = 3,
-        LapisLazuliDye = 4,
-        PurpleDye = 5,
-        CyanDye = 6,
-        LightGrayDye = 7,
-        GrayDye = 8,
-        PinkDye = 9,
-        LimeDye = 10,
-        DandelionYellowDye = 11,
-        LightBlueDye = 12,
-        MagentaDye = 13,
-        OrangeDye = 14,
-        BoneMealDye = 15,
-    };
-
-    enum TorchMetadata {
-        SouthTorch = 0,
-        NorthTorch = 1,
-        WestTorch = 2,
-        EastTorch = 3,
-        FloorTorch = 4,
-    };
-
-    enum MinecartTrackMetadata {
-        FlatEastWestTrack = 0,
-        FlatNorthSouthTrack = 1,
-        AscendingSouthTrack = 2,
-        AscendingNorthTrack = 3,
-        AscendingEastTrack = 4,
-        AscendingWestTrack = 5,
-        CornerNorthEastTrack = 6,
-        CornerSouthEastTrack = 7,
-        CornerSouthWestTrack = 8,
-        CornerNorthWestTrack = 9,
-    };
-
-    enum LadderMetadata {
-        EastLadder = 2,
-        WestLadder = 3,
-        NorthLadder = 4,
-        SouthLadder = 5,
-    };
-
-    enum StairsMetadata {
-        AscendingSouthStairs = 0,
-        AscendingNorthStairs = 1,
-        AscendingWestStairs = 2,
-        AscendingEastStairs = 3,
-    };
-
-    enum LeverPosition {
-        WallFacingSouthLever = 0,
-        WallFacingNorthLever = 1,
-        WallFacingWestLever = 2,
-        WallFacingEastLever = 3,
-        GroundFacingWestLever = 4, // lever points west when off
-        GroundFacingSouthLever = 5, // lever points south when off
-    };
-
-    enum DoorHingeLocation {
-        NorthEastDoorHinge = 0,
-        SouthEastDoorHinge = 1,
-        SouthWestDoorHinge = 2,
-        NirthWestDoorHinge = 3,
-    };
-
-    enum ButtonDirection {
-        SouthFacingButton = 1,
-        NorthFacingButton = 2,
-        WestFacingButton = 3,
-        EastFacingButton = 4,
-    };
-
-    enum WallSignMetadata {
-        EastFacingWallSign = 2,
-        WestFacingWallSign = 3,
-        NorthFacingWallSign = 4,
-        SouthFacingWallSign = 5,
-    };
-
-    enum FurnaceMetadata {
-        EastFacingFurnace = 2,
-        WestFacingFurnace = 3,
-        NorthFacingFurnace = 4,
-        SouthFacingFurnace = 5,
-    };
-
-    enum PumpkinMetadata {
-        EastFacingPumpkin = 0,
-        SouthFacingPumpkin = 1,
-        WestFacingPumpkin = 2,
-        NorthFacingPumpkin = 3,
-    };
-
-public:
-    inline void setType(ItemType type) {
+    inline void setType(Item::ItemType type) {
         Q_ASSERT((uint)type <= 0xff);
         m_type = type;
     }
-    inline ItemType type() const { return (ItemType)m_type; }
+    inline Item::ItemType type() const { return (Item::ItemType)m_type; }
 
     // [0, 15] - how much light from non-skylight
     inline void setLight(int light) {
@@ -168,23 +32,23 @@ public:
     }
 
     // specific metadata getters
-    inline WoodMetadata woodMetadata() const {
-        Q_ASSERT(type() == Wood);
-        return (WoodMetadata) m_metadata;
+    inline Item::WoodMetadata woodMetadata() const {
+        Q_ASSERT(type() == Item::Wood);
+        return (Item::WoodMetadata) m_metadata;
     }
-    inline LeavesMetadata leavesMetadata() const {
-        Q_ASSERT(type() == Leaves);
-        return (LeavesMetadata) m_metadata;
+    inline Item::LeavesMetadata leavesMetadata() const {
+        Q_ASSERT(type() == Item::Item::Leaves);
+        return (Item::LeavesMetadata) m_metadata;
     }
-    inline CoalMetadata coalMetadata() const {
-        Q_ASSERT(type() == Coal);
-        return (CoalMetadata) m_metadata;
+    inline Item::CoalMetadata coalMetadata() const {
+        Q_ASSERT(type() == Item::Coal);
+        return (Item::CoalMetadata) m_metadata;
     }
 
     // 0x0 is a freshly planted sapling. The data value is
     // incremented at random intervals. When it becomes 15, a new tree is created in its place.
     inline int saplingMetadata() const {
-        Q_ASSERT(type() == Sapling);
+        Q_ASSERT(type() == Item::Sapling);
         return m_metadata;
     }
 
@@ -192,21 +56,21 @@ public:
     // incremented at random intervals. When it becomes 15, a new cactus block
     // is created on top as long as the total height does not exceed 3.
     inline int cactusMetadata() const {
-        Q_ASSERT(type() == Cactus);
+        Q_ASSERT(type() == Item::Cactus);
         return m_metadata;
     }
 
     // 0x0 is a full block. Goes up to 0x7, If bit 0x8 is set,
     // this liquid is "falling" and only spreads downward.
     inline int waterMetadata() const {
-        Q_ASSERT(type() == Water);
+        Q_ASSERT(type() == Item::Water);
         return m_metadata;
     }
 
     // 0x0 is a full block. Can only go up to 0x3. If bit 0x8 is set,
     // this liquid is "falling" and only spreads downward.
     inline int lavaMetadata() const {
-        Q_ASSERT(type() == Lava);
+        Q_ASSERT(type() == Item::Lava);
         return m_metadata;
     }
 
@@ -214,102 +78,102 @@ public:
     // wetness. The wetness value depends on how far the block is away
     // from water.
     inline int farmlandMetadata() const {
-        Q_ASSERT(type() == Farmland);
+        Q_ASSERT(type() == Item::Farmland);
         return m_metadata;
     }
 
     // Crops Metadata: Crops grow from 0x0 to 0x7.
     inline int cropsMetadata() const {
-        Q_ASSERT(type() == Crops);
+        Q_ASSERT(type() == Item::Crops);
         return m_metadata;
     }
-    inline WoolMetadata woolMetadata() const {
-        Q_ASSERT(type() == Wool);
-        return (WoolMetadata) m_metadata;
+    inline Item::WoolMetadata woolMetadata() const {
+        Q_ASSERT(type() == Item::Wool);
+        return (Item::WoolMetadata) m_metadata;
     }
 
-    inline DyeMetadata dyeMetadata() const {
-        Q_ASSERT(type() == InkSac);
-        return (DyeMetadata) m_metadata;
+    inline Item::DyeMetadata dyeMetadata() const {
+        Q_ASSERT(type() == Item::InkSac);
+        return (Item::DyeMetadata) m_metadata;
     }
 
-    inline TorchMetadata torchMetadata() const {
-        Q_ASSERT(type() == Torch);
-        return (TorchMetadata) m_metadata;
+    inline Item::TorchMetadata torchMetadata() const {
+        Q_ASSERT(type() == Item::Torch);
+        return (Item::TorchMetadata) m_metadata;
     }
 
     inline int redstoneMetadata() const {
-        Q_ASSERT(type() == RedstoneWire_placed);
+        Q_ASSERT(type() == Item::RedstoneWire_placed);
         return m_metadata;
     }
 
-    inline MinecartTrackMetadata minecartTrackMetadata() const {
-        Q_ASSERT(type() == MinecartTracks);
-        return (MinecartTrackMetadata) m_metadata;
+    inline Item::MinecartTrackMetadata minecartTrackMetadata() const {
+        Q_ASSERT(type() == Item::MinecartTracks);
+        return (Item::MinecartTrackMetadata) m_metadata;
     }
 
-    inline LadderMetadata ladderMetadata() const {
-        Q_ASSERT(type() == Ladder);
-        return (LadderMetadata) m_metadata;
+    inline Item::LadderMetadata ladderMetadata() const {
+        Q_ASSERT(type() == Item::Ladder);
+        return (Item::LadderMetadata) m_metadata;
     }
 
-    inline StairsMetadata stairsMetadata() const {
-        Q_ASSERT(type() == WoodenStairs || type() == CobblestoneStairs);
-        return (StairsMetadata) m_metadata;
+    inline Item::StairsMetadata stairsMetadata() const {
+        Q_ASSERT(type() == Item::WoodenStairs || type() == Item::CobblestoneStairs);
+        return (Item::StairsMetadata) m_metadata;
     }
 
     inline bool leverState() const {
-        Q_ASSERT(type() == Lever);
+        Q_ASSERT(type() == Item::Lever);
         return (m_metadata & 0x8) != 0;
     }
-    inline LeverPosition leverPosition() const {
-        Q_ASSERT(type() == Lever);
-        return (LeverPosition)(m_metadata & 0x7);
+    inline Item::LeverPosition leverPosition() const {
+        Q_ASSERT(type() == Item::Lever);
+        return (Item::LeverPosition)(m_metadata & 0x7);
     }
     inline bool isTopDoorHalf() const {
-        Q_ASSERT(type() == WoodenDoor_placed || type() == IronDoor_placed);
+        Q_ASSERT(type() == Item::WoodenDoor_placed || type() == Item::IronDoor_placed);
         return (m_metadata & 0x8) != 0;
     }
     inline bool isDoorOpen() const {
-        Q_ASSERT(type() == WoodenDoor_placed || type() == IronDoor_placed);
+        Q_ASSERT(type() == Item::WoodenDoor_placed || type() == Item::IronDoor_placed);
         return (m_metadata & 0x4) != 0;
     }
-    inline DoorHingeLocation doorHingeLocation() const {
-        Q_ASSERT(type() == WoodenDoor_placed || type() == IronDoor_placed);
-        return (DoorHingeLocation)(m_metadata & 0x3);
+    inline Item::DoorHingeLocation doorHingeLocation() const {
+        Q_ASSERT(type() == Item::WoodenDoor_placed || type() == Item::IronDoor_placed);
+        return (Item::DoorHingeLocation)(m_metadata & 0x3);
     }
     inline bool isButtonPressed() const {
-        Q_ASSERT(type() == StoneButton);
+        Q_ASSERT(type() == Item::StoneButton);
         return (m_metadata & 0x8) != 0;
     }
-    inline ButtonDirection buttonDirection() const {
-        Q_ASSERT(type() == StoneButton);
-        return (ButtonDirection)(m_metadata & 0x7);
+    inline Item::ButtonDirection buttonDirection() const {
+        Q_ASSERT(type() == Item::StoneButton);
+        return (Item::ButtonDirection)(m_metadata & 0x7);
     }
     inline float signPostYaw() const {
-        Q_ASSERT(type() == SignPost_placed);
+        Q_ASSERT(type() == Item::SignPost_placed);
         return (8 - m_metadata) * 3.1415926536f / 8.0f;
     }
     inline bool isPressurePlatePressed() const {
-        Q_ASSERT(type() == StonePressurePlate || type() == WoodenPressurePlate);
+        Q_ASSERT(type() == Item::StonePressurePlate || type() == Item::WoodenPressurePlate);
         return (m_metadata & 0x1) != 0;
     }
 
-    inline WallSignMetadata wallSignMetadata() const {
-        Q_ASSERT(type() == WallSign_placed);
-        return (WallSignMetadata) m_metadata;
+    inline Item::WallSignMetadata wallSignMetadata() const {
+        Q_ASSERT(type() == Item::WallSign_placed);
+        return (Item::WallSignMetadata) m_metadata;
     }
-    inline FurnaceMetadata furnaceMetadata() const {
-        Q_ASSERT(type() == Furnace || type() == BurningFurnace || type() == Dispenser);
-        return (FurnaceMetadata) m_metadata;
+    inline Item::FurnaceMetadata furnaceMetadata() const {
+        Q_ASSERT(type() == Item::Furnace || type() == Item::BurningFurnace || type() == Item::Dispenser);
+        return (Item::FurnaceMetadata) m_metadata;
     }
-    inline PumpkinMetadata pumpkinMetadata() const {
-        Q_ASSERT(type() == Pumpkin || type() == JackOLantern);
-        return (PumpkinMetadata) m_metadata;
+    inline Item::PumpkinMetadata pumpkinMetadata() const {
+        Q_ASSERT(type() == Item::Pumpkin || type() == Item::JackOLantern);
+        return (Item::PumpkinMetadata) m_metadata;
     }
 
     Block() {}
-    Block(ItemType type, int metadata, int light, int sky_light) :
+    Block(Item::ItemType type, int metadata, int light, int sky_light) :
         m_type(type), m_metadata(metadata), m_light(light), m_sky_light(sky_light) {}
 
 private:

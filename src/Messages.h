@@ -2,6 +2,7 @@
 #define MESSAGES_H
 
 #include "Block.h"
+#include "Item.h"
 #include "Vector3D.h"
 
 #include <QString>
@@ -62,13 +63,6 @@ public:
         Transaction=0x6A,
         UpdateSign=(qint8)0x82,
         DisconnectOrKick=(qint8)0xFF,
-    };
-
-
-    struct Item {
-        Block::ItemType type;
-        qint8 count;
-        qint16 metadata;
     };
 
     enum DiggingStatus {
@@ -301,7 +295,7 @@ class EntityEquipmentResponse : public IncomingResponse {
 public:
     qint32 entity_id;
     qint16 slot;
-    Block::ItemType item_type;
+    Item::ItemType item_type;
     qint16 unknown;
     EntityEquipmentResponse() : IncomingResponse(EntityEquipment) {}
     virtual int parse(QByteArray buffer);
@@ -416,7 +410,7 @@ public:
     qint32 pixels_z;
     qint8 yaw_out_of_256;
     qint8 pitch_out_of_256;
-    Block::ItemType held_item;
+    Item::ItemType held_item;
     NamedEntitySpawnResponse() : IncomingResponse(NamedEntitySpawn) {}
     virtual int parse(QByteArray buffer);
 };
@@ -629,7 +623,7 @@ public:
     qint32 chunk_x;
     qint32 chunk_z;
     QVector<Int3D> block_coords;
-    QVector<Block::ItemType> new_block_types;
+    QVector<Item::ItemType> new_block_types;
     QVector<qint8> new_block_metadatas;
     MultiBlockChangeResponse() : IncomingResponse(MultiBlockChange) {}
     virtual int parse(QByteArray buffer);
@@ -640,7 +634,7 @@ public:
     qint32 x;
     qint8 y;
     qint32 z;
-    Block::ItemType new_block_type;
+    Item::ItemType new_block_type;
     qint8 metadata;
     BlockChangeResponse() : IncomingResponse(BlockChange) {}
     virtual int parse(QByteArray buffer);

@@ -164,7 +164,7 @@ void SubChunkMeshGenerator::loadResources()
         block_data.side_textures.resize(6);
         block_data.squish_amount.resize(6);
         int index = 0;
-        Block::ItemType id = (Block::ItemType) parts.at(index++).toInt();
+        Item::ItemType id = (Item::ItemType) parts.at(index++).toInt();
         block_data.name = parts.at(index++);
         for (int i = 0; i < 6; i++) {
             QString texture = parts.at(index++);
@@ -364,8 +364,8 @@ void SubChunkMeshGenerator::generateSideMesh(Ogre::ManualObject * obj,
 
     // if the block on this side is opaque or the same block, skip
     Block neighbor_block = m_owner->game()->blockAt(absolute_position + c_side_offset[side_index]);
-    Block::ItemType side_type = neighbor_block.type();
-    if ((side_type == block.type() && (block_data.partial_alpha || side_type == Block::Glass)) ||
+    Item::ItemType side_type = neighbor_block.type();
+    if ((side_type == block.type() && (block_data.partial_alpha || side_type == Item::Glass)) ||
         ! m_block_data.value(side_type, m_air).see_through)
     {
         return;
@@ -377,55 +377,55 @@ void SubChunkMeshGenerator::generateSideMesh(Ogre::ManualObject * obj,
     // special cases for textures
     QString texture_name = block_data.side_textures.at(side_index);
     switch (block.type()) {
-        case Block::Wood:
+        case Item::Wood:
         if (side_index != NegativeZ && side_index != PositiveZ) {
             switch (block.woodMetadata()) {
-            case Block::NormalTrunkTexture:
+            case Item::NormalTrunkTexture:
                 texture_name = "WoodSide";
                 break;
-            case Block::RedwoodTrunkTexture:
+            case Item::RedwoodTrunkTexture:
                 texture_name = "RedwoodTrunkSide";
                 break;
-            case Block::BirchTrunkTexture:
+            case Item::BirchTrunkTexture:
                 texture_name = "BirchTrunkSide";
                 break;
             }
         }
         break;
-        case Block::Leaves:
+        case Item::Leaves:
         {
             switch (block.leavesMetadata()) {
-            case Block::NormalLeavesTexture:
+            case Item::NormalLeavesTexture:
                 texture_name = "LeavesRegular";
                 break;
-            case Block::RedwoodLeavesTexture:
+            case Item::RedwoodLeavesTexture:
                 texture_name = "RedwoodLeaves";
                 break;
-            case Block::BirchLeavesTexture:
+            case Item::BirchLeavesTexture:
                 texture_name = "BirchLeaves";
                 break;
             }
         }
         break;
-        case Block::Farmland:
+        case Item::Farmland:
         if (side_index == PositiveZ)
             texture_name = block.farmlandMetadata() == 0 ? "FarmlandDry" : "FarmlandWet";
         break;
-        case Block::Crops:
+        case Item::Crops:
         texture_name = QString("Crops") + QString::number(block.cropsMetadata());
         break;
-        case Block::Wool:
+        case Item::Wool:
         texture_name = c_wool_texture_names[block.woolMetadata()];
         break;
-        case Block::Furnace:
-        case Block::BurningFurnace:
-        case Block::Dispenser:
+        case Item::Furnace:
+        case Item::BurningFurnace:
+        case Item::Dispenser:
         {
             if (side_index != NegativeZ && side_index != PositiveZ) {
-                if ((block.furnaceMetadata() == Block::EastFacingFurnace && side_index == PositiveX) ||
-                    (block.furnaceMetadata() == Block::WestFacingFurnace && side_index == NegativeX) ||
-                    (block.furnaceMetadata() == Block::NorthFacingFurnace && side_index == PositiveY) ||
-                    (block.furnaceMetadata() == Block::SouthFacingFurnace && side_index == NegativeY))
+                if ((block.furnaceMetadata() == Item::EastFacingFurnace && side_index == PositiveX) ||
+                    (block.furnaceMetadata() == Item::WestFacingFurnace && side_index == NegativeX) ||
+                    (block.furnaceMetadata() == Item::NorthFacingFurnace && side_index == PositiveY) ||
+                    (block.furnaceMetadata() == Item::SouthFacingFurnace && side_index == NegativeY))
                 {
                     texture_name = block_data.side_textures.value(NegativeY);
                 } else {
@@ -434,14 +434,14 @@ void SubChunkMeshGenerator::generateSideMesh(Ogre::ManualObject * obj,
             }
         }
         break;
-        case Block::Pumpkin:
-        case Block::JackOLantern:
+        case Item::Pumpkin:
+        case Item::JackOLantern:
         {
             if (side_index != NegativeZ && side_index != PositiveZ) {
-                if ((block.pumpkinMetadata() == Block::EastFacingPumpkin && side_index == PositiveX) ||
-                    (block.pumpkinMetadata() == Block::WestFacingPumpkin && side_index == NegativeX) ||
-                    (block.pumpkinMetadata() == Block::NorthFacingPumpkin && side_index == PositiveY) ||
-                    (block.pumpkinMetadata() == Block::SouthFacingPumpkin && side_index == NegativeY))
+                if ((block.pumpkinMetadata() == Item::EastFacingPumpkin && side_index == PositiveX) ||
+                    (block.pumpkinMetadata() == Item::WestFacingPumpkin && side_index == NegativeX) ||
+                    (block.pumpkinMetadata() == Item::NorthFacingPumpkin && side_index == PositiveY) ||
+                    (block.pumpkinMetadata() == Item::SouthFacingPumpkin && side_index == NegativeY))
                 {
                     texture_name = block_data.side_textures.value(NegativeY);
                 } else {
@@ -450,7 +450,7 @@ void SubChunkMeshGenerator::generateSideMesh(Ogre::ManualObject * obj,
             }
         }
         break;
-        case Block::RedstoneWire_placed:
+        case Item::RedstoneWire_placed:
         {
             if (block.redstoneMetadata() == 0) {
                 texture_name = "RedWire4wayOff";
@@ -470,9 +470,9 @@ void SubChunkMeshGenerator::generateSideMesh(Ogre::ManualObject * obj,
     brightness = c_light_brightness[qMax(neighbor_block.skyLight() - night_darkness, neighbor_block.light())];
 
     Ogre::ColourValue color = Ogre::ColourValue::White;
-    if (block.type() == Block::Grass && side_index == PositiveZ)
+    if (block.type() == Item::Grass && side_index == PositiveZ)
         color.setAsRGBA(0x8DD55EFF);
-    else if (block.type() == Block::Leaves)
+    else if (block.type() == Item::Leaves)
         color.setAsRGBA(0x8DD55EFF);
 
     color *= brightness;

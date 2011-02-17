@@ -84,7 +84,7 @@ private:
     QScriptValue jsPoint(const Int3D &pt);
     QScriptValue jsPoint(const Double3D &pt);
     bool fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, Double3D &point);
-    QScriptValue jsItem(Message::Item item);
+    QScriptValue jsItem(Item item);
     QScriptValue jsEntity(QSharedPointer<Game::Entity> entity);
 
 

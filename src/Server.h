@@ -62,8 +62,8 @@ signals:
     void chatReceived(QString message);
     void playerHealthUpdated(int new_health);
 
-    void namedPlayerSpawned(int entity_id, QString player_name, Server::EntityPosition position, Block::ItemType held_item);
-    void pickupSpawned(int entity_id, Message::Item item, Server::EntityPosition position);
+    void namedPlayerSpawned(int entity_id, QString player_name, Server::EntityPosition position, Item::ItemType held_item);
+    void pickupSpawned(int entity_id, Item item, Server::EntityPosition position);
     void mobSpawned(int entity_id, MobSpawnResponse::MobType mob_type, Server::EntityPosition position);
 
     void entityDestroyed(int entity_id);
@@ -82,8 +82,8 @@ signals:
     void blockUpdate(Int3D absolute_location, Block new_block);
     void unloadChunk(const Int3D & coord);
     void playerPositionAndLookUpdated(Server::EntityPosition position);
-    void windowItemsUpdated(int window_id, QVector<Message::Item> items);
-    void windowSlotUpdated(int window_id, int slot, Message::Item item);
+    void windowItemsUpdated(int window_id, QVector<Item> items);
+    void windowSlotUpdated(int window_id, int slot, Item item);
 
 public slots:
     // actually connect to the server

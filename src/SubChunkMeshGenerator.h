@@ -115,7 +115,7 @@ private:
     // key is the meter coordinates of the min corner
     QHash<Int3D, SubChunkData> m_sub_chunks;
     // maps item type to texture name for each side
-    QHash<Block::ItemType, BlockData> m_block_data;
+    QHash<Item::ItemType, BlockData> m_block_data;
     BlockData m_air;
 
 private slots:

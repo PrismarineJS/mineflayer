@@ -20,8 +20,8 @@ namespace MetaTypes {
         qRegisterMetaType<Block>("Block");
         qRegisterMetaType<QHash<Int3D,Block> >("QHash<Int3D,Block>");
         qRegisterMetaType<MobSpawnResponse::MobType>("MobSpawnResponse::MobType");
-        qRegisterMetaType<Block::ItemType>("Block::ItemType");
-        qRegisterMetaType<Message::Item>("Message::Item");
+        qRegisterMetaType<Item::ItemType>("Item::ItemType");
+        qRegisterMetaType<Item>("Item");
         qRegisterMetaType<QSharedPointer<Game::Entity> >("QSharedPointer<Game::Entity>");
 
     }
