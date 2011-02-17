@@ -27,6 +27,8 @@
  */
 mf.Point(x, y, z)
 
+// TODO: document member functions of Point
+
 /**
  * Contains a snapshot of an entity's state.
  *
@@ -146,8 +148,6 @@ mf.StoppedDiggingReason
  */
 mf.Control
 
-
-// IMPLEMENTED
 
 /**
  * runs a script with a path relative to the current script.
@@ -485,6 +485,7 @@ mf.onInventoryUpdated(function() {...})
 /**
  * Called when another user joins the server.
  * NOT YET IMPLEMENTED
+ * TODO: move to utility library
  * @param {String} username The username of the person joining.
  */
 mf.onUserJoined(function(username) {...})
@@ -492,11 +493,10 @@ mf.onUserJoined(function(username) {...})
 /**
  * Called when another user quits the server.
  * NOT YET IMPLEMENTED
+ * TODO: move to utility library
  * @param {String} username The username of the person quitting.
  */
 mf.onUserQuit(function(username) {...})
-
-// TODO: other non-chat type messages such as whispers.
 
 
 /**
