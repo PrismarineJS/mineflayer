@@ -4,9 +4,12 @@ Core:
  * ladder physics
  * slippery ice physics
 
- * digging / placing blocks / attacking
+ * placing blocks
+ * attacking
+ * animate while digging
  * time tracking (day / night)
- * crafting / inventory manipulation
+ * inventory manipulation
+ * crafting
  * non-spoken chat interpretation (player joined, etc)
  * clean up stray chunks that didn't get unloaded
  * recalculte light on block changes

@@ -794,3 +794,8 @@ int Game::itemStackHeight(Item::ItemType item)
     initializeStaticData();
     return s_item_stack_height.value(item, -1);
 }
+
+void Game::placeBlock(const Int3D &block, Message::BlockFaceDirection face)
+{
+    //m_server.sendBlockPlacement(block, face, equipped_item);
+}
