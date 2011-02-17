@@ -178,7 +178,7 @@ void Game::initializeStaticData()
     s_item_stack_height.insert(Item::Glowstone, 64);
     s_item_stack_height.insert(Item::Portal, 0);
     s_item_stack_height.insert(Item::JackOLantern, 64);
-    s_item_stack_height.insert(Item::CakeBlock, 1);
+    s_item_stack_height.insert(Item::Cake_placed, 1);
 
     s_item_stack_height.insert(Item::IronShovel, 1);
     s_item_stack_height.insert(Item::IronPickaxe, 1);

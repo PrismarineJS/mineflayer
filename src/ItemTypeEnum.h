@@ -83,7 +83,7 @@ enum ItemType
     Glowstone=0x59,
     Portal=0x5A,
     JackOLantern=0x5B,
-    CakeBlock=0x5C,
+    Cake_placed=0x5C,
 
     IronShovel=0x100,
     IronPickaxe=0x101,
