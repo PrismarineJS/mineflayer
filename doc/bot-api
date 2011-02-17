@@ -128,7 +128,7 @@ mf.Mob
 /**
  * Members:
  *      BlockBroken
- *      Interrupted
+ *      Aborted
  */
 mf.StoppedDiggingReason
 
@@ -294,6 +294,14 @@ mf.hax.setPosition(point)
 mf.entity(entity_id)
 
 /**
+ * Begin digging into a block with the currently equipped item. When you finally break through the block,
+ * or you are interrupted for any reason, you will get an onStoppedDigging() event.
+ * @param {Point} point The location of the block to dig.
+ */
+mf.startDigging(point)
+
+
+/**
  * Useful for communicating with notchian clients.
  * NOT YET IMPLEMENTED
  * @param {Point} mf_point Point in mineflayer's coordinates.
@@ -318,14 +326,6 @@ mf.fromNotchCoord(notch_point)
  * @param {Number} pitch Number of radians to point up or down. 0 means straight forward. pi / 2 means straight up. -pi / 2 means straight down.
  */
 mf.look(yaw, pitch)
-
-/**
- * Begin digging into a block with the currently equipped item. When you finally break through the block,
- * NOT YET IMPLEMENTED
- * or you are interrupted for any reason, you will get an onStoppedDigging() event.
- * @param {Point} point The location of the block to dig.
- */
-mf.startDigging(point)
 
 /**
  * Place the currently equipped item, with some exceptions. If the block at
@@ -464,7 +464,6 @@ mf.onEntityMoved(function(entity) {...})
 
 /**
  * Called when you have stopped digging for some reason.
- * NOT YET IMPLEMENTED
  * @param {StoppedDiggingReason} reason
  */
 mf.onStoppedDigging(function(reason) {...})

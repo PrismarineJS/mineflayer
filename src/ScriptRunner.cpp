@@ -106,6 +106,7 @@ void ScriptRunner::go()
     mf_obj.setProperty("lookAt", m_engine->newFunction(lookAt));
     mf_obj.setProperty("respawn", m_engine->newFunction(respawn));
     mf_obj.setProperty("entity", m_engine->newFunction(entity));
+    mf_obj.setProperty("startDigging", m_engine->newFunction(startDigging));
 
     // hook up hax functions
     QScriptValue hax_obj = m_engine->newObject();
@@ -146,6 +147,9 @@ void ScriptRunner::go()
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(playerHealthUpdated()), this, SLOT(handlePlayerHealthUpdated()));
     Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(stoppedDigging(Game::StoppedDiggingReason)), this, SLOT(handleStoppedDigging(Game::StoppedDiggingReason)));
+    Q_ASSERT(success);
+
     success = connect(&m_physics_timer, SIGNAL(timeout()), this, SLOT(doPhysics()));
     Q_ASSERT(success);
 
@@ -598,6 +602,23 @@ QScriptValue ScriptRunner::entity(QScriptContext *context, QScriptEngine *engine
     return me->jsEntity(entity);
 }
 
+QScriptValue ScriptRunner::startDigging(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
+
+    QScriptValue point_value = context->argument(0);
+    Double3D point;
+    if (!me->fromJsPoint(context, error, point_value, point))
+        return error;
+
+    me->m_game->startDigging(Int3D(std::floor(point.x), std::floor(point.y), std::floor(point.z)));
+
+    return QScriptValue();
+}
+
 QScriptValue ScriptRunner::setPosition(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
@@ -719,4 +740,9 @@ void ScriptRunner::handleLoginStatusUpdated(Server::LoginStatus status)
             break;
         default:;
     }
+}
+
+void ScriptRunner::handleStoppedDigging(Game::StoppedDiggingReason reason)
+{
+    raiseEvent("onStoppedDigging", QScriptValueList() << reason);
 }

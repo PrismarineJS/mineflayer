@@ -113,6 +113,7 @@ private:
     static QScriptValue lookAt(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue respawn(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue entity(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue startDigging(QScriptContext * context, QScriptEngine * engine);
 
     // hax functions
     static QScriptValue setPosition(QScriptContext * context, QScriptEngine * engine);
@@ -128,6 +129,7 @@ private slots:
     void handlePlayerDied();
     void handleChatReceived(QString username, QString message);
     void handleLoginStatusUpdated(Server::LoginStatus status);
+    void handleStoppedDigging(Game::StoppedDiggingReason reason);
 
     void dispatchTimeout();
 

@@ -23,6 +23,7 @@ namespace MetaTypes {
         qRegisterMetaType<Item::ItemType>("Item::ItemType");
         qRegisterMetaType<Item>("Item");
         qRegisterMetaType<QSharedPointer<Game::Entity> >("QSharedPointer<Game::Entity>");
+        qRegisterMetaType<Game::StoppedDiggingReason>("Game::StoppedDiggingReason");
 
     }
 }

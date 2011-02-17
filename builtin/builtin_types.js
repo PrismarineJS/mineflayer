@@ -78,8 +78,8 @@ mf.MobType = {
 };
 
 mf.StoppedDiggingReason = {
-    "BlockBroken": 1,
-    "Interrupted": 2,
+    "BlockBroken": 0,
+    "Aborted": 1,
 };
 
 mf.Control = {
