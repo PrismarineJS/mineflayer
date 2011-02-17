@@ -86,7 +86,6 @@ public:
 
 public:
     Game(QUrl connection_info);
-    ~Game();
 
 
     // call every frame passing it the amount of time since the last frame
@@ -114,6 +113,8 @@ public:
 
     void startDigging(const Int3D &block);
     void stopDigging();
+
+    void placeBlock(const Int3D &block, Message::BlockFaceDirection face);
 
     void sendChat(QString message);
 
@@ -151,7 +152,7 @@ private:
     QString m_userName;
 
     QTimer * m_position_update_timer;
-    QTimer * m_digging_timer;
+    QTimer m_digging_timer;
     Int3D m_digging_location;
     int m_digging_counter;
 
