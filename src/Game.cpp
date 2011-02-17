@@ -562,7 +562,6 @@ void Game::doPhysics(float delta_seconds)
 
 void Game::getPlayerBoundingBox(Int3D & boundingBoxMin, Int3D & boundingBoxMax)
 {
-    QMutexLocker locker(&m_mutex);
     boundingBoxMin.x = (int)std::floor(m_player_position.pos.x - c_player_apothem);
     boundingBoxMin.y = (int)std::floor(m_player_position.pos.y - c_player_apothem);
     boundingBoxMin.z = (int)std::floor(m_player_position.pos.z - 0);
@@ -574,7 +573,6 @@ void Game::getPlayerBoundingBox(Int3D & boundingBoxMin, Int3D & boundingBoxMax)
 // TODO: check partial blocks
 bool Game::collisionInRange(const Int3D & boundingBoxMin, const Int3D & boundingBoxMax)
 {
-    QMutexLocker locker(&m_mutex);
     Int3D cursor;
     for (cursor.x = boundingBoxMin.x; cursor.x <= boundingBoxMax.x; cursor.x++)
         for (cursor.y = boundingBoxMin.y; cursor.y <= boundingBoxMax.y; cursor.y++)

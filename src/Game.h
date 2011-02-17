@@ -175,7 +175,6 @@ private:
     int m_return_code;
 
 private:
-    void gotFirstPlayerPositionAndLookResponse();
     float groundSpeedSquared() { return m_player_position.vel.x * m_player_position.vel.x +
                                  m_player_position.vel.y * m_player_position.vel.y; }
     void getPlayerBoundingBox(Int3D & boundingBoxMin, Int3D & boundingBoxMax);
