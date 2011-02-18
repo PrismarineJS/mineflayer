@@ -206,6 +206,8 @@ private slots:
 
     void sendPosition();
     void timeToContinueDigging();
+
+    void checkForDiggingStopped(const Int3D &start, const Int3D &size);
 };
 
 #endif // GAME_H

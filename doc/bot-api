@@ -263,6 +263,13 @@ mf.isPhysical(block_type)
 mf.isSafe(block_type)
 
 /**
+ * Returns whether the block type is diggable.
+ * This returns false for air, bedrock, water, lava, etc.
+ * @param {ItemType} block_type
+ */
+mf.isDiggable(block_type)
+
+/**
  * Tells your health.
  * @return {Number} health The number of half-hearts that you have, out of 20.
  */

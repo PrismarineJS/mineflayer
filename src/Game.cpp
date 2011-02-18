@@ -85,6 +85,8 @@ Game::Game(QUrl connection_info) :
     success = connect(&m_digging_timer, SIGNAL(timeout()), this, SLOT(timeToContinueDigging()));
     Q_ASSERT(success);
 
+    success = connect(this, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(checkForDiggingStopped(Int3D,Int3D)));
+
     m_control_state.fill(false, (int)ControlCount);
 }
 
@@ -431,12 +433,6 @@ void Game::handleBlockUpdate(Int3D absolute_location, Block new_block)
 {
     QMutexLocker locker(&m_mutex);
 
-    if (m_digging_timer.isActive() && absolute_location == m_digging_location) {
-        m_digging_timer.stop();
-        m_server.sendDiggingStatus(Message::BlockBroken, m_digging_location);
-        emit stoppedDigging(BlockBroken);
-    }
-
     Int3D chunk_key =  chunkKey(absolute_location);
     QSharedPointer<Chunk> chunk = m_chunks.value(chunk_key, QSharedPointer<Chunk>());
     if (chunk.isNull())
@@ -447,6 +443,22 @@ void Game::handleBlockUpdate(Int3D absolute_location, Block new_block)
     chunk.data()->setBlock(absolute_location - chunk_key, new_block);
 
     emit chunkUpdated(absolute_location, Int3D(1, 1, 1));
+}
+
+void Game::checkForDiggingStopped(const Int3D &start, const Int3D &size)
+{
+    if (!m_digging_timer.isActive())
+        return;
+    Int3D end = start + size;
+    if (start.x <= m_digging_location.x && start.y <= m_digging_location.y && start.z <= m_digging_location.z &&
+        m_digging_location.x < end.x && m_digging_location.y < end.y && m_digging_location.z < end.z)
+    {
+        m_digging_timer.stop();
+        // if the new block is not diggable (air, water, etc.) then it worked.
+        bool success = !Item::blockIsDiggable(blockAt(m_digging_location).type());
+        m_server.sendDiggingStatus(Message::BlockBroken, m_digging_location);
+        emit stoppedDigging(success ? BlockBroken : Aborted);
+    }
 }
 
 Int3D Game::chunkKey(const Int3D &coord)

@@ -153,13 +153,14 @@ private:
     static QHash<Item::ItemType, int> s_item_stack_height;
     static QHash<Item::ItemType, bool> s_block_is_physical;
     static QHash<Item::ItemType, bool> s_block_is_safe;
+    static QHash<Item::ItemType, bool> s_block_is_diggable;
 
 public:
     static void initializeStaticData();
     static int itemStackHeight(Item::ItemType item);
     static bool blockIsPhysical(Item::ItemType item);
     static bool blockIsSafe(Item::ItemType item);
-
+    static bool blockIsDiggable(Item::ItemType item);
 };
 
 

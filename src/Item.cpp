@@ -6,6 +6,7 @@ bool Item::s_initialized = false;
 QHash<Item::ItemType, int> Item::s_item_stack_height;
 QHash<Item::ItemType, bool> Item::s_block_is_physical;
 QHash<Item::ItemType, bool> Item::s_block_is_safe;
+QHash<Item::ItemType, bool> Item::s_block_is_diggable;
 
 
 void Item::initializeStaticData()
@@ -268,6 +269,15 @@ void Item::initializeStaticData()
     s_block_is_safe.insert(Item::Lava, false);
     s_block_is_safe.insert(Item::StationaryLava, false);
     s_block_is_safe.insert(Item::Fire, false);
+
+    s_block_is_diggable.insert(Item::Air, false);
+    s_block_is_diggable.insert(Item::Bedrock, false);
+    s_block_is_diggable.insert(Item::Water, false);
+    s_block_is_diggable.insert(Item::StationaryWater, false);
+    s_block_is_diggable.insert(Item::Lava, false);
+    s_block_is_diggable.insert(Item::StationaryLava, false);
+    s_block_is_diggable.insert(Item::Fire, false);
+    s_block_is_diggable.insert(Item::Portal, false);
 }
 
 int Item::itemStackHeight(Item::ItemType item)
@@ -284,4 +294,9 @@ bool Item::blockIsSafe(Item::ItemType item)
 {
     initializeStaticData();
     return s_block_is_safe.value(item, true);
+}
+bool Item::blockIsDiggable(Item::ItemType item)
+{
+    initializeStaticData();
+    return s_block_is_diggable.value(item, true);
 }
