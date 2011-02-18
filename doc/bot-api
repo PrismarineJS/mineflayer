@@ -150,11 +150,11 @@ mf.Control
 
 /**
  * Members:
- * 		NoAnimation
- *		SwingArm
- *		Damage
- *		Crouch
- *		Uncrouch
+ *      NoAnimation
+ *      SwingArm
+ *      Damage
+ *      Crouch
+ *      Uncrouch
  */
 mf.AnimationType
 
