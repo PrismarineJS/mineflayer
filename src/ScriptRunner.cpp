@@ -11,7 +11,7 @@
 
 #include <cmath>
 
-const int ScriptRunner::c_physics_fps = 20;
+const int PhysicsDoer::c_physics_fps = 20;
 
 ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headless, QStringList lib_path) :
     QObject(NULL),
@@ -27,7 +27,8 @@ ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headl
     m_stdout(stdout),
     m_timer_count(0),
     m_debugger(new QScriptEngineDebugger()),
-    m_lib_path(lib_path)
+    m_lib_path(lib_path),
+    m_physics_doer(NULL)
 {
     m_engine = new QScriptEngine(this);
 
@@ -159,17 +160,51 @@ void ScriptRunner::go()
     success = connect(m_game, SIGNAL(stoppedDigging(Game::StoppedDiggingReason)), this, SLOT(handleStoppedDigging(Game::StoppedDiggingReason)));
     Q_ASSERT(success);
 
-    success = connect(&m_physics_timer, SIGNAL(timeout()), this, SLOT(doPhysics()));
-    Q_ASSERT(success);
+    m_physics_doer = new PhysicsDoer(m_game);
 
     m_started_game = true;
     m_game->start();
 }
 
-void ScriptRunner::doPhysics()
+PhysicsDoer::PhysicsDoer(Game *game) :
+    m_game(game),
+    m_physics_timer(NULL)
+{
+    // run in our own thread
+    m_thread = new QThread();
+    m_thread->start();
+    this->moveToThread(m_thread);
+}
+
+void PhysicsDoer::doPhysics()
 {
     float elapsed_time = m_physics_time.restart() / 1000.0f;
     m_game->doPhysics(elapsed_time);
+}
+
+void PhysicsDoer::start()
+{
+    if (QThread::currentThread() != m_thread) {
+        bool success;
+        success = QMetaObject::invokeMethod(this, "start", Qt::QueuedConnection);
+        Q_ASSERT(success);
+        return;
+    }
+    m_physics_timer = new QTimer(this);
+
+    bool success;
+    success = connect(m_physics_timer, SIGNAL(timeout()), this, SLOT(doPhysics()));
+    Q_ASSERT(success);
+
+    m_physics_time.start();
+    m_physics_timer->start(1000 / c_physics_fps);
+}
+
+void PhysicsDoer::stop()
+{
+    m_physics_timer->stop();
+    m_thread->exit();
+    m_thread->wait();
 }
 
 QString ScriptRunner::internalReadFile(const QString &path)
@@ -430,6 +465,7 @@ void ScriptRunner::shutdown(int return_code)
 {
     m_exiting = true;
     if (m_started_game) {
+        m_physics_doer->stop();
         m_thread->exit(return_code);
         m_game->shutdown(return_code);
     } else {
@@ -805,9 +841,7 @@ void ScriptRunner::handleLoginStatusUpdated(Server::LoginStatus status)
     // note that game class already handles shutting down for Disconnected and SocketError.
     switch (status) {
         case Server::Success:
-            m_physics_time.start();
-            doPhysics();
-            m_physics_timer.start(1000 / c_physics_fps);
+            m_physics_doer->start();
             raiseEvent("onConnected");
             break;
         default:;
