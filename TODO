@@ -1,8 +1,16 @@
 Core:
- * partial block physics (slab, stairs, etc)
- * in-liquid physics
- * ladder physics
- * slippery ice physics
+ * physics
+   - slab
+   - cake
+   - stairs
+   - ladders
+   - doors
+   - cacti
+   - water
+   - lava
+   - ice
+
+   - entity collisions
 
  * placing blocks
  * attacking

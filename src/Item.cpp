@@ -199,8 +199,6 @@ void Item::initializeStaticData()
 
 
 
-    s_block_is_physical.insert(Item::NoItem, false);
-    s_block_is_physical.insert(Item::Air, false);
     s_block_is_physical.insert(Item::Stone, true);
     s_block_is_physical.insert(Item::Grass, true);
     s_block_is_physical.insert(Item::Dirt, true);
@@ -208,10 +206,6 @@ void Item::initializeStaticData()
     s_block_is_physical.insert(Item::WoodenPlank, true);
     s_block_is_physical.insert(Item::Sapling, true);
     s_block_is_physical.insert(Item::Bedrock, true);
-    s_block_is_physical.insert(Item::Water, true);
-    s_block_is_physical.insert(Item::StationaryWater, true);
-    s_block_is_physical.insert(Item::Lava, true);
-    s_block_is_physical.insert(Item::StationaryLava, true);
     s_block_is_physical.insert(Item::Sand, true);
     s_block_is_physical.insert(Item::Gravel, true);
     s_block_is_physical.insert(Item::GoldOre, true);
@@ -227,10 +221,6 @@ void Item::initializeStaticData()
     s_block_is_physical.insert(Item::Sandstone, true);
     s_block_is_physical.insert(Item::NoteBlock, true);
     s_block_is_physical.insert(Item::Wool, true);
-    s_block_is_physical.insert(Item::YellowFlower, false);
-    s_block_is_physical.insert(Item::RedRose, false);
-    s_block_is_physical.insert(Item::BrownMushroom, false);
-    s_block_is_physical.insert(Item::RedMushroom, false);
     s_block_is_physical.insert(Item::GoldBlock, true);
     s_block_is_physical.insert(Item::IronBlock, true);
     s_block_is_physical.insert(Item::DoubleStoneSlab, true);
@@ -240,40 +230,25 @@ void Item::initializeStaticData()
     s_block_is_physical.insert(Item::Bookshelf, true);
     s_block_is_physical.insert(Item::MossStone, true);
     s_block_is_physical.insert(Item::Obsidian, true);
-    s_block_is_physical.insert(Item::Torch, false);
-    s_block_is_physical.insert(Item::Fire, false);
     s_block_is_physical.insert(Item::MonsterSpawner, true);
     s_block_is_physical.insert(Item::WoodenStairs, true);
     s_block_is_physical.insert(Item::Chest, true);
-    s_block_is_physical.insert(Item::RedstoneWire_placed, false);
     s_block_is_physical.insert(Item::DiamondOre, true);
     s_block_is_physical.insert(Item::DiamondBlock, true);
     s_block_is_physical.insert(Item::Workbench, true);
-    s_block_is_physical.insert(Item::Crops, false);
     s_block_is_physical.insert(Item::Farmland, true);
     s_block_is_physical.insert(Item::Furnace, true);
     s_block_is_physical.insert(Item::BurningFurnace, true);
-    s_block_is_physical.insert(Item::SignPost_placed, false);
     s_block_is_physical.insert(Item::WoodenDoor_placed, true);
     s_block_is_physical.insert(Item::Ladder, true);
-    s_block_is_physical.insert(Item::MinecartTracks, false);
     s_block_is_physical.insert(Item::CobblestoneStairs, true);
-    s_block_is_physical.insert(Item::WallSign_placed, false);
-    s_block_is_physical.insert(Item::Lever, false);
-    s_block_is_physical.insert(Item::StonePressurePlate, false);
     s_block_is_physical.insert(Item::IronDoor_placed, true);
-    s_block_is_physical.insert(Item::WoodenPressurePlate, false);
     s_block_is_physical.insert(Item::RedstoneOre, true);
     s_block_is_physical.insert(Item::GlowingRedstoneOre, true);
-    s_block_is_physical.insert(Item::RedstoneTorchOff_placed, false);
-    s_block_is_physical.insert(Item::RedstoneTorchOn, false);
-    s_block_is_physical.insert(Item::StoneButton, false);
-    s_block_is_physical.insert(Item::Snow, false);
     s_block_is_physical.insert(Item::Ice, true);
     s_block_is_physical.insert(Item::SnowBlock, true);
     s_block_is_physical.insert(Item::Cactus, true);
     s_block_is_physical.insert(Item::Clay, true);
-    s_block_is_physical.insert(Item::SugarCane_placed, false);
     s_block_is_physical.insert(Item::Jukebox, true);
     s_block_is_physical.insert(Item::Fence, true);
     s_block_is_physical.insert(Item::Pumpkin, true);
