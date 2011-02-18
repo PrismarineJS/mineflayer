@@ -131,6 +131,7 @@ signals:
     void entitySpawned(QSharedPointer<Game::Entity> entity);
     void entityDespawned(QSharedPointer<Game::Entity> entity);
     void entityMoved(QSharedPointer<Game::Entity> entity);
+    void animation(QSharedPointer<Game::Entity> entity, AnimationResponse::AnimationType animation_type);
 
     void chunkUpdated(const Int3D &start, const Int3D &size);
     void unloadChunk(const Int3D & coord);
@@ -197,7 +198,7 @@ private slots:
     void handleEntityLooked(int entity_id, Server::EntityPosition look);
     void handleEntityLookedAndMovedRelatively(int entity_id, Server::EntityPosition position);
     void handleEntityMoved(int entity_id, Server::EntityPosition position);
-
+    void handleAnimation(int entity_id, AnimationResponse::AnimationType animation_type);
 
     void handleMapChunkUpdated(QSharedPointer<Chunk> update);
     void handleMultiBlockUpdate(Int3D chunk_key, QHash<Int3D,Block> new_blocks);

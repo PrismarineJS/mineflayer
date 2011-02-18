@@ -245,6 +245,11 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             emit playerPositionAndLookUpdated(position);
             break;
         }
+        case Message::Animation: {
+            AnimationResponse * message = (AnimationResponse *) incomingMessage.data();
+            emit animation(message->entity_id, message->animation_type);
+            break;
+        }
         case Message::NamedEntitySpawn: {
             NamedEntitySpawnResponse * message = (NamedEntitySpawnResponse *) incomingMessage.data();
             EntityPosition position = EntityPosition::ZERO();

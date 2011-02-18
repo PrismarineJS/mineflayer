@@ -98,3 +98,10 @@ mf.Control = {
     "Action2":      9,
 };
 
+mf.AnimationType = {
+    "NoAnimation":  0,
+    "SwingArm":     1,
+    "Damage":       2,
+    "Crouch":       104,
+    "Uncrouch":     105
+};
