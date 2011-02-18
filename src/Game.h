@@ -137,6 +137,7 @@ signals:
     void playerPositionUpdated();
     void playerHealthUpdated();
     void playerDied();
+    void playerSpawned();
     void stoppedDigging(Game::StoppedDiggingReason reason);
     void loginStatusUpdated(Server::LoginStatus status);
 

@@ -4,7 +4,7 @@ mf.include("giver.js");
 
 function dig() {
     mf.chat("digging down");
-    var block_to_dig = mf.self().position.offset(0, 0, -0.5).rounded();
+    var block_to_dig = mf.self().position.offset(0, 0, -0.5).floored();
     //mf.lookAt(block_to_dig.offset(0.5, 0.5, 0.5));
     mf.startDigging(block_to_dig);
 }

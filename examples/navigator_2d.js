@@ -23,8 +23,8 @@ if (path_finder_2d === undefined) {
                 respond("sorry, can't see you");
                 return;
             }
-            var start = mf.self().position.rounded();
-            var end = entity.position.rounded();
+            var start = mf.self().position.floored();
+            var end = entity.position.floored();
             respond("looking for a path from " + start + " to " + end + "...");
             var path = path_finder.findPath({
                 "start": start,

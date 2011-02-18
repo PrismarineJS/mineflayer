@@ -131,6 +131,7 @@ private slots:
     void handleChunkUpdated(const Int3D &start, const Int3D &size);
     void handlePlayerHealthUpdated();
     void handlePlayerDied();
+    void handlePlayerSpawned();
     void handleChatReceived(QString username, QString message);
     void handleLoginStatusUpdated(Server::LoginStatus status);
     void handleStoppedDigging(Game::StoppedDiggingReason reason);

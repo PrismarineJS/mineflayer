@@ -299,7 +299,8 @@ mf.respawn()
 mf.hax.setPosition(point)
 
 /**
- * Returns the interval between outgoing position updates. Useful for waiting between setPosition calls.
+ * Returns the interval between outgoing position updates in milliseconds.
+ * Useful for waiting between setPosition calls.
  */
 mf.hax.positionUpdateInterval()
 

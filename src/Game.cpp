@@ -120,6 +120,9 @@ void Game::respawn()
     QMutexLocker locker(&m_mutex);
     Q_ASSERT(m_player_health == 0);
     m_server.sendRespawnRequest();
+
+    // assume this always works for now
+    emit playerSpawned();
 }
 
 void Game::start()
@@ -261,6 +264,7 @@ void Game::handlePlayerPositionAndLookUpdated(Server::EntityPosition position)
         success = connect(m_position_update_timer, SIGNAL(timeout()), this, SLOT(sendPosition()));
         Q_ASSERT(success);
         m_position_update_timer->start();
+        emit playerSpawned();
     }
     emit playerPositionUpdated();
 }

@@ -113,7 +113,7 @@ void ScriptRunner::go()
     QScriptValue hax_obj = m_engine->newObject();
     mf_obj.setProperty("hax", hax_obj);
     hax_obj.setProperty("setPosition", m_engine->newFunction(setPosition));
-    hax_obj.setProperty("positionUpdateInverval", m_engine->newFunction(positionUpdateInterval));
+    hax_obj.setProperty("positionUpdateInterval", m_engine->newFunction(positionUpdateInterval));
     hax_obj.setProperty("setGravityEnabled", m_engine->newFunction(setGravityEnabled));
 
     // run main script
@@ -147,6 +147,8 @@ void ScriptRunner::go()
     success = connect(m_game, SIGNAL(chatReceived(QString,QString)), this, SLOT(handleChatReceived(QString,QString)));
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(playerDied()), this, SLOT(handlePlayerDied()));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(playerSpawned()), this, SLOT(handlePlayerSpawned()));
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(playerHealthUpdated()), this, SLOT(handlePlayerHealthUpdated()));
     Q_ASSERT(success);
@@ -757,6 +759,10 @@ void ScriptRunner::handlePlayerHealthUpdated()
 void ScriptRunner::handlePlayerDied()
 {
     raiseEvent("onDeath");
+}
+void ScriptRunner::handlePlayerSpawned()
+{
+    raiseEvent("onSpawn");
 }
 
 void ScriptRunner::handleChatReceived(QString username, QString message)

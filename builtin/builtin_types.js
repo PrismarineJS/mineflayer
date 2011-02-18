@@ -8,7 +8,7 @@ mf.Point = function(x, y, z) {
     this.y = y;
     this.z = z;
 };
-mf.Point.prototype.rounded = function() {
+mf.Point.prototype.floored = function() {
     return new mf.Point(Math.floor(this.x), Math.floor(this.y), Math.floor(this.z));
 };
 /** returns a new point offset by the amount specified */

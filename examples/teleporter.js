@@ -1,6 +1,7 @@
 
 mf.include("json.js");
 mf.include("chat_commands.js");
+mf.include("player_tracker.js");
 mf.include("assert.js");
 
 mf.include("connection_notice.js");
@@ -10,7 +11,6 @@ if (teleporter === undefined) {
     teleporter = function() {
         var _public = {};
         _public.debug = true;
-        _public.delay = 100;
         chat_commands.registerModule("teleporter", _public);
 
         function respond(message) {
@@ -22,7 +22,7 @@ if (teleporter === undefined) {
 
         function hereis(username, args) {
             var point_name = args[0];
-            var entity = namedEntity(username);
+            var entity = player_tracker.entityForPlayer(username);
             if (entity === undefined) {
                 respond("sorry, can't see user: " + username);
                 return;
@@ -37,7 +37,7 @@ if (teleporter === undefined) {
             } else {
                 created_or_updated = "updated";
             }
-            message = ["point", point_name, created_or_updated, "at", point.x, point.y, point.z].join(" ");
+            message = ["point", point_name, created_or_updated, "at", point].join(" ");
             respond(message);
         }
         chat_commands.registerCommand("hereis", hereis, 1);
@@ -55,26 +55,60 @@ if (teleporter === undefined) {
 
         function zapto(username, args) {
             var point_name = args[0];
-            var point = name_to_point[point_name];
-            if (point === undefined) {
+            var destination = name_to_point[point_name];
+            if (destination === undefined) {
                 respond("not a recognized name: " + point_name);
                 return;
             }
-            //check point is accessible
-            for (var z = point.z; z < point.z + 2; z++) {
-                if (mf.blockAt(new mf.Point(point.x, point.y, z)).type != mf.ItemType.Air) {
-                    respond("that's not air. can't go there");
+            // check current position is escapable
+            var my_position = mf.self().position;
+            var z;
+            for (z = my_position.z; z < 128; z++) {
+                if (mf.isPhysical(mf.blockAt(new mf.Point(my_position.x, my_position.y, z)).type)) {
+                    respond("i can't see the sky");
                     return;
                 }
             }
-            var old_position = mf.self().position;
-            mf.hax.setPosition(point);
-            mf.setTimeout(function() {
-                mf.chat("/tp " + username + " " + mf.username());
-                mf.setTimeout(function() {
-                    mf.hax.setPosition(old_position);
-                }, _public.delay);
-            }, _public.delay);
+            // check destination is accessible
+            for (z = destination.z; z < 128; z++) {
+                if (mf.isPhysical(mf.blockAt(new mf.Point(destination.x, destination.y, z)).type)) {
+                    respond("destination does not have a view of the sky");
+                    return;
+                }
+            }
+            function arrived() {
+                if (!mf.self().position.floored().equals(destination.floored())) {
+                    respond("unable to reach destination");
+                    return;
+                }
+                var my_name = mf.username();
+                if (username !== my_name) {
+                    mf.chat("/tp " + username + " " + my_name);
+                }
+            }
+            // soar through the sky at z=128 to avoid colliding with anything
+            //
+            //          2------3
+            //          |      |
+            //          |      |
+            // start -> 1      4
+            //
+            // snap to grid at point 1 so our bounding box can fit in 1x1 space
+            var point1 = my_position.floored().offset(0.5, 0.5, 0);
+            var point2 = new mf.Point(point1.x, point1.y, 128);
+            var point4 = destination.floored().offset(0.5, 0.5, 0);
+            var point3 = new mf.Point(point4.x, point1.y, 128);
+            function makeGotoFunc(point, nextFunc) {
+                return function() {
+                    mf.hax.setPosition(point);
+                    mf.setTimeout(nextFunc, mf.hax.positionUpdateInterval() * 2);
+                };
+            }
+            var goto4 = makeGotoFunc(point4, arrived);
+            var goto3 = makeGotoFunc(point3, goto4);
+            var goto2 = makeGotoFunc(point2, goto3);
+            var goto1 = makeGotoFunc(point1, goto2);
+            goto1();
         }
         chat_commands.registerCommand("zapto", zapto, 1);
 
@@ -93,29 +127,7 @@ if (teleporter === undefined) {
         }
         load_database();
 
-        // track user's entity_id's
-        var username_to_entity_id = {};
-        mf.onEntitySpawned(function(entity) {
-            if (entity.type !== mf.EntityType.Player) {
-                return;
-            }
-            mf.debug("i see " + entity.username);
-            username_to_entity_id[entity.username] = entity.entity_id;
-        });
-        mf.onEntityDespawned(function(entity) {
-            if (entity.type !== mf.EntityType.Player) {
-                return;
-            }
-            mf.debug("i no longer see " + entity.username);
-            delete username_to_entity_id[entity.username];
-        });
-        function namedEntity(username) {
-            var entity_id = username_to_entity_id[username];
-            if (entity_id === undefined) {
-                return undefined;
-            }
-            return mf.entity(entity_id);
-        }
+        return _public;
     }();
 }
 
