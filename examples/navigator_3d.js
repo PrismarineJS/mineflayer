@@ -22,7 +22,9 @@ if (path_finder_3d === undefined) {
                 respond("sorry, can't see you");
                 return;
             }
-            navigator.navigateTo(entity.position);
+            navigator.navigateTo(entity.position, function() {
+                respond("i have arrived");
+            });
         }
         chat_commands.registerCommand("navhere", navhere);
         function stop() {
