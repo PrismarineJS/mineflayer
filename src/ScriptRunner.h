@@ -106,6 +106,7 @@ private:
     static QScriptValue username(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue itemStackHeight(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue isPhysical(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue isSafe(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue health(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue blockAt(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue self(QScriptContext * context, QScriptEngine * engine);

@@ -1,8 +1,12 @@
 #include "Item.h"
 
+#include <QDebug>
+
 bool Item::s_initialized = false;
 QHash<Item::ItemType, int> Item::s_item_stack_height;
 QHash<Item::ItemType, bool> Item::s_block_is_physical;
+QHash<Item::ItemType, bool> Item::s_block_is_safe;
+
 
 void Item::initializeStaticData()
 {
@@ -258,6 +262,12 @@ void Item::initializeStaticData()
     s_block_is_physical.insert(Item::Portal, 0);
     s_block_is_physical.insert(Item::JackOLantern, true);
     s_block_is_physical.insert(Item::Cake_placed, true);
+
+    foreach (Item::ItemType item_type, s_block_is_physical.keys())
+        s_block_is_safe.insert(item_type, !s_block_is_physical.value(item_type, false));
+    s_block_is_safe.insert(Item::Lava, false);
+    s_block_is_safe.insert(Item::StationaryLava, false);
+    s_block_is_safe.insert(Item::Fire, false);
 }
 
 int Item::itemStackHeight(Item::ItemType item)
@@ -269,4 +279,9 @@ bool Item::blockIsPhysical(Item::ItemType item)
 {
     initializeStaticData();
     return s_block_is_physical.value(item, false);
+}
+bool Item::blockIsSafe(Item::ItemType item)
+{
+    initializeStaticData();
+    return s_block_is_safe.value(item, true);
 }

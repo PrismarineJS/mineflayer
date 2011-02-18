@@ -234,7 +234,7 @@ mf.username()
 mf.itemStackHeight(item)
 
 /**
- * Returns whether the block has any physical presence with respect to physics.
+ * Returns whether the block type has any physical presence with respect to physics.
  * This is false for air, flowers, torches, etc.
  *
  * Examples:
@@ -245,6 +245,13 @@ mf.itemStackHeight(item)
  * @param {ItemType} block_type
  */
 mf.isPhysical(block_type)
+
+/**
+ * Returns whether the block type is non-physical and safe to stand in.
+ * This returns false for lava, fire, and everything that mf.isPhysical returns true for.
+ * @param {ItemType} block_type
+ */
+mf.isSafe(block_type)
 
 /**
  * Tells your health.

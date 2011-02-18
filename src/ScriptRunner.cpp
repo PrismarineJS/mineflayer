@@ -99,6 +99,7 @@ void ScriptRunner::go()
     mf_obj.setProperty("username", m_engine->newFunction(username));
     mf_obj.setProperty("itemStackHeight", m_engine->newFunction(itemStackHeight));
     mf_obj.setProperty("isPhysical", m_engine->newFunction(isPhysical));
+    mf_obj.setProperty("isSafe", m_engine->newFunction(isSafe));
     mf_obj.setProperty("health", m_engine->newFunction(health));
     mf_obj.setProperty("blockAt", m_engine->newFunction(blockAt));
     mf_obj.setProperty("self", m_engine->newFunction(self));
@@ -477,6 +478,17 @@ QScriptValue ScriptRunner::isPhysical(QScriptContext *context, QScriptEngine *en
     if (!me->maybeThrowArgumentError(context, error, value.isNumber()))
         return error;
     return Item::blockIsPhysical((Item::ItemType)value.toInteger());
+}
+QScriptValue ScriptRunner::isSafe(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
+    QScriptValue value = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, value.isNumber()))
+        return error;
+    return Item::blockIsSafe((Item::ItemType)value.toInteger());
 }
 
 QScriptValue ScriptRunner::health(QScriptContext *context, QScriptEngine *engine)
