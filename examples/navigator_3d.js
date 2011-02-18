@@ -66,7 +66,7 @@ if (path_finder_3d === undefined) {
                         })
                     ).filtered(isPointStandable);
                 },
-                "distance_func": function(a, b) { return 1; },
+                "distance_func": function(a, b) { return a.distanceTo(b); },
                 "heuristic_func": function(point) { return point.distanceTo(end); },
             });
             if (path === undefined) {
