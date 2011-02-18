@@ -19,6 +19,9 @@ mf.Point.prototype.offset = function(dx, dy, dz) {
 mf.Point.prototype.plus = function(other) {
     return this.offset(other.x, other.y, other.z);
 };
+mf.Point.prototype.minus = function(other) {
+    return this.offset(-other.x, -other.y, -other.z);
+};
 /** euclidean distance */
 mf.Point.prototype.distanceTo = function(other) {
     var dx = other.x - this.x;
