@@ -299,6 +299,17 @@ mf.respawn()
 mf.hax.setPosition(point)
 
 /**
+ * Returns the interval between outgoing position updates. Useful for waiting between setPosition calls.
+ */
+mf.hax.positionUpdateInterval()
+
+/**
+ * Turns on/off gravity. When gravity is off, you will not take fall damage.
+ * @param {Boolean} value
+ */
+mf.hax.setGravityEnabled(value)
+
+/**
  * Returns a snapshot of the entity with the given entity id or undefined if the entity id cannot be found.
  * Modifying the object does nothing.
  * @param {Number} entity_id

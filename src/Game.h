@@ -83,6 +83,7 @@ public:
     static const float c_player_half_height;
     static const float c_jump_speed;
     static const int c_chat_length_limit;
+    static const int c_position_update_interval_ms;
 
 public:
     Game(QUrl connection_info);
@@ -143,7 +144,6 @@ private:
 
     QMutex m_mutex;
 
-    static const int c_position_update_interval_ms;
     static const Int3D c_chunk_size;
     static const Block c_air;
     static Int3D chunkKey(const Int3D & coord);

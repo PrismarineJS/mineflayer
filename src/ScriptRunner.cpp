@@ -113,6 +113,8 @@ void ScriptRunner::go()
     QScriptValue hax_obj = m_engine->newObject();
     mf_obj.setProperty("hax", hax_obj);
     hax_obj.setProperty("setPosition", m_engine->newFunction(setPosition));
+    hax_obj.setProperty("positionUpdateInverval", m_engine->newFunction(positionUpdateInterval));
+    hax_obj.setProperty("setGravityEnabled", m_engine->newFunction(setGravityEnabled));
 
     // run main script
     QString main_script_contents = internalReadFile(m_main_script_filename);
@@ -643,6 +645,28 @@ QScriptValue ScriptRunner::setPosition(QScriptContext *context, QScriptEngine *e
         return error;
 
     me->m_game->setPlayerPosition(point);
+    return QScriptValue();
+}
+QScriptValue ScriptRunner::positionUpdateInterval(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 0))
+        return error;
+
+    return Game::c_position_update_interval_ms;
+}
+QScriptValue ScriptRunner::setGravityEnabled(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
+    QScriptValue value_value = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, value_value.isBool()))
+        return error;
+
+    me->m_game->setGravity(value_value.toBool() ? Game::c_standard_gravity : 0);
     return QScriptValue();
 }
 

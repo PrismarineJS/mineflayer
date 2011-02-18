@@ -118,6 +118,9 @@ private:
 
     // hax functions
     static QScriptValue setPosition(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue positionUpdateInterval(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue setGravityEnabled(QScriptContext * context, QScriptEngine * engine);
+
 
 private slots:
 
