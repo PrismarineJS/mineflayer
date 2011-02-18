@@ -13,6 +13,8 @@
 #include <QThread>
 #include <QStringList>
 
+class PhysicsDoer;
+
 class ScriptRunner : public QObject
 {
     Q_OBJECT
@@ -24,7 +26,6 @@ public slots:
     void go();
 
 private:
-    static const int c_physics_fps;
 
     QThread * m_thread;
     QUrl m_url;
@@ -65,10 +66,10 @@ private:
 
     QScriptEngineDebugger * m_debugger;
 
-    QTimer m_physics_timer;
-    QTime m_physics_time;
-
     QStringList m_lib_path;
+
+    PhysicsDoer * m_physics_doer;
+
 private:
     void shutdown(int return_code);
     void raiseEvent(QString event_name, const QScriptValueList & args = QScriptValueList());
@@ -140,6 +141,24 @@ private slots:
 
     void dispatchTimeout();
 
+};
+
+
+class PhysicsDoer : public QObject {
+    Q_OBJECT
+public:
+    PhysicsDoer(Game * game);
+public slots:
+    void start();
+    void stop();
+private:
+    static const int c_physics_fps;
+
+    Game * m_game;
+    QTimer * m_physics_timer;
+    QTime m_physics_time;
+    QThread * m_thread;
+private slots:
     void doPhysics();
 };
 
