@@ -23,6 +23,7 @@ function() {
         "onEntitySpawned",
         "onEntityDespawned",
         "onEntityMoved",
+        "onAnimation",
         "onStoppedDigging",
         "onEquippedItemChanged",
         "onInventoryUpdated",

@@ -75,6 +75,7 @@ signals:
     void entityLookedAndMovedRelatively(int entity_id, Server::EntityPosition position);
     // use .x .y .z for absolute position
     void entityMoved(int entity_id, Server::EntityPosition position);
+    void animation(int entity_id, AnimationResponse::AnimationType animation);
 
     void mapChunkUpdated(QSharedPointer<Chunk> chunk);
     // will always be contained within a chunk

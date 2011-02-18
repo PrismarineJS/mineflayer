@@ -148,6 +148,15 @@ mf.StoppedDiggingReason
  */
 mf.Control
 
+/**
+ * Members:
+ * 		NoAnimation
+ *		SwingArm
+ *		Damage
+ *		Crouch
+ *		Uncrouch
+ */
+mf.AnimationType
 
 /**
  * runs a script with a path relative to the current script.
@@ -493,6 +502,13 @@ mf.onEntityDespawned(function(entity) {...})
  * @param {Entity} entity
  */
 mf.onEntityMoved(function(entity) {...})
+
+/**
+ * Called when an entity animates
+ * @param {Entity} entity
+ * @param {AnimationType} animation_type which animation was performed. See mf.AnimationType
+ */
+mf.onAnimation(function(entity, animation_type) {...})
 
 /**
  * Called when you have stopped digging for some reason.

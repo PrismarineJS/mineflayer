@@ -139,6 +139,8 @@ void ScriptRunner::go()
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(entityDespawned(QSharedPointer<Game::Entity>)), this, SLOT(handleEntityDespawned(QSharedPointer<Game::Entity>)));
     Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(animation(QSharedPointer<Game::Entity>,AnimationResponse::AnimationType)), this, SLOT(handleAnimation(QSharedPointer<Game::Entity>,AnimationResponse::AnimationType)));
+    Q_ASSERT(success);
     success = connect(m_game, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(handleChunkUpdated(Int3D,Int3D)));
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(playerPositionUpdated()), this, SLOT(movePlayerPosition()));
@@ -751,6 +753,10 @@ void ScriptRunner::handleEntityMoved(QSharedPointer<Game::Entity>entity)
 void ScriptRunner::handleEntityDespawned(QSharedPointer<Game::Entity>entity)
 {
     raiseEvent("onEntityDespawned", QScriptValueList() << jsEntity(entity));
+}
+void ScriptRunner::handleAnimation(QSharedPointer<Game::Entity> entity, AnimationResponse::AnimationType animation_type)
+{
+    raiseEvent("onAnimation", QScriptValueList() << jsEntity(entity) << animation_type);
 }
 
 void ScriptRunner::handleChunkUpdated(const Int3D &start, const Int3D &size)
