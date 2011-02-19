@@ -5,16 +5,15 @@
 
 #include <QSettings>
 #include <QDir>
-#include <QCoreApplication>
+#include <QApplication>
 #include <QCursor>
 #include <QDebug>
 #include <QRectF>
 
-
 const QSizeF MainWindow::c_gui_png_size(256.0f, 256.0f);
 const QSizeF MainWindow::c_icons_png_size(256.0f, 256.0f);
 const QSizeF MainWindow::c_items_png_size(256.0f, 256.0f);
-
+const QSizeF MainWindow::c_inventory_png_size(256.0f, 256.0f);
 
 uint qHash(const MainWindow::PhysicalInput & value)
 {
@@ -38,11 +37,9 @@ MainWindow::MainWindow(QUrl url) :
     m_control_to_key(Game::ControlCount),
     m_sub_chunk_generator(NULL),
     m_selected_slot(0),
-    m_next_manual_object_string(0)
+    m_next_manual_object_string(0),
+    m_inventory_open(false)
 {
-    // TODO: figure out wtf is going on and delete this assertion.
-    Q_ASSERT(sizeof(MainWindow) != 216);
-
     loadControls();
 
     m_game = new Game(url);
@@ -66,7 +63,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::loadControls()
 {
-    QDir dir(QCoreApplication::applicationDirPath());
+    QDir dir(QApplication::applicationDirPath());
     QSettings settings(dir.absoluteFilePath("mineflayer.ini"), QSettings::IniFormat);
 
     m_control_to_key[Game::Forward] = configKeyToPhysInput(settings.value("controls/forward", QString("key_%1").arg(QString::number(OIS::KC_W))).toString());
@@ -148,6 +145,8 @@ void MainWindow::createFrameListener()
 #elif defined(OIS_LINUX_PLATFORM)
     pl.insert(std::make_pair(std::string("x11_mouse_grab"), std::string("false")));
     pl.insert(std::make_pair(std::string("x11_keyboard_grab"), std::string("false")));
+    pl.insert(std::make_pair(std::string("x11_mouse_hide"), std::string("false")));
+    pl.insert(std::make_pair(std::string("XAutoRepeatOn"), std::string("true")));
 #endif
 
     m_input_manager = OIS::InputManager::createInputSystem( pl );
@@ -302,6 +301,21 @@ void MainWindow::loadResources()
         texture_unit->setTextureName("gui/icons.png");
         texture_unit->setTextureFiltering(Ogre::TFO_NONE);
     }
+
+    // inventory
+    {
+        Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create("Inventory", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+        Ogre::Technique * first_technique = material->getTechnique(0);
+        Ogre::Pass * first_pass = first_technique->getPass(0);
+        first_pass->setAlphaRejectFunction(Ogre::CMPF_GREATER_EQUAL);
+        first_pass->setAlphaRejectValue(128);
+        first_pass->setDepthWriteEnabled(false);
+        first_pass->setDepthCheckEnabled(false);
+        first_pass->setLightingEnabled(false);
+        Ogre::TextureUnitState * texture_unit = first_pass->createTextureUnitState();
+        texture_unit->setTextureName("gui/inventory.png");
+        texture_unit->setTextureFiltering(Ogre::TFO_NONE);
+    }
 }
 
 int MainWindow::exec()
@@ -345,16 +359,31 @@ bool MainWindow::setup()
     loadResources();
 
     // create the scene
+    createScene();
+
+    createFrameListener();
+
+    return true;
+};
+
+void MainWindow::createScene()
+{
     m_scene_manager->setAmbientLight(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
     Ogre::SceneNode * node = m_scene_manager->getRootSceneNode();
     m_pass[0] = node->createChildSceneNode();
     m_pass[1] = node->createChildSceneNode();
     createHud();
 
-    createFrameListener();
+    // create dialog windows
+    QSizeF inv_size(0.41*2, 0.6875*2);
+    QRectF inv_pos(QPointF(-inv_size.width()/2, -inv_size.height()/2), inv_size);
+    Ogre::SceneNode * inventory = node->createChildSceneNode("Inventory");
+    inventory->attachObject(create2DObject("Inventory", c_inventory_png_size, "Inventory", inv_size));
+    inventory->setPosition(inv_pos.x(), inv_pos.y(), 0);
+    setInventoryOpen(m_inventory_open);
 
-    return true;
-};
+
+}
 
 void MainWindow::createHud()
 {
@@ -405,9 +434,9 @@ void MainWindow::createHud()
         heart_node->setPosition(i * heart_size.width(), 0, 0);
     }
 
-    // crosshair
+    // crosshair - size and position is recomputed on window resize.
     Ogre::SceneNode * crosshair_node = m_hud->createChildSceneNode("CrossHair");
-    crosshair_node->attachObject(create2DObject("IconsInverted", c_icons_png_size, "CrossHair", QSizeF(1, 1)));
+    crosshair_node->attachObject(create2DObject("IconsInverted", c_icons_png_size, "CrossHair", QSizeF(1,1)));
 
 }
 
@@ -452,7 +481,7 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
         return false;
 
     // add the newly generated chunks to the scene
-    QCoreApplication::processEvents();
+    QApplication::processEvents();
     while (m_sub_chunk_generator->availableNewSubChunk()) {
         SubChunkMeshGenerator::ReadySubChunk ready_chunk = m_sub_chunk_generator->nextNewSubChunk();
         m_ogre_mutex.lock();
@@ -477,6 +506,7 @@ bool MainWindow::frameRenderingQueued(const Ogre::FrameEvent& evt)
     // Need to capture/update each device
     m_keyboard->capture();
     m_mouse->capture();
+
     if (m_grab_mouse) {
         QPoint mouse_pos = QCursor::pos();
         int window_left, window_top;
@@ -579,7 +609,8 @@ bool MainWindow::keyReleased(const OIS::KeyEvent &arg )
 
 bool MainWindow::mousePressed(const OIS::MouseEvent &, OIS::MouseButtonID id )
 {
-    grabMouse();
+    if (! m_inventory_open)
+        grabMouse();
     activateInput(id, true);
     return true;
 }
@@ -596,11 +627,19 @@ bool MainWindow::mouseMoved(const OIS::MouseEvent & event)
     return true;
 }
 
-void MainWindow::grabMouse()
+void MainWindow::grabMouse(bool grab_mouse)
 {
-    m_grab_mouse = true;
-    // center mouse cursor
+    if (m_grab_mouse == grab_mouse)
+        return;
 
+    if (! grab_mouse) {
+        m_grab_mouse = false;
+        return;
+    }
+
+    m_grab_mouse = true;
+
+    // center mouse cursor
     int window_left, window_top;
     unsigned int window_width, window_height, trash;
     m_window->getMetrics(window_width, window_height, trash, window_left, window_top);
@@ -625,7 +664,19 @@ bool MainWindow::controlPressed(Game::Control control)
 
 void MainWindow::activateInput(PhysicalInput input, bool activated)
 {
-    m_game->setControlActivated(m_key_to_control.value(input, Game::NoControl), activated);
+    Game::Control activated_control = m_key_to_control.value(input, Game::NoControl);
+    m_game->setControlActivated(activated_control, activated);
+
+    if (activated && activated_control == Game::Inventory)
+        setInventoryOpen(! m_inventory_open);
+}
+
+void MainWindow::setInventoryOpen(bool new_value)
+{
+    m_inventory_open = new_value;
+    m_scene_manager->getSceneNode("Inventory")->setVisible(m_inventory_open);
+    m_scene_manager->getSceneNode("CrossHair")->setVisible(! m_inventory_open);
+    grabMouse(! m_inventory_open);
 }
 
 void MainWindow::windowResized(Ogre::RenderWindow* rw)
@@ -640,8 +691,9 @@ void MainWindow::windowResized(Ogre::RenderWindow* rw)
     ms.height = height;
 
     Ogre::SceneNode * crosshair_node = m_scene_manager->getSceneNode("CrossHair");
-    crosshair_node->setScale(18 * 2 / (float)width, 18 * 2 / (float)height, 1);
-    crosshair_node->setPosition(0, 0, 0);
+    BlockTextureCoord tex_coord = m_terrain_tex_coords.value("CrossHair");
+    crosshair_node->setScale(tex_coord.w*2 * 2 / (float)width, tex_coord.h*2 * 2 / (float)height, 1);
+    crosshair_node->setPosition(-tex_coord.w*2 / (float)width, tex_coord.h*2 / (float)height, 0);
 }
 
 void MainWindow::windowClosed(Ogre::RenderWindow* rw)

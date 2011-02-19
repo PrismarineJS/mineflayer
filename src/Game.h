@@ -88,19 +88,19 @@ public:
 public:
     Game(QUrl connection_info);
 
-
-    // call every frame passing it the amount of time since the last frame
     void start();
     void shutdown(int return_code);
+
+    // call every frame passing it the amount of time since the last frame
     void doPhysics(float delta_seconds);
 
     // equivalent to pressing a button.
     void setControlActivated(Control control, bool activated = true);
+
     // immediately emits a position update
     void updatePlayerLook(float delta_yaw, float delta_pitch);
     void setPlayerLook(float yaw, float pitch);
-    // this one is cheating
-    void setPlayerPosition(const Double3D & pt);
+
     // only valid to call this after you die
     void respawn();
 
@@ -119,11 +119,13 @@ public:
 
     void sendChat(QString message);
 
-
     // if you want you can cheat and override the default physics settings:
     void setInputAcceleration(float value) { m_input_acceleration = value; }
     void setGravity(float value) { m_gravity = value; }
     void setMaxGroundSpeed(float value) { m_max_ground_speed = value; }
+
+    // this one is cheating
+    void setPlayerPosition(const Double3D & pt);
 
 signals:
     void chatReceived(QString username, QString message);

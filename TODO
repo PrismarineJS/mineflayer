@@ -18,6 +18,7 @@ Core:
  * time tracking (day / night)
  * inventory manipulation
  * crafting
+ * handler for onHeardNoteBlock(type, pitch, volume)
  * non-spoken chat interpretation (player joined, etc)
  * clean up stray chunks that didn't get unloaded
  * recalculte light on block changes

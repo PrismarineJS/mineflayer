@@ -479,6 +479,13 @@ void Game::doPhysics(float delta_seconds)
 
     QMutexLocker locker(&m_mutex);
 
+//    if (m_player_position.pos != m_player_position.pos) {
+//        // NaN errors
+//        qDebug() << "NaN error";
+//        QCoreApplication::exit(-1);
+//        return;
+//    }
+
     // derive xy movement vector from controls
     int movement_right = 0;
     if (m_control_state.at(Right))

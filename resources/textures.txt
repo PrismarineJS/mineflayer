@@ -321,3 +321,8 @@ DyeWhite            240 176 16  16
 
 MusicDiscYellow     0   240 16  16
 MusicDiskGreen      16  240 16  16
+
+# /gui/inventory.png
+# name              x   y   w   h
+Inventory           0   0   176 166
+

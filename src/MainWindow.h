@@ -96,6 +96,7 @@ private:
     static const QSizeF c_gui_png_size;
     static const QSizeF c_icons_png_size;
     static const QSizeF c_items_png_size;
+    static const QSizeF c_inventory_png_size;
 
 
     Ogre::Root *m_root;
@@ -138,6 +139,8 @@ private:
 
     int m_next_manual_object_string;
 
+    bool m_inventory_open;
+
 private:
     void loadControls();
 
@@ -153,7 +156,7 @@ private:
     bool controlPressed(Game::Control control);
     void activateInput(PhysicalInput input, bool activated = true);
 
-    void grabMouse();
+    void grabMouse(bool grab_mouse = true);
 
     Ogre::ManualObject * create2DObject(const Ogre::String & material_name,
         const QSizeF & material_size_pixels, const QString & texture_name, const QSizeF & size);
@@ -161,7 +164,9 @@ private:
 
     void mouseWheel(int direction);
 
+    void createScene();
 
+    void setInventoryOpen(bool new_value);
 private slots:
     void movePlayerPosition();
     void handlePlayerHealthUpdated();
