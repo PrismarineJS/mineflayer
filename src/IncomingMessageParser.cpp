@@ -77,6 +77,7 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
     case Message::PlayNoteBlock: return new PlayNoteBlockResponse;
     case Message::Explosion: return new ExplosionResponse;
     case Message::OpenWindow: return new OpenWindowResponse;
+    case Message::CloseWindow: return new CloseWindowResponse;
     case Message::SetSlot: return new SetSlotResponse;
     case Message::WindowItems: return new WindowItemsResponse;
     case Message::UpdateProgressBar: return new UpdateProgressBarResponse;

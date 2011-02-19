@@ -825,6 +825,14 @@ int OpenWindowResponse::parse(QByteArray buffer)
     return index;
 }
 
+int CloseWindowResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, window_id)) == -1)
+        return -1;
+    return index;
+}
+
 int SetSlotResponse::parse(QByteArray buffer)
 {
     int index = 1;

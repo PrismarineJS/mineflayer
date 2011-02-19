@@ -681,6 +681,13 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class CloseWindowResponse : public IncomingResponse {
+public:
+    qint8 window_id;
+    CloseWindowResponse() : IncomingResponse(CloseWindow) {}
+    virtual int parse(QByteArray buffer);
+};
+
 class SetSlotResponse : public IncomingResponse {
 public:
     qint8 window_id;
