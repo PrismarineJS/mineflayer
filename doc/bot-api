@@ -71,14 +71,6 @@ mf.Entity
  */
 mf.Item(type, count)
 
-/**
- * Represents a snapshot of your inventory.
- * TODO: figure out how this is to be structured.
- *
- * NOT YET IMPLEMENTED
- */
-mf.Inventory
-
 // Enums
 
 /**
@@ -157,6 +149,16 @@ mf.Control
  *      Uncrouch
  */
 mf.AnimationType
+
+/**
+ * Members:
+ *      Inventory
+ *      Chest
+ *      Workbench
+ *      Furnace
+ *      Dispenser
+ */
+mf.WindowType
 
 /**
  * runs a script with a path relative to the current script.
@@ -379,65 +381,24 @@ mf.look(yaw, pitch)
  * Place the currently equipped item, with some exceptions. If the block at
  * point is a chest, furnace, workbench, etc, you will "activate" the block.
  * If the equipped item is food, you will eat it.
- * NOT YET IMPLEMENTED
  * @param {Point} block The coordinates of the block that you want to place the block on.
  * @param {Number} face Which side of the block you want to place the block on. See the mf.Face enum.
  */
 mf.placeBlock(block, face)
 
-/**
- * Looks for an item in your inventory and equips it. If you don't have the item, nothing happens.
- * NOT YET IMPLEMENTED
- * @param {Number} item The item ID of the item you want to equip.
- */
-mf.equipItem(item)
+// TODO: document these
+mf.selectedEquipSlot()
+mf.selectEquipSlot(slot)
 
-/**
- * Gets the id of item you are holding.
- * NOT YET IMPLEMENTED
- * @returns {Number} item_id What you are now equipped with.
- */
-mf.equippedItem()
+mf.clickInventorySlot(slot, right_click)
+mf.clickUniqueSlot(slot, right_click)
+mf.clickOutsideWindow(right_click)
 
-/**
- * Looks for armor in your inventory and equips it. If you don't have the armor, nothing happens.
- * NOT YET IMPLEMENTED
- * @param {Number} item The item ID of the armor you want to equip.
- */
-mf.equipArmor(item)
+mf.openInventoryWindow()
+mf.closeWindow()
 
-/**
- * TODO: move to utility library.
- * NOT YET IMPLEMENTED
- * Counts how many of a certain type of item you have.
- * @param {Number} item The item ID of the item you want to count.
- * @returns {Number} The number of items of that type that you have in all of your inventory slots combined. 
- */
-mf.countInventoryItemsOfType(item)
-
-/**
- * Returns a snapshot of your inventory. Modifying the object does nothing.
- * NOT YET IMPLEMENTED
- * @returns {Inventory} 
- */
-mf.inventory()
-
-/**
- * TODO: move to utility library.
- * Tells how much room you have left in your inventory. No need to worry about merging stacks; this function takes that into account automatically.
- * NOT YET IMPLEMENTED
- * @param {Number} item The item ID that you want to see how many more will fit in your inventory.
- * @returns {Number} How many more of those items will fit.
- */
-mf.inventorySpaceLeft(item)
-
-/**
- * TODO: move to utility library.
- * NOT YET IMPLEMENTED
- * Tells how many free slots you have open in your inventory. No need to worry about merging stacks; this method takes that into account automatically.
- * @returns {Number} The total number of empty inventory slots.
- */
-mf.inventorySlotsLeft()
+mf.inventoryItem(slot)
+mf.uniqueWindowItem(slot)
 
 /**
  * Tells what time it is, also known as where the sun or moon is in the sky.
@@ -445,9 +406,6 @@ mf.inventorySlotsLeft()
  * @returns {Number} The number of real life seconds since dawn. This ranges from 0 to 1200 since a day is 20 minutes.
  */
 mf.timeOfDay()
-
-// TODO: crafting
-// TODO: attacking
 
 // Events: fill in the ... part of the function. See examples for more information.
 
@@ -526,32 +484,19 @@ mf.onStoppedDigging(function(reason) {...})
 /**
  * Called when what you are currently equipped with changes.
  * For example, if your pickaxe breaks or you eat food. See also equippedItem().
- * NOT YET IMPLEMENTED
  */
 mf.onEquippedItemChanged(function() {...})
 
 /**
- * Called when anything in your inventory changes. See also inventory().
- * NOT YET IMPLEMENTED
+ * Called when anything in your inventory changes. See also inventoryItem().
  */
 mf.onInventoryUpdated(function() {...})
 
 /**
- * Called when another user joins the server.
- * NOT YET IMPLEMENTED
- * TODO: move to utility library
- * @param {String} username The username of the person joining.
+ * Called when you can begin messing with a chest or your inventory.
+ * @param {Number} window_type See mf.WindowType enum.
  */
-mf.onUserJoined(function(username) {...})
-
-/**
- * Called when another user quits the server.
- * NOT YET IMPLEMENTED
- * TODO: move to utility library
- * @param {String} username The username of the person quitting.
- */
-mf.onUserQuit(function(username) {...})
-
+mf.onWindowOpened(function(window_type) {...})
 
 /**
  * removes the handler from the event.

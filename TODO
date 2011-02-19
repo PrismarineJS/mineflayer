@@ -12,15 +12,14 @@ Core:
 
    - entity collisions
 
- * placing blocks
  * attacking
  * animate while digging
  * time tracking (day / night)
- * inventory manipulation
- * crafting
  * handler for onHeardNoteBlock(type, pitch, volume)
  * non-spoken chat interpretation (player joined, etc)
  * clean up stray chunks that didn't get unloaded
+ * look at the protocol page and see if there is any data there that we're not
+   exposing (e.g. entity equipment).
  * recalculte light on block changes
 
 Bot framework:

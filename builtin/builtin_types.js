@@ -106,5 +106,13 @@ mf.AnimationType = {
     "SwingArm":     1,
     "Damage":       2,
     "Crouch":       104,
-    "Uncrouch":     105
+    "Uncrouch":     105,
+};
+
+mf.WindowType = {
+    "Inventory":    -1,
+    "Chest":        0,
+    "Workbench":    1,
+    "Furnace":      2,
+    "Dispenser":    3,
 };

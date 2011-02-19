@@ -17,9 +17,14 @@ const float Game::c_player_half_height = Game::c_player_height / 2;
 const float Game::c_jump_speed = 8.2f; // seems good
 
 const int Game::c_position_update_interval_ms = 50;
+const int Game::c_dig_packet_interval_ms = 50;
 const int Game::c_chat_length_limit = 100;
 const Int3D Game::c_chunk_size(16, 16, 128);
 const Block Game::c_air(Item::Air, 0, 0, 0);
+
+const int Game::c_inventory_count = 36;
+const int Game::c_inventory_window_unique_count = 9;
+const int Game::c_outside_window_slot = -999;
 
 Game::Game(QUrl connection_info) :
     m_mutex(QMutex::Recursive),
@@ -34,11 +39,15 @@ Game::Game(QUrl connection_info) :
     m_gravity(c_standard_gravity),
     m_ground_friction(c_standard_ground_friction),
     m_jump_was_pressed(false),
-    m_return_code(0)
+    m_return_code(0),
+    m_inventory(c_inventory_count),
+    m_next_action_id(0),
+    m_open_window_id(-1),
+    m_need_to_emit_window_opened(false)
 {
     Item::initializeStaticData();
 
-    m_digging_timer.setInterval(50);
+    m_digging_timer.setInterval(c_dig_packet_interval_ms);
 
     bool success;
     success = connect(&m_server, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SLOT(handleLoginStatusChanged(Server::LoginStatus)));
@@ -77,6 +86,18 @@ Game::Game(QUrl connection_info) :
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(chatReceived(QString)), this, SLOT(handleChatReceived(QString)));
     Q_ASSERT(success);
+
+    success = connect(&m_server, SIGNAL(windowItemsUpdated(int,QVector<Item>)), this, SLOT(handleWindowItemsUpdated(int,QVector<Item>)));
+    Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(windowSlotUpdated(int,int,Item)), this, SLOT(handleWindowSlotUpdated(int,int,Item)));
+    Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(holdingChange(int)), this, SLOT(handleHoldingChange(int)));
+    Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(transaction(int,int,bool)), this, SLOT(handleTransaction(int,int,bool)));
+    Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(openWindow(int,Message::WindowType,int)), this, SLOT(handleOpenWindow(int,Message::WindowType,int)));
+    Q_ASSERT(success);
+
 
     // pass directly through
     success = connect(&m_server, SIGNAL(unloadChunk(Int3D)), this, SLOT(handleUnloadChunk(Int3D)));
@@ -618,6 +639,7 @@ bool Game::collisionInRange(const Int3D & boundingBoxMin, const Int3D & bounding
 void Game::sendChat(QString message)
 {
     QMutexLocker locker(&m_mutex);
+
     // limit chat length. split it up if necessary.
     for (int i = 0; i < message.length(); i += c_chat_length_limit)
         m_server.sendChat(message.mid(i, c_chat_length_limit));
@@ -625,5 +647,221 @@ void Game::sendChat(QString message)
 
 void Game::placeBlock(const Int3D &block, Message::BlockFaceDirection face)
 {
-    //m_server.sendBlockPlacement(block, face, equipped_item);
+    QMutexLocker locker(&m_mutex);
+
+    m_server.sendBlockPlacement(block, face, m_inventory.at(m_equipped_slot_id));
+}
+
+void Game::handleWindowItemsUpdated(int window_id, QVector<Item> items)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_unique_slots.resize(items.size() - c_inventory_count);
+    for (int i = 0; i < items.size(); i++)
+        updateWindowSlot(i, items.at(i));
+
+    if (window_id == 0) {
+        emit inventoryUpdated();
+    }
+}
+
+void Game::handleWindowSlotUpdated(int window_id, int slot, Item item)
+{
+    QMutexLocker locker(&m_mutex);
+
+    if (window_id == -1 && slot == -1) {
+        m_held_item = item;
+        return;
+    }
+
+    updateWindowSlot(slot, item);
+
+    if (window_id == 0) {
+        emit inventoryUpdated();
+    } else if (m_need_to_emit_window_opened) {
+        emit windowOpened(m_open_window_type);
+        m_need_to_emit_window_opened = false;
+    }
+}
+
+void Game::updateWindowSlot(int slot, Item item)
+{
+    if (slot < m_unique_slots.size())
+        m_unique_slots.replace(slot, item);
+    else
+        m_inventory.replace((slot-m_unique_slots.size()+9) % c_inventory_count, item);
+}
+
+Item Game::getWindowSlot(int slot)
+{
+    if (slot < m_unique_slots.size())
+        return m_unique_slots.at(slot);
+    else
+        return m_inventory.at((slot-m_unique_slots.size()+9) % c_inventory_count);
+}
+
+void Game::clickInventorySlot(int slot_id, bool right_click)
+{
+    QMutexLocker locker(&m_mutex);
+
+    Q_ASSERT(m_open_window_id != -1);
+    Q_ASSERT(slot_id >= 0 && slot_id < c_inventory_count);
+
+    int notch_slot = m_unique_slots.size() + Util::euclideanMod(slot_id - 9, c_inventory_count);
+
+    TransactionEffect trans_effect(nextActionId(), notch_slot, right_click);
+    m_transaction_queue.enqueue(trans_effect);
+    m_server.sendWindowClick(m_open_window_id, trans_effect.slot, trans_effect.right_click, trans_effect.id, m_inventory.at(slot_id));
+}
+
+void Game::clickUniqueSlot(int slot_id, bool right_click)
+{
+    QMutexLocker locker(&m_mutex);
+
+    Q_ASSERT(m_open_window_id != -1);
+    Q_ASSERT(slot_id >= 0 && slot_id < m_unique_slots.size());
+
+    TransactionEffect trans_effect(nextActionId(), slot_id, right_click);
+    m_transaction_queue.enqueue(trans_effect);
+    m_server.sendWindowClick(m_open_window_id, trans_effect.slot, trans_effect.right_click, trans_effect.id, m_unique_slots.at(slot_id));
+}
+
+int Game::nextActionId()
+{
+    return m_next_action_id++;
+}
+
+void Game::selectEquipSlot(int slot_id)
+{
+    QMutexLocker locker(&m_mutex);
+
+    Q_ASSERT(slot_id >= 0 && slot_id < 9);
+    m_server.sendHoldingChange(slot_id);
+    m_equipped_slot_id = slot_id;
+
+    emit equippedItemChanged();
+}
+
+void Game::handleHoldingChange(int slot_id)
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_equipped_slot_id = slot_id;
+
+    emit equippedItemChanged();
+}
+
+void Game::handleTransaction(int window_id, int action_id, bool accepted)
+{
+    Q_UNUSED(window_id);
+
+    QMutexLocker locker(&m_mutex);
+
+    TransactionEffect trans_effect = m_transaction_queue.dequeue();
+    Q_ASSERT(trans_effect.id == action_id);
+
+    if (accepted) {
+        if (trans_effect.right_click) {
+            if (m_held_item.type == Item::NoItem) {
+                // take half. if uneven, take the extra as well.
+                Item slot_item = getWindowSlot(trans_effect.slot);
+                int amt_to_take = std::floor((slot_item.count + 1) / 2);
+                int amt_to_leave = slot_item.count - amt_to_take;
+                m_held_item.count = amt_to_take;
+                if (m_held_item.count == 0)
+                    m_held_item = Item();
+                slot_item.count = amt_to_leave;
+                if (slot_item.count == 0)
+                    slot_item = Item();
+                updateWindowSlot(trans_effect.slot, slot_item);
+            } else {
+                Item slot_item = getWindowSlot(trans_effect.slot);
+                if (slot_item.type == Item::NoItem || slot_item.type == m_held_item.type) {
+                    // drop 1
+                    slot_item.count++;
+                    m_held_item.count--;
+                    if (m_held_item.count == 0)
+                        m_held_item = Item();
+                } else {
+                    // swap held item and window item
+                    Item tmp = m_held_item;
+                    m_held_item = slot_item;
+                    updateWindowSlot(trans_effect.slot, tmp);
+                }
+            }
+        } else {
+            if (trans_effect.slot == c_outside_window_slot) {
+                m_held_item = Item();
+            } else {
+                // swap held item and window item
+                Item tmp = m_held_item;
+                m_held_item = getWindowSlot(trans_effect.slot);
+                updateWindowSlot(trans_effect.slot, tmp);
+            }
+        }
+    } else {
+        qDebug() << "rejected transaction: " << action_id;
+    }
+}
+
+void Game::closeWindow()
+{
+    QMutexLocker locker(&m_mutex);
+
+    Q_ASSERT(m_open_window_id >= 0 && m_open_window_id < 256);
+    m_server.sendCloseWindow(m_open_window_id);
+    m_open_window_id = -1;
+}
+
+void Game::openInventoryWindow()
+{
+    QMutexLocker locker(&m_mutex);
+
+    Q_ASSERT(m_open_window_id == -1);
+
+    m_open_window_id = 0;
+    m_unique_slots.resize(c_inventory_window_unique_count);
+
+    emit windowOpened(Message::Inventory);
+}
+
+void Game::clickOutsideWindow(bool right_click)
+{
+    QMutexLocker locker(&m_mutex);
+
+    Q_ASSERT(m_open_window_id != -1);
+
+    Item no_item;
+    TransactionEffect trans_effect(nextActionId(), c_outside_window_slot, right_click);
+    m_transaction_queue.enqueue(trans_effect);
+    m_server.sendWindowClick(m_open_window_id, trans_effect.slot, trans_effect.right_click, trans_effect.id, no_item);
+}
+
+void Game::handleOpenWindow(int window_id, Message::WindowType window_type, int number_of_slots)
+{
+    QMutexLocker locker(&m_mutex);
+
+    Q_ASSERT(m_open_window_id == -1);
+
+    m_open_window_id = window_id;
+    m_unique_slots.resize(number_of_slots);
+
+    m_open_window_type = window_type;
+    m_need_to_emit_window_opened = true;
+}
+
+Item Game::inventoryItem(int slot_id) const
+{
+    QMutexLocker locker(&m_mutex);
+
+    return m_inventory.at(slot_id);
+}
+
+Item Game::uniqueWindowItem(int slot_id) const
+{
+    QMutexLocker locker(&m_mutex);
+
+    Q_ASSERT(m_open_window_id != -1);
+
+    return m_unique_slots.at(slot_id);
 }

@@ -106,14 +106,6 @@ void PlayerBlockPlacementRequest::writeMessageBody(QDataStream &stream)
     writeValue(stream, item);
 }
 
-void OpenWindowRequest::writeMessageBody(QDataStream &stream)
-{
-    writeValue(stream, window_id);
-    writeValue(stream, (qint8)inventory_type);
-    writeValue(stream, window_title);
-    writeValue(stream, number_of_slots);
-}
-
 void CloseWindowRequest::writeMessageBody(QDataStream &stream)
 {
     writeValue(stream, window_id);
@@ -126,6 +118,11 @@ void WindowClickRequest::writeMessageBody(QDataStream &stream)
     writeValue(stream, is_right_click);
     writeValue(stream, action_id);
     writeValue(stream, item);
+}
+
+void HoldingChangeRequest::writeMessageBody(QDataStream &stream)
+{
+    writeValue(stream, slot);
 }
 
 int IncomingResponse::parseValue(QByteArray buffer, int index, bool &value)
@@ -820,7 +817,7 @@ int OpenWindowResponse::parse(QByteArray buffer)
     qint8 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    inventory_type = (InventoryType)tmp;
+    inventory_type = (WindowType)tmp;
     if ((index = parseValue(buffer, index, window_title)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, number_of_slots)) == -1)

@@ -111,6 +111,18 @@ void ScriptRunner::go()
     mf_obj.setProperty("respawn", m_engine->newFunction(respawn));
     mf_obj.setProperty("entity", m_engine->newFunction(entity));
     mf_obj.setProperty("startDigging", m_engine->newFunction(startDigging));
+    mf_obj.setProperty("placeBlock", m_engine->newFunction(placeBlock));
+
+    mf_obj.setProperty("selectEquipSlot", m_engine->newFunction(selectEquipSlot));
+    mf_obj.setProperty("selectedEquipSlot", m_engine->newFunction(selectedEquipSlot));
+    mf_obj.setProperty("openInventoryWindow", m_engine->newFunction(openInventoryWindow));
+    mf_obj.setProperty("clickInventorySlot", m_engine->newFunction(clickInventorySlot));
+    mf_obj.setProperty("clickUniqueSlot", m_engine->newFunction(clickUniqueSlot));
+    mf_obj.setProperty("clickOutsideWindow", m_engine->newFunction(clickOutsideWindow));
+    mf_obj.setProperty("closeWindow", m_engine->newFunction(closeWindow));
+    mf_obj.setProperty("inventoryItem", m_engine->newFunction(inventoryItem));
+    mf_obj.setProperty("uniqueWindowItem", m_engine->newFunction(uniqueWindowItem));
+
 
     // hook up hax functions
     QScriptValue hax_obj = m_engine->newObject();
@@ -159,6 +171,11 @@ void ScriptRunner::go()
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(stoppedDigging(Game::StoppedDiggingReason)), this, SLOT(handleStoppedDigging(Game::StoppedDiggingReason)));
     Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(windowOpened(Message::WindowType)), this, SLOT(handleWindowOpened(Message::WindowType)));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(equippedItemChanged()), this, SLOT(handleEquippedItemChanged()));
+    Q_ASSERT(success);
+
 
     m_physics_doer = new PhysicsDoer(m_game);
 
@@ -670,10 +687,12 @@ QScriptValue ScriptRunner::entity(QScriptContext *context, QScriptEngine *engine
     QScriptValue error;
     if (!me->argCount(context, error, 1))
         return error;
+
     QScriptValue entity_id_value = context->argument(0);
     if (!me->maybeThrowArgumentError(context, error, entity_id_value.isNumber()))
         return error;
     int entity_id = entity_id_value.toInt32();
+
     QSharedPointer<Game::Entity> entity = me->m_game->entity(entity_id);
     if (entity.isNull())
         return QScriptValue();
@@ -695,6 +714,165 @@ QScriptValue ScriptRunner::startDigging(QScriptContext *context, QScriptEngine *
     me->m_game->startDigging(Int3D(std::floor(point.x), std::floor(point.y), std::floor(point.z)));
 
     return QScriptValue();
+}
+
+QScriptValue ScriptRunner::placeBlock(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 2))
+        return error;
+
+    QScriptValue point_value = context->argument(0);
+    Double3D point;
+    if (!me->fromJsPoint(context, error, point_value, point))
+        return error;
+
+    QScriptValue face_value = context->argument(1);
+    if (!me->maybeThrowArgumentError(context, error, face_value.isNumber()))
+        return error;
+    Message::BlockFaceDirection face = (Message::BlockFaceDirection) face_value.toInt32();
+
+    me->m_game->placeBlock(Int3D(std::floor(point.x), std::floor(point.y), std::floor(point.z)), face);
+
+    return QScriptValue();
+}
+
+QScriptValue ScriptRunner::selectEquipSlot(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
+
+    QScriptValue slot_id_value = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, slot_id_value.isNumber()))
+        return error;
+    int slot_id = slot_id_value.toInt32();
+
+    me->m_game->selectEquipSlot(slot_id);
+
+    return QScriptValue();
+}
+
+QScriptValue ScriptRunner::selectedEquipSlot(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 0))
+        return error;
+
+    return me->m_game->selectedEquipSlot();
+}
+
+QScriptValue ScriptRunner::openInventoryWindow(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 0))
+        return error;
+
+    me->m_game->openInventoryWindow();
+    return QScriptValue();
+}
+
+QScriptValue ScriptRunner::clickInventorySlot(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 2))
+        return error;
+
+    QScriptValue slot_id_value = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, slot_id_value.isNumber()))
+        return error;
+    int slot_id = slot_id_value.toInt32();
+
+    QScriptValue right_click_value = context->argument(1);
+    if (!me->maybeThrowArgumentError(context, error, right_click_value.isBool()))
+        return error;
+    bool right_click = right_click_value.toBool();
+
+    me->m_game->clickInventorySlot(slot_id, right_click);
+    return QScriptValue();
+}
+
+QScriptValue ScriptRunner::clickUniqueSlot(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 2))
+        return error;
+
+    QScriptValue slot_id_value = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, slot_id_value.isNumber()))
+        return error;
+    int slot_id = slot_id_value.toInt32();
+
+    QScriptValue right_click_value = context->argument(1);
+    if (!me->maybeThrowArgumentError(context, error, right_click_value.isBool()))
+        return error;
+    bool right_click = right_click_value.toBool();
+
+    me->m_game->clickUniqueSlot(slot_id, right_click);
+    return QScriptValue();
+}
+
+QScriptValue ScriptRunner::clickOutsideWindow(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
+
+    QScriptValue right_click_value = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, right_click_value.isBool()))
+        return error;
+    bool right_click = right_click_value.toBool();
+
+    me->m_game->clickOutsideWindow(right_click);
+    return QScriptValue();
+}
+
+QScriptValue ScriptRunner::closeWindow(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 0))
+        return error;
+
+    me->m_game->closeWindow();
+    return QScriptValue();
+}
+
+QScriptValue ScriptRunner::inventoryItem(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
+
+    QScriptValue slot_id_value = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, slot_id_value.isNumber()))
+        return error;
+    int slot_id = slot_id_value.toInt32();
+
+    return me->jsItem(me->m_game->inventoryItem(slot_id));
+}
+
+QScriptValue ScriptRunner::uniqueWindowItem(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
+
+    QScriptValue slot_id_value = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, slot_id_value.isNumber()))
+        return error;
+    int slot_id = slot_id_value.toInt32();
+
+    return me->jsItem(me->m_game->uniqueWindowItem(slot_id));
 }
 
 QScriptValue ScriptRunner::setPosition(QScriptContext *context, QScriptEngine *engine)
@@ -851,4 +1029,14 @@ void ScriptRunner::handleLoginStatusUpdated(Server::LoginStatus status)
 void ScriptRunner::handleStoppedDigging(Game::StoppedDiggingReason reason)
 {
     raiseEvent("onStoppedDigging", QScriptValueList() << reason);
+}
+
+void ScriptRunner::handleWindowOpened(Message::WindowType window_type)
+{
+    raiseEvent("onWindowOpened", QScriptValueList() << window_type);
+}
+
+void ScriptRunner::handleEquippedItemChanged()
+{
+    raiseEvent("onEquippedItemChanged", QScriptValueList());
 }

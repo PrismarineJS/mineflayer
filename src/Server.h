@@ -85,6 +85,9 @@ signals:
     void playerPositionAndLookUpdated(Server::EntityPosition position);
     void windowItemsUpdated(int window_id, QVector<Item> items);
     void windowSlotUpdated(int window_id, int slot, Item item);
+    void holdingChange(int slot);
+    void transaction(int window_id, int action_id, bool accepted);
+    void openWindow(int window_id, Message::WindowType inventory_type, int number_of_slots);
 
 public slots:
     // actually connect to the server
@@ -98,7 +101,11 @@ public:
     void sendChat(QString message);
     void sendRespawnRequest();
     void sendDiggingStatus(Message::DiggingStatus status, const Int3D & coord);
-    void sendBlockPlacement(Int3D & coord, Message::BlockFaceDirection face, Item block);
+    void sendBlockPlacement(const Int3D & coord, Message::BlockFaceDirection face, Item block);
+
+    void sendWindowClick(qint8 window_id, qint16 slot, bool is_right_click, qint16 action_id, Item item);
+    void sendHoldingChange(qint16 slot);
+    void sendCloseWindow(qint8 window_id);
 
 private:
     static const QString c_auth_server;

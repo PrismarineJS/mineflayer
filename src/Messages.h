@@ -83,11 +83,15 @@ public:
         PositiveX=5,
     };
 
-    enum InventoryType {
-        BasicInventory=0,
-        WorkbenchInventory=1,
-        FurnaceInventory=2,
-        DispenserInventory=3,
+    enum WindowType {
+        // ours
+        Inventory=-1,
+
+        // notch's
+        Chest=0,
+        Workbench=1,
+        Furnace=2,
+        Dispenser=3,
     };
 
     MessageType messageType;
@@ -187,17 +191,6 @@ public:
     virtual void writeMessageBody(QDataStream &stream);
 };
 
-class OpenWindowRequest : public OutgoingRequest {
-public:
-    qint8 window_id;
-    InventoryType inventory_type;
-    QString window_title;
-    qint8 number_of_slots;
-    OpenWindowRequest(qint8 window_id, InventoryType inventory_type, QString window_title, qint8 number_of_slots) : OutgoingRequest(OpenWindow),
-            window_id(window_id), inventory_type(inventory_type), window_title(window_title), number_of_slots(number_of_slots) {}
-    virtual void writeMessageBody(QDataStream &stream);
-};
-
 class CloseWindowRequest : public OutgoingRequest {
 public:
     qint8 window_id;
@@ -223,6 +216,15 @@ public:
     DummyDisconnectMessage() : OutgoingRequest(DummyDisconnect) {}
     virtual void writeMessageBody(QDataStream &) {}
 };
+
+
+class HoldingChangeRequest : public OutgoingRequest {
+public:
+    qint16 slot;
+    HoldingChangeRequest(qint16 slot) : OutgoingRequest(HoldingChange), slot(slot) {}
+    virtual void writeMessageBody(QDataStream &stream);
+};
+
 
 class IncomingResponse : public Message {
 public:
@@ -672,7 +674,7 @@ public:
 class OpenWindowResponse : public IncomingResponse {
 public:
     qint8 window_id;
-    InventoryType inventory_type;
+    WindowType inventory_type;
     QString window_title;
     qint8 number_of_slots;
     OpenWindowResponse() : IncomingResponse(OpenWindow) {}

@@ -161,6 +161,8 @@ public:
     static bool blockIsPhysical(Item::ItemType item);
     static bool blockIsSafe(Item::ItemType item);
     static bool blockIsDiggable(Item::ItemType item);
+
+    Item() : type(NoItem), count(0), metadata(0) {}
 };
 
 

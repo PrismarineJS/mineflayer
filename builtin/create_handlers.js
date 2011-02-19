@@ -27,9 +27,7 @@ function() {
         "onStoppedDigging",
         "onEquippedItemChanged",
         "onInventoryUpdated",
-        "onTimeUpdated",
-        "onUserJoined",
-        "onUserQuit",
+        "onWindowOpened",
     ];
     for (var i = 0; i < registrar_names.length; i++) {
         createEventRegistrar(registrar_names[i]);

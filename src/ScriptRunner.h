@@ -118,6 +118,19 @@ private:
     static QScriptValue respawn(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue entity(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue startDigging(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue placeBlock(QScriptContext * context, QScriptEngine * engine);
+
+    static QScriptValue selectEquipSlot(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue selectedEquipSlot(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue openInventoryWindow(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue clickInventorySlot(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue clickUniqueSlot(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue clickOutsideWindow(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue closeWindow(QScriptContext * context, QScriptEngine * engine);
+
+    static QScriptValue inventoryItem(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue uniqueWindowItem(QScriptContext * context, QScriptEngine * engine);
+
 
     // hax functions
     static QScriptValue setPosition(QScriptContext * context, QScriptEngine * engine);
@@ -139,6 +152,8 @@ private slots:
     void handleChatReceived(QString username, QString message);
     void handleLoginStatusUpdated(Server::LoginStatus status);
     void handleStoppedDigging(Game::StoppedDiggingReason reason);
+    void handleWindowOpened(Message::WindowType);
+    void handleEquippedItemChanged();
 
     void dispatchTimeout();
 

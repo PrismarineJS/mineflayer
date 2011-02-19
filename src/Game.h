@@ -6,6 +6,7 @@
 
 #include <QMutex>
 #include <QMutexLocker>
+#include <QQueue>
 
 // This class is thread-safe.
 class Game : public QObject
@@ -85,6 +86,12 @@ public:
     static const int c_chat_length_limit;
     static const int c_position_update_interval_ms;
 
+    static const int c_dig_packet_interval_ms;
+    static const int c_inventory_count;
+    static const int c_inventory_window_unique_count;
+
+    static const int c_outside_window_slot;
+
 public:
     Game(QUrl connection_info);
 
@@ -104,7 +111,7 @@ public:
     // only valid to call this after you die
     void respawn();
 
-    int playerEntityId() const { return m_player_entity_id; }
+    int playerEntityId() const { QMutexLocker locker(&m_mutex); return m_player_entity_id; }
     Server::EntityPosition playerPosition();
     QSharedPointer<Entity> entity(int entity_id);
 
@@ -119,10 +126,23 @@ public:
 
     void sendChat(QString message);
 
+    int selectedEquipSlot() const { QMutexLocker locker(&m_mutex); return m_equipped_slot_id; }
+    void selectEquipSlot(int slot_id); // [27, 35]
+
+    void clickInventorySlot(int slot_id, bool right_click); // slot_id [0, 35]
+    void clickUniqueSlot(int slot_id, bool right_click); // slot_id range depends on window
+    void clickOutsideWindow(bool right_click);
+
+    void openInventoryWindow();
+    void closeWindow();
+
+    Item inventoryItem(int slot_id) const; // [0, 35]
+    Item uniqueWindowItem(int slot_id) const;
+
     // if you want you can cheat and override the default physics settings:
-    void setInputAcceleration(float value) { m_input_acceleration = value; }
-    void setGravity(float value) { m_gravity = value; }
-    void setMaxGroundSpeed(float value) { m_max_ground_speed = value; }
+    void setInputAcceleration(float value) { QMutexLocker locker(&m_mutex); m_input_acceleration = value; }
+    void setGravity(float value) { QMutexLocker locker(&m_mutex); m_gravity = value; }
+    void setMaxGroundSpeed(float value) { QMutexLocker locker(&m_mutex); m_max_ground_speed = value; }
 
     // this one is cheating
     void setPlayerPosition(const Double3D & pt);
@@ -144,9 +164,13 @@ signals:
     void stoppedDigging(Game::StoppedDiggingReason reason);
     void loginStatusUpdated(Server::LoginStatus status);
 
-private:
+    void windowOpened(Message::WindowType);
 
-    QMutex m_mutex;
+    void inventoryUpdated();
+    void equippedItemChanged();
+
+private:
+    mutable QMutex m_mutex;
 
     static const Int3D c_chunk_size;
     static const Block c_air;
@@ -178,11 +202,40 @@ private:
 
     int m_return_code;
 
+    QVector<Item> m_inventory; // indexed from [0, 36)
+    QVector<Item> m_unique_slots; // indexing depends on which window is open
+    qint16 m_next_action_id;
+    int m_equipped_slot_id; // [0, 9)
+
+    int m_open_window_id;
+
+    Item m_held_item;
+
+    struct TransactionEffect {
+        int id;
+        int slot;
+        bool right_click;
+
+        TransactionEffect(int id, int slot, bool right_click) :
+                id(id), slot(slot), right_click(right_click) {}
+    };
+
+    QQueue<TransactionEffect> m_transaction_queue;
+
+    bool m_need_to_emit_window_opened;
+    Message::WindowType m_open_window_type;
+
+
 private:
     float groundSpeedSquared() { return m_player_position.vel.x * m_player_position.vel.x +
                                  m_player_position.vel.y * m_player_position.vel.y; }
     void getPlayerBoundingBox(Int3D & boundingBoxMin, Int3D & boundingBoxMax);
     bool collisionInRange(const Int3D & boundingBoxMin, const Int3D & boundingBoxMax);
+
+    int nextActionId();
+
+    void updateWindowSlot(int slot_id, Item item);
+    Item getWindowSlot(int slot);
 
 private slots:
     void handleLoginStatusChanged(Server::LoginStatus status);
@@ -205,6 +258,12 @@ private slots:
     void handleMapChunkUpdated(QSharedPointer<Chunk> update);
     void handleMultiBlockUpdate(Int3D chunk_key, QHash<Int3D,Block> new_blocks);
     void handleBlockUpdate(Int3D absolute_location, Block new_block);
+
+    void handleWindowItemsUpdated(int window_id, QVector<Item> items);
+    void handleWindowSlotUpdated(int window_id, int slot, Item item);
+    void handleHoldingChange(int slot_id);
+    void handleTransaction(int window_id, int action_id, bool accepted);
+    void handleOpenWindow(int window_id, Message::WindowType inventory_type, int number_of_slots);
 
     void sendPosition();
     void timeToContinueDigging();

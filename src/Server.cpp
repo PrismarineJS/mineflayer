@@ -106,10 +106,20 @@ void Server::sendDiggingStatus(Message::DiggingStatus status, const Int3D &coord
     sendMessage(QSharedPointer<OutgoingRequest>(new PlayerDiggingRequest(status, notchian_coord.x, notchian_coord.y, notchian_coord.z, Message::PositiveY)));
 }
 
-void Server::sendBlockPlacement(Int3D &coord, Message::BlockFaceDirection face, Item block)
+void Server::sendBlockPlacement(const Int3D &coord, Message::BlockFaceDirection face, Item block)
 {
     Int3D notchian_coord = toNotchianIntMeters(coord);
     sendMessage(QSharedPointer<OutgoingRequest>(new PlayerBlockPlacementRequest(notchian_coord.x, notchian_coord.y, notchian_coord.z, face, block)));
+}
+
+void Server::sendWindowClick(qint8 window_id, qint16 slot, bool is_right_click, qint16 action_id, Item item)
+{
+    sendMessage(QSharedPointer<OutgoingRequest>(new WindowClickRequest(window_id, slot, is_right_click, action_id, item)));
+}
+
+void Server::sendHoldingChange(qint16 slot)
+{
+    sendMessage(QSharedPointer<OutgoingRequest>(new HoldingChangeRequest(slot)));
 }
 
 void Server::handleConnected()
@@ -421,6 +431,21 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
                 m_socket->disconnectFromHost();
             break;
         }
+        case Message::HoldingChange: {
+            HoldingChangeResponse * message = (HoldingChangeResponse *) incomingMessage.data();
+            emit holdingChange(message->slot);
+            break;
+        }
+        case Message::Transaction: {
+            TransactionResponse * message = (TransactionResponse *) incomingMessage.data();
+            emit transaction(message->window_id, message->action_id, message->is_accepted);
+            break;
+        }
+        case Message::OpenWindow: {
+            OpenWindowResponse * message = (OpenWindowResponse *) incomingMessage.data();
+            emit openWindow(message->window_id, message->inventory_type, message->number_of_slots);
+            break;
+        }
         default: {
 //            qDebug() << "ignoring message type: 0x" << QString::number(incomingMessage.data()->messageType, 16).toStdString().c_str();
             break;
@@ -536,4 +561,9 @@ void Server::handleSocketError(QAbstractSocket::SocketError error)
         break;
     default:;
     }
+}
+
+void Server::sendCloseWindow(qint8 window_id)
+{
+    sendMessage(QSharedPointer<OutgoingRequest>(new CloseWindowRequest(window_id)));
 }

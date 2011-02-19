@@ -25,6 +25,8 @@ namespace MetaTypes {
         qRegisterMetaType<QSharedPointer<Game::Entity> >("QSharedPointer<Game::Entity>");
         qRegisterMetaType<Game::StoppedDiggingReason>("Game::StoppedDiggingReason");
         qRegisterMetaType<AnimationResponse::AnimationType>("AnimationResponse::AnimationType");
+        qRegisterMetaType<Message::WindowType>("Message::WindowType");
+        qRegisterMetaType<QVector<Item> >("QVector<Item>");
     }
 }
 
