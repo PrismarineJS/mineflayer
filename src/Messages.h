@@ -146,6 +146,16 @@ public:
     virtual void writeMessageBody(QDataStream &stream);
 };
 
+class UseEntityRequest : public OutgoingRequest {
+public:
+    qint32 self_entity_id;
+    qint32 target_entity_id;
+    bool left_click;
+    UseEntityRequest(qint32 self_entity_id, qint32 target_entity_id, bool left_click) : OutgoingRequest(UseEntity),
+        self_entity_id(self_entity_id), target_entity_id(target_entity_id), left_click(left_click) {}
+    virtual void writeMessageBody(QDataStream &stream);
+};
+
 class RespawnRequest : public OutgoingRequest {
 public:
     RespawnRequest() : OutgoingRequest(Respawn) {}

@@ -77,6 +77,13 @@ void ChatRequest::writeMessageBody(QDataStream &stream)
     writeValue(stream, message);
 }
 
+void UseEntityRequest::writeMessageBody(QDataStream &stream)
+{
+    writeValue(stream, self_entity_id);
+    writeValue(stream, target_entity_id);
+    writeValue(stream, left_click);
+}
+
 void PlayerPositionAndLookRequest::writeMessageBody(QDataStream &stream)
 {
     writeValue(stream, x);

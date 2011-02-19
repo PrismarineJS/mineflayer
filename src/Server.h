@@ -102,6 +102,7 @@ public:
     void sendRespawnRequest();
     void sendDiggingStatus(Message::DiggingStatus status, const Int3D & coord);
     void sendBlockPlacement(const Int3D & coord, Message::BlockFaceDirection face, Item block);
+    void sendClickEntity(int self_entity_id, int target_entity_id, bool right_click);
 
     void sendWindowClick(qint8 window_id, qint16 slot, bool is_right_click, qint16 action_id, Item item);
     void sendHoldingChange(qint16 slot);

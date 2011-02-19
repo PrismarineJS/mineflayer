@@ -21,6 +21,7 @@ Core:
  * look at the protocol page and see if there is any data there that we're not
    exposing (e.g. entity equipment).
  * recalculte light on block changes
+ * handle forced window close events from the server
 
 Bot framework:
  * implement the functions in doc/bot-api

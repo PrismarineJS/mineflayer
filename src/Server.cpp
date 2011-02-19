@@ -112,6 +112,11 @@ void Server::sendBlockPlacement(const Int3D &coord, Message::BlockFaceDirection 
     sendMessage(QSharedPointer<OutgoingRequest>(new PlayerBlockPlacementRequest(notchian_coord.x, notchian_coord.y, notchian_coord.z, face, block)));
 }
 
+void Server::sendClickEntity(int self_entity_id, int target_entity_id, bool right_click)
+{
+    sendMessage(QSharedPointer<OutgoingRequest>(new UseEntityRequest(self_entity_id, target_entity_id, !right_click)));
+}
+
 void Server::sendWindowClick(qint8 window_id, qint16 slot, bool is_right_click, qint16 action_id, Item item)
 {
     sendMessage(QSharedPointer<OutgoingRequest>(new WindowClickRequest(window_id, slot, is_right_click, action_id, item)));

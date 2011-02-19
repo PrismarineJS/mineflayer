@@ -136,6 +136,7 @@ private:
     static QScriptValue setPosition(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue positionUpdateInterval(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue setGravityEnabled(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue attackEntity(QScriptContext * context, QScriptEngine * engine);
 
 
 private slots:

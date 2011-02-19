@@ -336,6 +336,12 @@ mf.hax.positionUpdateInterval()
 mf.hax.setGravityEnabled(value)
 
 /**
+ * Sends a single attack message to the server.
+ * @param {Number} entity_id
+ */
+mf.hax.attackEntity(entity_id)
+
+/**
  * Returns a snapshot of the entity with the given entity id or undefined if the entity id cannot be found.
  * Modifying the object does nothing.
  * @param {Number} entity_id

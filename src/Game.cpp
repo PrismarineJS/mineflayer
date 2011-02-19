@@ -140,6 +140,12 @@ void Game::setPlayerPosition(const Double3D & pt)
     emit playerPositionUpdated();
 }
 
+void Game::attackEntity(int entity_id)
+{
+    QMutexLocker locker(&m_mutex);
+    m_server.sendClickEntity(m_player_entity_id, entity_id, false);
+}
+
 void Game::respawn()
 {
     QMutexLocker locker(&m_mutex);

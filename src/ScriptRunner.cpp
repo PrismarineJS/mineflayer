@@ -130,6 +130,7 @@ void ScriptRunner::go()
     hax_obj.setProperty("setPosition", m_engine->newFunction(setPosition));
     hax_obj.setProperty("positionUpdateInterval", m_engine->newFunction(positionUpdateInterval));
     hax_obj.setProperty("setGravityEnabled", m_engine->newFunction(setGravityEnabled));
+    hax_obj.setProperty("attackEntity", m_engine->newFunction(attackEntity));
 
     // run main script
     QString main_script_contents = internalReadFile(m_main_script_filename);
@@ -909,6 +910,20 @@ QScriptValue ScriptRunner::setGravityEnabled(QScriptContext *context, QScriptEng
         return error;
 
     me->m_game->setGravity(value_value.toBool() ? Game::c_standard_gravity : 0);
+    return QScriptValue();
+}
+QScriptValue ScriptRunner::attackEntity(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
+    QScriptValue entity_id_value = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, entity_id_value.isNumber()))
+        return error;
+    int entity_id = entity_id_value.toInt32();
+
+    me->m_game->attackEntity(entity_id);
     return QScriptValue();
 }
 
