@@ -2,16 +2,17 @@ mf.include("auto_respawn.js");
 mf.include("player_tracker.js");
 mf.include("giver.js");
 
-function dig() {
+function dig(block_to_dig) {
     mf.chat("digging down");
-    var block_to_dig = mf.self().position.offset(0, 0, -0.5).floored();
     //mf.lookAt(block_to_dig.offset(0.5, 0.5, 0.5));
     mf.startDigging(block_to_dig);
 }
 
 mf.onChat(function(username, message) {
     if (message == "dig") {
-        dig();
+        dig(mf.self().position.offset(0, 0, -0.5).floored());
+    } else if (message == "dig there") {
+        dig(entityLooksAt(player_tracker.entityForPlayer(username)));
     } else if (message == "look") {
         mf.lookAt(player_tracker.entityForPlayer(username).position);
     } else if (message == "c'mere") {
@@ -28,3 +29,20 @@ mf.onStoppedDigging(function(reason) {
         mf.chat("?? wtf?? - got "+ reason);
     }
 });
+
+function entityLooksAt(entity) {
+    var pos = entity.position.offset(0, 0, 1.6);
+    var yaw = entity.yaw, pitch = entity.pitch;
+    var vector_length = 0.25;
+    var x = Math.cos(yaw) * Math.cos(pitch);
+    var y = Math.sin(yaw) * Math.cos(pitch);
+    var z = Math.sin(pitch);
+    var vector = new mf.Point(x*vector_length,y*vector_length,z*vector_length);
+
+    var block = 0;
+    while (!mf.isPhysical(block)) {
+        pos = pos.plus(vector);
+        block = mf.blockAt(pos).type;
+    }
+    return pos;
+}
