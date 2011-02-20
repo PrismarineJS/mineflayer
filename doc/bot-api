@@ -234,11 +234,6 @@ mf.chat(message)
 mf.exit(return_code)
 
 /**
- * @returns {String} The name you are logged in as.
- */
-mf.username()
-
-/**
  * Gets the number of items you can stack together.
  * @param {mf.ItemType} item The ID of the item you want to check the stack height of.
  * @returns {Number} The number of items of type item you can stack together, or -1 if that item doesn't exist.

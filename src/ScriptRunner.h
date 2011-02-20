@@ -103,7 +103,6 @@ private:
 
     // mf functions
     static QScriptValue chat(QScriptContext *context, QScriptEngine *engine);
-    static QScriptValue username(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue itemStackHeight(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue isPhysical(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue isSafe(QScriptContext * context, QScriptEngine * engine);

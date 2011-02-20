@@ -47,7 +47,7 @@ if (teleporter === undefined) {
             if (target_user === "me") {
                 target_user = username;
             } else if (target_user === "you" || target_user === "yourself") {
-                target_user = mf.username();
+                target_user = mf.self().username;
             }
             zapto(target_user, args);
         }
@@ -81,7 +81,7 @@ if (teleporter === undefined) {
                     respond("unable to reach destination");
                     return;
                 }
-                var my_name = mf.username();
+                var my_name = mf.self().username;
                 if (username !== my_name) {
                     mf.chat("/tp " + username + " " + my_name);
                 }

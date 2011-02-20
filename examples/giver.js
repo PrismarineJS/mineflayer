@@ -35,7 +35,7 @@ var giver = function() {
         if (target_user === "me") {
             target_user = username;
         } else if (target_user === "yourself" || target_user === "you") {
-            target_user = mf.username();
+            target_user = mf.self().username;
         }
         gimme(target_user, args);
     }
