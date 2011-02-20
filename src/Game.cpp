@@ -804,6 +804,9 @@ void Game::handleWindowItemsUpdated(int window_id, QVector<Item> items)
 
     if (window_id == 0) {
         emit inventoryUpdated();
+    } else if (m_need_to_emit_window_opened) {
+        emit windowOpened(m_open_window_type);
+        m_need_to_emit_window_opened = false;
     }
 }
 
@@ -820,9 +823,6 @@ void Game::handleWindowSlotUpdated(int window_id, int slot, Item item)
 
     if (window_id == 0) {
         emit inventoryUpdated();
-    } else if (m_need_to_emit_window_opened) {
-        emit windowOpened(m_open_window_type);
-        m_need_to_emit_window_opened = false;
     }
 }
 
@@ -844,30 +844,33 @@ Item Game::getWindowSlot(int slot)
         return m_inventory.at((slot-m_unique_slots.size()+9) % c_inventory_count);
 }
 
-void Game::clickInventorySlot(int slot_id, bool right_click)
+bool Game::clickInventorySlot(int slot_id, bool right_click)
 {
-    QMutexLocker locker(&m_mutex);
+    WindowClick window_click;
+    {
+        QMutexLocker locker(&m_mutex);
 
-    Q_ASSERT(m_open_window_id != -1);
-    Q_ASSERT(slot_id >= 0 && slot_id < c_inventory_count);
+        Q_ASSERT(slot_id >= 0 && slot_id < c_inventory_count);
 
-    int notch_slot = m_unique_slots.size() + Util::euclideanMod(slot_id - 9, c_inventory_count);
+        int notch_slot = m_unique_slots.size() + Util::euclideanMod(slot_id - 9, c_inventory_count);
+        window_click = WindowClick(nextActionId(), notch_slot, right_click, m_inventory.at(slot_id));
+    }
 
-    TransactionEffect trans_effect(nextActionId(), notch_slot, right_click);
-    m_transaction_queue.enqueue(trans_effect);
-    m_server.sendWindowClick(m_open_window_id, trans_effect.slot, trans_effect.right_click, trans_effect.id, m_inventory.at(slot_id));
+    return doWindowClick(window_click);
 }
 
-void Game::clickUniqueSlot(int slot_id, bool right_click)
+bool Game::clickUniqueSlot(int slot_id, bool right_click)
 {
-    QMutexLocker locker(&m_mutex);
+    WindowClick window_click;
+    {
+        QMutexLocker locker(&m_mutex);
 
-    Q_ASSERT(m_open_window_id != -1);
-    Q_ASSERT(slot_id >= 0 && slot_id < m_unique_slots.size());
+        Q_ASSERT(slot_id >= 0 && slot_id < m_unique_slots.size());
 
-    TransactionEffect trans_effect(nextActionId(), slot_id, right_click);
-    m_transaction_queue.enqueue(trans_effect);
-    m_server.sendWindowClick(m_open_window_id, trans_effect.slot, trans_effect.right_click, trans_effect.id, m_unique_slots.at(slot_id));
+        window_click = WindowClick(nextActionId(), slot_id, right_click, m_unique_slots.at(slot_id));
+    }
+
+    return doWindowClick(window_click);
 }
 
 int Game::nextActionId()
@@ -896,57 +899,85 @@ void Game::handleHoldingChange(int slot_id)
     emit equippedItemChanged();
 }
 
+bool Game::doWindowClick(const WindowClick &window_click)
+{
+    {
+        QMutexLocker locker(&m_mutex);
+
+        Q_ASSERT(m_open_window_id != -1);
+
+        m_window_click_queue.enqueue(window_click);
+        m_server.sendWindowClick(m_open_window_id, window_click.slot, window_click.right_click, window_click.id, window_click.item);
+    }
+
+    m_click_mutex.lock();
+    bool success = m_click_wait_condition.wait(&m_click_mutex, 1000) && m_click_success;
+    m_click_mutex.unlock();
+
+    return success;
+}
+
 void Game::handleTransaction(int window_id, int action_id, bool accepted)
 {
     Q_UNUSED(window_id);
 
-    QMutexLocker locker(&m_mutex);
+    {
+        QMutexLocker locker(&m_mutex);
 
-    TransactionEffect trans_effect = m_transaction_queue.dequeue();
-    Q_ASSERT(trans_effect.id == action_id);
+        WindowClick window_click = m_window_click_queue.dequeue();
 
-    if (accepted) {
-        if (trans_effect.right_click) {
-            if (m_held_item.type == Item::NoItem) {
-                // take half. if uneven, take the extra as well.
-                Item slot_item = getWindowSlot(trans_effect.slot);
-                int amt_to_take = std::floor((slot_item.count + 1) / 2);
-                int amt_to_leave = slot_item.count - amt_to_take;
-                m_held_item.count = amt_to_take;
-                if (m_held_item.count == 0)
-                    m_held_item = Item();
-                slot_item.count = amt_to_leave;
-                if (slot_item.count == 0)
-                    slot_item = Item();
-                updateWindowSlot(trans_effect.slot, slot_item);
-            } else {
-                Item slot_item = getWindowSlot(trans_effect.slot);
-                if (slot_item.type == Item::NoItem || slot_item.type == m_held_item.type) {
-                    // drop 1
-                    slot_item.count++;
-                    m_held_item.count--;
+        Q_ASSERT(window_click.id <= action_id);
+        while (action_id > window_click.id)
+            window_click = m_window_click_queue.dequeue();
+
+        if (accepted) {
+            if (window_click.right_click) {
+                if (m_held_item.type == Item::NoItem) {
+                    // take half. if uneven, take the extra as well.
+                    Item slot_item = getWindowSlot(window_click.slot);
+                    int amt_to_take = std::floor((slot_item.count + 1) / 2);
+                    int amt_to_leave = slot_item.count - amt_to_take;
+                    m_held_item.count = amt_to_take;
                     if (m_held_item.count == 0)
                         m_held_item = Item();
+                    slot_item.count = amt_to_leave;
+                    if (slot_item.count == 0)
+                        slot_item = Item();
+                    updateWindowSlot(window_click.slot, slot_item);
+                } else {
+                    Item slot_item = getWindowSlot(window_click.slot);
+                    if (slot_item.type == Item::NoItem || slot_item.type == m_held_item.type) {
+                        // drop 1
+                        slot_item.count++;
+                        m_held_item.count--;
+                        if (m_held_item.count == 0)
+                            m_held_item = Item();
+                    } else {
+                        // swap held item and window item
+                        Item tmp = m_held_item;
+                        m_held_item = slot_item;
+                        updateWindowSlot(window_click.slot, tmp);
+                    }
+                }
+            } else {
+                if (window_click.slot == c_outside_window_slot) {
+                    m_held_item = Item();
                 } else {
                     // swap held item and window item
                     Item tmp = m_held_item;
-                    m_held_item = slot_item;
-                    updateWindowSlot(trans_effect.slot, tmp);
+                    m_held_item = getWindowSlot(window_click.slot);
+                    updateWindowSlot(window_click.slot, tmp);
                 }
             }
         } else {
-            if (trans_effect.slot == c_outside_window_slot) {
-                m_held_item = Item();
-            } else {
-                // swap held item and window item
-                Item tmp = m_held_item;
-                m_held_item = getWindowSlot(trans_effect.slot);
-                updateWindowSlot(trans_effect.slot, tmp);
-            }
+            qDebug() << "rejected transaction: " << action_id;
         }
-    } else {
-        qDebug() << "rejected transaction: " << action_id;
     }
+
+    m_click_mutex.lock();
+    m_click_success = accepted;
+    m_click_wait_condition.wakeAll();
+    m_click_mutex.unlock();
 }
 
 void Game::closeWindow()
@@ -956,6 +987,7 @@ void Game::closeWindow()
     Q_ASSERT(m_open_window_id >= 0 && m_open_window_id < 256);
     m_server.sendCloseWindow(m_open_window_id);
     m_open_window_id = -1;
+    m_held_item = Item();
 }
 
 void Game::openInventoryWindow()
@@ -970,16 +1002,15 @@ void Game::openInventoryWindow()
     emit windowOpened(Message::Inventory);
 }
 
-void Game::clickOutsideWindow(bool right_click)
+bool Game::clickOutsideWindow(bool right_click)
 {
-    QMutexLocker locker(&m_mutex);
+    WindowClick window_click;
+    {
+        QMutexLocker locker(&m_mutex);
 
-    Q_ASSERT(m_open_window_id != -1);
-
-    Item no_item;
-    TransactionEffect trans_effect(nextActionId(), c_outside_window_slot, right_click);
-    m_transaction_queue.enqueue(trans_effect);
-    m_server.sendWindowClick(m_open_window_id, trans_effect.slot, trans_effect.right_click, trans_effect.id, no_item);
+        window_click = WindowClick(nextActionId(), c_outside_window_slot, right_click, Item());
+    }
+    return doWindowClick(window_click);
 }
 
 void Game::handleOpenWindow(int window_id, Message::WindowType window_type, int number_of_slots)

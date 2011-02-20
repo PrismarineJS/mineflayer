@@ -7,6 +7,7 @@
 #include <QMutex>
 #include <QMutexLocker>
 #include <QQueue>
+#include <QWaitCondition>
 
 // This class is thread-safe.
 class Game : public QObject
@@ -138,9 +139,10 @@ public:
     int selectedEquipSlot() const { QMutexLocker locker(&m_mutex); return m_equipped_slot_id; }
     void selectEquipSlot(int slot_id); // [27, 35]
 
-    void clickInventorySlot(int slot_id, bool right_click); // slot_id [0, 35]
-    void clickUniqueSlot(int slot_id, bool right_click); // slot_id range depends on window
-    void clickOutsideWindow(bool right_click);
+    // blocks and returns success
+    bool clickInventorySlot(int slot_id, bool right_click); // slot_id [0, 35]
+    bool clickUniqueSlot(int slot_id, bool right_click); // slot_id range depends on window
+    bool clickOutsideWindow(bool right_click);
 
     void openInventoryWindow();
     void closeWindow();
@@ -218,16 +220,18 @@ private:
     // held, as in, you left clicked an item in your inventory window
     Item m_held_item;
 
-    struct TransactionEffect {
+    struct WindowClick {
         int id;
         int slot;
         bool right_click;
+        Item item;
 
-        TransactionEffect(int id, int slot, bool right_click) :
-                id(id), slot(slot), right_click(right_click) {}
+        WindowClick() {}
+        WindowClick(int id, int slot, bool right_click, Item item) :
+                id(id), slot(slot), right_click(right_click), item(item) {}
     };
 
-    QQueue<TransactionEffect> m_transaction_queue;
+    QQueue<WindowClick> m_window_click_queue;
 
     bool m_need_to_emit_window_opened;
     Message::WindowType m_open_window_type;
@@ -239,6 +243,10 @@ private:
     };
 
     OpStatus m_op_status;
+
+    QMutex m_click_mutex;
+    QWaitCondition m_click_wait_condition;
+    bool m_click_success;
 
 private:
     static Int3D chunkKey(const Int3D & coord);
@@ -254,6 +262,8 @@ private:
 
     void updateBlock(const Int3D & absolute_location, Block new_block);
     bool entityCollidesWithPoint(const Entity * entity, const Int3D & point);
+
+    bool doWindowClick(const WindowClick & window_click);
 
 private slots:
     void handleLoginStatusChanged(Server::LoginStatus status);

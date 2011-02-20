@@ -47,11 +47,8 @@ chat_commands.registerCommand("toss", function(username, slot_str) {
     var slot = parseInt(slot_str);
     window_open_func = function(window_type) {
         window_open_func = undefined;
-        mf.debug("clicking the slot");
         mf.clickInventorySlot(slot, false);
-        mf.debug("clicking outside window");
         mf.clickOutsideWindow(false);
-        mf.debug("closing window");
         mf.closeWindow();
     };
     mf.openInventoryWindow();
@@ -90,6 +87,72 @@ mf.onSelfMoved(function() {
             mf.hax.placeBlock(below, mf.Face.PositiveZ);
         }
     }
+});
+
+chat_commands.registerCommand("woodplank", function() {
+    var wood_count = inventory.itemCount(mf.ItemType.Wood);
+
+    if (wood_count < 1) {
+        mf.chat("not enough wood to create plank");
+        return
+    }
+
+    var wood_slot = inventory.itemSlot(mf.ItemType.Wood);
+    var wood_item = mf.inventoryItem(wood_slot);
+
+    window_open_func = function(window_type) {
+        window_open_func = undefined;
+
+        mf.debug("now crafting");
+
+        mf.clickInventorySlot(wood_slot, false);
+        mf.clickUniqueSlot(1, false);
+        mf.clickUniqueSlot(0, false);
+
+        mf.closeWindow();
+    };
+    mf.openInventoryWindow();
+
+});
+
+chat_commands.registerCommand("torch", function() {
+    var stick_count = inventory.itemCount(mf.ItemType.Stick);
+
+    if (stick_count < 1) {
+        mf.chat("not enough sticks to create torch");
+        return
+    }
+
+    var coal_count = inventory.itemCount(mf.ItemType.Coal);
+
+    if (coal_count < 1) {
+        mf.chat("not enough coal to create torch");
+        return
+    }
+
+    var stick_slot = inventory.itemSlot(mf.ItemType.Stick);
+    var stick_item = mf.inventoryItem(stick_slot);
+
+    var coal_slot = inventory.itemSlot(mf.ItemType.Coal);
+    var coal_item = mf.inventoryItem(coal_slot);
+
+    window_open_func = function(window_type) {
+        window_open_func = undefined;
+
+        mf.debug("now crafting");
+
+        mf.clickInventorySlot(stick_slot, false);
+        mf.clickUniqueSlot(3, true);
+
+        mf.clickInventorySlot(coal_slot, false);
+        mf.clickUniqueSlot(1, true);
+
+        mf.clickUniqueSlot(0, false);
+
+        mf.closeWindow();
+    };
+    mf.openInventoryWindow();
+
 });
 
 chat_commands.registerCommand("craft", function() {
@@ -151,6 +214,38 @@ chat_commands.registerCommand("craft", function() {
 
             mf.closeWindow();
         };
-        mf.hax.placeBlock(table_pt, mf.Face.PositiveZ);
+        mf.hax.activateBlock(table_pt);
     }, 3);
+});
+
+chat_commands.registerCommand("loot", function() {
+    var chest_pt = block_finder.findNearest(mf.self().position, mf.ItemType.Chest, 20);
+    
+    if (chest_pt === undefined) {
+        mf.chat("I see no chest.");
+        return;
+    }
+
+    navigator.navigateTo(chest_pt, function() {
+        mf.debug("done navigating");
+        window_open_func = function(window_type) {
+            window_open_func = undefined;
+
+            mf.debug("now looting");
+
+            for (var i = 0; i < 27; i++) {
+                var item = mf.uniqueWindowItem(i);
+                if (item.type != mf.ItemType.NoItem) {
+                    mf.debug("looting " + item.count + " " + items.nameForId(item.type));
+                    mf.clickUniqueSlot(i, false);
+                    mf.debug("dropping outside window");
+                    mf.clickOutsideWindow(false);
+                }
+            }
+
+            mf.closeWindow();
+        };
+        mf.hax.activateBlock(chest_pt);
+    }, 3);
+    
 });

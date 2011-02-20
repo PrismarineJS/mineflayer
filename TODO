@@ -1,4 +1,7 @@
 Core:
+ * crafting doesn't work
+ * dispenser is untested
+ * furnace is untested
  * physics
    - slab
    - cake
@@ -12,8 +15,8 @@ Core:
 
    - entity collisions
 
- * attacking
  * animate while digging
+ * handle double chests
  * time tracking (day / night)
  * handler for onHeardNoteBlock(type, pitch, volume)
  * non-spoken chat interpretation (player joined, etc)

@@ -824,8 +824,7 @@ QScriptValue ScriptRunner::clickInventorySlot(QScriptContext *context, QScriptEn
         return error;
     bool right_click = right_click_value.toBool();
 
-    me->m_game->clickInventorySlot(slot_id, right_click);
-    return QScriptValue();
+    return me->m_game->clickInventorySlot(slot_id, right_click);
 }
 
 QScriptValue ScriptRunner::clickUniqueSlot(QScriptContext *context, QScriptEngine *engine)
@@ -845,8 +844,7 @@ QScriptValue ScriptRunner::clickUniqueSlot(QScriptContext *context, QScriptEngin
         return error;
     bool right_click = right_click_value.toBool();
 
-    me->m_game->clickUniqueSlot(slot_id, right_click);
-    return QScriptValue();
+    return me->m_game->clickUniqueSlot(slot_id, right_click);
 }
 
 QScriptValue ScriptRunner::clickOutsideWindow(QScriptContext *context, QScriptEngine *engine)
@@ -861,8 +859,7 @@ QScriptValue ScriptRunner::clickOutsideWindow(QScriptContext *context, QScriptEn
         return error;
     bool right_click = right_click_value.toBool();
 
-    me->m_game->clickOutsideWindow(right_click);
-    return QScriptValue();
+    return me->m_game->clickOutsideWindow(right_click);
 }
 
 QScriptValue ScriptRunner::closeWindow(QScriptContext *context, QScriptEngine *engine)
