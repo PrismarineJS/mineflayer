@@ -61,12 +61,12 @@ chat_commands.registerCommand("build", function() {
 });
 
 chat_commands.registerCommand("build1", function(user, arg) {
-    var glass_pos = block_finder.findNearest(mf.self().position, mf.ItemType.Glass, 10);
-    if (glass_pos === undefined) {
+    var glass_pos_arr = block_finder.findNearest(mf.self().position, mf.ItemType.Glass, 10, 1);
+    if (glass_pos_arr.length === 0) {
         mf.chat("I see no glass.");
         return;
     }
-    mf.hax.placeBlock(glass_pos, parseInt(arg));
+    mf.hax.placeBlock(glass_pos_arr[0], parseInt(arg));
 }, 1);
 
 chat_commands.registerCommand("stopbuild", function() {
@@ -182,12 +182,13 @@ chat_commands.registerCommand("craft", function() {
         mf.chat("stick stack too small.");
     }
 
-    var table_pt = block_finder.findNearest(mf.self().position, mf.ItemType.Workbench, 20);
+    var table_pt_arr = block_finder.findNearest(mf.self().position, mf.ItemType.Workbench, 20, 1);
     
-    if (table_pt === undefined) {
+    if (table_pt_arr.length === 0) {
         mf.chat("I see no crafting table.");
         return;
     }
+    var table_pt = table_pt_arr[0];
 
     navigator.navigateTo(table_pt, function() {
         mf.debug("done navigating");
@@ -219,12 +220,13 @@ chat_commands.registerCommand("craft", function() {
 });
 
 chat_commands.registerCommand("loot", function() {
-    var chest_pt = block_finder.findNearest(mf.self().position, mf.ItemType.Chest, 20);
+    var chest_pts = block_finder.findNearest(mf.self().position, mf.ItemType.Chest, 20, 1);
     
-    if (chest_pt === undefined) {
+    if (chest_pts.length === 0) {
         mf.chat("I see no chest.");
         return;
     }
+    var chest_pt = chest_pts[0];
 
     navigator.navigateTo(chest_pt, function() {
         mf.debug("done navigating");

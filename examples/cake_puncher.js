@@ -10,11 +10,12 @@ var get_it;
 function go() {
     // FIND CAKE
     mf.chat("looking for " + get_it.name);
-    var cake_pos = block_finder.findNearest(mf.self().position.floored(), get_it.id);
-    if (cake_pos === undefined) {
+    var cake_pos_arr = block_finder.findNearest(mf.self().position.floored(), get_it.id, 64, 1);
+    if (cake_pos_arr.length === 0) {
         mf.chat("can't find " + get_it.name);
     } else {
         // STAND ON THE CAKE
+        var cake_pos = cake_pos_arr[0];
         navigator.navigateTo(cake_pos.offset(0, 0, 1), function() {
             // PUNCH THE CAKE   
             mf.startDigging(cake_pos);

@@ -10,11 +10,12 @@ if (fire_fighter === undefined) {
         var _public = {};
         _public.fightFire = function() {
             mf.chat("looking for fire");
-            var nearest_fire_position = block_finder.findNearest(mf.self().position, mf.ItemType.Fire);
-            if (nearest_fire_position === undefined) {
+            var nearest_fire_positions = block_finder.findNearest(mf.self().position, mf.ItemType.Fire, 64, 1);
+            if (nearest_fire_positions.length === 0) {
                 mf.chat("didn't find any fire");
                 return;
             }
+            var nearest_fire_position = nearest_fire_positions[0];
             mf.chat("found fire");
             function arrived() {
                 var punch_these = [
