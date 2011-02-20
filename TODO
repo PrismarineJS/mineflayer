@@ -22,6 +22,7 @@ Core:
    exposing (e.g. entity equipment).
  * recalculte light on block changes
  * handle forced window close events from the server
+ * mf.haveOpStatus and add an op/spawn check to canPlaceBlock
 
 Bot framework:
  * implement the functions in doc/bot-api

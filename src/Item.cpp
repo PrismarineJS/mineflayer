@@ -3,11 +3,17 @@
 #include <QDebug>
 
 bool Item::s_initialized = false;
+
 QHash<Item::ItemType, int> Item::s_item_stack_height;
+QHash<Item::ItemType, bool> Item::s_item_is_placeable;
+QHash<Item::ItemType, bool> Item::s_item_is_activatable;
+
 QHash<Item::ItemType, bool> Item::s_block_is_physical;
 QHash<Item::ItemType, bool> Item::s_block_is_safe;
 QHash<Item::ItemType, bool> Item::s_block_is_diggable;
 
+QHash<Item::ItemType, bool> Item::s_block_is_activatable;
+QHash<Item::ItemType, bool> Item::s_block_is_place_against_able;
 
 void Item::initializeStaticData()
 {
@@ -96,7 +102,7 @@ void Item::initializeStaticData()
     s_item_stack_height.insert(Item::Netherrack, 64);
     s_item_stack_height.insert(Item::SoulSand, 64);
     s_item_stack_height.insert(Item::Glowstone, 64);
-    s_item_stack_height.insert(Item::Portal, 0);
+    s_item_stack_height.insert(Item::Portal, 64);
     s_item_stack_height.insert(Item::JackOLantern, 64);
     s_item_stack_height.insert(Item::Cake_placed, 1);
 
@@ -165,7 +171,7 @@ void Item::initializeStaticData()
     s_item_stack_height.insert(Item::Flint, 1);
     s_item_stack_height.insert(Item::RawPorkchop, 1);
     s_item_stack_height.insert(Item::CookedPorkchop, 1);
-    s_item_stack_height.insert(Item::Paintings, 64);
+    s_item_stack_height.insert(Item::Painting, 64);
     s_item_stack_height.insert(Item::GoldenApple, 1);
     s_item_stack_height.insert(Item::Sign, 1);
     s_item_stack_height.insert(Item::WoodenDoor, 1);
@@ -278,6 +284,67 @@ void Item::initializeStaticData()
     s_block_is_diggable.insert(Item::StationaryLava, false);
     s_block_is_diggable.insert(Item::Fire, false);
     s_block_is_diggable.insert(Item::Portal, false);
+
+    // activatable
+    s_block_is_activatable.insert(Item::Dispenser, true);
+    s_block_is_activatable.insert(Item::NoteBlock, true);
+    s_block_is_activatable.insert(Item::Chest, true);
+    s_block_is_activatable.insert(Item::Workbench, true);
+    s_block_is_activatable.insert(Item::Furnace, true);
+    s_block_is_activatable.insert(Item::BurningFurnace, true);
+    s_block_is_activatable.insert(Item::WoodenDoor_placed, true);
+    s_block_is_activatable.insert(Item::Lever, true);
+    s_block_is_activatable.insert(Item::IronDoor_placed, true);
+    s_block_is_activatable.insert(Item::StoneButton, true);
+    s_block_is_activatable.insert(Item::Cake_placed, true);
+
+    // not place against able
+    s_block_is_place_against_able.insert(Item::NoItem, false);
+    s_block_is_place_against_able.insert(Item::Air, false);
+    s_block_is_place_against_able.insert(Item::Water, false);
+    s_block_is_place_against_able.insert(Item::StationaryWater, false);
+    s_block_is_place_against_able.insert(Item::Lava, false);
+    s_block_is_place_against_able.insert(Item::StationaryLava, false);
+    s_block_is_place_against_able.insert(Item::Fire, false);
+
+    // item is placeable
+    s_item_is_placeable.insert(Item::WoodenHoe, true);
+    s_item_is_placeable.insert(Item::StoneHoe, true);
+    s_item_is_placeable.insert(Item::IronHoe, true);
+    s_item_is_placeable.insert(Item::DiamondHoe, true);
+    s_item_is_placeable.insert(Item::GoldHoe, true);
+    s_item_is_placeable.insert(Item::Seeds, true);
+    s_item_is_placeable.insert(Item::Painting, true);
+    s_item_is_placeable.insert(Item::Sign, true);
+    s_item_is_placeable.insert(Item::WoodenDoor, true);
+    s_item_is_placeable.insert(Item::Bucket, true);
+    s_item_is_placeable.insert(Item::WaterBucket, true);
+    s_item_is_placeable.insert(Item::LavaBucket, true);
+    s_item_is_placeable.insert(Item::Minecart, true);
+    s_item_is_placeable.insert(Item::Saddle, true);
+    s_item_is_placeable.insert(Item::IronDoor, true);
+    s_item_is_placeable.insert(Item::Redstone, true);
+    s_item_is_placeable.insert(Item::Boat, true);
+    s_item_is_placeable.insert(Item::Milk, true);
+    s_item_is_placeable.insert(Item::StorageMinecart, true);
+    s_item_is_placeable.insert(Item::PoweredMinecart, true);
+    s_item_is_placeable.insert(Item::Cake, true);
+    s_item_is_placeable.insert(Item::GoldMusicDisc, true);
+    s_item_is_placeable.insert(Item::GreenMusicDisc, true);
+    s_item_is_placeable.insert(Item::InkSac, true);
+
+    // item is activatable
+    s_item_is_activatable.insert(Item::Apple, true);
+    s_item_is_activatable.insert(Item::Bow, true);
+    s_item_is_activatable.insert(Item::MushroomSoup, true);
+    s_item_is_activatable.insert(Item::Bread, true);
+    s_item_is_activatable.insert(Item::RawPorkchop, true);
+    s_item_is_activatable.insert(Item::CookedPorkchop, true);
+    s_item_is_activatable.insert(Item::GoldenApple, true);
+    s_item_is_activatable.insert(Item::Snowball, true);
+    s_item_is_activatable.insert(Item::Egg, true);
+    s_item_is_activatable.insert(Item::RawFish, true);
+    s_item_is_activatable.insert(Item::FishingRod, true);
 }
 
 int Item::itemStackHeight(Item::ItemType item)
@@ -285,6 +352,17 @@ int Item::itemStackHeight(Item::ItemType item)
     initializeStaticData();
     return s_item_stack_height.value(item, -1);
 }
+bool Item::itemIsPlaceable(ItemType item)
+{
+    initializeStaticData();
+    return (item >= Air && item < 256) || s_item_is_placeable.value(item, false);
+}
+bool Item::itemIsActivatable(ItemType item)
+{
+    initializeStaticData();
+    return s_item_is_activatable.value(item, false);
+}
+
 bool Item::blockIsPhysical(Item::ItemType item)
 {
     initializeStaticData();
@@ -299,4 +377,16 @@ bool Item::blockIsDiggable(Item::ItemType item)
 {
     initializeStaticData();
     return s_block_is_diggable.value(item, true);
+}
+
+bool Item::blockIsActivatable(Item::ItemType item)
+{
+    initializeStaticData();
+    return s_block_is_activatable.value(item, false);
+}
+
+bool Item::blockIsPlaceAgainstAble(Item::ItemType item)
+{
+    initializeStaticData();
+    return s_block_is_place_against_able.value(item, true);
 }

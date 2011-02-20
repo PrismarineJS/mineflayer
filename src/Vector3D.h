@@ -86,6 +86,10 @@ public:
     T distanceSquared() const {
         return x * x + y * y + z * z;
     }
+    template <class O>
+    double distanceTo(const Vector3D<O> & other) const {
+        return std::sqrt(std::pow(other.x-x, 2) + std::pow(other.y-y, 2) + std::pow(other.z-z, 2));
+    }
 };
 
 typedef Vector3D<int> Int3D;

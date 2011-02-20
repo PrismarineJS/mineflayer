@@ -12,6 +12,16 @@ const float Server::c_gravity = -9.81;
 
 const QString Server::c_auth_server = "www.minecraft.net";
 
+const Message::BlockFaceDirection Server::c_to_notch_face[] = {
+    Message::NoDirection,
+    Message::PositiveX,
+    Message::NegativeX,
+    Message::NegativeY,
+    Message::PositiveY,
+    Message::NegativeZ,
+    Message::PositiveZ,
+};
+
 Server::Server(QUrl connection_info) :
     m_connection_info(connection_info),
     m_socket_thread(NULL),
@@ -109,7 +119,8 @@ void Server::sendDiggingStatus(Message::DiggingStatus status, const Int3D &coord
 void Server::sendBlockPlacement(const Int3D &coord, Message::BlockFaceDirection face, Item block)
 {
     Int3D notchian_coord = toNotchianIntMeters(coord);
-    sendMessage(QSharedPointer<OutgoingRequest>(new PlayerBlockPlacementRequest(notchian_coord.x, notchian_coord.y, notchian_coord.z, face, block)));
+    Message::BlockFaceDirection notchian_face = toNotchianFace(face);
+    sendMessage(QSharedPointer<OutgoingRequest>(new PlayerBlockPlacementRequest(notchian_coord.x, notchian_coord.y, notchian_coord.z, notchian_face, block)));
 }
 
 void Server::sendClickEntity(int self_entity_id, int target_entity_id, bool right_click)
@@ -535,6 +546,11 @@ void Server::toNotchianYawPitch(const EntityPosition &source, float &destination
 {
     destination_notchian_yaw = Util::radiansToDegrees(Util::pi - source.yaw);
     destination_notchian_pitch = Util::radiansToDegrees(-source.pitch);
+}
+
+Message::BlockFaceDirection Server::toNotchianFace(Message::BlockFaceDirection face) {
+    Q_ASSERT(face >= -1 && face < 6);
+    return (Message::BlockFaceDirection) c_to_notch_face[face+1];
 }
 
 void Server::sendPositionAndLook(EntityPosition positionAndLook)

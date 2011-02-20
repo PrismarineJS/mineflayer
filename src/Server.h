@@ -109,6 +109,7 @@ public:
     void sendCloseWindow(qint8 window_id);
 
 private:
+    static const Message::BlockFaceDirection c_to_notch_face[];
     static const QString c_auth_server;
     QUrl m_connection_info;
 
@@ -141,6 +142,7 @@ private:
     static void fromNotchianYawPitch(EntityPosition & destination, float notchian_yaw, float notchian_pitch);
     static void fromNotchianYawPitchBytes(EntityPosition & destination, qint8 yaw_out_of_255, qint8 pitch_out_of_255);
     static void toNotchianYawPitch(const EntityPosition &source, float & destination_notchian_yaw, float & destination_notchian_pitch);
+    static Message::BlockFaceDirection toNotchianFace(Message::BlockFaceDirection face);
     QByteArray notchUrlEncode(QString param);
 
 private slots:

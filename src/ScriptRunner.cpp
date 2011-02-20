@@ -111,7 +111,6 @@ void ScriptRunner::go()
     mf_obj.setProperty("respawn", m_engine->newFunction(respawn));
     mf_obj.setProperty("entity", m_engine->newFunction(entity));
     mf_obj.setProperty("startDigging", m_engine->newFunction(startDigging));
-    mf_obj.setProperty("placeBlock", m_engine->newFunction(placeBlock));
 
     mf_obj.setProperty("selectEquipSlot", m_engine->newFunction(selectEquipSlot));
     mf_obj.setProperty("selectedEquipSlot", m_engine->newFunction(selectedEquipSlot));
@@ -122,6 +121,7 @@ void ScriptRunner::go()
     mf_obj.setProperty("closeWindow", m_engine->newFunction(closeWindow));
     mf_obj.setProperty("inventoryItem", m_engine->newFunction(inventoryItem));
     mf_obj.setProperty("uniqueWindowItem", m_engine->newFunction(uniqueWindowItem));
+    mf_obj.setProperty("canPlaceBlock", m_engine->newFunction(canPlaceBlock));
 
 
     // hook up hax functions
@@ -131,6 +131,9 @@ void ScriptRunner::go()
     hax_obj.setProperty("positionUpdateInterval", m_engine->newFunction(positionUpdateInterval));
     hax_obj.setProperty("setGravityEnabled", m_engine->newFunction(setGravityEnabled));
     hax_obj.setProperty("attackEntity", m_engine->newFunction(attackEntity));
+
+    hax_obj.setProperty("placeBlock", m_engine->newFunction(placeBlock));
+    hax_obj.setProperty("activateBlock", m_engine->newFunction(activateBlock));
 
     // run main script
     QString main_script_contents = internalReadFile(m_main_script_filename);
@@ -735,6 +738,43 @@ QScriptValue ScriptRunner::placeBlock(QScriptContext *context, QScriptEngine *en
     Message::BlockFaceDirection face = (Message::BlockFaceDirection) face_value.toInt32();
 
     me->m_game->placeBlock(Int3D(std::floor(point.x), std::floor(point.y), std::floor(point.z)), face);
+
+    return QScriptValue();
+}
+
+QScriptValue ScriptRunner::canPlaceBlock(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 2))
+        return error;
+
+    QScriptValue point_value = context->argument(0);
+    Double3D point;
+    if (!me->fromJsPoint(context, error, point_value, point))
+        return error;
+
+    QScriptValue face_value = context->argument(1);
+    if (!me->maybeThrowArgumentError(context, error, face_value.isNumber()))
+        return error;
+    Message::BlockFaceDirection face = (Message::BlockFaceDirection) face_value.toInt32();
+
+    return me->m_game->canPlaceBlock(Int3D(std::floor(point.x), std::floor(point.y), std::floor(point.z)), face);
+}
+
+QScriptValue ScriptRunner::activateBlock(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
+
+    QScriptValue point_value = context->argument(0);
+    Double3D point;
+    if (!me->fromJsPoint(context, error, point_value, point))
+        return error;
+
+    me->m_game->activateBlock(Int3D(std::floor(point.x), std::floor(point.y), std::floor(point.z)));
 
     return QScriptValue();
 }

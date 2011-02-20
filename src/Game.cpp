@@ -26,13 +26,22 @@ const int Game::c_inventory_count = 36;
 const int Game::c_inventory_window_unique_count = 9;
 const int Game::c_outside_window_slot = -999;
 
+
+const Int3D Game::c_side_offset[] = {
+    Int3D(0, -1, 0),
+    Int3D(0, 1, 0),
+    Int3D(0, 0, -1),
+    Int3D(0, 0, 1),
+    Int3D(-1, 0, 0),
+    Int3D(1, 0, 0),
+};
+
 Game::Game(QUrl connection_info) :
     m_mutex(QMutex::Recursive),
     m_server(connection_info),
-    m_userName(connection_info.userName()),
     m_position_update_timer(NULL),
     m_digging_timer(NULL),
-    m_player_held_item(Item::NoItem),
+    m_player(-1, Server::EntityPosition(), connection_info.userName(), Item::NoItem),
     m_max_ground_speed(c_standard_max_ground_speed),
     m_terminal_velocity(c_standard_terminal_velocity),
     m_input_acceleration(c_standard_walking_acceleration),
@@ -43,7 +52,8 @@ Game::Game(QUrl connection_info) :
     m_inventory(c_inventory_count),
     m_next_action_id(0),
     m_open_window_id(-1),
-    m_need_to_emit_window_opened(false)
+    m_need_to_emit_window_opened(false),
+    m_op_status(MaybeOp)
 {
     Item::initializeStaticData();
 
@@ -117,26 +127,31 @@ void Game::setControlActivated(Control control, bool activated)
     m_control_state[control] = activated;
     if (activated && control == Jump)
         m_jump_was_pressed = true;
+
+    if (activated && (control == Action1 || control == Action2)) {
+        // TODO: raycast to figure out what block and face we are clicking on.
+
+    }
 }
 
 void Game::updatePlayerLook(float delta_yaw, float delta_pitch)
 {
     QMutexLocker locker(&m_mutex);
-    m_player_position.yaw += delta_yaw;
-    m_player_position.pitch += delta_pitch;
+    m_player.position.yaw += delta_yaw;
+    m_player.position.pitch += delta_pitch;
     emit playerPositionUpdated();
 }
 void Game::setPlayerLook(float yaw, float pitch)
 {
     QMutexLocker locker(&m_mutex);
-    m_player_position.yaw = yaw;
-    m_player_position.pitch = pitch;
+    m_player.position.yaw = yaw;
+    m_player.position.pitch = pitch;
     emit playerPositionUpdated();
 }
 void Game::setPlayerPosition(const Double3D & pt)
 {
     QMutexLocker locker(&m_mutex);
-    m_player_position.pos = pt;
+    m_player.position.pos = pt;
     emit playerPositionUpdated();
 }
 
@@ -172,10 +187,9 @@ void Game::shutdown(int return_code)
 QSharedPointer<Game::Entity> Game::entity(int entity_id)
 {
     QMutexLocker locker(&m_mutex);
-    if (entity_id == m_player_entity_id) {
-        // construct a named player entity for the player
-        return QSharedPointer<Entity>(new NamedPlayerEntity(entity_id, m_player_position, m_userName, m_player_held_item));
-    }
+    if (entity_id == m_player.entity_id)
+        return QSharedPointer<Entity>(m_player.clone());
+
     QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
     if (entity.isNull())
         return entity;
@@ -185,7 +199,7 @@ QSharedPointer<Game::Entity> Game::entity(int entity_id)
 Server::EntityPosition Game::playerPosition()
 {
     QMutexLocker locker(&m_mutex);
-    return m_player_position;
+    return m_player.position;
 }
 
 Block Game::blockAt(const Int3D & absolute_location)
@@ -197,6 +211,18 @@ Block Game::blockAt(const Int3D & absolute_location)
         return c_air;
     return chunk.data()->getBlock(absolute_location - chunk_key);
 }
+
+void Game::updateBlock(const Int3D & absolute_location, Block new_block)
+{
+    // no mutex locker; private function
+    Q_ASSERT(isBlockLoaded(absolute_location));
+    Int3D chunk_key = chunkKey(absolute_location);
+    QSharedPointer<Chunk> chunk = m_chunks.value(chunk_key, QSharedPointer<Chunk>());
+    if (chunk.isNull())
+        return;
+    chunk.data()->setBlock(absolute_location - chunk_key, new_block);
+}
+
 bool Game::isBlockLoaded(const Int3D &absolute_location)
 {
     QMutexLocker locker(&m_mutex);
@@ -254,7 +280,7 @@ void Game::handleLoginStatusChanged(Server::LoginStatus status)
 void Game::handleLoginCompleted(int entity_id)
 {
     QMutexLocker locker(&m_mutex);
-    m_player_entity_id = entity_id;
+    m_player.entity_id = entity_id;
 }
 
 void Game::handleChatReceived(QString message)
@@ -266,7 +292,7 @@ void Game::handleChatReceived(QString message)
         QString username = message.mid(1, pos-1);
         QString content = message.mid(pos+2);
         // suppress talking to yourself
-        if (username != m_userName)
+        if (username != m_player.username)
             emit chatReceived(username, content);
     } else {
         // TODO
@@ -276,18 +302,18 @@ void Game::handleChatReceived(QString message)
 void Game::handlePlayerPositionAndLookUpdated(Server::EntityPosition position)
 {
     QMutexLocker locker(&m_mutex);
-    m_player_position.pos = position.pos;
-    m_player_position.height = position.height;
-    m_player_position.on_ground = position.on_ground;
+    m_player.position.pos = position.pos;
+    m_player.position.height = position.height;
+    m_player.position.on_ground = position.on_ground;
 
     // apologize to the notchian server by echoing an identical position back
 
-    m_server.sendPositionAndLook(m_player_position);
+    m_server.sendPositionAndLook(m_player.position);
 
     if (m_position_update_timer == NULL) {
         // got first 0x0D. start the clocks
-        m_player_position.yaw = position.yaw;
-        m_player_position.pitch = position.pitch;
+        m_player.position.yaw = position.yaw;
+        m_player.position.pitch = position.pitch;
 
         m_position_update_timer = new QTimer(this);
         m_position_update_timer->setInterval(c_position_update_interval_ms);
@@ -496,7 +522,7 @@ Int3D Game::chunkKey(const Int3D &coord)
 void Game::sendPosition()
 {
     QMutexLocker locker(&m_mutex);
-    m_server.sendPositionAndLook(m_player_position);
+    m_server.sendPositionAndLook(m_player.position);
 }
 
 void Game::doPhysics(float delta_seconds)
@@ -506,7 +532,7 @@ void Game::doPhysics(float delta_seconds)
 
     QMutexLocker locker(&m_mutex);
 
-//    if (m_player_position.pos != m_player_position.pos) {
+//    if (m_player.position.pos != m_player.position.pos) {
 //        // NaN errors
 //        qDebug() << "NaN error";
 //        QCoreApplication::exit(-1);
@@ -530,14 +556,14 @@ void Game::doPhysics(float delta_seconds)
     if (movement_forward || movement_right) {
         // input acceleration
         float rotation_from_input = std::atan2(movement_forward, movement_right) - Util::half_pi;
-        float input_yaw = m_player_position.yaw + rotation_from_input;
+        float input_yaw = m_player.position.yaw + rotation_from_input;
         acceleration.x += std::cos(input_yaw) * m_input_acceleration;
         acceleration.y += std::sin(input_yaw) * m_input_acceleration;
     }
 
     // jumping
-    if ((m_control_state.at(Jump) || m_jump_was_pressed) && m_player_position.on_ground)
-        m_player_position.vel.z = c_jump_speed;
+    if ((m_control_state.at(Jump) || m_jump_was_pressed) && m_player.position.on_ground)
+        m_player.position.vel.z = c_jump_speed;
     m_jump_was_pressed = false;
 
     // gravity
@@ -546,73 +572,73 @@ void Game::doPhysics(float delta_seconds)
     float old_ground_speed_squared = groundSpeedSquared();
     if (old_ground_speed_squared < std::numeric_limits<float>::epsilon()) {
         // stopped
-        m_player_position.vel.x = 0;
-        m_player_position.vel.y = 0;
+        m_player.position.vel.x = 0;
+        m_player.position.vel.y = 0;
     } else {
         // non-zero ground speed
         float old_ground_speed = std::sqrt(old_ground_speed_squared);
         float ground_friction = m_ground_friction;
-        if (!m_player_position.on_ground)
+        if (!m_player.position.on_ground)
             ground_friction *= 0.05; // half friction for the air
         if (ground_friction > old_ground_speed / delta_seconds) {
             // friction will stop the motion
             ground_friction = old_ground_speed / delta_seconds;
         }
-        acceleration.x -= m_player_position.vel.x / old_ground_speed * ground_friction;
-        acceleration.y -= m_player_position.vel.y / old_ground_speed * ground_friction;
+        acceleration.x -= m_player.position.vel.x / old_ground_speed * ground_friction;
+        acceleration.y -= m_player.position.vel.y / old_ground_speed * ground_friction;
     }
 
     // calculate new speed
-    m_player_position.vel += acceleration * delta_seconds;
+    m_player.position.vel += acceleration * delta_seconds;
 
     // limit speed
     double ground_speed_squared = groundSpeedSquared();
     if (ground_speed_squared > m_max_ground_speed * m_max_ground_speed) {
         float ground_speed = std::sqrt(ground_speed_squared);
         float correction_scale = m_max_ground_speed / ground_speed;
-        m_player_position.vel.x *= correction_scale;
-        m_player_position.vel.y *= correction_scale;
+        m_player.position.vel.x *= correction_scale;
+        m_player.position.vel.y *= correction_scale;
     }
-    if (m_player_position.vel.z < -m_terminal_velocity)
-        m_player_position.vel.z = -m_terminal_velocity;
-    else if (m_player_position.vel.z > m_terminal_velocity)
-        m_player_position.vel.z = m_terminal_velocity;
+    if (m_player.position.vel.z < -m_terminal_velocity)
+        m_player.position.vel.z = -m_terminal_velocity;
+    else if (m_player.position.vel.z > m_terminal_velocity)
+        m_player.position.vel.z = m_terminal_velocity;
 
 
     // calculate new positions and resolve collisions
     Int3D boundingBoxMin, boundingBoxMax;
-    getPlayerBoundingBox(boundingBoxMin, boundingBoxMax);
+    m_player.getBoundingBox(boundingBoxMin, boundingBoxMax);
 
-    if (m_player_position.vel.x != 0) {
-        m_player_position.pos.x += m_player_position.vel.x * delta_seconds;
-        double forward_x_edge = m_player_position.pos.x + Util::sign(m_player_position.vel.x) * c_player_apothem;
+    if (m_player.position.vel.x != 0) {
+        m_player.position.pos.x += m_player.position.vel.x * delta_seconds;
+        double forward_x_edge = m_player.position.pos.x + Util::sign(m_player.position.vel.x) * c_player_apothem;
         int block_x = (int)std::floor(forward_x_edge);
         if (collisionInRange(Int3D(block_x, boundingBoxMin.y, boundingBoxMin.z), Int3D(block_x, boundingBoxMax.y, boundingBoxMax.z))) {
-            m_player_position.pos.x = block_x + (m_player_position.vel.x < 0 ? 1 + c_player_apothem : -c_player_apothem) * 1.001;
-            m_player_position.vel.x = 0;
-            getPlayerBoundingBox(boundingBoxMin, boundingBoxMax);
+            m_player.position.pos.x = block_x + (m_player.position.vel.x < 0 ? 1 + c_player_apothem : -c_player_apothem) * 1.001;
+            m_player.position.vel.x = 0;
+            m_player.getBoundingBox(boundingBoxMin, boundingBoxMax);
         }
     }
 
-    if (m_player_position.vel.y != 0) {
-        m_player_position.pos.y += m_player_position.vel.y * delta_seconds;
-        int block_y = (int)std::floor(m_player_position.pos.y + Util::sign(m_player_position.vel.y) * c_player_apothem);
+    if (m_player.position.vel.y != 0) {
+        m_player.position.pos.y += m_player.position.vel.y * delta_seconds;
+        int block_y = (int)std::floor(m_player.position.pos.y + Util::sign(m_player.position.vel.y) * c_player_apothem);
         if (collisionInRange(Int3D(boundingBoxMin.x, block_y, boundingBoxMin.z), Int3D(boundingBoxMax.x, block_y, boundingBoxMax.z))) {
-            m_player_position.pos.y = block_y + (m_player_position.vel.y < 0 ? 1 + c_player_apothem : -c_player_apothem) * 1.001;
-            m_player_position.vel.y = 0;
-            getPlayerBoundingBox(boundingBoxMin, boundingBoxMax);
+            m_player.position.pos.y = block_y + (m_player.position.vel.y < 0 ? 1 + c_player_apothem : -c_player_apothem) * 1.001;
+            m_player.position.vel.y = 0;
+            m_player.getBoundingBox(boundingBoxMin, boundingBoxMax);
         }
     }
 
-    m_player_position.on_ground = false;
-    if (m_player_position.vel.z != 0) {
-        m_player_position.pos.z += m_player_position.vel.z * delta_seconds;
-        int block_z = (int)std::floor(m_player_position.pos.z + c_player_half_height + Util::sign(m_player_position.vel.z) * c_player_half_height);
+    m_player.position.on_ground = false;
+    if (m_player.position.vel.z != 0) {
+        m_player.position.pos.z += m_player.position.vel.z * delta_seconds;
+        int block_z = (int)std::floor(m_player.position.pos.z + c_player_half_height + Util::sign(m_player.position.vel.z) * c_player_half_height);
         if (collisionInRange(Int3D(boundingBoxMin.x, boundingBoxMin.y, block_z), Int3D(boundingBoxMax.x, boundingBoxMax.y, block_z))) {
-            m_player_position.pos.z = block_z + (m_player_position.vel.z < 0 ? 1 : -c_player_height) * 1.001;
-            if (m_player_position.vel.z < 0)
-                m_player_position.on_ground = true;
-            m_player_position.vel.z = 0;
+            m_player.position.pos.z = block_z + (m_player.position.vel.z < 0 ? 1 : -c_player_height) * 1.001;
+            if (m_player.position.vel.z < 0)
+                m_player.position.on_ground = true;
+            m_player.position.vel.z = 0;
         }
     }
 
@@ -620,19 +646,42 @@ void Game::doPhysics(float delta_seconds)
     emit playerPositionUpdated();
 }
 
-void Game::getPlayerBoundingBox(Int3D & boundingBoxMin, Int3D & boundingBoxMax)
+void Game::NamedPlayerEntity::getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const
 {
-    boundingBoxMin.x = (int)std::floor(m_player_position.pos.x - c_player_apothem);
-    boundingBoxMin.y = (int)std::floor(m_player_position.pos.y - c_player_apothem);
-    boundingBoxMin.z = (int)std::floor(m_player_position.pos.z - 0);
-    boundingBoxMax.x = (int)std::floor(m_player_position.pos.x + c_player_apothem);
-    boundingBoxMax.y = (int)std::floor(m_player_position.pos.y + c_player_apothem);
-    boundingBoxMax.z = (int)std::floor(m_player_position.pos.z + c_player_height);
+    boundingBoxMin.x = (int)std::floor(position.pos.x - Game::c_player_apothem);
+    boundingBoxMin.y = (int)std::floor(position.pos.y - Game::c_player_apothem);
+    boundingBoxMin.z = (int)std::floor(position.pos.z - 0);
+    boundingBoxMax.x = (int)std::floor(position.pos.x + Game::c_player_apothem);
+    boundingBoxMax.y = (int)std::floor(position.pos.y + Game::c_player_apothem);
+    boundingBoxMax.z = (int)std::floor(position.pos.z + Game::c_player_height);
+}
+
+void Game::MobEntity::getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const
+{
+    // TODO: use the real bounding box instead of a human shape for all of them
+    boundingBoxMin.x = (int)std::floor(position.pos.x - Game::c_player_apothem);
+    boundingBoxMin.y = (int)std::floor(position.pos.y - Game::c_player_apothem);
+    boundingBoxMin.z = (int)std::floor(position.pos.z - 0);
+    boundingBoxMax.x = (int)std::floor(position.pos.x + Game::c_player_apothem);
+    boundingBoxMax.y = (int)std::floor(position.pos.y + Game::c_player_apothem);
+    boundingBoxMax.z = (int)std::floor(position.pos.z + Game::c_player_height);
+}
+
+void Game::PickupEntity::getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const
+{
+    boundingBoxMin.x = (int)std::floor(position.pos.x - 1);
+    boundingBoxMin.y = (int)std::floor(position.pos.y - 1);
+    boundingBoxMin.z = (int)std::floor(position.pos.z - 0);
+    boundingBoxMax.x = (int)std::floor(position.pos.x + 1);
+    boundingBoxMax.y = (int)std::floor(position.pos.y + 1);
+    boundingBoxMax.z = (int)std::floor(position.pos.z + 1);
 }
 
 // TODO: check partial blocks
 bool Game::collisionInRange(const Int3D & boundingBoxMin, const Int3D & boundingBoxMax)
 {
+    // no mutex locker; private function
+
     Int3D cursor;
     for (cursor.x = boundingBoxMin.x; cursor.x <= boundingBoxMax.x; cursor.x++)
         for (cursor.y = boundingBoxMin.y; cursor.y <= boundingBoxMax.y; cursor.y++)
@@ -655,7 +704,94 @@ void Game::placeBlock(const Int3D &block, Message::BlockFaceDirection face)
 {
     QMutexLocker locker(&m_mutex);
 
-    m_server.sendBlockPlacement(block, face, m_inventory.at(m_equipped_slot_id));
+    Int3D new_block_pos = block + c_side_offset[face];
+    if (canPlaceBlock(block, face)) {
+        Item equipped_item = m_inventory.at(m_equipped_slot_id);
+        updateBlock(new_block_pos, Block(equipped_item.type, equipped_item.metadata, 0, 0));
+        m_server.sendPositionAndLook(m_player.position);
+        m_server.sendBlockPlacement(block, face, equipped_item);
+    }
+}
+
+void Game::activateBlock(const Int3D &block)
+{
+    QMutexLocker locker(&m_mutex);
+
+    Item equipped_item = m_inventory.at(m_equipped_slot_id);
+
+    m_server.sendPositionAndLook(m_player.position);
+    m_server.sendBlockPlacement(block, Message::PositiveZ, equipped_item);
+}
+
+bool Game::canPlaceBlock(const Int3D &block_pos, Message::BlockFaceDirection face)
+{
+    QMutexLocker locker(&m_mutex);
+
+    Int3D new_block_pos = block_pos + c_side_offset[face];
+
+    // not if it's outside z boundaries
+    if (new_block_pos.z < 0 || new_block_pos.z >= 128)
+        return false;
+
+    // not if we're too far away
+    if (new_block_pos.distanceTo(m_player.position.pos) > 6.0)
+        return false;
+
+    // not if there's an entity in the way
+    // myself
+    if (entityCollidesWithPoint(&m_player, new_block_pos))
+        return false;
+    // anyone else
+    foreach (QSharedPointer<Entity> entity, m_entities) {
+        if (entity.data()->type != Entity::Pickup) {
+            if (entityCollidesWithPoint(entity.data(), new_block_pos))
+                return false;
+        }
+    }
+
+    // not if we're not op and we're within spawn
+    if (m_op_status == NotOp) {
+        const int spawn_apothem = 20;
+        if (Util::abs(new_block_pos.x) < spawn_apothem &&
+            Util::abs(new_block_pos.y) < spawn_apothem &&
+            Util::abs(new_block_pos.z) < spawn_apothem)
+        {
+            return false;
+        }
+    }
+
+    Block target_block = blockAt(block_pos);
+
+    // not against water, lava, air, etc
+    if (! Item::blockIsPlaceAgainstAble(target_block.type()))
+        return false;
+
+    // not against chest, dispenser, furnace, door, etc
+    if (Item::blockIsActivatable(target_block.type()))
+        return false;
+
+    // not if our equipment isn't placeable
+    Item equipped_item = m_inventory.at(m_equipped_slot_id);
+    if (! Item::itemIsPlaceable(equipped_item.type))
+        return false;
+
+    return true;
+}
+
+bool Game::entityCollidesWithPoint(const Entity * entity, const Int3D & point)
+{
+    // no mutex locker; private method
+    Int3D min, max, it;
+    entity->getBoundingBox(min, max);
+    for (it.x = min.x; it.x <= max.x; it.x++) {
+        for (it.y = min.y; it.y <= max.y; it.y++) {
+            for (it.z = min.z; it.z <= max.z; it.z++) {
+                if (it == point)
+                    return true;
+            }
+        }
+    }
+    return false;
 }
 
 void Game::handleWindowItemsUpdated(int window_id, QVector<Item> items)
@@ -692,6 +828,7 @@ void Game::handleWindowSlotUpdated(int window_id, int slot, Item item)
 
 void Game::updateWindowSlot(int slot, Item item)
 {
+    // no mutex locker; private function
     if (slot < m_unique_slots.size())
         m_unique_slots.replace(slot, item);
     else
@@ -700,6 +837,7 @@ void Game::updateWindowSlot(int slot, Item item)
 
 Item Game::getWindowSlot(int slot)
 {
+    // no mutex locker; private function
     if (slot < m_unique_slots.size())
         return m_unique_slots.at(slot);
     else
@@ -734,6 +872,7 @@ void Game::clickUniqueSlot(int slot_id, bool right_click)
 
 int Game::nextActionId()
 {
+    // no mutex locker; private function
     return m_next_action_id++;
 }
 

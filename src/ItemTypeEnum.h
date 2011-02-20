@@ -150,7 +150,7 @@ enum ItemType
     Flint=0x13E,
     RawPorkchop=0x13F,
     CookedPorkchop=0x140,
-    Paintings=0x141,
+    Painting=0x141,
     GoldenApple=0x142,
     Sign=0x143,
     WoodenDoor=0x144,

@@ -10,8 +10,9 @@
 
 /**
  * Represents a 3D coordinate/location in meters.
- * NOTE: this East-North-Up coordinate system is different from Notch's South-Up-West system.
- * Use toNotchCoord() and fromNotchCoord() to translate between coordinate systems.
+ * NOTE: this East-North-Up coordinate system is different from Notch's
+ * South-Up-West system.  Use toNotchCoord() and fromNotchCoord() to translate
+ * between coordinate systems.
  * 
  * Example:
  * var point = new mf.Point(0, 0, 0);
@@ -34,22 +35,22 @@ mf.Point(x, y, z)
  *
  * Properties:
  * entity_id {Number} the id of this entity.
- * type {EntityType}
- * position {Point} The center of the bottom of of the entity.
- * velocity {Point} The entity's velocity in meters per second squared.
+ * type {mf.EntityType}
+ * position {mf.Point} The center of the bottom of of the entity.
+ * velocity {mf.Point} The entity's velocity in meters per second squared.
  * yaw {Number} [0, 2pi] Rotation around z axis. 0 is +x. pi/2 is +y. pi is -x. 3pi/2 is -y.
  * pitch {Number} [-pi/2, pi/2] 0 is parallel to the ground. pi/2 is up. -pi/2 is down.
  * on_ground {Boolean} True if you are not free-falling.
  *
  * Additional properties when type is Player:
  * username {String}
- * held_item {ItemType} the item the player is holding in their hand
+ * held_item {mf.ItemType} the item the player is holding in their hand
  *
  * Additional properties when type is Mob:
- * mob_type {MobType}
+ * mob_type {mf.MobType}
  *
  * Additional properties when type is Pickup:
- * item {Item}
+ * item {mf.Item}
  */
 mf.Entity
 
@@ -61,12 +62,12 @@ mf.Entity
  * var item2 = new mf.Item(mf.ItemType.StoneSword)
  *
  * Properties:
- * type {ItemType}
+ * type {mf.ItemType}
  * count {Number}
  *
  * TODO: include the uses/data field somehow
  *
- * @param {ItemType}
+ * @param {mf.ItemType}
  * @param {Number} optional, defaults to 1
  */
 mf.Item(type, count)
@@ -239,7 +240,7 @@ mf.username()
 
 /**
  * Gets the number of items you can stack together.
- * @param {ItemType} item The ID of the item you want to check the stack height of.
+ * @param {mf.ItemType} item The ID of the item you want to check the stack height of.
  * @returns {Number} The number of items of type item you can stack together, or -1 if that item doesn't exist.
  */
 mf.itemStackHeight(item)
@@ -253,21 +254,21 @@ mf.itemStackHeight(item)
  *     // water physics
  * }
  *
- * @param {ItemType} block_type
+ * @param {mf.ItemType} block_type
  */
 mf.isPhysical(block_type)
 
 /**
  * Returns whether the block type is non-physical and safe to stand in.
  * This returns false for lava, fire, and everything that mf.isPhysical returns true for.
- * @param {ItemType} block_type
+ * @param {mf.ItemType} block_type
  */
 mf.isSafe(block_type)
 
 /**
  * Returns whether the block type is diggable.
  * This returns false for air, bedrock, water, lava, etc.
- * @param {ItemType} block_type
+ * @param {mf.ItemType} block_type
  */
 mf.isDiggable(block_type)
 
@@ -280,46 +281,106 @@ mf.health()
 /**
  * Returns the block at the absolute location in the world.
  * @param {Number} point Coordinates do not need to be rounded.
- * @return {Item} block object
+ * @return {mf.Item} block object
  */
 mf.blockAt(point)
 
 /**
+ * Returns whether or not you're able to place your currently equipped item
+ * on the face of the block at point.
+ * Takes into account distance, whether something is in your way,
+ * spawn protection, whether the target block is activatable, and what you're
+ * equipped with.
+ * In order to actually place a block, you should use this formula:
+ * mf.lookAt(point); // face the block you want to build next to
+ * mf.setControlState(Action2, true); // press right click
+ * mf.setControlState(Action2, false); // release right click
+ * If this is too hard and you're willing to cheat, you can use
+ * mf.hax.placeBlock(point, face);
+ * @param {Number} point The location of the block you want to check.
+ * @param {mf.Face} face The face of the block you want to attach to.
+ */
+mf.canPlaceBlock(point, face)
+
+/**
+ * The block you're looking directly at.
+ * NOT YET IMPLEMENTED
+ * @returns {Object} object with properties:
+ *      block {mf.Block} - the targeted block
+ *      face {mf.Face} - which face is targeted
+ *      coord {mf.Point} - coordinates of the block you're looking at
+ */
+mf.target()
+
+/**
  * Returns a snapshot of your state in the world as an entity. Modifying the object does nothing.
- * @returns {Entity}
+ * @returns {mf.Entity}
  */
 mf.self()
 
-
 /**
- * Sets the input state of a control. Use this to move around and jump. It is as if you are
- * virtually pressing keys on a keyboard. Your actions will be bound by the physics engine, (unless you
+ * Sets the input state of a control. Use this to move around, jump, and
+ * place and activate blocks. It is as if you are virtually pressing keys on a
+ * keyboard. Your actions will be bound by the physics engine, (unless you
  * use the mf.hax functions).
- * @param {Control} control
- * @param {Boolean} state Whether or not you are activating this control. E.g. whether or not the virtual button is held down.
+ * @param {mf.Control} control 
+ * @param {Boolean} state Whether or not you are activating this control.
+ * E.g. whether or not the virtual button is held down.
  */
 mf.setControlState(control, state)
 
 /**
- * Sets all control states to false
+ * Sets all control states to false.
  */
 mf.clearControlStates()
 
 /**
  * Looks at the given point specified in absolute coordinates. See also mf.look.
- * @param {Point} point
+ * @param {mf.Point} point
+ * @param {mf.Face} [face] Optional, which side of the block located at point
+ * to look at. This is to help you look exactly at the face of a block for
+ * building purposes. See mf.Face.
+ * SECOND PARAMETER NOT YET IMPLEMENTED
  */
-mf.lookAt(point)
+mf.lookAt(point, face)
 
 /**
- * call this when you're dead to respawn.
+ * Call this when you're dead to respawn.
  */
 mf.respawn()
 
+// cheating methods
+
+/**
+ * Place the currently equipped block. If the block at point is a chest,
+ * furnace, workbench, etc, this will throw an exception.
+ * See mf.activateBlock().
+ * If the equipped item is food, this will throw an exception.
+ * See mf.setControlState().
+ * This method is considered cheating. See description of canPlaceBlock() for
+ * an example of how to place blocks without cheating.
+ * @param {mf.Point} block The coordinates of the block that you want to place
+ * the block on.
+ * @param {mf.Face} face Which side of the block you want to place the block
+ * on.
+ */
+mf.hax.placeBlock(block, face)
+
+/**
+ * Same as right-clicking. This is for chests, furnaces, note blocks, etc.
+ * Throws an exception if the block is not activatable.
+ * This method is considered cheating. See description of canPlaceBlock() for
+ * an example of how to activate blocks without cheating.
+ * @param {mf.Point} block The coordinates of the block that you want to activate
+ */
+mf.hax.activateBlock(block)
+
+
 /**
  * Instantly moves you to the position specified.
- * NOTE: Your movement may be rejected by the server. This can happen if you try to go through a wall.
- * @param {Point} point
+ * NOTE: Your movement may be rejected by the server. This can happen if you
+ * try to go through a wall.
+ * @param {mf.Point} point
  */
 mf.hax.setPosition(point)
 
@@ -345,14 +406,14 @@ mf.hax.attackEntity(entity_id)
  * Returns a snapshot of the entity with the given entity id or undefined if the entity id cannot be found.
  * Modifying the object does nothing.
  * @param {Number} entity_id
- * @return {Entity} or undefined
+ * @return {mf.Entity} or undefined
  */
 mf.entity(entity_id)
 
 /**
  * Begin digging into a block with the currently equipped item. When you finally break through the block,
  * or you are interrupted for any reason, you will get an onStoppedDigging() event.
- * @param {Point} point The location of the block to dig.
+ * @param {mf.Point} point The location of the block to dig.
  */
 mf.startDigging(point)
 
@@ -360,8 +421,8 @@ mf.startDigging(point)
 /**
  * Useful for communicating with notchian clients.
  * NOT YET IMPLEMENTED
- * @param {Point} mf_point Point in mineflayer's coordinates.
- * @returns {Point} Point in Notch's coordinates.
+ * @param {mf.Point} mf_point Point in mineflayer's coordinates.
+ * @returns {mf.Point} Point in Notch's coordinates.
  */
 mf.toNotchCoord(mf_point)
 
@@ -370,8 +431,8 @@ mf.toNotchCoord(mf_point)
  * he presses F3, he's probably talking about Notchian coordinates. This method
  * translates them into our coordinate system (see top of this document)
  * NOT YET IMPLEMENTED
- * @param {Point} notch_point Point in Notch's coordinates.
- * @returns {Object} Point in mineflayer's coordinates.
+ * @param {mf.Point} notch_point Point in Notch's coordinates.
+ * @returns {mf.Point} Point in mineflayer's coordinates.
  */
 mf.fromNotchCoord(notch_point)
 
@@ -382,15 +443,6 @@ mf.fromNotchCoord(notch_point)
  * @param {Number} pitch Number of radians to point up or down. 0 means straight forward. pi / 2 means straight up. -pi / 2 means straight down.
  */
 mf.look(yaw, pitch)
-
-/**
- * Place the currently equipped item, with some exceptions. If the block at
- * point is a chest, furnace, workbench, etc, you will "activate" the block.
- * If the equipped item is food, you will eat it.
- * @param {Point} block The coordinates of the block that you want to place the block on.
- * @param {Number} face Which side of the block you want to place the block on. See the mf.Face enum.
- */
-mf.placeBlock(block, face)
 
 // TODO: document these
 mf.selectedEquipSlot()
@@ -429,8 +481,8 @@ mf.onChat(function(user, message) {...})
 
 /**
  * Called when blocks are updated.
- * @param {Point} start The absolute position of the first block that was updated.
- * @param {Point} size The number of blocks that were updated.
+ * @param {mf.Point} start The absolute position of the first block that was updated.
+ * @param {mf.Point} size The number of blocks that were updated.
  */
 mf.onChunkUpdated(function(start, size) {...})
 
@@ -457,33 +509,33 @@ mf.onDeath(function() {...})
 /**
  * Called when an entity is discovered.
  * This can happen when an entity is created or when it comes into view.
- * @param {Entity} entity
+ * @param {mf.Entity} entity
  */
 mf.onEntitySpawned(function(entity) {...})
 
 /**
  * Called when an entity vanishes from known existence.
  * This can happen when an entity is destroyed or when it goes out of view.
- * @param {Entity} entity
+ * @param {mf.Entity} entity
  */
 mf.onEntityDespawned(function(entity) {...})
 
 /**
  * Called when an entity moves or in some other way changes state.
- * @param {Entity} entity
+ * @param {mf.Entity} entity
  */
 mf.onEntityMoved(function(entity) {...})
 
 /**
  * Called when an entity animates
- * @param {Entity} entity
- * @param {AnimationType} animation_type which animation was performed. See mf.AnimationType
+ * @param {mf.Entity} entity
+ * @param {mf.AnimationType} animation_type which animation was performed.
  */
 mf.onAnimation(function(entity, animation_type) {...})
 
 /**
  * Called when you have stopped digging for some reason.
- * @param {StoppedDiggingReason} reason
+ * @param {mf.StoppedDiggingReason} reason
  */
 mf.onStoppedDigging(function(reason) {...})
 
@@ -500,7 +552,7 @@ mf.onInventoryUpdated(function() {...})
 
 /**
  * Called when you can begin messing with a chest or your inventory.
- * @param {Number} window_type See mf.WindowType enum.
+ * @param {mf.WindowType} window_type
  */
 mf.onWindowOpened(function(window_type) {...})
 

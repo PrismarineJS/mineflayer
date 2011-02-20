@@ -26,7 +26,6 @@ public slots:
     void go();
 
 private:
-
     QThread * m_thread;
     QUrl m_url;
     QString m_main_script_filename;
@@ -118,7 +117,7 @@ private:
     static QScriptValue respawn(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue entity(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue startDigging(QScriptContext * context, QScriptEngine * engine);
-    static QScriptValue placeBlock(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue canPlaceBlock(QScriptContext * context, QScriptEngine * engine);
 
     static QScriptValue selectEquipSlot(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue selectedEquipSlot(QScriptContext * context, QScriptEngine * engine);
@@ -137,6 +136,9 @@ private:
     static QScriptValue positionUpdateInterval(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue setGravityEnabled(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue attackEntity(QScriptContext * context, QScriptEngine * engine);
+
+    static QScriptValue placeBlock(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue activateBlock(QScriptContext * context, QScriptEngine * engine);
 
 
 private slots:

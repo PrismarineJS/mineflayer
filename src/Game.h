@@ -43,10 +43,11 @@ public:
             Pickup = 4,
         };
         const EntityType type;
-        const int entity_id;
+        int entity_id;
         Server::EntityPosition position;
         virtual ~Entity() {}
         virtual Entity * clone() = 0;
+        virtual void getBoundingBox(Int3D & boundingBoxMin, Int3D & boundingBoxMax) const = 0;
     protected:
         Entity(EntityType type, int entity_id, Server::EntityPosition position) :
                 type(type), entity_id(entity_id), position(position) {}
@@ -58,6 +59,7 @@ public:
         NamedPlayerEntity(int entity_id, Server::EntityPosition position, QString username, Item::ItemType held_item) :
                 Entity(NamedPlayer, entity_id, position), username(username), held_item(held_item) {}
         Entity * clone() { return new NamedPlayerEntity(entity_id, position, username, held_item); }
+        void getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const;
     };
     class MobEntity : public Entity {
     public:
@@ -65,6 +67,7 @@ public:
         MobEntity(int entity_id, Server::EntityPosition position, MobSpawnResponse::MobType mob_type) :
                 Entity(Mob, entity_id, position), mob_type(mob_type) {}
         Entity * clone() { return new MobEntity(entity_id, position, mob_type); }
+        void getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const;
     };
     class PickupEntity : public Entity {
     public:
@@ -72,6 +75,7 @@ public:
         PickupEntity(int entity_id, Server::EntityPosition position, Item item) :
                 Entity(Pickup, entity_id, position), item(item) {}
         Entity * clone() { return new PickupEntity(entity_id, position, item); }
+        void getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const;
     };
 
     static const float c_standard_max_ground_speed; // m/s
@@ -114,7 +118,7 @@ public:
     // only valid to call this after you die
     void respawn();
 
-    int playerEntityId() const { QMutexLocker locker(&m_mutex); return m_player_entity_id; }
+    int playerEntityId() const { QMutexLocker locker(&m_mutex); return m_player.entity_id; }
     Server::EntityPosition playerPosition();
     QSharedPointer<Entity> entity(int entity_id);
 
@@ -126,6 +130,8 @@ public:
     void stopDigging();
 
     void placeBlock(const Int3D &block, Message::BlockFaceDirection face);
+    bool canPlaceBlock(const Int3D &block, Message::BlockFaceDirection face);
+    void activateBlock(const Int3D &block);
 
     void sendChat(QString message);
 
@@ -177,20 +183,17 @@ private:
 
     static const Int3D c_chunk_size;
     static const Block c_air;
-    static Int3D chunkKey(const Int3D & coord);
+    static const Int3D c_side_offset[];
 
     Server m_server;
-    QString m_userName;
 
     QTimer * m_position_update_timer;
     QTimer m_digging_timer;
     Int3D m_digging_location;
     int m_digging_counter;
 
-    Server::EntityPosition m_player_position;
+    NamedPlayerEntity m_player;
     int m_player_health;
-    int m_player_entity_id;
-    Item::ItemType m_player_held_item;
     QHash<Int3D, QSharedPointer<Chunk> > m_chunks;
     QHash<int, QSharedPointer<Entity> > m_entities;
 
@@ -212,6 +215,7 @@ private:
 
     int m_open_window_id;
 
+    // held, as in, you left clicked an item in your inventory window
     Item m_held_item;
 
     struct TransactionEffect {
@@ -228,17 +232,28 @@ private:
     bool m_need_to_emit_window_opened;
     Message::WindowType m_open_window_type;
 
+    enum OpStatus {
+        MaybeOp,
+        YesOp,
+        NotOp,
+    };
+
+    OpStatus m_op_status;
 
 private:
-    float groundSpeedSquared() { return m_player_position.vel.x * m_player_position.vel.x +
-                                 m_player_position.vel.y * m_player_position.vel.y; }
-    void getPlayerBoundingBox(Int3D & boundingBoxMin, Int3D & boundingBoxMax);
+    static Int3D chunkKey(const Int3D & coord);
+
+    float groundSpeedSquared() const { return m_player.position.vel.x * m_player.position.vel.x +
+                                 m_player.position.vel.y * m_player.position.vel.y; }
     bool collisionInRange(const Int3D & boundingBoxMin, const Int3D & boundingBoxMax);
 
     int nextActionId();
 
     void updateWindowSlot(int slot_id, Item item);
     Item getWindowSlot(int slot);
+
+    void updateBlock(const Int3D & absolute_location, Block new_block);
+    bool entityCollidesWithPoint(const Entity * entity, const Int3D & point);
 
 private slots:
     void handleLoginStatusChanged(Server::LoginStatus status);

@@ -150,17 +150,31 @@ public:
 private:
     static bool s_initialized;
 
-    static QHash<Item::ItemType, int> s_item_stack_height;
-    static QHash<Item::ItemType, bool> s_block_is_physical;
-    static QHash<Item::ItemType, bool> s_block_is_safe;
-    static QHash<Item::ItemType, bool> s_block_is_diggable;
+    static QHash<ItemType, int> s_item_stack_height;
+    static QHash<ItemType, bool> s_item_is_placeable;
+    static QHash<ItemType, bool> s_item_is_activatable;
+
+    static QHash<ItemType, bool> s_block_is_physical;
+    static QHash<ItemType, bool> s_block_is_safe;
+    static QHash<ItemType, bool> s_block_is_diggable;
+
+    // for example workbench, note block
+    static QHash<ItemType, bool> s_block_is_activatable;
+    // false if placing against would be cheating
+    static QHash<ItemType, bool> s_block_is_place_against_able;
 
 public:
     static void initializeStaticData();
-    static int itemStackHeight(Item::ItemType item);
-    static bool blockIsPhysical(Item::ItemType item);
-    static bool blockIsSafe(Item::ItemType item);
-    static bool blockIsDiggable(Item::ItemType item);
+    static int itemStackHeight(ItemType item);
+    static bool itemIsPlaceable(ItemType item);
+    static bool itemIsActivatable(ItemType item);
+
+    static bool blockIsPhysical(ItemType item);
+    static bool blockIsSafe(ItemType item);
+    static bool blockIsDiggable(ItemType item);
+    static bool blockIsActivatable(ItemType item);
+    static bool blockIsPlaceAgainstAble(ItemType item);
+
 
     Item() : type(NoItem), count(0), metadata(0) {}
 };

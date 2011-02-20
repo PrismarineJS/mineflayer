@@ -1,3 +1,4 @@
+mf.include("navigator_3d.js");
 mf.include("giver.js");
 mf.include("auto_respawn.js");
 mf.include("block_finder.js");
@@ -62,21 +63,31 @@ chat_commands.registerCommand("build", function() {
     build_under_myself = true;
 });
 
-chat_commands.registerCommand("build1", function() {
-    mf.placeBlock(mf.self().position.offset(0, 2, 0), mf.Face.PositiveZ);
-});
+chat_commands.registerCommand("build1", function(user, arg) {
+    var glass_pos = block_finder.findNearest(mf.self().position, mf.ItemType.Glass, 10);
+    if (glass_pos === undefined) {
+        mf.chat("I see no glass.");
+        return;
+    }
+    mf.hax.placeBlock(glass_pos, parseInt(arg));
+}, 1);
 
-chat_commands.registerCommand("stop", function() {
+chat_commands.registerCommand("stopbuild", function() {
     mf.setControlState(mf.Control.Jump, false);
     build_under_myself = false;
 });
 
+chat_commands.registerCommand("where", function() {
+    var pos = mf.self().position;
+    mf.chat("I'm at " + pos.x + " " + pos.y + " " + pos.z);
+});
+
 mf.onSelfMoved(function() {
     if (build_under_myself) {
-        var below = mf.self().position.offset(0, 0, -1);
-        if (mf.blockAt(below).type == mf.ItemType.Air) {
+        var below = mf.self().position.offset(0, 0, -1.5).floored();
+        if (mf.blockAt(below.offset(0, 0, 1)).type == mf.ItemType.Air) {
             mf.debug("js: place block at "+ below.x + " " + below.y + " " + below.z);
-            mf.placeBlock(below, mf.Face.PositiveZ);
+            mf.hax.placeBlock(below, mf.Face.PositiveZ);
         }
     }
 });
@@ -140,6 +151,6 @@ chat_commands.registerCommand("craft", function() {
 
             mf.closeWindow();
         };
-        mf.placeBlock(table_pt, mf.Face.PositiveZ);
+        mf.hax.placeBlock(table_pt, mf.Face.PositiveZ);
     }, 3);
 });
