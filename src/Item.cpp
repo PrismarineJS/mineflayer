@@ -182,15 +182,32 @@ Item * Item::parseItem(QString item_string, bool * metadata_matters)
 uint qHash(const Item::Recipe & recipe)
 {
     const int big_prime = 8191;
+    const int big_prime_2 = 131071;
 
     uint h = 0;
     h = h * big_prime + recipe.size.width();
     h = h * big_prime + recipe.size.height();
 
-    foreach (Item::Ingredient ingredient, recipe.ingredients) {
-        h = h * big_prime + ingredient.item->type;
-        if (ingredient.metadata_matters)
-            h = h * big_prime + ingredient.item->metadata;
+    if (recipe.size.width() == 0) {
+        // no design - only the ingredients matter. we have conveniently sorted them.
+        for (int i = 0; i < recipe.ingredients.size(); i++) {
+            const Item::Ingredient * ingredient = &(recipe.ingredients.at(i));
+            h = h * big_prime + ingredient->item->type;
+            if (ingredient->metadata_matters)
+                h = h * big_prime + ingredient->item->metadata;
+        }
+    } else {
+        foreach (int ingredient_index, recipe.design) {
+            if (ingredient_index == -1) {
+                h = h * big_prime + big_prime_2;
+            } else {
+                const Item::Ingredient * ingredient = &(recipe.ingredients.at(ingredient_index));
+
+                h = h * big_prime + ingredient->item->type;
+                if (ingredient->metadata_matters)
+                    h = h * big_prime + ingredient->item->metadata;
+            }
+        }
     }
 
     return h;

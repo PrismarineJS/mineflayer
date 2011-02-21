@@ -383,6 +383,9 @@ public:
     inline static const ItemData * itemData(ItemType item_id) { return s_item_data.value(item_id, NULL); }
     inline static const QHash<ItemType, ItemData *> * itemDataHash() { return &s_item_data; }
 
+    inline static const Recipe * recipeFor(const Recipe & recipe) { return s_recipes.value(recipe, NULL); }
+    inline static QList<Recipe *> recipesToMake(const Item & item) { return s_item_recipe.values(item); }
+
     Item() : type(NoItem), count(0), metadata(0) {}
 
 private:
