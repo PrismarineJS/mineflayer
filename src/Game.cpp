@@ -51,6 +51,7 @@ Game::Game(QUrl connection_info) :
     m_return_code(0),
     m_inventory(c_inventory_count),
     m_next_action_id(0),
+    m_equipped_slot_id(0),
     m_open_window_id(-1),
     m_need_to_emit_window_opened(false),
     m_op_status(MaybeOp)
