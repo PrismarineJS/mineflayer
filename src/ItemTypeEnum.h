@@ -166,7 +166,7 @@ enum ItemType
     Leather=0x14E,
     Milk=0x14F,
     ClayBrick=0x150,
-    ClayBalls=0x151,
+    ClayBall=0x151,
     SugarCane=0x152,
     Paper=0x153,
     Book=0x154,

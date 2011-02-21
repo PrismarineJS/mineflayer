@@ -168,7 +168,7 @@ void Item::initializeStaticData()
     s_item_stack_height.insert(Item::GoldChestplate, 1);
     s_item_stack_height.insert(Item::GoldLeggings, 1);
     s_item_stack_height.insert(Item::GoldBoots, 1);
-    s_item_stack_height.insert(Item::Flint, 1);
+    s_item_stack_height.insert(Item::Flint, 64);
     s_item_stack_height.insert(Item::RawPorkchop, 1);
     s_item_stack_height.insert(Item::CookedPorkchop, 1);
     s_item_stack_height.insert(Item::Painting, 64);
