@@ -55,7 +55,7 @@
 0x37    RedstoneWire_placed     64  1   0   0   1   0   1
 0x38    DiamondOre              64  1   0   1   1   0   0
 0x39    DiamondBlock            64  1   0   1   1   0   0
-0x3A    Workbench               64  1   0   1   1   1   0
+0x3A    CraftingTable           64  1   0   1   1   1   0
 0x3B    Crops                   64  1   0   0   1   0   1
 0x3C    Farmland                64  1   0   1   1   0   0
 0x3D    Furnace                 64  1   0   1   1   1   0
@@ -118,7 +118,7 @@
 0x117   DiamondAxe              1   0   0   0   1   0   1
 0x118   Stick                   64  0   0   0   1   0   1
 0x119   Bowl                    64  0   0   0   1   0   1
-0x11A   MushroomSoup            1   0   1   0   1   0   1
+0x11A   MushroomStew            1   0   1   0   1   0   1
 0x11B   GoldSword               1   0   0   0   1   0   1
 0x11C   GoldShovel              1   0   0   0   1   0   1
 0x11D   GoldPickaxe             1   0   0   0   1   0   1
@@ -171,7 +171,7 @@
 0x14C   Snowball                16  0   1   0   1   0   1
 0x14D   Boat                    1   1   0   0   1   0   1
 0x14E   Leather                 64  0   0   0   1   0   1
-0x14F   Milk                    1   1   0   0   1   0   1
+0x14F   MilkBucket              1   1   0   0   1   0   1
 0x150   ClayBrick               64  0   0   0   1   0   1
 0x151   ClayBall                64  0   0   0   1   0   1
 0x152   SugarCane               64  0   0   0   1   0   1

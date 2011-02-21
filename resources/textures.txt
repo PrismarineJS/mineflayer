@@ -40,7 +40,7 @@ MossStone           64  32  16  16
 Obsidian            80  32  16  16
 LgChestFrLeft       144 32  16  16
 LgChestFrRight      160 32  16  16
-WorkbenchTop        176 32  16  16
+CraftingTableTop    176 32  16  16
 FurnaceFront        192 32  16  16
 FurnaceBack         208 32  16  16
 DispenserFront      224 32  16  16
@@ -53,8 +53,8 @@ LeavesRegular       64  48  16  16
 LeavesNotFancy      80  48  16  16
 LgChestBkLeft       144 48  16  16
 LgChestBkRight      160 48  16  16
-WorkbenchFront      176 48  16  16
-WorkbenchBack       192 48  16  16
+CraftingTableFront  176 48  16  16
+CraftingTableBack   192 48  16  16
 FurnaceFrontLit     208 48  16  16
 FurnaceTop          224 48  16  16
 

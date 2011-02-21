@@ -2,6 +2,8 @@
 #define ITEM_H
 
 #include <QHash>
+#include <QSize>
+#include <QVector>
 
 class Item {
 public:
@@ -56,7 +58,7 @@ public:
         RedstoneWire_placed=0x37,
         DiamondOre=0x38,
         DiamondBlock=0x39,
-        Workbench=0x3A,
+        CraftingTable=0x3A,
         Crops=0x3B,
         Farmland=0x3C,
         Furnace=0x3D,
@@ -117,7 +119,7 @@ public:
         DiamondAxe=0x117,
         Stick=0x118,
         Bowl=0x119,
-        MushroomSoup=0x11A,
+        MushroomStew=0x11A,
         GoldSword=0x11B,
         GoldShovel=0x11C,
         GoldPickaxe=0x11D,
@@ -170,7 +172,7 @@ public:
         Snowball=0x14C,
         Boat=0x14D,
         Leather=0x14E,
-        Milk=0x14F,
+        MilkBucket=0x14F,
         ClayBrick=0x150,
         ClayBall=0x151,
         SugarCane=0x152,
@@ -343,36 +345,65 @@ public:
         ItemData() : id(NoItem) {}
     };
 
+    struct Ingredient {
+        Item * item;
+        // are we looking for specific metadata for this ingredient?
+        bool metadata_matters;
+        // what this ingredient turns into when the crafting is done. Usually NoItem.
+        // for MilkBucket this is Bucket and for MushroomStew this is Bowl.
+        Item * result;
+
+        // for sorting
+        bool operator <(const Ingredient & other) const;
+    };
+
+    struct Recipe {
+        Item * result;
+        // palette for design
+        QVector<Ingredient> ingredients;
+        // design width and height. 0, 0 means design doesn't matter.
+        QSize size;
+        // list of length size.width * size.height indexes into ingredients vector.
+        QVector<int> design;
+
+        bool operator ==(const Recipe & other) const;
+    };
+
 public:
     ItemType type;
     qint8 count;
     qint16 metadata;
 
+    // for hashing purposes. we only check type and metadata, not count.
+    bool operator ==(const Item & other) const;
+
+public:
+
     static void initializeStaticData();
     inline static const ItemData * itemData(ItemType item_id) { return s_item_data.value(item_id, NULL); }
     inline static const QHash<ItemType, ItemData *> * itemDataHash() { return &s_item_data; }
+
+    Item() : type(NoItem), count(0), metadata(0) {}
 
 private:
     static bool s_initialized;
 
     static QHash<ItemType, ItemData *> s_item_data;
+    static QHash<QString, ItemData *> s_item_by_name;
 
-public:
-    static int itemStackHeight(ItemType item);
-    static bool itemIsPlaceable(ItemType item);
-    static bool itemIsActivatable(ItemType item);
+    // match generic recipe to our recipe structure which contains result
+    static QHash<Recipe, Recipe *> s_recipes;
+    // match result item type to list of recipes that can make it.
+    static QMultiHash<Item, Recipe *> s_item_recipe;
 
-    static bool blockIsPhysical(ItemType item);
-    static bool blockIsSafe(ItemType item);
-    static bool blockIsDiggable(ItemType item);
-    static bool blockIsActivatable(ItemType item);
-    static bool blockIsPlaceAgainstAble(ItemType item);
+    static const Item * c_no_item;
 
-
-    Item() : type(NoItem), count(0), metadata(0) {}
+private:
+    static Item * parseItem(QString item_string, bool * metadata_matters = NULL);
 };
 
-
+uint qHash(const Item::Recipe & recipe);
+uint qHash(const Item & item);
 
 
 
