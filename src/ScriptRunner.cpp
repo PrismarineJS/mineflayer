@@ -41,11 +41,11 @@ ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headl
     this->moveToThread(m_thread);
 }
 
-void ScriptRunner::go()
+void ScriptRunner::bootstrap()
 {
     if (QThread::currentThread() != m_thread) {
         bool success;
-        success = QMetaObject::invokeMethod(this, "go", Qt::QueuedConnection);
+        success = QMetaObject::invokeMethod(this, "bootstrap", Qt::QueuedConnection);
         Q_ASSERT(success);
         return;
     }
@@ -81,18 +81,18 @@ void ScriptRunner::go()
         m_entity_class = mf_obj.property("Entity");
         m_item_class = mf_obj.property("Item");
     }
-    // create JavaScript enums from C++ enums
+    // create the mf.ItemType enum
     {
-        QString enum_contents = internalReadFile(":/enums/ItemTypeEnum.h").trimmed();
-        QStringList lines = enum_contents.split("\n");
-        QStringList values = lines.takeFirst().split(" ");
-        Q_ASSERT(values.size() == 2);
-        QString prop_name = values.at(1);
-        Q_ASSERT(values.at(0) == "enum");
-        enum_contents = lines.join("\n");
-        Q_ASSERT(enum_contents.endsWith(";"));
-        enum_contents.chop(1);
-        mf_obj.setProperty(prop_name, evalJsonContents(enum_contents.replace("=", ":")));
+        QScriptValue item_type_obj = m_engine->newObject();
+        mf_obj.setProperty("ItemType", item_type_obj);
+
+        const QHash<Item::ItemType, Item::ItemData*> * item_data_hash = Item::itemDataHash();
+        for (QHash<Item::ItemType, Item::ItemData*>::const_iterator it = item_data_hash->constBegin();
+            it != item_data_hash->constEnd(); ++it)
+        {
+            const Item::ItemData * item_data = it.value();
+            item_type_obj.setProperty(item_data->name, item_data->id);
+        }
     }
 
     // hook up mf functions
@@ -285,7 +285,7 @@ QScriptValue ScriptRunner::setTimeout(QScriptContext *context, QScriptEngine *en
     if (!me->maybeThrowArgumentError(context, error, ms.isNumber()))
         return error;
 
-    return me->setTimeout(func, ms.toInteger(), context->parentContext()->thisObject(), false);
+    return me->setTimeout(func, ms.toInt32(), context->parentContext()->thisObject(), false);
 }
 
 QScriptValue ScriptRunner::setInterval(QScriptContext *context, QScriptEngine *engine)
@@ -301,7 +301,7 @@ QScriptValue ScriptRunner::setInterval(QScriptContext *context, QScriptEngine *e
     if (!me->maybeThrowArgumentError(context, error, ms.isNumber()))
         return error;
 
-    return me->setTimeout(func, ms.toInteger(), context->parentContext()->thisObject(), true);
+    return me->setTimeout(func, ms.toInt32(), context->parentContext()->thisObject(), true);
 }
 
 int ScriptRunner::setTimeout(QScriptValue func, int ms, QScriptValue this_obj, bool repeat)
@@ -328,7 +328,7 @@ QScriptValue ScriptRunner::clearTimeout(QScriptContext *context, QScriptEngine *
     if (!me->maybeThrowArgumentError(context, error, id.isNumber()))
         return error;
 
-    int int_id = id.toInteger();
+    int int_id = id.toInt32();
     QTimer * ptr = me->m_timer_ptrs.value(int_id, NULL);
     me->m_timer_ptrs.remove(int_id);
     me->m_script_timers.remove(ptr);
@@ -516,7 +516,7 @@ QScriptValue ScriptRunner::itemStackHeight(QScriptContext *context, QScriptEngin
     QScriptValue value = context->argument(0);
     if (!me->maybeThrowArgumentError(context, error, value.isNumber()))
         return error;
-    return Item::itemStackHeight((Item::ItemType)value.toInteger());
+    return Item::itemData((Item::ItemType)value.toInt32())->stack_height;
 }
 QScriptValue ScriptRunner::isPhysical(QScriptContext *context, QScriptEngine *engine)
 {
@@ -527,7 +527,7 @@ QScriptValue ScriptRunner::isPhysical(QScriptContext *context, QScriptEngine *en
     QScriptValue value = context->argument(0);
     if (!me->maybeThrowArgumentError(context, error, value.isNumber()))
         return error;
-    return Item::blockIsPhysical((Item::ItemType)value.toInteger());
+    return Item::itemData((Item::ItemType)value.toInt32())->physical;
 }
 QScriptValue ScriptRunner::isSafe(QScriptContext *context, QScriptEngine *engine)
 {
@@ -538,7 +538,7 @@ QScriptValue ScriptRunner::isSafe(QScriptContext *context, QScriptEngine *engine
     QScriptValue value = context->argument(0);
     if (!me->maybeThrowArgumentError(context, error, value.isNumber()))
         return error;
-    return Item::blockIsSafe((Item::ItemType)value.toInteger());
+    return Item::itemData((Item::ItemType)value.toInt32())->safe;
 }
 QScriptValue ScriptRunner::isDiggable(QScriptContext *context, QScriptEngine *engine)
 {
@@ -549,7 +549,7 @@ QScriptValue ScriptRunner::isDiggable(QScriptContext *context, QScriptEngine *en
     QScriptValue value = context->argument(0);
     if (!me->maybeThrowArgumentError(context, error, value.isNumber()))
         return error;
-    return Item::blockIsDiggable((Item::ItemType)value.toInteger());
+    return Item::itemData((Item::ItemType)value.toInt32())->diggable;
 }
 
 QScriptValue ScriptRunner::health(QScriptContext *context, QScriptEngine *engine)
@@ -631,7 +631,7 @@ QScriptValue ScriptRunner::setControlState(QScriptContext *context, QScriptEngin
     if (!me->maybeThrowArgumentError(context, error, state.isBool()))
         return error;
 
-    me->m_game->setControlActivated((Game::Control) control.toInteger(), state.toBool());
+    me->m_game->setControlActivated((Game::Control) control.toInt32(), state.toBool());
     return QScriptValue();
 }
 QScriptValue ScriptRunner::clearControlStates(QScriptContext *context, QScriptEngine *engine)

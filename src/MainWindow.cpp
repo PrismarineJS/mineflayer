@@ -192,7 +192,7 @@ void MainWindow::loadResources()
 
     {
         // grab all the textures from resources
-        QFile texture_index_file(":/textures/textures.txt");
+        QFile texture_index_file(":/graphics/textures.txt");
         texture_index_file.open(QFile::ReadOnly);
         QTextStream stream(&texture_index_file);
         while (! stream.atEnd()) {

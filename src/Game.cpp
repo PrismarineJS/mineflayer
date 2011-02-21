@@ -508,7 +508,7 @@ void Game::checkForDiggingStopped(const Int3D &start, const Int3D &size)
     {
         m_digging_timer.stop();
         // if the new block is not diggable (air, water, etc.) then it worked.
-        bool success = !Item::blockIsDiggable(blockAt(m_digging_location).type());
+        bool success = !Item::itemData(blockAt(m_digging_location).type())->diggable;
         m_server.sendDiggingStatus(Message::BlockBroken, m_digging_location);
         emit stoppedDigging(success ? BlockBroken : Aborted);
     }
@@ -686,7 +686,7 @@ bool Game::collisionInRange(const Int3D & boundingBoxMin, const Int3D & bounding
     for (cursor.x = boundingBoxMin.x; cursor.x <= boundingBoxMax.x; cursor.x++)
         for (cursor.y = boundingBoxMin.y; cursor.y <= boundingBoxMax.y; cursor.y++)
             for (cursor.z = boundingBoxMin.z; cursor.z <= boundingBoxMax.z; cursor.z++)
-                if (Item::blockIsPhysical(blockAt(cursor).type()))
+                if (Item::itemData(blockAt(cursor).type())->physical)
                     return true;
     return false;
 }
@@ -762,17 +762,19 @@ bool Game::canPlaceBlock(const Int3D &block_pos, Message::BlockFaceDirection fac
 
     Block target_block = blockAt(block_pos);
 
+    const Item::ItemData * item_data = Item::itemData(target_block.type());
+
     // not against water, lava, air, etc
-    if (! Item::blockIsPlaceAgainstAble(target_block.type()))
+    if (! item_data->diggable)
         return false;
 
     // not against chest, dispenser, furnace, door, etc
-    if (Item::blockIsActivatable(target_block.type()))
+    if (item_data->block_activatable)
         return false;
 
     // not if our equipment isn't placeable
     Item equipped_item = m_inventory.at(m_equipped_slot_id);
-    if (! Item::itemIsPlaceable(equipped_item.type))
+    if (! Item::itemData(equipped_item.type)->placeable)
         return false;
 
     return true;

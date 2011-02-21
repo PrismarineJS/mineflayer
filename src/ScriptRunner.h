@@ -23,7 +23,7 @@ public:
 
 public slots:
     // start the engine
-    void go();
+    void bootstrap();
 
 private:
     QThread * m_thread;

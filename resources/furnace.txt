@@ -1,0 +1,20 @@
+# Furnace Recipes. Pulled from
+# http://www.minecraftwiki.net/wiki/Furnace#Smelting
+#
+# IngredientName[:count[:metadata]] > ResultName[:count[:metadata]]
+#
+# default result count: 1
+# default result metadata: 0
+# default ingredient count: 1
+# omitted ingredient metadata means any metadata is OK.
+
+IronOre     > IronIngot
+GoldOre     > GoldIngot
+Sand        > Glass
+Cobblestone > Stone
+RawPorkchop > CookedPorkchop
+Clay        > ClayBrick
+RawFish     > CookedFish
+Wood        > Coal:1:1
+Cactus      > InkSac:1:2
+

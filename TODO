@@ -27,6 +27,7 @@ Core:
  * mf.haveOpStatus and add an op/spawn check to canPlaceBlock
 
 Bot framework:
+ * refactor mf.blockHeight and friends into some kind of ItemData structure
  * implement the functions in doc/bot-api
  * metadata access for blocks
  * command line parameters

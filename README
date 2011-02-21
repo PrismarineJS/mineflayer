@@ -23,7 +23,7 @@ Setting up build:
     Linux:
 
         1. Install prerequisites: libois-dev libogre-dev qt4-dev-tools
-        2. Run ./extract_resources <path_to_minecraft.jar>
+        2. Run bin/extract_resources.sh <path_to_minecraft.jar>
         3. Manually copy resources/ to build directory
         4. Create a build folder OUTSIDE the source code tree and cd to it.
         5. qmake path/to/mineflayer.pro

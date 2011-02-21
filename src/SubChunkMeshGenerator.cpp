@@ -151,7 +151,7 @@ void SubChunkMeshGenerator::initialize()
 void SubChunkMeshGenerator::loadResources()
 {
     // grab all the solid block data from resources
-    QFile blocks_file(":/textures/blocks.txt");
+    QFile blocks_file(":/graphics/blocks.txt");
     blocks_file.open(QFile::ReadOnly);
     QTextStream stream(&blocks_file);
     while(! stream.atEnd()) {

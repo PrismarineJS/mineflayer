@@ -1,6 +1,5 @@
-decompiled/
 *.pro.user
-build
+build/
 resources/armor/
 resources/art/
 resources/environment/

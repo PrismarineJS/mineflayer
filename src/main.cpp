@@ -15,6 +15,7 @@
 
 #include "MetaTypes.h"
 #include "ScriptRunner.h"
+#include "Item.h"
 
 #include <iostream>
 #include <cstdlib>
@@ -100,6 +101,7 @@ int main(int argc, char *argv[])
     url.setPassword(password);
 
     MetaTypes::registerMetaTypes();
+    Item::initializeStaticData();
 
 #ifndef MINEFLAYER_3D_ON
     if (! headless)
@@ -114,7 +116,7 @@ int main(int argc, char *argv[])
 
     if (! script_filename.isEmpty()) {
         ScriptRunner runner(url, script_filename, script_debug, headless, lib_path);
-        runner.go();
+        runner.bootstrap();
         if (headless)
             return a.exec();
     }
