@@ -137,9 +137,11 @@ function next() {
             nav_point.y++;
         }
     }
-    navigator.navigateTo(nav_point, function() {
-        next();
-        next_interval = mf.setInterval(next, 1000);
+    navigator.navigateTo(nav_point, {
+        "arrived_func": function() {
+            next();
+            next_interval = mf.setInterval(next, 1000);
+        },
     });
 }
 

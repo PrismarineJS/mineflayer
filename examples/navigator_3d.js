@@ -22,8 +22,10 @@ if (path_finder_3d === undefined) {
                 respond("sorry, can't see you");
                 return;
             }
-            navigator.navigateTo(entity.position, function() {
-                respond("i have arrived");
+            navigator.navigateTo(entity.position, {
+                "arrived_func": function() {
+                    respond("i have arrived");
+                },
             });
         }
         chat_commands.registerCommand("navhere", navhere);

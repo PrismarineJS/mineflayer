@@ -16,10 +16,13 @@ function go() {
     } else {
         // STAND ON THE CAKE
         var cake_pos = cake_pos_arr[0];
-        navigator.navigateTo(cake_pos.offset(0, 0, 1), function() {
-            // PUNCH THE CAKE   
-            mf.startDigging(cake_pos);
-        }, 1);
+        navigator.navigateTo(cake_pos.offset(0, 0, 1), {
+            "end_radius": 1,
+            "arrived_func": function() {
+                // PUNCH THE CAKE
+                mf.startDigging(cake_pos);
+            },
+        });
     }
 }
 
@@ -37,4 +40,4 @@ chat_commands.registerCommand("punch", function(username, args) {
     }
     get_it = ret[0];
     go();
-}, 1); 
+}, 1);

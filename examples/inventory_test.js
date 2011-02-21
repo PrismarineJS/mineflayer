@@ -190,33 +190,36 @@ chat_commands.registerCommand("craft", function() {
     }
     var table_pt = table_pt_arr[0];
 
-    navigator.navigateTo(table_pt, function() {
-        mf.debug("done navigating");
-        window_open_func = function(window_type) {
-            window_open_func = undefined;
+    navigator.navigateTo(table_pt, {
+        "end_radius": 3,
+        "arrived_func": function() {
+            mf.debug("done navigating");
+            window_open_func = function(window_type) {
+                window_open_func = undefined;
 
-            mf.debug("now crafting");
+                mf.debug("now crafting");
 
-            mf.clickInventorySlot(stick_slot, false);
-            mf.clickUniqueSlot(8, true);
-            mf.clickUniqueSlot(5, true);
+                mf.clickInventorySlot(stick_slot, false);
+                mf.clickUniqueSlot(8, true);
+                mf.clickUniqueSlot(5, true);
 
-            mf.clickInventorySlot(stone_slot, false);
-            mf.clickUniqueSlot(1, true);
-            mf.clickUniqueSlot(2, true);
-            mf.clickUniqueSlot(3, true);
+                mf.clickInventorySlot(stone_slot, false);
+                mf.clickUniqueSlot(1, true);
+                mf.clickUniqueSlot(2, true);
+                mf.clickUniqueSlot(3, true);
 
-            if (stone_item.count > 3) {
+                if (stone_item.count > 3) {
+                    mf.clickInventorySlot(inventory.firstEmptySlot(), false);
+                }
+
+                mf.clickUniqueSlot(0, false);
                 mf.clickInventorySlot(inventory.firstEmptySlot(), false);
-            }
 
-            mf.clickUniqueSlot(0, false);
-            mf.clickInventorySlot(inventory.firstEmptySlot(), false);
-
-            mf.closeWindow();
-        };
-        mf.hax.activateBlock(table_pt);
-    }, 3);
+                mf.closeWindow();
+            };
+            mf.hax.activateBlock(table_pt);
+        },
+    });
 });
 
 chat_commands.registerCommand("loot", function() {
@@ -228,26 +231,29 @@ chat_commands.registerCommand("loot", function() {
     }
     var chest_pt = chest_pts[0];
 
-    navigator.navigateTo(chest_pt, function() {
-        mf.debug("done navigating");
-        window_open_func = function(window_type) {
-            window_open_func = undefined;
+    navigator.navigateTo(chest_pt, {
+        "end_radius": 3,
+        "arrived_func": function() {
+            mf.debug("done navigating");
+            window_open_func = function(window_type) {
+                window_open_func = undefined;
 
-            mf.debug("now looting");
+                mf.debug("now looting");
 
-            for (var i = 0; i < 27; i++) {
-                var item = mf.uniqueWindowItem(i);
-                if (item.type != mf.ItemType.NoItem) {
-                    mf.debug("looting " + item.count + " " + items.nameForId(item.type));
-                    mf.clickUniqueSlot(i, false);
-                    mf.debug("dropping outside window");
-                    mf.clickOutsideWindow(false);
+                for (var i = 0; i < 27; i++) {
+                    var item = mf.uniqueWindowItem(i);
+                    if (item.type != mf.ItemType.NoItem) {
+                        mf.debug("looting " + item.count + " " + items.nameForId(item.type));
+                        mf.clickUniqueSlot(i, false);
+                        mf.debug("dropping outside window");
+                        mf.clickOutsideWindow(false);
+                    }
                 }
-            }
 
-            mf.closeWindow();
-        };
-        mf.hax.activateBlock(chest_pt);
-    }, 3);
+                mf.closeWindow();
+            };
+            mf.hax.activateBlock(chest_pt);
+        },
+    });
     
 });
