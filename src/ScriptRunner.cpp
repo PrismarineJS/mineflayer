@@ -598,6 +598,7 @@ QScriptValue ScriptRunner::jsEntity(QSharedPointer<Game::Entity> entity)
     result.setProperty("yaw", position.yaw);
     result.setProperty("pitch", position.pitch);
     result.setProperty("on_ground", position.on_ground);
+    result.setProperty("height", position.height);
     Game::Entity::EntityType type = entity.data()->type;
     result.setProperty("type", (int)type);
     switch (type) {

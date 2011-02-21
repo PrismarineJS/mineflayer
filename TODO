@@ -32,6 +32,9 @@ Bot framework:
  * metadata access for blocks
  * command line parameters
 
+Libs:
+ * block_finder returns duplicate blocks
+
 3D client:
  * chunk seams are broken
  * deleting chunks is broken

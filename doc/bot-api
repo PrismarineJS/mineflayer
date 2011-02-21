@@ -41,6 +41,7 @@ mf.Point(x, y, z)
  * yaw {Number} [0, 2pi] Rotation around z axis. 0 is +x. pi/2 is +y. pi is -x. 3pi/2 is -y.
  * pitch {Number} [-pi/2, pi/2] 0 is parallel to the ground. pi/2 is up. -pi/2 is down.
  * on_ground {Boolean} True if you are not free-falling.
+ * height {Number} The Z-dimension of the bounding box.
  *
  * Additional properties when type is Player:
  * username {String}
