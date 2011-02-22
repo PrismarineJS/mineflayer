@@ -1,5 +1,7 @@
 Core:
- * crafting doesn't work
+ * handle double chests
+ * handle specific metadata crafting
+ * expose crafting and smelting recipes to API
  * dispenser is untested
  * furnace is untested
  * physics
@@ -12,11 +14,11 @@ Core:
    - water
    - lava
    - ice
-
+   - when you get punched, get knocked a small distance
+   - mine cart
    - entity collisions
 
  * animate while digging
- * handle double chests
  * time tracking (day / night)
  * handler for onHeardNoteBlock(type, pitch, volume)
  * clean up stray chunks that didn't get unloaded
@@ -31,8 +33,10 @@ Bot framework:
  * implement the functions in doc/bot-api
  * metadata access for blocks
  * command line parameters
+ * handle Ctrl+C
 
 Libs:
+ * high level inventory management
  * block_finder returns duplicate blocks
  * non-spoken chat interpretation (player joined, etc)
 

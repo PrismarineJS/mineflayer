@@ -265,6 +265,8 @@ private:
 
     bool doWindowClick(const WindowClick & window_click);
 
+    _Item::Recipe buildRecipeForItems(QVector<Item> items, QSize size);
+
 private slots:
     void handleLoginStatusChanged(Server::LoginStatus status);
     void handleLoginCompleted(int entity_id);

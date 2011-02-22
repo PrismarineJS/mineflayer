@@ -47,8 +47,8 @@ chat_commands.registerCommand("toss", function(username, slot_str) {
     var slot = parseInt(slot_str);
     window_open_func = function(window_type) {
         window_open_func = undefined;
-        mf.clickInventorySlot(slot, false);
-        mf.clickOutsideWindow(false);
+        mf.clickInventorySlot(slot, mf.MouseButton.Left);
+        mf.clickOutsideWindow(mf.MouseButton.Left);
         mf.closeWindow();
     };
     mf.openInventoryWindow();
@@ -105,9 +105,9 @@ chat_commands.registerCommand("woodplank", function() {
 
         mf.debug("now crafting");
 
-        mf.clickInventorySlot(wood_slot, false);
-        mf.clickUniqueSlot(1, false);
-        mf.clickUniqueSlot(0, false);
+        mf.clickInventorySlot(wood_slot, mf.MouseButton.Left);
+        mf.clickUniqueSlot(1, mf.MouseButton.Left);
+        mf.clickUniqueSlot(0, mf.MouseButton.Left);
 
         mf.closeWindow();
     };
@@ -141,13 +141,16 @@ chat_commands.registerCommand("torch", function() {
 
         mf.debug("now crafting");
 
-        mf.clickInventorySlot(stick_slot, false);
-        mf.clickUniqueSlot(3, true);
+        mf.clickInventorySlot(stick_slot, mf.MouseButton.Left);
+        mf.clickUniqueSlot(3, mf.MouseButton.Right);
 
-        mf.clickInventorySlot(coal_slot, false);
-        mf.clickUniqueSlot(1, true);
+        mf.clickInventorySlot(coal_slot, mf.MouseButton.Left);
+        mf.clickUniqueSlot(1, mf.MouseButton.Right);
 
-        mf.clickUniqueSlot(0, false);
+        mf.clickInventorySlot(stick_slot, mf.MouseButton.Left);
+
+        mf.clickUniqueSlot(0, mf.MouseButton.Left);
+        mf.clickInventorySlot(inventory.firstEmptySlot(), mf.MouseButton.Left);
 
         mf.closeWindow();
     };
@@ -199,21 +202,20 @@ chat_commands.registerCommand("craft", function() {
 
                 mf.debug("now crafting");
 
-                mf.clickInventorySlot(stick_slot, false);
-                mf.clickUniqueSlot(8, true);
-                mf.clickUniqueSlot(5, true);
+                mf.clickInventorySlot(stick_slot, mf.MouseButton.Left);
+                mf.clickUniqueSlot(8, mf.MouseButton.Right);
+                mf.clickUniqueSlot(5, mf.MouseButton.Right);
 
-                mf.clickInventorySlot(stone_slot, false);
-                mf.clickUniqueSlot(1, true);
-                mf.clickUniqueSlot(2, true);
-                mf.clickUniqueSlot(3, true);
+                mf.clickInventorySlot(stone_slot, mf.MouseButton.Left);
+                mf.clickUniqueSlot(1, mf.MouseButton.Right);
+                mf.clickUniqueSlot(2, mf.MouseButton.Right);
+                mf.clickUniqueSlot(3, mf.MouseButton.Right);
 
-                if (stone_item.count > 3) {
-                    mf.clickInventorySlot(inventory.firstEmptySlot(), false);
-                }
+                mf.clickInventorySlot(stick_slot, mf.MouseButton.Left);
 
-                mf.clickUniqueSlot(0, false);
-                mf.clickInventorySlot(inventory.firstEmptySlot(), false);
+                mf.clickUniqueSlot(0, mf.MouseButton.Left);
+                //mf.clickInventorySlot(inventory.firstEmptySlot(), mf.MouseButton.Left);
+                mf.clickOutsideWindow(mf.MouseButton.Left);
 
                 mf.closeWindow();
             };
@@ -244,9 +246,9 @@ chat_commands.registerCommand("loot", function() {
                     var item = mf.uniqueWindowItem(i);
                     if (item.type != mf.ItemType.NoItem) {
                         mf.debug("looting " + item.count + " " + items.nameForId(item.type));
-                        mf.clickUniqueSlot(i, false);
+                        mf.clickUniqueSlot(i, mf.MouseButton.Left);
                         mf.debug("dropping outside window");
-                        mf.clickOutsideWindow(false);
+                        mf.clickOutsideWindow(mf.MouseButton.Left);
                     }
                 }
 

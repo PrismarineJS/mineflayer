@@ -6,7 +6,9 @@
  * meter - a block is 1 meter cubed, or 1x1x1.
  */
 
+
 // Classes
+
 
 /**
  * Represents a 3D coordinate/location in meters.
@@ -161,6 +163,20 @@ mf.AnimationType
  *      Dispenser
  */
 mf.WindowType
+
+/**
+ * For sending window clicks.
+ * Members:
+ *      Left
+ *      Right
+ */
+mf.MouseButton
+
+
+
+// Methods
+
+
 
 /**
  * runs a script with a path relative to the current script.
@@ -444,9 +460,9 @@ mf.look(yaw, pitch)
 mf.selectedEquipSlot()
 mf.selectEquipSlot(slot)
 
-mf.clickInventorySlot(slot, right_click)
-mf.clickUniqueSlot(slot, right_click)
-mf.clickOutsideWindow(right_click)
+mf.clickInventorySlot(slot, button)
+mf.clickUniqueSlot(slot, button)
+mf.clickOutsideWindow(button)
 
 mf.openInventoryWindow()
 mf.closeWindow()

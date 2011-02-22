@@ -116,3 +116,8 @@ mf.WindowType = {
     "Furnace":      2,
     "Dispenser":    3,
 };
+
+mf.MouseButton = {
+    "Left":         false,
+    "Right":        true,
+};

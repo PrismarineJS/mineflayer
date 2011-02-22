@@ -533,13 +533,6 @@ void Game::doPhysics(float delta_seconds)
 
     QMutexLocker locker(&m_mutex);
 
-//    if (m_player.position.pos != m_player.position.pos) {
-//        // NaN errors
-//        qDebug() << "NaN error";
-//        QCoreApplication::exit(-1);
-//        return;
-//    }
-
     // derive xy movement vector from controls
     int movement_right = 0;
     if (m_control_state.at(Right))
@@ -876,6 +869,51 @@ bool Game::clickUniqueSlot(int slot_id, bool right_click)
     return doWindowClick(window_click);
 }
 
+_Item::Recipe Game::buildRecipeForItems(QVector<Item> items, QSize size)
+{
+    // determine bounds and build palette
+    int min_x = -1, min_y = -1, max_x = -1, max_y = -1;
+    QHash<Item, int> palette;
+    int next_palette_index = 0;
+    _Item::Recipe recipe;
+    for (int x = 0; x < size.width(); x++) {
+        for (int y = 0; y < size.height(); y++) {
+            int index = y * size.width() + x;
+            if (items.at(index).type != Item::NoItem) {
+                if (min_x == -1) min_x = x;
+                if (min_y == -1) min_y = y;
+                if (x > max_x) max_x = x;
+                if (y > max_y) max_y = y;
+
+                if (! palette.contains(items.at(index))) {
+                    _Item::Ingredient ingredient;
+                    ingredient.item = items.at(index);
+                    ingredient.metadata_matters = false;
+                    ingredient.result = Item();
+                    recipe.ingredients.append(ingredient);
+                    palette.insert(items.at(index), next_palette_index++);
+                }
+            }
+        }
+    }
+
+    if (palette.size() == 0)
+        return recipe;
+
+    recipe.size = QSize(max_x-min_x+1, max_y-min_y+1);
+    recipe.design.resize(recipe.size.width() * recipe.size.height());
+
+    for (int x = 0; x < recipe.size.width(); x++) {
+        for (int y = 0; y < recipe.size.height(); y++) {
+            int old_index = (y+min_y) * size.width() + (x+min_x);
+            int index = y * recipe.size.width() + x;
+            recipe.design.replace(index, palette.value(items.at(old_index), -1));
+        }
+    }
+
+    return recipe;
+}
+
 int Game::nextActionId()
 {
     // no mutex locker; private function
@@ -917,6 +955,20 @@ bool Game::doWindowClick(const WindowClick &window_click)
     bool success = m_click_wait_condition.wait(&m_click_mutex, 1000) && m_click_success;
     m_click_mutex.unlock();
 
+    {
+        QMutexLocker locker(&m_mutex);
+
+        // if they click in the crafting area, we need to set the value of unique_slots[0]
+        if (m_open_window_type == Message::Inventory && window_click.slot >= 1 && window_click.slot <= 4) {
+            // make a recipe out of the crafting area and see what we need to set the result
+            const _Item::Recipe * recipe = Item::recipeFor(buildRecipeForItems(m_unique_slots.mid(1, 4), QSize(2,2)));
+            m_unique_slots.replace(0, (recipe == NULL) ? Item() : recipe->result);
+        } else if (m_open_window_type == Message::CraftingTable && window_click.slot >= 1 && window_click.slot <= 9) {
+            const _Item::Recipe * recipe = Item::recipeFor(buildRecipeForItems(m_unique_slots.mid(1, 9), QSize(3,3)));
+            m_unique_slots.replace(0, (recipe == NULL) ? Item() : recipe->result);
+        }
+    }
+
     return success;
 }
 
@@ -934,13 +986,53 @@ void Game::handleTransaction(int window_id, int action_id, bool accepted)
             window_click = m_window_click_queue.dequeue();
 
         if (accepted) {
-            if (window_click.right_click) {
+            if ((m_open_window_type == Message::Inventory || m_open_window_type == Message::CraftingTable) &&
+                window_click.slot == 0)
+            {
+                // take the crafting output and add it to your hand.
+                // if you're holding something else, clicking does nothing.
+                Item slot_item = getWindowSlot(window_click.slot);
+                if (m_held_item.type == Item::NoItem ||
+                    (slot_item.type == m_held_item.type && slot_item.metadata == m_held_item.metadata))
+                {
+                    if (m_held_item.type == Item::NoItem)
+                        m_held_item = slot_item;
+                    else if (slot_item.type == m_held_item.type && slot_item.metadata == m_held_item.metadata)
+                        m_held_item.count += slot_item.count;
+                    slot_item = Item();
+                    updateWindowSlot(window_click.slot, slot_item);
+
+                    // decrement the count of every slot in the crafting area
+                    int decrement_start, decrement_end;
+                    if (m_open_window_type == Message::Inventory) {
+                        decrement_start = 1;
+                        decrement_end = 4;
+                    } else if (m_open_window_type == Message::CraftingTable) {
+                        decrement_start = 1;
+                        decrement_end = 9;
+                    } else {
+                        Q_ASSERT(false);
+                    }
+
+                    for (int i = decrement_start; i <= decrement_end; i++) {
+                        Item slot_item = getWindowSlot(i);
+                        if (slot_item.type != Item::NoItem) {
+                            slot_item.count--;
+                            if (slot_item.count == 0)
+                                slot_item = Item();
+                            updateWindowSlot(i, slot_item);
+                        }
+                    }
+                }
+            } else if (window_click.right_click) {
                 if (m_held_item.type == Item::NoItem) {
                     // take half. if uneven, take the extra as well.
                     Item slot_item = getWindowSlot(window_click.slot);
                     int amt_to_take = std::floor((slot_item.count + 1) / 2);
                     int amt_to_leave = slot_item.count - amt_to_take;
                     m_held_item.count = amt_to_take;
+                    m_held_item.type = slot_item.type;
+                    m_held_item.metadata = slot_item.metadata;
                     if (m_held_item.count == 0)
                         m_held_item = Item();
                     slot_item.count = amt_to_leave;
@@ -949,12 +1041,21 @@ void Game::handleTransaction(int window_id, int action_id, bool accepted)
                     updateWindowSlot(window_click.slot, slot_item);
                 } else {
                     Item slot_item = getWindowSlot(window_click.slot);
-                    if (slot_item.type == Item::NoItem || slot_item.type == m_held_item.type) {
-                        // drop 1
-                        slot_item.count++;
-                        m_held_item.count--;
-                        if (m_held_item.count == 0)
-                            m_held_item = Item();
+                    if (slot_item.type == Item::NoItem ||
+                        (slot_item.type == m_held_item.type && slot_item.metadata == m_held_item.metadata))
+                    {
+                        // drop 1 if the stack height allows it
+                        slot_item.type = m_held_item.type;
+                        slot_item.metadata = m_held_item.metadata;
+
+                        if (slot_item.count < Item::itemData(slot_item.type)->stack_height) {
+                            slot_item.count++;
+
+                            updateWindowSlot(window_click.slot, slot_item);
+                            m_held_item.count--;
+                            if (m_held_item.count == 0)
+                                m_held_item = Item();
+                        }
                     } else {
                         // swap held item and window item
                         Item tmp = m_held_item;
@@ -966,10 +1067,26 @@ void Game::handleTransaction(int window_id, int action_id, bool accepted)
                 if (window_click.slot == c_outside_window_slot) {
                     m_held_item = Item();
                 } else {
-                    // swap held item and window item
-                    Item tmp = m_held_item;
-                    m_held_item = getWindowSlot(window_click.slot);
-                    updateWindowSlot(window_click.slot, tmp);
+                    Item slot_item = getWindowSlot(window_click.slot);
+                    if (slot_item.type == m_held_item.type && slot_item.metadata == m_held_item.metadata) {
+                        // drop as many held item counts into the slot as we can.
+                        int new_count = slot_item.count + m_held_item.count;
+                        int max = Item::itemData(slot_item.type)->stack_height;
+                        int leftover = new_count - max;
+                        if (leftover <= 0) {
+                            slot_item.count = new_count;
+                            m_held_item = Item();
+                        } else {
+                            slot_item.count = max;
+                            m_held_item.count = leftover;
+                        }
+                        updateWindowSlot(window_click.slot, slot_item);
+                    } else {
+                        // swap held item and window item
+                        Item tmp = m_held_item;
+                        m_held_item = slot_item;
+                        updateWindowSlot(window_click.slot, tmp);
+                    }
                 }
             }
         } else {
@@ -989,7 +1106,9 @@ void Game::closeWindow()
 
     Q_ASSERT(m_open_window_id >= 0 && m_open_window_id < 256);
     m_server.sendCloseWindow(m_open_window_id);
+
     m_open_window_id = -1;
+    m_unique_slots.resize(c_inventory_window_unique_count);
     m_held_item = Item();
 }
 
@@ -1000,6 +1119,7 @@ void Game::openInventoryWindow()
     Q_ASSERT(m_open_window_id == -1);
 
     m_open_window_id = 0;
+    m_open_window_type = Message::Inventory;
     m_unique_slots.resize(c_inventory_window_unique_count);
 
     emit windowOpened(Message::Inventory);

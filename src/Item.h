@@ -1,9 +1,20 @@
 #ifndef ITEM_H
 #define ITEM_H
 
-#include <QHash>
 #include <QSize>
 #include <QVector>
+
+class Item;
+
+namespace _Item {
+    struct Ingredient;
+    struct Recipe;
+}
+
+uint qHash(const _Item::Recipe & recipe);
+uint qHash(const Item & item);
+
+#include <QHash>
 
 class Item {
 public:
@@ -345,30 +356,6 @@ public:
         ItemData() : id(NoItem) {}
     };
 
-    struct Ingredient {
-        Item * item;
-        // are we looking for specific metadata for this ingredient?
-        bool metadata_matters;
-        // what this ingredient turns into when the crafting is done. Usually NoItem.
-        // for MilkBucket this is Bucket and for MushroomStew this is Bowl.
-        Item * result;
-
-        // for sorting
-        bool operator <(const Ingredient & other) const;
-    };
-
-    struct Recipe {
-        Item * result;
-        // palette for design
-        QVector<Ingredient> ingredients;
-        // design width and height. 0, 0 means design doesn't matter.
-        QSize size;
-        // list of length size.width * size.height indexes into ingredients vector.
-        QVector<int> design;
-
-        bool operator ==(const Recipe & other) const;
-    };
-
 public:
     ItemType type;
     qint8 count;
@@ -383,8 +370,8 @@ public:
     inline static const ItemData * itemData(ItemType item_id) { return s_item_data.value(item_id, NULL); }
     inline static const QHash<ItemType, ItemData *> * itemDataHash() { return &s_item_data; }
 
-    inline static const Recipe * recipeFor(const Recipe & recipe) { return s_recipes.value(recipe, NULL); }
-    inline static QList<Recipe *> recipesToMake(const Item & item) { return s_item_recipe.values(item); }
+    static const _Item::Recipe * recipeFor(const _Item::Recipe & recipe);
+    inline static QList<_Item::Recipe *> recipesToMake(const Item & item) { return s_item_recipe.values(item); }
 
     Item() : type(NoItem), count(0), metadata(0) {}
 
@@ -395,18 +382,44 @@ private:
     static QHash<QString, ItemData *> s_item_by_name;
 
     // match generic recipe to our recipe structure which contains result
-    static QHash<Recipe, Recipe *> s_recipes;
+    static QHash<_Item::Recipe, _Item::Recipe *> s_recipes;
     // match result item type to list of recipes that can make it.
-    static QMultiHash<Item, Recipe *> s_item_recipe;
+    static QMultiHash<Item, _Item::Recipe *> s_item_recipe;
 
     static const Item * c_no_item;
 
 private:
-    static Item * parseItem(QString item_string, bool * metadata_matters = NULL);
+    static Item parseItem(QString item_string, bool * metadata_matters = NULL);
 };
 
-uint qHash(const Item::Recipe & recipe);
-uint qHash(const Item & item);
+namespace _Item {
+
+    struct Ingredient {
+        Item item;
+        // are we looking for specific metadata for this ingredient?
+        bool metadata_matters;
+        // what this ingredient turns into when the crafting is done. Usually NoItem.
+        // for MilkBucket this is Bucket and for MushroomStew this is Bowl.
+        Item result;
+
+        // for sorting
+        bool operator <(const Ingredient & other) const;
+        bool operator ==(const Ingredient & other) const;
+    };
+
+    struct Recipe {
+        Item result;
+        // palette for design
+        QVector<Ingredient> ingredients;
+        // design width and height. 0, 0 means design doesn't matter.
+        QSize size;
+        // list of length size.width * size.height indexes into ingredients vector.
+        QVector<int> design;
+
+        bool operator ==(const Recipe & other) const;
+    };
+}
+
 
 
 

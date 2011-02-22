@@ -1,5 +1,7 @@
 #include "Item.h"
 
+#include <cmath>
+
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
@@ -9,8 +11,8 @@ bool Item::s_initialized = false;
 
 QHash<Item::ItemType, Item::ItemData *> Item::s_item_data;
 QHash<QString, Item::ItemData *> Item::s_item_by_name;
-QHash<Item::Recipe, Item::Recipe *> Item::s_recipes;
-QMultiHash<Item, Item::Recipe *> Item::s_item_recipe;
+QHash<_Item::Recipe, _Item::Recipe *> Item::s_recipes;
+QMultiHash<Item, _Item::Recipe *> Item::s_item_recipe;
 
 void Item::initializeStaticData()
 {
@@ -72,7 +74,7 @@ void Item::initializeStaticData()
 
         bool recipe_start = true;
         bool done_parsing_design = false;
-        Recipe * recipe = NULL;
+        _Item::Recipe * recipe = NULL;
         QStringList design;
         while (! stream.atEnd()) {
             QString line = stream.readLine().trimmed();
@@ -95,7 +97,7 @@ void Item::initializeStaticData()
 
                 Q_ASSERT(recipe == NULL);
 
-                recipe = new Recipe;
+                recipe = new _Item::Recipe;
                 recipe->result = parseItem(line);
 
                 recipe_start = false;
@@ -127,9 +129,9 @@ void Item::initializeStaticData()
                 int part_index = 0;
                 int ingredient_count = parts.at(part_index++).toInt();
                 QStringList ingredient_parts = parts.at(part_index++).split(",");
-                Ingredient ingredient;
+                _Item::Ingredient ingredient;
                 ingredient.item = parseItem(ingredient_parts.at(0), &ingredient.metadata_matters);
-                ingredient.result = (ingredient_parts.size() > 1) ? parseItem(ingredient_parts.at(1)) : new Item;
+                ingredient.result = (ingredient_parts.size() > 1) ? parseItem(ingredient_parts.at(1)) : Item();
                 Q_ASSERT(part_index == parts.size());
 
                 recipe->ingredients.append(ingredient);
@@ -145,28 +147,28 @@ void Item::initializeStaticData()
     }
 
     // create mapping from item type
-    for (QHash<Recipe, Recipe *>::iterator it = s_recipes.begin();
+    for (QHash<_Item::Recipe, _Item::Recipe *>::iterator it = s_recipes.begin();
         it != s_recipes.end(); ++it)
     {
-        Item::Recipe * recipe = it.value();
-        s_item_recipe.insert(*(recipe->result), recipe);
+        _Item::Recipe * recipe = it.value();
+        s_item_recipe.insert(recipe->result, recipe);
     }
 }
 
-Item * Item::parseItem(QString item_string, bool * metadata_matters)
+Item Item::parseItem(QString item_string, bool * metadata_matters)
 {
     QStringList parts = item_string.split(":", QString::SkipEmptyParts);
     int part_index = 0;
-    Item * item = new Item;
-    item->type = s_item_by_name.value(parts.at(part_index++))->id;
-    item->count = 1;
-    item->metadata = 0;
+    Item item;
+    item.type = s_item_by_name.value(parts.at(part_index++))->id;
+    item.count = 1;
+    item.metadata = 0;
     if (parts.size() > part_index)
-        item->count = parts.at(part_index++).toInt();
+        item.count = parts.at(part_index++).toInt();
 
     bool _metadata_matters = false;
     if (parts.size() > part_index) {
-        item->metadata = parts.at(part_index++).toInt();
+        item.metadata = parts.at(part_index++).toInt();
         _metadata_matters = true;
     }
 
@@ -179,7 +181,7 @@ Item * Item::parseItem(QString item_string, bool * metadata_matters)
 }
 
 
-uint qHash(const Item::Recipe & recipe)
+uint qHash(const _Item::Recipe & recipe)
 {
     const int big_prime = 8191;
     const int big_prime_2 = 131071;
@@ -191,21 +193,21 @@ uint qHash(const Item::Recipe & recipe)
     if (recipe.size.width() == 0) {
         // no design - only the ingredients matter. we have conveniently sorted them.
         for (int i = 0; i < recipe.ingredients.size(); i++) {
-            const Item::Ingredient * ingredient = &(recipe.ingredients.at(i));
-            h = h * big_prime + ingredient->item->type;
+            const _Item::Ingredient * ingredient = &(recipe.ingredients.at(i));
+            h = h * big_prime + ingredient->item.type;
             if (ingredient->metadata_matters)
-                h = h * big_prime + ingredient->item->metadata;
+                h = h * big_prime + ingredient->item.metadata;
         }
     } else {
         foreach (int ingredient_index, recipe.design) {
             if (ingredient_index == -1) {
                 h = h * big_prime + big_prime_2;
             } else {
-                const Item::Ingredient * ingredient = &(recipe.ingredients.at(ingredient_index));
+                const _Item::Ingredient * ingredient = &(recipe.ingredients.at(ingredient_index));
 
-                h = h * big_prime + ingredient->item->type;
+                h = h * big_prime + ingredient->item.type;
                 if (ingredient->metadata_matters)
-                    h = h * big_prime + ingredient->item->metadata;
+                    h = h * big_prime + ingredient->item.metadata;
             }
         }
     }
@@ -224,10 +226,47 @@ uint qHash(const Item & item)
     return h;
 }
 
-bool Item::Recipe::operator ==(const Recipe & other) const
+bool _Item::Recipe::operator ==(const _Item::Recipe & other) const
 {
-    // TODO: this probabably works but if we have any collisions we're SCREWED.
-    return qHash(this) == qHash(other);
+    if (size != other.size)
+        return false;
+
+    if (size.width() == 0) {
+        // only compare ingredient list - assume both are sorted
+        if (ingredients.size() != other.ingredients.size())
+            return false;
+
+        for (int i = 0; i < ingredients.size(); i++) {
+            const _Item::Ingredient * this_ingredient  = &(ingredients.at(i));
+            const _Item::Ingredient * other_ingredient = &(other.ingredients.at(i));
+
+            if (! (*this_ingredient == *other_ingredient))
+                return false;
+        }
+    } else {
+        // compare design
+        if (design.size() != other.design.size())
+            return false;
+
+        for (int i = 0; i < design.size(); i++) {
+            int this_ingredient_index = design.at(i);
+            int other_ingredient_index= other.design.at(i);
+
+            if (this_ingredient_index == -1 && other_ingredient_index == -1)
+                continue;
+
+            if (this_ingredient_index == -1 || other_ingredient_index == -1)
+                return false;
+
+            const _Item::Ingredient * this_ingredient  = &(ingredients.at(this_ingredient_index));
+            const _Item::Ingredient * other_ingredient = &(other.ingredients.at(other_ingredient_index));
+
+            if (! (*this_ingredient == *other_ingredient))
+                return false;
+        }
+    }
+
+    return true;
 }
 
 bool Item::operator ==(const Item & other) const
@@ -236,7 +275,41 @@ bool Item::operator ==(const Item & other) const
 }
 
 
-bool Item::Ingredient::operator <(const Ingredient & other) const
+bool _Item::Ingredient::operator <(const Ingredient & other) const
 {
-    return this->item->type < other.item->type || this->item->metadata < other.item->metadata;
+    return this->item.type < other.item.type ||
+        (this->item.type == other.item.type && this->item.metadata < other.item.metadata);
+}
+
+bool _Item::Ingredient::operator ==(const Ingredient & other) const
+{
+    return this->item.type == other.item.type &&
+            (! this->metadata_matters || this->item.metadata == other.item.metadata) &&
+            this->result == other.result;
+}
+
+const _Item::Recipe * Item::recipeFor(const _Item::Recipe & recipe)
+{
+    _Item::Recipe * result = s_recipes.value(recipe, NULL);
+
+    if (result != NULL)
+        return result;
+
+    // can't try flipping if there is no design.
+    if (recipe.size.width() == 0 || (recipe.size.width() == 1 && recipe.size.height() == 1))
+        return NULL;
+
+    // try flipping the recipe horizontally and see if we get any results
+    _Item::Recipe flipped_recipe = recipe; // copy
+    for (int y = 0; y < flipped_recipe.size.height(); y++) {
+        for (int x = 0; x < std::floor(flipped_recipe.size.width() / 2); x++) {
+            int index = y*flipped_recipe.size.width()+x;
+            int index2= y*flipped_recipe.size.width()+(flipped_recipe.size.width() - 1 - x);
+            int tmp = flipped_recipe.design.at(index);
+            flipped_recipe.design.replace(index, flipped_recipe.design.at(index2));
+            flipped_recipe.design.replace(index2, tmp);
+        }
+    }
+
+    return s_recipes.value(flipped_recipe, NULL);
 }
