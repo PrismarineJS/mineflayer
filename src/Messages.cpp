@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-const qint32 OutgoingRequest::c_protocol_version = 8;
+const qint32 OutgoingRequest::c_protocol_version = 9;
 
 void OutgoingRequest::writeToStream(QDataStream &stream)
 {
@@ -342,6 +342,23 @@ int RespawnResponse::parse(QByteArray)
     return index;
 }
 
+int BedAnimationResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, unknown_1)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, unknown_2)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, unknown_3)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, unknown_4)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, unknown_5)) == -1)
+        return -1;
+
+    return index;
+}
+
 int PlayerPositionAndLookResponse::parse(QByteArray buffer)
 {
     int index = 1;
@@ -543,6 +560,24 @@ int EntityPaintingResponse::parse(QByteArray buffer)
     if ((index = parseValue(buffer, index, z)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, type)) == -1)
+        return -1;
+    return index;
+}
+
+int Unknown1BResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, unknown_1)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, unknown_2)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, unknown_3)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, unknown_4)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, unknown_5)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, unknown_6)) == -1)
         return -1;
     return index;
 }

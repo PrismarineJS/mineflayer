@@ -45,6 +45,7 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
     case Message::TimeUpdate: return new TimeUpdateResponse;
     case Message::EntityEquipment: return new EntityEquipmentResponse;
     case Message::SpawnPosition: return new SpawnPositionResponse;
+    case Message::BedAnimation: return new BedAnimationResponse;
     case Message::UseEntity: return new UseEntityResponse;
     case Message::UpdateHealth: return new UpdateHealthResponse;
     case Message::Respawn: return new RespawnResponse;
@@ -60,6 +61,7 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
     case Message::AddObjectOrVehicle: return new AddObjectOrVehicleResponse;
     case Message::MobSpawn: return new MobSpawnResponse;
     case Message::EntityPainting: return new EntityPaintingResponse;
+    case Message::Unknown1B: return new Unknown1BResponse;
     case Message::EntityVelocity: return new EntityVelocityResponse;
     case Message::DestroyEntity: return new DestroyEntityResponse;
     case Message::Entity: return new EntityResponse;

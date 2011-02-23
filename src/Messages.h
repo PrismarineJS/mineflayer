@@ -23,6 +23,7 @@ public:
         UseEntity=0x07,
         UpdateHealth=0x08,
         Respawn=0x09,
+        BedAnimation=0x11,
         Player=0x0A,
         PlayerPosition=0x0B,
         PlayerLook=0x0C,
@@ -38,6 +39,7 @@ public:
         AddObjectOrVehicle=0x17,
         MobSpawn=0x18,
         EntityPainting=0x19,
+        Unknown1B=0x1B,
         EntityVelocity=0x1C,
         DestroyEntity=0x1D,
         Entity=0x1E,
@@ -344,6 +346,17 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class BedAnimationResponse : public IncomingResponse {
+public:
+    qint32 unknown_1;
+    qint8 unknown_2;
+    qint32 unknown_3;
+    qint8 unknown_4;
+    qint32 unknown_5;
+    BedAnimationResponse() : IncomingResponse(BedAnimation) {}
+    virtual int parse(QByteArray buffer);
+};
+
 class PlayerPositionAndLookResponse : public IncomingResponse {
 public:
     double x;
@@ -510,6 +523,18 @@ public:
     qint32 z;
     qint32 type;
     EntityPaintingResponse() : IncomingResponse(EntityPainting) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class Unknown1BResponse : public IncomingResponse {
+public:
+    float unknown_1;
+    float unknown_2;
+    float unknown_3;
+    float unknown_4;
+    bool unknown_5;
+    bool unknown_6;
+    Unknown1BResponse() : IncomingResponse(Unknown1B) {}
     virtual int parse(QByteArray buffer);
 };
 
