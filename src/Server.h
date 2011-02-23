@@ -42,12 +42,7 @@ public:
         float yaw; // [0, 2pi] rotation around z axis. 0 is +x. pi/2 is +y. pi is -x. 3pi/2 is -y.
         float pitch; // [-pi/2, pi/2] 0 is parallel to the ground. pi/2 is up. -pi/2 is down.
         bool on_ground;
-        EntityPosition() {}
-        inline static EntityPosition ZERO() {
-            EntityPosition position;
-            memset(&position, 0, sizeof(EntityPosition));
-            return position;
-        }
+        EntityPosition(): pos(), vel(), height(0),yaw(0.0f),pitch(0.0f),on_ground(false) {}
     };
 
 

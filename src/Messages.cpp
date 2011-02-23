@@ -134,7 +134,7 @@ void HoldingChangeRequest::writeMessageBody(QDataStream &stream)
 
 int IncomingResponse::parseValue(QByteArray buffer, int index, bool &value)
 {
-    qint8 tmp;
+    qint8 tmp = 0;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
     value = tmp;
@@ -382,7 +382,7 @@ int PlayerPositionAndLookResponse::parse(QByteArray buffer)
 int PlayerDiggingResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    qint8 tmp;
+    qint8 tmp = 0;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
     status = (DiggingStatus)tmp;
@@ -751,16 +751,16 @@ int MultiBlockChangeResponse::parse(QByteArray buffer)
         return -1;
     if ((index = parseValue(buffer, index, chunk_z)) == -1)
         return -1;
-    qint16 block_count;
+    qint16 block_count = 0;
     if ((index = parseValue(buffer, index, block_count)) == -1)
         return -1;
     block_coords.clear();
     block_coords.resize(block_count);
     for (int i = 0; i < block_count; i++) {
-        qint8 x_and_z;
+        qint8 x_and_z = 0;
         if ((index = parseValue(buffer, index, x_and_z)) == -1)
             return -1;
-        qint8 y;
+        qint8 y = 0;
         if ((index = parseValue(buffer, index, y)) == -1)
             return -1;
         block_coords.replace(i, Int3D((x_and_z >> 4) & 0xf, y, x_and_z & 0xf));
@@ -768,7 +768,7 @@ int MultiBlockChangeResponse::parse(QByteArray buffer)
     new_block_types.clear();
     new_block_types.resize(block_count);
     for (int i = 0; i < block_count; i++) {
-        qint8 block_type;
+        qint8 block_type = 0;
         if ((index = parseValue(buffer, index, block_type)) == -1)
             return -1;
         new_block_types.replace(i, (Item::ItemType)block_type);
@@ -776,7 +776,7 @@ int MultiBlockChangeResponse::parse(QByteArray buffer)
     new_block_metadatas.clear();
     new_block_metadatas.resize(block_count);
     for (int i = 0; i < block_count; i++) {
-        qint8 metadata;
+        qint8 metadata = 0;
         if ((index = parseValue(buffer, index, metadata)) == -1)
             return -1;
         new_block_metadatas.replace(i, metadata);
@@ -837,13 +837,13 @@ int ExplosionResponse::parse(QByteArray buffer)
     offsets_to_affected_blocks.clear();
     offsets_to_affected_blocks.resize(record_count);
     for (int i = 0; i < record_count; i++) {
-        qint8 local_x;
+        qint8 local_x = 0;
         if ((index = parseValue(buffer, index, local_x)) == -1)
             return -1;
-        qint8 local_y;
+        qint8 local_y = 0;
         if ((index = parseValue(buffer, index, local_y)) == -1)
             return -1;
-        qint8 local_z;
+        qint8 local_z = 0;
         if ((index = parseValue(buffer, index, local_z)) == -1)
             return -1;
         offsets_to_affected_blocks.replace(i, Int3D(local_x, local_y, local_z));

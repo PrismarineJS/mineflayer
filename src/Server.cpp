@@ -69,6 +69,7 @@ void Server::socketConnect()
     if (QThread::currentThread() != m_socket_thread) {
         bool success = QMetaObject::invokeMethod(this, "socketConnect", Qt::QueuedConnection);
         Q_ASSERT(success);
+        Q_UNUSED(success);
         return;
     }
     Q_ASSERT(m_socket);
@@ -88,6 +89,7 @@ void Server::sendMessage(QSharedPointer<OutgoingRequest> msg)
     if (QThread::currentThread() != m_socket_thread) {
         bool success = QMetaObject::invokeMethod(this, "sendMessage", Qt::QueuedConnection, Q_ARG(QSharedPointer<OutgoingRequest>, msg));
         Q_ASSERT(success);
+        Q_UNUSED(success);
         return;
     }
 
@@ -263,7 +265,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         }
         case Message::PlayerPositionAndLook: {
             PlayerPositionAndLookResponse * message = (PlayerPositionAndLookResponse *) incomingMessage.data();
-            EntityPosition position = EntityPosition::ZERO();
+            EntityPosition position;
             fromNotchianDoubleMeters(position, Double3D(message->x, message->y, message->z));
             position.height = message->stance - position.pos.z;
             fromNotchianYawPitch(position, message->yaw, message->pitch);
@@ -278,7 +280,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         }
         case Message::NamedEntitySpawn: {
             NamedEntitySpawnResponse * message = (NamedEntitySpawnResponse *) incomingMessage.data();
-            EntityPosition position = EntityPosition::ZERO();
+            EntityPosition position;
             fromNotchianIntPixels(position, Int3D(message->pixels_x, message->pixels_y, message->pixels_z));
             fromNotchianYawPitchBytes(position, message->yaw_out_of_256, message->pitch_out_of_256);
             emit namedPlayerSpawned(message->entity_id, message->player_name, position, message->held_item);
@@ -286,7 +288,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         }
         case Message::PickupSpawn: {
             PickupSpawnResponse * message = (PickupSpawnResponse *) incomingMessage.data();
-            EntityPosition position = EntityPosition::ZERO();
+            EntityPosition position;
             fromNotchianIntPixels(position, Int3D(message->pixels_x, message->pixels_y, message->pixels_z));
             fromNotchianYawPitchBytes(position, message->yaw_out_of_256, message->pitch_out_of_256);
             // ignore roll
@@ -295,7 +297,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         }
         case Message::MobSpawn: {
             MobSpawnResponse * message = (MobSpawnResponse *) incomingMessage.data();
-            EntityPosition position = EntityPosition::ZERO();
+            EntityPosition position;
             fromNotchianIntPixels(position, Int3D(message->pixels_x, message->pixels_y, message->pixels_z));
             fromNotchianYawPitchBytes(position, message->yaw_out_of_256, message->pitch_out_of_256);
             emit mobSpawned(message->entity_id, message->mob_type, position);

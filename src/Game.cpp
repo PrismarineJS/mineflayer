@@ -849,7 +849,12 @@ bool Game::clickInventorySlot(int slot_id, bool right_click)
         Q_ASSERT(slot_id >= 0 && slot_id < c_inventory_count);
 
         int notch_slot = m_unique_slots.size() + Util::euclideanMod(slot_id - 9, c_inventory_count);
-        window_click = WindowClick(nextActionId(), notch_slot, right_click, m_inventory.at(slot_id));
+
+        window_click.id = nextActionId();
+        window_click.slot = notch_slot;
+        window_click.right_click = right_click;
+        window_click.item = m_unique_slots.at(slot_id);
+
     }
 
     return doWindowClick(window_click);
@@ -863,7 +868,10 @@ bool Game::clickUniqueSlot(int slot_id, bool right_click)
 
         Q_ASSERT(slot_id >= 0 && slot_id < m_unique_slots.size());
 
-        window_click = WindowClick(nextActionId(), slot_id, right_click, m_unique_slots.at(slot_id));
+        window_click.id = nextActionId();
+        window_click.slot = slot_id;
+        window_click.right_click = right_click;
+        window_click.item = m_unique_slots.at(slot_id);
     }
 
     return doWindowClick(window_click);
@@ -1011,6 +1019,8 @@ void Game::handleTransaction(int window_id, int action_id, bool accepted)
                         decrement_start = 1;
                         decrement_end = 9;
                     } else {
+                        decrement_start = 0;
+                        decrement_end = 0;
                         Q_ASSERT(false);
                     }
 
@@ -1131,7 +1141,10 @@ bool Game::clickOutsideWindow(bool right_click)
     {
         QMutexLocker locker(&m_mutex);
 
-        window_click = WindowClick(nextActionId(), c_outside_window_slot, right_click, Item());
+        window_click.id = nextActionId();
+        window_click.slot = c_outside_window_slot;
+        window_click.right_click = right_click;
+        window_click.item = Item();
     }
     return doWindowClick(window_click);
 }

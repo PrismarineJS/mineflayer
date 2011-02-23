@@ -226,9 +226,9 @@ private:
         bool right_click;
         Item item;
 
-        WindowClick() {}
-        WindowClick(int id, int slot, bool right_click, Item item) :
-                id(id), slot(slot), right_click(right_click), item(item) {}
+        WindowClick(): id(0), slot(0), right_click(false), item() {}
+        WindowClick(int _id, int _slot, bool _right_click, Item _item) :
+                id(_id), slot(_slot), right_click(_right_click), item(_item) {}
     };
 
     QQueue<WindowClick> m_window_click_queue;

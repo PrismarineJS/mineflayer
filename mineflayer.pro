@@ -60,4 +60,5 @@ no_3d {
     HEADERS -= src/MainWindow.h \
         src/SubChunkMeshGenerator.h
     mac:CONFIG -= app_bundle
+    win32: CONFIG += console
 }

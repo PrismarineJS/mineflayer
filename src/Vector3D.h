@@ -10,7 +10,7 @@ public:
     T y;
     T z;
 
-    Vector3D<T>() {}
+    Vector3D<T>(): x(),y(),z() {}
     Vector3D<T>(const Vector3D<T> & other) : x(other.x), y(other.y), z(other.z) {}
     Vector3D<T>(T x, T y, T z) : x(x), y(y), z(z) {}
     void setValue(T _x, T _y, T _z) { x=_x; y=_y; z=_z; }

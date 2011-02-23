@@ -37,7 +37,7 @@ public:
         return (Item::WoodMetadata) m_metadata;
     }
     inline Item::LeavesMetadata leavesMetadata() const {
-        Q_ASSERT(type() == Item::Item::Leaves);
+        Q_ASSERT(type() == Item::Leaves);
         return (Item::LeavesMetadata) m_metadata;
     }
     inline Item::CoalMetadata coalMetadata() const {

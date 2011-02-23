@@ -136,6 +136,7 @@ void Item::initializeStaticData()
 
                 recipe->ingredients.append(ingredient);
                 Q_ASSERT(ingredient_count == recipe->ingredients.size());
+                Q_UNUSED(ingredient_count);
             } else {
                 Q_ASSERT(! done_parsing_design);
                 // design
