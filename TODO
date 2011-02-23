@@ -28,6 +28,7 @@ Core:
  * recalculte light on block changes
  * handle forced window close events from the server
  * mf.haveOpStatus and add an op/spawn check to canPlaceBlock
+ * metadata for cake, repeater, bed, slab/doubleslab
 
 Bot framework:
  * refactor mf.blockHeight and friends into some kind of ItemData structure
@@ -35,6 +36,7 @@ Bot framework:
  * metadata access for blocks
  * command line parameters
  * handle Ctrl+C
+ * document lib public functions better
 
 Libs:
  * high level inventory management

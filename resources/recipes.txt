@@ -83,10 +83,26 @@ Tnt
 121
 212
 121
-1=Sulphur
+1=Gunpowder
 2=Sand
 
-StoneSlab:3
+# stone slab
+Slab:3:0
+111
+1=Stone
+
+# sandstone slab
+Slab:3:1
+111
+1=Sandstone
+
+# wooden slab
+Slab:3:2
+111
+1=WoodenPlank
+
+# cobblestone slab
+Slab:3:3
 111
 1=Cobblestone
 
@@ -784,4 +800,10 @@ Wool:1:10
 Wool:1:12
 1=Wool:1:0
 2=InkSac:1:3
+
+Bed
+111
+222
+1=Wool
+2=WoodenPlank
 
