@@ -299,6 +299,14 @@ mf.health()
 mf.blockAt(point)
 
 /**
+ * Returns the text of the sign at the specified location, or undefined if
+ * the block at the location is not a sign.
+ * @param {mf.Point} point The location of the sign
+ * @return {String} or undefined. lines are separated by '\n'
+ */
+mf.signTextAt(point)
+
+/**
  * Returns whether or not you're able to place your currently equipped item
  * on the face of the block at point.
  * Takes into account distance, whether something is in your way,
@@ -508,7 +516,7 @@ mf.onChunkUpdated(function(start, size) {...})
 
 /**
  * Called when a sign is discovered or updated.
- * @param {Point} location The location of the sign
+ * @param {mf.Point} location The location of the sign
  * @param {String} text The new text of the sign
  */
 mf.onSignUpdated(function(location, text) {...})

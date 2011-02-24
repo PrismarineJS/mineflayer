@@ -103,6 +103,7 @@ void ScriptRunner::bootstrap()
     mf_obj.setProperty("isDiggable", m_engine->newFunction(isDiggable));
     mf_obj.setProperty("health", m_engine->newFunction(health));
     mf_obj.setProperty("blockAt", m_engine->newFunction(blockAt));
+    mf_obj.setProperty("signTextAt", m_engine->newFunction(signTextAt));
     mf_obj.setProperty("self", m_engine->newFunction(self));
     mf_obj.setProperty("setControlState", m_engine->newFunction(setControlState));
     mf_obj.setProperty("clearControlStates", m_engine->newFunction(clearControlStates));
@@ -581,13 +582,31 @@ QScriptValue ScriptRunner::blockAt(QScriptContext *context, QScriptEngine *engin
     QScriptValue js_pt = context->argument(0);
     if (!me->maybeThrowArgumentError(context, error, js_pt.isObject()))
         return error;
-    Int3D pt(std::floor(js_pt.property("x").toNumber()),
-             std::floor(js_pt.property("y").toNumber()),
-             std::floor(js_pt.property("z").toNumber()));
+    Int3D pt;
+    if (!fromJsPoint(context, error, js_pt, pt))
+        return error;
     Block block = me->m_game->blockAt(pt);
     QScriptValue result = engine->newObject();
     result.setProperty("type", block.type());
     return result;
+}
+
+QScriptValue ScriptRunner::signTextAt(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
+    QScriptValue js_pt = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, js_pt.isObject()))
+        return error;
+    Int3D pt;
+    if (!fromJsPoint(context, error, js_pt, pt))
+        return error;
+    QString text = me->m_game->signTextAt(pt);
+    if (text.isNull())
+        return QScriptValue();
+    return text;
 }
 
 QScriptValue ScriptRunner::self(QScriptContext *context, QScriptEngine *engine)
@@ -1014,6 +1033,16 @@ bool ScriptRunner::fromJsPoint(QScriptContext *context, QScriptValue &error, QSc
     if (!maybeThrowArgumentError(context, error, property.isNumber()))
         return false;
     point.z = property.toNumber();
+    return true;
+}
+bool ScriptRunner::fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, Int3D &floored_point)
+{
+    Double3D double_point;
+    if (!fromJsPoint(context, error, point_value, double_point))
+        return false;
+    floored_point.x = std::floor(double_point.x);
+    floored_point.y = std::floor(double_point.y);
+    floored_point.z = std::floor(double_point.z);
     return true;
 }
 
