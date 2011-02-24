@@ -17,6 +17,7 @@ function() {
         "onChat",
         "onNonSpokenChat",
         "onChunkUpdated",
+        "onSignUpdated",
         "onSpawn",
         "onSelfMoved",
         "onHealthChanged",

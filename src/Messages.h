@@ -237,6 +237,20 @@ public:
     virtual void writeMessageBody(QDataStream &stream);
 };
 
+class UpdateSignRequest : public OutgoingRequest {
+public:
+    qint32  meters_x;
+    qint16  meters_y;
+    qint32  meters_z;
+    QString line_1;
+    QString line_2;
+    QString line_3;
+    QString line_4;
+    UpdateSignRequest(qint32 meters_x, qint16 meters_y, qint32 meters_z, QString line_1, QString line_2, QString line_3, QString line_4) : OutgoingRequest(UpdateSign),
+        meters_x(meters_x), meters_y(meters_y), meters_z(meters_z), line_1 (line_1), line_2 (line_2), line_3 (line_3), line_4 (line_4) {}
+    virtual void writeMessageBody(QDataStream &stream);
+};
+
 
 class IncomingResponse : public Message {
 public:

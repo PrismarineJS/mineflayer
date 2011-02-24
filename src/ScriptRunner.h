@@ -150,6 +150,7 @@ private slots:
     void handleEntityMoved(QSharedPointer<Game::Entity> entity);
     void handleAnimation(QSharedPointer<Game::Entity> entity, AnimationResponse::AnimationType animation_type);
     void handleChunkUpdated(const Int3D &start, const Int3D &size);
+    void handleSignUpdated(const Int3D &location, QString text);
     void handlePlayerHealthUpdated();
     void handlePlayerDied();
     void handlePlayerSpawned();

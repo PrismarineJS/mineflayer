@@ -464,6 +464,13 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             emit openWindow(message->window_id, message->inventory_type, message->number_of_slots);
             break;
         }
+        case Message::UpdateSign: {
+            UpdateSignResponse * message = (UpdateSignResponse *) incomingMessage.data();
+            Int3D position(message->meters_x, message->meters_y, message->meters_z);
+            QString text = message->line_1 + "\n" + message->line_2 + "\n" + message->line_3 + "\n" + message->line_4;
+            emit signUpdated(position, text);
+            break;
+        }
         default: {
 //            qDebug() << "ignoring message type: 0x" << QString::number(incomingMessage.data()->messageType, 16).toStdString().c_str();
             break;
