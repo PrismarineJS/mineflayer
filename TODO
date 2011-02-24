@@ -1,7 +1,7 @@
 Core:
  * crafting is broken :(
  * digger bot is broken
- * handle signs
+ * forget sign text when signs are destroyed
  * handle double chests
  * handle specific metadata crafting
  * expose crafting and smelting recipes to API
