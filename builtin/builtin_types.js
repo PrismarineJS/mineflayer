@@ -1,7 +1,7 @@
 
-mf.serializableTypeNames = [];
+mf._serializableTypeNames = [];
 
-mf.serializableTypeNames.push("Point");
+mf._serializableTypeNames.push("Point");
 mf.Point = function(x, y, z) {
     this._type = "Point";
     this.x = x;
@@ -47,7 +47,7 @@ mf.EntityType = {
     "Pickup": 4,
 };
 
-mf.serializableTypeNames.push("Item");
+mf._serializableTypeNames.push("Item");
 mf.Item = function(type, count) {
     this._type = "Item";
     this.type = type;

@@ -589,9 +589,3 @@ mf.onWindowOpened(function(window_type) {...})
  */
 mf.removeHandler(event_registrar, handler)
 
-/**
- * An array of all the serializeable type names in the mf object.
- * TODO: wtf is this and when would we ever use it?
- */
-mf.serializableTypeNames
-
