@@ -160,6 +160,7 @@ public:
 
 signals:
     void chatReceived(QString username, QString message);
+    void nonSpokenChatReceived(QString message);
 
     void entitySpawned(QSharedPointer<Game::Entity> entity);
     void entityDespawned(QSharedPointer<Game::Entity> entity);

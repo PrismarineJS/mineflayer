@@ -492,6 +492,13 @@ mf.onConnected(function() {...})
 mf.onChat(function(user, message) {...})
 
 /**
+ * Called when a chat is received that was no spoken by a player.
+ * This includes player joined messages, teleporting notifications, etc.
+ * @param {String} message All color codes will be removed
+ */
+mf.onNonSpokenChat(function(message) {...})
+
+/**
  * Called when blocks are updated.
  * @param {mf.Point} start The absolute position of the first block that was updated.
  * @param {mf.Point} size The number of blocks that were updated.
