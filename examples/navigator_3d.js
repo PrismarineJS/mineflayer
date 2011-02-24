@@ -27,8 +27,15 @@ if (navigator_3d === undefined) {
                     respond(message);
                 };
             }
-            respond("looking for a path from " + mf.self().position.floored() + " to " + entity.position.floored() + "...");
+            var end = entity.position.floored();
+            var end_radius = undefined;
+            if (!mf.isPhysical(mf.blockAt(end.offset(0, 0, -1)).type)) {
+                // player is jumping or hanging over an edge. settle for a destination near by
+                end_radius = 1.5;
+            }
+            respond("looking for a path from " + mf.self().position.floored() + " to " + end + "...");
             navigator.navigateTo(entity.position, {
+                "end_radius": end_radius,
                 "cant_find_func": make_responder("can't find a path"),
                 "path_found_func": function(path) {
                     respond("i can get there in " + path.length + " moves");

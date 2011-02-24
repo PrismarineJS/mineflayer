@@ -32,6 +32,7 @@ Core:
  * mf.haveOpStatus and add an op/spawn check to canPlaceBlock
  * metadata for cake, repeater, bed, slab/doubleslab
  * don't segfault so much
+ * put an underscore in front of serializableTypeNames. remove it from the docs.
 
 Bot framework:
  * refactor mf.blockHeight and friends into some kind of ItemData structure
