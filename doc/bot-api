@@ -179,8 +179,9 @@ mf.MouseButton
 
 
 /**
- * runs a script with a path relative to the current script.
- * modularize your bot by using this function to import components.
+ * Runs a script with a path relative to the current script.
+ * Modularize your bot by using this function to import components.
+ * This method will not run a script twice.
  * @param {String} path The filepath to the script including the extension.
  */
 mf.include(path)
