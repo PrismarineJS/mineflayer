@@ -215,6 +215,11 @@ Block Game::blockAt(const Int3D & absolute_location)
         return c_air;
     return chunk.data()->getBlock(absolute_location - chunk_key);
 }
+QString Game::signTextAt(const Int3D &absolute_location)
+{
+    QMutexLocker locker(&m_mutex);
+    return m_signs.value(absolute_location);
+}
 
 void Game::updateBlock(const Int3D & absolute_location, Block new_block)
 {

@@ -74,8 +74,8 @@ private:
 private:
     void shutdown(int return_code);
     void raiseEvent(QString event_name, const QScriptValueList & args = QScriptValueList());
-    bool argCount(QScriptContext *context, QScriptValue & error, int arg_count_min, int arg_count_max = -1);
-    bool maybeThrowArgumentError(QScriptContext *context, QScriptValue & error, bool arg_is_valid);
+    static bool argCount(QScriptContext *context, QScriptValue & error, int arg_count_min, int arg_count_max = -1);
+    static bool maybeThrowArgumentError(QScriptContext *context, QScriptValue & error, bool arg_is_valid);
     int nextTimerId();
 
     int setTimeout(QScriptValue func, int ms, QScriptValue this_obj, bool repeat);
@@ -85,7 +85,8 @@ private:
     void checkEngine(const QString & while_doing_what = QString());
     QScriptValue jsPoint(const Int3D &pt);
     QScriptValue jsPoint(const Double3D &pt);
-    bool fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, Double3D &point);
+    static bool fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, Double3D &point);
+    static bool fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, Int3D &floored_point);
     QScriptValue jsItem(Item item);
     QScriptValue jsEntity(QSharedPointer<Game::Entity> entity);
 
@@ -111,6 +112,7 @@ private:
     static QScriptValue isDiggable(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue health(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue blockAt(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue signTextAt(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue self(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue setControlState(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue clearControlStates(QScriptContext * context, QScriptEngine * engine);
