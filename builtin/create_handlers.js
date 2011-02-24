@@ -15,6 +15,7 @@ function() {
     var registrar_names = [
         "onConnected",
         "onChat",
+        "onNonSpokenChat",
         "onChunkUpdated",
         "onSpawn",
         "onSelfMoved",

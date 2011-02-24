@@ -288,15 +288,25 @@ void Game::handleChatReceived(QString message)
 {
     QMutexLocker locker(&m_mutex);
     if (message.startsWith("<")) {
+        // spoken chat
         int pos = message.indexOf(">");
         Q_ASSERT(pos != -1);
         QString username = message.mid(1, pos-1);
         QString content = message.mid(pos+2);
         // suppress talking to yourself
-        if (username != m_player.username)
-            emit chatReceived(username, content);
+        if (username == m_player.username)
+            return;
+        emit chatReceived(username, content);
     } else {
-        // TODO
+        // non-spoken chat
+        while (true) {
+            // remove any color codes
+            int index = message.indexOf(QChar(0xa7));
+            if (index == -1)
+                break;
+            message = message.mid(0, index) + message.mid(index + 2);
+        }
+        emit nonSpokenChatReceived(message);
     }
 }
 

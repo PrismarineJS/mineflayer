@@ -152,6 +152,7 @@ private slots:
     void handlePlayerDied();
     void handlePlayerSpawned();
     void handleChatReceived(QString username, QString message);
+    void handleNonSpokenChatReceived(QString message);
     void handleLoginStatusUpdated(Server::LoginStatus status);
     void handleStoppedDigging(Game::StoppedDiggingReason reason);
     void handleWindowOpened(Message::WindowType);

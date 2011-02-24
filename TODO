@@ -30,6 +30,7 @@ Core:
  * handle forced window close events from the server
  * mf.haveOpStatus and add an op/spawn check to canPlaceBlock
  * metadata for cake, repeater, bed, slab/doubleslab
+ * don't segfault so much
 
 Bot framework:
  * refactor mf.blockHeight and friends into some kind of ItemData structure
