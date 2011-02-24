@@ -1,10 +1,9 @@
-mf.include("strings.js");
 mf.include("player_tracker.js");
 mf.include("chat_commands.js");
 mf.include("items.js");
 mf.include("block_finder.js");
 
-function finder() {
+var finder = function() {
     var _public = {};
     _public.enabled = true;
     _public.debug = true;
@@ -35,8 +34,19 @@ function finder() {
             respond("The block '" + itemName + "' is ambiguous.");
             return;
         }
-        if (itemType.length == 1 || itemType[0].name.toLowerCase() == itemName.toLowerCase()) {
-            type = itemType[0].id
+        typeIndex = -1;
+        if (itemType.length == 1) {
+            typeIndex = 0;
+        } else {
+            for (var i = 0; i < itemType.length; i++) {
+                if (itemType[i].name.toLowerCase() == itemName.toLowerCase()) {
+                    typeIndex = i;
+                    break;
+                }
+            }
+        }
+        if (typeIndex != -1) {
+            type = itemType[typeIndex].id
             if (type === -1) {
                 respond("I don't understand '" + itemName + "'");
                 return false;
@@ -44,27 +54,18 @@ function finder() {
             respond("Trying to find " + items.nameForId(type) + " closest to " + username + "...");
             var position = player.position;
             var coordinates = block_finder.findNearest(position,type).shift();
-            if (coordinates === null) {
+            if (coordinates === undefined) {
                 respond("I couldn't find any " + itemName + ".");
                 return;
             }
-            var x = coordinates.x - position.x;
-            var y = coordinates.y - position.y;
-            var z = coordinates.z - position.z;
-            eastWest = "East";
-            northSouth = "North";
-            upDown = "Up";
-            if (x < 0) {
-                eastWest = "West";
-            }
-            if (y < 0) {
-                northSouth = "South";
-            }
-            if (z < 0) {
-                upDown = "Down";
-            }
             
-            respond("I found some " + items.nameForId(type) + "! Go " + eastWest + " " + Math.abs(x) + " blocks, " + northSouth + " " + Math.abs(y) + " blocks, and " + upDown + " " + Math.abs(z) + " blocks."); 
+            var relativeCoordinates = coordinates.minus(position);
+            
+            eastWest = relativeCoordinates.x < 0 ? "West" : "East";
+            northSouth = relativeCoordinates.y < 0 ? "South" : "North";
+            upDown = relativeCoordinates.z < 0 ? "Down" : "Up";
+            
+            respond("I found some " + items.nameForId(type) + "! Go " + eastWest + " " + Math.abs(relativeCoordinates.x) + " blocks, " + northSouth + " " + Math.abs(relativeCoordinates.y) + " blocks, and " + upDown + " " + Math.abs(relativeCoordinates.z) + " blocks."); 
             return coordinates;
         } else {
             var matchingItemTypeList = itemType;
@@ -79,5 +80,4 @@ function finder() {
     }
     chat_commands.registerCommand("find",find, 1, Infinity);
     return _public;
-}
-finder();
+}();
