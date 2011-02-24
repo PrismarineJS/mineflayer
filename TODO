@@ -23,6 +23,7 @@ Core:
    - recoil when punched
    - vehicles: mine cart, boat, pig
    - entity collisions
+   - fences
 
  * animate while digging and attacking
  * time tracking (day / night)

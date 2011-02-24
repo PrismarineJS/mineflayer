@@ -3,21 +3,6 @@ mineflayer - Minecraft multiplayer client and bot scripting interface.
 Some screenshots and information:
     http://wiki.vg/Mineflayer
 
-ECMAScript reference:
-    http://doc.qt.nokia.com/latest/ecmascript.html
-
-See libs/ for more utility functions.
-
-See examples/ for examples of bot code.
-
-Current features:
- * 3d client renders the map and allows you to walk/jump around
- * runs javascript bot scripts
-
-Planned features:
- * the rest of the bot api. see doc/bot-api for further details.
- * examples of bot scripts with AI.
-
 Setting up build:
 
     Linux:
@@ -59,13 +44,22 @@ Setting up build:
 
 Running bots:
 
-./mineflayer bot.js
+    ./mineflayer bot.js
 
-If the bot depends on any of the lib files you'll need to pass the lib folder
-like this:
+    If the bot depends on any of the lib files you'll need to pass the lib
+    folder like this:
 
-./mineflayer -I<path_to_lib> bot.js
+    ./mineflayer -I<path_to_lib> bot.js
 
-Alternately, you can put the lib folder in an environment variable called
-MINEFLAYER_LIB. When we make an installer for this package, we'll have it set
-this stuff up automatically.
+    Alternately, you can put the lib folder in an environment variable called
+    MINEFLAYER_LIB. When we make an installer for this package, we'll have it
+    set this stuff up automatically.
+
+Documentation:
+    * See doc/bot-api for comprehensive API documentation.
+    * See libs/ for more utility functions.
+    * See examples/ for examples of bot code.
+    
+    ECMAScript reference:
+        http://doc.qt.nokia.com/latest/ecmascript.html
+
