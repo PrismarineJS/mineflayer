@@ -169,6 +169,7 @@ signals:
 
     void chunkUpdated(const Int3D &start, const Int3D &size);
     void unloadChunk(const Int3D & coord);
+    void signUpdated(const Int3D &location, QString text);
     void playerPositionUpdated();
     void playerHealthUpdated();
     void playerDied();
@@ -198,6 +199,7 @@ private:
     NamedPlayerEntity m_player;
     int m_player_health;
     QHash<Int3D, QSharedPointer<Chunk> > m_chunks;
+    QHash<Int3D, QString> m_signs;
     QHash<int, QSharedPointer<Entity> > m_entities;
 
     float m_max_ground_speed;
@@ -289,6 +291,7 @@ private slots:
     void handleMapChunkUpdated(QSharedPointer<Chunk> update);
     void handleMultiBlockUpdate(Int3D chunk_key, QHash<Int3D,Block> new_blocks);
     void handleBlockUpdate(Int3D absolute_location, Block new_block);
+    void handleSignUpdate(Int3D absolute_location, QString text);
 
     void handleWindowItemsUpdated(int window_id, QVector<Item> items);
     void handleWindowSlotUpdated(int window_id, int slot, Item item);

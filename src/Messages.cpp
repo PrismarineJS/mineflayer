@@ -132,6 +132,17 @@ void HoldingChangeRequest::writeMessageBody(QDataStream &stream)
     writeValue(stream, slot);
 }
 
+void UpdateSignRequest::writeMessageBody(QDataStream &stream)
+{
+    writeValue(stream, meters_x);
+    writeValue(stream, meters_y);
+    writeValue(stream, meters_z);
+    writeValue(stream, line_1);
+    writeValue(stream, line_2);
+    writeValue(stream, line_3);
+    writeValue(stream, line_4);
+}
+
 int IncomingResponse::parseValue(QByteArray buffer, int index, bool &value)
 {
     qint8 tmp = 0;

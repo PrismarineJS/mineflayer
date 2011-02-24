@@ -507,6 +507,13 @@ mf.onNonSpokenChat(function(message) {...})
 mf.onChunkUpdated(function(start, size) {...})
 
 /**
+ * Called when a sign is discovered or updated.
+ * @param {Point} location The location of the sign
+ * @param {String} text The new text of the sign
+ */
+mf.onSignUpdated(function(location, text) {...})
+
+/**
  * Called when you spawn. Happens after connecting and after respawning after death.
  */
 mf.onSpawn(function() {...})

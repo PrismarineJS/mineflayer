@@ -83,6 +83,7 @@ signals:
     void holdingChange(int slot);
     void transaction(int window_id, int action_id, bool accepted);
     void openWindow(int window_id, Message::WindowType inventory_type, int number_of_slots);
+    void signUpdated(Int3D position, QString text);
 
 public slots:
     // actually connect to the server

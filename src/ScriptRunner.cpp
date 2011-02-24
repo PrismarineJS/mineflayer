@@ -160,6 +160,8 @@ void ScriptRunner::bootstrap()
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(handleChunkUpdated(Int3D,Int3D)));
     Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(signUpdated(Int3D,QString)), this, SLOT(handleSignUpdated(Int3D,QString)));
+    Q_ASSERT(success);
     success = connect(m_game, SIGNAL(playerPositionUpdated()), this, SLOT(movePlayerPosition()));
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SLOT(handleLoginStatusUpdated(Server::LoginStatus)));
@@ -1040,6 +1042,10 @@ void ScriptRunner::handleAnimation(QSharedPointer<Game::Entity> entity, Animatio
 void ScriptRunner::handleChunkUpdated(const Int3D &start, const Int3D &size)
 {
     raiseEvent("onChunkUpdated", QScriptValueList() << jsPoint(start) << jsPoint(size));
+}
+void ScriptRunner::handleSignUpdated(const Int3D &location, QString text)
+{
+    raiseEvent("onSignUpdated", QScriptValueList() << jsPoint(location) << text);
 }
 
 void ScriptRunner::movePlayerPosition()

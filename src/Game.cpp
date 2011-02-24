@@ -2,6 +2,7 @@
 
 #include <QCoreApplication>
 #include <QHashIterator>
+#include <QStringList>
 
 #include <cmath>
 #include <limits>
@@ -94,6 +95,8 @@ Game::Game(QUrl connection_info) :
     success = connect(&m_server, SIGNAL(multiBlockUpdate(Int3D,QHash<Int3D,Block>)), this, SLOT(handleMultiBlockUpdate(Int3D,QHash<Int3D,Block>)));
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(blockUpdate(Int3D,Block)), this, SLOT(handleBlockUpdate(Int3D,Block)));
+    Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(signUpdated(Int3D,QString)), this, SLOT(handleSignUpdate(Int3D,QString)));
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(chatReceived(QString)), this, SLOT(handleChatReceived(QString)));
     Q_ASSERT(success);
@@ -508,6 +511,12 @@ void Game::handleBlockUpdate(Int3D absolute_location, Block new_block)
 
     emit chunkUpdated(absolute_location, Int3D(1, 1, 1));
 }
+void Game::handleSignUpdate(Int3D absolute_location, QString text)
+{
+    QMutexLocker locker(&m_mutex);
+    m_signs[absolute_location] = text;
+    emit signUpdated(absolute_location, text);
+}
 
 void Game::checkForDiggingStopped(const Int3D &start, const Int3D &size)
 {
@@ -685,7 +694,6 @@ void Game::PickupEntity::getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBo
 bool Game::collisionInRange(const Int3D & boundingBoxMin, const Int3D & boundingBoxMax)
 {
     // no mutex locker; private function
-
     Int3D cursor;
     for (cursor.x = boundingBoxMin.x; cursor.x <= boundingBoxMax.x; cursor.x++)
         for (cursor.y = boundingBoxMin.y; cursor.y <= boundingBoxMax.y; cursor.y++)
@@ -699,9 +707,14 @@ void Game::sendChat(QString message)
 {
     QMutexLocker locker(&m_mutex);
 
-    // limit chat length. split it up if necessary.
-    for (int i = 0; i < message.length(); i += c_chat_length_limit)
-        m_server.sendChat(message.mid(i, c_chat_length_limit));
+    // split on newlines
+    foreach (QString sub_message, message.split('\n')) {
+        if (sub_message.isEmpty())
+            continue;
+        // TODO: get rid of illegal characters
+        for (int i = 0; i < sub_message.length(); i += c_chat_length_limit)
+            m_server.sendChat(sub_message.mid(i, c_chat_length_limit));
+    }
 }
 
 void Game::placeBlock(const Int3D &block, Message::BlockFaceDirection face)
