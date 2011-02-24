@@ -179,8 +179,9 @@ mf.MouseButton
 
 
 /**
- * runs a script with a path relative to the current script.
- * modularize your bot by using this function to import components.
+ * Runs a script with a path relative to the current script.
+ * Modularize your bot by using this function to import components.
+ * This method will not run a script twice.
  * @param {String} path The filepath to the script including the extension.
  */
 mf.include(path)
@@ -588,10 +589,4 @@ mf.onWindowOpened(function(window_type) {...})
  * @param {Function} handler function registered previously with the event
  */
 mf.removeHandler(event_registrar, handler)
-
-/**
- * An array of all the serializeable type names in the mf object.
- * TODO: wtf is this and when would we ever use it?
- */
-mf.serializableTypeNames
 

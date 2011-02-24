@@ -69,6 +69,8 @@ private:
 
     PhysicsDoer * m_physics_doer;
 
+    QSet<QString> m_included_filenames;
+
 private:
     void shutdown(int return_code);
     void raiseEvent(QString event_name, const QScriptValueList & args = QScriptValueList());

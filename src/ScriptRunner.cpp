@@ -414,10 +414,17 @@ QScriptValue ScriptRunner::include(QScriptContext *context, QScriptEngine *engin
     QScriptValue error;
     if (! me->argCount(context, error, 1))
         return error;
+
     QScriptValue file_name_value = context->argument(0);
     if (!me->maybeThrowArgumentError(context, error, file_name_value.isString()))
         return error;
     QString file_name = file_name_value.toString();
+
+    if (me->m_included_filenames.contains(file_name)) {
+        // already included this script, skip!
+        return QScriptValue();
+    }
+    me->m_included_filenames.insert(file_name);
 
     // look in all lib paths for the file
     QString contents;

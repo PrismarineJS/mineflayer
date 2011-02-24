@@ -1,4 +1,4 @@
-// reflect mineflayer program: reveals what properties the mf object has.
+// reflect mineflayer program: reveals what properties the global object has.
 var global = this;
 function reflect(prefix, obj) {
     for (name in obj) {
