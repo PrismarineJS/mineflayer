@@ -21,13 +21,9 @@ mf.include("arrays.js");
 
 var giver = function() {
     var _public = {};
-    _public.debug = true;
     chat_commands.registerModule("giver", _public);
 
     function respond(message) {
-        if (_public.debug) {
-            mf.debug(message);
-        }
         mf.chat(message);
     }
     function give(username, args) {
@@ -80,13 +76,6 @@ var giver = function() {
                 return false;
             }
             var command = "/give " + username + " " + item_id + " " + mf.itemStackHeight(item_id);
-            if (_public.debug) {
-                if (count === 1) {
-                    mf.debug("sending: " + command);
-                } else {
-                    mf.debug("sending " + count + " times: " + command);
-                }
-            }
             for (var i = 0; i < count; i++) {
                 mf.chat(command);
             }

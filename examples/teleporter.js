@@ -10,13 +10,9 @@ var teleporter;
 if (teleporter === undefined) {
     teleporter = function() {
         var _public = {};
-        _public.debug = true;
         chat_commands.registerModule("teleporter", _public);
 
         function respond(message) {
-            if (_public.debug) {
-                mf.debug(message);
-            }
             mf.chat(message);
         }
 

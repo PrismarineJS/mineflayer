@@ -1,4 +1,5 @@
 Core:
+ * digger bot is broken
  * handle signs
  * handle double chests
  * handle specific metadata crafting
