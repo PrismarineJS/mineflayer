@@ -35,7 +35,7 @@ function next() {
     if (inventory.itemCount(mf.ItemType.Tnt) < 1828) {
         mf.lookAt(mf.self().position.offset(0, 0, -1));
         for (var i = 0; i < 10; i++) {
-            mf.chat("/give " + mf.self().username + " 46 64");
+            mf.chat("/give " + mf.self().username + " 46 " + inventory.slotsLeft());
         }
         mf.chat("got TNT");
         mf.debug("got TNT");
