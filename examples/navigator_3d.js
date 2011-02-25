@@ -33,6 +33,7 @@ var navigator_3d = function() {
         respond("looking for a path from " + mf.self().position.floored() + " to " + end + "...");
         navigator.navigateTo(entity.position, {
             "end_radius": end_radius,
+            "timeout_milliseconds": 10000,
             "cant_find_func": make_responder("can't find a path"),
             "path_found_func": function(path) {
                 respond("i can get there in " + path.length + " moves");

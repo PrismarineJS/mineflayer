@@ -36,7 +36,7 @@ mf.setInterval(function() {
     }
     mf.setControlState(mf.Control.Forward, false);
     navigator.navigateTo(mf.entity(target_ids[0]).position, {
-        give_up_threshold: 1000,
+        timeout_milliseconds: 1000,
         end_radius: 3,
         cant_find_func: function() { mf.chat("damn you!!"); },
     });

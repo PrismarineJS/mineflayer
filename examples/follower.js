@@ -30,7 +30,7 @@ var follower = function() {
             if (entity.entity_id == followee.entity_id) {
                 following = true;
                 navigator.navigateTo(entity.position, {
-                    give_up_threshold: 3000,
+                    timeout_milliseconds: 3000,
                     end_radius: 12,
                     cant_find_func: function() { mf.chat("Can't get to you, " + entity.username + "!  I'm gonna stop following you!"); followee = undefined; following = false;},
                     arrived_func: function() {following = false;},
