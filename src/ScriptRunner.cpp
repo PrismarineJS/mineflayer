@@ -177,6 +177,8 @@ void ScriptRunner::bootstrap()
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(playerHealthUpdated()), this, SLOT(handlePlayerHealthUpdated()));
     Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(inventoryUpdated()), this, SLOT(handleInventoryUpdated()));
+    Q_ASSERT(success);
     success = connect(m_game, SIGNAL(stoppedDigging(Game::StoppedDiggingReason)), this, SLOT(handleStoppedDigging(Game::StoppedDiggingReason)));
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(windowOpened(Message::WindowType)), this, SLOT(handleWindowOpened(Message::WindowType)));
@@ -1085,6 +1087,11 @@ void ScriptRunner::movePlayerPosition()
 void ScriptRunner::handlePlayerHealthUpdated()
 {
     raiseEvent("onHealthChanged");
+}
+
+void ScriptRunner::handleInventoryUpdated()
+{
+    raiseEvent("onInventoryUpdated");
 }
 
 void ScriptRunner::handlePlayerDied()

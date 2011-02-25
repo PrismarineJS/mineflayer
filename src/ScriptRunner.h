@@ -154,6 +154,7 @@ private slots:
     void handleChunkUpdated(const Int3D &start, const Int3D &size);
     void handleSignUpdated(const Int3D &location, QString text);
     void handlePlayerHealthUpdated();
+    void handleInventoryUpdated();
     void handlePlayerDied();
     void handlePlayerSpawned();
     void handleChatReceived(QString username, QString message);
