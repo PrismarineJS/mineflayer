@@ -6,18 +6,21 @@ var follower = function() {
     var _public = {};
     _public.enabled = true;
     _public.debug = true;
-    chat_commands.registerModule("follower",_public);
+    chat_commands.registerModule("follower", _public);
     var followee = undefined;
     var following = false;
     
-    var follow = function(username,args) {
+    var follow = function(username, args) {
         if (! _public.enabled) {
             mf.debug("follow command issued, but follower module not enabled");
             return;
         }
-        var playerName = args[0] == "me" ? username : args[0];
+        var playerName = args[0];
+        if (playerName === undefined || playerName === "me") {
+            playerName = username;
+        }
         var player = player_tracker.entityForPlayer(player_tracker.findUsername(playerName));
-        if (player == undefined) {
+        if (player === undefined) {
             mf.chat("I don't know who " + playerName + " is, or where they are.");
             mf.debug("I don't know who " + playerName + " is, or where they are.");
             return;
@@ -25,9 +28,10 @@ var follower = function() {
         followee = player;
         mf.chat("I'm now following " + followee.username + ".");
     };
+    chat_commands.registerCommand("follow", follow, 0, 1);
     mf.onEntityMoved(function(entity) {
-        if (followee != undefined && ! following) {
-            if (entity.entity_id == followee.entity_id) {
+        if (followee !== undefined && ! following) {
+            if (entity.entity_id === followee.entity_id) {
                 following = true;
                 navigator.navigateTo(entity.position, {
                     timeout_milliseconds: 3000,
@@ -39,6 +43,5 @@ var follower = function() {
         }
     });
     
-    chat_commands.registerCommand("follow",follow, 1, 1);
     return _public;
 }();
