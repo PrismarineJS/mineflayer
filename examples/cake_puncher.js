@@ -32,10 +32,10 @@ mf.onStoppedDigging(function() {
     go();
 });
 
-chat_commands.registerCommand("punch", function(username, args) {
+chat_commands.registerCommand("punch", function(username, args, responder_func) {
     var ret = items.lookupItemType(args[0]);
     if (ret.length != 1) {
-        mf.chat("what. " + ret.mapped(function(item){return item.name;}));
+        responder_func("what. " + ret.mapped(function(item){return item.name;}));
         return;
     }
     get_it = ret[0];

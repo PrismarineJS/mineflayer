@@ -19,24 +19,19 @@ mf.include("connection_notice.js");
 mf.include("strings.js");
 mf.include("arrays.js");
 
-var giver = function() {
-    var _public = {};
-    chat_commands.registerModule("giver", _public);
-
-    function respond(message) {
-        mf.chat(message);
-    }
-    function give(username, args) {
+(function() {
+    function give(username, args, responder_func) {
         var target_user = args.shift();
         if (target_user === "me") {
             target_user = username;
         } else if (target_user === "yourself" || target_user === "you") {
             target_user = mf.self().username;
         }
-        gimme(target_user, args);
+        gimme(target_user, args, responder_func);
     }
     chat_commands.registerCommand("give", give, 2, Infinity);
-    function gimme(username, args) {
+
+    function gimme(username, args, responder_func) {
         var count = parseInt(args[0]);
         if (isNaN(count)) {
             // no count specified
@@ -45,10 +40,11 @@ var giver = function() {
             // count specified
             args.shift();
         }
-        give_items(username, args.join(" "), count);
+        give_items(username, args.join(" "), count, responder_func);
     }
     chat_commands.registerCommand("gimme", gimme, 1, Infinity);
-    function give_items(username, item_name, count) {
+
+    function give_items(username, item_name, count, responder_func) {
         // check for kits
         var preview_name_parts = item_name.split(" ");
         var kits = {
@@ -60,7 +56,7 @@ var giver = function() {
                 item_name = preview_name_parts.join(" ");
                 var kit_items = kits[kit_name];
                 for (var i = 0; i < kit_items.length; i++) {
-                    if (!give_items(username, item_name + " " + kit_items[i], count)) {
+                    if (!give_items(username, item_name + " " + kit_items[i], count, responder_func)) {
                         return false;
                     }
                 }
@@ -72,7 +68,7 @@ var giver = function() {
         if (typeof item_id_or_ambiguous_results === "number") {
             var item_id = item_id_or_ambiguous_results;
             if (item_id === -1) {
-                respond("can't find item name: " + item_name);
+                responder_func("can't find item name: " + item_name);
                 return false;
             }
             var command = "/give " + username + " " + item_id + " " + mf.itemStackHeight(item_id);
@@ -82,15 +78,15 @@ var giver = function() {
             return true;
         } else {
             var ambiguous_results = item_id_or_ambiguous_results;
-            respond("item name is ambiguous: " + item_name);
+            responder_func("item name is ambiguous: " + item_name);
             var ambiguous_candidates = [];
             for (var i = 0; i < ambiguous_results.length; i++) {
                 ambiguous_candidates.push(ambiguous_results[i][0].join(" "));
             }
-            respond("candidates: " + ambiguous_candidates.join(", "));
+            responder_func("candidates: " + ambiguous_candidates.join(", "));
             return false;
         }
-    };
+    }
 
     function lookupItemType(item_name) {
         var item_name_parts = item_name.split(" ");
@@ -164,7 +160,8 @@ var giver = function() {
         }
         // not found
         return result;
-    };
+    }
+
     var item_database = function() {
         function splitCamelCase(s) {
             if (s.length === 0) {
@@ -192,7 +189,6 @@ var giver = function() {
         }
         return item_database;
     }();
-    return _public;
-}();
+})();
 
 

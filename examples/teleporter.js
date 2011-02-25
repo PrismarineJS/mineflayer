@@ -5,19 +5,12 @@ mf.include("assert.js");
 
 mf.include("connection_notice.js");
 
-var teleporter = function() {
-    var _public = {};
-    chat_commands.registerModule("teleporter", _public);
-
-    function respond(message) {
-        mf.chat(message);
-    }
-
-    function hereis(username, args) {
+(function() {
+    function hereis(username, args, responder_func) {
         var point_name = args[0];
         var entity = player_tracker.entityForPlayer(username);
         if (entity === undefined) {
-            respond("sorry, can't see user: " + username);
+            responder_func("sorry, can't see user: " + username);
             return;
         }
         var point = entity.position;
@@ -31,7 +24,7 @@ var teleporter = function() {
             created_or_updated = "updated";
         }
         message = ["point", point_name, created_or_updated, "at", point].join(" ");
-        respond(message);
+        responder_func(message);
     }
     chat_commands.registerCommand("hereis", hereis, 1);
 
@@ -46,11 +39,11 @@ var teleporter = function() {
     }
     chat_commands.registerCommand("zap", zap, 2);
 
-    function zapto(username, args) {
+    function zapto(username, args, responder_func) {
         var point_name = args[0];
         var destination = name_to_point[point_name];
         if (destination === undefined) {
-            respond("not a recognized name: " + point_name);
+            responder_func("not a recognized name: " + point_name);
             return;
         }
         // check current position is escapable
@@ -58,20 +51,20 @@ var teleporter = function() {
         var z;
         for (z = my_position.z; z < 128; z++) {
             if (mf.isPhysical(mf.blockAt(new mf.Point(my_position.x, my_position.y, z)).type)) {
-                respond("i can't see the sky");
+                responder_func("i can't see the sky");
                 return;
             }
         }
         // check destination is accessible
         for (z = destination.z; z < 128; z++) {
             if (mf.isPhysical(mf.blockAt(new mf.Point(destination.x, destination.y, z)).type)) {
-                respond("destination does not have a view of the sky");
+                responder_func("destination does not have a view of the sky");
                 return;
             }
         }
         function arrived() {
             if (!mf.self().position.floored().equals(destination.floored())) {
-                respond("unable to reach destination");
+                responder_func("unable to reach destination");
                 return;
             }
             var my_name = mf.self().username;
@@ -119,6 +112,4 @@ var teleporter = function() {
         }
     }
     load_database();
-
-    return _public;
-}();
+})();
