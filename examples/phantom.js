@@ -1,5 +1,4 @@
 mf.include("giver.js");
-mf.include("teleporter.js");
 mf.include("quitter.js");
 
 mf.onSpawn(function() {
