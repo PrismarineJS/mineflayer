@@ -17,7 +17,7 @@ mf.include("chat_commands.js");
         }
         var distance = parseInt(args.shift());
         if (isNaN(distance)) {
-            distance = 12;
+            distance = 3;
         }
         var player = player_tracker.entityForPlayer(player_tracker.findUsername(playerName));
         if (player === undefined) {
@@ -50,6 +50,13 @@ mf.include("chat_commands.js");
         go();
     };
     chat_commands.registerCommand("follow", follow, 0, 2);
+
+    function stalk(username, args, responder_func) {
+        // same as follow, but with a long distance
+        args.push("12");
+        follow(username, args, responder_func);
+    }
+    chat_commands.registerCommand("stalk", stalk, 1);
 
     function stop() {
         if (current_following_interval_id !== undefined) {
