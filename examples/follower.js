@@ -3,42 +3,58 @@ mf.include("player_tracker.js");
 mf.include("chat_commands.js");
 
 (function() {
-    var followee = undefined;
-    var following = false;
-    var last_responder_func;
-    
+    var current_following_interval_id;
     function follow(username, args, responder_func) {
+        stop();
         var playerName = args[0];
-        if (playerName === undefined || playerName === "me") {
+        if (playerName !== undefined) {
+            if (playerName === "me") {
+                playerName = username;
+            }
+            args.shift();
+        } else {
             playerName = username;
+        }
+        var distance = parseInt(args.shift());
+        if (isNaN(distance)) {
+            distance = 12;
         }
         var player = player_tracker.entityForPlayer(player_tracker.findUsername(playerName));
         if (player === undefined) {
             responder_func("I don't know who " + playerName + " is, or where they are.");
             return;
         }
-        followee = player;
-        last_responder_func = responder_func;
-        responder_func("I'm now following " + followee.username + ".");
-    };
-    chat_commands.registerCommand("follow", follow, 0, 1);
-    mf.onEntityMoved(function(entity) {
-        if (followee !== undefined && !following) {
-            if (entity.entity_id === followee.entity_id) {
-                following = true;
-                navigator.navigateTo(entity.position, {
-                    timeout_milliseconds: 3000,
-                    end_radius: 12,
-                    cant_find_func: function() {
-                        last_responder_func("Can't get to " + entity.username + "!  I'm gonna stop following!");
-                        followee = undefined;
-                        following = false;
-                    },
-                    arrived_func: function() {
-                        following = false;
-                    },
-                });
+        responder_func("I'm now following " + player.username + ".");
+        function go() {
+            stop();
+            var entity = mf.entity(player.entity_id);
+            if (entity === undefined) {
+                responder_func("can't see you anymore");
+                return;
             }
+            navigator.navigateTo(entity.position, {
+                timeout_milliseconds: 3 * 1000,
+                end_radius: distance,
+                arrived_func: function() {
+                    if (current_following_interval_id === undefined) {
+                        // stopped
+                        return;
+                    }
+                    stop();
+                    go();
+                },
+            });
+            // recalculate path every 5 seconds even if don't make it in that long
+            current_following_interval_id = mf.setInterval(go, 5 * 1000);
         }
-    });
+        go();
+    };
+    chat_commands.registerCommand("follow", follow, 0, 2);
+
+    function stop() {
+        if (current_following_interval_id !== undefined) {
+            mf.clearInterval(current_following_interval_id);
+        }
+    }
+    chat_commands.registerCommand("stop", stop);
 })();
