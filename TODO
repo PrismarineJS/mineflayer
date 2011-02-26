@@ -17,7 +17,7 @@ Core:
    - water
    - lava
    - ice
-   - when you get punched, get knocked a small distance
+   - recoil when punched
    - mine cart
    - entity collisions
 
@@ -43,7 +43,7 @@ Bot framework:
  * document lib public functions better
 
 Libs:
- * high level inventory management
+ * fix high level inventory management
  * block_finder returns duplicate blocks
  * non-spoken chat interpretation (player joined, etc)
 
