@@ -82,9 +82,13 @@ mf.include("arrays.js");
         if (bad_guy !== undefined) {
             // get him!!
             bad_guy_id = bad_guy.entity_id;
+            var arrived = false;
             navigator.navigateTo(bad_guy.position, {
                 "timeout_milliseconds": 1 * 1000,
                 "end_radius": 2,
+                "arrived_func": function() {
+                    arrived = true;
+                },
             });
             punch_bad_guy_interval_id = mf.setInterval(function() {
                 var bad_guy = mf.entity(bad_guy_id);
@@ -97,7 +101,7 @@ mf.include("arrays.js");
                     mf.lookAt(bad_guy.position);
                     mf.attackEntity(bad_guy_id);
                 }
-                if (distance > 3) {
+                if (arrived && distance > 3) {
                     // walk straight at the guy
                     mf.lookAt(bad_guy.position);
                     mf.setControlState(mf.Control.Forward, true);
