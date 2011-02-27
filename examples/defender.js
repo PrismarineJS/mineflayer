@@ -16,6 +16,7 @@ mf.include("arrays.js");
         if (entity === undefined) {
             return;
         }
+        responder_func("now defending " + entity.username);
         current_defended_entity_id = entity.entity_id;
         next_bad_guy_interval_id = mf.setInterval(nextBadGuy, 3 * 1000);
         nextBadGuy();
@@ -101,11 +102,15 @@ mf.include("arrays.js");
                     // punch the guy!
                     mf.lookAt(bad_guy.position);
                     mf.attackEntity(bad_guy_id);
-                }
-                if (arrived && distance > 3) {
-                    // walk straight at the guy
-                    mf.lookAt(bad_guy.position);
-                    mf.setControlState(mf.Control.Forward, true);
+                    // maintain distance of 3
+                    mf.clearControlStates();
+                    if (arrived) {
+                        if (distance > 3) {
+                            mf.setControlState(mf.Control.Forward, true);
+                        } else {
+                            mf.setControlState(mf.Control.Back, true);
+                        }
+                    }
                 }
             }, 0.1 * 1000);
         } else {
