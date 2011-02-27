@@ -4,6 +4,8 @@ mf.include("auto_respawn.js");
 mf.include("quitter.js");
 mf.include("navigator_3d.js");
 mf.include("follower.js");
+mf.include("defender.js");
 mf.include("finder.js");
 mf.include("where_are_you.js");
+
 

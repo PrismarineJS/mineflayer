@@ -111,6 +111,7 @@ void ScriptRunner::bootstrap()
     mf_obj.setProperty("respawn", m_engine->newFunction(respawn));
     mf_obj.setProperty("entity", m_engine->newFunction(entity));
     mf_obj.setProperty("startDigging", m_engine->newFunction(startDigging));
+    mf_obj.setProperty("attackEntity", m_engine->newFunction(attackEntity));
 
     mf_obj.setProperty("selectEquipSlot", m_engine->newFunction(selectEquipSlot));
     mf_obj.setProperty("selectedEquipSlot", m_engine->newFunction(selectedEquipSlot));
@@ -130,7 +131,6 @@ void ScriptRunner::bootstrap()
     hax_obj.setProperty("setPosition", m_engine->newFunction(setPosition));
     hax_obj.setProperty("positionUpdateInterval", m_engine->newFunction(positionUpdateInterval));
     hax_obj.setProperty("setGravityEnabled", m_engine->newFunction(setGravityEnabled));
-    hax_obj.setProperty("attackEntity", m_engine->newFunction(attackEntity));
 
     hax_obj.setProperty("placeBlock", m_engine->newFunction(placeBlock));
     hax_obj.setProperty("activateBlock", m_engine->newFunction(activateBlock));

@@ -25,7 +25,7 @@ mf.setInterval(function() {
     if (target_ids.length === 0) {
         return;
     }
-    mf.hax.attackEntity(target_ids[0]);
+    mf.attackEntity(target_ids[0]);
     mf.lookAt(mf.entity(target_ids[0]).position);
     mf.setControlState(mf.Control.Forward, true);
 }, 100);
@@ -41,3 +41,4 @@ mf.setInterval(function() {
         cant_find_func: function() { mf.chat("damn you!!"); },
     });
 }, 5000);
+
