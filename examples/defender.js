@@ -75,7 +75,8 @@ mf.include("arrays.js");
             if (distance > 20) {
                 // not a threat
                 bad_guy = undefined;
-                continue;
+                // which means no one else is close enough either
+                break;
             }
             break;
         }

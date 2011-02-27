@@ -8,20 +8,23 @@ Core:
  * dispenser is untested
  * furnace is untested
  * physics
-   - slab
-   - cake
-   - stairs
-   - ladders
-   - doors
-   - cacti
-   - water
-   - lava
-   - ice
+   - partial blocks:
+       - slab
+       - cake
+       - bed
+       - stairs
+       - ladders
+       - doors
+       - cacti
+   - fences
+   - climb ladders
+   - swim & slow down in liquids: water, lava
+   - less friction on ice
    - recoil when punched
-   - mine cart
+   - vehicles: mine cart, boat, pig
    - entity collisions
 
- * animate while digging
+ * animate while digging and attacking
  * time tracking (day / night)
  * handler for onHeardNoteBlock(type, pitch, volume)
  * clean up stray chunks that didn't get unloaded
@@ -46,7 +49,6 @@ Bot framework:
 Libs:
  * fix high level inventory management
  * block_finder returns duplicate blocks
- * non-spoken chat interpretation (player joined, etc)
  * navigating down stairs is glitchy
  * drowning awareness
 
