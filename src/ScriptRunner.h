@@ -19,7 +19,7 @@ class ScriptRunner : public QObject
 {
     Q_OBJECT
 public:
-    ScriptRunner(QUrl url, QString script_file, bool debug, bool headless, QStringList lib_path);
+    ScriptRunner(QUrl url, QString script_file, QStringList args, bool debug, bool headless, QStringList lib_path);
 
 public slots:
     // start the engine
@@ -29,6 +29,7 @@ private:
     QThread * m_thread;
     QUrl m_url;
     QString m_main_script_filename;
+    QStringList m_args;
     bool m_debug;
     bool m_headless;
 
@@ -103,6 +104,7 @@ private:
     static QScriptValue clearInterval(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue readFile(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue writeFile(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue args(QScriptContext * context, QScriptEngine * engine);
 
     // mf functions
     static QScriptValue chat(QScriptContext *context, QScriptEngine *engine);

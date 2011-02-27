@@ -240,6 +240,12 @@ mf.readFile(path)
 mf.writeFile(path, contents)
 
 /**
+ * Returns the script's arguments from the command line invocation.
+ * @return {Array} of strings
+ */
+mf.args()
+
+/**
  * Sends a publicly broadcast chat message. Breaks up big messages into multiple chat messages as necessary.
  * @param {String} message
  */

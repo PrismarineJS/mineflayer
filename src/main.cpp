@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
     bool script_debug = false;
     bool headless = true;
     QString script_filename;
+    QStringList script_args;
     QUrl url = QUrl::fromUserInput("mineflayer@localhost:25565");
     QString password;
 
@@ -82,15 +83,13 @@ int main(int argc, char *argv[])
             printUsage(args.at(0));
             return -1;
         } else {
-            if (script_filename.isEmpty()) {
-                script_filename = arg;
-            } else {
-                qWarning() << "Don't know what to do with 2 input files.";
-                printUsage(args.at(0));
-                return -1;
-            }
+            script_filename = arg;
+            // all the rest of the args get exposed to the script api
+            script_args.append(args.mid(i + 1));
+            break;
         }
     }
+
     lib_path.prepend(QFileInfo(script_filename).dir().absolutePath());
     if (env_path.isNull()) {
        // default lib path
@@ -115,7 +114,7 @@ int main(int argc, char *argv[])
 #endif
 
     if (! script_filename.isEmpty()) {
-        ScriptRunner runner(url, script_filename, script_debug, headless, lib_path);
+        ScriptRunner runner(url, script_filename, script_args, script_debug, headless, lib_path);
         runner.bootstrap();
         if (headless)
             return a.exec();
@@ -143,6 +142,6 @@ void printUsage(QString app_name)
     QString debug_text = "";
 #endif
     std::cout << "Usage: " << app_name.toStdString() << " " << debug_text.toStdString() <<
-        headless_text.toStdString() << "[--url user@server.com:25565] [--password 12345] [-I<path/to/libs>] [script.js]"
+        headless_text.toStdString() << "[--url user@server.com:25565] [--password 12345] [-I<path/to/libs>] [script.js [script_args...]]"
         << std::endl;
 }

@@ -13,10 +13,11 @@
 
 const int PhysicsDoer::c_physics_fps = 20;
 
-ScriptRunner::ScriptRunner(QUrl url, QString script_file, bool debug, bool headless, QStringList lib_path) :
+ScriptRunner::ScriptRunner(QUrl url, QString script_file, QStringList args, bool debug, bool headless, QStringList lib_path) :
     QObject(NULL),
     m_url(url),
     m_main_script_filename(script_file),
+    m_args(args),
     m_debug(debug),
     m_headless(headless),
     m_engine(NULL),
@@ -65,6 +66,7 @@ void ScriptRunner::bootstrap()
     mf_obj.setProperty("clearInterval", m_engine->newFunction(clearTimeout));
     mf_obj.setProperty("readFile", m_engine->newFunction(readFile));
     mf_obj.setProperty("writeFile", m_engine->newFunction(writeFile));
+    mf_obj.setProperty("args", m_engine->newFunction(args));
 
     // init event handler framework
     {
@@ -388,6 +390,18 @@ QScriptValue ScriptRunner::writeFile(QScriptContext *context, QScriptEngine *eng
     }
     file.close();
     return QScriptValue();
+}
+QScriptValue ScriptRunner::args(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 0))
+        return error;
+
+    QScriptValue array = engine->newArray();
+    foreach (QString arg, me->m_args)
+        array.property("push").call(array, QScriptValueList() << arg);
+    return array;
 }
 
 int ScriptRunner::nextTimerId()
