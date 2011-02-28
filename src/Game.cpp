@@ -872,6 +872,7 @@ bool Game::clickInventorySlot(int slot_id, bool right_click)
 {
     WindowClick window_click;
     {
+
         QMutexLocker locker(&m_mutex);
 
         Q_ASSERT(slot_id >= 0 && slot_id < c_inventory_count);
@@ -881,7 +882,7 @@ bool Game::clickInventorySlot(int slot_id, bool right_click)
         window_click.id = nextActionId();
         window_click.slot = notch_slot;
         window_click.right_click = right_click;
-        window_click.item = m_unique_slots.at(slot_id);
+        window_click.item = m_inventory.at(slot_id);
 
     }
 
