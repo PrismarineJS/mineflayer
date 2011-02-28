@@ -1,4 +1,5 @@
 
+mf.include("extra_includer.js");
 mf.include("giver.js");
 mf.include("auto_respawn.js");
 mf.include("quitter.js");
@@ -10,5 +11,4 @@ mf.include("where.js");
 mf.include("suicidal.js");
 mf.include("death_notice.js");
 mf.include("health_reporter.js");
-
 
