@@ -49,7 +49,6 @@ Bot framework:
 Libs:
  * fix high level inventory management
  * block_finder returns duplicate blocks
- * navigating down stairs is glitchy
  * drowning awareness
 
 3D client:
