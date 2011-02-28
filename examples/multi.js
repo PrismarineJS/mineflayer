@@ -11,4 +11,5 @@ mf.include("where.js");
 mf.include("suicidal.js");
 mf.include("death_notice.js");
 mf.include("health_reporter.js");
+mf.include("equip.js");
 
