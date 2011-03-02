@@ -122,6 +122,7 @@ private:
     static QScriptValue respawn(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue entity(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue startDigging(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue stopDigging(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue canPlaceBlock(QScriptContext * context, QScriptEngine * engine);
 
     static QScriptValue selectEquipSlot(QScriptContext * context, QScriptEngine * engine);

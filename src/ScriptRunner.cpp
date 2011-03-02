@@ -113,6 +113,7 @@ void ScriptRunner::bootstrap()
     mf_obj.setProperty("respawn", m_engine->newFunction(respawn));
     mf_obj.setProperty("entity", m_engine->newFunction(entity));
     mf_obj.setProperty("startDigging", m_engine->newFunction(startDigging));
+    mf_obj.setProperty("stopDigging", m_engine->newFunction(stopDigging));
     mf_obj.setProperty("attackEntity", m_engine->newFunction(attackEntity));
 
     mf_obj.setProperty("selectEquipSlot", m_engine->newFunction(selectEquipSlot));
@@ -756,6 +757,17 @@ QScriptValue ScriptRunner::startDigging(QScriptContext *context, QScriptEngine *
 
     return QScriptValue();
 }
+QScriptValue ScriptRunner::stopDigging(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 0))
+        return error;
+
+    me->m_game->stopDigging();
+    return QScriptValue();
+}
+
 
 QScriptValue ScriptRunner::placeBlock(QScriptContext *context, QScriptEngine *engine)
 {

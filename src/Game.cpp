@@ -242,8 +242,7 @@ bool Game::isBlockLoaded(const Int3D &absolute_location)
 void Game::startDigging(const Int3D &block)
 {
     QMutexLocker locker(&m_mutex);
-    if (m_digging_timer.isActive())
-        stopDigging();
+    stopDigging();
     m_digging_location = block;
     m_digging_counter = 0;
     m_server.sendDiggingStatus(Message::StartDigging, m_digging_location);

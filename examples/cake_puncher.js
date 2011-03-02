@@ -8,6 +8,9 @@ mf.include("navigator_3d.js");
 var get_it;
 
 function go() {
+    if (get_it === undefined) {
+        return;
+    }
     // FIND CAKE
     mf.chat("looking for " + get_it.name);
     var cake_pos_arr = block_finder.findNearest(mf.self().position.floored(), get_it.id, 64, 1);
@@ -33,11 +36,13 @@ mf.onStoppedDigging(function() {
 });
 
 chat_commands.registerCommand("punch", function(username, args, responder_func) {
-    var ret = items.lookupItemType(args[0]);
-    if (ret.length != 1) {
-        responder_func("what. " + ret.mapped(function(item){return item.name;}));
+    get_it = items.findItemTypeUnambiguously(args[0]);
+    if (get_it === undefined) {
         return;
     }
-    get_it = ret[0];
     go();
 }, 1);
+chat_commands.registerCommand("stop", function() {
+    get_it = undefined;
+    mf.stopDigging();
+});

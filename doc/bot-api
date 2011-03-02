@@ -444,6 +444,10 @@ mf.entity(entity_id)
  */
 mf.startDigging(point)
 
+/**
+ * Stops digging
+ */
+mf.stopDigging()
 
 /**
  * Useful for communicating with notchian clients.

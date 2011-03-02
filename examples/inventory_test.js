@@ -43,8 +43,8 @@ chat_commands.registerCommand("prev", function() {
     mf.selectEquipSlot((mf.selectedEquipSlot() - 1) % inventory.column_count);
 });
 
-chat_commands.registerCommand("toss", function(username, slot_str) {
-    var slot = parseInt(slot_str);
+chat_commands.registerCommand("toss", function(speaker, args) {
+    var slot = parseInt(args[0]);
     window_open_func = function(window_type) {
         window_open_func = undefined;
         mf.clickInventorySlot(slot, mf.MouseButton.Left);

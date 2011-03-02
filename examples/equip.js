@@ -7,10 +7,10 @@ mf.include("items.js");
         var itemName = args.join(" ");
         var itemType = items.lookupItemType(itemName);
         if (itemType.length === 0) {
-            respond("The block '" + itemName +"' is ambiguous.");
+            respond("item type not found: " + itemName);
             return;
         }
-        typeIndex = -1;
+        var typeIndex = -1;
         if (itemType.length === 1) {
             typeIndex = 0;
         } else {
