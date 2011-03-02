@@ -11,11 +11,11 @@ mf.include("block_finder.js");
             return;
         }
         var itemName = args.join(" ");
-        var itemType = items.lookupItemType(itemName);
-        if (itemType.length === 0) {
-            responder_func("The block '" + itemName + "' is ambiguous.");
+        var item = items.findBlockTypeUnambiguously(itemName);
+        if (item === undefined) {
             return;
         }
+        var itemType = item.id;
         typeIndex = -1;
         if (itemType.length === 1) {
             typeIndex = 0;

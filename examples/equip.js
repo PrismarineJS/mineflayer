@@ -3,47 +3,34 @@ mf.include("inventory.js");
 mf.include("items.js");
 
 (function () {
-    function equip(username, args, respond) {
-        var itemName = args.join(" ");
-        var itemType = items.lookupItemType(itemName);
-        if (itemType.length === 0) {
-            respond("item type not found: " + itemName);
-            return;
+    function equip(speaker, args, responder_func) {
+        var item_name = args.join(" ");
+        var inventory_database = {};
+        var types = inventory.snapshot().types;
+        for (var i = 0; i < types.length; i++) {
+            inventory_database[types[i]] = items.nameForId(types[i]);
         }
-        var typeIndex = -1;
-        if (itemType.length === 1) {
-            typeIndex = 0;
-        } else {
-            for (var i = 0; i < itemType.length; i++) {
-                if (itemType[i].name.toLowerCase() === itemName.toLowerCase()) {
-                    typeIndex = i;
-                    break;
-                }
-            }
-        }
-        if (typeIndex === -1) {
-            var matchingItemTypeList = itemType;
-            respond("The block '" + itemName +"' is ambiguous.");
-            var matchingTypes = [];
-            for (var i = 0; i < matchingItemTypeList.length; i++) {
-                matchingTypes.push(matchingItemTypeList[i].name);
-            }
-            respond("Did you mean any of these?: " + matchingTypes.join(", "));
-            return false;
-        } else {
-            type = itemType[typeIndex].id;
-            if (type === -1) {
-                respond("I don't understand '" + itemName + "'.");
-                return false;
-            }
-            if (inventory.itemSlot(type) === undefined) {
-                respond("I don't have any " + items.nameForId(type) + ".");
+        // only look in our inventory
+        var results = items.lookupInDatabase(item_name, inventory_database);
+        if (results.length !== 1) {
+            // we don't have it or it's ambiguous
+            if (results.length !== 0) {
+                responder_func("name is ambiguous: " + results.mapped(function(item) { return item.name; }).join(", "));
                 return;
             }
-            respond("Equipping " + items.nameForId(type) + ".");
-            inventory.equipItem(type);
+            // we don't have it. see if it exists in the global databse.
+            results = items.lookupItemType(item_name);
+            if (results.length === 0) {
+                responder_func("name not found");
+            } else {
+                // it's an item we don't have.
+                responder_func("i don't have: " + results.mapped(function(item) { return item.name; }).join(", "));
+            }
+            return;
         }
-        
+        var type = results[0].id;
+        responder_func("Equipping " + items.nameForId(type) + ".");
+        inventory.equipItem(type);
     }
-    chat_commands.registerCommand("equip",equip,1,Infinity);
+    chat_commands.registerCommand("equip", equip, 1, Infinity);
 })();
