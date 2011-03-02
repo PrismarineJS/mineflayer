@@ -35,6 +35,7 @@ mf.include("quitter.js");
 
     var current_checker_interval_id;
     function goToPoint(end, end_radius, responder_func) {
+        stopChecking();
         responder_func("looking for a path from " + mf.self().position.floored() + " to " + end + "...");
         navigator.navigateTo(end, {
             "end_radius": end_radius,
