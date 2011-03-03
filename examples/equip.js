@@ -6,9 +6,9 @@ mf.include("items.js");
     function equip(speaker, args, responder_func) {
         var item_name = args.join(" ");
         var inventory_database = {};
-        var types = inventory.snapshot().types;
-        for (var i = 0; i < types.length; i++) {
-            inventory_database[types[i]] = items.nameForId(types[i]);
+        var inventory = inventory.condensedSnapshot();
+        for (var type in inventory) {
+            inventory_database[type] = items.nameForId(type);
         }
         // only look in our inventory
         var results = items.lookupInDatabase(item_name, inventory_database);
