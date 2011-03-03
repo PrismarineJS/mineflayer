@@ -87,5 +87,17 @@ mf.include("items.js");
             mf.openInventoryWindow();
         }
     };
+
+    var list = function(username,args,respond) {
+        current_inventory = inventory.condensedSnapshot();
+        respond("My Inventory: ");
+        more_respond = [];
+        for (var type in current_inventory) {
+            more_respond.push(items.nameForId(type) + " x " + current_inventory[type]);
+        }
+        respond(more_respond.join(", "));
+    };
+
+    chat_commands.registerCommand("list",list,0,0);
     chat_commands.registerCommand("dump",dump,0,Infinity);
 })();
