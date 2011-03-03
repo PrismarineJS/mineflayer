@@ -25,7 +25,6 @@ mf.include("items.js");
     });
     
     var dump = function(username,args,respond) {
-        debugger;
         if ( args.length === 0 || args.length === 1 && (args[0] === "all" || args[0] === "inventory" || args[0] === "*" || args[0] === "everything")) {
             for (var i = 0; i < inventory.slot_count; i++) {
                 dumpSlots.push({slot: i, count: "*"});
@@ -33,69 +32,61 @@ mf.include("items.js");
             respond("Dumping everything!");
             mf.openInventoryWindow();
         } else if (args.length >= 1) {
-            var itemCount = undefined;
+            var item_count = undefined;
             if (!isNaN(args[0])) {
-                itemCount = args.shift();
+                item_count = args.shift();
                 respond("Sorry, right-click giving one item at a time is currently broken.");
                 return;
             }
-            var itemName = args.join(" ");
-            var itemType = items.lookupItemType(itemName);
-            if (itemType.length === 0) {
-                respond("The block '" + itemName + "' is ambiguous.");
-                return;
+            var item_name = args.join(" ");
+
+            var inventory_database = {};
+            var current_inventory = inventory.snapshot();
+            var types = current_inventory.types;
+            for (var i = 0; i < types.length; i++) {
+                inventory_database[types[i]] = items.nameForId(types[i]);
             }
-            var typeIndex = -1;
-            if (itemType.length === 1) {
-                typeIndex = 0;
+            // only look in our inventory
+            var results = items.lookupInDatabase(item_name, inventory_database);
+            if (results.length !== 1) {
+                // we don't have it or it's ambiguous
+                if (results.length !== 0) {
+                    respond(item_name + " is ambiguous: " + results.mapped(function(item) { return item.name; }).join(", "));
+                    return;
+                }
+                // we don't have it. see if it exists in the global database.
+                results = items.lookupItemType(item_name);
+                if (results.length === 0) {
+                    respond("I dont' know of anything named '" + item_name + "'.");
+                    return;
+                } else {
+                    // it's an item we don't have.
+                    respond("I don't have any of these: " + results.mapped(function(item) { return item.name; }).join(", "));
+                    return;
+                }
+            }
+            var item = results.shift();
+            
+            if (item_count === undefined) {
+                respond("Dumping all " + item.name + ".");
             } else {
-                for (var i = 0; i < itemType.length; i++) {
-                    if (itemType[i].name.toLowerCase() === itemName.toLowerCase()) {
-                        typeIndex = i;
+                respond("Dumping " + item_count + " " + item.name + ".");
+            }
+            
+            for (var i = 0; i < current_inventory.types.length; i++) {
+                if (current_inventory.types[i] === parseInt(item.id)) {
+                    if (item_count === undefined) {
+                        dumpSlots.push({slot: i, count: "*"});
+                    } else if (item_count >= current_inventory.counts[i]) {
+                        dumpSlots.push({slot: i, count: "*"});
+                        item_count = item_count - current_inventory.counts[i];
+                    } else {
+                        dumpSlots.push({slot: i, count: item_count});
                         break;
                     }
                 }
             }
-            if (typeIndex === -1) {
-                var matchingItemTypeList = itemType;
-                respond("The block '" + itemName + "' is ambiguous.");
-                var matchingTypes = [];
-                for (var i = 0; i < matchingItemTypeList.length; i++) {
-                    matchingTypes.push(matchingItemTypeList[i].name);
-                }
-                respond("Did you mean any of these?: " + matchingTypes.join(", "));
-                return false;
-            } else {
-                type = itemType[typeIndex].id;
-                if (type === -1) {
-                    respond("I don't understand '" + itemName + "'.");
-                    return false;
-                }
-                
-                if (inventory.itemSlot(type) === undefined) {
-                    respond("I don't have any " + items.nameForId(type) + ".");
-                    return;
-                }
-                if (itemCount === undefined) {
-                    respond("Dumping all " + items.nameForId(type) + ".");
-                } else {
-                    respond("Dumping " + itemCount + " " + items.nameForId(type) + ".");
-                }
-                for (var i = 0; i < inventory.slot_count; i++) {
-                    if (mf.inventoryItem(i).type === parseInt(type)) {
-                        if (itemCount === undefined) {
-                            dumpSlots.push({slot: i, count: "*"});
-                        } else if (itemCount >= mf.inventoryItem(i).count) {
-                            dumpSlots.push({slot: i, count: "*"});
-                            itemCount = itemCount - mf.inventoryItem(i).count;
-                        } else {
-                            dumpSlots.push({slot: i, count: itemCount});
-                            break;
-                        }
-                    }
-                }
-                mf.openInventoryWindow();
-            }
+            mf.openInventoryWindow();
         }
     };
     chat_commands.registerCommand("dump",dump,0,Infinity);
