@@ -213,7 +213,16 @@ Block Game::blockAt(const Int3D & absolute_location)
     QSharedPointer<Chunk> chunk = m_chunks.value(chunk_key, QSharedPointer<Chunk>());
     if (chunk.isNull())
         return c_air;
-    return chunk.data()->getBlock(absolute_location - chunk_key);
+    Int3D relative_location = absolute_location - chunk_key;
+    Block probable_value = chunk.data()->getBlock(relative_location);
+    if (probable_value.type() == Item::Air && relative_location.z != 0) {
+        Block maybe_a_fence = chunk.data()->getBlock(relative_location + Int3D(0, 0, -1));
+        if (maybe_a_fence.type() == Item::Fence) {
+            // say that the air immediately above a fence is also a fence.
+            return maybe_a_fence;
+        }
+    }
+    return probable_value;
 }
 QString Game::signTextAt(const Int3D &absolute_location)
 {

@@ -16,7 +16,7 @@ Core:
        - ladders
        - doors
        - cacti
-   - fences
+       - fences
    - climb ladders
    - swim & slow down in liquids: water, lava
    - less friction on ice
