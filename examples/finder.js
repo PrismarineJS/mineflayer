@@ -11,7 +11,7 @@ mf.include("block_finder.js");
             return;
         }
         var itemName = args.join(" ");
-        var item = items.findBlockTypeUnambiguously(itemName);
+        var item = items.findBlockTypeUnambiguously(itemName,responder_func);
         if (item === undefined) {
             return;
         }
