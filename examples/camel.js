@@ -14,9 +14,9 @@ mf.include("items.js");
             if (dumpSlots[i].count === "*") {
                 mf.clickOutsideWindow(mf.MouseButton.Left);
             } else {
-//                for (var j = 0; j < dumpSlots[i].count; j++) {
+                for (var j = 0; j < dumpSlots[i].count; j++) {
                     mf.clickOutsideWindow(mf.MouseButton.Right);    
-  //              }
+                }
                 mf.clickInventorySlot(dumpSlots[i].slot,mf.MouseButton.Left);
             }
         }
@@ -35,8 +35,6 @@ mf.include("items.js");
             var item_count = undefined;
             if (!isNaN(args[0])) {
                 item_count = args.shift();
-                respond("Sorry, right-click giving one item at a time is currently broken.");
-                return;
             }
             var item_name = args.join(" ");
 

@@ -852,6 +852,8 @@ void Game::handleWindowSlotUpdated(int window_id, int slot, Item item)
 void Game::updateWindowSlot(int slot, Item item)
 {
     // no mutex locker; private function
+    if (slot == Game::c_outside_window_slot)
+        return;
     if (slot < m_unique_slots.size())
         m_unique_slots.replace(slot, item);
     else
@@ -861,6 +863,8 @@ void Game::updateWindowSlot(int slot, Item item)
 Item Game::getWindowSlot(int slot)
 {
     // no mutex locker; private function
+    if (slot == Game::c_outside_window_slot)
+        return Item();
     if (slot < m_unique_slots.size())
         return m_unique_slots.at(slot);
     else
