@@ -40,9 +40,8 @@ mf.include("items.js");
 
             var inventory_database = {};
             var current_inventory = inventory.snapshot();
-            var types = current_inventory.types;
-            for (var i = 0; i < types.length; i++) {
-                inventory_database[types[i]] = items.nameForId(types[i]);
+            for (var i = 0; i < current_inventory.length; i++) {
+                inventory_database[current_inventory[i].type] = items.nameForId(current_inventory[i].type);
             }
             // only look in our inventory
             var results = items.lookupInDatabase(item_name, inventory_database);
@@ -71,13 +70,13 @@ mf.include("items.js");
                 respond("Dumping " + item_count + " " + item.name + ".");
             }
             
-            for (var i = 0; i < current_inventory.types.length; i++) {
-                if (current_inventory.types[i] === parseInt(item.id)) {
+            for (var i = 0; i < current_inventory.length; i++) {
+                if (current_inventory[i].type === parseInt(item.id)) {
                     if (item_count === undefined) {
                         dumpSlots.push({slot: i, count: "*"});
                     } else if (item_count >= current_inventory.counts[i]) {
                         dumpSlots.push({slot: i, count: "*"});
-                        item_count = item_count - current_inventory.counts[i];
+                        item_count = item_count - current_inventory[i].count;
                     } else {
                         dumpSlots.push({slot: i, count: item_count});
                         break;
