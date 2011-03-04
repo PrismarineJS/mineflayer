@@ -6,8 +6,8 @@ mf.include("items.js");
     function equip(speaker, args, responder_func) {
         var item_name = args.join(" ");
         var inventory_database = {};
-        var inventory = inventory.condensedSnapshot();
-        for (var type in inventory) {
+        var inv = inventory.condensedSnapshot();
+        for (var type in inv) {
             inventory_database[type] = items.nameForId(type);
         }
         // only look in our inventory
@@ -30,7 +30,11 @@ mf.include("items.js");
         }
         var type = results[0].id;
         responder_func("Equipping " + items.nameForId(type) + ".");
-        inventory.equipItem(type);
+        if (inventory.isItemArmor(type)) {
+            inventory.equipArmor(type);
+        } else {
+            inventory.equipItem(type);
+        }
     }
     chat_commands.registerCommand("equip", equip, 1, Infinity);
 })();
