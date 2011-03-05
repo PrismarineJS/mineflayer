@@ -7,8 +7,6 @@
 #include <cmath>
 #include <limits>
 
-#include "Digger.h"
-
 const float Game::c_standard_max_ground_speed = 4.27; // according to the internet
 const float Game::c_standard_terminal_velocity = 20.0; // guess
 const float Game::c_standard_walking_acceleration = 100.0; // seems good
@@ -42,7 +40,6 @@ Game::Game(QUrl connection_info) :
     m_mutex(QMutex::Recursive),
     m_server(connection_info),
     m_position_update_timer(NULL),
-    m_digger(new Digger(this, this)),
     m_waiting_for_dig_confirmation(false),
     m_player(-1, Server::EntityPosition(), connection_info.userName(), Item::NoItem),
     m_max_ground_speed(c_standard_max_ground_speed),
@@ -119,10 +116,6 @@ Game::Game(QUrl connection_info) :
 
     success = connect(this, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(checkForDiggingStopped(Int3D,Int3D)));
     Q_ASSERT(success);
-
-    success = connect(m_digger, SIGNAL(finished()), this, SLOT(sendDiggingComplete()));
-    Q_ASSERT(success);
-
 
     m_control_state.fill(false, (int)ControlCount);
 }
@@ -256,25 +249,13 @@ void Game::startDigging(const Int3D &block)
     stopDigging();
     m_digging_location = block;
     m_server.sendDiggingStatus(Message::StartDigging, m_digging_location);
-    m_digger->start(inventoryItem(m_equipped_slot_id).type, blockAt(m_digging_location).type());
-}
-void Game::stopDigging()
-{
-    QMutexLocker locker(&m_mutex);
-
-    if (! m_digger->isActive())
-        return;
-
-    m_digger->stop();
-    emit stoppedDigging(Aborted);
-}
-
-void Game::sendDiggingComplete()
-{
-    QMutexLocker locker(&m_mutex);
-
     m_server.sendDiggingStatus(Message::AbortDigging, m_digging_location);
     m_waiting_for_dig_confirmation = true;
+}
+
+void Game::stopDigging()
+{
+    // can't stop!
 }
 
 void Game::handleLoginStatusChanged(Server::LoginStatus status)
@@ -1220,3 +1201,4 @@ Item Game::uniqueWindowItem(int slot_id) const
 
     return m_unique_slots.at(slot_id);
 }
+
