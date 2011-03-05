@@ -15,7 +15,7 @@
 mf.include("chat_commands.js");
 
 mf.include("connection_notice.js");
-
+mf.include("items.js");
 mf.include("strings.js");
 mf.include("arrays.js");
 
@@ -68,7 +68,7 @@ mf.include("arrays.js");
         if (result === undefined) {
             return false;
         }
-        var command = "/give " + username + " " + result.id + " " + mf.itemStackHeight(item_id);
+        var command = "/give " + username + " " + result.id + " " + mf.itemStackHeight(result.id);
         for (var i = 0; i < count; i++) {
             mf.chat(command);
         }
