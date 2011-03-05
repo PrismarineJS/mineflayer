@@ -1,6 +1,4 @@
 Core:
- * crafting is broken :(
- * digger bot is broken
  * forget sign text when signs are destroyed
  * handle double chests
  * handle specific metadata crafting
