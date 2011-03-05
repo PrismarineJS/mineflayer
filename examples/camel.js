@@ -74,7 +74,7 @@ mf.include("items.js");
                 if (current_inventory[i].type === parseInt(item.id)) {
                     if (item_count === undefined) {
                         dumpSlots.push({slot: i, count: "*"});
-                    } else if (item_count >= current_inventory.counts[i]) {
+                    } else if (item_count >= current_inventory[i].count) {
                         dumpSlots.push({slot: i, count: "*"});
                         item_count = item_count - current_inventory[i].count;
                     } else {
