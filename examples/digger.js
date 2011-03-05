@@ -1,6 +1,7 @@
 mf.include("auto_respawn.js");
 mf.include("player_tracker.js");
 mf.include("giver.js");
+mf.include("inventory_test.js");
 
 function dig(block_to_dig) {
     mf.chat("digging down");

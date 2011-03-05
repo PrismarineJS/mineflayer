@@ -7,18 +7,19 @@
 #include <cmath>
 #include <limits>
 
+#include "Digger.h"
+
 const float Game::c_standard_max_ground_speed = 4.27; // according to the internet
 const float Game::c_standard_terminal_velocity = 20.0; // guess
 const float Game::c_standard_walking_acceleration = 100.0; // seems good
 const float Game::c_standard_gravity = 27.0; // seems good
 const float Game::c_standard_ground_friction = Game::c_standard_walking_acceleration * 0.9; // seems good
-const float Game::c_player_apothem = 0.32; // notche's client F3 says 0.30, but that caused spankings
+const float Game::c_player_apothem = 0.32; // notch's client F3 says 0.30, but that caused spankings
 const float Game::c_player_height = 1.74; // tested with a binary search
 const float Game::c_player_half_height = Game::c_player_height / 2;
 const float Game::c_jump_speed = 8.2f; // seems good
 
 const int Game::c_position_update_interval_ms = 50;
-const int Game::c_dig_packet_interval_ms = 50;
 const int Game::c_chat_length_limit = 100;
 const Int3D Game::c_chunk_size(16, 16, 128);
 const Block Game::c_air(Item::Air, 0, 0, 0);
@@ -41,7 +42,8 @@ Game::Game(QUrl connection_info) :
     m_mutex(QMutex::Recursive),
     m_server(connection_info),
     m_position_update_timer(NULL),
-    m_digging_timer(NULL),
+    m_digger(new Digger(this, this)),
+    m_waiting_for_dig_confirmation(false),
     m_player(-1, Server::EntityPosition(), connection_info.userName(), Item::NoItem),
     m_max_ground_speed(c_standard_max_ground_speed),
     m_terminal_velocity(c_standard_terminal_velocity),
@@ -58,8 +60,6 @@ Game::Game(QUrl connection_info) :
     m_op_status(MaybeOp)
 {
     Item::initializeStaticData();
-
-    m_digging_timer.setInterval(c_dig_packet_interval_ms);
 
     bool success;
     success = connect(&m_server, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SLOT(handleLoginStatusChanged(Server::LoginStatus)));
@@ -117,10 +117,12 @@ Game::Game(QUrl connection_info) :
     success = connect(&m_server, SIGNAL(unloadChunk(Int3D)), this, SLOT(handleUnloadChunk(Int3D)));
     Q_ASSERT(success);
 
-    success = connect(&m_digging_timer, SIGNAL(timeout()), this, SLOT(timeToContinueDigging()));
+    success = connect(this, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(checkForDiggingStopped(Int3D,Int3D)));
     Q_ASSERT(success);
 
-    success = connect(this, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(checkForDiggingStopped(Int3D,Int3D)));
+    success = connect(m_digger, SIGNAL(finished()), this, SLOT(sendDiggingComplete()));
+    Q_ASSERT(success);
+
 
     m_control_state.fill(false, (int)ControlCount);
 }
@@ -253,28 +255,26 @@ void Game::startDigging(const Int3D &block)
     QMutexLocker locker(&m_mutex);
     stopDigging();
     m_digging_location = block;
-    m_digging_counter = 0;
     m_server.sendDiggingStatus(Message::StartDigging, m_digging_location);
-    m_server.sendDiggingStatus(Message::ContinueDigging, m_digging_location);
-    m_digging_timer.start();
+    m_digger->start(inventoryItem(m_equipped_slot_id).type, blockAt(m_digging_location).type());
 }
 void Game::stopDigging()
 {
     QMutexLocker locker(&m_mutex);
-    if (! m_digging_timer.isActive())
+
+    if (! m_digger->isActive())
         return;
 
-    m_digging_timer.stop();
-    m_server.sendDiggingStatus(Message::AbortDigging, m_digging_location);
+    m_digger->stop();
     emit stoppedDigging(Aborted);
 }
-void Game::timeToContinueDigging()
+
+void Game::sendDiggingComplete()
 {
     QMutexLocker locker(&m_mutex);
-    if (! m_digging_timer.isActive())
-        return; // race conditions
-    m_server.sendDiggingStatus(Message::ContinueDigging, m_digging_location);
-    m_digging_counter++;
+
+    m_server.sendDiggingStatus(Message::AbortDigging, m_digging_location);
+    m_waiting_for_dig_confirmation = true;
 }
 
 void Game::handleLoginStatusChanged(Server::LoginStatus status)
@@ -533,17 +533,19 @@ void Game::handleSignUpdate(Int3D absolute_location, QString text)
 
 void Game::checkForDiggingStopped(const Int3D &start, const Int3D &size)
 {
-    if (!m_digging_timer.isActive())
+    if (! m_waiting_for_dig_confirmation)
         return;
     Int3D end = start + size;
     if (start.x <= m_digging_location.x && start.y <= m_digging_location.y && start.z <= m_digging_location.z &&
         m_digging_location.x < end.x && m_digging_location.y < end.y && m_digging_location.z < end.z)
     {
-        m_digging_timer.stop();
+        m_waiting_for_dig_confirmation = false;
         // if the new block is not diggable (air, water, etc.) then it worked.
         bool success = !Item::itemData(blockAt(m_digging_location).type())->diggable;
         m_server.sendDiggingStatus(Message::BlockBroken, m_digging_location);
         emit stoppedDigging(success ? BlockBroken : Aborted);
+
+        qDebug() << "got confirmation from server" << success;
     }
 }
 

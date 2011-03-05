@@ -13,12 +13,37 @@ QHash<Item::ItemType, Item::ItemData *> Item::s_item_data;
 QHash<QString, Item::ItemData *> Item::s_item_by_name;
 QHash<_Item::Recipe, _Item::Recipe *> Item::s_recipes;
 QMultiHash<Item, _Item::Recipe *> Item::s_item_recipe;
+QHash<QString, Item::Material> Item::s_materials;
 
 void Item::initializeStaticData()
 {
     if (s_initialized)
         return;
     s_initialized = true;
+
+    {
+        // grab the materials lookup table
+        QFile materials_file(":/game/materials.txt");
+        materials_file.open(QFile::ReadOnly);
+        QTextStream stream(&materials_file);
+        while (! stream.atEnd()) {
+            QString line = stream.readLine().trimmed();
+            if (line.isEmpty() || line.startsWith("#"))
+                continue;
+            QStringList parts = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+            Q_ASSERT(parts.size() == 2);
+
+            int part_index = 0;
+
+            QString name = parts.at(part_index++);
+            Material value = static_cast<Material>(parts.at(part_index++).toInt());
+            s_materials.insert(name, value);
+
+            Q_ASSERT(parts.size() == part_index);
+
+        }
+        materials_file.close();
+    }
 
     {
         // grab the item data from resources
@@ -30,7 +55,7 @@ void Item::initializeStaticData()
             if (line.isEmpty() || line.startsWith("#"))
                 continue;
             QStringList parts = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-            Q_ASSERT(parts.size() == 9);
+            Q_ASSERT(parts.size() == 11);
 
             int part_index = 0;
 
@@ -38,7 +63,7 @@ void Item::initializeStaticData()
 
             // ID
             bool ok;
-            item_data->id = (ItemType)parts.at(part_index++).toInt(&ok, 0);
+            item_data->id                   = (ItemType)parts.at(part_index++).toInt(&ok, 0);
             Q_ASSERT(ok);
 
             item_data->name                 = parts.at(part_index++);
@@ -49,6 +74,12 @@ void Item::initializeStaticData()
             item_data->diggable             = static_cast<bool>(parts.at(part_index++).toInt());
             item_data->block_activatable    = static_cast<bool>(parts.at(part_index++).toInt());
             item_data->safe                 = static_cast<bool>(parts.at(part_index++).toInt());
+            item_data->hardness             = static_cast<float>(parts.at(part_index++).toFloat());
+
+            // material
+            QString material_name = parts.at(part_index++);
+            Q_ASSERT(s_materials.contains(material_name));
+            item_data->material             = s_materials.value(material_name);
 
             Q_ASSERT(parts.size() == part_index);
 

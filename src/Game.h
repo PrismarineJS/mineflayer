@@ -9,6 +9,8 @@
 #include <QQueue>
 #include <QWaitCondition>
 
+class Digger;
+
 // This class is thread-safe.
 class Game : public QObject
 {
@@ -91,7 +93,6 @@ public:
     static const int c_chat_length_limit;
     static const int c_position_update_interval_ms;
 
-    static const int c_dig_packet_interval_ms;
     static const int c_inventory_count;
     static const int c_inventory_window_unique_count;
 
@@ -193,9 +194,9 @@ private:
     Server m_server;
 
     QTimer * m_position_update_timer;
-    QTimer m_digging_timer;
     Int3D m_digging_location;
-    int m_digging_counter;
+    Digger * m_digger;
+    bool m_waiting_for_dig_confirmation;
 
     NamedPlayerEntity m_player;
     int m_player_health;
@@ -301,9 +302,9 @@ private slots:
     void handleOpenWindow(int window_id, Message::WindowType inventory_type, int number_of_slots);
 
     void sendPosition();
-    void timeToContinueDigging();
 
     void checkForDiggingStopped(const Int3D &start, const Int3D &size);
+    void sendDiggingComplete();
 };
 
 #endif // GAME_H

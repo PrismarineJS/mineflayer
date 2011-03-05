@@ -12,5 +12,6 @@
         <file alias="furnace.txt">resources/furnace.txt</file>
         <file alias="items.txt">resources/items.txt</file>
         <file alias="recipes.txt">resources/recipes.txt</file>
+        <file alias="materials.txt">resources/materials.txt</file>
     </qresource>
 </RCC>
