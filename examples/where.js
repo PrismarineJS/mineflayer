@@ -12,7 +12,12 @@ mf.include("location_manager.js");
     };
 
     var whereIs = function(username,args,respond) {
-        var position = player_tracker.entityForPlayer(username).position.floored();
+        var player = player_tracker.entityForPlayer(username);
+        if (player === undefined) {
+            respond("I can't see you, " + username);
+            return;
+        }
+        var position = player.position.floored();
         if (position === undefined) {
             respond("I can't see you, " + username);
             return;
