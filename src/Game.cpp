@@ -97,6 +97,8 @@ Game::Game(QUrl connection_info) :
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(chatReceived(QString)), this, SLOT(handleChatReceived(QString)));
     Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(timeUpdated(double)), this, SIGNAL(timeUpdated(double)));
+    Q_ASSERT(success);
 
     success = connect(&m_server, SIGNAL(windowItemsUpdated(int,QVector<Item>)), this, SLOT(handleWindowItemsUpdated(int,QVector<Item>)));
     Q_ASSERT(success);

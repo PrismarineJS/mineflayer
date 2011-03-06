@@ -258,6 +258,11 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             emit chatReceived(message->content);
             break;
         }
+        case Message::TimeUpdate: {
+            TimeUpdateResponse * message = (TimeUpdateResponse *)incomingMessage.data();
+            emit timeUpdated(Util::euclideanMod(message->game_time_in_twentieths_of_a_second / 20.0, 1200.0));
+            break;
+        }
         case Message::UpdateHealth: {
             UpdateHealthResponse * message = (UpdateHealthResponse*) incomingMessage.data();
             emit playerHealthUpdated(message->health);

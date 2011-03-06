@@ -174,6 +174,8 @@ void ScriptRunner::bootstrap()
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(nonSpokenChatReceived(QString)), this, SLOT(handleNonSpokenChatReceived(QString)));
     Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(timeUpdated(double)), this, SLOT(handleTimeUpdated(double)));
+    Q_ASSERT(success);
     success = connect(m_game, SIGNAL(playerDied()), this, SLOT(handlePlayerDied()));
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(playerSpawned()), this, SLOT(handlePlayerSpawned()));
@@ -1136,6 +1138,10 @@ void ScriptRunner::handleChatReceived(QString username, QString message)
 void ScriptRunner::handleNonSpokenChatReceived(QString message)
 {
     raiseEvent("onNonSpokenChat", QScriptValueList() << message);
+}
+void ScriptRunner::handleTimeUpdated(double seconds)
+{
+    raiseEvent("onTimeUpdated", QScriptValueList() << seconds);
 }
 
 void ScriptRunner::handleLoginStatusUpdated(Server::LoginStatus status)

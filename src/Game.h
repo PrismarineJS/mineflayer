@@ -162,6 +162,7 @@ public:
 
 signals:
     void chatReceived(QString username, QString message);
+    void timeUpdated(double seconds);
     void nonSpokenChatReceived(QString message);
 
     void entitySpawned(QSharedPointer<Game::Entity> entity);

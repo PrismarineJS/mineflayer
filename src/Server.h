@@ -55,6 +55,7 @@ signals:
     void loginCompleted(int entity_id);
 
     void chatReceived(QString message);
+    void timeUpdated(double seconds);
     void playerHealthUpdated(int new_health);
 
     void namedPlayerSpawned(int entity_id, QString player_name, Server::EntityPosition position, Item::ItemType held_item);
