@@ -24,7 +24,6 @@ Core:
    - fences
 
  * animate while digging and attacking
- * time tracking (day / night)
  * handler for onHeardNoteBlock(type, pitch, volume)
  * clean up stray chunks that didn't get unloaded
  * look at the protocol page and see if there is any data there that we're not
