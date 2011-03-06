@@ -526,6 +526,7 @@ void Game::handleSignUpdate(Int3D absolute_location, QString text)
 
 void Game::checkForDiggingStopped(const Int3D &start, const Int3D &size)
 {
+    QMutexLocker locker(&m_mutex);
     if (! m_waiting_for_dig_confirmation)
         return;
     Int3D end = start + size;
