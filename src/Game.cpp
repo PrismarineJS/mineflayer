@@ -42,6 +42,9 @@ Game::Game(QUrl connection_info) :
     m_position_update_timer(NULL),
     m_waiting_for_dig_confirmation(false),
     m_player(-1, Server::EntityPosition(), connection_info.userName(), Item::NoItem),
+    m_player_health(20),
+    m_current_time_seconds(0),
+    m_current_time_recorded_time(QTime::currentTime()),
     m_max_ground_speed(c_standard_max_ground_speed),
     m_terminal_velocity(c_standard_terminal_velocity),
     m_input_acceleration(c_standard_walking_acceleration),
@@ -97,7 +100,7 @@ Game::Game(QUrl connection_info) :
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(chatReceived(QString)), this, SLOT(handleChatReceived(QString)));
     Q_ASSERT(success);
-    success = connect(&m_server, SIGNAL(timeUpdated(double)), this, SIGNAL(timeUpdated(double)));
+    success = connect(&m_server, SIGNAL(timeUpdated(double)), this, SLOT(handleTimeUpdated(double)));
     Q_ASSERT(success);
 
     success = connect(&m_server, SIGNAL(windowItemsUpdated(int,QVector<Item>)), this, SLOT(handleWindowItemsUpdated(int,QVector<Item>)));
@@ -307,6 +310,13 @@ void Game::handleChatReceived(QString message)
         }
         emit nonSpokenChatReceived(message);
     }
+}
+void Game::handleTimeUpdated(double seconds)
+{
+    QMutexLocker locker(&m_mutex);
+    m_current_time_seconds = seconds;
+    m_current_time_recorded_time = QTime::currentTime();
+    emit timeUpdated(seconds);
 }
 
 void Game::handlePlayerPositionAndLookUpdated(Server::EntityPosition position)
@@ -713,6 +723,12 @@ void Game::sendChat(QString message)
         for (int i = 0; i < sub_message.length(); i += c_chat_length_limit)
             m_server.sendChat(sub_message.mid(i, c_chat_length_limit));
     }
+}
+
+double Game::timeOfDay()
+{
+    QMutexLocker locker(&m_mutex);
+    return Util::euclideanMod(m_current_time_seconds + m_current_time_recorded_time.msecsTo(QTime::currentTime()) / 1000.0, 1200.0);
 }
 
 void Game::placeBlock(const Int3D &block, Message::BlockFaceDirection face)

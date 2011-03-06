@@ -491,8 +491,7 @@ mf.uniqueWindowItem(slot)
 
 /**
  * Tells what time it is, also known as where the sun or moon is in the sky.
- * NOT YET IMPLEMENTED
- * @returns {Number} The number of real life seconds since dawn. This ranges from 0 to 1200 since a day is 20 minutes.
+ * @returns {Number} The number of real life seconds since dawn (6:00am). This ranges from 0 to 1200 since a day is 20 minutes.
  */
 mf.timeOfDay()
 
@@ -509,6 +508,12 @@ mf.onConnected(function() {...})
  * @param {String} message The content of the message.
  */
 mf.onChat(function(user, message) {...})
+
+/**
+ * Called every second. See mf.timeOfDay().
+ * @param {Number} seconds Number of seconds since dawn.
+ */
+mf.onTimeUpdated(function(seconds) {...})
 
 /**
  * Called when a chat is received that was no spoken by a player.

@@ -8,6 +8,7 @@
 #include <QMutexLocker>
 #include <QQueue>
 #include <QWaitCondition>
+#include <QTime>
 
 class Digger;
 
@@ -137,6 +138,7 @@ public:
     void activateBlock(const Int3D &block);
 
     void sendChat(QString message);
+    double timeOfDay();
 
     int selectedEquipSlot() const { QMutexLocker locker(&m_mutex); return m_equipped_slot_id; }
     void selectEquipSlot(int slot_id); // [27, 35]
@@ -204,6 +206,8 @@ private:
     QHash<Int3D, QSharedPointer<Chunk> > m_chunks;
     QHash<Int3D, QString> m_signs;
     QHash<int, QSharedPointer<Entity> > m_entities;
+    double m_current_time_seconds;
+    QTime m_current_time_recorded_time;
 
     float m_max_ground_speed;
     float m_terminal_velocity;
@@ -277,6 +281,7 @@ private slots:
     void handleLoginStatusChanged(Server::LoginStatus status);
     void handleLoginCompleted(int entity_id);
     void handleChatReceived(QString content);
+    void handleTimeUpdated(double seconds);
     void handlePlayerPositionAndLookUpdated(Server::EntityPosition position);
     void handlePlayerHealthUpdated(int new_health);
     void handleUnloadChunk(const Int3D & coord);

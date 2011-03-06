@@ -13,4 +13,5 @@ mf.include("death_notice.js");
 mf.include("health_reporter.js");
 mf.include("equip.js");
 mf.include("camel.js");
+mf.include("time_reporter.js");
 

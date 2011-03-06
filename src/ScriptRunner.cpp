@@ -99,6 +99,7 @@ void ScriptRunner::bootstrap()
 
     // hook up mf functions
     mf_obj.setProperty("chat", m_engine->newFunction(chat));
+    mf_obj.setProperty("timeOfDay", m_engine->newFunction(timeOfDay));
     mf_obj.setProperty("itemStackHeight", m_engine->newFunction(itemStackHeight));
     mf_obj.setProperty("isPhysical", m_engine->newFunction(isPhysical));
     mf_obj.setProperty("isSafe", m_engine->newFunction(isSafe));
@@ -536,6 +537,14 @@ QScriptValue ScriptRunner::chat(QScriptContext *context, QScriptEngine *engine)
     QString message = message_value.toString();
     me->m_game->sendChat(message);
     return QScriptValue();
+}
+QScriptValue ScriptRunner::timeOfDay(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 0))
+        return error;
+    return me->m_game->timeOfDay();
 }
 
 QScriptValue ScriptRunner::itemStackHeight(QScriptContext *context, QScriptEngine *engine)
