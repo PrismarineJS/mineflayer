@@ -23,7 +23,7 @@ Core:
    - fences
 
  * handler for onHeardNoteBlock(type, pitch, volume)
- * clean up stray chunks that didn't get unloaded
+ * clean up stray chunks that didn't get unloaded (still a problem in 1.3?)
  * look at the protocol page and see if there is any data there that we're not
    exposing (e.g. entity equipment).
  * recalculte light on block changes
@@ -34,7 +34,7 @@ Core:
  * don't segfault on shutdown
 
 Bot framework:
- * refactor mf.blockHeight and friends into some kind of ItemData structure
+ * expose some kind of ItemData structure with bounding boxes and stuff
  * implement the functions in doc/bot-api
  * metadata access for blocks
  * command line parameters
@@ -45,6 +45,7 @@ Bot framework:
 Libs:
  * fix high level inventory management
  * block_finder returns duplicate blocks
+ * some kind of indexed search as faster alternative to current block_finder
  * drowning awareness
 
 3D client:

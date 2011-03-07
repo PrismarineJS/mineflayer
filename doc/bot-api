@@ -43,7 +43,7 @@ mf.Point(x, y, z)
  * yaw {Number} [0, 2pi] Rotation around z axis. 0 is +x. pi/2 is +y. pi is -x. 3pi/2 is -y.
  * pitch {Number} [-pi/2, pi/2] 0 is parallel to the ground. pi/2 is up. -pi/2 is down.
  * on_ground {Boolean} True if you are not free-falling.
- * height {Number} The Z-dimension of the bounding box.
+ * height {Number} Distance from ground to eyes. 0 for non-humanoid entities.
  *
  * Additional properties when type is Player:
  * username {String}
@@ -58,7 +58,7 @@ mf.Point(x, y, z)
 mf.Entity
 
 /**
- * Represents a block or item or stack of blocks or items.
+ * Represents a block or item or stack of items.
  *
  * Examples:
  * var item1 = new mf.Item(mf.ItemType.Dirt, 64)
@@ -247,6 +247,7 @@ mf.args()
 
 /**
  * Sends a publicly broadcast chat message. Breaks up big messages into multiple chat messages as necessary.
+ * If message begins with "/tell <username> ", then all split messages will be whispered as well.
  * @param {String} message
  */
 mf.chat(message)
@@ -316,28 +317,11 @@ mf.signTextAt(point)
  * Returns whether or not you're able to place your currently equipped item
  * on the face of the block at point.
  * Takes into account distance, whether something is in your way,
- * spawn protection, whether the target block is activatable, and what you're
- * equipped with.
- * In order to actually place a block, you should use this formula:
- * mf.lookAt(point); // face the block you want to build next to
- * mf.setControlState(Action2, true); // press right click
- * mf.setControlState(Action2, false); // release right click
- * If this is too hard and you're willing to cheat, you can use
- * mf.hax.placeBlock(point, face);
+ * whether the target block is activatable, and what you're equipped with.
  * @param {Number} point The location of the block you want to check.
  * @param {mf.Face} face The face of the block you want to attach to.
  */
 mf.canPlaceBlock(point, face)
-
-/**
- * The block you're looking directly at.
- * NOT YET IMPLEMENTED
- * @returns {Object} object with properties:
- *      block {mf.Block} - the targeted block
- *      face {mf.Face} - which face is targeted
- *      coord {mf.Point} - coordinates of the block you're looking at
- */
-mf.target()
 
 /**
  * Returns a snapshot of your state in the world as an entity. Modifying the object does nothing.
@@ -510,12 +494,6 @@ mf.onConnected(function() {...})
 mf.onChat(function(user, message) {...})
 
 /**
- * Called every second. See mf.timeOfDay().
- * @param {Number} seconds Number of seconds since dawn.
- */
-mf.onTimeUpdated(function(seconds) {...})
-
-/**
  * Called when a chat is received that was no spoken by a player.
  * This includes player joined messages, teleporting notifications, etc.
  * @param {String} message All color codes will be removed
@@ -523,16 +501,23 @@ mf.onTimeUpdated(function(seconds) {...})
 mf.onNonSpokenChat(function(message) {...})
 
 /**
- * Called when blocks are updated.
- * @param {mf.Point} start The absolute position of the first block that was updated.
- * @param {mf.Point} size The number of blocks that were updated.
+ * Called every second. See mf.timeOfDay().
+ * @param {Number} seconds Number of seconds since dawn.
+ */
+mf.onTimeUpdated(function(seconds) {...})
+
+/**
+ * Called when blocks are updated. Updated region is a rectangular solid even if not
+ * all of the blocks in the region have actually changed.
+ * @param {mf.Point} start The absolute position of the min corner of the region.
+ * @param {mf.Point} size The size of the region.
  */
 mf.onChunkUpdated(function(start, size) {...})
 
 /**
- * Called when a sign is discovered or updated.
+ * Called when a sign is discovered or destroyed or when a sign's text changes.
  * @param {mf.Point} location The location of the sign
- * @param {String} text The new text of the sign
+ * @param {String} text The new text of the sign or undefined if the sign was destroyed
  */
 mf.onSignUpdated(function(location, text) {...})
 

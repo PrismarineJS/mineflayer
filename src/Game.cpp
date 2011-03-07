@@ -387,6 +387,18 @@ void Game::handlePickupSpawned(int entity_id, Item item, Server::EntityPosition 
 void Game::handleMobSpawned(int entity_id, MobSpawnResponse::MobType mob_type, Server::EntityPosition position)
 {
     QMutexLocker locker(&m_mutex);
+    switch (mob_type) {
+        case MobSpawnResponse::Creeper:
+        case MobSpawnResponse::Skeleton:
+        case MobSpawnResponse::Zombie:
+        case MobSpawnResponse::ZombiePigman:
+            // humanoids get a human-ish height
+            position.height = 1.62;
+            break;
+        default:
+            break;
+    }
+
     Entity * entity = new MobEntity(entity_id, position, mob_type);
     m_entities.insert(entity_id, QSharedPointer<Entity>(entity));
     emit entitySpawned(QSharedPointer<Entity>(entity->clone()));
