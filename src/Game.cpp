@@ -121,6 +121,8 @@ Game::Game(QUrl connection_info) :
 
     success = connect(this, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(checkForDiggingStopped(Int3D,Int3D)));
     Q_ASSERT(success);
+    success = connect(this, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(checkForDestroyedSigns(Int3D,Int3D)));
+    Q_ASSERT(success);
 
     m_control_state.fill(false, (int)ControlCount);
 }
@@ -520,7 +522,9 @@ void Game::handleBlockUpdate(Int3D absolute_location, Block new_block)
 void Game::handleSignUpdate(Int3D absolute_location, QString text)
 {
     QMutexLocker locker(&m_mutex);
-    m_signs[absolute_location] = text;
+    if (text == m_signs.value(absolute_location))
+        return; // suppress no change
+    m_signs.insert(absolute_location, text);
     emit signUpdated(absolute_location, text);
 }
 
@@ -540,6 +544,36 @@ void Game::checkForDiggingStopped(const Int3D &start, const Int3D &size)
         emit stoppedDigging(success ? BlockBroken : Aborted);
 
         qDebug() << "got confirmation from server" << success;
+    }
+}
+
+void Game::checkForDestroyedSigns(const Int3D &start, const Int3D &size)
+{
+    QMutexLocker locker(&m_mutex);
+    QList<Int3D> removed_signs;
+    if (size == Int3D(1, 1, 1)) {
+        // single block update
+        if (!m_signs.contains(start))
+            return; // wasn't a sign
+        Block supposed_sign = blockAt(start);
+        if (supposed_sign.type() == Item::SignPost_placed || supposed_sign.type() == Item::WallSign_placed)
+            return; // still a sign
+        removed_signs.append(start);
+    } else {
+        // multi block update
+        foreach (Int3D location, m_signs.keys()) {
+            if (!(start.x <= location.x && start.y <= location.y && start.z <= location.z &&
+                  location.x < start.x + size.x && location.y < start.y + size.y && location.z < start.z + size.z))
+                continue; // out of bounds
+            Block supposed_sign = blockAt(location);
+            if (supposed_sign.type() == Item::SignPost_placed || supposed_sign.type() == Item::WallSign_placed)
+                continue; // still a sign
+            removed_signs.append(location);
+        }
+    }
+    foreach (Int3D location, removed_signs) {
+        m_signs.remove(location);
+        emit signUpdated(location, QString());
     }
 }
 

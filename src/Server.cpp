@@ -471,7 +471,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         }
         case Message::UpdateSign: {
             UpdateSignResponse * message = (UpdateSignResponse *) incomingMessage.data();
-            Int3D position(message->meters_x, message->meters_y, message->meters_z);
+            Int3D position = fromNotchianIntMeters(Int3D(message->meters_x, message->meters_y, message->meters_z));
             QString text = message->line_1 + "\n" + message->line_2 + "\n" + message->line_3 + "\n" + message->line_4;
             emit signUpdated(position, text);
             break;

@@ -1,5 +1,4 @@
 Core:
- * forget sign text when signs are destroyed
  * handle double chests
  * handle specific metadata crafting
  * expose crafting and smelting recipes to API
@@ -29,6 +28,7 @@ Core:
  * look at the protocol page and see if there is any data there that we're not
    exposing (e.g. entity equipment).
  * recalculte light on block changes
+ * figure out when attached blocks fall off their host block (signs, torches, etc)
  * handle forced window close events from the server
  * mf.haveOpStatus and add an op/spawn check to canPlaceBlock
  * metadata for cake, repeater, bed, slab/doubleslab

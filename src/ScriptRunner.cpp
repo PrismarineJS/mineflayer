@@ -1113,7 +1113,10 @@ void ScriptRunner::handleChunkUpdated(const Int3D &start, const Int3D &size)
 }
 void ScriptRunner::handleSignUpdated(const Int3D &location, QString text)
 {
-    raiseEvent("onSignUpdated", QScriptValueList() << jsPoint(location) << text);
+    QScriptValue text_value;
+    if (!text.isNull())
+        text_value = text;
+    raiseEvent("onSignUpdated", QScriptValueList() << jsPoint(location) << text_value);
 }
 
 void ScriptRunner::movePlayerPosition()
