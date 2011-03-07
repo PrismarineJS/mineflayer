@@ -750,13 +750,24 @@ void Game::sendChat(QString message)
 {
     QMutexLocker locker(&m_mutex);
 
+    QString header = "";
+    if (message.startsWith("/tell ")) {
+        // repeate any "/tell <username> " header on all the chat messages.
+        int username_end = message.indexOf(" ", QString("/tell ").length());
+        if (username_end != -1) {
+            header = message.mid(0, username_end + 1);
+            message = message.mid(username_end + 1);
+        }
+    }
+    int lenght_limit = c_chat_length_limit - header.length();
     // split on newlines
     foreach (QString sub_message, message.split('\n')) {
         if (sub_message.isEmpty())
             continue;
         // TODO: get rid of illegal characters
-        for (int i = 0; i < sub_message.length(); i += c_chat_length_limit)
-            m_server.sendChat(sub_message.mid(i, c_chat_length_limit));
+        for (int i = 0; i < sub_message.length(); i += lenght_limit) {
+            m_server.sendChat(header + sub_message.mid(i, lenght_limit));
+        }
     }
 }
 

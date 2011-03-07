@@ -33,7 +33,6 @@ Core:
  * mf.haveOpStatus and add an op/spawn check to canPlaceBlock
  * metadata for cake, repeater, bed, slab/doubleslab
  * don't segfault on shutdown
- * repeate any "/tell <username> " header for split chat messages
 
 Bot framework:
  * refactor mf.blockHeight and friends into some kind of ItemData structure
