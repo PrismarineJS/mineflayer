@@ -200,6 +200,7 @@ private:
     Int3D m_digging_location;
     Digger * m_digger;
     bool m_waiting_for_dig_confirmation;
+    QTimer * m_digging_animation_timer;
 
     NamedPlayerEntity m_player;
     int m_player_health;
@@ -308,6 +309,7 @@ private slots:
     void handleOpenWindow(int window_id, Message::WindowType inventory_type, int number_of_slots);
 
     void sendPosition();
+    void animateDigging();
 
     void checkForDiggingStopped(const Int3D &start, const Int3D &size);
     void checkForDestroyedSigns(const Int3D &start, const Int3D &size);

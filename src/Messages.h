@@ -96,6 +96,14 @@ public:
         Dispenser=3,
     };
 
+    enum AnimationType {
+        NoAnimation=0,
+        SwingArmAnimation=1,
+        DamageAnimation=2,
+        CrouchAnimation=104,
+        UncrouchAnimation=105,
+    };
+
     MessageType messageType;
 
 protected:
@@ -200,6 +208,15 @@ public:
     Item item;
     PlayerBlockPlacementRequest(qint32 meters_x, qint8 meters_y, qint32 meters_z, BlockFaceDirection block_face, Item item) : OutgoingRequest(PlayerBlockPlacement),
         meters_x(meters_x), meters_y(meters_y), meters_z(meters_z), block_face(block_face), item(item) {}
+    virtual void writeMessageBody(QDataStream &stream);
+};
+
+class AnimationRequest : public OutgoingRequest {
+public:
+    qint32 entity_id;
+    AnimationType animation_type;
+    AnimationRequest(qint32 entity_id, AnimationType animation_type) : OutgoingRequest(Animation),
+        entity_id(entity_id), animation_type(animation_type) {}
     virtual void writeMessageBody(QDataStream &stream);
 };
 
@@ -415,13 +432,6 @@ public:
 
 class AnimationResponse : public IncomingResponse {
 public:
-    enum AnimationType {
-        NoAnimation=0,
-        SwingArm=1,
-        Damage=2,
-        Crouch=104,
-        Uncrouch=105,
-    };
     qint32 entity_id;
     AnimationType animation_type;
     AnimationResponse() : IncomingResponse(Animation) {}

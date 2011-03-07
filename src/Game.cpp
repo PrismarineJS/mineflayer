@@ -41,6 +41,7 @@ Game::Game(QUrl connection_info) :
     m_server(connection_info),
     m_position_update_timer(NULL),
     m_waiting_for_dig_confirmation(false),
+    m_digging_animation_timer(NULL),
     m_player(-1, Server::EntityPosition(), connection_info.userName(), Item::NoItem),
     m_player_health(20),
     m_current_time_seconds(0),
@@ -165,6 +166,7 @@ void Game::attackEntity(int entity_id)
 {
     QMutexLocker locker(&m_mutex);
     m_server.sendClickEntity(m_player.entity_id, entity_id, false);
+    m_server.sendAnimation(m_player.entity_id, Message::SwingArmAnimation);
 }
 
 void Game::respawn()
@@ -258,11 +260,19 @@ void Game::startDigging(const Int3D &block)
     m_server.sendDiggingStatus(Message::StartDigging, m_digging_location);
     m_server.sendDiggingStatus(Message::AbortDigging, m_digging_location);
     m_waiting_for_dig_confirmation = true;
+    m_digging_animation_timer = new QTimer(this);
+    m_digging_animation_timer->setInterval(1000 / 4); // guess
+    bool success;
+    success = connect(m_digging_animation_timer, SIGNAL(timeout()), this, SLOT(animateDigging()));
+    Q_ASSERT(success);
+    m_digging_animation_timer->start();
 }
 
 void Game::stopDigging()
 {
-    // can't stop!
+    QMutexLocker locker(&m_mutex);
+    delete m_digging_animation_timer;
+    m_digging_animation_timer = NULL;
 }
 
 void Game::handleLoginStatusChanged(Server::LoginStatus status)
@@ -541,6 +551,7 @@ void Game::checkForDiggingStopped(const Int3D &start, const Int3D &size)
         // if the new block is not diggable (air, water, etc.) then it worked.
         bool success = !Item::itemData(blockAt(m_digging_location).type())->diggable;
         m_server.sendDiggingStatus(Message::BlockBroken, m_digging_location);
+        stopDigging();
         emit stoppedDigging(success ? BlockBroken : Aborted);
 
         qDebug() << "got confirmation from server" << success;
@@ -586,6 +597,11 @@ void Game::sendPosition()
 {
     QMutexLocker locker(&m_mutex);
     m_server.sendPositionAndLook(m_player.position);
+}
+void Game::animateDigging()
+{
+    QMutexLocker locker(&m_mutex);
+    m_server.sendAnimation(m_player.entity_id, Message::SwingArmAnimation);
 }
 
 void Game::doPhysics(float delta_seconds)

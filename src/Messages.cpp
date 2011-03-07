@@ -113,6 +113,12 @@ void PlayerBlockPlacementRequest::writeMessageBody(QDataStream &stream)
     writeValue(stream, item);
 }
 
+void AnimationRequest::writeMessageBody(QDataStream &stream)
+{
+    writeValue(stream, entity_id);
+    writeValue(stream, (qint8)animation_type);
+}
+
 void CloseWindowRequest::writeMessageBody(QDataStream &stream)
 {
     writeValue(stream, window_id);
