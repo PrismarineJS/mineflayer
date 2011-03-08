@@ -106,6 +106,7 @@ void ScriptRunner::bootstrap()
     mf_obj.setProperty("isDiggable", m_engine->newFunction(isDiggable));
     mf_obj.setProperty("health", m_engine->newFunction(health));
     mf_obj.setProperty("blockAt", m_engine->newFunction(blockAt));
+    mf_obj.setProperty("isBlockLoaded", m_engine->newFunction(isBlockLoaded));
     mf_obj.setProperty("signTextAt", m_engine->newFunction(signTextAt));
     mf_obj.setProperty("self", m_engine->newFunction(self));
     mf_obj.setProperty("setControlState", m_engine->newFunction(setControlState));
@@ -617,6 +618,21 @@ QScriptValue ScriptRunner::blockAt(QScriptContext *context, QScriptEngine *engin
     QScriptValue result = engine->newObject();
     result.setProperty("type", block.type());
     return result;
+}
+
+QScriptValue ScriptRunner::isBlockLoaded(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
+    QScriptValue js_pt = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, js_pt.isObject()))
+        return error;
+    Int3D pt;
+    if (!fromJsPoint(context, error, js_pt, pt))
+        return error;
+    return me->m_game->isBlockLoaded(pt);
 }
 
 QScriptValue ScriptRunner::signTextAt(QScriptContext *context, QScriptEngine *engine)

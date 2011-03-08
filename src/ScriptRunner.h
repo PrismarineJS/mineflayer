@@ -115,6 +115,7 @@ private:
     static QScriptValue isDiggable(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue health(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue blockAt(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue isBlockLoaded(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue signTextAt(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue self(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue setControlState(QScriptContext * context, QScriptEngine * engine);

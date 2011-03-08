@@ -9,5 +9,5 @@ chat_commands.registerCommand("time", function(speaker, args, responder_func) {
     var fake_minutes = (hours_since_midnight % 1) * 60;
     var fake_seconds = (fake_minutes % 1) * 60;
     var time_string = [hours_since_midnight, fake_minutes, fake_seconds].mapped(function(n) { return Math.floor(n).zfill(2); }).join(":");
-    responder_func("time is " + time_string + " (real seconds: " + real_seconds + ")");
+    responder_func("time is " + time_string);
 });

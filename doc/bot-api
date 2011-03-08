@@ -300,10 +300,19 @@ mf.health()
 
 /**
  * Returns the block at the absolute location in the world.
+ * If mf.isBlockLoaded returns false for the point, this function will return
+ * some kind of Air.
  * @param {Number} point Coordinates do not need to be rounded.
  * @return {mf.Item} block object
  */
 mf.blockAt(point)
+
+/**
+ * Returns whether the map is loaded at the specified point
+ * @param {Number} point Coordinates do not need to be rounded.
+ * @return {Boolean}
+ */
+mf.isBlockLoaded(point)
 
 /**
  * Returns the text of the sign at the specified location, or undefined if
@@ -432,24 +441,6 @@ mf.startDigging(point)
  * Stops digging
  */
 mf.stopDigging()
-
-/**
- * Useful for communicating with notchian clients.
- * NOT YET IMPLEMENTED
- * @param {mf.Point} mf_point Point in mineflayer's coordinates.
- * @returns {mf.Point} Point in Notch's coordinates.
- */
-mf.toNotchCoord(mf_point)
-
-/**
- * If a player specifies coordinates to a bot, by looking at the numbers when
- * he presses F3, he's probably talking about Notchian coordinates. This method
- * translates them into our coordinate system (see top of this document)
- * NOT YET IMPLEMENTED
- * @param {mf.Point} notch_point Point in Notch's coordinates.
- * @returns {mf.Point} Point in mineflayer's coordinates.
- */
-mf.fromNotchCoord(notch_point)
 
 /**
  * Looks in a direction.
