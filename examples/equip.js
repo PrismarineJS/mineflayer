@@ -5,13 +5,9 @@ mf.include("items.js");
 (function () {
     function equip(speaker, args, responder_func) {
         var item_name = args.join(" ");
-        var inventory_database = {};
         var inv = inventory.condensedSnapshot();
-        for (var type in inv) {
-            inventory_database[type] = items.nameForId(type);
-        }
         // only look in our inventory
-        var results = items.lookupInDatabase(item_name, inventory_database);
+        var results = items.lookupInDatabase(item_name, inventory.getDatabase());
         if (results.length !== 1) {
             // we don't have it or it's ambiguous
             if (results.length !== 0) {
