@@ -40,26 +40,10 @@ mf.include("items.js");
 
             var current_inventory = inventory.snapshot();
             // only look in our inventory
-            var results = items.lookupInDatabase(item_name, inventory.getDatabase());
-            if (results.length !== 1) {
-                // we don't have it or it's ambiguous
-                if (results.length !== 0) {
-                    respond(item_name + " is ambiguous: " + results.mapped(function(item) { return item.name; }).join(", "));
-                    return;
-                }
-                // we don't have it. see if it exists in the global database.
-                results = items.lookupItemType(item_name);
-                if (results.length === 0) {
-                    respond("I dont' know of anything named '" + item_name + "'.");
-                    return;
-                } else {
-                    // it's an item we don't have.
-                    respond("I don't have any of these: " + results.mapped(function(item) { return item.name; }).join(", "));
-                    return;
-                }
+            var item = items.findUnambiguouslyInDatabase(item_name,inventory.getDatabase(),respond);
+            if (item === undefined) {
+                return;
             }
-            var item = results.shift();
-            
             if (item_count === undefined) {
                 respond("Dumping all " + item.name + ".");
             } else {
