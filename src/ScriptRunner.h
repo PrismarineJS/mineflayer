@@ -144,6 +144,7 @@ private:
     static QScriptValue positionUpdateInterval(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue setGravityEnabled(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue attackEntity(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue setJesusModeEnabled(QScriptContext * context, QScriptEngine * engine);
 
     static QScriptValue placeBlock(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue activateBlock(QScriptContext * context, QScriptEngine * engine);

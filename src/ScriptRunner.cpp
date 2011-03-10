@@ -136,6 +136,7 @@ void ScriptRunner::bootstrap()
     hax_obj.setProperty("setPosition", m_engine->newFunction(setPosition));
     hax_obj.setProperty("positionUpdateInterval", m_engine->newFunction(positionUpdateInterval));
     hax_obj.setProperty("setGravityEnabled", m_engine->newFunction(setGravityEnabled));
+    hax_obj.setProperty("setJesusModeEnabled", m_engine->newFunction(setJesusModeEnabled));
 
     hax_obj.setProperty("placeBlock", m_engine->newFunction(placeBlock));
     hax_obj.setProperty("activateBlock", m_engine->newFunction(activateBlock));
@@ -1037,6 +1038,21 @@ QScriptValue ScriptRunner::attackEntity(QScriptContext *context, QScriptEngine *
     int entity_id = entity_id_value.toInt32();
 
     me->m_game->attackEntity(entity_id);
+    return QScriptValue();
+}
+
+QScriptValue ScriptRunner::setJesusModeEnabled(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 1))
+        return error;
+    QScriptValue value_value = context->argument(0);
+    if (!me->maybeThrowArgumentError(context, error, value_value.isBool()))
+        return error;
+    bool value = value_value.toBool();
+
+    Item::setJesusModeEnabled(value);
     return QScriptValue();
 }
 

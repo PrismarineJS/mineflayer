@@ -417,6 +417,12 @@ mf.hax.positionUpdateInterval()
 mf.hax.setGravityEnabled(value)
 
 /**
+ * Pretend that water and lava are solid.
+ * @param {Boolean} value
+ */
+mf.hax.setJesusModeEnabled(value)
+
+/**
  * Sends a single attack message to the server.
  * @param {Number} entity_id
  */

@@ -406,6 +406,7 @@ public:
 public:
 
     static void initializeStaticData();
+    static void setJesusModeEnabled(bool value);
     inline static const ItemData * itemData(ItemType item_id) { return s_item_data.value(item_id, NULL); }
     inline static const QHash<ItemType, ItemData *> * itemDataHash() { return &s_item_data; }
 
