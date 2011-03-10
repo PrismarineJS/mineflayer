@@ -40,7 +40,7 @@ mf.include("items.js");
 
             var current_inventory = inventory.snapshot();
             // only look in our inventory
-            var item = items.findUnambiguouslyInDatabase(item_name,inventory.getDatabase(),respond);
+            var item = items.findUnambiguouslyInDatabase(item_name,respond,inventory.getDatabase());
             if (item === undefined) {
                 return;
             }
