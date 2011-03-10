@@ -57,8 +57,7 @@ Game::Game(QUrl connection_info) :
     m_next_action_id(0),
     m_equipped_slot_id(0),
     m_open_window_id(-1),
-    m_need_to_emit_window_opened(false),
-    m_op_status(MaybeOp)
+    m_need_to_emit_window_opened(false)
 {
     Item::initializeStaticData();
 
@@ -805,17 +804,34 @@ double Game::timeOfDay()
     return Util::euclideanMod(m_current_time_seconds + m_current_time_recorded_time.msecsTo(QTime::currentTime()) / 1000.0, 1200.0);
 }
 
-void Game::placeBlock(const Int3D &block, Message::BlockFaceDirection face)
+bool Game::placeBlock(const Int3D &block, Message::BlockFaceDirection face)
 {
     QMutexLocker locker(&m_mutex);
 
-    Int3D new_block_pos = block + c_side_offset[face];
-    if (canPlaceBlock(block, face)) {
-        Item equipped_item = m_inventory.at(m_equipped_slot_id);
-        updateBlock(new_block_pos, Block(equipped_item.type, equipped_item.metadata, 0, 0));
-        m_server.sendPositionAndLook(m_player.position);
-        m_server.sendBlockPlacement(block, face, equipped_item);
+    Item equipped_item = m_inventory.at(m_equipped_slot_id);
+    if (!Item::itemData(equipped_item.type)->placeable) {
+        qWarning() << "trying to place: " << item.type;
+        return false;
     }
+    if (canPlaceBlock(block, face))
+        return true;
+    Int3D new_block_pos = block + c_side_offset[face];
+    updateBlock(new_block_pos, Block(equipped_item.type, equipped_item.metadata, 0, 0));
+    m_server.sendPositionAndLook(m_player.position);
+    m_server.sendBlockPlacement(block, face, equipped_item);
+    return true;
+}
+bool Game::activateItem()
+{
+    QMutexLocker locker(&m_mutex);
+
+    Item item = m_inventory.at(m_equipped_slot_id);
+    if (!Item::itemData(item.type)->item_activatable) {
+        qWarning() << "trying to activate: " << item.type;
+        return false;
+    }
+    m_server.sendBlockPlacement(Int3D(-1, -1, -1), Message::NoDirection, item);
+    return true;
 }
 
 void Game::activateBlock(const Int3D &block)
@@ -851,17 +867,6 @@ bool Game::canPlaceBlock(const Int3D &block_pos, Message::BlockFaceDirection fac
         if (entity.data()->type != Entity::Pickup) {
             if (entityCollidesWithPoint(entity.data(), new_block_pos))
                 return false;
-        }
-    }
-
-    // not if we're not op and we're within spawn
-    if (m_op_status == NotOp) {
-        const int spawn_apothem = 20;
-        if (Util::abs(new_block_pos.x) < spawn_apothem &&
-            Util::abs(new_block_pos.y) < spawn_apothem &&
-            Util::abs(new_block_pos.z) < spawn_apothem)
-        {
-            return false;
         }
     }
 

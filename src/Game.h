@@ -133,7 +133,10 @@ public:
     void startDigging(const Int3D &block);
     void stopDigging();
 
-    void placeBlock(const Int3D &block, Message::BlockFaceDirection face);
+    // returns whether you're equipped with a proper item
+    bool placeBlock(const Int3D &block, Message::BlockFaceDirection face);
+    // returns whether you're equipped with a proper item
+    bool activateItem();
     bool canPlaceBlock(const Int3D &block, Message::BlockFaceDirection face);
     void activateBlock(const Int3D &block);
 
@@ -246,14 +249,6 @@ private:
 
     bool m_need_to_emit_window_opened;
     Message::WindowType m_open_window_type;
-
-    enum OpStatus {
-        MaybeOp,
-        YesOp,
-        NotOp,
-    };
-
-    OpStatus m_op_status;
 
     QMutex m_click_mutex;
     QWaitCondition m_click_wait_condition;

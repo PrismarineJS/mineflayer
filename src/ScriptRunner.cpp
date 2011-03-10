@@ -128,6 +128,7 @@ void ScriptRunner::bootstrap()
     mf_obj.setProperty("inventoryItem", m_engine->newFunction(inventoryItem));
     mf_obj.setProperty("uniqueWindowItem", m_engine->newFunction(uniqueWindowItem));
     mf_obj.setProperty("canPlaceBlock", m_engine->newFunction(canPlaceBlock));
+    mf_obj.setProperty("activateItem", m_engine->newFunction(activateItem));
 
 
     // hook up hax functions
@@ -814,7 +815,21 @@ QScriptValue ScriptRunner::placeBlock(QScriptContext *context, QScriptEngine *en
         return error;
     Message::BlockFaceDirection face = (Message::BlockFaceDirection) face_value.toInt32();
 
-    me->m_game->placeBlock(Int3D(std::floor(point.x), std::floor(point.y), std::floor(point.z)), face);
+    if (!me->m_game->placeBlock(Int3D(std::floor(point.x), std::floor(point.y), std::floor(point.z)), face))
+        return context->throwError("Invalid Argument");
+
+    return QScriptValue();
+}
+
+QScriptValue ScriptRunner::activateItem(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 0))
+        return error;
+
+    if (!me->m_game->activateItem())
+        return context->throwError("Invalid Argument");
 
     return QScriptValue();
 }

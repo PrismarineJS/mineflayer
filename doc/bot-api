@@ -369,6 +369,12 @@ mf.lookAt(point, face)
  */
 mf.respawn()
 
+/**
+ * Eat, shoot, throw, etc, your currently equipped item.
+ * Throws an exception if your currently equipped item can't be activated.
+ */
+mf.activateItem()
+
 // cheating methods
 
 /**

@@ -147,6 +147,7 @@ private:
     static QScriptValue setJesusModeEnabled(QScriptContext * context, QScriptEngine * engine);
 
     static QScriptValue placeBlock(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue activateItem(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue activateBlock(QScriptContext * context, QScriptEngine * engine);
 
 
