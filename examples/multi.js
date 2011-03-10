@@ -14,4 +14,7 @@ mf.include("health_reporter.js");
 mf.include("equip.js");
 mf.include("camel.js");
 mf.include("time_reporter.js");
+mf.include("echo.js");
+mf.include("jesus.js");
+mf.include("eat.js");
 

@@ -187,6 +187,16 @@ void Item::initializeStaticData()
     }
 }
 
+void Item::setJesusModeEnabled(bool value)
+{
+    s_item_data.value(Water)->physical = value;
+    s_item_data.value(Water)->safe = !value;
+    s_item_data.value(StationaryWater)->physical = value;
+    s_item_data.value(StationaryWater)->safe = !value;
+    s_item_data.value(Lava)->physical = value;
+    s_item_data.value(StationaryLava)->physical = value;
+}
+
 Item Item::parseItem(QString item_string, bool * metadata_matters)
 {
     QStringList parts = item_string.split(":", QString::SkipEmptyParts);

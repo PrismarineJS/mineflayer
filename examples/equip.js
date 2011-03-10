@@ -5,9 +5,8 @@ mf.include("items.js");
 (function () {
     function equip(speaker, args, respond) {
         var item_name = args.join(" ");
-        var inv = inventory.condensedSnapshot();
         // only look in our inventory
-        var item = items.findUnambiguouslyInDatabase(item_name,respond,inventory.getDatabase());
+        var item = items.findUnambiguouslyInDatabase(item_name, respond, inventory.getDatabase());
         if (item === undefined) {
             return;
         }
