@@ -4,6 +4,7 @@ mf.include("player_tracker.js");
 mf.include("location_manager.js");
 mf.include("items.js");
 mf.include("inventory.js");
+mf.include("navigator.js");
 
 var findChestNearestPoint = function(point) {
     chests = block_finder.findNearest(point,mf.ItemType.Chest, 128, 1);
@@ -14,21 +15,70 @@ var findChestNearestPoint = function(point) {
     }
 };
 
-var dump_slots;
-var chest_position;
+var chest_data = [];
+
+var cant_navto_func = function() {
+    var this_data = chest_data.shift();
+    this_data.respond("I can't find a path to the chest at (" + this_data.chest_position.x + ", " + this_data.chest_position.y + ", " + this.data_chest_position.z + ").");
+    if (chest_data.length !== 0) {
+        dump_to_chest();
+    } else {
+        mf.chat("Chest navigation complete.  Awaiting new commands.");
+    }
+}
 
 var dump_func = function() {
-    mf.chat("I would be dumping now, if dumping was implemented!");
+    var this_data = chest_data.shift();
+    var current_inventory = inventory.snapshot();
+    if (chest_data.length !== 0) {
+        dump_to_chest();
+    } else {
+        mf.chat("Chest navigation complete.  Awaiting new commands.");
+    }
+}
+
+var dump_to_chest = function() {
+    if (chest_data.length !== 0) {
+        var this_data = chest_data[0];
+        if (this_data.item_type !== undefined) {
+            if (this_data.item_count !== undefined) {
+                this_data.respond("Going to go dump " + this_data.item_count + " " + items.nameForId(this_data.item_type) + " into chest at (" + this_data.chest_position.x + ", " + this_data.chest_position.y + ", " + this_data.chest_position.z + ").");
+            } else {
+                this_data.respond("Goin to go dump all of my " + items.nameForId(this_data.item_type) + " into chest at (" + this_data.chest_position.x + ", " + this_data.chest_position.y + ", " + this_data.chest_position.z + ").");
+            }
+        } else {
+            this_data.respond("Going to go dump everything into chest at (" + this_data.chest_position.x +", " + this_data.chest_position.y + ", " + this_data.chest_position.z + ").");
+        }
+        navigator.navigateTo(this_data.chest_position,{
+            end_radius : 4,
+            cant_find_func : cant_navto_func,
+            arrived_func : dump_func
+        });
+
+    }
 };
 
-var dump = function(username,args,respond) {
+var dump = function(chest_position, respond, item_type, item_count) {
+    data = {
+        chest_position : chest_position,
+        item_type : item_type,
+        item_count : item_count,
+        respond : respond
+    };
+    chest_data.push(data);
+    if (chest_data.length === 1) {
+        dump_to_chest();
+    }
+}
+
+var dump_command = function(speaker,args,respond) {
 /*
     Parsing:
     case 1: Dump everything into nearest chest
         "dump" 
         "dump all/inventory/ * /everything"
     
-    case 2: Dump everything into chest nearest entity(username)
+    case 2: Dump everything into chest nearest entity(speaker)
         "dump here" 
         "dump all/inventory/ * /everything here"
 
@@ -39,7 +89,7 @@ var dump = function(username,args,respond) {
     case 4: Dump all items of type X into nearest chest
         "dump X"
 
-    case 5: Dump all items of type X into chest nearest entity(username)
+    case 5: Dump all items of type X into chest nearest entity(speaker)
         "dump X here"
 
     case 6: Dump all items of type X into chest nearest location
@@ -48,20 +98,21 @@ var dump = function(username,args,respond) {
     case 7: Dump # items of type X into nearest chest
         "dump # X"
 
-    case 8: Dump # items of type X into chest nearest entity(username)
+    case 8: Dump # items of type X into chest nearest entity(speaker)
         "dump # X here"
 
     case 9: Dump # items of type X into chest nearest location
         "dump # X into location"
 */
+
     var chest_position = findChestNearestPoint(mf.self().position);
     var location_type = 0;
     if (args.length !== 0 && args[args.length-1] === "here") {
-        //set chest_position to position of username
+        //set chest_position to position of speaker
         args.pop();
-        var player = player_tracker.entityForPlayer(username);
+        var player = player_tracker.entityForPlayer(speaker);
         if (player === undefined) {
-            respond("I don't know where you are, " + username + ".");
+            respond("I don't know where you are, " + speaker + ".");
             return;
         }        
         chest_position = findChestNearestPoint(player.position);
@@ -80,12 +131,12 @@ var dump = function(username,args,respond) {
         if (matching_location === undefined) {
             return;
         }
-        chest_position = matching_location.point;
-        chest_position = findChestNearestPoint(chest_position);
+        matching_location = matching_location.point;
+        chest_position = findChestNearestPoint(matching_location);
         location_type = 2;
     }
     if (chest_position === undefined) {
-        switch(location_type) {
+        switch(data_obj.location_type) {
             case 0:
                 respond("I couldn't find any chests near me.");
                 return;
@@ -96,35 +147,24 @@ var dump = function(username,args,respond) {
                 respond("I couldn't find any chests near " + location_string + ".");
                 return;
             default:
+                // This should never happen...
                 respond("I couldn't find any chests anywhere.");
                 return;
         }
     } else {
         chest_position = chest_position.floored();
-        cant_navto_func = function() {
-            respond("I can't reach that chest.");
-        };
     }
     
     if (args.length === 0) {
         //dump everything into chest_position
-        respond("Dumping everything into chest at (" + chest_position.x +", " + chest_position.y + ", " + chest_position.z + ").");
-        navigator.navigateTo(chest_position,{
-            end_radius : 4,
-            cant_find_func : cant_navto_func,
-            arrived_func : dump_func});
+        dump(chest_position, respond);
         return;
     }
     if (args.length === 1) {
         var arg = args[0];
         if (arg === "all" || arg === "inventory" || arg === "*" || arg === "everything") {
-            args.shift();
             //dump everything into chest nearest mf.self()
-            respond("Dumping everything into chest at (" + chest_position.x +", " + chest_position.y + ", " + chest_position.z + ").");
-            navigator.navigateTo(chest_position,{
-            end_radius : 4,
-            cant_find_func : cant_navto_func,
-            arrived_func : dump_func});
+            dump(chest_position,respond);
             return;
         }
     }
@@ -139,17 +179,13 @@ var dump = function(username,args,respond) {
     }
     var item_type = item.id;
     if (count !== undefined) {
-        respond("Dumping " + count + " " + items.nameForId(item_type) + " into chest at (" + chest_position.x +", " + chest_position.y + ", " + chest_position.z + ").");
-        navigator.navigateTo(chest_position,{
-            end_radius : 4,
-            cant_find_func : cant_navto_func,
-            arrived_func : dump_func});
+        have_count = inventory.itemCount(item_type);
+        if (inventory.itemCount(item_type) >= count) {
+            respond("I don't have " + count + " " + items.nameForId(item_type) + ".  I'm only going to dump " + have_count + ".");
+        }
+        dump(chest_position, respond, item_type, count);
     } else {
-        respond("Dumping all " + items.nameForId(item_type) + " into chest at (" + chest_position.x +", " + chest_position.y + ", " + chest_position.z + ").");
-        navigator.navigateTo(chest_position,{
-            end_radius : 4,
-            cant_find_func : cant_navto_func,
-            arrived_func : dump_func});
+        dump(chest_position,respond,item_type);
     }
 };
-chat_commands.registerCommand("dump",dump,0,Infinity);
+chat_commands.registerCommand("dump",dump_command,0,Infinity);
