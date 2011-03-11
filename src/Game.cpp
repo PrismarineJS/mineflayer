@@ -810,7 +810,7 @@ bool Game::placeBlock(const Int3D &block, Message::BlockFaceDirection face)
 
     Item equipped_item = m_inventory.at(m_equipped_slot_id);
     if (!Item::itemData(equipped_item.type)->placeable) {
-        qWarning() << "trying to place: " << item.type;
+        qWarning() << "trying to place: " << equipped_item.type;
         return false;
     }
     if (canPlaceBlock(block, face))
