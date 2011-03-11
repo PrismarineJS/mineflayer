@@ -31,6 +31,7 @@ function() {
         "onEquippedItemChanged",
         "onInventoryUpdated",
         "onWindowOpened",
+        "onStdinLine",
     ];
     for (var i = 0; i < registrar_names.length; i++) {
         createEventRegistrar(registrar_names[i]);

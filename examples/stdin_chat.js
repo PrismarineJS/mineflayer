@@ -1,0 +1,1 @@
+mf.onStdinLine(mf.chat);

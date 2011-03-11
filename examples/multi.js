@@ -17,4 +17,5 @@ mf.include("time_reporter.js");
 mf.include("echo.js");
 mf.include("jesus.js");
 mf.include("eat.js");
+mf.include("stdin_chat.js");
 

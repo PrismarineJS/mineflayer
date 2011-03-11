@@ -85,7 +85,6 @@ public:
         QMutexLocker locker(&m_queue_mutex);
         return m_done_sub_chunk_queue.dequeue();
     }
-    void shutDown();
 
     void saveSubChunkNode(ReadySubChunk ready_chunk, Ogre::SceneNode * node);
 private:
@@ -123,6 +122,7 @@ private slots:
     void queueDeleteSubChunkMesh(const Int3D & coord);
 
     void initialize();
+    void cleanup();
 
 private:
     void generateSubChunkMesh(const Int3D & sub_chunk_key, BlockFaceDirection seam = NoDirection);

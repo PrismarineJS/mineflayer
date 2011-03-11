@@ -19,7 +19,8 @@ SOURCES += src/main.cpp \
     src/ScriptRunner.cpp \
     src/Game.cpp \
     src/SubChunkMeshGenerator.cpp \
-    src/Item.cpp
+    src/Item.cpp \
+    src/StdinReader.cpp
 HEADERS += src/Server.h \
     src/Messages.h \
     src/Chunk.h \
@@ -32,7 +33,8 @@ HEADERS += src/Server.h \
     src/Game.h \
     src/Block.h \
     src/Item.h \
-    src/SubChunkMeshGenerator.h
+    src/SubChunkMeshGenerator.h \
+    src/StdinReader.h
 RESOURCES += mineflayer.qrc
 LIBS += -lOgreMain \
     -lOIS
@@ -60,5 +62,5 @@ no_3d {
     HEADERS -= src/MainWindow.h \
         src/SubChunkMeshGenerator.h
     mac:CONFIG -= app_bundle
-    win32: CONFIG += console
+    win32:CONFIG += console
 }

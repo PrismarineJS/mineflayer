@@ -591,7 +591,7 @@ bool MainWindow::keyPressed(const OIS::KeyEvent &arg )
         m_grab_mouse = false;
 
     if (arg.key == OIS::KC_ESCAPE || (m_keyboard->isModifierDown(OIS::Keyboard::Alt) && arg.key == OIS::KC_F4)) {
-        m_sub_chunk_generator->shutDown();
+        QCoreApplication::quit();
         m_shut_down = true;
     } else if (arg.key == OIS::KC_F2) {
         m_free_look_mode = !m_free_look_mode;

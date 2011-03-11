@@ -40,6 +40,10 @@ ScriptRunner::ScriptRunner(QUrl url, QString script_file, QStringList args, bool
     m_thread = new QThread();
     m_thread->start();
     this->moveToThread(m_thread);
+
+    bool success;
+    success = connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(cleanup()));
+    Q_ASSERT(success);
 }
 
 void ScriptRunner::bootstrap()
@@ -147,7 +151,7 @@ void ScriptRunner::bootstrap()
     if (main_script_contents.isNull()) {
         m_stderr << "file not found: " << m_main_script_filename << "\n";
         m_stderr.flush();
-        shutdown(1);
+        QCoreApplication::instance()->exit(1);
         return;
     }
     m_engine->evaluate(main_script_contents, m_main_script_filename);
@@ -195,11 +199,16 @@ void ScriptRunner::bootstrap()
     success = connect(m_game, SIGNAL(equippedItemChanged()), this, SLOT(handleEquippedItemChanged()));
     Q_ASSERT(success);
 
+    success = connect(&m_stdin_reader, SIGNAL(readLine(QString)), this, SLOT(handleReadLine(QString)));
+    Q_ASSERT(success);
+    success = connect(&m_stdin_reader, SIGNAL(eof()), QCoreApplication::instance(), SLOT(quit()));
+    Q_ASSERT(success);
 
     m_physics_doer = new PhysicsDoer(m_game);
 
     m_started_game = true;
     m_game->start();
+    m_stdin_reader.start();
 }
 
 PhysicsDoer::PhysicsDoer(Game *game) :
@@ -229,6 +238,8 @@ void PhysicsDoer::start()
     m_physics_timer = new QTimer(this);
 
     bool success;
+    success = connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(cleanup()));
+    Q_ASSERT(success);
     success = connect(m_physics_timer, SIGNAL(timeout()), this, SLOT(doPhysics()));
     Q_ASSERT(success);
 
@@ -236,11 +247,10 @@ void PhysicsDoer::start()
     m_physics_timer->start(1000 / c_physics_fps);
 }
 
-void PhysicsDoer::stop()
+void PhysicsDoer::cleanup()
 {
     m_physics_timer->stop();
     m_thread->exit();
-    m_thread->wait();
 }
 
 QString ScriptRunner::internalReadFile(const QString &path)
@@ -273,7 +283,7 @@ void ScriptRunner::checkEngine(const QString & while_doing_what)
         m_stderr << m_engine->uncaughtExceptionBacktrace().join("\n") << "\n";
         m_stderr.flush();
     }
-    shutdown(1);
+    QCoreApplication::instance()->exit(1);
 }
 
 void ScriptRunner::dispatchTimeout()
@@ -516,16 +526,10 @@ QScriptValue ScriptRunner::debug(QScriptContext *context, QScriptEngine *engine)
     return QScriptValue();
 }
 
-void ScriptRunner::shutdown(int return_code)
+void ScriptRunner::cleanup()
 {
     m_exiting = true;
-    if (m_started_game) {
-        m_physics_doer->stop();
-        m_thread->exit(return_code);
-        m_game->shutdown(return_code);
-    } else {
-        QCoreApplication::exit(return_code);
-    }
+    m_thread->exit();
 }
 
 QScriptValue ScriptRunner::chat(QScriptContext *context, QScriptEngine *engine)
@@ -1228,4 +1232,9 @@ void ScriptRunner::handleWindowOpened(Message::WindowType window_type)
 void ScriptRunner::handleEquippedItemChanged()
 {
     raiseEvent("onEquippedItemChanged", QScriptValueList());
+}
+
+void ScriptRunner::handleReadLine(QString line)
+{
+    raiseEvent("onStdinLine", QScriptValueList() << line);
 }

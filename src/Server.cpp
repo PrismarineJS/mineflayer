@@ -36,6 +36,7 @@ Server::Server(QUrl connection_info) :
     this->moveToThread(m_socket_thread);
 
     bool success;
+    success = connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(cleanup()));
     success = QMetaObject::invokeMethod(this, "initialize", Qt::QueuedConnection);
     Q_ASSERT(success);
 }
@@ -54,7 +55,7 @@ void Server::initialize()
     m_socket = new QTcpSocket(this);
     success = connect(m_socket, SIGNAL(connected()), this, SLOT(handleConnected()));
     Q_ASSERT(success);
-    success = connect(m_socket, SIGNAL(disconnected()), this, SLOT(cleanUpAfterDisconnect()));
+    success = connect(m_socket, SIGNAL(disconnected()), QCoreApplication::instance(), SLOT(quit()));
     Q_ASSERT(success);
     success = connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(handleSocketError(QAbstractSocket::SocketError)));
     Q_ASSERT(success);
@@ -157,21 +158,9 @@ void Server::handleConnected()
     sendMessage(QSharedPointer<OutgoingRequest>(new HandshakeRequest(m_connection_info.userName())));
 }
 
-void Server::cleanUpAfterDisconnect()
+void Server::cleanup()
 {
     m_socket_thread->exit();
-    this->moveToThread(QCoreApplication::instance()->thread());
-    bool success;
-    success = QMetaObject::invokeMethod(this, "terminate", Qt::QueuedConnection);
-    Q_ASSERT(success);
-}
-
-void Server::terminate()
-{
-    Q_ASSERT(QThread::currentThread() == QCoreApplication::instance()->thread());
-    m_socket_thread->exit();
-    m_socket_thread->wait();
-
     changeLoginState(Disconnected);
 }
 

@@ -595,6 +595,12 @@ mf.onInventoryUpdated(function() {...})
 mf.onWindowOpened(function(window_type) {...})
 
 /**
+ * Called when a line of stardard input is typed in the console
+ * @param {String} line
+ */
+mf.onStdinLine(function(line) {...})
+
+/**
  * removes the handler from the event.
  *
  * example:

@@ -3,6 +3,7 @@
 
 #include <QFile>
 #include <QStringList>
+#include <QCoreApplication>
 
 const Int3D SubChunkMeshGenerator::c_side_offset[] = {
     Int3D(0, -1, 0),
@@ -128,6 +129,8 @@ SubChunkMeshGenerator::SubChunkMeshGenerator(MainWindow * owner) :
     this->moveToThread(m_thread);
 
     bool success;
+    success = connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(cleanup()));
+    Q_ASSERT(success);
     success = QMetaObject::invokeMethod(this, "initialize", Qt::QueuedConnection);
     Q_ASSERT(success);
 }
@@ -146,6 +149,12 @@ void SubChunkMeshGenerator::initialize()
     success = connect(m_owner->game(), SIGNAL(unloadChunk(Int3D)), this, SLOT(queueDeleteSubChunkMesh(Int3D)));
     Q_ASSERT(success);
     m_owner->game()->start();
+}
+
+void SubChunkMeshGenerator::cleanup()
+{
+    m_shutdown = true;
+    m_thread->exit();
 }
 
 void SubChunkMeshGenerator::loadResources()
@@ -181,13 +190,6 @@ void SubChunkMeshGenerator::loadResources()
         m_block_data.insert(id, block_data);
     }
     blocks_file.close();
-}
-
-void SubChunkMeshGenerator::shutDown()
-{
-    m_shutdown = true;
-    m_thread->exit();
-    m_thread->wait();
 }
 
 void SubChunkMeshGenerator::handleUpdatedChunk(const Int3D &start, const Int3D &size)

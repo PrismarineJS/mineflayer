@@ -280,7 +280,7 @@ void Game::handleLoginStatusChanged(Server::LoginStatus status)
     switch (status) {
         case Server::SocketError:
             qWarning() << "Game: Unable to connect to server";
-            QCoreApplication::instance()->exit(-1);
+            QCoreApplication::instance()->exit(1);
             break;
         case Server::Disconnected:
             qWarning() << "Game: Disconnected from server";

@@ -2,6 +2,7 @@
 #define SCRIPTRUNNER_H
 
 #include "Game.h"
+#include "StdinReader.h"
 
 #include <QObject>
 #include <QScriptEngine>
@@ -44,6 +45,7 @@ private:
 
     bool m_exiting;
 
+    StdinReader m_stdin_reader;
     QTextStream m_stderr;
     QTextStream m_stdout;
 
@@ -73,7 +75,6 @@ private:
     QSet<QString> m_included_filenames;
 
 private:
-    void shutdown(int return_code);
     void raiseEvent(QString event_name, const QScriptValueList & args = QScriptValueList());
     static bool argCount(QScriptContext *context, QScriptValue & error, int arg_count_min, int arg_count_max = -1);
     static bool maybeThrowArgumentError(QScriptContext *context, QScriptValue & error, bool arg_is_valid);
@@ -172,8 +173,11 @@ private slots:
     void handleWindowOpened(Message::WindowType);
     void handleEquippedItemChanged();
 
+    void handleReadLine(QString line);
+
     void dispatchTimeout();
 
+    void cleanup();
 };
 
 
@@ -183,7 +187,7 @@ public:
     PhysicsDoer(Game * game);
 public slots:
     void start();
-    void stop();
+    void cleanup();
 private:
     static const int c_physics_fps;
 
