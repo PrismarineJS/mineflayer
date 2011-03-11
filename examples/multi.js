@@ -1,4 +1,6 @@
-
+mf.include("dump.js");
+mf.include("connection_notice.js");
+mf.include("chat_printer.js");
 mf.include("extra_includer.js");
 mf.include("giver.js");
 mf.include("auto_respawn.js");

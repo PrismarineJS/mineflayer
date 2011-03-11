@@ -19,23 +19,64 @@ var chest_data = [];
 
 var cant_navto_func = function() {
     var this_data = chest_data.shift();
-    this_data.respond("I can't find a path to the chest at (" + this_data.chest_position.x + ", " + this_data.chest_position.y + ", " + this.data_chest_position.z + ").");
+    this_data.respond("I can't find a path to the chest at (" + this_data.chest_position.x + ", " + this_data.chest_position.y + ", " + this_data_chest_position.z + ").");
     if (chest_data.length !== 0) {
         dump_to_chest();
     } else {
         mf.chat("Chest navigation complete.  Awaiting new commands.");
     }
-}
+};
+
+var on_chest_opened = function(window_type) {
+    if (window_type !== mf.WindowType.Chest) {
+        return;
+    }
+    if (chest_data.length === 0) {
+        return;
+    }
+    var this_data = chest_data.shift();
+    var current_inventory = inventory.condensedSnapshot();
+    if (this_data.item_type === undefined) {
+        for (var type in current_inventory) {
+            type = parseInt(type);
+            if (current_inventory.hasOwnProperty(type)) {
+                var item_slot = inventory.itemSlot(type);
+                if (item_slot === undefined) {
+                    continue;
+                }
+                for (var chest_slot = 0; chest_slot < 54; chest_slot++) {
+                    var chest_item = mf.uniqueWindowItem(chest_slot);
+                    if (chest_item.type === type || chest_item.type === mf.ItemType.NoItem) {
+                        if (chest_item.count < mf.itemStackHeight(chest_item.type) || chest_item.type === mf.ItemType.NoItem) {
+                            mf.clickInventorySlot(item_slot,mf.MouseButton.Left);
+                            mf.clickUniqueSlot(chest_slot,mf.MouseButton.Left);
+                            mf.clickInventorySlot(item_slot,mf.MouseButton.Left);
+                        }
+                    }
+                    if (mf.inventoryItem(item_slot).id !== type) {
+                        //No more items here
+                        break;
+                    }
+        
+                }
+            }
+        }
+    } else {
+        mf.chat("No.");
+    }
+    mf.closeWindow();
+    if (chest_data.length !== 0) {
+        dump_to_chest();
+    } else {
+        mf.chat("Chest navigation complete.  Awaiting new commands.");
+    }
+};
+
+mf.onWindowOpened(on_chest_opened);
 
 var dump_func = function() {
-    var this_data = chest_data.shift();
-    var current_inventory = inventory.snapshot();
-    if (chest_data.length !== 0) {
-        dump_to_chest();
-    } else {
-        mf.chat("Chest navigation complete.  Awaiting new commands.");
-    }
-}
+    mf.hax.activateBlock(chest_data[0].chest_position);
+};
 
 var dump_to_chest = function() {
     if (chest_data.length !== 0) {
@@ -50,7 +91,7 @@ var dump_to_chest = function() {
             this_data.respond("Going to go dump everything into chest at (" + this_data.chest_position.x +", " + this_data.chest_position.y + ", " + this_data.chest_position.z + ").");
         }
         navigator.navigateTo(this_data.chest_position,{
-            end_radius : 4,
+            end_radius : 3,
             cant_find_func : cant_navto_func,
             arrived_func : dump_func
         });
@@ -69,7 +110,7 @@ var dump = function(chest_position, respond, item_type, item_count) {
     if (chest_data.length === 1) {
         dump_to_chest();
     }
-}
+};
 
 var dump_command = function(speaker,args,respond) {
 /*
@@ -136,7 +177,7 @@ var dump_command = function(speaker,args,respond) {
         location_type = 2;
     }
     if (chest_position === undefined) {
-        switch(data_obj.location_type) {
+        switch(location_type) {
             case 0:
                 respond("I couldn't find any chests near me.");
                 return;
