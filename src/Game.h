@@ -9,6 +9,7 @@
 #include <QQueue>
 #include <QWaitCondition>
 #include <QTime>
+#include <QSet>
 
 class Digger;
 
@@ -198,6 +199,8 @@ private:
     static const Int3D c_side_offset[];
 
     Server m_server;
+
+    QSet<QChar> m_legal_chat_chars;
 
     QTimer * m_position_update_timer;
     Int3D m_digging_location;

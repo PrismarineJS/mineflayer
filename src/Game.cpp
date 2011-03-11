@@ -61,6 +61,9 @@ Game::Game(QUrl connection_info) :
 {
     Item::initializeStaticData();
 
+    foreach (QChar c, QString(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~⌂ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»" ))
+        m_legal_chat_chars.insert(c);
+
     bool success;
     success = connect(&m_server, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SLOT(handleLoginStatusChanged(Server::LoginStatus)));
     Q_ASSERT(success);
@@ -777,6 +780,12 @@ void Game::sendChat(QString message)
 {
     QMutexLocker locker(&m_mutex);
 
+    // remove illegal characters
+    QString new_message = "";
+    foreach (QChar c, message)
+        if (m_legal_chat_chars.contains(c))
+            new_message.append(c);
+    message = new_message;
     QString header = "";
     if (message.startsWith("/tell ")) {
         // repeate any "/tell <username> " header on all the chat messages.
@@ -791,7 +800,6 @@ void Game::sendChat(QString message)
     foreach (QString sub_message, message.split('\n')) {
         if (sub_message.isEmpty())
             continue;
-        // TODO: get rid of illegal characters
         for (int i = 0; i < sub_message.length(); i += lenght_limit) {
             m_server.sendChat(header + sub_message.mid(i, lenght_limit));
         }
