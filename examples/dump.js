@@ -52,8 +52,10 @@ var on_chest_opened = function(window_type) {
                             mf.clickUniqueSlot(chest_slot,mf.MouseButton.Left);
                             mf.clickInventorySlot(item_slot,mf.MouseButton.Left);
                         }
+                    } else {
+                        continue;
                     }
-                    if (mf.inventoryItem(item_slot).id !== type) {
+                    if (mf.inventoryItem(item_slot).type !== type) {
                         //No more items here
                         break;
                     }
