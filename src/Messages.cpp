@@ -149,6 +149,11 @@ void UpdateSignRequest::writeMessageBody(QDataStream &stream)
     writeValue(stream, line_4);
 }
 
+void DisconnectRequest::writeMessageBody(QDataStream &stream)
+{
+    writeValue(stream, reason);
+}
+
 int IncomingResponse::parseValue(QByteArray buffer, int index, bool &value)
 {
     qint8 tmp = 0;

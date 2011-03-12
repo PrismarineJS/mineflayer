@@ -24,16 +24,16 @@ const Message::BlockFaceDirection Server::c_to_notch_face[] = {
 
 Server::Server(QUrl connection_info) :
     m_connection_info(connection_info),
-    m_socket_thread(NULL),
+    m_thread(NULL),
     m_parser(NULL),
     m_network(NULL),
     m_physics_timer(NULL),
     m_login_state(Disconnected)
 {
-    // we run in m_socket_thread
-    m_socket_thread = new QThread(this);
-    m_socket_thread->start();
-    this->moveToThread(m_socket_thread);
+    // we run in m_thread
+    m_thread = new QThread(this);
+    m_thread->start();
+    this->moveToThread(m_thread);
 
     bool success;
     success = connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(cleanup()));
@@ -48,14 +48,12 @@ Server::~Server()
 
 void Server::initialize()
 {
-    Q_ASSERT(QThread::currentThread() == m_socket_thread);
+    Q_ASSERT(QThread::currentThread() == m_thread);
 
     bool success;
 
     m_socket = new QTcpSocket(this);
     success = connect(m_socket, SIGNAL(connected()), this, SLOT(handleConnected()));
-    Q_ASSERT(success);
-    success = connect(m_socket, SIGNAL(disconnected()), QCoreApplication::instance(), SLOT(quit()));
     Q_ASSERT(success);
     success = connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(handleSocketError(QAbstractSocket::SocketError)));
     Q_ASSERT(success);
@@ -67,7 +65,7 @@ void Server::initialize()
 
 void Server::socketConnect()
 {
-    if (QThread::currentThread() != m_socket_thread) {
+    if (QThread::currentThread() != m_thread) {
         bool success = QMetaObject::invokeMethod(this, "socketConnect", Qt::QueuedConnection);
         Q_ASSERT(success);
         Q_UNUSED(success);
@@ -79,30 +77,19 @@ void Server::socketConnect()
     m_socket->connectToHost(m_connection_info.host(), m_connection_info.port(25565));
 }
 
-void Server::finishWritingAndDisconnect()
-{
-    // put a dummy message on the queue
-    this->sendMessage(QSharedPointer<OutgoingRequest>(new DummyDisconnectMessage()));
-}
-
 void Server::sendMessage(QSharedPointer<OutgoingRequest> msg)
 {
-    if (QThread::currentThread() != m_socket_thread) {
+    if (QThread::currentThread() != m_thread) {
         bool success = QMetaObject::invokeMethod(this, "sendMessage", Qt::QueuedConnection, Q_ARG(QSharedPointer<OutgoingRequest>, msg));
         Q_ASSERT(success);
         Q_UNUSED(success);
         return;
     }
 
-    if (m_socket->isOpen()) {
-        if (msg.data()->messageType == Message::DummyDisconnect) {
-            m_socket->disconnectFromHost();
-            return;
-        }
-
-        QDataStream stream(m_socket);
-        msg.data()->writeToStream(stream);
-    }
+    if (!m_socket->isOpen())
+        return;
+    QDataStream stream(m_socket);
+    msg.data()->writeToStream(stream);
 }
 
 void Server::sendChat(QString message)
@@ -160,7 +147,14 @@ void Server::handleConnected()
 
 void Server::cleanup()
 {
-    m_socket_thread->exit();
+    Q_ASSERT(QThread::currentThread() == m_thread);
+
+    sendMessage(QSharedPointer<OutgoingRequest>(new DisconnectRequest));
+    // flush and disconnect
+    m_socket->waitForBytesWritten(1000);
+    m_socket->disconnectFromHost();
+
+    m_thread->exit();
     changeLoginState(Disconnected);
 }
 
