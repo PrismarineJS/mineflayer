@@ -90,8 +90,6 @@ public slots:
     // actually connect to the server
     void socketConnect();
 
-    void finishWritingAndDisconnect();
-
 public:
     void sendPositionAndLook(EntityPosition positionAndLook);
     // sends a chat message. can start with '/' to be a command.
@@ -111,7 +109,7 @@ private:
     static const QString c_auth_server;
     QUrl m_connection_info;
 
-    QThread * m_socket_thread;
+    QThread * m_thread;
     QTcpSocket * m_socket;
     IncomingMessageParser * m_parser;
     QNetworkAccessManager * m_network;

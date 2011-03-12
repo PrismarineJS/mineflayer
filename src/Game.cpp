@@ -187,13 +187,6 @@ void Game::start()
     m_server.socketConnect();
 }
 
-void Game::shutdown(int return_code)
-{
-    QMutexLocker locker(&m_mutex);
-
-    m_return_code = return_code;
-    m_server.finishWritingAndDisconnect();
-}
 QSharedPointer<Game::Entity> Game::entity(int entity_id)
 {
     QMutexLocker locker(&m_mutex);

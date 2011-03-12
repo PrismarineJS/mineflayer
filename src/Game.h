@@ -104,7 +104,6 @@ public:
     Game(QUrl connection_info);
 
     void start();
-    void shutdown(int return_code);
 
     // call every frame passing it the amount of time since the last frame
     void doPhysics(float delta_seconds);
