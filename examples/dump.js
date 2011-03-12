@@ -170,23 +170,56 @@ var on_chest_opened = function(window_type) {
 mf.onWindowOpened(on_chest_opened);
 
 var dump_func = function() {
-    mf.hax.activateBlock(chest_data[0].chest_position);
+    var this_data = chest_data[0];
+    if (mf.blockAt(this_data.chest_position).type !== mf.ItemType.Chest) {
+        this_data.chest_position = findChestNearestPoint(this_data.chest_position);
+        if (this_data.chest_position === undefined) {
+            this_data.respond("Unable to find any chest near " + this_data.chest_position + ".");
+            chest_data.shift();
+            if (chest_data.length !== 0) {
+                dump_to_chest();
+            }
+            return;
+        }
+        if (this_data.item_type !== undefined) {
+            if (this_data.item_count !== undefined) {
+                this_data.respond("Going to go dump " + this_data.item_count + " " + items.nameForId(this_data.item_type) + " into chest at " + this_data.chest_position + ".");
+            } else {
+                this_data.respond("Going to go dump all of my " + items.nameForId(this_data.item_type) + " into chest at " + this_data.chest_position + ".");
+            }
+        } else {
+            this_data.respond("Going to go dump everything into chest at (" + this_data.chest_position + ".");
+        }
+        navigator.navigateTo(this_data.chest_position,{
+            end_radius : 3,
+            cant_find_func : cant_navto_func,
+            arrived_func : dump_func
+        });
+        return;
+    }
+    mf.hax.activateBlock(this_data.chest_position);
 };
 
 var dump_to_chest = function() {
     if (chest_data.length !== 0) {
         var this_data = chest_data[0];
-        if (this_data.item_type !== undefined) {
-            if (this_data.item_count !== undefined) {
-                this_data.respond("Going to go dump " + this_data.item_count + " " + items.nameForId(this_data.item_type) + " into chest at (" + this_data.chest_position.x + ", " + this_data.chest_position.y + ", " + this_data.chest_position.z + ").");
+        var distance = 3;
+        if (mf.blockAt(this_data.chest_position).type === mf.ItemType.Chest) {
+            if (this_data.item_type !== undefined) {
+                if (this_data.item_count !== undefined) {
+                    this_data.respond("Going to go dump " + this_data.item_count + " " + items.nameForId(this_data.item_type) + " into chest at (" + this_data.chest_position.x + ", " + this_data.chest_position.y + ", " + this_data.chest_position.z + ").");
+                } else {
+                    this_data.respond("Going to go dump all of my " + items.nameForId(this_data.item_type) + " into chest at (" + this_data.chest_position.x + ", " + this_data.chest_position.y + ", " + this_data.chest_position.z + ").");
+                }
             } else {
-                this_data.respond("Goin to go dump all of my " + items.nameForId(this_data.item_type) + " into chest at (" + this_data.chest_position.x + ", " + this_data.chest_position.y + ", " + this_data.chest_position.z + ").");
+                this_data.respond("Going to go dump everything into chest at (" + this_data.chest_position.x +", " + this_data.chest_position.y + ", " + this_data.chest_position.z + ").");
             }
         } else {
-            this_data.respond("Going to go dump everything into chest at (" + this_data.chest_position.x +", " + this_data.chest_position.y + ", " + this_data.chest_position.z + ").");
+            this_data.respond("Going to go near that location and see the nearest chests.");
+            distance = 32;
         }
         navigator.navigateTo(this_data.chest_position,{
-            end_radius : 3,
+            end_radius : distance,
             cant_find_func : cant_navto_func,
             arrived_func : dump_func
         });
@@ -267,9 +300,8 @@ var dump_command = function(speaker,args,respond) {
         if (matching_location === undefined) {
             return;
         }
-        matching_location = matching_location.point;
-        chest_position = findChestNearestPoint(matching_location);
-        location_type = 2;
+        chest_position = matching_location.point;
+        mf.debug(chest_position + ", " + typeof chest_position);
     }
     if (chest_position === undefined) {
         switch(location_type) {
@@ -278,9 +310,6 @@ var dump_command = function(speaker,args,respond) {
                 return;
             case 1:
                 respond("I couldn't find any chests near you.");
-                return;
-            case 2:
-                respond("I couldn't find any chests near " + location_string + ".");
                 return;
             default:
                 // This should never happen...
