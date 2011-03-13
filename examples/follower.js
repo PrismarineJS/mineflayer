@@ -19,9 +19,8 @@ mf.include("chat_commands.js");
         if (isNaN(distance)) {
             distance = 3;
         }
-        var player = player_tracker.entityForPlayer(player_tracker.findUsername(playerName));
+        var player = player_tracker.findUserEntityUnambiguously(playerName);
         if (player === undefined) {
-            responder_func("I don't know who " + playerName + " is, or where they are.");
             return;
         }
         responder_func("I'm now following " + player.username + ".");

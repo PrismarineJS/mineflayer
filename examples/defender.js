@@ -12,7 +12,7 @@ mf.include("arrays.js");
         if (name === undefined) {
             name = speaker;
         }
-        var entity = player_tracker.resolveUserEntityUnambiguously(name, speaker, responder_func);
+        var entity = player_tracker.findUserEntityUnambiguously(name, speaker, responder_func);
         if (entity === undefined) {
             return;
         }
