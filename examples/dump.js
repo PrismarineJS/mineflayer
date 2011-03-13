@@ -173,10 +173,8 @@ var dump_to_chest = function() {
     if (chest_data.length === 0) {
         return;
     }
-    mf.debug("1");
     var this_data = chest_data[0];
     if (mf.blockAt(this_data.chest_position).type !== mf.ItemType.Chest) {
-        mf.debug("1.1");
         if (mf.self().position.floored().distanceTo(this_data.chest_position) <= 64) {
             this_data.chest_position = findChestNearestPoint(this_data.chest_position);
             if (this_data.chest_position === undefined) {
@@ -201,7 +199,6 @@ var dump_to_chest = function() {
                 arrived_func : dump_to_chest
             });
         } else {
-            mf.debug("1.2");
             this_data.respond("Going to go near that location and see the nearest chests.");
             navigator.navigateTo(this_data.chest_position,{
                 end_radius : 32,
@@ -305,7 +302,6 @@ var dump_command = function(speaker,args,respond) {
             return;
         }
         chest_position = matching_location.point;
-        mf.debug(chest_position + ", " + typeof chest_position);
     }
     if (chest_position === undefined) {
         switch(location_type) {
