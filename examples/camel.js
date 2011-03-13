@@ -69,12 +69,11 @@ mf.include("items.js");
 
     var list = function(username,args,respond) {
         current_inventory = inventory.condensedSnapshot();
-        respond("My Inventory: ");
         more_respond = [];
         for (var type in current_inventory) {
-            more_respond.push(items.nameForId(type) + " x " + current_inventory[type]);
+            more_respond.push(current_inventory[type] + " " + items.nameForId(type));
         }
-        respond(more_respond.join(", "));
+        respond("My Inventory: " + more_respond.join(", "));
     };
 
     chat_commands.registerCommand("list",list,0,0);
