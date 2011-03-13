@@ -169,61 +169,65 @@ var on_chest_opened = function(window_type) {
 
 mf.onWindowOpened(on_chest_opened);
 
-var dump_func = function() {
-    var this_data = chest_data[0];
-    if (mf.blockAt(this_data.chest_position).type !== mf.ItemType.Chest) {
-        this_data.chest_position = findChestNearestPoint(this_data.chest_position);
-        if (this_data.chest_position === undefined) {
-            this_data.respond("Unable to find any chest near " + this_data.chest_position + ".");
-            chest_data.shift();
-            if (chest_data.length !== 0) {
-                dump_to_chest();
-            }
-            return;
-        }
-        if (this_data.item_type !== undefined) {
-            if (this_data.item_count !== undefined) {
-                this_data.respond("Going to go dump " + this_data.item_count + " " + items.nameForId(this_data.item_type) + " into chest at " + this_data.chest_position + ".");
-            } else {
-                this_data.respond("Going to go dump all of my " + items.nameForId(this_data.item_type) + " into chest at " + this_data.chest_position + ".");
-            }
-        } else {
-            this_data.respond("Going to go dump everything into chest at (" + this_data.chest_position + ".");
-        }
-        navigator.navigateTo(this_data.chest_position,{
-            end_radius : 3,
-            cant_find_func : cant_navto_func,
-            arrived_func : dump_func
-        });
+var dump_to_chest = function() {
+    if (chest_data.length === 0) {
         return;
     }
-    mf.hax.activateBlock(this_data.chest_position);
-};
-
-var dump_to_chest = function() {
-    if (chest_data.length !== 0) {
-        var this_data = chest_data[0];
-        var distance = 3;
-        if (mf.blockAt(this_data.chest_position).type === mf.ItemType.Chest) {
+    mf.debug("1");
+    var this_data = chest_data[0];
+    if (mf.blockAt(this_data.chest_position).type !== mf.ItemType.Chest) {
+        mf.debug("1.1");
+        if (mf.self().position.floored().distanceTo(this_data.chest_position) <= 64) {
+            this_data.chest_position = findChestNearestPoint(this_data.chest_position);
+            if (this_data.chest_position === undefined) {
+                this_data.respond("Unable to find any chest near " + this_data.chest_position + ".");
+                chest_data.shift();
+                if (chest_data.length !== 0) {
+                    dump_to_chest();
+                }
+            }
             if (this_data.item_type !== undefined) {
                 if (this_data.item_count !== undefined) {
-                    this_data.respond("Going to go dump " + this_data.item_count + " " + items.nameForId(this_data.item_type) + " into chest at (" + this_data.chest_position.x + ", " + this_data.chest_position.y + ", " + this_data.chest_position.z + ").");
+                    this_data.respond("Going to go dump " + this_data.item_count + " " + items.nameForId(this_data.item_type) + " into chest at " + this_data.chest_position + ".");
                 } else {
-                    this_data.respond("Going to go dump all of my " + items.nameForId(this_data.item_type) + " into chest at (" + this_data.chest_position.x + ", " + this_data.chest_position.y + ", " + this_data.chest_position.z + ").");
+                    this_data.respond("Going to go dump all of my " + items.nameForId(this_data.item_type) + " into chest at " + this_data.chest_position + ".");
                 }
             } else {
-                this_data.respond("Going to go dump everything into chest at (" + this_data.chest_position.x +", " + this_data.chest_position.y + ", " + this_data.chest_position.z + ").");
+                this_data.respond("Going to go dump everything into chest at (" + this_data.chest_position + ".");
             }
+            navigator.navigateTo(this_data.chest_position,{
+                end_radius : 3,
+                cant_find_func : cant_navto_func,
+                arrived_func : dump_to_chest
+            });
         } else {
+            mf.debug("1.2");
             this_data.respond("Going to go near that location and see the nearest chests.");
-            distance = 32;
+            navigator.navigateTo(this_data.chest_position,{
+                end_radius : 32,
+                cant_find_func : cant_navto_func,
+                arrived_func : dump_to_chest
+            });
         }
-        navigator.navigateTo(this_data.chest_position,{
-            end_radius : distance,
-            cant_find_func : cant_navto_func,
-            arrived_func : dump_func
-        });
-
+    } else {
+        if (mf.self().position.floored().distanceTo(this_data.chest_position) <= 3) {
+            mf.hax.activateBlock(this_data.chest_position);
+        } else {
+            if (this_data.item_type !== undefined) {
+                if (this_data.item_count !== undefined) {
+                    this_data.respond("Going to go dump " + this_data.item_count + " " + items.nameForId(this_data.item_type) + " into chest at " + this_data.chest_position + ".");
+                } else {
+                    this_data.respond("Going to go dump all of my " + items.nameForId(this_data.item_type) + " into chest at " + this_data.chest_position + ".");
+                }
+            } else {
+                this_data.respond("Going to go dump everything into chest at (" + this_data.chest_position + ".");
+            }
+            navigator.navigateTo(this_data.chest_position,{
+                end_radius : 3,
+                cant_find_func : cant_navto_func,
+                arrived_func : dump_to_chest
+            });
+        }
     }
 };
 
@@ -353,4 +357,11 @@ var dump_command = function(speaker,args,respond) {
         dump(chest_position,respond,item_type);
     }
 };
+
+var reset = function(speaker,args,respond) {
+    chest_data = [];
+    
+};
+
+chat_commands.registerCommand("stop",reset,0,0);
 chat_commands.registerCommand("dump",dump_command,0,Infinity);
