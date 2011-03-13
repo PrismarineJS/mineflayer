@@ -27,11 +27,14 @@ mf.include("quitter.js");
     chat_commands.registerCommand("goto", function(username, args, responder_func) {
         var end_radius;
         if (args.length >= 2) {
-            var end_radius = parseInt(args[args.length - 1]);
-            if (!isNaN(end_radius)) {
-                args.pop();
-            } else {
-                end_radius = undefined;
+            var end_radius_string_maybe = args[args.length - 1];
+            if (!end_radius_string_maybe.endsWith(")")) {
+                var end_radius = parseInt(end_radius_string_maybe);
+                if (!isNaN(end_radius)) {
+                    args.pop();
+                } else {
+                    end_radius = undefined;
+                }
             }
         }
         var name = args.join(" ");
@@ -48,7 +51,7 @@ mf.include("quitter.js");
     var current_checker_interval_id;
     function goToPoint(end, end_radius, responder_func) {
         stopChecking();
-        responder_func("looking for a path from " + mf.self().position.floored() + " to " + end + "...");
+        responder_func("looking for a path from " + mf.self().position.toNotch().floored() + " to " + end.toNotch().floored() + "...");
         function startMonitor() {
             var previous_position;
             current_checker_interval_id = mf.setInterval(function() {
@@ -57,7 +60,7 @@ mf.include("quitter.js");
                     return;
                 }
                 var current_position = mf.self().position;
-                if (previous_position !== undefined && current_position.distanceTo(previous_position) < 1) {
+                if (previous_position !== undefined && current_position.distanceTo(previous_position) < 3) {
                     // i'm stuck
                     stopChecking();
                     goToPoint(end, end_radius, responder_func);
