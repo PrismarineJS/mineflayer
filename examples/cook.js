@@ -32,6 +32,7 @@ mf.include("navigator.js");
             responder_func("no furnaces within " + radius + " meters");
             return;
         }
+        responder_func("found a furnace");
         var furnace_position = furnaces[0];
         var checker_inverval_id;
         function checkTheStove() {
@@ -75,6 +76,7 @@ mf.include("navigator.js");
                     responder_func("done cooking bacon");
                     mf.clearInterval(checker_inverval_id);
                     checker_inverval_id = undefined;
+                    mf.closeWindow();
                 }
             }
         }
