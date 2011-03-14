@@ -226,7 +226,7 @@ chat_commands.registerCommand("craft", function() {
 
 chat_commands.registerCommand("loot", function() {
     var chest_pts = block_finder.findNearest(mf.self().position, mf.ItemType.Chest, 20, 1);
-    
+
     if (chest_pts.length === 0) {
         mf.chat("I see no chest.");
         return;
@@ -257,5 +257,4 @@ chat_commands.registerCommand("loot", function() {
             mf.hax.activateBlock(chest_pt);
         },
     });
-    
 });
