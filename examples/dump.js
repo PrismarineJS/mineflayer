@@ -19,7 +19,7 @@ var chest_data = [];
 
 var cant_navto_func = function() {
     var this_data = chest_data.shift();
-    this_data.respond("I can't find a path to the chest at (" + this_data.chest_position.x + ", " + this_data.chest_position.y + ", " + this_data_chest_position.z + ").");
+    this_data.respond("I can't find a path to the chest at " + this_data.chest_position + ".");
     if (chest_data.length !== 0) {
         dump_to_chest();
     } else {
