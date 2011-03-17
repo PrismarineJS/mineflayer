@@ -55,6 +55,8 @@ void Server::initialize()
     m_socket = new QTcpSocket(this);
     success = connect(m_socket, SIGNAL(connected()), this, SLOT(handleConnected()));
     Q_ASSERT(success);
+    success = connect(m_socket, SIGNAL(disconnected()), QCoreApplication::instance(), SLOT(quit()));
+    Q_ASSERT(success);
     success = connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(handleSocketError(QAbstractSocket::SocketError)));
     Q_ASSERT(success);
 
@@ -150,9 +152,11 @@ void Server::cleanup()
     Q_ASSERT(QThread::currentThread() == m_thread);
 
     sendMessage(QSharedPointer<OutgoingRequest>(new DisconnectRequest));
-    // flush and disconnect
-    m_socket->waitForBytesWritten(1000);
-    m_socket->disconnectFromHost();
+    if (m_socket->state() != QAbstractSocket::UnconnectedState) {
+        // flush and disconnect
+        m_socket->waitForBytesWritten(1000);
+        m_socket->disconnectFromHost();
+    }
 
     m_thread->exit();
     changeLoginState(Disconnected);
