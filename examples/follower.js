@@ -4,22 +4,22 @@ mf.include("chat_commands.js");
 
 (function() {
     var current_following_interval_id;
-    function follow(username, args, responder_func) {
+    function follow(speaker, args, responder_func) {
         stop();
         var playerName = args[0];
         if (playerName !== undefined) {
             if (playerName === "me") {
-                playerName = username;
+                playerName = speaker;
             }
             args.shift();
         } else {
-            playerName = username;
+            playerName = speaker;
         }
         var distance = parseInt(args.shift());
         if (isNaN(distance)) {
             distance = 3;
         }
-        var player = player_tracker.findUserEntityUnambiguously(playerName);
+        var player = player_tracker.findUserEntityUnambiguously(playerName, speaker, responder_func);
         if (player === undefined) {
             return;
         }
@@ -50,10 +50,10 @@ mf.include("chat_commands.js");
     };
     chat_commands.registerCommand("follow", follow, 0, 2);
 
-    function stalk(username, args, responder_func) {
+    function stalk(speaker, args, responder_func) {
         // same as follow, but with a long distance
         args.push("12");
-        follow(username, args, responder_func);
+        follow(speaker, args, responder_func);
     }
     chat_commands.registerCommand("stalk", stalk, 1);
 
