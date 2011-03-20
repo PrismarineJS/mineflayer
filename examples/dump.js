@@ -195,6 +195,7 @@ var dump_to_chest = function() {
             }
             navigator.navigateTo(this_data.chest_position,{
                 end_radius : 3,
+                timeout_milliseconds: 6 * 1000,
                 cant_find_func : cant_navto_func,
                 arrived_func : dump_to_chest
             });
@@ -202,6 +203,7 @@ var dump_to_chest = function() {
             this_data.respond("Going to go near that location and see the nearest chests.");
             navigator.navigateTo(this_data.chest_position,{
                 end_radius : 32,
+                timeout_milliseconds: 6 * 1000,
                 cant_find_func : cant_navto_func,
                 arrived_func : dump_to_chest
             });
@@ -221,6 +223,7 @@ var dump_to_chest = function() {
             }
             navigator.navigateTo(this_data.chest_position,{
                 end_radius : 3,
+                timeout_milliseconds: 6 * 1000,
                 cant_find_func : cant_navto_func,
                 arrived_func : dump_to_chest
             });
