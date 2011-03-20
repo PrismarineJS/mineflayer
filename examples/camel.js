@@ -29,7 +29,12 @@ mf.include("items.js");
             for (var i = 0; i < inventory.slot_count; i++) {
                 dropSlots.push({slot: i, count: "*"});
             }
-            respond("Dumping everything!");
+            respond("Dropping everything!");
+            var player = player_tracker.entityForPlayer(username);
+            if (player !== undefined) {
+                var position = player.position;
+                mf.lookAt(position);
+            }
             mf.openInventoryWindow();
         } else if (args.length >= 1) {
             var item_count = undefined;
@@ -45,9 +50,9 @@ mf.include("items.js");
                 return;
             }
             if (item_count === undefined) {
-                respond("Dumping all " + item.name + ".");
+                respond("Dropping all " + item.name + ".");
             } else {
-                respond("Dumping " + item_count + " " + item.name + ".");
+                respond("Dropping " + item_count + " " + item.name + ".");
             }
             
             for (var i = 0; i < current_inventory.length; i++) {
@@ -62,6 +67,11 @@ mf.include("items.js");
                         break;
                     }
                 }
+            }
+            var player = player_tracker.entityForPlayer(username);
+            if (player !== undefined) {
+                var position = player.position;
+                mf.lookAt(position);
             }
             mf.openInventoryWindow();
         }
