@@ -4,32 +4,25 @@ mf.include("player_tracker.js");
 mf.include("block_finder.js");
 
 (function() {
-    var height_level = undefined;
+    var min_height_level = undefined;
+    var max_height_level = undefined;
     var player_position = undefined;
     var respond = undefined;
     var dirt_position = undefined;
-    var find_dirt = function(position,radius, min_height) {
+    var radius = undefined;
+    var find_dirt = function() {
         if (radius === undefined) {
-            radius = 32;
+            radius = 8;
         }
-        var dirt_position = block_finder.findHighest(position,{
+        var dirt_position = block_finder.findHighest(player_position,{
             radius: radius,
             block_type: function(block_type) {
                 return (block_type === mf.ItemType.Sand || block_type === mf.ItemType.Grass || block_type === mf.ItemType.Dirt || block_type === mf.ItemType.Gravel);},
-            bottom_threshold: min_height
+            bottom_threshold: min_height_level,
+            top_threshold: max_height_level
         });
         if (dirt_position.length === 0) {
-
-            dirt_position = block_finder.findHighest(position,{
-                radius: radius,
-                block_type: mf.ItemType.Dirt,
-                bottom_threshold: min_height
-            });
-            if (dirt_position.length === 0) {
                 return undefined;
-            } else {
-                return dirt_position.shift();
-            }
         } else {
             return dirt_position.shift();
         }
@@ -45,8 +38,10 @@ mf.include("block_finder.js");
     
     var stop = function() {
         dirt_position = undefined;
-        height_level = undefined;
+        min_height_level = undefined;
+        max_height_level = undefined;
         player_position = undefined;
+        radius = undefined;
     };
     
     var no_path_found = function() {
@@ -55,11 +50,10 @@ mf.include("block_finder.js");
     };
 
     var mine_dirt = function() {
-        dirt_position = find_dirt(player_position, 8, height_level);
+        dirt_position = find_dirt();
         if (dirt_position === undefined) {
-            respond("I can't find any dirt above your height!");
-            height_level = undefined;
-            player_position = undefined;
+            respond("I can't find anything else to flatten!");
+            stop();
             return;
         }
         navigator.navigateTo(dirt_position,{
@@ -72,6 +66,19 @@ mf.include("block_finder.js");
     };
 
     mf.onStoppedDigging(mine_dirt);
+    var start_mining = function() {
+        dirt_position = find_dirt();
+        if (dirt_position === undefined) {
+            respond("I don't see anything to flatten!");
+            stop();
+            return;
+        } else {
+            max_height_level = dirt_position.z;
+            respond("Going to go flatten.");
+        }
+        mine_dirt();
+        
+    };
     
     chat_commands.registerCommand("flatten",function(speaker,args,responder_fun) {
         var player = player_tracker.entityForPlayer(speaker);
@@ -79,18 +86,29 @@ mf.include("block_finder.js");
             responder_fun("I can't see you, " + speaker + ".");
             return;
         }
+        if (args.length === 1) {
+            var arg = args.shift();
+            if (isNaN(arg)) {
+                responder_fun("I don't understand " + arg + ".");
+                return;
+            } else {
+                radius = arg;
+            }
+        } else {
+            radius = undefined;
+        }
         player_position = player.position;
         respond = responder_fun;
-        height_level = player.position.z;
+        min_height_level = player.position.z;
         navigator.navigateTo(player.position,{
             end_radius: 16,
             timeout_milliseconds: 1000 * 10,
-            arrived_func: mine_dirt,
+            arrived_func: start_mining,
             cant_find_func: function() {
                 responder_fun("Sorry, I can't get to you!");
             }
         });
-    },0,0);
+    },0,1);
 
     chat_commands.registerCommand("stop",stop,0,0);
 })();
