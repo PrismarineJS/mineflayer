@@ -423,7 +423,7 @@ mf.hax.positionUpdateInterval()
 mf.hax.setGravityEnabled(value)
 
 /**
- * Pretend that water and lava are solid.
+ * Pretend that water is solid.
  * @param {Boolean} value
  */
 mf.hax.setJesusModeEnabled(value)
