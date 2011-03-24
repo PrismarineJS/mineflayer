@@ -16,6 +16,7 @@ const float Game::c_player_apothem = 0.32; // notch's client F3 says 0.30, but t
 const float Game::c_player_height = 1.74; // tested with a binary search
 const float Game::c_player_half_height = Game::c_player_height / 2;
 const float Game::c_jump_speed = 8.2f; // seems good
+const float Game::c_yaw_speed = 3.0f; // seems good
 
 const int Game::c_position_update_interval_ms = 50;
 const int Game::c_chat_length_limit = 100;
@@ -334,13 +335,14 @@ void Game::handlePlayerPositionAndLookUpdated(Server::EntityPosition position)
     m_player.position.on_ground = position.on_ground;
 
     // apologize to the notchian server by echoing an identical position back
-
     m_server.sendPositionAndLook(m_player.position);
 
     if (m_position_update_timer == NULL) {
         // got first 0x0D. start the clocks
         m_player.position.yaw = position.yaw;
         m_player.position.pitch = position.pitch;
+        m_last_sent_yaw = Util::euclideanMod(m_player.position.yaw, Util::two_pi);
+        m_last_position_sent_time = QTime::currentTime();
 
         m_position_update_timer = new QTimer(this);
         m_position_update_timer->setInterval(c_position_update_interval_ms);
@@ -603,7 +605,31 @@ Int3D Game::chunkKey(const Int3D &coord)
 void Game::sendPosition()
 {
     QMutexLocker locker(&m_mutex);
-    m_server.sendPositionAndLook(m_player.position);
+
+    // increment the yaw in baby steps so that notchian clients (not the server) can keep up.
+    Server::EntityPosition sent_position = m_player.position;
+    sent_position.yaw = Util::euclideanMod(sent_position.yaw, Util::two_pi);
+    float delta_yaw = sent_position.yaw - m_last_sent_yaw;
+    if (delta_yaw < 0) {
+        if (delta_yaw < -Util::pi)
+            delta_yaw += Util::two_pi;
+    } else {
+        if (delta_yaw > Util::pi)
+            delta_yaw -= Util::two_pi;
+    }
+    float abs_delta_yaw = std::abs(delta_yaw);
+    Q_ASSERT(abs_delta_yaw < Util::pi + 0.001);
+
+    QTime now = QTime::currentTime();
+    float delta_milliseconds = m_last_position_sent_time.msecsTo(now);
+    m_last_position_sent_time = now;
+    float max_delta_yaw = delta_milliseconds / 1000 * c_yaw_speed;
+    if (abs_delta_yaw > max_delta_yaw)
+        delta_yaw = max_delta_yaw * Util::sign(delta_yaw);
+    m_last_sent_yaw = Util::euclideanMod(m_last_sent_yaw + delta_yaw, Util::two_pi);
+    sent_position.yaw = m_last_sent_yaw;
+
+    m_server.sendPositionAndLook(sent_position);
 }
 void Game::animateDigging()
 {
@@ -818,7 +844,7 @@ bool Game::placeBlock(const Int3D &block, Message::BlockFaceDirection face)
         return true;
     Int3D new_block_pos = block + c_side_offset[face];
     updateBlock(new_block_pos, Block(equipped_item.type, equipped_item.metadata, 0, 0));
-    m_server.sendPositionAndLook(m_player.position);
+    sendPosition();
     m_server.sendBlockPlacement(block, face, equipped_item);
     return true;
 }
@@ -841,7 +867,6 @@ void Game::activateBlock(const Int3D &block)
 
     Item equipped_item = m_inventory.at(m_equipped_slot_id);
 
-    m_server.sendPositionAndLook(m_player.position);
     m_server.sendBlockPlacement(block, Message::PositiveZ, equipped_item);
 }
 

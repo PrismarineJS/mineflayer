@@ -92,6 +92,7 @@ public:
     static const float c_player_height;
     static const float c_player_half_height;
     static const float c_jump_speed;
+    static const float c_yaw_speed; // rad/s
     static const int c_chat_length_limit;
     static const int c_position_update_interval_ms;
 
@@ -208,6 +209,8 @@ private:
     QTimer * m_digging_animation_timer;
 
     NamedPlayerEntity m_player;
+    float m_last_sent_yaw;
+    QTime m_last_position_sent_time;
     int m_player_health;
     QHash<Int3D, QSharedPointer<Chunk> > m_chunks;
     QHash<Int3D, QString> m_signs;

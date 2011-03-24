@@ -40,7 +40,6 @@ Bot framework:
  * command line parameters
  * handle Ctrl+C
  * document lib public functions better
- * looking doesn't sync with notchian clients correctly. try looking in smaller intervals at a time.
 
 Libs:
  * fix high level inventory management
