@@ -142,7 +142,6 @@ mf.include("Set.js");
                 if (current_end === undefined) {
                     return;
                 }
-                mf.debug("can't navigate");
                 impossible_spaces.add(this_one);
                 nextBlock();
             },
@@ -178,11 +177,10 @@ mf.include("Set.js");
                     return;
                 }
             }
-            mf.debug("unplaceable");
             impossible_spaces.add(point);
             nextBlock();
         })) {
-            responder_func("out of " + current_block.name);
+            current_responder_func("out of " + current_block.name);
             stop();
         }
     }
