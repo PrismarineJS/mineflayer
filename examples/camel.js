@@ -83,7 +83,7 @@ mf.include("items.js");
         for (var type in current_inventory) {
             more_respond.push(current_inventory[type] + " " + items.nameForId(type));
         }
-        respond("My Inventory: " + more_respond.join(", "));
+        respond("My Inventory: " + more_respond.join(", ") + ". Empty Slots: " + inventory.slotsLeft() + ".");
     };
 
     chat_commands.registerCommand("list",list,0,0);
