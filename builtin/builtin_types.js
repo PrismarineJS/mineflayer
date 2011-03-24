@@ -24,7 +24,7 @@ mf.Point.prototype.minus = function(other) {
 };
 mf.Point.prototype.scaled = function(scalar) {
     return new mf.Point(this.x * scalar, this.y * scalar, this.z * scalar);
-}
+};
 /** euclidean distance */
 mf.Point.prototype.distanceTo = function(other) {
     var dx = other.x - this.x;

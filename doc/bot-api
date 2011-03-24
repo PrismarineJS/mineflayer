@@ -13,7 +13,7 @@
 /**
  * Represents a 3D coordinate/location in meters.
  * NOTE: this East-North-Up coordinate system is different from Notch's
- * South-Up-West system.  Use toNotchCoord() and fromNotchCoord() to translate
+ * South-Up-West system.  Use toNotch() and fromNotch() to translate
  * between coordinate systems.
  * 
  * Example:
@@ -30,7 +30,7 @@
  */
 mf.Point(x, y, z)
 
-// TODO: document member functions of Point
+// TODO: document member functions of Point. you can find them in builtin/builtin_types.js.
 
 /**
  * Contains a snapshot of an entity's state.

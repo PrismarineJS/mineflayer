@@ -370,6 +370,8 @@ void Game::handlePlayerHealthUpdated(int new_health)
 void Game::handleNamedPlayerSpawned(int entity_id, QString player_name, Server::EntityPosition position, Item::ItemType held_item)
 {
     QMutexLocker locker(&m_mutex);
+    // TODO: don't assume never crouching
+    position.height = 1.62;
     Entity * entity = new NamedPlayerEntity(entity_id, position, player_name, held_item);
     m_entities.insert(entity_id, QSharedPointer<Entity>(entity));
     emit entitySpawned(QSharedPointer<Entity>(entity->clone()));
@@ -840,8 +842,8 @@ bool Game::placeBlock(const Int3D &block, Message::BlockFaceDirection face)
         qWarning() << "trying to place: " << equipped_item.type;
         return false;
     }
-    if (canPlaceBlock(block, face))
-        return true;
+    if (!canPlaceBlock(block, face))
+        return false;
     Int3D new_block_pos = block + c_side_offset[face];
     updateBlock(new_block_pos, Block(equipped_item.type, equipped_item.metadata, 0, 0));
     sendPosition();

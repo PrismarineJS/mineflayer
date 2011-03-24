@@ -18,8 +18,8 @@ const Message::BlockFaceDirection Server::c_to_notch_face[] = {
     Message::NegativeX,
     Message::NegativeY,
     Message::PositiveY,
-    Message::NegativeZ,
     Message::PositiveZ,
+    Message::NegativeZ,
 };
 
 Server::Server(QUrl connection_info) :
