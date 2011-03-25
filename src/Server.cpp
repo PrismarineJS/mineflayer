@@ -390,7 +390,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
                     for (notchian_relative_pos.y = 0; notchian_relative_pos.y < notchian_size.y; notchian_relative_pos.y++) {
                         // grab all the fields for each block at once even though they're strewn accross the data structure.
                         Block block;
-                        block.setType((Item::ItemType)decompressed.at(array_index));
+                        block.setType((Item::ItemType)(decompressed.at(array_index) & 0xff));
                         block.setMetadata((decompressed.at( metadata_offset + array_index / 2) >> nibble_shifter) & 0xf);
                         block.setLight(   (decompressed.at(    light_offset + array_index / 2) >> nibble_shifter) & 0xf);
                         block.setSkyLight((decompressed.at(sky_light_offest + array_index / 2) >> nibble_shifter) & 0xf);
