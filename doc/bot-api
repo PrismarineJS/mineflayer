@@ -302,7 +302,7 @@ mf.health()
  * Returns the block at the absolute location in the world.
  * If mf.isBlockLoaded returns false for the point, this function will return
  * some kind of Air.
- * @param {Number} point Coordinates do not need to be rounded.
+ * @param {mf.Point} point Coordinates do not need to be rounded.
  * @return {mf.Item} block object
  */
 mf.blockAt(point)
