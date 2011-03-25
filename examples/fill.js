@@ -84,8 +84,6 @@ mf.include("Set.js");
         // include both ends
         current_end = current_end.offset(1, 1, 1);
         var volume = current_end.minus(current_start);
-        current_responder_func("will fill a volume of " + volume.x + "x" + volume.y + "x" + volume.z + "=" + (volume.x * volume.y * volume.z) + " with " + current_block.name);
-        current_instructor_id = undefined; // don't need any more instructions
 
         // how much space do we need to fill
         var estimate_of_need = 0;
@@ -98,6 +96,9 @@ mf.include("Set.js");
                 }
             }
         }
+        var total_volume = (volume.x * volume.y * volume.z);
+        current_responder_func("will fill a volume of " + volume.x + "x" + volume.y + "x" + volume.z + "=" + estimate_of_need + "/" + total_volume + " with " + current_block.name);
+        current_instructor_id = undefined; // don't need any more instructions
         var supply = inventory.itemCount(current_block.id);
         if (supply < estimate_of_need) {
             current_responder_func("I'm going to need " + (estimate_of_need - supply) + " more " + current_block.name);
