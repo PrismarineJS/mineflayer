@@ -564,8 +564,6 @@ void Game::checkForDiggingStopped(const Int3D &start, const Int3D &size)
         m_server.sendDiggingStatus(Message::BlockBroken, m_digging_location);
         stopDigging();
         emit stoppedDigging(success ? BlockBroken : Aborted);
-
-        qDebug() << "got confirmation from server" << success;
     }
 }
 
