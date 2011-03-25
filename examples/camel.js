@@ -76,16 +76,28 @@ mf.include("items.js");
             mf.openInventoryWindow();
         }
     };
+    chat_commands.registerCommand("drop", drop, 0, Infinity);
 
-    var list = function(username,args,respond) {
-        current_inventory = inventory.condensedSnapshot();
-        more_respond = [];
-        for (var type in current_inventory) {
-            more_respond.push(current_inventory[type] + " " + items.nameForId(type));
+    function list(speaker_name, args, responder_func) {
+        var name_filter = args[0];
+        if (name_filter === undefined) {
+            name_filter = "";
         }
-        respond("My Inventory: " + more_respond.join(", ") + ". Empty Slots: " + inventory.slotsLeft() + ".");
-    };
+        var current_inventory = inventory.condensedSnapshot();
+        current_inventory[-1] = inventory.slotsLeft();
+        var result = [];
+        for (var type in current_inventory) {
+            var name = type !== "-1" ? items.nameForId(type) : "empty slots";
+            if (name.contains(name_filter)) {
+                result.push(current_inventory[type] + " " + name);
+            }
+        }
+        if (result.length !== 0) {
+            responder_func(result.join(", "));
+        } else {
+            responder_func("i have nothing matching \"" + name_filter + "\"");
+        }
+    }
+    chat_commands.registerCommand("list", list, 0, 1);
 
-    chat_commands.registerCommand("list",list,0,0);
-    chat_commands.registerCommand("drop",drop,0,Infinity);
 })();
