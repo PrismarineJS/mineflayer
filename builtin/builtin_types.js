@@ -44,6 +44,9 @@ mf.Point.prototype.equals = function(other) {
 mf.Point.prototype.toString = function() {
     return "(" + this.x + ", " + this.y + ", " + this.z + ")";
 };
+mf.Point.prototype.clone = function() {
+    return this.offset(0, 0, 0);
+};
 
 mf.Entity = function() {
 };

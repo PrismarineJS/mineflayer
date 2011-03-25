@@ -12,6 +12,8 @@ mf.include("Set.js");
     var current_responder_func;
     var current_start;
     var current_end;
+    var current_cursor;
+    var cursor_traversal_order;
     chat_commands.registerCommand("fill", function(speaker, args, responder_func) {
         chat_commands.talkToSelf("stop");
         var block = items.findBlockTypeUnambiguously(args[0], responder_func);
@@ -82,7 +84,7 @@ mf.include("Set.js");
         // include both ends
         current_end = current_end.offset(1, 1, 1);
         var volume = current_end.minus(current_start);
-        current_responder_func("will fill a volume of " + volume.x + "x" + volume.y + "x" + volume.z + " = " + (volume.x * volume.y * volume.z) + " with " + current_block.name);
+        current_responder_func("will fill a volume of " + volume.x + "x" + volume.y + "x" + volume.z + "=" + (volume.x * volume.y * volume.z) + " with " + current_block.name);
         current_instructor_id = undefined; // don't need any more instructions
 
         // how much space do we need to fill
@@ -101,48 +103,56 @@ mf.include("Set.js");
             current_responder_func("I'm going to need " + (estimate_of_need - supply) + " more " + current_block.name);
         }
 
+        // determine the best x,y,z traversal order
+        cursor_traversal_order = ["x", "y", "z"];
+        cursor_traversal_order.sort(function(left, right) {
+            return volume[left] - volume[right];
+        });
+        current_cursor = current_start.clone();
+        // pull back the first so that our loop includes it
+        current_cursor[cursor_traversal_order[0]]--;
+
         nextBlock();
     });
 
-    var impossible_spaces = new Set();
+    var impossible_count = 0;
     function nextBlock() {
-        var this_one;
-        (function() {
-            for (var z = current_start.z; z < current_end.z; z++) {
-                for (var y = current_start.y; y < current_end.y; y++) {
-                    for (var x = current_start.x; x < current_end.x; x++) {
-                        var point = new mf.Point(x, y, z);
-                        if (impossible_spaces.contains(point)) {
-                            continue;
+        debugger;
+        while (true) {
+            current_cursor[cursor_traversal_order[0]]++;
+            if (current_cursor[cursor_traversal_order[0]] >= current_end[cursor_traversal_order[0]]) {
+                current_cursor[cursor_traversal_order[0]] = current_start[cursor_traversal_order[0]];
+                current_cursor[cursor_traversal_order[1]]++;
+                if (current_cursor[cursor_traversal_order[1]] >= current_end[cursor_traversal_order[1]]) {
+                    current_cursor[cursor_traversal_order[1]] = current_start[cursor_traversal_order[1]];
+                    current_cursor[cursor_traversal_order[2]]++;
+                    if (current_cursor[cursor_traversal_order[2]] >= current_end[cursor_traversal_order[2]]) {
+                        // done
+                        if (impossible_count === 0) {
+                            current_responder_func("done");
+                        } else {
+                            current_responder_func("couldn't place " + impossible_count + " spaces");
                         }
-                        if (mf.blockAt(point).type !== mf.ItemType.Air) {
-                            continue;
-                        }
-                        this_one = point;
+                        stop();
                         return;
                     }
                 }
             }
-        })();
-        if (this_one === undefined) {
-            if (impossible_spaces.size() === 0) {
-                current_responder_func("done");
-            } else {
-                current_responder_func("couldn't place " + impossible_spaces.size() + " spaces");
+            if (mf.blockAt(current_cursor).type === mf.ItemType.Air) {
+                // found a spot
+                break;
             }
-            stop();
-            return;
         }
-        navigator.navigateTo(this_one, {
+        navigator.navigateTo(current_cursor, {
             "end_radius": 4,
             "arrived_func": function() {
-                placeAt(this_one);
+                placeAt(current_cursor);
             },
             "cant_find_func": function() {
                 if (current_end === undefined) {
                     return;
                 }
-                impossible_spaces.add(this_one);
+                impossible_count++;
                 nextBlock();
             },
         });
@@ -177,7 +187,7 @@ mf.include("Set.js");
                     return;
                 }
             }
-            impossible_spaces.add(point);
+            impossible_count++;
             nextBlock();
         })) {
             current_responder_func("out of " + current_block.name);
@@ -189,7 +199,7 @@ mf.include("Set.js");
         current_instructor_id = undefined;
         current_start = undefined;
         current_end = undefined;
-        impossible_spaces.clear();
+        impossible_count = 0;
     }
     chat_commands.registerCommand("stop", stop);
 })();
