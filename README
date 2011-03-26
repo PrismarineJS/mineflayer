@@ -38,9 +38,25 @@ Setting up build:
 
         Same thing as no 3D support except use "headless" instead of "no_3d"
 
-    Windows:
+    Windows, no 3D support:
 
-        TODO
+        1. Download and install the Qt SDK: http://qt.nokia.com/downloads/
+        2. Open mineflayer.pro with Qt Creator
+        3. On the left click Projects.
+        4. Edit build configuration: Release
+        5. Build Steps -> qmake -> Details -> additional arguments: CONFIG+=no_3d
+        6. On the left above the run button, change the active build to Release
+        7. Build -> Build All
+        8. This generates mineflayer.exe in your build directory. Typically
+           you run bots from the command line. To do this you'll need to copy
+           a bunch of DLLs from Qt. These DLLs are:
+           * libgcc_s_dw2-1.dll
+           * mingwm10.dll
+           * QtCore4.dll
+           * QtGui4.dll
+           * QtNetwork4.dll
+           * QtScript4.dll
+           * QtScriptTools4.dll
 
 Running bots:
 
@@ -54,6 +70,13 @@ Running bots:
     Alternately, you can put the lib folder in an environment variable called
     MINEFLAYER_LIB. When we make an installer for this package, we'll have it
     set this stuff up automatically.
+
+    To connect to a server that requires authentication:
+
+    ./mineflayer --url username@server --password 12345 bot.js
+
+    Note that all parameters passed after the bot .js file are
+    parameters passed to the bot script itself rather than mineflayer.
 
 Documentation:
     * See doc/bot-api for comprehensive API documentation.
