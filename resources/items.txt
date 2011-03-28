@@ -58,7 +58,7 @@
 0x38    DiamondOre                  64  1   0   1   1   0   0   3   Stone
 0x39    DiamondBlock                64  1   0   1   1   0   0   5   Iron
 0x3A    CraftingTable               64  1   0   1   1   1   0   2.5 Wood
-0x3B    Crops                       64  1   0   0   1   0   1   0.0 Crops
+0x3B    Crops                       64  1   0   0   1   0   0   0.0 Crops
 0x3C    Farmland                    64  1   0   1   1   0   0   0.6 Dirt
 0x3D    Furnace                     64  1   0   1   1   1   0   3.5 Stone
 0x3E    BurningFurnace              64  1   0   1   1   1   0   3.5 Stone
