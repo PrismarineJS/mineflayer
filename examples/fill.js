@@ -16,7 +16,7 @@ mf.include("Set.js");
     var cursor_traversal_order;
     chat_commands.registerCommand("fill", function(speaker, args, responder_func) {
         chat_commands.talkToSelf("stop");
-        var block = items.findBlockTypeUnambiguously(args[0], responder_func);
+        var block = items.findBlockTypeUnambiguously(args.join(" "), responder_func);
         var speaker_entity = player_tracker.entityForPlayer(speaker);
         if (speaker_entity === undefined) {
             responder_func("sorry, can't see you");
@@ -29,7 +29,7 @@ mf.include("Set.js");
         current_block = block;
         current_responder_func = responder_func;
         responder_func("punch the start block");
-    }, 1);
+    }, 1, Infinity);
     mf.onAnimation(function(entity, animation_type) {
         if (entity.entity_id !== current_instructor_id) {
             return;
