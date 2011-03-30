@@ -183,8 +183,27 @@ var dump_command = function(speaker,args,respond) {
         if (player === undefined) {
             respond("I don't know where you are, " + speaker + ".");
             return;
-        }        
-        chest_position = findChestNearestPoint(player.position);
+        } 
+        var target_block_position;
+        var cursor = player.position.offset(0, 0, player.height);
+        var yaw = player.yaw, pitch = player.pitch;
+        var vector_length = 0.03125;
+        var x = Math.cos(yaw) * Math.cos(pitch);
+        var y = Math.sin(yaw) * Math.cos(pitch);
+        var z = Math.sin(pitch);
+        var step_delta = new mf.Point(x * vector_length, y * vector_length, z * vector_length);
+        for (var i = 0; i < 192; i++) {
+            cursor = cursor.plus(step_delta);
+            if (mf.isPhysical(mf.blockAt(cursor).type)) {
+                target_block_position = cursor.floored();
+                break;
+            }
+        }
+        if (target_block_position === undefined) {
+            chest_position = findChestNearestPoint(player.position);
+        } else {
+            chest_position = findChestNearestPoint(target_block_position);
+        }
         location_type = 1;
     }
     var location_string = undefined;
