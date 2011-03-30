@@ -41,12 +41,12 @@ mf.include("Set.js");
         var target_block_position;
         var cursor = entity.position.offset(0, 0, entity.height);
         var yaw = entity.yaw, pitch = entity.pitch;
-        var vector_length = 0.25;
+        var vector_length = 0.03125;
         var x = Math.cos(yaw) * Math.cos(pitch);
         var y = Math.sin(yaw) * Math.cos(pitch);
         var z = Math.sin(pitch);
         var step_delta = new mf.Point(x * vector_length, y * vector_length, z * vector_length);
-        for (var i = 0; i < 40; i++) {
+        for (var i = 0; i < 128; i++) {
             cursor = cursor.plus(step_delta);
             if (mf.isPhysical(mf.blockAt(cursor).type)) {
                 target_block_position = cursor.floored();
