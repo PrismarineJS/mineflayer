@@ -72,6 +72,12 @@ mf.include("arrays.js");
                 // race conditions
                 continue;
             }
+            if (bad_guy.mob_type === mf.MobType.Pig || bad_guy.mob_type === mf.MobType.Chicken || bad_guy.mob_type === mf.MobType.Sheep || bad_guy.mob_type === mf.MobType.Cow || bad_guy.mob_type === mf.MobType.ZombiePigman) {
+                bad_guy = undefined;
+                // we love neutral mobs.
+                continue;
+            }
+    
             var distance = bad_guy.position.distanceTo(current_defended_entity_position);
             if (distance > 20) {
                 // not a threat

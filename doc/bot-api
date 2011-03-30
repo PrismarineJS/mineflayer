@@ -119,7 +119,7 @@ mf.Face
  *      Cow
  *      Chicken
  */
-mf.Mob
+mf.MobType
 
 /**
  * Members:
