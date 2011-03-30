@@ -5,7 +5,7 @@ mf.include("location_manager.js");
 mf.include("items.js");
 mf.include("inventory.js");
 mf.include("navigator.js");
-
+    
 var findChestNearestPoint = function(point) {
     chests = block_finder.findNearest(point,mf.ItemType.Chest, 128, 1);
     if (chests.length === 0) {
@@ -22,8 +22,6 @@ var cant_navto_func = function() {
     this_data.respond("I can't find a path to the chest at " + this_data.chest_position + ".");
     if (chest_data.length !== 0) {
         dump_to_chest();
-    } else {
-        mf.chat("Chest navigation complete.  Awaiting new commands.");
     }
 };
 
@@ -36,134 +34,32 @@ var on_chest_opened = function(window_type) {
     }
     var this_data = chest_data.shift();
     if (this_data.item_type === undefined) {
-        for (var i = 0; i < inventory.slot_count; i++) {
-            var item = mf.inventoryItem(i);
-            var item_type = item.type;
-            var item_count = item.count;
-            if (item_type === mf.ItemType.NoItem) {
-                continue;
-            }
-            for (var chest_slot = 0; chest_slot < 54; chest_slot++) {
-                var chest_item = mf.uniqueWindowItem(chest_slot);
-                if (item_count <= 0) {
-                    break;
-                }
-                if (chest_item.type !== item_type && chest_item.type !== mf.ItemType.NoItem) {
-                    continue;
-                }
-                if (chest_item.type !== mf.ItemType.NoItem && chest_item.count >= mf.itemStackHeight(chest_item.type)) {
-                    continue;
-                }
-                if (chest_item.type === mf.ItemType.NoItem) {
-                    item_count = 0;
-                } else {
-                    item_count -= (mf.itemStackHeight(chest_item.type) - chest_item.count);
-                }
-                mf.clickInventorySlot(i, mf.MouseButton.Left);
-                mf.clickUniqueSlot(chest_slot,mf.MouseButton.Left);
-                mf.clickInventorySlot(i,mf.MouseButton.Left);
-            }
+        var success = inventory.moveAll(inventory.InventoryFull,inventory.ChestFull);
+        if (success) {
+            this_data.respond("Done!");
+        } else {
+            this_data.respond("The chest is too full to hold anything else!");
         }
     } else {
         if (this_data.item_count === undefined) {
-            item_type = this_data.item_type;
-            items_for_type = [];
-            for (var i = 0; i < inventory.slot_count; i++) {
-                var item = mf.inventoryItem(i);
-                if (item.type === item_type) {
-                    items_for_type.push({
-                        slot : i,
-                        count : item.count
-                    });
-                }
-            }
-            for (var i = 0; i < items_for_type.length; i++) {
-                var item_slot = items_for_type[i].slot;
-                var item_count = items_for_type[i].count;
-                for (var chest_slot = 0; chest_slot < 54; chest_slot++) {
-                    var chest_item = mf.uniqueWindowItem(chest_slot);
-                    if (item_count <= 0) {
-                        break;
-                    }
-                    if (chest_item.type !== item_type && chest_item.type !== mf.ItemType.NoItem) {
-                        continue;
-                    }
-                    if (chest_item.type !== mf.ItemType.NoItem && chest_item.count >= mf.itemStackHeight(chest_item.type)) {
-                        continue;
-                    }
-                    if (chest_item.type === mf.ItemType.NoItem) {
-                        item_count = 0;
-                    } else {
-                        item_count -= (mf.itemStackHeight(chest_item.type) - chest_item.count);
-                    }
-                    mf.clickInventorySlot(item_slot, mf.MouseButton.Left);
-                    mf.clickUniqueSlot(chest_slot,mf.MouseButton.Left);
-                    mf.clickInventorySlot(item_slot,mf.MouseButton.Left);
-                }
+            var success = inventory.moveAllType(this_data.item_type,inventory.InventoryFull,inventory.ChestFull);
+            if (success) {
+                this_data.respond("Done!");
+            } else {
+                this_data.respond("The chest is too full to hold any more " + items.nameForId(this_data.item_type) + ".");
             }
         } else {
-            item_type = this_data.item_type;
-            total_count = this_data.item_count;
-            items_for_type = [];
-            for (var i = 0; i < inventory.slot_count; i++) {
-                var item = mf.inventoryItem(i);
-                if (item.count > total_count) {
-                    items_for_type.push({
-                        slot : i,
-                        count : total_count
-                    });
-                    break;
-                }
-                if (item.type === item_type) {
-                    items_for_type.push({
-                        slot : i,
-                        count : item.count
-                    });
-                    total_count -= item.count;
-                }
-            }
-            for (var i = 0; i < items_for_type.length; i++) {
-                var item_slot = items_for_type[i].slot;
-                var item_count = items_for_type[i].count;
-                for (var chest_slot = 0; chest_slot < 54; chest_slot++) {
-                    var chest_item = mf.uniqueWindowItem(chest_slot);
-                    if (item_count <= 0) {
-                        break;
-                    }
-                    if (chest_item.type !== item_type && chest_item.type !== mf.ItemType.NoItem) {
-                        continue;
-                    }
-                    if (chest_item.type !== mf.ItemType.NoItem && chest_item.count >= mf.itemStackHeight(chest_item.type)) {
-                        continue;
-                    }
-                    if (item_count < mf.inventoryItem(item_slot).count) {
-                        mf.clickInventorySlot(item_slot, mf.MouseButton.Left);
-                        while (chest_item.count < mf.itemStackHeight(item_type) && item_count > 0 ) {
-                            mf.clickUniqueSlot(chest_slot,mf.MouseButton.Right);
-                            chest_item = mf.uniqueWindowItem(chest_slot);
-                            item_count--;
-                        }
-                        items_for_type[i].count = item_count;
-                        mf.clickInventorySlot(item_slot,mf.MouseButton.Left);
-                    } else {
-                        if (chest_item.type === mf.ItemType.NoItem) {
-                            item_count = 0;
-                        } else {
-                            item_count -= (mf.itemStackHeight(chest_item.type) - chest_item.count);
-                        }
-                        mf.clickInventorySlot(item_slot, mf.MouseButton.Left);
-                        mf.clickUniqueSlot(chest_slot,mf.MouseButton.Left);
-                        mf.clickInventorySlot(item_slot,mf.MouseButton.Left);
-                    }
-                }
+            var success = inventory.moveCountType(this_data.item_count,this_data.item_type,inventory.InventoryFull,inventory.ChestFull);
+            if (success) {
+                this_data.respond("Done!");
+            } else {
+                this_data.respond("The chest is too full to hold any more " + items.nameForId(this_data.item_type) + ".");
             }
         }
     }
     mf.closeWindow();
     if (chest_data.length !== 0) {
         dump_to_chest();
-    } else {
-        mf.chat("Chest navigation complete.  Awaiting new commands.");
     }
 };
 

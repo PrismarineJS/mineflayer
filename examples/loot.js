@@ -17,6 +17,9 @@ var reset = function() {
     chest_position = undefined;
     respond = undefined;
     location_string = undefined;
+    if (inventory.currentlyOpenWindow !== undefined) {
+        mf.closeWindow();
+    }
 };
 
 chat_commands.registerCommand("stop",reset);
@@ -35,7 +38,6 @@ mf.onWindowOpened(function(window_type) {
             if (item_count === undefined) {
                 respond("I couldn't find any " + items.nameForId(item_type) + ".  Done!");
                 reset();
-                mf.closeWindow();
                 return;
             }
         } else {
@@ -43,108 +45,26 @@ mf.onWindowOpened(function(window_type) {
             if (actual_count === undefined) {
                 respond("I couldn't find any " + items.nameForId(item_type) + ".  Done!");
                 reset();
-                mf.closeWindow();
                 return;
             } else if (actual_count < item_count) {
                 respond("I only see " + actual_count + " " + items.nameForId(item_type) + ".  I'm only going to be able to loot that many.");
             }
         }
         
+    }
+    if (item_type === undefined) {
+        var success = inventory.moveAll(inventory.ChestFull,inventory.InventoryFull);
+    } else if (item_count !== undefined) {
+        var success = inventory.moveCountType(item_count,item_type,inventory.ChestFull,inventory.InventoryFull);
     } else {
-        item_count = 0;//1;
-        var counts = inventory.condensedSnapshot(inventory.ChestFull);
-        for (var type in counts) {
-            if (counts.hasOwnProperty(type)) {
-                item_count += counts[type];
-            }
-        }
-        if (item_count === 0) {
-            respond("Done!");
-            reset();
-            mf.closeWindow();
-            return;
-        }
+        var success = inventory.moveAllType(item_type,inventory.ChestFull,inventory.InventoryFull);
     }
-    // Deposit items
-    for (var chest_slot = inventory.ChestFull.firstSlot; chest_slot <= inventory.ChestFull.lastSlot; chest_slot++) {
-        var chest_item = inventory.inventoryItem(chest_slot,inventory.ChestFull);
-        if (chest_item.type === mf.ItemType.NoItem) {
-            continue;
-        }
-        if (item_type !== undefined) {
-            if (item_type !== chest_item.type) {
-                continue;
-            }
-        }
-
-        var slots = inventory.slotsForItem(inventory.inventoryItem(chest_slot,inventory.ChestFull).type, inventory.InventoryFull);
-
-        for (var k = 0; k < slots.length; k++) {
-            var inv_slot = slots[k];
-            var inv_item = inventory.inventoryItem(inv_slot,inventory.InventoryFull);
-            var open_slots = mf.itemStackHeight(chest_item.type) - inv_item.count;
-            if (open_slots === 0) {
-                continue;
-            }
-            if (open_slots <= item_count) {
-                //Fill all slots
-                mf.clickUniqueSlot(chest_slot,mf.MouseButton.Left);
-                mf.clickInventorySlot(inv_slot,mf.MouseButton.Left);
-                mf.clickUniqueSlot(chest_slot,mf.MouseButton.Left);
-                chest_item = inventory.inventoryItem(chest_slot, inventory.ChestFull);
-                item_count -= Math.min(open_slots, chest_item.count);
-                if (chest_item.type === mf.ItemType.NoItem) {
-                    break;
-                }
-            } else {
-                //Fill up to item_count slots
-                if (chest_item.count > item_count) {
-                    //Fill item_count slots
-
-                    if (Math.ceil(chest_item.count/2) >= item_count) {
-                        if (Math.ceil(chest_item.count/2) === item_count) {
-                            mf.clickUniqueSlot(chest_slot,mf.MouseButton.Right);
-                            mf.clickInventorySlot(inv_slot,mf.MouseButton.Left);
-                            chest_item = inventory.inventoryItem(chest_slot, inventory.ChestFull);
-                        } else {
-                            mf.clickUniqueSlot(chest_slot,mf.MouseButton.Right);
-                            for (var i = 0; i < item_count; i++) {
-                                mf.clickInventorySlot(inv_slot,mf.MouseButton.Right);
-                            }
-                            mf.clickUniqueSlot(chest_slot,mf.MouseButton.Left);
-                            chest_item = inventory.inventoryItem(chest_slot, inventory.ChestFull);
-                        }
-                    } else {
-                        mf.clickUniqueSlot(chest_slot,mf.MouseButton.Left);
-                        for (var i = 0; i < item_count; i++) {
-                            mf.clickInventorySlot(inv_slot,mf.MouseButton.Right);
-                        }
-                        mf.clickUniqueSlot(chest_slot,mf.MouseButton.Left);
-                        chest_item = inventory.inventoryItem(chest_slot, inventory.ChestFull);
-                    }                    
-                    item_count = 0;
-                    break;
-                } else {
-                    //Fill chest_item.count slots
-                    mf.clickUniqueSlot(chest_slot, mf.MouseButton.Left);
-                    mf.clickInventorySlot(inv_slot,mf.MouseButton.Left);
-                    mf.clickUniqueSlot(chest_slot, mf.MouseButton.Left);
-                    chest_item = inventory.inventoryItem(chest_slot, inventory.ChestFull);
-                    item_count -= chest_item.count;
-                }
-            }
-        }
-        if (item_count === 0) {
-            break;
-        }
-    }
-    if (item_count !== 0 && (item_type === undefined || inventory.itemSlot(item_type,inventory.ChestFull) !== undefined)) {
+    if (! success) {
        respond("My inventory is full!");
     } else {
         respond("Done!");
     }
     reset();
-    mf.closeWindow();
 });
 
 var loot = function() {
