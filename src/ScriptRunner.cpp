@@ -166,6 +166,10 @@ void ScriptRunner::bootstrap()
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(entityMoved(QSharedPointer<Game::Entity>)), this, SLOT(handleEntityMoved(QSharedPointer<Game::Entity>)));
     Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(entityDamaged(QSharedPointer<Game::Entity>)), this, SLOT(handleEntityDamaged(QSharedPointer<Game::Entity>)));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(entityDead(QSharedPointer<Game::Entity>)), this, SLOT(handleEntityDead(QSharedPointer<Game::Entity>)));
+    Q_ASSERT(success);
     success = connect(m_game, SIGNAL(entityDespawned(QSharedPointer<Game::Entity>)), this, SLOT(handleEntityDespawned(QSharedPointer<Game::Entity>)));
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(animation(QSharedPointer<Game::Entity>,AnimationResponse::AnimationType)), this, SLOT(handleAnimation(QSharedPointer<Game::Entity>,AnimationResponse::AnimationType)));
@@ -1148,6 +1152,14 @@ void ScriptRunner::handleEntitySpawned(QSharedPointer<Game::Entity>entity)
 void ScriptRunner::handleEntityMoved(QSharedPointer<Game::Entity>entity)
 {
     raiseEvent("onEntityMoved", QScriptValueList() << jsEntity(entity));
+}
+void ScriptRunner::handleEntityDamaged(QSharedPointer<Game::Entity>entity)
+{
+    raiseEvent("onEntityDamaged", QScriptValueList() << jsEntity(entity));
+}
+void ScriptRunner::handleEntityDead(QSharedPointer<Game::Entity>entity)
+{
+    raiseEvent("onEntityDead", QScriptValueList() << jsEntity(entity));
 }
 void ScriptRunner::handleEntityDespawned(QSharedPointer<Game::Entity>entity)
 {

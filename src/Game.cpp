@@ -91,6 +91,10 @@ Game::Game(QUrl connection_info) :
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(entityMoved(int,Server::EntityPosition)), this, SLOT(handleEntityMoved(int,Server::EntityPosition)));
     Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(entityDamaged(int)), this, SLOT(handleEntityDamaged(int)));
+    Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(entityDead(int)), this, SLOT(handleEntityDead(int)));
+    Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(animation(int,AnimationResponse::AnimationType)), this, SLOT(handleAnimation(int,AnimationResponse::AnimationType)));
     Q_ASSERT(success);
 
@@ -448,6 +452,22 @@ void Game::handleEntityMoved(int entity_id, Server::EntityPosition position)
         return;
     entity.data()->position.pos = position.pos;
     emit entityMoved(QSharedPointer<Entity>(entity.data()->clone()));
+}
+void Game::handleEntityDamaged(int entity_id)
+{
+    QMutexLocker locker(&m_mutex);
+    QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
+    if (entity.isNull())
+        return;
+    emit entityDamaged(QSharedPointer<Entity>(entity.data()->clone()));
+}
+void Game::handleEntityDead(int entity_id)
+{
+    QMutexLocker locker(&m_mutex);
+    QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
+    if (entity.isNull())
+        return;
+    emit entityDead(QSharedPointer<Entity>(entity.data()->clone()));
 }
 void Game::handleAnimation(int entity_id, AnimationResponse::AnimationType animation_type)
 {

@@ -333,6 +333,18 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             emit entityMoved(message->entity_id, position);
             break;
         }
+        case Message::EntityStatus: {
+            EntityStatusResponse * message = (EntityStatusResponse *) incomingMessage.data();
+            switch (message->status) {
+                case 2: // enum this?
+                    emit entityDamaged(message->entity_id);
+                    break;
+                case 3:
+                    emit entityDead(message->entity_id);
+            }
+
+            break;
+        }
         case Message::PreChunk: {
             PreChunkResponse * message = (PreChunkResponse *) incomingMessage.data();
             if (message->mode == PreChunkResponse::Unload) {
