@@ -166,13 +166,9 @@ void ScriptRunner::bootstrap()
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(entityMoved(QSharedPointer<Game::Entity>)), this, SLOT(handleEntityMoved(QSharedPointer<Game::Entity>)));
     Q_ASSERT(success);
-    success = connect(m_game, SIGNAL(entityDamaged(QSharedPointer<Game::Entity>)), this, SLOT(handleEntityDamaged(QSharedPointer<Game::Entity>)));
-    Q_ASSERT(success);
-    success = connect(m_game, SIGNAL(entityDead(QSharedPointer<Game::Entity>)), this, SLOT(handleEntityDead(QSharedPointer<Game::Entity>)));
-    Q_ASSERT(success);
     success = connect(m_game, SIGNAL(entityDespawned(QSharedPointer<Game::Entity>)), this, SLOT(handleEntityDespawned(QSharedPointer<Game::Entity>)));
     Q_ASSERT(success);
-    success = connect(m_game, SIGNAL(animation(QSharedPointer<Game::Entity>,AnimationResponse::AnimationType)), this, SLOT(handleAnimation(QSharedPointer<Game::Entity>,AnimationResponse::AnimationType)));
+    success = connect(m_game, SIGNAL(animation(QSharedPointer<Game::Entity>,Message::AnimationType)), this, SLOT(handleAnimation(QSharedPointer<Game::Entity>,Message::AnimationType)));
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(handleChunkUpdated(Int3D,Int3D)));
     Q_ASSERT(success);
@@ -1153,19 +1149,11 @@ void ScriptRunner::handleEntityMoved(QSharedPointer<Game::Entity>entity)
 {
     raiseEvent("onEntityMoved", QScriptValueList() << jsEntity(entity));
 }
-void ScriptRunner::handleEntityDamaged(QSharedPointer<Game::Entity>entity)
-{
-    raiseEvent("onEntityDamaged", QScriptValueList() << jsEntity(entity));
-}
-void ScriptRunner::handleEntityDead(QSharedPointer<Game::Entity>entity)
-{
-    raiseEvent("onEntityDead", QScriptValueList() << jsEntity(entity));
-}
 void ScriptRunner::handleEntityDespawned(QSharedPointer<Game::Entity>entity)
 {
     raiseEvent("onEntityDespawned", QScriptValueList() << jsEntity(entity));
 }
-void ScriptRunner::handleAnimation(QSharedPointer<Game::Entity> entity, AnimationResponse::AnimationType animation_type)
+void ScriptRunner::handleAnimation(QSharedPointer<Game::Entity> entity, Message::AnimationType animation_type)
 {
     raiseEvent("onAnimation", QScriptValueList() << jsEntity(entity) << animation_type);
 }

@@ -337,12 +337,24 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             EntityStatusResponse * message = (EntityStatusResponse *) incomingMessage.data();
             switch (message->status) {
                 case 2: // enum this?
-                    emit entityDamaged(message->entity_id);
+                    emit animation(message->entity_id, Message::DamageAnimation);
                     break;
                 case 3:
-                    emit entityDead(message->entity_id);
+                    emit animation(message->entity_id, Message::DeathAnimation);
+                    break;
             }
-
+            break;
+        }
+        case Message::EntityAction: {
+            EntityActionResponse * message = (EntityActionResponse *) incomingMessage.data();
+            switch (message->entity_action_type) {
+                case EntityActionResponse::Crouch:
+                    emit animation(message->entity_id, Message::CrouchAnimation);
+                    break;
+                case EntityActionResponse::Uncrouch:
+                    emit animation(message->entity_id, Message::UncrouchAnimation);
+                    break;
+            }
             break;
         }
         case Message::PreChunk: {

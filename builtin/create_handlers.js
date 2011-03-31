@@ -24,8 +24,6 @@ function() {
         "onHealthChanged",
         "onDeath",
         "onEntitySpawned",
-        "onEntityDamaged",
-        "onEntityDead",
         "onEntityDespawned",
         "onEntityMoved",
         "onAnimation",

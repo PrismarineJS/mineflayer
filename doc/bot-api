@@ -552,18 +552,6 @@ mf.onDeath(function() {...})
 mf.onEntitySpawned(function(entity) {...})
 
 /**
- * Called when an entity is seen to take damage
- * @param {mf.Entity} entity
- */
-mf.onEntityDamaged(function(entity) {...})
-
-/**
- * Called when an entity shows the "fall over dead" animation.
- * @param {mf.Entity} entity
- */
-mf.onEntityDead(function(entity) {...})
-
-/**
  * Called when an entity vanishes from known existence.
  * This can happen when an entity is destroyed or when it goes out of view.
  * @param {mf.Entity} entity
