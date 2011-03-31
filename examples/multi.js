@@ -1,5 +1,5 @@
 mf.include("extra_includer.js");
-mf.include("dump.js");
+mf.include("chests.js");
 mf.include("connection_notice.js");
 mf.include("giver.js");
 mf.include("auto_respawn.js");
@@ -22,4 +22,4 @@ mf.include("console.js");
 mf.include("cook.js");
 mf.include("flatten.js");
 mf.include("fill.js");
-mf.include("loot.js");
+mf.include("chat_printer.js");
