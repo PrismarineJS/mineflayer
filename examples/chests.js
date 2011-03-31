@@ -109,8 +109,9 @@ mf.include("navigator.js");
         var location_string = chest_data[0].location_string
         var command = chest_data[0].command;
         if (mf.blockAt(chest_position).type !== mf.ItemType.Chest) {
-            if (mf.self().position.floored().distanceTo(chest_position) <= 64) {
+            if (mf.self().position.floored().distanceTo(chest_position) <= 120) {
                 chest_position = findChestNearestPoint(chest_position);
+                chest_data[0].chest_position = chest_position;
                 if (chest_position === undefined) {
                     responder_fun("Unable to find any chest near " + chest_position.floored() + ".");
                     chest_data.shift();
@@ -246,7 +247,6 @@ mf.include("navigator.js");
                 item_count = Math.ceil(args.shift());
                 if (item_count <= 0) {
                     responder_fun("I can't " + command + " " + item_count + " of ANY item!");
-                    stop();
                     return;
                 }
             }
@@ -264,7 +264,6 @@ mf.include("navigator.js");
                 var player = player_tracker.entityForPlayer(speaker);
                 if (player === undefined) {
                     responder_fun("I can't see you, " + speaker + ".");
-                    stop();
                     return;
                 }
                 var target_block_position;
@@ -303,17 +302,22 @@ mf.include("navigator.js");
             if (args.length === 0) {
                 item_type = undefined;
             } else {
-                item_type = items.findItemTypeUnambiguously(args.join(" "),responder_fun);
-                if (item_type === undefined) {
-                    stop();
-                    return;
+                if (command === "loot") {
+                    item_type = items.findItemTypeUnambiguously(args.join(" "),responder_fun);
+                    if (item_type === undefined) {
+                        return;
+                    }
+                } else {
+                    item_type = items.findUnambiguouslyInDatabase(args.join(" "),responder_fun,inventory.getDatabase());
+                    if (item_type === undefined) {
+                        return;
+                    }
                 }
                 item_type = item_type.id;
             }
             if (flag) {
                 chest_position = location_manager.findUnambiguousLocation(location_string,responder_fun);
                 if (chest_position === undefined) {
-                    stop();
                     return;
                 }
                 location_string = chest_position.name;
@@ -324,7 +328,6 @@ mf.include("navigator.js");
             chest_position = block_finder.findNearest(mf.self().position,mf.ItemType.Chest,128,1);
             if (chest_position.length !== 1) {
                 responder_fun("I couldn't find any nearby chests.");
-                stop();
                 return;
             }
             chest_position = chest_position.shift();
@@ -333,10 +336,10 @@ mf.include("navigator.js");
         if (item_count !== undefined) {
             if (item_type === undefined) {
                 responder_fun("I can't " + command + " " + item_count + " of all block types!");
-                stop();
                 return;
             }
         }
+        chest_position = chest_position.floored();
         start_using_chest(chest_position, responder_fun, item_type, item_count, command, location_string);
     };
 
