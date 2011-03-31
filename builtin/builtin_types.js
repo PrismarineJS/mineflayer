@@ -116,6 +116,7 @@ mf.AnimationType = {
     "Damage":       2,
     "Crouch":       104,
     "Uncrouch":     105,
+    "Dead":         55061,
 };
 
 mf.WindowType = {

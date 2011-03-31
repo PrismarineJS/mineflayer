@@ -100,6 +100,7 @@ public:
         DamageAnimation=2,
         CrouchAnimation=104,
         UncrouchAnimation=105,
+        DeathAnimation=55061, // random out-of-the-way number
     };
 
     MessageType messageType;
