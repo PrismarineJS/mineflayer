@@ -37,6 +37,25 @@ mf.include("arrays.js");
         }
     }
     chat_commands.registerCommand("stop", stop);
+    var Peaceful = 0;
+    var Neutral = 1;
+    var Aggressive = 2;
+
+    var mob_stance = {}; 
+    mob_stance[mf.MobType.Creeper] = Aggressive;
+    mob_stance[mf.MobType.Skeleton] = Aggressive;
+    mob_stance[mf.MobType.Spider] = Aggressive; //Worst case for spiders
+    mob_stance[mf.MobType.GiantZombie] = Aggressive;
+    mob_stance[mf.MobType.Zombie] = Aggressive;
+    mob_stance[mf.MobType.Slime] = Aggressive;
+    mob_stance[mf.MobType.Ghast] = Aggressive;
+    mob_stance[mf.MobType.ZombiePigman] = Neutral;
+    mob_stance[mf.MobType.Pig] = Peaceful;
+    mob_stance[mf.MobType.Sheep] = Peaceful;
+    mob_stance[mf.MobType.Cow] = Peaceful;
+    mob_stance[mf.MobType.Chicken] = Peaceful;
+    mob_stance[mf.MobType.Squid] = Peaceful;
+    mob_stance[mf.MobType.Wolf] = Neutral;
 
     var current_defended_entity_id;
     var next_bad_guy_interval_id;
@@ -72,10 +91,19 @@ mf.include("arrays.js");
                 // race conditions
                 continue;
             }
-            if (bad_guy.mob_type === mf.MobType.Pig || bad_guy.mob_type === mf.MobType.Chicken || bad_guy.mob_type === mf.MobType.Sheep || bad_guy.mob_type === mf.MobType.Cow || bad_guy.mob_type === mf.MobType.ZombiePigman) {
-                bad_guy = undefined;
-                // we love neutral mobs.
-                continue;
+            if (bad_guy.mob_type !== undefined) {
+                var flag = false;
+                for (var key in mf.MobType) {
+                    if (mf.MobType[key] === bad_guy.mob_type) {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (flag && mob_stance[bad_guy.mob_type] !== Aggressive) {
+                    bad_guy = undefined;
+                    // we love neutral/peaceful mobs.
+                    continue;
+                }
             }
     
             var distance = bad_guy.position.distanceTo(current_defended_entity_position);
