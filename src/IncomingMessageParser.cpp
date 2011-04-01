@@ -77,6 +77,7 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
     case Message::MultiBlockChange: return new MultiBlockChangeResponse;
     case Message::BlockChange: return new BlockChangeResponse;
     case Message::PlayNoteBlock: return new PlayNoteBlockResponse;
+    case Message::InvalidBed: return new InvalidBedResponse;
     case Message::Explosion: return new ExplosionResponse;
     case Message::OpenWindow: return new OpenWindowResponse;
     case Message::CloseWindow: return new CloseWindowResponse;

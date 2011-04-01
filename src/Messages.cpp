@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-const qint32 OutgoingRequest::c_protocol_version = 9;
+const qint32 OutgoingRequest::c_protocol_version = 10;
 
 void OutgoingRequest::writeToStream(QDataStream &stream)
 {
@@ -838,6 +838,14 @@ int PlayNoteBlockResponse::parse(QByteArray buffer)
         return -1;
     instrument_type = (InstrumentType)tmp;
     if ((index = parseValue(buffer, index, pitch)) == -1)
+        return -1;
+    return index;
+}
+
+int InvalidBedResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, unknown)) == -1)
         return -1;
     return index;
 }

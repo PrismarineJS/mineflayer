@@ -90,6 +90,8 @@ mf.MobType = {
     "Sheep": 91,
     "Cow": 92,
     "Chicken": 93,
+    "Squid": 94,
+    "Wolf": 95
 };
 
 mf.StoppedDiggingReason = {

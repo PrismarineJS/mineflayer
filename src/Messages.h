@@ -53,6 +53,7 @@ public:
         MultiBlockChange=0x34,
         BlockChange=0x35,
         PlayNoteBlock=0x36,
+        InvalidBed=0x46,
         Explosion=0x3C,
         OpenWindow=0x64,
         CloseWindow=0x65,
@@ -715,6 +716,13 @@ public:
     InstrumentType instrument_type;
     qint8 pitch;
     PlayNoteBlockResponse() : IncomingResponse(PlayNoteBlock) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class InvalidBedResponse : public IncomingResponse {
+public:
+    qint8 unknown;
+    InvalidBedResponse() : IncomingResponse(InvalidBed) {}
     virtual int parse(QByteArray buffer);
 };
 
