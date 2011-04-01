@@ -19,7 +19,7 @@ mf.include("navigator.js");
 
     var cant_navto_func = function() {
         var this_data = chest_data.shift();
-        this_data.responder_fun("I can't find a path to the chest at " + chest_position.floored() + ".");
+        this_data.responder_fun("I can't find a path to the chest at " + this_data.chest_position.floored() + ".");
         if (chest_data.length !== 0) {
             useChestData();
         }
