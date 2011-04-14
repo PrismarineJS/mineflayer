@@ -15,30 +15,24 @@ mf.include("navigator.js");
         }
     };
 
-    var chest_data = [];
 
     var cant_navto_func = function() {
-        var this_data = chest_data.shift();
-        this_data.responder_fun("I can't find a path to the chest at " + this_data.chest_position.floored() + ".");
-        if (chest_data.length !== 0) {
-            useChestData();
-        }
+        var task = task_manager.getCurrentTask();
+        task.responder_fun("I can't find a path to the chest at " + task.chest_position.floored() + ".");
+        task_manager.removeTask(task);
     };
 
     var on_chest_opened = function(window_type) {
         if (window_type !== mf.WindowType.Chest) {
             return;
         }
-        if (chest_data.length === 0) {
-            return;
-        }
-        var this_data = chest_data.shift();
-        var chest_position = this_data.chest_position;
-        var item_type = this_data.item_type;
-        var item_count = this_data.item_count;
-        var responder_fun = this_data.responder_fun;
-        var location_string = this_data.location_string
-        var command = this_data.command;
+        var task = task_manager.getCurrentTask();
+        var chest_position = task.chest_position;
+        var item_type = task.item_type;
+        var item_count = task.item_count;
+        var responder_fun = task.responder_fun;
+        var location_string = task.location_string
+        var command = task.command;
 
         if (item_type === undefined) {
             if (command === "loot") {
@@ -90,34 +84,28 @@ mf.include("navigator.js");
             }
         }
         mf.closeWindow();
-        if (chest_data.length !== 0) {
-            useChestData();
-        }
+        task_manager.markTaskComplete(task);
     };
 
     mf.onWindowOpened(on_chest_opened);
 
-    var useChestData = function() {
-        if (chest_data.length === 0) {
-            return;
+    var useChestData = function(task) {
+        if (task === undefined) {
+            task = task_manager.getCurrentTask();
         }
-        var this_data = chest_data[0];
-        var chest_position = chest_data[0].chest_position;
-        var item_type = chest_data[0].item_type;
-        var item_count = chest_data[0].item_count;
-        var responder_fun = chest_data[0].responder_fun;
-        var location_string = chest_data[0].location_string
-        var command = chest_data[0].command;
+        var chest_position = task.chest_position;
+        var item_type = task.item_type;
+        var item_count = task.item_count;
+        var responder_fun = task.responder_fun;
+        var location_string = task.location_string
+        var command = task.command;
         if (mf.blockAt(chest_position).type !== mf.ItemType.Chest) {
             if (mf.self().position.floored().distanceTo(chest_position) <= 120) {
                 chest_position = findChestNearestPoint(chest_position);
-                chest_data[0].chest_position = chest_position;
+                task.chest_position = chest_position;
                 if (chest_position === undefined) {
                     responder_fun("Unable to find any chest near " + chest_position.floored() + ".");
-                    chest_data.shift();
-                    if (chest_data.length !== 0) {
-                        useChestData();
-                    }
+                    task_manager.removeTask(task);
                 }
                 if (item_type !== undefined) {
                     if (item_count !== undefined) {
@@ -168,7 +156,7 @@ mf.include("navigator.js");
                         }
                     } else {
                         if (command === "loot") {
-                            responder_fun("Going to go " + command + " all of my " + items.nameForId(item_type) + " from the chest at " + chest_position.floored() + ".");
+                            responder_fun("Going to go " + command + " all of the " + items.nameForId(item_type) + " from the chest at " + chest_position.floored() + ".");
                         } else {
                             responder_fun("Going to go " + command + " all of my " + items.nameForId(item_type) + " into the chest at " + chest_position.floored() + ".");
                         }
@@ -187,21 +175,6 @@ mf.include("navigator.js");
                     arrived_func : useChestData
                 });
             }
-        }
-    };
-
-    var start_using_chest = function(chest_position, responder_fun, item_type, item_count, command, location_string) {
-        data = {
-            chest_position: chest_position,
-            item_type: item_type,
-            item_count: item_count,
-            responder_fun: responder_fun,
-            command: command,
-            location_string: location_string
-        };
-        chest_data.push(data);
-        if (chest_data.length === 1) {
-            useChestData();
         }
     };
 
@@ -340,16 +313,62 @@ mf.include("navigator.js");
             }
         }
         chest_position = chest_position.floored();
-        start_using_chest(chest_position, responder_fun, item_type, item_count, command, location_string);
+        task = {
+            onStart: useChestData,
+            onStop: stop,
+            onInterrupt: stop,
+            onPause: stop,
+            onRemoved: stop,
+            onCompleted: stop,
+            onPostponed: stop,
+
+            chest_position: chest_position,
+            responder_fun: responder_fun,
+            item_type: item_type,
+            item_count: item_count,
+            command: command,
+            location_string: location_string,
+
+            toString: function() {
+                if (item_type === undefined) {
+                    if (command === "loot") {
+                        if (mf.blockAt(chest_position).type !== mf.ItemType.Chest) {
+                            return "loot everything near " + location_string;
+                        } else {
+                            return "loot everything from chest at " + chest_position;
+                        }
+                    } else {
+                        if (mf.blockAt(chest_position).type !== mf.ItemType.Chest) {
+                            return "dump everything near " + location_string;
+                        } else {
+                            return "dump everything into chest at " + chest_position;
+                        }
+                    }
+                } else if (item_count === undefined) {
+                    if (command === "loot") {
+                        if (mf.blockAt(chest_position).type !== mf.ItemType.Chest) {
+                            return "loot all " + items.nameForId(item_type) + " from chest near " + location_string;
+                        } else {
+                            return "loot all " + items.nameForId(item_type) + " from chest at " + chest_position;
+                        }
+                    } else {
+                        if (mf.blockAt(chest_position).type !== mf.ItemType.Chest) {
+                            return "dump all " + items.nameForId(item_type) + " into chest near " + location_string;
+                        } else {
+                            return "dump all " + items.nameForId(item_type) + " into chest at " + chest_position;
+                        }
+                    }
+                }
+            }
+        };
+        task_manager.addTask(task);
     };
 
-
-    var stop = function(speaker,args,respond) {
+    var stop = function(task) {
         if (inventory.currentlyOpenWindow !== undefined) {
             mf.closeWindow();
         }
-        chest_data = [];
-        
+        task_manager.removeTask(task);
     };
 
     function loot_command(speaker,args,responder_fun) {
@@ -361,6 +380,5 @@ mf.include("navigator.js");
     }
 
     chat_commands.registerCommand("loot",loot_command,0,Infinity);
-    chat_commands.registerCommand("stop",stop,0,0);
     chat_commands.registerCommand("dump",dump_command,0,Infinity);
 })();
