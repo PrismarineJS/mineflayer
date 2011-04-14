@@ -5,9 +5,10 @@ mf.include("location_manager.js");
 mf.include("items.js");
 mf.include("inventory.js");
 mf.include("navigator.js");
+mf.include("task_manager.js");
 (function() {
     var findChestNearestPoint = function(point) {
-        chests = block_finder.findNearest(point,mf.ItemType.Chest, 128, 1);
+        var chests = block_finder.findNearest(point, mf.ItemType.Chest, 128, 1);
         if (chests.length === 0) {
             return undefined;
         } else {
@@ -15,171 +16,8 @@ mf.include("navigator.js");
         }
     };
 
-
-    var cant_navto_func = function() {
-        var task = task_manager.getCurrentTask();
-        task.responder_fun("I can't find a path to the chest at " + task.chest_position.floored() + ".");
-        task_manager.removeTask(task);
-    };
-
-    var on_chest_opened = function(window_type) {
-        if (window_type !== mf.WindowType.Chest) {
-            return;
-        }
-        var task = task_manager.getCurrentTask();
-        var chest_position = task.chest_position;
-        var item_type = task.item_type;
-        var item_count = task.item_count;
-        var responder_fun = task.responder_fun;
-        var location_string = task.location_string
-        var command = task.command;
-
-        if (item_type === undefined) {
-            if (command === "loot") {
-                var success = inventory.moveAll(inventory.ChestFull,inventory.InventoryFull);
-            } else {
-                var success = inventory.moveAll(inventory.InventoryFull,inventory.ChestFull);
-            }
-            
-            if (success) {
-                responder_fun("Done!");
-            } else {
-                if (command === "loot") {
-                    responder_fun("My inventory is full!");
-                } else {
-                    responder_fun("The chest is too full to hold anything else!");
-                }
-            }
-        } else {
-            if (item_count === undefined) {
-                if (command === "loot") {
-                    var success = inventory.moveAllType(item_type, inventory.ChestFull, inventory.InventoryFull);
-                } else {
-                    var success = inventory.moveAllType(item_type,inventory.InventoryFull,inventory.ChestFull);
-                }
-                if (success) {
-                    responder_fun("Done!");
-                } else {
-                    if (command === "loot") {
-                        respond_fun("My inventory is too full to hold any more " + items.nameForId(item_type) + ".");
-                    } else {
-                        responder_fun("The chest is too full to hold any more " + items.nameForId(item_type) + ".");
-                    }
-                }
-            } else {
-                if (command === "loot") {
-                    var success = inventory.moveCountType(item_count, item_type, inventory.ChestFull, inventory.InventoryFull);
-                } else {
-                    var success = inventory.moveCountType(item_count, item_type, inventory.InventoryFull, inventory.ChestFull);
-                }
-                if (success) {
-                    responder_fun("Done!");
-                } else {
-                    if (command === "loot") {
-                        responder_fun("My inventory is too full to hold any more " + items.nameForId(item_type) + ".");
-                    } else {
-                        responder_fun("The chest is too full to hold any more " + items.nameForId(item_type) + ".");
-                    }
-                }
-            }
-        }
-        mf.closeWindow();
-        task_manager.markTaskComplete(task);
-    };
-
-    mf.onWindowOpened(on_chest_opened);
-
-    var useChestData = function(task) {
-        if (task === undefined) {
-            task = task_manager.getCurrentTask();
-        }
-        var chest_position = task.chest_position;
-        var item_type = task.item_type;
-        var item_count = task.item_count;
-        var responder_fun = task.responder_fun;
-        var location_string = task.location_string
-        var command = task.command;
-        if (mf.blockAt(chest_position).type !== mf.ItemType.Chest) {
-            if (mf.self().position.floored().distanceTo(chest_position) <= 120) {
-                chest_position = findChestNearestPoint(chest_position);
-                task.chest_position = chest_position;
-                if (chest_position === undefined) {
-                    responder_fun("Unable to find any chest near " + chest_position.floored() + ".");
-                    task_manager.removeTask(task);
-                }
-                if (item_type !== undefined) {
-                    if (item_count !== undefined) {
-                        if (command === "loot") {
-                            responder_fun("Going to go " + command + " " + item_count + " " + items.nameForId(item_type) + " from chest at " + chest_position.floored() + ".");
-                        } else {
-                            responder_fun("Going to go " + command + " " + item_count + " " + items.nameForId(item_type) + " into chest at " + chest_position.floored() + ".");
-                        }
-                    } else {
-                        if (command === "loot") {
-                            responder_fun("Going to go " + command + " all of the " + items.nameForId(item_type) + " from the chest at " + chest_position.floored() + ".");
-                        } else {
-                            responder_fun("Going to go " + command + " all of my " + items.nameForId(item_type) + " into the chest at " + chest_position.floored() + ".");
-                        }
-                    }
-                } else {
-                    if (command === "loot") {
-                        responder_fun("Going to go " + command + " everything from the chest at " + chest_position.floored() + ".");
-                    } else {
-                        responder_fun("Going to go " + command + " everything into the chest at " + chest_position.floored() + ".");
-                    } 
-                }
-                navigator.navigateTo(chest_position.floored(),{
-                    end_radius : 3,
-                    timeout_milliseconds: 6 * 1000,
-                    cant_find_func : cant_navto_func,
-                    arrived_func : useChestData
-                });
-            } else {
-                responder_fun("Going to go near that location and see the nearest chests.");
-                navigator.navigateTo(chest_position.floored(),{
-                    end_radius: 32,
-                    timeout_milliseconds: 6 * 1000,
-                    cant_find_func: cant_navto_func,
-                    arrived_func: useChestData
-                });
-            }
-        } else {
-            if (mf.self().position.floored().distanceTo(chest_position.floored()) <= 3) {
-                mf.hax.activateBlock(chest_position);
-            } else {
-                if (item_type !== undefined) {
-                    if (item_count !== undefined) {
-                        if (command === "loot") {
-                            responder_fun("Going to go " + command + " " + item_count + " " + items.nameForId(item_type) + " from the chest at " + chest_position.floored() + ".");
-                        } else {
-                            responder_fun("Going to go " + command + " " + item_count + " " + items.nameForId(item_type) + " into the chest at " + chest_position.floored() + ".");
-                        }
-                    } else {
-                        if (command === "loot") {
-                            responder_fun("Going to go " + command + " all of the " + items.nameForId(item_type) + " from the chest at " + chest_position.floored() + ".");
-                        } else {
-                            responder_fun("Going to go " + command + " all of my " + items.nameForId(item_type) + " into the chest at " + chest_position.floored() + ".");
-                        }
-                    }
-                } else {
-                    if (command === "loot") {
-                        responder_fun("Going to go " + command + " everything from the chest at " + chest_position.floored() + ".");
-                    } else {
-                        responder_fun("Going to go " + command + " everything into the chest at " + chest_position.floored() + ".");
-                    }
-                }
-                navigator.navigateTo(chest_position,{
-                    end_radius : 3,
-                    timeout_milliseconds: 6 * 1000,
-                    cant_find_func : cant_navto_func,
-                    arrived_func : useChestData
-                });
-            }
-        }
-    };
-
-    var useChest = function(speaker,args,responder_fun,command) {
-    /*
+    var useChest = function(speaker, args, responder_fun, command) {
+        /*
         Parsing:
         case 1: Dump everything into nearest chest
             "dump" 
@@ -210,11 +48,11 @@ mf.include("navigator.js");
 
         case 9: Dump # items of type X into chest nearest location
             "dump # X into location"
-    */
-    var chest_position;
-    var item_type;
-    var item_count;
-    var location_string
+        */
+        var chest_position;
+        var item_type;
+        var item_count;
+        var location_string;
         if (args.length > 0) {
             if (! isNaN(args[0])) {
                 item_count = Math.ceil(args.shift());
@@ -313,72 +151,192 @@ mf.include("navigator.js");
             }
         }
         chest_position = chest_position.floored();
-        task = {
-            onStart: useChestData,
-            onStop: stop,
-            onInterrupt: stop,
-            onPause: stop,
-            onRemoved: stop,
-            onCompleted: stop,
-            onPostponed: stop,
-
-            chest_position: chest_position,
-            responder_fun: responder_fun,
-            item_type: item_type,
-            item_count: item_count,
-            command: command,
-            location_string: location_string,
-
-            toString: function() {
-                if (item_type === undefined) {
-                    if (command === "loot") {
-                        if (mf.blockAt(chest_position).type !== mf.ItemType.Chest) {
-                            return "loot everything near " + location_string;
+        var task = new task_manager.Task(function useChestData() {
+            function cant_navto_func() {
+                responder_fun("I can't find a path to the chest at " + chest_position.floored() + ".");
+                task_manager.remove(task);
+            }
+            if (mf.blockAt(chest_position).type !== mf.ItemType.Chest) {
+                if (mf.self().position.floored().distanceTo(chest_position) <= 120) {
+                    var new_chest_position = findChestNearestPoint(chest_position);
+                    if (new_chest_position === undefined) {
+                        responder_fun("Unable to find any chest near " + chest_position.floored() + ".");
+                        task_manager.remove(task);
+                        return;
+                    }
+                    chest_position = new_chest_position;
+                    if (item_type !== undefined) {
+                        if (item_count !== undefined) {
+                            if (command === "loot") {
+                                responder_fun("Going to go " + command + " " + item_count + " " + items.nameForId(item_type) + " from chest at " + chest_position.floored() + ".");
+                            } else {
+                                responder_fun("Going to go " + command + " " + item_count + " " + items.nameForId(item_type) + " into chest at " + chest_position.floored() + ".");
+                            }
                         } else {
-                            return "loot everything from chest at " + chest_position;
+                            if (command === "loot") {
+                                responder_fun("Going to go " + command + " all of the " + items.nameForId(item_type) + " from the chest at " + chest_position.floored() + ".");
+                            } else {
+                                responder_fun("Going to go " + command + " all of my " + items.nameForId(item_type) + " into the chest at " + chest_position.floored() + ".");
+                            }
                         }
                     } else {
-                        if (mf.blockAt(chest_position).type !== mf.ItemType.Chest) {
-                            return "dump everything near " + location_string;
+                        if (command === "loot") {
+                            responder_fun("Going to go " + command + " everything from the chest at " + chest_position.floored() + ".");
                         } else {
-                            return "dump everything into chest at " + chest_position;
+                            responder_fun("Going to go " + command + " everything into the chest at " + chest_position.floored() + ".");
+                        } 
+                    }
+                    navigator.navigateTo(chest_position.floored(),{
+                        end_radius : 3,
+                        timeout_milliseconds: 6 * 1000,
+                        cant_find_func : cant_navto_func,
+                        arrived_func : useChestData
+                    });
+                } else {
+                    responder_fun("Going to go near that location and see the nearest chests.");
+                    navigator.navigateTo(chest_position.floored(),{
+                        end_radius: 32,
+                        timeout_milliseconds: 6 * 1000,
+                        cant_find_func: cant_navto_func,
+                        arrived_func: useChestData
+                    });
+                }
+            } else {
+                if (mf.self().position.floored().distanceTo(chest_position.floored()) <= 3) {
+                    mf.onWindowOpened(function on_chest_opened(window_type) {
+                        if (window_type !== mf.WindowType.Chest) {
+                            return;
+                        }
+                        mf.removeHandler(mf.onWindowOpened, on_chest_opened);
+                        if (item_type === undefined) {
+                            if (command === "loot") {
+                                var success = inventory.moveAll(inventory.ChestFull,inventory.InventoryFull);
+                            } else {
+                                var success = inventory.moveAll(inventory.InventoryFull,inventory.ChestFull);
+                            }
+                            
+                            if (success) {
+                                responder_fun("Done!");
+                            } else {
+                                if (command === "loot") {
+                                    responder_fun("My inventory is full!");
+                                } else {
+                                    responder_fun("The chest is too full to hold anything else!");
+                                }
+                            }
+                        } else {
+                            if (item_count === undefined) {
+                                if (command === "loot") {
+                                    var success = inventory.moveAllType(item_type, inventory.ChestFull, inventory.InventoryFull);
+                                } else {
+                                    var success = inventory.moveAllType(item_type,inventory.InventoryFull,inventory.ChestFull);
+                                }
+                                if (success) {
+                                    responder_fun("Done!");
+                                } else {
+                                    if (command === "loot") {
+                                        respond_fun("My inventory is too full to hold any more " + items.nameForId(item_type) + ".");
+                                    } else {
+                                        responder_fun("The chest is too full to hold any more " + items.nameForId(item_type) + ".");
+                                    }
+                                }
+                            } else {
+                                if (command === "loot") {
+                                    var success = inventory.moveCountType(item_count, item_type, inventory.ChestFull, inventory.InventoryFull);
+                                } else {
+                                    var success = inventory.moveCountType(item_count, item_type, inventory.InventoryFull, inventory.ChestFull);
+                                }
+                                if (success) {
+                                    responder_fun("Done!");
+                                } else {
+                                    if (command === "loot") {
+                                        responder_fun("My inventory is too full to hold any more " + items.nameForId(item_type) + ".");
+                                    } else {
+                                        responder_fun("The chest is too full to hold any more " + items.nameForId(item_type) + ".");
+                                    }
+                                }
+                            }
+                        }
+                        mf.closeWindow();
+                        task_manager.remove(task);
+                    });
+                    mf.hax.activateBlock(chest_position);
+                } else {
+                    if (item_type !== undefined) {
+                        if (item_count !== undefined) {
+                            if (command === "loot") {
+                                responder_fun("Going to go " + command + " " + item_count + " " + items.nameForId(item_type) + " from the chest at " + chest_position.floored() + ".");
+                            } else {
+                                responder_fun("Going to go " + command + " " + item_count + " " + items.nameForId(item_type) + " into the chest at " + chest_position.floored() + ".");
+                            }
+                        } else {
+                            if (command === "loot") {
+                                responder_fun("Going to go " + command + " all of the " + items.nameForId(item_type) + " from the chest at " + chest_position.floored() + ".");
+                            } else {
+                                responder_fun("Going to go " + command + " all of my " + items.nameForId(item_type) + " into the chest at " + chest_position.floored() + ".");
+                            }
+                        }
+                    } else {
+                        if (command === "loot") {
+                            responder_fun("Going to go " + command + " everything from the chest at " + chest_position.floored() + ".");
+                        } else {
+                            responder_fun("Going to go " + command + " everything into the chest at " + chest_position.floored() + ".");
                         }
                     }
-                } else if (item_count === undefined) {
-                    if (command === "loot") {
-                        if (mf.blockAt(chest_position).type !== mf.ItemType.Chest) {
-                            return "loot all " + items.nameForId(item_type) + " from chest near " + location_string;
-                        } else {
-                            return "loot all " + items.nameForId(item_type) + " from chest at " + chest_position;
-                        }
+                    navigator.navigateTo(chest_position,{
+                        end_radius : 3,
+                        timeout_milliseconds: 6 * 1000,
+                        cant_find_func : cant_navto_func,
+                        arrived_func : useChestData
+                    });
+                }
+            }
+        }, function stop() {
+            if (inventory.currentlyOpenWindow !== undefined) {
+                mf.closeWindow();
+            }
+            task_manager.remove(task);
+        });
+        task.pause = navigator.stop;
+        task.toString = function() {
+            if (item_type === undefined) {
+                if (command === "loot") {
+                    if (mf.blockAt(chest_position).type !== mf.ItemType.Chest) {
+                        return "loot everything near " + location_string;
                     } else {
-                        if (mf.blockAt(chest_position).type !== mf.ItemType.Chest) {
-                            return "dump all " + items.nameForId(item_type) + " into chest near " + location_string;
-                        } else {
-                            return "dump all " + items.nameForId(item_type) + " into chest at " + chest_position;
-                        }
+                        return "loot everything from chest at " + chest_position;
+                    }
+                } else {
+                    if (mf.blockAt(chest_position).type !== mf.ItemType.Chest) {
+                        return "dump everything near " + location_string;
+                    } else {
+                        return "dump everything into chest at " + chest_position;
+                    }
+                }
+            } else if (item_count === undefined) {
+                if (command === "loot") {
+                    if (mf.blockAt(chest_position).type !== mf.ItemType.Chest) {
+                        return "loot all " + items.nameForId(item_type) + " from chest near " + location_string;
+                    } else {
+                        return "loot all " + items.nameForId(item_type) + " from chest at " + chest_position;
+                    }
+                } else {
+                    if (mf.blockAt(chest_position).type !== mf.ItemType.Chest) {
+                        return "dump all " + items.nameForId(item_type) + " into chest near " + location_string;
+                    } else {
+                        return "dump all " + items.nameForId(item_type) + " into chest at " + chest_position;
                     }
                 }
             }
         };
-        task_manager.addTask(task);
+        task_manager.add(task);
     };
 
-    var stop = function(task) {
-        if (inventory.currentlyOpenWindow !== undefined) {
-            mf.closeWindow();
-        }
-        task_manager.removeTask(task);
-    };
+    chat_commands.registerCommand("loot", function(speaker, args, responder_fun) {
+       useChest(speaker, args, responder_fun, "loot"); 
+    }, 0, Infinity);
 
-    function loot_command(speaker,args,responder_fun) {
-       useChest(speaker,args,responder_fun,"loot"); 
-    }
-
-    function dump_command(speaker,args,responder_fun) {
+    chat_commands.registerCommand("dump", function(speaker, args, responder_fun) {
         useChest(speaker,args,responder_fun,"dump");
-    }
-
-    chat_commands.registerCommand("loot",loot_command,0,Infinity);
-    chat_commands.registerCommand("dump",dump_command,0,Infinity);
+    }, 0, Infinity);
 })();
