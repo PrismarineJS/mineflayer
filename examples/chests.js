@@ -6,6 +6,7 @@ mf.include("items.js");
 mf.include("inventory.js");
 mf.include("navigator.js");
 mf.include("task_manager.js");
+
 (function() {
     var findChestNearestPoint = function(point) {
         var chests = block_finder.findNearest(point, mf.ItemType.Chest, 128, 1);
@@ -329,7 +330,7 @@ mf.include("task_manager.js");
                 }
             }
         };
-        task_manager.add(task);
+        task_manager.doLater(task);
     };
 
     chat_commands.registerCommand("loot", function(speaker, args, responder_fun) {
