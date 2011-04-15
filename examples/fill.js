@@ -118,7 +118,6 @@ mf.include("Set.js");
 
     var impossible_count = 0;
     function nextBlock() {
-        debugger;
         while (true) {
             current_cursor[cursor_traversal_order[0]]++;
             if (current_cursor[cursor_traversal_order[0]] >= current_end[cursor_traversal_order[0]]) {
