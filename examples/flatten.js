@@ -144,25 +144,33 @@ mf.include("inventory.js");
         mine_dirt();
         
     };
-    
-    chat_commands.registerCommand("flatten",function(speaker,args,responder_fun) {
+
+    chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) {
         var player = player_tracker.entityForPlayer(speaker);
         if (player === undefined) {
             responder_fun("I can't see you, " + speaker + ".");
             return;
         }
-        if (args.length === 1) {
+        radius = undefined;
+        if (args.length > 0) {
             var arg = args.shift();
             if (isNaN(arg)) {
                 responder_fun("I don't understand " + arg + ".");
                 return;
             } else {
-                radius = arg;
+                radius = parseInt(arg);
             }
-        } else {
-            radius = undefined;
         }
-        player_position = player.position;
+        player_position = player.position.floored();
+        max_height_level = 128;
+        if (args.length > 0) {
+            var arg = args.shift();
+            if (isNaN(arg)) {
+                responder_fun("Not a number: " + arg);
+                return;
+            }
+            max_height_level = player_position.z + parseInt(arg);
+        }
         respond = responder_fun;
         min_height_level = player.position.z;
         if (inventory.itemSlot(mf.ItemType.WoodenPickaxe) !== undefined || inventory.itemSlot(mf.ItemType.StonePickaxe) !== undefined || inventory.itemSlot(mf.ItemType.IronPickaxe) !== undefined || inventory.itemSlot(mf.ItemType.DiamondPickaxe) !== undefined) {
@@ -179,7 +187,7 @@ mf.include("inventory.js");
                 responder_fun("Sorry, I can't get to you!");
             }
         });
-    },0,1);
+    }, 0, 2);
 
     chat_commands.registerCommand("stop",stop,0,0);
 })();
