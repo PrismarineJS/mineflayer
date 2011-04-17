@@ -730,19 +730,23 @@ QScriptValue ScriptRunner::lookAt(QScriptContext *context, QScriptEngine *engine
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
     QScriptValue error;
-    if (!me->argCount(context, error, 1))
+    if (!me->argCount(context, error, 1, 2))
         return error;
     QScriptValue point_value = context->argument(0);
     Double3D point;
     if (!me->fromJsPoint(context, error, point_value, point))
         return error;
+    QScriptValue force_value = context->argument(1);
+    bool force = false;
+    if (force_value.isBool())
+        force = force_value.toBool();
 
     Server::EntityPosition my_position = me->m_game->playerPosition();
     Double3D delta = point - my_position.pos;
     double yaw = std::atan2(delta.y, delta.x);
     double ground_distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
     double pitch = std::atan2(delta.z, ground_distance);
-    me->m_game->setPlayerLook(yaw, pitch);
+    me->m_game->setPlayerLook(yaw, pitch, force);
     return QScriptValue();
 }
 

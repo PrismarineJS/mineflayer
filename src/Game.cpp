@@ -151,11 +151,14 @@ void Game::updatePlayerLook(float delta_yaw, float delta_pitch)
     m_player.position.pitch += delta_pitch;
     emit playerPositionUpdated();
 }
-void Game::setPlayerLook(float yaw, float pitch)
+void Game::setPlayerLook(float yaw, float pitch, bool force)
 {
     QMutexLocker locker(&m_mutex);
     m_player.position.yaw = yaw;
     m_player.position.pitch = pitch;
+    if (force) {
+        m_last_sent_yaw = yaw;
+    }
     emit playerPositionUpdated();
 }
 void Game::setPlayerPosition(const Double3D & pt)

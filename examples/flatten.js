@@ -1,4 +1,5 @@
 mf.include("chat_commands.js");
+mf.include("task_manager.js");
 mf.include("navigator.js");
 mf.include("player_tracker.js");
 mf.include("block_finder.js");
@@ -70,7 +71,7 @@ chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) 
 
     function done() {
         running = false;
-        task_manager.remove(task);
+        task_manager.done();
     }
 
     function start_punch() {
@@ -156,7 +157,7 @@ chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) 
         }
         mine_dirt();
     };
-    var task = new task_manager.Task(function start() {
+    task_manager.doLater(new task_manager.Task(function start() {
         running = true;
         navigator.navigateTo(player.position, {
             end_radius: 16,
@@ -171,9 +172,5 @@ chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) 
         });
     }, function stop() {
         running = false;
-    })
-    task.toString = function() {
-        return "flatten " + player_position + " r=" + radius + " z=" + max_height_level;
-    };
-    task_manager.doLater(task);
+    }, "flatten " + player_position + " r=" + radius + " z=" + max_height_level));
 }, 0, 2);

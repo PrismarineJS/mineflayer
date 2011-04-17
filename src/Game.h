@@ -114,7 +114,7 @@ public:
 
     // immediately emits a position update
     void updatePlayerLook(float delta_yaw, float delta_pitch);
-    void setPlayerLook(float yaw, float pitch);
+    void setPlayerLook(float yaw, float pitch, bool force);
 
     // left-clicks an entity. no support for right-clicking entities yet.
     void attackEntity(int entity_id);

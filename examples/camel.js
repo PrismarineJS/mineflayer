@@ -1,41 +1,19 @@
 mf.include("inventory.js");
+mf.include("task_manager.js");
 mf.include("chat_commands.js");
 mf.include("items.js");
 
 (function() {
-    var dropSlots = [];
     
-    mf.onWindowOpened(function(window_type) {
-        if (window_type !== mf.WindowType.Inventory) {
-            return;
-        }
-        for (var i = 0; i < dropSlots.length; i++) {
-            mf.clickInventorySlot(dropSlots[i].slot,mf.MouseButton.Left);
-            if (dropSlots[i].count === "*") {
-                mf.clickOutsideWindow(mf.MouseButton.Left);
-            } else {
-                for (var j = 0; j < dropSlots[i].count; j++) {
-                    mf.clickOutsideWindow(mf.MouseButton.Right);    
-                }
-                mf.clickInventorySlot(dropSlots[i].slot,mf.MouseButton.Left);
-            }
-        }
-        dropSlots = [];
-        mf.closeWindow();
-    });
-    
-    var drop = function(username,args,respond) {
-        if ( args.length === 0 || args.length === 1 && (args[0] === "all" || args[0] === "inventory" || args[0] === "*" || args[0] === "everything")) {
+
+    chat_commands.registerCommand("drop", function(username, args, responder_func) {
+        var dropSlots = [];
+        var respond_message;
+        if (args.length === 0 || args.length === 1 && (args[0] === "all" || args[0] === "inventory" || args[0] === "*" || args[0] === "everything")) {
             for (var i = 0; i < inventory.slot_count; i++) {
                 dropSlots.push({slot: i, count: "*"});
             }
-            respond("Dropping everything!");
-            var player = player_tracker.entityForPlayer(username);
-            if (player !== undefined) {
-                var position = player.position;
-                mf.lookAt(position);
-            }
-            mf.openInventoryWindow();
+            respond_message = "Dropping everything!";
         } else if (args.length >= 1) {
             var item_count = undefined;
             if (!isNaN(args[0])) {
@@ -45,14 +23,14 @@ mf.include("items.js");
 
             var current_inventory = inventory.snapshot();
             // only look in our inventory
-            var item = items.findUnambiguouslyInDatabase(item_name,respond,inventory.getDatabase());
+            var item = items.findUnambiguouslyInDatabase(item_name, responder_func, inventory.getDatabase());
             if (item === undefined) {
                 return;
             }
             if (item_count === undefined) {
-                respond("Dropping all " + item.name + ".");
+                respond_message = "Dropping all " + item.name + ".";
             } else {
-                respond("Dropping " + item_count + " " + item.name + ".");
+                respond_message = "Dropping " + item_count + " " + item.name + ".";
             }
             
             for (var i = 0; i < current_inventory.length; i++) {
@@ -68,17 +46,40 @@ mf.include("items.js");
                     }
                 }
             }
+        }
+        task_manager.doNow(new task_manager.Task(function start() {
+            responder_func(respond_message);
             var player = player_tracker.entityForPlayer(username);
             if (player !== undefined) {
                 var position = player.position;
-                mf.lookAt(position);
+                mf.lookAt(position, true);
             }
+            mf.onWindowOpened(function asdf(window_type) {
+                if (window_type !== mf.WindowType.Inventory) {
+                    return;
+                }
+                mf.removeHandler(mf.onWindowOpened, asdf);
+                for (var i = 0; i < dropSlots.length; i++) {
+                    mf.clickInventorySlot(dropSlots[i].slot,mf.MouseButton.Left);
+                    if (dropSlots[i].count === "*") {
+                        mf.clickOutsideWindow(mf.MouseButton.Left);
+                    } else {
+                        for (var j = 0; j < dropSlots[i].count; j++) {
+                            mf.clickOutsideWindow(mf.MouseButton.Right);
+                        }
+                        mf.clickInventorySlot(dropSlots[i].slot,mf.MouseButton.Left);
+                    }
+                }
+                mf.closeWindow();
+                task_manager.done();
+            });
             mf.openInventoryWindow();
-        }
-    };
-    chat_commands.registerCommand("drop", drop, 0, Infinity);
+        }, function stop() {
+            // can't stop
+        }, respond_message));
+    }, 0, Infinity);
 
-    function list(speaker_name, args, responder_func) {
+    chat_commands.registerCommand("list", function(speaker_name, args, responder_func) {
         var name_filter = args[0];
         if (name_filter === undefined) {
             name_filter = "";
@@ -97,7 +98,5 @@ mf.include("items.js");
         } else {
             responder_func("i have nothing matching \"" + name_filter + "\"");
         }
-    }
-    chat_commands.registerCommand("list", list, 0, 1);
-
+    }, 0, 1);
 })();

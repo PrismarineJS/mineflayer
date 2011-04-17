@@ -1,5 +1,5 @@
-
 mf.include("chat_commands.js");
+mf.include("task_manager.js");
 mf.include("inventory.js");
 mf.include("items.js");
 mf.include("block_finder.js");
@@ -25,17 +25,20 @@ mf.include("navigator.js");
             responder_func("don't have any " + missing_items.mapped(function(id) { return items.nameForId(id); }).join(" or "));
             return;
         }
-        responder_func("looking for a furnace");
-        var radius = 30;
-        var furnaces = block_finder.findNearest(mf.self().position, [mf.ItemType.Furnace, mf.ItemType.BurningFurnace], radius);
-        if (furnaces.length === 0) {
-            responder_func("no furnaces within " + radius + " meters");
-            return;
-        }
-        responder_func("found a furnace");
-        var furnace_position = furnaces[0];
+        var furnace_position;
         var checker_inverval_id;
+        function stop() {
+            if (checker_inverval_id === undefined) {
+                return;
+            }
+            mf.clearInterval(checker_inverval_id);
+            checker_inverval_id = undefined;
+            mf.closeWindow();
+        }
         function checkTheStove() {
+            if (checker_inverval_id === undefined) {
+                return;
+            }
             var input_slot = 0, fuel_slot = 1, output_slot = 2;
             var current_fuel = mf.uniqueWindowItem(fuel_slot);
             if (current_fuel.type === -1) {
@@ -74,25 +77,39 @@ mf.include("navigator.js");
                 } else {
                     // out of bacon and nothing's cooking.
                     responder_func("done cooking bacon");
-                    mf.clearInterval(checker_inverval_id);
-                    checker_inverval_id = undefined;
-                    mf.closeWindow();
+                    task_manager.done();
+                    stop();
                 }
             }
         }
-        navigator.navigateTo(furnace_position, {
-            "end_radius": 3,
-            "cant_find_func": function() {
-                responder_func("can't get to the nearest furnace");
-            },
-            "arrived_func": function() {
-                mf.onWindowOpened(function handle_window_opend(window_type) {
-                    mf.removeHandler(mf.onWindowOpened, handle_window_opend);
-                    checker_inverval_id = mf.setInterval(checkTheStove, 100);
-                });
-                mf.lookAt(furnace_position);
-                mf.hax.activateBlock(furnace_position);
-            },
-        });
+        task_manager.doLater(new task_manager.Task(function start() {
+            if (furnace_position === undefined) {
+                responder_func("looking for a furnace");
+                var radius = 30;
+                var furnaces = block_finder.findNearest(mf.self().position, [mf.ItemType.Furnace, mf.ItemType.BurningFurnace], radius);
+                if (furnaces.length === 0) {
+                    responder_func("no furnaces within " + radius + " meters");
+                    task_manager.done();
+                    return;
+                }
+                responder_func("found a furnace");
+                furnace_position = furnaces[0];
+            }
+            navigator.navigateTo(furnace_position, {
+                "end_radius": 4,
+                "cant_find_func": function() {
+                    responder_func("can't get to the nearest furnace");
+                    task_manager.done();
+                },
+                "arrived_func": function() {
+                    mf.onWindowOpened(function handle_window_opend(window_type) {
+                        mf.removeHandler(mf.onWindowOpened, handle_window_opend);
+                        checker_inverval_id = mf.setInterval(checkTheStove, 100);
+                    });
+                    mf.lookAt(furnace_position);
+                    mf.hax.activateBlock(furnace_position);
+                },
+            });
+        }, stop, "cook bacon"));
     }
 })();

@@ -357,12 +357,11 @@ mf.clearControlStates()
 /**
  * Looks at the given point specified in absolute coordinates. See also mf.look.
  * @param {mf.Point} point
- * @param {mf.Face} [face] Optional, which side of the block located at point
- * to look at. This is to help you look exactly at the face of a block for
- * building purposes. See mf.Face.
- * SECOND PARAMETER NOT YET IMPLEMENTED
+ * @param {Boolean} [force] Optional, if present and true, skips the smooth server-side transition.
+ * Specify this to true if you need the server to know exactly where you are looking, such as for dropping
+ * items or shooting arrows. This is not needed for client-side calculation such as walking direction.
  */
-mf.lookAt(point, face)
+mf.lookAt(point, force)
 
 /**
  * Call this when you're dead to respawn.

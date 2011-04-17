@@ -1,4 +1,5 @@
 mf.include("chat_commands.js");
+mf.include("task_manager.js");
 mf.include("location_manager.js");
 mf.include("player_tracker.js");
 mf.include("navigator.js");
@@ -65,10 +66,9 @@ mf.include("quitter.js");
         _goto(speaker, args, responder_func, wait_for_username);
     }, 2, Infinity);
 
-    var current_checker_interval_id;
     function goToPoint(end, end_radius, responder_func, wait_for_username) {
         stopChecking();
-        responder_func("looking for a path from " + mf.self().position.toNotch().floored() + " to " + end.toNotch().floored() + "...");
+        var current_checker_interval_id;
         function startMonitor() {
             if (current_checker_interval_id !== undefined) {
                 // already started
@@ -78,6 +78,7 @@ mf.include("quitter.js");
                 // noboday to wait for
                 return;
             }
+            var waiting = false;
             current_checker_interval_id = mf.setInterval(function() {
                 // wait for someone maybe
                 if (current_checker_interval_id === undefined) {
@@ -86,68 +87,74 @@ mf.include("quitter.js");
                 }
                 var current_position = mf.self().position;
                 var entity = player_tracker.entityForPlayer(wait_for_username);
+                var resume = false;
                 if (entity === undefined) {
                     responder_func("can't see " + wait_for_username + " so i'm going on with them");
-                    wait_for_username = undefined;
-                    return;
-                }
-                if (entity.position.distanceTo(current_position) > 20) {
-                    responder_func("waiting for " + wait_for_username + " to catch up");
-                    navigator.stop();
                     stopChecking();
-                    var resume_interval_id = mf.setInterval(function() {
-                        var entity = player_tracker.entityForPlayer(wait_for_username);
-                        var resume = false;
-                        if (entity === undefined) {
-                            responder_func("can't see " + wait_for_username + " so i'm going on with them");
-                            wait_for_username = undefined;
-                            resume = true;
-                        } else if (entity.position.distanceTo(mf.self().position) < 10) {
-                            // resume
-                            resume = true;
-                        }
-                        if (resume) {
-                            mf.clearInterval(resume_interval_id);
-                            goToPoint(end, end_radius, responder_func, wait_for_username);
-                        }
-                    }, 1000);
+                    if (waiting) {
+                        resume = true;
+                    }
+                } else if (waiting) {
+                    if (entity.position.distanceTo(mf.self().position) < 10) {
+                        // resume
+                        resume = true;
+                    }
+                } else {
+                    if (entity.position.distanceTo(current_position) > 20) {
+                        responder_func("waiting for " + wait_for_username + " to catch up");
+                        navigator.stop();
+                        waiting = true;
+                    }
                 }
-            }, 3 * 1000);
+                if (resume) {
+                    goToPoint(end, end_radius, responder_func, wait_for_username);
+                    waiting = false;
+                }
+            }, 1000);
         }
-        navigator.navigateTo(end, {
-            "end_radius": end_radius,
-            "timeout_milliseconds": 10 * 1000,
-            "cant_find_func": function() {
-                responder_func("can't find a path");
-            },
-            "path_part_found_func": function(path) {
-                responder_func("k, i'm going to go " + path.length + " moves for now");
-                startMonitor();
-            },
-            "path_found_func": function(path) {
-                responder_func("i can get there in " + path.length + " moves");
-                startMonitor();
-            },
-            "arrived_func": function() {
-                responder_func("i have arrived");
-                stopChecking();
-            },
-        });
+        function stopChecking() {
+            if (current_checker_interval_id === undefined) {
+                // race conditions
+                return;
+            }
+            mf.clearInterval(current_checker_interval_id);
+            current_checker_interval_id = undefined;
+        }
+        var description;
+        if (wait_for_username !== undefined) {
+            description = "lead " + wait_for_username + " to ";
+        } else {
+            description = "goto ";
+        }
+        description += end;
+        task_manager.doLater(new task_manager.Task(function start() {
+            responder_func("looking for a path from " + mf.self().position.toNotch().floored() + " to " + end.toNotch().floored() + "...");
+            navigator.navigateTo(end, {
+                "end_radius": end_radius,
+                "timeout_milliseconds": 10 * 1000,
+                "cant_find_func": function() {
+                    responder_func("can't find a path");
+                    task_manager.done();
+                },
+                "path_part_found_func": function(path) {
+                    responder_func("k, i'm going to go " + path.length + " moves for now");
+                    startMonitor();
+                },
+                "path_found_func": function(path) {
+                    responder_func("i can get there in " + path.length + " moves");
+                    startMonitor();
+                },
+                "arrived_func": function() {
+                    responder_func("i have arrived");
+                    stopChecking();
+                    task_manager.done();
+                },
+            });
+        }, function stop() {
+            navigator.stop();
+            stopChecking();
+        }, description));
     }
 
-    function stopChecking() {
-        if (current_checker_interval_id === undefined) {
-            // race conditions
-            return;
-        }
-        mf.clearInterval(current_checker_interval_id);
-        current_checker_interval_id = undefined;
-    }
-
-    // stop
-    chat_commands.registerCommand("stop", function() {
-        navigator.stop();
-        stopChecking();
-    });
 })();
 
