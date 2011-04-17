@@ -74,25 +74,17 @@ mf.include("quitter.js");
                 // already started
                 return;
             }
-            var previous_position;
+            if (wait_for_username === undefined) {
+                // noboday to wait for
+                return;
+            }
             current_checker_interval_id = mf.setInterval(function() {
+                // wait for someone maybe
                 if (current_checker_interval_id === undefined) {
                     // race conditions
                     return;
                 }
                 var current_position = mf.self().position;
-                if (previous_position !== undefined && current_position.distanceTo(previous_position) < 3) {
-                    // i'm stuck
-                    stopChecking();
-                    goToPoint(end, end_radius, responder_func, wait_for_username);
-                    return;
-                }
-                previous_position = current_position;
-
-                // wait for someone maybe
-                if (wait_for_username === undefined) {
-                    return;
-                }
                 var entity = player_tracker.entityForPlayer(wait_for_username);
                 if (entity === undefined) {
                     responder_func("can't see " + wait_for_username + " so i'm going on with them");
@@ -120,7 +112,6 @@ mf.include("quitter.js");
                         }
                     }, 1000);
                 }
-
             }, 3 * 1000);
         }
         navigator.navigateTo(end, {
