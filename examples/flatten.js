@@ -1,5 +1,4 @@
 mf.include("chat_commands.js");
-mf.include("task_manager.js");
 mf.include("navigator.js");
 mf.include("player_tracker.js");
 mf.include("block_finder.js");
@@ -33,41 +32,24 @@ chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) 
     }
     var respond = responder_fun;
     var min_height_level = player.position.z;
-    var has_pick = inventory.itemSlot(mf.ItemType.WoodenPickaxe) !== undefined || inventory.itemSlot(mf.ItemType.StonePickaxe) !== undefined || inventory.itemSlot(mf.ItemType.IronPickaxe) !== undefined || inventory.itemSlot(mf.ItemType.DiamondPickaxe) !== undefined;
+    var flatten_types = [mf.ItemType.Sand, mf.ItemType.Grass, mf.ItemType.Dirt, mf.ItemType.Gravel, mf.ItemType.Stone, mf.ItemType.Sandstone];
+    var has_pick = inventory.itemsSlot(items.tools.pickaxes) !== undefined;
+    var has_shovel = inventory.itemsSlot(items.tools.shovels) !== undefined;
+    var block_positions;
+    var block_index;
     var running;
-    var dirt_position;
-
-    function find_dirt() {
-        var dirt_position = block_finder.findHighest(player_position,{
+    var flattened;
+    function find_blocks() {
+        var block_positions = block_finder.findHighest(player_position, {
             radius: radius,
             block_type: function(block_type) {
-                return (block_type === mf.ItemType.Sand || block_type === mf.ItemType.Grass || block_type === mf.ItemType.Dirt || block_type === mf.ItemType.Gravel);
+                return (mf.isDiggable(block_type));
             },
             bottom_threshold: min_height_level,
             top_threshold: max_height_level
         });
-        if (dirt_position.length === 0) {
-            return undefined;
-        } else {
-            return dirt_position.shift();
-        }
+        return block_positions;
     }
-
-    var find_stone = function() {
-        var dirt_position = block_finder.findHighest(player_position,{
-            radius: radius,
-            block_type: function(block_type) {
-                return (block_type === mf.ItemType.Sand || block_type === mf.ItemType.Grass || block_type === mf.ItemType.Dirt || block_type === mf.ItemType.Gravel || block_type === mf.ItemType.Stone);
-                },
-            bottom_threshold: min_height_level,
-            top_threshold: max_height_level
-        });
-        if (dirt_position.length === 0) {
-            return undefined;
-        } else {
-            return dirt_position.shift();
-        }
-    };
 
     function done() {
         running = false;
@@ -75,102 +57,138 @@ chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) 
     }
 
     function start_punch() {
-        navigator.navigateTo(dirt_position, {
+        navigator.navigateTo(block_positions[block_index], {
             end_radius: 3,
-            timeout_milliseconds: 1000 * 5,
+            timeout_milliseconds: 1000 * 1,
             arrived_func: function() {
                 if (!running) {
                     // stopped
                     return;
                 }
+                if (! mf.isDiggable(mf.blockAt(block_positions[block_index]).type)) {
+                    block_positions.removeAt(block_index);
+                    mine_blocks();
+                    return;
+                }
                 mf.onStoppedDigging(function asdf() {
                     mf.removeHandler(mf.onStoppedDigging, asdf);
-                    mine_dirt();
+                    block_positions.removeAt(block_index);
+                    mine_blocks();
                 });
-                mf.startDigging(dirt_position);
+                flattened = true;
+                mf.startDigging(block_positions[block_index]);
             },
             cant_find_func: function() {
-                respond("Sorry, I can't find a path to the highest piece of dirt.");
-                done();
+                block_index++;
+                mine_blocks();
             },
         });
     }
 
-    var mine_dirt = function() {
-        dirt_position = find_stone();
-        if (dirt_position === undefined) {
+    var block_to_tools = {};
+        block_to_tools[mf.ItemType.Sand] = "shovels";
+        block_to_tools[mf.ItemType.Dirt] = "shovels";
+        block_to_tools[mf.ItemType.Snow] = "shovels";
+        block_to_tools[mf.ItemType.Grass] = "shovels";
+        block_to_tools[mf.ItemType.Gravel] = "shovels";
+        block_to_tools[mf.ItemType.Stone] = "pickaxes";
+        block_to_tools[mf.ItemType.Cobblestone] = "pickaxes";
+        block_to_tools[mf.ItemType.SnowBlock] = "shovels";
+        block_to_tools[mf.ItemType.CoalOre] = "pickaxes";
+
+    function toolsForBlock(block_type) {
+        return items.tools[block_to_tools[block_type]];
+    }
+    var mine_blocks = function() {
+        if (block_positions.length === 0) {
             respond("I can't find anything else to flatten!");
             done();
             return;
         }
-        var dirt_type = mf.blockAt(dirt_position).type;
-        if (dirt_type === mf.ItemType.Stone) {
-            if (inventory.itemSlot(mf.ItemType.WoodenPickaxe) !== undefined) {
-                inventory.equipItem(mf.ItemType.WoodenPickaxe, start_punch);
-                return;
-            } else if (inventory.itemSlot(mf.ItemType.StonePickaxe) !== undefined) {
-                inventory.equipItem(mf.ItemType.StonePickaxe, start_punch);
-                return;
-            } else if (inventory.itemSlot(mf.ItemType.IronPickaxe) !== undefined) {
-                inventory.equipItem(mf.ItemType.IronPickaxe, start_punch);
-                return;
-            } else if (inventory.itemSlot(mf.ItemType.DiamondPickaxe) !== undefined) {
-                inventory.equipItem(mf.ItemType.DiamondPickaxe, start_punch);
+        if (block_index >= block_positions.length) {
+            if (! flattened) {
+                respond("I can't reach any of the " + block_positions.length + " remaining blocks.  Done!");
+                done();
                 return;
             } else {
-                if (has_pick) {
-                    respond("My pickaxe is gone.  I'm going to just remove dirt/sand/gravel/grass now.");
-                    has_pick = false;
-                }
-                dirt_position = find_dirt();
-                if (dirt_position === undefined) {
-                    respond("I don't see anything left to flatten.");
-                    done();
-                    return;
-                }
+                block_index = 0;
+                flattened = false;
             }
         }
-        if (dirt_type === mf.ItemType.Dirt || dirt_type === mf.ItemType.Sand || dirt_type === mf.ItemType.Gravel || dirt_type === mf.ItemType.Grass) {
-            if (inventory.itemSlot(mf.ItemType.WoodenShovel) !== undefined) {
-                inventory.equipItem(mf.ItemType.WoodenShovel, start_punch);
-            } else if (inventory.itemSlot(mf.ItemType.StoneShovel) !== undefined) {
-                inventory.equipItem(mf.ItemType.StoneShovel, start_punch);
-            } else if (inventory.itemSlot(mf.ItemType.IronShovel) !== undefined) {
-                inventory.equipItem(mf.ItemType.IronShovel, start_punch);
-            } else if (inventory.itemSlot(mf.ItemType.DiamondShovel) !== undefined) {
-                inventory.equipItem(mf.ItemType.DiamondShovel, start_punch);
-            } else {
-                start_punch();
-            }
+        var block_position = block_positions[block_index];
+        var block_type = mf.blockAt(block_position).type;
+        if (flatten_types.indexOf(block_type) === -1) {
+            block_positions.removeAt(block_index);
+            mine_blocks();
             return;
-        } 
-    };
+        }
+        var tools = toolsForBlock(block_type);
 
+        if (tools !== undefined) {
+            var slot = inventory.itemsSlot(tools);
+            if (slot !== undefined) {
+                inventory.equipItem(inventory.inventoryItem(slot).type, start_punch);
+                return;
+            }
+            if (has_pick && tools === items.tools.pickaxes) {
+                respond("I don't have any pickaxes!  I'm going to skip over any blocks that require a pickaxe for material.");
+                has_pick = false;
+                block_index++;
+                mine_blocks();
+                return;
+            } else if (has_shovel && tools === items.tools.shovels) {
+                respond("I don't have any shovels!");
+                has_shovel = false;
+            }
+        }
+        //equip non-tool
+        for (var i = 0; i < inventory.InventoryFull.slotCount; i++) {
+            var flag = false;
+            for (var key in items.tools) {
+                if (items.tools[key].indexOf(inventory.inventoryItem(i, inventory.InventoryFull).type) !== -1) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag) {
+                continue;
+            }
+            inventory.equipItem(inventory.inventoryItem(i, inventory.InventoryFull).type, start_punch);
+            return;
+        }
+        // no non-tools
+        start_punch();
+    };
     var start_mining = function() {
-        dirt_position = find_stone();
-        if (dirt_position === undefined) {
+        block_positions = find_blocks();
+        block_index = 0;
+        flattened = false;
+        if (block_positions.length <= 0) {
             respond("I don't see anything to flatten!");
             done();
             return;
-        } else {
-            max_height_level = dirt_position.z;
         }
-        mine_dirt();
+        max_height_level = block_positions[0].z;
+        mine_blocks();
     };
     task_manager.doLater(new task_manager.Task(function start() {
-        running = true;
-        navigator.navigateTo(player.position, {
-            end_radius: 16,
-            timeout_milliseconds: 1000 * 10,
-            arrived_func: start_mining,
-            path_found_func: function() {
-                responder_fun("Going to go flatten");
-            },
-            cant_find_func: function() {
-                responder_fun("Sorry, I can't get to you!");
-            },
-        });
-    }, function stop() {
-        running = false;
-    }, "flatten " + player_position + " r=" + radius + " z=" + max_height_level));
+            running = true;
+            navigator.navigateTo(player.position, {
+                end_radius: 16,
+                timeout_milliseconds: 1000 * 10,
+                arrived_func: start_mining,
+                path_found_func: function() {
+                    responder_fun("Going to try and flatten");
+                },
+                cant_find_func: function() {
+                    responder_fun("Sorry, I can't get to you!");
+                    done();
+                },
+            });
+        }, function stop() {
+            running = false;
+        }, function toString() {
+            return "flatten (" + player_position.x + ", " + player_position.y + ") r=" + radius + " z=[" + min_height_level + " : " + block_positions[0].z + "]";
+        })
+    );
 }, 0, 2);
