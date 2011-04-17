@@ -4,85 +4,102 @@ mf.include("player_tracker.js");
 mf.include("block_finder.js");
 mf.include("inventory.js");
 
-(function() {
-    var min_height_level = undefined;
-    var max_height_level = undefined;
-    var player_position = undefined;
-    var respond = undefined;
-    var dirt_position = undefined;
-    var radius = undefined;
-    var has_pick = undefined;
-    var find_dirt = function() {
-        if (radius === undefined) {
-            radius = 8;
-        }
-        var dirt_position = block_finder.findHighest(player_position,{
-            radius: radius,
-            block_type: function(block_type) {
-                return (block_type === mf.ItemType.Sand || block_type === mf.ItemType.Grass || block_type === mf.ItemType.Dirt || block_type === mf.ItemType.Gravel);},
-            bottom_threshold: min_height_level,
-            top_threshold: max_height_level
-        });
-        if (dirt_position.length === 0) {
-                return undefined;
+chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) {
+    var player = player_tracker.entityForPlayer(speaker);
+    if (player === undefined) {
+        responder_fun("I can't see you, " + speaker + ".");
+        return;
+    }
+    var radius = 8;
+    if (args.length > 0) {
+        var arg = args.shift();
+        if (isNaN(arg)) {
+            responder_fun("Not a number: " + arg);
+            return;
         } else {
-            return dirt_position.shift();
+            radius = parseInt(arg);
         }
-    };
-
-    var find_stone = function() {
-        if (radius === undefined) {
-            radius = 8;
-        }
-        var dirt_position = block_finder.findHighest(player_position,{
-            radius: radius,
-            block_type: function(block_type) {
-                return (block_type === mf.ItemType.Sand || block_type === mf.ItemType.Grass || block_type === mf.ItemType.Dirt || block_type === mf.ItemType.Gravel || block_type === mf.ItemType.Stone);},
-            bottom_threshold: min_height_level,
-            top_threshold: max_height_level
-        });
-        if (dirt_position.length === 0) {
-                return undefined;
-        } else {
-            return dirt_position.shift();
-        }
-    };
-
-    var punch_dirt = function() {
-        if (dirt_position === undefined) {
-            stop();
+    }
+    var player_position = player.position.floored();
+    var max_height_level = 128;
+    if (args.length > 0) {
+        var arg = args.shift();
+        if (isNaN(arg)) {
+            responder_fun("Not a number: " + arg);
             return;
         }
-        mf.startDigging(dirt_position);
-    };
-    
-    var stop = function() {
-        dirt_position = undefined;
-        min_height_level = undefined;
-        max_height_level = undefined;
-        player_position = undefined;
-        radius = undefined;
-    };
-    
-    var no_path_found = function() {
-        respond("Sorry, I can't find a path to the highest piece of dirt.");
-        stop();
+        max_height_level = player_position.z + parseInt(arg);
+    }
+    var respond = responder_fun;
+    var min_height_level = player.position.z;
+    var has_pick = inventory.itemSlot(mf.ItemType.WoodenPickaxe) !== undefined || inventory.itemSlot(mf.ItemType.StonePickaxe) !== undefined || inventory.itemSlot(mf.ItemType.IronPickaxe) !== undefined || inventory.itemSlot(mf.ItemType.DiamondPickaxe) !== undefined;
+    var running;
+    var dirt_position;
+
+    function find_dirt() {
+        var dirt_position = block_finder.findHighest(player_position,{
+            radius: radius,
+            block_type: function(block_type) {
+                return (block_type === mf.ItemType.Sand || block_type === mf.ItemType.Grass || block_type === mf.ItemType.Dirt || block_type === mf.ItemType.Gravel);
+            },
+            bottom_threshold: min_height_level,
+            top_threshold: max_height_level
+        });
+        if (dirt_position.length === 0) {
+            return undefined;
+        } else {
+            return dirt_position.shift();
+        }
+    }
+
+    var find_stone = function() {
+        var dirt_position = block_finder.findHighest(player_position,{
+            radius: radius,
+            block_type: function(block_type) {
+                return (block_type === mf.ItemType.Sand || block_type === mf.ItemType.Grass || block_type === mf.ItemType.Dirt || block_type === mf.ItemType.Gravel || block_type === mf.ItemType.Stone);
+                },
+            bottom_threshold: min_height_level,
+            top_threshold: max_height_level
+        });
+        if (dirt_position.length === 0) {
+            return undefined;
+        } else {
+            return dirt_position.shift();
+        }
     };
 
-    var start_punch = function() {
-        navigator.navigateTo(dirt_position,{
+    function done() {
+        running = false;
+        task_manager.remove(task);
+    }
+
+    function start_punch() {
+        navigator.navigateTo(dirt_position, {
             end_radius: 3,
             timeout_milliseconds: 1000 * 5,
-            arrived_func: punch_dirt,
-            cant_find_func: no_path_found,
+            arrived_func: function() {
+                if (!running) {
+                    // stopped
+                    return;
+                }
+                mf.onStoppedDigging(function asdf() {
+                    mf.removeHandler(mf.onStoppedDigging, asdf);
+                    mine_dirt();
+                });
+                mf.startDigging(dirt_position);
+            },
+            cant_find_func: function() {
+                respond("Sorry, I can't find a path to the highest piece of dirt.");
+                done();
+            },
         });
-    };
+    }
 
     var mine_dirt = function() {
         dirt_position = find_stone();
         if (dirt_position === undefined) {
             respond("I can't find anything else to flatten!");
-            stop();
+            done();
             return;
         }
         var dirt_type = mf.blockAt(dirt_position).type;
@@ -107,11 +124,10 @@ mf.include("inventory.js");
                 dirt_position = find_dirt();
                 if (dirt_position === undefined) {
                     respond("I don't see anything left to flatten.");
-                    stop();
+                    done();
                     return;
                 }
             }
-             
         }
         if (dirt_type === mf.ItemType.Dirt || dirt_type === mf.ItemType.Sand || dirt_type === mf.ItemType.Gravel || dirt_type === mf.ItemType.Grass) {
             if (inventory.itemSlot(mf.ItemType.WoodenShovel) !== undefined) {
@@ -127,67 +143,37 @@ mf.include("inventory.js");
             }
             return;
         } 
-        
     };
 
-    mf.onStoppedDigging(mine_dirt);
     var start_mining = function() {
         dirt_position = find_stone();
         if (dirt_position === undefined) {
             respond("I don't see anything to flatten!");
-            stop();
+            done();
             return;
         } else {
             max_height_level = dirt_position.z;
-            respond("Going to go flatten.");
         }
         mine_dirt();
-        
     };
-
-    chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) {
-        var player = player_tracker.entityForPlayer(speaker);
-        if (player === undefined) {
-            responder_fun("I can't see you, " + speaker + ".");
-            return;
-        }
-        radius = undefined;
-        if (args.length > 0) {
-            var arg = args.shift();
-            if (isNaN(arg)) {
-                responder_fun("I don't understand " + arg + ".");
-                return;
-            } else {
-                radius = parseInt(arg);
-            }
-        }
-        player_position = player.position.floored();
-        max_height_level = 128;
-        if (args.length > 0) {
-            var arg = args.shift();
-            if (isNaN(arg)) {
-                responder_fun("Not a number: " + arg);
-                return;
-            }
-            max_height_level = player_position.z + parseInt(arg);
-        }
-        respond = responder_fun;
-        min_height_level = player.position.z;
-        if (inventory.itemSlot(mf.ItemType.WoodenPickaxe) !== undefined || inventory.itemSlot(mf.ItemType.StonePickaxe) !== undefined || inventory.itemSlot(mf.ItemType.IronPickaxe) !== undefined || inventory.itemSlot(mf.ItemType.DiamondPickaxe) !== undefined) {
-            has_pick = true;
-        } else {
-            has_pick = false;
-        }
-        
-        navigator.navigateTo(player.position,{
+    var task = new task_manager.Task(function start() {
+        running = true;
+        navigator.navigateTo(player.position, {
             end_radius: 16,
             timeout_milliseconds: 1000 * 10,
             arrived_func: start_mining,
+            path_found_func: function() {
+                responder_fun("Going to go flatten");
+            },
             cant_find_func: function() {
                 responder_fun("Sorry, I can't get to you!");
-            }
+            },
         });
-    }, 0, 2);
-
-    chat_commands.registerCommand("stop",stop,0,0);
-})();
+    }, function stop() {
+        running = false;
+    })
+    task.toString = function() {
+        return "flatten " + player_position + " r=" + radius + " z=" + max_height_level;
+    };
+    task_manager.doLater(task);
+}, 0, 2);
