@@ -1,7 +1,7 @@
 mf.include("chat_commands.js");
+mf.include("iterators.js");
 mf.include("navigator.js");
 mf.include("player_tracker.js");
-mf.include("block_finder.js");
 mf.include("inventory.js");
 
 chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) {
@@ -39,17 +39,6 @@ chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) 
     var block_index;
     var running;
     var flattened;
-    function find_blocks() {
-        var block_positions = block_finder.findHighest(player_position, {
-            radius: radius,
-            block_type: function(block_type) {
-                return (mf.isDiggable(block_type));
-            },
-            bottom_threshold: min_height_level,
-            top_threshold: max_height_level
-        });
-        return block_positions;
-    }
 
     function done() {
         running = false;
@@ -58,7 +47,7 @@ chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) 
 
     function start_punch() {
         navigator.navigateTo(block_positions[block_index], {
-            end_radius: 3,
+            end_radius: 4,
             timeout_milliseconds: 1000 * 1,
             arrived_func: function() {
                 if (!running) {
@@ -106,7 +95,7 @@ chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) 
             return;
         }
         if (block_index >= block_positions.length) {
-            if (! flattened) {
+            if (!flattened) {
                 respond("I can't reach any of the " + block_positions.length + " remaining blocks.  Done!");
                 done();
                 return;
@@ -160,7 +149,12 @@ chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) 
         start_punch();
     };
     var start_mining = function() {
-        block_positions = find_blocks();
+        block_positions = new iterators.StripeIterable({
+            corner1: new mf.Point(player_position.x - radius, player_position.y - radius, min_height_level),
+            corner2: new mf.Point(player_position.x + radius, player_position.y + radius, max_height_level),
+            stripe_width: 6,
+            z_direction: -1,
+        }).toArray();
         block_index = 0;
         flattened = false;
         if (block_positions.length <= 0) {
