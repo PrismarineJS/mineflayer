@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-const qint32 OutgoingRequest::c_protocol_version = 10;
+const qint32 OutgoingRequest::c_protocol_version = 11;
 
 void OutgoingRequest::writeToStream(QDataStream &stream)
 {
@@ -62,7 +62,6 @@ void LoginRequest::writeMessageBody(QDataStream &stream)
 {
     writeValue(stream, c_protocol_version);
     writeValue(stream, username);
-    writeValue(stream, password);
     writeValue(stream, (qint64)0); // map seed
     writeValue(stream, (qint8)0); // dimension
 }
@@ -845,7 +844,7 @@ int PlayNoteBlockResponse::parse(QByteArray buffer)
 int InvalidBedResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseValue(buffer, index, unknown)) == -1)
+    if ((index = parseValue(buffer, index, reason)) == -1)
         return -1;
     return index;
 }
@@ -878,6 +877,22 @@ int ExplosionResponse::parse(QByteArray buffer)
             return -1;
         offsets_to_affected_blocks.replace(i, Int3D(local_x, local_y, local_z));
     }
+    return index;
+}
+
+int WeatherResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, weather_type)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, raining)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, x)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, y)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, z)) == -1)
+        return -1;
     return index;
 }
 
@@ -937,6 +952,16 @@ int TransactionResponse::parse(QByteArray buffer)
     if ((index = parseValue(buffer, index, action_id)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, is_accepted)) == -1)
+        return -1;
+    return index;
+}
+
+int IncrementStatisticResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, statistic_id)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, amount)) == -1)
         return -1;
     return index;
 }

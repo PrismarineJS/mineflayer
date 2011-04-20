@@ -54,6 +54,7 @@ public:
         BlockChange=0x35,
         PlayNoteBlock=0x36,
         InvalidBed=0x46,
+        Weather=0x47,
         Explosion=0x3C,
         OpenWindow=0x64,
         CloseWindow=0x65,
@@ -62,6 +63,7 @@ public:
         WindowItems=0x68,
         UpdateProgressBar=0x69,
         Transaction=0x6A,
+        IncrementStatistic=0xC8,
         UpdateSign=(qint8)0x82,
         DisconnectOrKick=(qint8)0xFF,
     };
@@ -133,9 +135,8 @@ protected:
 class LoginRequest : public OutgoingRequest {
 public:
     QString username;
-    QString password;
-    LoginRequest(QString username, QString password) : OutgoingRequest(Login),
-        username(username), password(password) {}
+    LoginRequest(QString username) : OutgoingRequest(Login),
+        username(username) {}
 protected:
     virtual void writeMessageBody(QDataStream &stream);
 };
@@ -721,7 +722,7 @@ public:
 
 class InvalidBedResponse : public IncomingResponse {
 public:
-    qint8 unknown;
+    qint8 reason;
     InvalidBedResponse() : IncomingResponse(InvalidBed) {}
     virtual int parse(QByteArray buffer);
 };
@@ -734,6 +735,17 @@ public:
     float unknown;
     QVector<Int3D> offsets_to_affected_blocks;
     ExplosionResponse() : IncomingResponse(Explosion) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class WeatherResponse : public IncomingResponse {
+public:
+    qint32 weather_type;
+    bool raining;
+    qint32 x;
+    qint16 y;
+    qint32 z;
+    WeatherResponse() : IncomingResponse(Weather) {}
     virtual int parse(QByteArray buffer);
 };
 
@@ -778,6 +790,14 @@ public:
     qint16 action_id;
     bool is_accepted;
     TransactionResponse() : IncomingResponse(Transaction) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class IncrementStatisticResponse : public IncomingResponse {
+public:
+    qint32 statistic_id;
+    qint8 amount;
+    IncrementStatisticResponse() : IncomingResponse(IncrementStatistic) {}
     virtual int parse(QByteArray buffer);
 };
 
