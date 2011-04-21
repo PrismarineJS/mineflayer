@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-const qint32 OutgoingRequest::c_protocol_version = 10;
+const qint32 OutgoingRequest::c_protocol_version = 11;
 
 void OutgoingRequest::writeToStream(QDataStream &stream)
 {
@@ -45,6 +45,21 @@ void OutgoingRequest::writeValue(QDataStream &stream, double value)
 }
 void OutgoingRequest::writeValue(QDataStream & stream, QString value)
 {
+    writeValue(stream, (qint16)value.length());
+    const char * char_buffer = reinterpret_cast<const char *>(value.utf16());
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+    // swap endian
+    for (int i = 0; i < value.length(); i++) {
+        int char_index = i * 2;
+        stream.device()->write(char_buffer + char_index + 1, 1);
+        stream.device()->write(char_buffer + char_index, 1);
+    }
+#else
+    stream.device()->write(char_buffer, value.length()*2);
+#endif
+}
+void OutgoingRequest::writeStringUtf8(QDataStream & stream, QString value)
+{
     QByteArray utf8_data = value.toUtf8();
     writeValue(stream, (qint16)utf8_data.size());
     stream.device()->write(utf8_data);
@@ -62,7 +77,6 @@ void LoginRequest::writeMessageBody(QDataStream &stream)
 {
     writeValue(stream, c_protocol_version);
     writeValue(stream, username);
-    writeValue(stream, password);
     writeValue(stream, (qint64)0); // map seed
     writeValue(stream, (qint8)0); // dimension
 }
@@ -154,6 +168,12 @@ void DisconnectRequest::writeMessageBody(QDataStream &stream)
     writeValue(stream, reason);
 }
 
+void IncrementStatisticRequest::writeMessageBody(QDataStream &stream)
+{
+    writeValue(stream, statistic_id);
+    writeValue(stream, amount);
+}
+
 int IncomingResponse::parseValue(QByteArray buffer, int index, bool &value)
 {
     qint8 tmp = 0;
@@ -226,6 +246,30 @@ int IncomingResponse::parseValue(QByteArray buffer, int index, QString &value)
     qint16 length;
     if ((index = parseValue(buffer, index, length)) == -1)
         return -1;
+    if (!(index + length * 2 <= buffer.size()))
+        return -1;
+
+    char * char_buffer = buffer.data() + index;
+#if Q_BYTE_ORDER == Q_LITTLE_ENDIAN
+    // swap endian
+    for (int i = 0; i < length; i++) {
+        int char_index = i * 2;
+        char tmp = char_buffer[char_index];
+        char_buffer[char_index] = char_buffer[char_index + 1];
+        char_buffer[char_index + 1] = tmp;
+    }
+#endif
+    ushort * short_buffer = reinterpret_cast<ushort*>(char_buffer);
+    value = QString::fromUtf16(short_buffer, length);
+
+    index += length*2;
+    return index;
+}
+int IncomingResponse::parseStringUtf8(QByteArray buffer, int index, QString &value)
+{
+    qint16 length;
+    if ((index = parseValue(buffer, index, length)) == -1)
+        return -1;
     if (!(index + length <= buffer.size()))
         return -1;
     value = QString::fromUtf8(buffer.mid(index, length).constData(), length);
@@ -272,8 +316,6 @@ int LoginResponse::parse(QByteArray buffer)
     if ((index = parseValue(buffer, index, entity_id)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, _unknown_1)) == -1)
-        return -1;
-    if ((index = parseValue(buffer, index, _unknown_2)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, map_seed)) == -1)
         return -1;
@@ -845,7 +887,7 @@ int PlayNoteBlockResponse::parse(QByteArray buffer)
 int InvalidBedResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseValue(buffer, index, unknown)) == -1)
+    if ((index = parseValue(buffer, index, reason)) == -1)
         return -1;
     return index;
 }
@@ -890,7 +932,7 @@ int OpenWindowResponse::parse(QByteArray buffer)
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
     inventory_type = (WindowType)tmp;
-    if ((index = parseValue(buffer, index, window_title)) == -1)
+    if ((index = parseStringUtf8(buffer, index, window_title)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, number_of_slots)) == -1)
         return -1;
@@ -987,3 +1029,21 @@ int DisconnectOrKickResponse::parse(QByteArray buffer)
         return -1;
     return index;
 }
+
+int WeatherResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, raining)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, x)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, y)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, z)) == -1)
+        return -1;
+
+    return index;
+}
+

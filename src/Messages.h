@@ -54,6 +54,7 @@ public:
         BlockChange=0x35,
         PlayNoteBlock=0x36,
         InvalidBed=0x46,
+        Weather=0x47,
         Explosion=0x3C,
         OpenWindow=0x64,
         CloseWindow=0x65,
@@ -63,6 +64,7 @@ public:
         UpdateProgressBar=0x69,
         Transaction=0x6A,
         UpdateSign=(qint8)0x82,
+        IncrementStatistic=(qint8)0xC8,
         DisconnectOrKick=(qint8)0xFF,
     };
 
@@ -127,15 +129,15 @@ protected:
     static void writeValue(QDataStream & stream, float value);
     static void writeValue(QDataStream & stream, double value);
     static void writeValue(QDataStream & stream, QString value);
+    static void writeStringUtf8(QDataStream & stream, QString value);
     static void writeValue(QDataStream & stream, Item value);
 };
 
 class LoginRequest : public OutgoingRequest {
 public:
     QString username;
-    QString password;
-    LoginRequest(QString username, QString password) : OutgoingRequest(Login),
-        username(username), password(password) {}
+    LoginRequest(QString username) : OutgoingRequest(Login),
+        username(username) {}
 protected:
     virtual void writeMessageBody(QDataStream &stream);
 };
@@ -261,6 +263,15 @@ public:
     virtual void writeMessageBody(QDataStream &stream);
 };
 
+class IncrementStatisticRequest : public OutgoingRequest {
+public:
+    qint32 statistic_id;
+    qint8 amount;
+    IncrementStatisticRequest(qint32 statistic_id, qint8 amount) :
+        OutgoingRequest(IncrementStatistic), statistic_id(statistic_id), amount(amount) {}
+    virtual void writeMessageBody(QDataStream &stream);
+};
+
 class DisconnectRequest : public OutgoingRequest {
 public:
     QString reason;
@@ -288,6 +299,7 @@ protected:
     static int parseValue(QByteArray buffer, int index, float &value);
     static int parseValue(QByteArray buffer, int index, double &value);
     static int parseValue(QByteArray buffer, int index, QString &value);
+    static int parseStringUtf8(QByteArray buffer, int index, QString &value);
     static int parseValue(QByteArray buffer, int index, Item &item);
     static int parseValue(QByteArray buffer, int index, QByteArray &value);
 };
@@ -306,7 +318,6 @@ public:
     };
     qint32 entity_id;
     QString _unknown_1;
-    QString _unknown_2;
     qint64 map_seed;
     Dimension dimension;
     LoginResponse() : IncomingResponse(Login) {}
@@ -721,7 +732,7 @@ public:
 
 class InvalidBedResponse : public IncomingResponse {
 public:
-    qint8 unknown;
+    qint8 reason;
     InvalidBedResponse() : IncomingResponse(InvalidBed) {}
     virtual int parse(QByteArray buffer);
 };
@@ -744,6 +755,15 @@ public:
     QString window_title;
     qint8 number_of_slots;
     OpenWindowResponse() : IncomingResponse(OpenWindow) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class WeatherResponse : public IncomingResponse {
+public:
+    qint32 entity_id;
+    bool raining;
+    qint32 x, y, z;
+    WeatherResponse() : IncomingResponse(Weather) {}
     virtual int parse(QByteArray buffer);
 };
 

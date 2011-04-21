@@ -87,8 +87,18 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
     case Message::Transaction: return new TransactionResponse;
     case Message::UpdateSign: return new UpdateSignResponse;
     case Message::DisconnectOrKick: return new DisconnectOrKickResponse;
-    default:
-        Q_ASSERT_X(false, "", (QString("parse message: 0x") + QString::number(type, 16)).toStdString().c_str());
+    case Message::Weather: return new WeatherResponse;
+
+
+
+    case Message::Player:
+    case Message::PlayerPosition:
+    case Message::PlayerLook:
+    case Message::WindowClick:
+    case Message::IncrementStatistic:
+        Q_ASSERT_X(false, "", (QString("client only message from server: 0x") + QString::number(type, 16)).toStdString().c_str());
         return NULL;
     }
+    Q_ASSERT_X(false, "", (QString("parse message: 0x") + QString::number(type, 16)).toStdString().c_str());
+    return NULL;
 }
