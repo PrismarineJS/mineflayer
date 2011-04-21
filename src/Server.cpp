@@ -203,7 +203,7 @@ void Server::handleFinishedRequest(QNetworkReply * reply)
 
         qDebug() << "Authentication success. sending login request.";
         changeLoginState(WaitingForLoginResponse);
-        sendMessage(QSharedPointer<OutgoingRequest>(new LoginRequest(m_connection_info.userName())));
+        sendMessage(QSharedPointer<OutgoingRequest>(new LoginRequest(m_connection_info.userName(), m_connection_info.password())));
     }
 }
 
@@ -231,7 +231,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             {
                 // no minecraf.net authentication required
                 changeLoginState(WaitingForLoginResponse);
-                sendMessage(QSharedPointer<OutgoingRequest>(new LoginRequest(m_connection_info.userName())));
+                sendMessage(QSharedPointer<OutgoingRequest>(new LoginRequest(m_connection_info.userName(), m_connection_info.password())));
             } else {
                 // authentication with minecraft.net required
                 QUrl request_url(QString("http://") + c_auth_server + QString("/game/getversion.jsp"));

@@ -79,14 +79,12 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
     case Message::PlayNoteBlock: return new PlayNoteBlockResponse;
     case Message::InvalidBed: return new InvalidBedResponse;
     case Message::Explosion: return new ExplosionResponse;
-    case Message::Weather: return new WeatherResponse;
     case Message::OpenWindow: return new OpenWindowResponse;
     case Message::CloseWindow: return new CloseWindowResponse;
     case Message::SetSlot: return new SetSlotResponse;
     case Message::WindowItems: return new WindowItemsResponse;
     case Message::UpdateProgressBar: return new UpdateProgressBarResponse;
     case Message::Transaction: return new TransactionResponse;
-    case Message::IncrementStatistic: return new IncrementStatisticResponse;
     case Message::UpdateSign: return new UpdateSignResponse;
     case Message::DisconnectOrKick: return new DisconnectOrKickResponse;
     default:
