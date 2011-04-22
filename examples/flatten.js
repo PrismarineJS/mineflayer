@@ -33,8 +33,8 @@ chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) 
     var respond = responder_fun;
     var min_height_level = player.position.z;
     var flatten_types = [mf.ItemType.Sand, mf.ItemType.Grass, mf.ItemType.Dirt, mf.ItemType.Gravel, mf.ItemType.Stone, mf.ItemType.Sandstone];
-    var has_pick = inventory.itemsSlot(items.tools.pickaxes) !== undefined;
-    var has_shovel = inventory.itemsSlot(items.tools.shovels) !== undefined;
+    var has_pick = true;
+    var has_shovel = true;
     var block_positions;
     var block_index;
     var running;
@@ -74,20 +74,6 @@ chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) 
         });
     }
 
-    var block_to_tools = {};
-        block_to_tools[mf.ItemType.Sand] = "shovels";
-        block_to_tools[mf.ItemType.Dirt] = "shovels";
-        block_to_tools[mf.ItemType.Snow] = "shovels";
-        block_to_tools[mf.ItemType.Grass] = "shovels";
-        block_to_tools[mf.ItemType.Gravel] = "shovels";
-        block_to_tools[mf.ItemType.Stone] = "pickaxes";
-        block_to_tools[mf.ItemType.Cobblestone] = "pickaxes";
-        block_to_tools[mf.ItemType.SnowBlock] = "shovels";
-        block_to_tools[mf.ItemType.CoalOre] = "pickaxes";
-
-    function toolsForBlock(block_type) {
-        return items.tools[block_to_tools[block_type]];
-    }
     var mine_blocks = function() {
         if (block_positions.length === 0) {
             respond("I can't find anything else to flatten!");
@@ -111,42 +97,28 @@ chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) 
             mine_blocks();
             return;
         }
-        var tools = toolsForBlock(block_type);
-
-        if (tools !== undefined) {
-            var slot = inventory.itemsSlot(tools);
-            if (slot !== undefined) {
-                inventory.equipItem(inventory.inventoryItem(slot).type, start_punch);
-                return;
-            }
-            if (has_pick && tools === items.tools.pickaxes) {
-                respond("I don't have any pickaxes!  I'm going to skip over any blocks that require a pickaxe for material.");
-                has_pick = false;
+        if (!inventory.equipBestTool(block_type, start_punch)) {
+            // couldn't equip proper tool
+            var missing_tools = items.toolsForBlock(block_type);
+            if (missing_tools === items.tools.shovels) {
+                if (has_shovel) {
+                    respond("I don't have any shovels!");
+                    has_shovel = false;
+                    if (!inventory.equipNonTool(start_punch)) {
+                        start_punch();
+                    }
+                }
+            } else if (missing_tools === items.tools.pickaxes) {
+                if (has_pick) {
+                    respond("I don't have any pickaxes!  I'm going to skip over any blocks that require a pickaxe for material.");
+                    has_pick = false;
+                }
                 block_index++;
                 mine_blocks();
-                return;
-            } else if (has_shovel && tools === items.tools.shovels) {
-                respond("I don't have any shovels!");
-                has_shovel = false;
+            } else {
+                throw "I didn't know I was going to need a " + items.nameForId(missing_tools[0]);
             }
         }
-        //equip non-tool
-        for (var i = 0; i < inventory.InventoryFull.slotCount; i++) {
-            var flag = false;
-            for (var key in items.tools) {
-                if (items.tools[key].indexOf(inventory.inventoryItem(i, inventory.InventoryFull).type) !== -1) {
-                    flag = true;
-                    break;
-                }
-            }
-            if (flag) {
-                continue;
-            }
-            inventory.equipItem(inventory.inventoryItem(i, inventory.InventoryFull).type, start_punch);
-            return;
-        }
-        // no non-tools
-        start_punch();
     };
     var start_mining = function() {
         block_positions = new iterators.StripeIterable({

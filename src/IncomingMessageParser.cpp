@@ -78,6 +78,7 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
     case Message::BlockChange: return new BlockChangeResponse;
     case Message::PlayNoteBlock: return new PlayNoteBlockResponse;
     case Message::InvalidBed: return new InvalidBedResponse;
+    case Message::Weather: return new WeatherResponse;
     case Message::Explosion: return new ExplosionResponse;
     case Message::OpenWindow: return new OpenWindowResponse;
     case Message::CloseWindow: return new CloseWindowResponse;
@@ -86,16 +87,14 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
     case Message::UpdateProgressBar: return new UpdateProgressBarResponse;
     case Message::Transaction: return new TransactionResponse;
     case Message::UpdateSign: return new UpdateSignResponse;
+    case Message::IncrementStatistic: return new IncrementStatisticResponse;
     case Message::DisconnectOrKick: return new DisconnectOrKickResponse;
-    case Message::Weather: return new WeatherResponse;
-
 
 
     case Message::Player:
     case Message::PlayerPosition:
     case Message::PlayerLook:
     case Message::WindowClick:
-    case Message::IncrementStatistic:
         Q_ASSERT_X(false, "", (QString("client only message from server: 0x") + QString::number(type, 16)).toStdString().c_str());
         return NULL;
     }

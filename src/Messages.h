@@ -822,6 +822,14 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class IncrementStatisticResponse : public IncomingResponse {
+public:
+    qint32 statistic_id;
+    qint8 amount;
+    IncrementStatisticResponse() : IncomingResponse(IncrementStatistic) {}
+    virtual int parse(QByteArray buffer);
+};
+
 class DisconnectOrKickResponse : public IncomingResponse {
 public:
     QString reason;

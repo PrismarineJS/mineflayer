@@ -1022,6 +1022,16 @@ int UpdateSignResponse::parse(QByteArray buffer)
     return index;
 }
 
+int IncrementStatisticResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, statistic_id)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, amount)) == -1)
+        return -1;
+    return index;
+}
+
 int DisconnectOrKickResponse::parse(QByteArray buffer)
 {
     int index = 1;
