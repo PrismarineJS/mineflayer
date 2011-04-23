@@ -236,7 +236,7 @@ mf.include("task_manager.js");
                                     responder_fun("Done!");
                                 } else {
                                     if (command === "loot") {
-                                        respond_fun("My inventory is too full to hold any more " + items.nameForId(item_type) + ".");
+                                        responder_fun("My inventory is too full to hold any more " + items.nameForId(item_type) + ".");
                                     } else {
                                         responder_fun("The chest is too full to hold any more " + items.nameForId(item_type) + ".");
                                     }
