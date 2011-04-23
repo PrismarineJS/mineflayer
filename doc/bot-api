@@ -156,6 +156,7 @@ mf.AnimationType
 
 /**
  * Members:
+ *      None
  *      Inventory
  *      Chest
  *      Workbench

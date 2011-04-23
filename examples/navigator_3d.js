@@ -9,6 +9,7 @@ mf.include("auto_respawn.js");
 mf.include("quitter.js");
 
 (function() {
+    chat_commands.registerCommand("stop", navigator.stop);
     // navhere
     chat_commands.registerCommand("navhere", function(username, args, responder_func) {
         var entity = player_tracker.entityForPlayer(username);

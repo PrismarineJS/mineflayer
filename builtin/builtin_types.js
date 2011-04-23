@@ -122,6 +122,7 @@ mf.AnimationType = {
 };
 
 mf.WindowType = {
+    "None":         -2,
     "Inventory":    -1,
     "Chest":        0,
     "Workbench":    1,
