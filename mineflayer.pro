@@ -1,7 +1,6 @@
 # -------------------------------------------------
 # Project created by QtCreator 2011-01-23T00:47:29
 # -------------------------------------------------
-# TODO: use better build system.
 QT += core \
     network \
     script \
@@ -50,9 +49,8 @@ headless {
     QT -= gui
 }
 
-# if you want to run without depending on the 3D client but still have the
-# debugging features set environment variable EXTRA_CONFIG=no_3d or uncomment next line
-# CONFIG += no_3d
+# if you want to turn on building with the 3D client, comment out the next line
+CONFIG += no_3d
 no_3d { 
     LIBS -= -lOgreMain \
         -lOIS
