@@ -100,7 +100,7 @@ public:
     void sendClickEntity(int self_entity_id, int target_entity_id, bool right_click);
     void sendAnimation(int entity_id, Message::AnimationType animation_type);
 
-    void sendWindowClick(qint8 window_id, qint16 slot, bool is_right_click, qint16 action_id, Item item);
+    void sendWindowClick(qint8 window_id, qint16 slot, bool is_right_click, qint16 action_id, bool is_shift, Item item);
     void sendHoldingChange(qint16 slot);
     void sendCloseWindow(qint8 window_id);
 

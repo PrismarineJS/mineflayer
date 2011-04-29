@@ -236,9 +236,10 @@ public:
     qint16 slot;
     bool is_right_click;
     qint16 action_id;
+    bool is_shift;
     Item item;
-    WindowClickRequest(qint8 window_id, qint16 slot, bool is_right_click, qint16 action_id, Item item) : OutgoingRequest(WindowClick),
-        window_id(window_id), slot(slot), is_right_click(is_right_click), action_id(action_id), item(item) {}
+    WindowClickRequest(qint8 window_id, qint16 slot, bool is_right_click, qint16 action_id, bool is_shift, Item item) : OutgoingRequest(WindowClick),
+        window_id(window_id), slot(slot), is_right_click(is_right_click), action_id(action_id), is_shift(is_shift), item(item) {}
     virtual void writeMessageBody(QDataStream &stream);
 };
 

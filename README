@@ -7,38 +7,44 @@ Setting up build:
 
     Linux:
 
-        1. Install prerequisites: libois-dev libogre-dev qt4-dev-tools
-        2. Run bin/extract_resources.sh <path_to_minecraft.jar>
-        3. Manually copy resources/ to build directory
-        4. Create a build folder OUTSIDE the source code tree and cd to it.
-        5. qmake path/to/mineflayer.pro
-        6. Now whenever you want to build, use make.
-
-    Linux, no 3D support (this removes dependency on ogre3d and OIS):
-    
         1. Install prerequisites: qt4-dev-tools
         2. Create a build folder OUTSIDE the source code tree and cd to it.
-        3. EXTRA_CONFIG=no_3d qmake path/to/mineflayer.pro
+        3. qmake path/to/mineflayer.pro
         4. Now whenever you want to build, use make.
 
     Linux, headless mode (this removes dependency on an X server at all):
 
-        Same thing as no 3D support except use "headless" instead of "no_3d"
+        Same thing as above Linux except for step 3 which is:
+        3. EXTRA_CONFIG=headless qmake path/to/mineflayer.pro
 
-    Mac, no 3D support:
+    Linux, with 3D support:
 
-        Important: Currently 3D via Ogre doesn't work!
-        
+        NOTE: 3D support currently only works in Linux
+
+        1. Install prerequisites: libois-dev libogre-dev qt4-dev-tools
+        2. Edit mineflayer.pro and follow instructions there for 3D support
+        3. Run bin/extract_resources.sh <path_to_minecraft.jar>
+        4. Manually copy resources/ to build directory
+        5. Create a build folder OUTSIDE the source code tree and cd to it.
+        6. qmake path/to/mineflayer.pro
+        7. Now whenever you want to build, use make.
+
+    Mac:
+
         1. Download the Qt SDK for Mac from http://qt.nokia.com/downloads/
         2. Create a build folder OUTSIDE the source code tree and cd to it.
-        3. EXTRA_CONFIG=no_3d qmake -spec macx-g++ ../mineflayer/mineflayer.pro
+        3. qmake -spec macx-g++ path/to/mineflayer.pro
         4. Now whenever you want to build, use make.
-        
+
     Mac, headless mode (this removes dependency on user being logged in via UI):
 
-        Same thing as no 3D support except use "headless" instead of "no_3d"
+        Same thing as above except for step 3, which is:
+        3. EXTRA_CONFIG=headless qmake -spec macx-g++ path/to/mineflayer.pro
 
-    Windows, no 3D support:
+    Windows:
+
+        NOTE: these instructions are out of date. You don't need to do step 5 or
+              probably steps 2 - 6 at all.
 
         1. Download and install the Qt SDK: http://qt.nokia.com/downloads/
         2. Open mineflayer.pro with Qt Creator
@@ -82,7 +88,7 @@ Documentation:
     * See doc/bot-api for comprehensive API documentation.
     * See libs/ for more utility functions.
     * See examples/ for examples of bot code.
-    
+
     ECMAScript reference:
         http://doc.qt.nokia.com/latest/ecmascript.html
 

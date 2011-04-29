@@ -124,9 +124,9 @@ void Server::sendAnimation(int entity_id, Message::AnimationType animation_type)
     sendMessage(QSharedPointer<OutgoingRequest>(new AnimationRequest(entity_id, animation_type)));
 }
 
-void Server::sendWindowClick(qint8 window_id, qint16 slot, bool is_right_click, qint16 action_id, Item item)
+void Server::sendWindowClick(qint8 window_id, qint16 slot, bool is_right_click, qint16 action_id, bool is_shift, Item item)
 {
-    sendMessage(QSharedPointer<OutgoingRequest>(new WindowClickRequest(window_id, slot, is_right_click, action_id, item)));
+    sendMessage(QSharedPointer<OutgoingRequest>(new WindowClickRequest(window_id, slot, is_right_click, action_id, is_shift, item)));
 }
 
 void Server::sendHoldingChange(qint16 slot)

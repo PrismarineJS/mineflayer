@@ -144,6 +144,7 @@ void WindowClickRequest::writeMessageBody(QDataStream &stream)
     writeValue(stream, slot);
     writeValue(stream, is_right_click);
     writeValue(stream, action_id);
+    writeValue(stream, is_shift);
     writeValue(stream, item);
 }
 

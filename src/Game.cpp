@@ -1106,7 +1106,7 @@ bool Game::doWindowClick(const WindowClick &window_click)
         Q_ASSERT(m_open_window_id != -1);
 
         m_window_click_queue.enqueue(window_click);
-        m_server.sendWindowClick(m_open_window_id, window_click.slot, window_click.right_click, window_click.id, window_click.item);
+        m_server.sendWindowClick(m_open_window_id, window_click.slot, window_click.right_click, window_click.id, false, window_click.item);
     }
 
     m_click_mutex.lock();
