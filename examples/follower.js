@@ -23,7 +23,18 @@ mf.include("chat_commands.js");
         if (player === undefined) {
             return;
         }
-        responder_func("I'm now following " + player.username + ".");
+        task = new task_manager.Task(function start() {
+            responder_func("I'm now following " + player.username + ".");
+            go();
+        }, function pause() {
+            stop();
+        }, function toString() {
+            return "follow " + player.username;
+        }, function resume() {
+            stop();
+            go();
+        });
+
         function go() {
             stop();
             var entity = mf.entity(player.entity_id);
@@ -39,14 +50,14 @@ mf.include("chat_commands.js");
                         // stopped
                         return;
                     }
-                    stop();
-                    go();
+                    task_manager.postpone(task);
                 },
             });
             // recalculate path every 5 seconds even if don't make it in that long
             current_following_interval_id = mf.setInterval(go, 5 * 1000);
         }
-        go();
+        task_manager.doLater(task);
+
     };
     chat_commands.registerCommand("follow", follow, 0, 2);
 
