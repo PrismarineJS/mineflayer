@@ -154,7 +154,12 @@ chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) 
         }, function stop() {
             running = false;
         }, function toString() {
-            return "flatten (" + player_position.x + ", " + player_position.y + ") r=" + radius + " z=[" + min_height_level + " : " + block_positions[0].z + "]";
+            if (block_positions !== undefined && block_positions.length > 0) {
+                return "flatten (" + player_position.x + ", " + player_position.y + ") r=" + radius + " z=[" + min_height_level + " : " + block_positions[0].z + "]";
+            } else {
+                return "flatten (" + player_position.x + ", " + player_position.y + ") r=" + radius + " z=[" + min_height_level + " : " + max_height_level + "]";
+            }
+
         })
     );
 }, 0, 2);
