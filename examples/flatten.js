@@ -102,6 +102,7 @@ mf.include("inventory.js");
         var respond = responder_fun;
         var min_height_level = player.position.z;
         var has_pick = true;
+        var has_axe = true;
         var has_shovel = true;
         var block_positions;
         var block_index;
@@ -161,7 +162,6 @@ mf.include("inventory.js");
             var block_position = block_positions[block_index];
             var block_type = mf.blockAt(block_position).type;
             if (! flatten_types.contains(block_type)) {
-                mf.debug("does not contain " + block_type + " " + items.nameForId(block_type));
                 block_positions.removeAt(block_index);
                 mine_blocks();
                 return;
@@ -184,6 +184,14 @@ mf.include("inventory.js");
                     }
                     block_index++;
                     mine_blocks();
+                } else  if (missing_tools === items.tools.axes) {
+                    if (has_axe) {
+                        respond("I don't have any axes!");
+                        has_axe = false;
+                        if (! inventory.equipNonTool(start_punch)) {
+                            start_punch();
+                        }
+                    }
                 } else {
                     throw "I didn't know I was going to need a " + items.nameForId(missing_tools[0]);
                 }
