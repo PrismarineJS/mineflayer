@@ -43,10 +43,10 @@ mf.include("inventory.js");
     }
 
     chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) {
-        var command = args.shift();
         if (!isNaN(args[0])) {
             return;
         }
+        var command = args.shift();
         if (command === "add") {
             if (args.length > 0) {
                 flatten_add_type(speaker, args, responder_fun);
@@ -161,6 +161,7 @@ mf.include("inventory.js");
             var block_position = block_positions[block_index];
             var block_type = mf.blockAt(block_position).type;
             if (! flatten_types.contains(block_type)) {
+                mf.debug("does not contain " + block_type + " " + items.nameForId(block_type));
                 block_positions.removeAt(block_index);
                 mine_blocks();
                 return;
