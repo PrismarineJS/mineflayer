@@ -4,162 +4,232 @@ mf.include("navigator.js");
 mf.include("player_tracker.js");
 mf.include("inventory.js");
 
-chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) {
-    var player = player_tracker.entityForPlayer(speaker);
-    if (player === undefined) {
-        responder_fun("I can't see you, " + speaker + ".");
-        return;
+(function() {
+
+    var flatten_types = new Set([mf.ItemType.Sand, mf.ItemType.Grass, mf.ItemType.Dirt, mf.ItemType.Gravel, mf.ItemType.Stone, mf.ItemType.Sandstone]);
+
+    function flatten_add_type(speaker, args, responder_fun) {
+        var arg = args.join(" ");
+        var item_type = items.findBlockTypeUnambiguously(arg, responder_fun);
+        if (item_type === undefined) {
+            return;
+        }
+        item_type = item_type.id;
+        if (!flatten_types.add(item_type)) {
+            responder_fun("Already flattening " + items.nameForId(item_type));
+        } else {
+            responder_fun("Now flattening " + items.nameForId(item_type));
+        }
     }
-    var radius = 8;
-    if (args.length > 0) {
-        var arg = args.shift();
-        if (isNaN(arg)) {
-            responder_fun("Not a number: " + arg);
+
+    function flatten_remove_type(speaker, args, responder_fun) {
+        var arg = args.join(" ");
+        var item_type = items.findBlockTypeUnambiguously(arg, responder_fun);
+        if (item_type === undefined) {
+            return;
+        }
+        item_type = item_type.id;
+        if (!flatten_types.contains(item_type)) {
+            responder_fun("Already not flattening " + items.nameForId(item_type));
             return;
         } else {
-            radius = parseInt(arg);
+            flatten_types.remove(item_type);
+            responder_fun("No longer flattening " + items.nameForId(item_type));
         }
     }
-    var player_position = player.position.floored();
-    var max_height_level = 128;
-    if (args.length > 0) {
-        var arg = args.shift();
-        if (isNaN(arg)) {
-            responder_fun("Not a number: " + arg);
+
+    function flatten_list(speaker, responder_fun) {
+        responder_fun("Flattening " + flatten_types.list().mapped(function(type) {return items.nameForId(type);}).join(", "));
+    }
+
+    chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) {
+        var command = args.shift();
+        if (!isNaN(args[0])) {
             return;
         }
-        max_height_level = player_position.z + parseInt(arg);
-    }
-    var respond = responder_fun;
-    var min_height_level = player.position.z;
-    var flatten_types = [mf.ItemType.Sand, mf.ItemType.Grass, mf.ItemType.Dirt, mf.ItemType.Gravel, mf.ItemType.Stone, mf.ItemType.Sandstone];
-    var has_pick = true;
-    var has_shovel = true;
-    var block_positions;
-    var block_index;
-    var running;
-    var flattened;
-
-    function done() {
-        running = false;
-        task_manager.done();
-    }
-
-    function start_punch() {
-        navigator.navigateTo(block_positions[block_index], {
-            end_radius: 4,
-            timeout_milliseconds: 1000 * 1,
-            arrived_func: function() {
-                if (!running) {
-                    // stopped
-                    return;
-                }
-                if (! mf.isDiggable(mf.blockAt(block_positions[block_index]).type)) {
-                    block_positions.removeAt(block_index);
-                    mine_blocks();
-                    return;
-                }
-                mf.onStoppedDigging(function asdf() {
-                    mf.removeHandler(mf.onStoppedDigging, asdf);
-                    block_positions.removeAt(block_index);
-                    mine_blocks();
-                });
-                flattened = true;
-                mf.startDigging(block_positions[block_index]);
-            },
-            cant_find_func: function() {
-                block_index++;
-                mine_blocks();
-            },
-        });
-    }
-
-    var mine_blocks = function() {
-        if (block_positions.length === 0) {
-            respond("I can't find anything else to flatten!");
-            done();
+        if (command === "add") {
+            if (args.length > 0) {
+                flatten_add_type(speaker, args, responder_fun);
+            } else {
+                responder_fun("Must specify a type to add");
+            }
             return;
         }
-        if (block_index >= block_positions.length) {
-            if (!flattened) {
-                respond("I can't reach any of the " + block_positions.length + " remaining blocks.  Done!");
-                done();
+        if (command === "remove") {
+            if (args.length > 0) {
+                flatten_remove_type(speaker, args, responder_fun);
+            } else {
+                responder_fun("Must specify a type to remove");
+            }
+            return;
+        }
+        if (command === "list") {
+            flatten_list(speaker, responder_fun);
+            return;
+        }
+        responder_fun("Unrecognized command: " + command);
+    }, 1, Infinity);
+
+    chat_commands.registerCommand("flatten", function(speaker, args, responder_fun) {
+        if (isNaN(args[0])) {
+            return;
+        }
+        var player = player_tracker.entityForPlayer(speaker);
+        if (player === undefined) {
+            responder_fun("I can't see you, " + speaker + ".");
+            return;
+        }
+        var radius = 8;
+        if (args.length > 0) {
+            var arg = args.shift();
+            if (isNaN(arg)) {
+                responder_fun("Not a number: " + arg);
                 return;
             } else {
-                block_index = 0;
-                flattened = false;
+                radius = parseInt(arg);
             }
         }
-        var block_position = block_positions[block_index];
-        var block_type = mf.blockAt(block_position).type;
-        if (flatten_types.indexOf(block_type) === -1) {
-            block_positions.removeAt(block_index);
-            mine_blocks();
-            return;
+        var player_position = player.position.floored();
+        var max_height_level = 128;
+        if (args.length > 0) {
+            var arg = args.shift();
+            if (isNaN(arg)) {
+                responder_fun("Not a number: " + arg);
+                return;
+            }
+            max_height_level = player_position.z + parseInt(arg);
         }
-        if (!inventory.equipBestTool(block_type, start_punch)) {
-            // couldn't equip proper tool
-            var missing_tools = items.toolsForBlock(block_type);
-            if (missing_tools === items.tools.shovels) {
-                if (has_shovel) {
-                    respond("I don't have any shovels!");
-                    has_shovel = false;
-                    if (!inventory.equipNonTool(start_punch)) {
-                        start_punch();
+        var respond = responder_fun;
+        var min_height_level = player.position.z;
+        var has_pick = true;
+        var has_shovel = true;
+        var block_positions;
+        var block_index;
+        var running;
+        var flattened;
+
+        function done() {
+            running = false;
+            task_manager.done();
+        }
+
+        function start_punch() {
+            navigator.navigateTo(block_positions[block_index], {
+                end_radius: 4,
+                timeout_milliseconds: 1000 * 1,
+                arrived_func: function() {
+                    if (!running) {
+                        // stopped
+                        return;
                     }
-                }
-            } else if (missing_tools === items.tools.pickaxes) {
-                if (has_pick) {
-                    respond("I don't have any pickaxes!  I'm going to skip over any blocks that require a pickaxe for material.");
-                    has_pick = false;
-                }
-                block_index++;
-                mine_blocks();
-            } else {
-                throw "I didn't know I was going to need a " + items.nameForId(missing_tools[0]);
-            }
-        }
-    };
-    var start_mining = function() {
-        block_positions = new iterators.StripeIterable({
-            corner1: new mf.Point(player_position.x - radius, player_position.y - radius, min_height_level),
-            corner2: new mf.Point(player_position.x + radius, player_position.y + radius, max_height_level),
-            stripe_width: 6,
-            z_direction: -1,
-        }).toArray();
-        block_index = 0;
-        flattened = false;
-        if (block_positions.length <= 0) {
-            respond("I don't see anything to flatten!");
-            done();
-            return;
-        }
-        max_height_level = block_positions[0].z;
-        mine_blocks();
-    };
-    task_manager.doLater(new task_manager.Task(function start() {
-            running = true;
-            navigator.navigateTo(player.position, {
-                end_radius: 16,
-                timeout_milliseconds: 1000 * 10,
-                arrived_func: start_mining,
-                path_found_func: function() {
-                    responder_fun("Going to try and flatten");
+                    if (! mf.isDiggable(mf.blockAt(block_positions[block_index]).type)) {
+                        block_positions.removeAt(block_index);
+                        mine_blocks();
+                        return;
+                    }
+                    mf.onStoppedDigging(function asdf() {
+                        mf.removeHandler(mf.onStoppedDigging, asdf);
+                        block_positions.removeAt(block_index);
+                        mine_blocks();
+                    });
+                    flattened = true;
+                    mf.startDigging(block_positions[block_index]);
                 },
                 cant_find_func: function() {
-                    responder_fun("Sorry, I can't get to you!");
-                    done();
+                    block_index++;
+                    mine_blocks();
                 },
             });
-        }, function stop() {
-            running = false;
-        }, function toString() {
-            if (block_positions !== undefined && block_positions.length > 0) {
-                return "flatten (" + player_position.x + ", " + player_position.y + ") r=" + radius + " z=[" + min_height_level + " : " + block_positions[0].z + "]";
-            } else {
-                return "flatten (" + player_position.x + ", " + player_position.y + ") r=" + radius + " z=[" + min_height_level + " : " + max_height_level + "]";
-            }
+        }
 
-        })
-    );
-}, 0, 2);
+        var mine_blocks = function() {
+            if (block_positions.length === 0) {
+                respond("I can't find anything else to flatten!");
+                done();
+                return;
+            }
+            if (block_index >= block_positions.length) {
+                if (!flattened) {
+                    respond("I can't reach any of the " + block_positions.length + " remaining blocks.  Done!");
+                    done();
+                    return;
+                } else {
+                    block_index = 0;
+                    flattened = false;
+                }
+            }
+            var block_position = block_positions[block_index];
+            var block_type = mf.blockAt(block_position).type;
+            if (! flatten_types.contains(block_type)) {
+                block_positions.removeAt(block_index);
+                mine_blocks();
+                return;
+            }
+            if (!inventory.equipBestTool(block_type, start_punch)) {
+                // couldn't equip proper tool
+                var missing_tools = items.toolsForBlock(block_type);
+                if (missing_tools === items.tools.shovels) {
+                    if (has_shovel) {
+                        respond("I don't have any shovels!");
+                        has_shovel = false;
+                        if (!inventory.equipNonTool(start_punch)) {
+                            start_punch();
+                        }
+                    }
+                } else if (missing_tools === items.tools.pickaxes) {
+                    if (has_pick) {
+                        respond("I don't have any pickaxes!  I'm going to skip over any blocks that require a pickaxe for material.");
+                        has_pick = false;
+                    }
+                    block_index++;
+                    mine_blocks();
+                } else {
+                    throw "I didn't know I was going to need a " + items.nameForId(missing_tools[0]);
+                }
+            }
+        };
+        var start_mining = function() {
+            block_positions = new iterators.StripeIterable({
+                corner1: new mf.Point(player_position.x - radius, player_position.y - radius, min_height_level),
+                corner2: new mf.Point(player_position.x + radius, player_position.y + radius, max_height_level),
+                stripe_width: 6,
+                z_direction: -1,
+            }).toArray();
+            block_index = 0;
+            flattened = false;
+            if (block_positions.length <= 0) {
+                respond("I don't see anything to flatten!");
+                done();
+                return;
+            }
+            max_height_level = block_positions[0].z;
+            mine_blocks();
+        };
+        task_manager.doLater(new task_manager.Task(function start() {
+                running = true;
+                navigator.navigateTo(player.position, {
+                    end_radius: 16,
+                    timeout_milliseconds: 1000 * 10,
+                    arrived_func: start_mining,
+                    path_found_func: function() {
+                        responder_fun("Going to try and flatten");
+                    },
+                    cant_find_func: function() {
+                        responder_fun("Sorry, I can't get to you!");
+                        done();
+                    },
+                });
+            }, function stop() {
+                running = false;
+            }, function toString() {
+                if (block_positions !== undefined && block_positions.length > 0) {
+                    return "flatten (" + player_position.x + ", " + player_position.y + ") r=" + radius + " z=[" + min_height_level + " : " + block_positions[0].z + "]";
+                } else {
+                    return "flatten (" + player_position.x + ", " + player_position.y + ") r=" + radius + " z=[" + min_height_level + " : " + max_height_level + "]";
+                }
+
+            })
+        );
+    }, 0, 2);
+
+})();
