@@ -313,6 +313,7 @@ private slots:
 
     void checkForDiggingStopped(const Int3D &start, const Int3D &size);
     void checkForDestroyedSigns(const Int3D &start, const Int3D &size);
+    void sendDiggingComplete();
 
 };
 

@@ -19,7 +19,8 @@ SOURCES += src/main.cpp \
     src/Game.cpp \
     src/SubChunkMeshGenerator.cpp \
     src/Item.cpp \
-    src/StdinReader.cpp
+    src/StdinReader.cpp \
+    src/Digger.cpp
 HEADERS += src/Server.h \
     src/Messages.h \
     src/Chunk.h \
@@ -33,7 +34,8 @@ HEADERS += src/Server.h \
     src/Block.h \
     src/Item.h \
     src/SubChunkMeshGenerator.h \
-    src/StdinReader.h
+    src/StdinReader.h \
+    src/Digger.h
 RESOURCES += mineflayer.qrc
 LIBS += -lOgreMain \
     -lOIS

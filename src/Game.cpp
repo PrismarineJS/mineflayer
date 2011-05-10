@@ -1,5 +1,7 @@
 #include "Game.h"
 
+#include "Digger.h"
+
 #include <QCoreApplication>
 #include <QHashIterator>
 #include <QStringList>
@@ -41,8 +43,9 @@ Game::Game(QUrl connection_info) :
     m_mutex(QMutex::Recursive),
     m_server(connection_info),
     m_position_update_timer(NULL),
+    m_digger(new Digger(this, this)),
     m_waiting_for_dig_confirmation(false),
-    m_digging_animation_timer(NULL),
+    m_digging_animation_timer(new QTimer(this)),
     m_player(-1, Server::EntityPosition(), connection_info.userName(), Item::NoItem),
     m_player_health(20),
     m_current_time_seconds(0),
@@ -127,8 +130,14 @@ Game::Game(QUrl connection_info) :
     Q_ASSERT(success);
     success = connect(this, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(checkForDestroyedSigns(Int3D,Int3D)));
     Q_ASSERT(success);
+    success = connect(m_digger, SIGNAL(finished()), this, SLOT(sendDiggingComplete()));
+    Q_ASSERT(success);
 
     m_control_state.fill(false, (int)ControlCount);
+
+    m_digging_animation_timer->setInterval(1000 / 4); // guess
+    success = connect(m_digging_animation_timer, SIGNAL(timeout()), this, SLOT(animateDigging()));
+    Q_ASSERT(success);
 }
 
 void Game::setControlActivated(Control control, bool activated)
@@ -257,21 +266,30 @@ void Game::startDigging(const Int3D &block)
     stopDigging();
     m_digging_location = block;
     m_server.sendDiggingStatus(Message::StartDigging, m_digging_location);
-    m_server.sendDiggingStatus(Message::AbortDigging, m_digging_location);
-    m_waiting_for_dig_confirmation = true;
-    m_digging_animation_timer = new QTimer(this);
-    m_digging_animation_timer->setInterval(1000 / 4); // guess
-    bool success;
-    success = connect(m_digging_animation_timer, SIGNAL(timeout()), this, SLOT(animateDigging()));
-    Q_ASSERT(success);
+    m_digger->start(inventoryItem(m_equipped_slot_id).type, blockAt(m_digging_location).type());
+
     m_digging_animation_timer->start();
 }
 
 void Game::stopDigging()
 {
     QMutexLocker locker(&m_mutex);
-    delete m_digging_animation_timer;
-    m_digging_animation_timer = NULL;
+
+    m_digging_animation_timer->stop();
+
+    if (! m_digger->isActive())
+        return;
+
+    m_digger->stop();
+    emit stoppedDigging(Aborted);
+}
+
+void Game::sendDiggingComplete()
+{
+    QMutexLocker locker(&m_mutex);
+
+    m_server.sendDiggingStatus(Message::AbortDigging, m_digging_location);
+    m_waiting_for_dig_confirmation = true;
 }
 
 void Game::handleLoginStatusChanged(Server::LoginStatus status)
