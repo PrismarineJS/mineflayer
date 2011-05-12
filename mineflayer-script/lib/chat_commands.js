@@ -3,42 +3,69 @@ mf.include("strings.js");
 mf.include("Set.js");
 mf.include("player_tracker.js");
 
+/**
+ * Use this module to register commands that run in response to chat messages.
+ * Commands are identified by the first spoken word, and the rest of the message
+ * is split on " " and becomes the args array (like shell commands).
+ *
+ *
+ * Example 1:
+ *
+ * chat_commands.registerCommand("hello", function(speaker, args, responder_func) {
+ *     responder_func("hi!");
+ * });
+ *
+ * Conversation will look like this:
+ * <Player1> hello
+ * <mineflayer> hi!
+ *
+ *
+ * Example 2:
+ *
+ * function echo(speaker, args, responder_func) {
+ *     responder_func(args.join(" "));
+ * }
+ * chat_commands.registerCommand("echo", echo, 1, Infinity);
+ *
+ * Conversation will look like this:
+ * <Player1> echo hello
+ * <mineflayer> hello
+ * <Player1> echo a b c d
+ * <mineflayer> a b c d
+ * <Player1> mineflayer, echo hello
+ * <mineflayer> Player1, hello
+ * Player1 whispers echo this is whispering
+ * minflayer whispers this is whispering
+ *
+ *
+ * These command line parameters are recognized by this module:
+ *
+ * --master=USERNAME
+ *  This identifies the user specified as a master.
+ *  If there are any masters, only chat commands from masters will be honored.
+ *  Multiple masters can be specified by --master="user1,user2" --master=user3.
+ *
+ * --oblivious
+ *  This causes generally spoken commands to be ignored, but commands addressed
+ *  specifically to us to be honored. Example:
+ *  <Player1> echo hello
+ *  not honored
+ *  <Player1> mineflayer, echo hello
+ *  <mineflayer> Player1, hello
+ *  Player1 whispers echo hello
+ *  mineflayer whispers hello
+ *
+ * --setup="command ..."
+ *  This causes the command specified to be "run" once we log in. The
+ *  responder_func for the commands whispers to each of the masters specified by
+ *  --master (see above). If there are no masters, then the responder_func
+ *  speaks openly. Example:
+ *  --setup='echo Hello, World!'
+ *
+ */
 var chat_commands = {};
 (function() {
     /**
-     * Use this to register a command that runs in response to a chat message.
-     * Commands are identified by the first spoken word, and the rest of the message
-     * is split on " " and becomes the args array (like shell commands).
-     *
-     *
-     * Example 1:
-     *
-     * chat_commands.registerCommand("hello", function(speaker, args, responder_func) {
-     *     responder_func("hi!");
-     * });
-     *
-     * Conversation will look like this:
-     * <Player1> hello
-     * <mineflayer> hi!
-     *
-     *
-     * Example 2:
-     *
-     * function echo(speaker, args, responder_func) {
-     *     responder_func(args.join(" "));
-     * }
-     * chat_commands.registerCommand("echo", echo, 1, Infinity);
-     *
-     * Conversation will look like this:
-     * <Player1> echo hello
-     * <mineflayer> hello
-     * <Player1> echo a b c d
-     * <mineflayer> a b c d
-     * <Player1> mineflayer, echo hello
-     * <mineflayer> Player1, hello
-     * Player1 whispers echo this is whispering
-     * minflayer whispers this is whispering
-     *
      *
      * @param command_name {String} The first word of the command. Must be a single word.
      * @param callback {Function} Callback for the command: function(speaker, args, responder_func) {...}
