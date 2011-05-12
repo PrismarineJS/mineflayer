@@ -9,24 +9,13 @@ Setting up build:
         1. Install prerequisites: qt4-dev-tools
         2. Create a build folder OUTSIDE the source code tree and cd to it.
         3. qmake path/to/mineflayer.pro
-        4. Now whenever you want to build, use make.
+        4. make
+        5. INSTALL_ROOT=/usr sudo make install
 
     Linux, headless mode (this removes dependency on an X server at all):
 
         Same thing as above Linux except for step 3 which is:
         3. EXTRA_CONFIG=headless qmake path/to/mineflayer.pro
-
-    Linux, with 3D support:
-
-        NOTE: 3D support currently only works in Linux
-
-        1. Install prerequisites: libois-dev libogre-dev qt4-dev-tools
-        2. Edit mineflayer.pro and follow instructions there for 3D support
-        3. Run bin/extract_resources.sh <path_to_minecraft.jar>
-        4. Manually copy resources/ to build directory
-        5. Create a build folder OUTSIDE the source code tree and cd to it.
-        6. qmake path/to/mineflayer.pro
-        7. Now whenever you want to build, use make.
 
     Mac:
 
@@ -65,12 +54,12 @@ Setting up build:
 
 Running bots:
 
-    ./mineflayer bot.js
+    mineflayer bot.js
 
     If the bot depends on any of the lib files you'll need to pass the lib
     folder like this:
 
-    ./mineflayer -I<path_to_lib> bot.js
+    mineflayer -I<path_to_lib> bot.js
 
     Alternately, you can put the lib folder in an environment variable called
     MINEFLAYER_LIB. When we make an installer for this package, we'll have it
@@ -78,7 +67,7 @@ Running bots:
 
     To connect to a server that requires authentication:
 
-    ./mineflayer --url username@server --password 12345 bot.js
+    mineflayer --url username@server --password 12345 bot.js
 
     Note that all parameters passed after the bot .js file are
     parameters passed to the bot script itself rather than mineflayer.

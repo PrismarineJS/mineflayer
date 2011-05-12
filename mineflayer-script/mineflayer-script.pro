@@ -17,12 +17,17 @@ HEADERS += ../mineflayer-core/src/mineflayer-core.h \
     src/Util.h
 INCLUDEPATH += ..
 LIBS += -L../mineflayer-core -lmineflayer-core
-RESOURCES += mineflayer.qrc
+RESOURCES += mineflayer-script.qrc
 DEFINES += MINEFLAYER_GUI_ON
 CONFIG += $$(EXTRA_CONFIG)
 mac:CONFIG -= app_bundle
 win32:CONFIG += console
 
+
+unix {
+    target.path = /bin
+    INSTALLS += target
+}
 
 
 # if you want to run in headless mode, set environment variable EXTRA_CONFIG=headless or uncomment next line

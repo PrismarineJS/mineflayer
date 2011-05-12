@@ -73,7 +73,7 @@ Game::Game(QUrl connection_info) :
         m_legal_chat_chars.insert(c);
 
     bool success;
-    success = connect(&m_server, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SLOT(handleLoginStatusChanged(Server::LoginStatus)));
+    success = connect(&m_server, SIGNAL(loginStatusUpdated(mineflayer_LoginStatus)), this, SLOT(handleLoginStatusChanged(mineflayer_LoginStatus)));
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(loginCompleted(int)), this, SLOT(handleLoginCompleted(int)));
     Q_ASSERT(success);
@@ -98,7 +98,7 @@ Game::Game(QUrl connection_info) :
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(entityMoved(int,mineflayer_EntityPosition)), this, SLOT(handleEntityMoved(int,mineflayer_EntityPosition)));
     Q_ASSERT(success);
-    success = connect(&m_server, SIGNAL(animation(int,Message::AnimationType)), this, SLOT(handleAnimation(int,Message::AnimationType)));
+    success = connect(&m_server, SIGNAL(animation(int,mineflayer_AnimationType)), this, SLOT(handleAnimation(int,mineflayer_AnimationType)));
     Q_ASSERT(success);
 
     success = connect(&m_server, SIGNAL(mapChunkUpdated(QSharedPointer<Chunk>)), this, SLOT(handleMapChunkUpdated(QSharedPointer<Chunk>)));
@@ -122,7 +122,7 @@ Game::Game(QUrl connection_info) :
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(transaction(int,int,bool)), this, SLOT(handleTransaction(int,int,bool)));
     Q_ASSERT(success);
-    success = connect(&m_server, SIGNAL(openWindow(int,Message::WindowType,int)), this, SLOT(handleOpenWindow(int,Message::WindowType,int)));
+    success = connect(&m_server, SIGNAL(openWindow(int,mineflayer_WindowType,int)), this, SLOT(handleOpenWindow(int,mineflayer_WindowType,int)));
     Q_ASSERT(success);
 
 
@@ -205,22 +205,14 @@ mineflayer_Entity * Game::entity(int entity_id)
 {
     QMutexLocker locker(&m_mutex);
 
-    if (entity_id == m_player.entity_id) {
-        mineflayer_Entity * value = new mineflayer_Entity;
-        *value = m_player;
-        value->username = Util::copyMfUtf8(value->username);
-        return value;
-    }
+    if (entity_id == m_player.entity_id)
+        return Util::cloneEntity(&m_player);
 
     mineflayer_Entity * entity = m_entities.value(entity_id, NULL);
     if (entity == NULL)
         return NULL;
 
-    mineflayer_Entity * value = new mineflayer_Entity;
-    *value = *entity;
-    if (value->type == mineflayer_NamedPlayerEntity)
-        value->username = Util::copyMfUtf8(value->username);
-    return value;
+    return Util::cloneEntity(entity);
 }
 
 mineflayer_EntityPosition Game::playerPosition()
@@ -835,11 +827,16 @@ bool Game::collisionInRange(const Int3D & boundingBoxMin, const Int3D & bounding
 {
     // no mutex locker; private function
     Int3D cursor;
-    for (cursor.x = boundingBoxMin.x; cursor.x <= boundingBoxMax.x; cursor.x++)
-        for (cursor.y = boundingBoxMin.y; cursor.y <= boundingBoxMax.y; cursor.y++)
-            for (cursor.z = boundingBoxMin.z; cursor.z <= boundingBoxMax.z; cursor.z++)
-                if (Item::itemData(blockAt(cursor).type())->physical)
+    for (cursor.x = boundingBoxMin.x; cursor.x <= boundingBoxMax.x; cursor.x++) {
+        for (cursor.y = boundingBoxMin.y; cursor.y <= boundingBoxMax.y; cursor.y++) {
+            for (cursor.z = boundingBoxMin.z; cursor.z <= boundingBoxMax.z; cursor.z++) {
+                Block block = blockAt(cursor);
+                mineflayer_ItemData * item_data = Item::itemData(block.type());
+                if (item_data->physical)
                     return true;
+            }
+        }
+    }
     return false;
 }
 

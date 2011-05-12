@@ -39,25 +39,10 @@ HEADERS += \
     src/Digger.h \
     src/GameListener.h
 
-RESOURCES += mineflayer.qrc
+RESOURCES += mineflayer-core.qrc
 CONFIG += $$(EXTRA_CONFIG)
 
-symbian {
-    #Symbian specific definitions
-    MMP_RULES += EXPORTUNFROZEN
-    TARGET.UID3 = 0xE3896420
-    TARGET.CAPABILITY =
-    TARGET.EPOCALLOWDLLDATA = 1
-    addFiles.sources = mineflayer-core.dll
-    addFiles.path = !:/sys/bin
-    DEPLOYMENT += addFiles
-}
-
-unix:!symbian {
-    maemo5 {
-        target.path = /opt/usr/lib
-    } else {
-        target.path = /usr/local/lib
-    }
+unix {
+    target.path = /lib
     INSTALLS += target
 }

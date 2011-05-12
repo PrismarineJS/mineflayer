@@ -40,7 +40,7 @@ void mineflayer_destroyEntity(mineflayer_Entity * entity) {
     if (entity->type == mineflayer_NamedPlayerEntity)
         mineflayer_destroyUtf8(entity->username);
 
-    delete[] entity;
+    delete entity;
 }
 
 void mineflayer_destroyUtf8(mineflayer_Utf8 utf8) {
