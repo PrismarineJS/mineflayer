@@ -6,6 +6,7 @@
 
 #ifdef MINEFLAYER_GUI_ON
 #include <QScriptEngineDebugger>
+#include <QMainWindow>
 #endif
 
 #include <QObject>

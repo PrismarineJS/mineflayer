@@ -2,10 +2,6 @@
 
 #include "Util.h"
 
-#ifdef MINEFLAYER_GUI_ON
-#include <QMainWindow>
-#endif
-
 #include <QFile>
 #include <QDebug>
 #include <QCoreApplication>
@@ -44,8 +40,10 @@ ScriptRunner::ScriptRunner(QUrl url, QString script_file, QStringList args, bool
     m_engine = new QScriptEngine(this);
 
 #ifdef MINEFLAYER_GUI_ON
-    m_debugger = new QScriptEngineDebugger();
-    m_debugger->attachTo(m_engine);
+    if (debug) {
+        m_debugger = new QScriptEngineDebugger();
+        m_debugger->attachTo(m_engine);
+    }
 #endif
 
     bool success;
