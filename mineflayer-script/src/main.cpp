@@ -11,6 +11,7 @@
 #include <QDebug>
 
 #include "ScriptRunner.h"
+#include "MetaTypes.h"
 
 #include <iostream>
 #include <cstdlib>
@@ -98,6 +99,7 @@ int main(int argc, char *argv[])
     }
 #endif
 
+    MetaTypes::registerMetaTypes();
     if (! script_filename.isEmpty()) {
         ScriptRunner runner(url, script_filename, script_args, script_debug, lib_path);
         runner.bootstrap();

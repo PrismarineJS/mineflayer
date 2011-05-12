@@ -10,8 +10,8 @@
 
 bool _mineflayer_registered_meta_types = false;
 
-namespace MetaTypes {
-    void registerMetaTypes() {
+namespace CoreMetaTypes {
+    void coreRegisterMetaTypes() {
         if (_mineflayer_registered_meta_types)
             return;
         _mineflayer_registered_meta_types = true;
@@ -28,7 +28,7 @@ namespace MetaTypes {
         qRegisterMetaType<mineflayer_MobType>("mineflayer_MobType");
         qRegisterMetaType<mineflayer_ItemType>("mineflayer_ItemType");
         qRegisterMetaType<Item>("Item");
-        qRegisterMetaType<QSharedPointer<mineflayer_Entity> >("QSharedPointer<mineflayer_Entity>");
+        qRegisterMetaType<mineflayer_Entity*>("mineflayer_Entity*");
         qRegisterMetaType<mineflayer_StoppedDiggingReason>("mineflayer_StoppedDiggingReason");
         qRegisterMetaType<mineflayer_AnimationType>("mineflayer_AnimationType");
         qRegisterMetaType<mineflayer_WindowType>("mineflayer_WindowType");

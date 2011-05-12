@@ -10,7 +10,7 @@
 #include <QObject>
 
 mineflayer_GamePtr mineflayer_createGame(mineflayer_Url url) {
-    MetaTypes::registerMetaTypes();
+    CoreMetaTypes::coreRegisterMetaTypes();
     Item::initializeStaticData();
 
     QUrl qurl;

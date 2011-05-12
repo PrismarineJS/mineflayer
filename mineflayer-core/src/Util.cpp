@@ -41,6 +41,7 @@ mineflayer_Utf8 Util::copyMfUtf8(mineflayer_Utf8 utf8)
     mineflayer_Utf8 newUtf8;
 
     newUtf8.byte_count = utf8.byte_count;
+    newUtf8.utf8_bytes = new unsigned char[newUtf8.byte_count];
     memcpy(newUtf8.utf8_bytes, utf8.utf8_bytes, utf8.byte_count);
 
     return newUtf8;

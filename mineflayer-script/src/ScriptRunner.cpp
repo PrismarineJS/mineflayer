@@ -1147,18 +1147,22 @@ QScriptValue ScriptRunner::jsItem(mineflayer_Item item)
 void ScriptRunner::handleEntitySpawned(mineflayer_Entity * entity)
 {
     raiseEvent("onEntitySpawned", QScriptValueList() << jsEntity(entity));
+    Util::destroyEntity(entity);
 }
 void ScriptRunner::handleEntityMoved(mineflayer_Entity * entity)
 {
     raiseEvent("onEntityMoved", QScriptValueList() << jsEntity(entity));
+    Util::destroyEntity(entity);
 }
 void ScriptRunner::handleEntityDespawned(mineflayer_Entity * entity)
 {
     raiseEvent("onEntityDespawned", QScriptValueList() << jsEntity(entity));
+    Util::destroyEntity(entity);
 }
 void ScriptRunner::handleAnimation(mineflayer_Entity * entity, mineflayer_AnimationType animation_type)
 {
     raiseEvent("onAnimation", QScriptValueList() << jsEntity(entity) << animation_type);
+    Util::destroyEntity(entity);
 }
 
 void ScriptRunner::handleChunkUpdated(const mineflayer_Int3D &start, const mineflayer_Int3D &size)
@@ -1245,107 +1249,129 @@ void ScriptRunner::handleReadLine(QString line)
 void ScriptRunner::chatReceived(void * context, mineflayer_Utf8 username, mineflayer_Utf8 message)
 {
     ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    runner->handleChatReceived(Util::toQString(username), Util::toQString(message));
+    bool success = QMetaObject::invokeMethod(runner, "handleChatReceived",
+        Q_ARG(QString, Util::toQString(username)), Q_ARG(QString, Util::toQString(message)));
+    Q_ASSERT(success);
 }
 
 void ScriptRunner::timeUpdated(void * context, double seconds)
 {
     ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    runner->handleTimeUpdated(seconds);
+    bool success = QMetaObject::invokeMethod(runner, "handleTimeUpdated", Q_ARG(double, seconds));
+    Q_ASSERT(success);
 }
 
 void ScriptRunner::nonSpokenChatReceived(void * context, mineflayer_Utf8 message)
 {
     ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    runner->handleNonSpokenChatReceived(Util::toQString(message));
+    bool success = QMetaObject::invokeMethod(runner, "handleNonSpokenChatReceived", Q_ARG(QString, Util::toQString(message)));
+    Q_ASSERT(success);
 }
 
 void ScriptRunner::entitySpawned(void * context, mineflayer_Entity *entity)
 {
     ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    runner->handleEntitySpawned(entity);
+    bool success = QMetaObject::invokeMethod(runner, "handleEntitySpawned", Q_ARG(mineflayer_Entity *, Util::cloneEntity(entity)));
+    Q_ASSERT(success);
 }
 
 void ScriptRunner::entityDespawned(void * context, mineflayer_Entity *entity)
 {
     ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    runner->handleEntityDespawned(entity);
+    bool success = QMetaObject::invokeMethod(runner, "handleEntityDespawned", Q_ARG(mineflayer_Entity *, Util::cloneEntity(entity)));
+    Q_ASSERT(success);
 }
 
 void ScriptRunner::entityMoved(void * context, mineflayer_Entity *entity)
 {
     ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    runner->handleEntityMoved(entity);
+    bool success = QMetaObject::invokeMethod(runner, "handleEntityMoved", Q_ARG(mineflayer_Entity *, Util::cloneEntity(entity)));
+    Q_ASSERT(success);
 }
 
 void ScriptRunner::animation(void * context, mineflayer_Entity *entity, mineflayer_AnimationType animation_type)
 {
     ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    runner->handleAnimation(entity, animation_type);
+    bool success = QMetaObject::invokeMethod(runner, "handleAnimation",
+        Q_ARG(mineflayer_Entity *, Util::cloneEntity(entity)), Q_ARG(mineflayer_AnimationType, animation_type));
+    Q_ASSERT(success);
 }
 
 void ScriptRunner::chunkUpdated(void * context, mineflayer_Int3D start, mineflayer_Int3D size)
 {
     ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    runner->handleChunkUpdated(start, size);
+    bool success = QMetaObject::invokeMethod(runner, "handleChunkUpdated",
+        Q_ARG(mineflayer_Int3D, start), Q_ARG(mineflayer_Int3D, size));
+    Q_ASSERT(success);
 }
 
 void ScriptRunner::signUpdated(void * context, mineflayer_Int3D location, mineflayer_Utf8 text)
 {
     ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    runner->handleSignUpdated(location, Util::toQString(text));
+    bool success = QMetaObject::invokeMethod(runner, "handleSignUpdated",
+        Q_ARG(mineflayer_Int3D, location), Q_ARG(QString, Util::toQString(text)));
+    Q_ASSERT(success);
 }
 
 void ScriptRunner::playerPositionUpdated(void * context)
 {
     ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    runner->handlePlayerPositionUpdated();
+    bool success = QMetaObject::invokeMethod(runner, "handlePlayerPositionUpdated");
+    Q_ASSERT(success);
 }
 
 void ScriptRunner::playerHealthUpdated(void * context)
 {
     ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    runner->handlePlayerHealthUpdated();
+    bool success = QMetaObject::invokeMethod(runner, "handlePlayerHealthUpdated");
+    Q_ASSERT(success);
 }
 
 void ScriptRunner::playerDied(void * context)
 {
     ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    runner->handlePlayerDied();
+    bool success = QMetaObject::invokeMethod(runner, "handlePlayerDied");
+    Q_ASSERT(success);
 }
 
 void ScriptRunner::playerSpawned(void * context)
 {
     ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    runner->handlePlayerSpawned();
+    bool success = QMetaObject::invokeMethod(runner, "handlePlayerSpawned");
+    Q_ASSERT(success);
 }
 
 void ScriptRunner::stoppedDigging(void * context, mineflayer_StoppedDiggingReason reason)
 {
     ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    runner->handleStoppedDigging(reason);
+    bool success = QMetaObject::invokeMethod(runner, "handleStoppedDigging", Q_ARG(mineflayer_StoppedDiggingReason, reason));
+    Q_ASSERT(success);
 }
 
 void ScriptRunner::loginStatusUpdated(void * context, mineflayer_LoginStatus status)
 {
     ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    runner->handleLoginStatusUpdated(status);
+    bool success = QMetaObject::invokeMethod(runner, "handleLoginStatusUpdated", Q_ARG(mineflayer_LoginStatus, status));
+    Q_ASSERT(success);
 }
 
 void ScriptRunner::windowOpened(void * context, mineflayer_WindowType window_type)
 {
     ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    runner->handleWindowOpened(window_type);
+    bool success = QMetaObject::invokeMethod(runner, "handleWindowOpened", Q_ARG(mineflayer_WindowType, window_type));
+    Q_ASSERT(success);
 }
 
 void ScriptRunner::inventoryUpdated(void * context)
 {
     ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    runner->handleInventoryUpdated();
+    bool success = QMetaObject::invokeMethod(runner, "handleInventoryUpdated");
+    Q_ASSERT(success);
 }
 
 void ScriptRunner::equippedItemChanged(void * context)
 {
     ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    runner->handleEquippedItemChanged();
+    bool success = QMetaObject::invokeMethod(runner, "handleEquippedItemChanged");
+    Q_ASSERT(success);
 }

@@ -14,7 +14,8 @@ SOURCES += src/main.cpp \
 HEADERS += ../mineflayer-core/src/mineflayer-core.h \
     src/ScriptRunner.h \
     src/StdinReader.h \
-    src/Util.h
+    src/Util.h \
+    src/MetaTypes.h
 INCLUDEPATH += ..
 LIBS += -L../mineflayer-core -lmineflayer-core
 RESOURCES += mineflayer-script.qrc

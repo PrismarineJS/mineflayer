@@ -161,7 +161,7 @@ private slots:
     void cleanup();
     void handleReadLine(QString line);
 
-private: // non-static callbacks
+private slots: // non-static callbacks
     void handlePlayerPositionUpdated();
     void handleEntitySpawned(mineflayer_Entity * entity);
     void handleEntityDespawned(mineflayer_Entity * entity);

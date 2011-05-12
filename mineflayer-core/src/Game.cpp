@@ -406,7 +406,8 @@ void Game::handleNamedPlayerSpawned(int entity_id, QString player_name, mineflay
     entity->held_item = held_item;
 
     m_entities.insert(entity_id, entity);
-    emit entitySpawned(Util::cloneEntity(entity));
+    mineflayer_Entity * clone = Util::cloneEntity(entity);
+    emit entitySpawned(clone);
 }
 void Game::handlePickupSpawned(int entity_id, Item item, mineflayer_EntityPosition position)
 {
@@ -419,7 +420,8 @@ void Game::handlePickupSpawned(int entity_id, Item item, mineflayer_EntityPositi
     entity->item = item.data;
 
     m_entities.insert(entity_id, entity);
-    emit entitySpawned(Util::cloneEntity(entity));
+    mineflayer_Entity * clone = Util::cloneEntity(entity);
+    emit entitySpawned(clone);
 }
 void Game::handleMobSpawned(int entity_id, mineflayer_MobType mob_type, mineflayer_EntityPosition position)
 {
@@ -443,7 +445,8 @@ void Game::handleMobSpawned(int entity_id, mineflayer_MobType mob_type, mineflay
     entity->mob_type = mob_type;
 
     m_entities.insert(entity_id, entity);
-    emit entitySpawned(Util::cloneEntity(entity));
+    mineflayer_Entity * clone = Util::cloneEntity(entity);
+    emit entitySpawned(clone);
 }
 void Game::handleEntityDestroyed(int entity_id)
 {
