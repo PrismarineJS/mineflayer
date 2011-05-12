@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+
+import subprocess
+import sys
+
+def print_usage():
+    context = {'exe': sys.argv[0]}
+    print("""
+Usage:
+
+%(exe)s minecraft_server.jar
+""" % context)
+
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print_usage()
+        sys.exit(1)
+
+    server_jar = sys.argv[1]
+
+

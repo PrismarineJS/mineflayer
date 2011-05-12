@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/js">
+        <file alias="builtin_types.js">builtin/builtin_types.js</file>
+        <file alias="create_handlers.js">builtin/create_handlers.js</file>
+    </qresource>
+</RCC>

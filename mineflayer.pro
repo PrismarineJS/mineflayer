@@ -1,66 +1,7 @@
-# -------------------------------------------------
-# Project created by QtCreator 2011-01-23T00:47:29
-# -------------------------------------------------
-QT += core \
-    network \
-    script \
-    scripttools \
-    gui
+TEMPLATE = subdirs
+SUBDIRS = mineflayer-core \
+    mineflayer-script
+
+mineflayer-script.depends = mineflayer-core
+
 TARGET = mineflayer
-TEMPLATE = app
-SOURCES += src/main.cpp \
-    src/Server.cpp \
-    src/Messages.cpp \
-    src/IncomingMessageParser.cpp \
-    src/Chunk.cpp \
-    src/MainWindow.cpp \
-    src/Util.cpp \
-    src/ScriptRunner.cpp \
-    src/Game.cpp \
-    src/SubChunkMeshGenerator.cpp \
-    src/Item.cpp \
-    src/StdinReader.cpp \
-    src/Digger.cpp
-HEADERS += src/Server.h \
-    src/Messages.h \
-    src/Chunk.h \
-    src/IncomingMessageParser.h \
-    src/MetaTypes.h \
-    src/MainWindow.h \
-    src/Vector3D.h \
-    src/Util.h \
-    src/ScriptRunner.h \
-    src/Game.h \
-    src/Block.h \
-    src/Item.h \
-    src/SubChunkMeshGenerator.h \
-    src/StdinReader.h \
-    src/Digger.h
-RESOURCES += mineflayer.qrc
-LIBS += -lOgreMain \
-    -lOIS
-DEFINES += MINEFLAYER_3D_ON \
-    MINEFLAYER_GUI_ON
-CONFIG += $$(EXTRA_CONFIG)
-
-# if you want to run in headless mode, set environment variable EXTRA_CONFIG=headless or uncomment next line
-# CONFIG += headless
-headless { 
-    CONFIG += no_3d
-    DEFINES -= MINEFLAYER_GUI_ON
-    QT -= gui
-}
-
-# if you want to turn on building with the 3D client, comment out the next line
-CONFIG += no_3d
-no_3d { 
-    LIBS -= -lOgreMain \
-        -lOIS
-    DEFINES -= MINEFLAYER_3D_ON
-    SOURCES -= src/MainWindow.cpp \
-        src/SubChunkMeshGenerator.cpp
-    HEADERS -= src/MainWindow.h \
-        src/SubChunkMeshGenerator.h
-    mac:CONFIG -= app_bundle
-    win32:CONFIG += console
-}

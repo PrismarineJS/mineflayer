@@ -1,0 +1,166 @@
+State:
+
+    state = {
+        'time_passed': int number of seconds,
+        'window_open': enum value (chest, inventory, nothing, etc),
+        'invulnerable': bool (if you got hit by a zombie .1 sec ago),
+    }
+
+State:
+
+    which entities are alive, and for each entity (also for myself):
+         health
+         position
+         velocity
+         yaw
+         pitch
+         how much oxygen bubbles it has left
+         if it's a player
+             inventory
+             equipped item
+             whether crouching
+    for each block of the world,
+         what block fills the space
+         the metadata of the block filling the space
+         if the block is a container, the contents
+    what window is open, if any
+    what item is held in hand (with window open, clicking an item)
+    how much time has passed
+
+
+
+Actions:
+
+    OpenInventoryWindow
+         prereqs:
+             no window open
+         effects:
+         [
+            'window_open': inventory,
+            'time_passed': hypothetical_state.time_passed + 1,
+         ]
+
+    OpenCraftingTableWindow
+         prereqs:
+             no window open
+             standing within 6 meters of crafting table
+         effects:
+             crafting table window open
+             10ms time passes by
+
+    CraftWithoutTable(recipe)
+         prereqs:
+             recipe.width < 3
+             recipe.height < 3
+             have open inventory window
+             have in inventory recipe.ingredients
+         effects:
+             ingredients gone or transformed (specified by recipe)
+             recipe.result in hand
+             10ms time passes by
+
+    CraftWithTable(recipe)
+         prereqs:
+             have in inventory recipe.ingredients
+             have open crafting table window
+         effects:
+             ingredients gone or transformed (specified by recipe)
+             recipe.result in hand
+             10ms time passes by
+
+    EquipItem(item)
+         prereqs:
+             have item in bottom row of inventory
+             no window open
+         effects:
+             item is equipped
+             10ms time passes by
+         
+
+    PlaceBlock(position)
+
+Laws:
+
+    FallingSand
+        condition:
+            sand above air
+        effect:
+            sand and air switch places
+
+    ZombieAttack
+        condition:
+            zombie within 1.5 meters of me
+            not invulnerable
+        effect:
+            my health decreases, depending on my armor
+            invulnerable for 1000ms
+
+    CreeperAttack
+        condition:
+            creeper within 1.5 meters of me
+            not invulnerable
+        effect:
+            creeper explodes
+            my health decreases, depending on my armor
+
+    Dying
+        condition:
+            health <= 0
+        effect:
+            health => full
+            all items dropped where I died
+            teleported to spawn
+
+
+Algorithm:
+
+    parameters:
+        goal_state: some subset of the state of the world. for example, "diamond sword is equipped". 
+        start_state: the real state of the world when the algorithm is run
+
+    
+    until start_state contains goal_state:
+        find an Action or whose effects fulfill the goal state
+            use a map to find a small list of actions that can achieve goal state
+
+        apply all applicable laws
+        new goal state is the Action or Law's prereqs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // set of nodes already evaluated
+    closed_set = empty set
+
+    // set of tentative nodes to be evaluated
+    open_set = all states that can be obtained by reversing an action's effects and prereqs and applying that to goal_state
+
+    // the list of frames we've followed to get here. a frame is [action, g_score_so_far]
+    // g_score is actual score from start along optimal path.
+    path = empty list
+
+
+    current_state = goal_state
+    while current_state not in start_state:
+        action = find an action with an effect that is in current_state and prereqs that move current_state closer to being in start_state
+        append action to path
+
