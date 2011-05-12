@@ -1,10 +1,14 @@
 #ifndef MINEFLAYERCORE_GLOBAL_H
 #define MINEFLAYERCORE_GLOBAL_H
 
+#if defined(WIN32)
 #if defined(MINEFLAYERCORE_LIBRARY)
-#define MINEFLAYERCORESHARED_EXPORT Q_DECL_EXPORT
+#define MINEFLAYER_EXPORT __declspec(dllexport)
 #else
-#define MINEFLAYERCORESHARED_EXPORT Q_DECL_IMPORT
+#define MINEFLAYER_EXPORT __declspec(dllimport)
+#endif
+#else
+#define MINEFLAYER_EXPORT
 #endif
 
 #if defined(__cplusplus)
@@ -427,88 +431,88 @@ typedef struct {
 } mineflayer_Callbacks;
 
 // methods
-mineflayer_GamePtr mineflayer_createGame(mineflayer_Url url);
-void mineflayer_setCallbacks(mineflayer_GamePtr game, mineflayer_Callbacks callbacks, void * context);
+MINEFLAYER_EXPORT mineflayer_GamePtr mineflayer_createGame(mineflayer_Url url);
+MINEFLAYER_EXPORT void mineflayer_setCallbacks(mineflayer_GamePtr game, mineflayer_Callbacks callbacks, void * context);
 
-void mineflayer_destroyGame(mineflayer_GamePtr game);
-void mineflayer_destroyEntity(mineflayer_Entity * mineflayer_entity);
-void mineflayer_destroyUtf8(mineflayer_Utf8 utf8);
-void mineflayer_destroyItemIdList(int * item_id_list);
+MINEFLAYER_EXPORT void mineflayer_destroyGame(mineflayer_GamePtr game);
+MINEFLAYER_EXPORT void mineflayer_destroyEntity(mineflayer_Entity * mineflayer_entity);
+MINEFLAYER_EXPORT void mineflayer_destroyUtf8(mineflayer_Utf8 utf8);
+MINEFLAYER_EXPORT void mineflayer_destroyItemIdList(int * item_id_list);
 
-void mineflayer_start(mineflayer_GamePtr game);
+MINEFLAYER_EXPORT void mineflayer_start(mineflayer_GamePtr game);
 
 // call every frame passing it the amount of time since the last frame
-void mineflayer_doPhysics(mineflayer_GamePtr game, float delta_seconds);
+MINEFLAYER_EXPORT void mineflayer_doPhysics(mineflayer_GamePtr game, float delta_seconds);
 
 // equivalent to pressing a button.
-void mineflayer_setControlActivated(mineflayer_GamePtr game, mineflayer_Control control, bool activated);
+MINEFLAYER_EXPORT void mineflayer_setControlActivated(mineflayer_GamePtr game, mineflayer_Control control, bool activated);
 
 // immediately emits a position update
-void mineflayer_updatePlayerLook(mineflayer_GamePtr game, float delta_yaw, float delta_pitch);
-void mineflayer_setPlayerLook(mineflayer_GamePtr game, float yaw, float pitch, bool force);
+MINEFLAYER_EXPORT void mineflayer_updatePlayerLook(mineflayer_GamePtr game, float delta_yaw, float delta_pitch);
+MINEFLAYER_EXPORT void mineflayer_setPlayerLook(mineflayer_GamePtr game, float yaw, float pitch, bool force);
 
 // left-clicks an entity. no support for right-clicking entities yet.
-void mineflayer_attackEntity(mineflayer_GamePtr game, int entity_id);
+MINEFLAYER_EXPORT void mineflayer_attackEntity(mineflayer_GamePtr game, int entity_id);
 
 // only valid to call this after you die
-void mineflayer_respawn(mineflayer_GamePtr game);
+MINEFLAYER_EXPORT void mineflayer_respawn(mineflayer_GamePtr game);
 
-int mineflayer_playerEntityId(mineflayer_GamePtr game);
-mineflayer_EntityPosition mineflayer_playerPosition(mineflayer_GamePtr game);
+MINEFLAYER_EXPORT int mineflayer_playerEntityId(mineflayer_GamePtr game);
+MINEFLAYER_EXPORT mineflayer_EntityPosition mineflayer_playerPosition(mineflayer_GamePtr game);
 
 // call mineflayer_destroyEntity when you are done with the return value.
-mineflayer_Entity * mineflayer_entity(mineflayer_GamePtr game, int entity_id);
+MINEFLAYER_EXPORT mineflayer_Entity * mineflayer_entity(mineflayer_GamePtr game, int entity_id);
 
-mineflayer_Block mineflayer_blockAt(mineflayer_GamePtr game, mineflayer_Int3D absolute_location);
-bool mineflayer_isBlockLoaded(mineflayer_GamePtr game, mineflayer_Int3D absolute_location);
+MINEFLAYER_EXPORT mineflayer_Block mineflayer_blockAt(mineflayer_GamePtr game, mineflayer_Int3D absolute_location);
+MINEFLAYER_EXPORT bool mineflayer_isBlockLoaded(mineflayer_GamePtr game, mineflayer_Int3D absolute_location);
 
 // call mineflayer_destroyUtf8 when you are done with the return value.
-mineflayer_Utf8 mineflayer_signTextAt(mineflayer_GamePtr game, mineflayer_Int3D absolute_location);
-int mineflayer_playerHealth(mineflayer_GamePtr game);
+MINEFLAYER_EXPORT mineflayer_Utf8 mineflayer_signTextAt(mineflayer_GamePtr game, mineflayer_Int3D absolute_location);
+MINEFLAYER_EXPORT int mineflayer_playerHealth(mineflayer_GamePtr game);
 
-void mineflayer_startDigging(mineflayer_GamePtr game, mineflayer_Int3D block);
-void mineflayer_stopDigging(mineflayer_GamePtr game);
+MINEFLAYER_EXPORT void mineflayer_startDigging(mineflayer_GamePtr game, mineflayer_Int3D block);
+MINEFLAYER_EXPORT void mineflayer_stopDigging(mineflayer_GamePtr game);
 
 // returns whether you were allowed to place a block there
-bool mineflayer_placeBlock(mineflayer_GamePtr game, mineflayer_Int3D block, mineflayer_BlockFaceDirection face);
+MINEFLAYER_EXPORT bool mineflayer_placeBlock(mineflayer_GamePtr game, mineflayer_Int3D block, mineflayer_BlockFaceDirection face);
 // returns whether the item was activatable
-bool mineflayer_activateItem(mineflayer_GamePtr game);
-bool mineflayer_canPlaceBlock(mineflayer_GamePtr game, mineflayer_Int3D block, mineflayer_BlockFaceDirection face);
-void mineflayer_activateBlock(mineflayer_GamePtr game, mineflayer_Int3D block);
+MINEFLAYER_EXPORT bool mineflayer_activateItem(mineflayer_GamePtr game);
+MINEFLAYER_EXPORT bool mineflayer_canPlaceBlock(mineflayer_GamePtr game, mineflayer_Int3D block, mineflayer_BlockFaceDirection face);
+MINEFLAYER_EXPORT void mineflayer_activateBlock(mineflayer_GamePtr game, mineflayer_Int3D block);
 
 // you are responsible for allocating and deallocating message
-void mineflayer_sendChat(mineflayer_GamePtr game, mineflayer_Utf8 message);
-double mineflayer_timeOfDay(mineflayer_GamePtr game);
+MINEFLAYER_EXPORT void mineflayer_sendChat(mineflayer_GamePtr game, mineflayer_Utf8 message);
+MINEFLAYER_EXPORT double mineflayer_timeOfDay(mineflayer_GamePtr game);
 
-int mineflayer_selectedEquipSlot(mineflayer_GamePtr game);
-void mineflayer_selectEquipSlot(mineflayer_GamePtr game, int slot_id); // [27, 35]
+MINEFLAYER_EXPORT int mineflayer_selectedEquipSlot(mineflayer_GamePtr game);
+MINEFLAYER_EXPORT void mineflayer_selectEquipSlot(mineflayer_GamePtr game, int slot_id); // [27, 35]
 
 // blocks and returns success
-bool mineflayer_clickInventorySlot(mineflayer_GamePtr game, int slot_id, bool right_click); // slot_id [0, 35]
-bool mineflayer_clickUniqueSlot(mineflayer_GamePtr game, int slot_id, bool right_click); // slot_id range depends on window
-bool mineflayer_clickOutsideWindow(mineflayer_GamePtr game, bool right_click);
+MINEFLAYER_EXPORT bool mineflayer_clickInventorySlot(mineflayer_GamePtr game, int slot_id, bool right_click); // slot_id [0, 35]
+MINEFLAYER_EXPORT bool mineflayer_clickUniqueSlot(mineflayer_GamePtr game, int slot_id, bool right_click); // slot_id range depends on window
+MINEFLAYER_EXPORT bool mineflayer_clickOutsideWindow(mineflayer_GamePtr game, bool right_click);
 
-void mineflayer_openInventoryWindow(mineflayer_GamePtr game);
-void mineflayer_closeWindow(mineflayer_GamePtr game);
+MINEFLAYER_EXPORT void mineflayer_openInventoryWindow(mineflayer_GamePtr game);
+MINEFLAYER_EXPORT void mineflayer_closeWindow(mineflayer_GamePtr game);
 
-mineflayer_Item mineflayer_inventoryItem(mineflayer_GamePtr game, int slot_id); // [0, 35]
-mineflayer_Item mineflayer_uniqueWindowItem(mineflayer_GamePtr game, int slot_id);
+MINEFLAYER_EXPORT mineflayer_Item mineflayer_inventoryItem(mineflayer_GamePtr game, int slot_id); // [0, 35]
+MINEFLAYER_EXPORT mineflayer_Item mineflayer_uniqueWindowItem(mineflayer_GamePtr game, int slot_id);
 
 // if you want you can cheat and override the default physics settings:
-void mineflayer_setInputAcceleration(mineflayer_GamePtr game, float value);
-void mineflayer_setGravity(mineflayer_GamePtr game, float value);
-float mineflayer_getStandardGravity();
-void mineflayer_setMaxGroundSpeed(mineflayer_GamePtr game, float value);
+MINEFLAYER_EXPORT void mineflayer_setInputAcceleration(mineflayer_GamePtr game, float value);
+MINEFLAYER_EXPORT void mineflayer_setGravity(mineflayer_GamePtr game, float value);
+MINEFLAYER_EXPORT float mineflayer_getStandardGravity();
+MINEFLAYER_EXPORT void mineflayer_setMaxGroundSpeed(mineflayer_GamePtr game, float value);
 
 // this one is cheating
-void mineflayer_setPlayerPosition(mineflayer_GamePtr game, mineflayer_Double3D pt);
+MINEFLAYER_EXPORT void mineflayer_setPlayerPosition(mineflayer_GamePtr game, mineflayer_Double3D pt);
 
-void mineflayer_setJesusModeEnabled(bool value);
+MINEFLAYER_EXPORT void mineflayer_setJesusModeEnabled(bool value);
 
 // exception to memory management: don't delete this pointer
-mineflayer_ItemData * mineflayer_itemData(mineflayer_ItemType item_id);
+MINEFLAYER_EXPORT mineflayer_ItemData * mineflayer_itemData(mineflayer_ItemType item_id);
 // returns an int array of all item ids. the first one is the number of item ids in the list. call mineflayer_destroyItemIdList when done.
-int * mineflayer_itemIdList();
+MINEFLAYER_EXPORT int * mineflayer_itemIdList();
 
 #if defined(__cplusplus)
 }
