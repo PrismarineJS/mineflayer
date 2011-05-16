@@ -131,7 +131,6 @@ mf.StoppedDiggingReason
 /**
  * Represents an input action as if you were pressing buttons on a keyboard.
  * Members:
- *      NoControl
  *      Forward
  *      Back
  *      Left
@@ -139,8 +138,6 @@ mf.StoppedDiggingReason
  *      Jump
  *      Crouch - NOT HOOKED UP
  *      DiscardItem - NOT HOOKED UP
- *      Action1 (left click) - NOT HOOKED UP
- *      Action2 (right click) - NOT HOOKED UP
  */
 mf.Control
 

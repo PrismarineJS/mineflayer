@@ -100,16 +100,13 @@ mf.StoppedDiggingReason = {
 };
 
 mf.Control = {
-    "NoControl":    0,
-    "Forward":      1,
-    "Back":         2,
-    "Left":         3,
-    "Right":        4,
-    "Jump":         5,
-    "Crouch":       6,
-    "DiscardItem":  7,
-    "Action1":      8,
-    "Action2":      9,
+    "Forward":      0,
+    "Back":         1,
+    "Left":         2,
+    "Right":        3,
+    "Jump":         4,
+    "Crouch":       5,
+    "DiscardItem":  6,
 };
 
 mf.AnimationType = {

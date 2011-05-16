@@ -1,4 +1,7 @@
 Core:
+ * expose direct access to chunks in API
+ * revert to notchian coordinate system :(
+
  * handle specific metadata crafting
  * expose crafting and smelting recipes to API
  * dispenser is untested
@@ -39,7 +42,7 @@ Bot framework:
  * document lib public functions better
  * allow shift=true in window clicks
 
-Libs:
+JavaScript Libs:
  * fix high level inventory management
  * block_finder returns duplicate blocks
  * some kind of indexed search as faster alternative to current block_finder
@@ -69,26 +72,3 @@ Tests that need to be written:
  * test shooting an arrow
  * test killing an entity
 
-3D client:
- * chunk seams are broken
- * deleting chunks is broken
- * TOO SLOW
- * chatting 
- * digging
- * mobs/players/pickups
- * doors
- * torches and redstone torches
- * minecart tracks
- * ladders
- * stairs
- * levers
- * buttons
- * sign posts
- * wall signs
- * pressure plates
- * stone slab
- * cake
- * water/lava animation
- * water / lava flow
- * sky, sun, moon, day/night
- * clouds
