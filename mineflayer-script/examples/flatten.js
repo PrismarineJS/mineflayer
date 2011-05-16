@@ -8,33 +8,64 @@ mf.include("inventory.js");
 
     var flatten_types = new Set([mf.ItemType.Sand, mf.ItemType.Grass, mf.ItemType.Dirt, mf.ItemType.Gravel, mf.ItemType.Stone, mf.ItemType.Sandstone]);
 
+    function get_flatten_database() {
+        var db = {};
+        for (var val in flatten_types.values) {
+            db[parseInt(val)] = items.nameForId(val);
+        }
+        return db;
+    }
+
     function flatten_add_type(speaker, args, responder_fun) {
         var arg = args.join(" ");
-        var item_type = items.findBlockTypeUnambiguously(arg, responder_fun);
-        if (item_type === undefined) {
-            return;
+        var str_item_types = arg.split(",");
+        var invalid_types = [];
+        var valid_types = [];
+        for (var i = 0; i < str_item_types.length; i++) {
+            var item_type = str_item_types[i].trim();
+            var matching_types = items.lookupBlockType(item_type);
+            if (matching_types.length !== 1) {
+                invalid_types.push(item_type);
+                continue;
+            }
+            item_type = matching_types[0].id;
+            valid_types.push(items.nameForId(item_type));
+            flatten_types.add(item_type);
         }
-        item_type = item_type.id;
-        if (!flatten_types.add(item_type)) {
-            responder_fun("Already flattening " + items.nameForId(item_type));
-        } else {
-            responder_fun("Now flattening " + items.nameForId(item_type));
+        if (invalid_types.length > 0) {
+            responder_fun("Ambiguous or unknown types: " + invalid_types.join(", "));
+        }
+        if (valid_types.length > 0) {
+            responder_fun("Now flattening " + valid_types.join(", "));
         }
     }
 
     function flatten_remove_type(speaker, args, responder_fun) {
         var arg = args.join(" ");
-        var item_type = items.findBlockTypeUnambiguously(arg, responder_fun);
-        if (item_type === undefined) {
+        if (arg === "*" || arg === "everything" || arg === "all") {
+            flatten_types.clear();
+            responder_fun("No longer flattening anything");
             return;
         }
-        item_type = item_type.id;
-        if (!flatten_types.contains(item_type)) {
-            responder_fun("Already not flattening " + items.nameForId(item_type));
-            return;
-        } else {
+        var str_item_types = arg.split(",");
+        var invalid_types = [];
+        var valid_types = [];
+        for (var i = 0; i < str_item_types.length; i++) {
+            var item_type = str_item_types[i].trim();
+            var matching_types = items.lookupInDatabase(item_type, get_flatten_database());
+            if (matching_types.length !== 1) {
+                invalid_types.push(item_type);
+                continue;
+            }
+            item_type = matching_types[0].id;
+            valid_types.push(items.nameForId(item_type));
             flatten_types.remove(item_type);
-            responder_fun("No longer flattening " + items.nameForId(item_type));
+        }
+        if (invalid_types.length > 0) {
+            responder_fun("Ambiguous, unknown, or already not flattening " + invalid_types.join(", "));
+        }
+        if (valid_types.length > 0) {
+            responder_fun("No longer flattening " + valid_types.join(", "));
         }
     }
 
@@ -215,13 +246,15 @@ mf.include("inventory.js");
             mine_blocks();
         };
         task_manager.doLater(new task_manager.Task(function start() {
-                running = true;
                 navigator.navigateTo(player.position, {
                     end_radius: 16,
                     timeout_milliseconds: 1000 * 10,
                     arrived_func: start_mining,
                     path_found_func: function() {
-                        responder_fun("Going to try and flatten");
+                        if (! running) {
+                            responder_fun("Going to try and flatten");
+                        }
+                        running = true;
                     },
                     cant_find_func: function() {
                         responder_fun("Sorry, I can't get to you!");
