@@ -17,7 +17,7 @@ mf.include("arrays.js");
  *     mf.clearInterval(id);
  * }, "saying hello 10 times");
  */
-task_manager = {};
+var task_manager = {};
 
 (function() {
     /**
@@ -43,7 +43,7 @@ task_manager = {};
         }
         this.started = false;
     };
-    tasks = [];
+    var tasks = [];
 
     function runNextCommand() {
         if (tasks.length === 0) {
@@ -53,12 +53,12 @@ task_manager = {};
             tasks[0].resume();
         } else {
             tasks[0].start();
-            tasks[0].started = true;
         }
     };
 
     task_manager.doLater = function(task) {
         tasks.push(task);
+        task.started = false;
         if (tasks.length === 1) {
             runNextCommand();
         }
@@ -74,7 +74,9 @@ task_manager = {};
 
     task_manager.done = function() {
         assert.isTrue(tasks.length !== 0);
+        var length = tasks.length;
         tasks.shift();
+        assert.isTrue(length !== tasks.length);
         runNextCommand();
     };
 
