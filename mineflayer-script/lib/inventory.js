@@ -251,52 +251,52 @@ var inventory = {};
      * @param {Number} item_id The item ID of the item you want to equip.
      * @param {Function} callback Called when it's finally equipped (possibly before this function returns)
      * @return true iff you have the item
-     */
+    */
     inventory.equipItem = function(item_id, callback) {
-        var itemSlot = undefined;
-        for (var i = 0; i < inventory.slot_count; i++) {
-            if (mf.inventoryItem(i).type === item_id) {
-                itemSlot = i;
-                break;
-            }
-        }
+        var itemSlot = inventory.itemSlot(item_id);
         if (itemSlot === undefined) {
             return false;
         }
         if (itemSlot < inventory.column_count) {
-            //On hot-switch bar
+            //On action bar
             mf.selectEquipSlot(itemSlot);
             if (callback !== undefined) {
                 callback();
             }
+            return true;
         } else {
             //In inventory
-            switchSlot = itemSlot;
-            switchCallback = callback;
-            mf.openInventoryWindow();
+            if (inventory.currentlyOpenWindow === mf.WindowType.Inventory) {
+                if (inventory.selectedItem !== undefined) {
+                    inventory.moveSelected(inventory.InventoryFull);
+                }
+                return equip(inventory.currentlyOpenWindow);
+            } else {
+                if (inventory.currentlyOpenWindow !== undefined) {
+                    mf.closeWindow();
+                }
+                mf.onWindowOpened(function equip(window_type) {
+                    mf.removeHandler(mf.onWindowOpened, equip);
+                    if (window_type !== mf.WindowType.Inventory) {
+                        return false;
+                    }
+                    if (itemSlot === undefined) {
+                        return false;
+                    }
+                    mf.clickInventorySlot(itemSlot, mf.MouseButton.Left);
+                    mf.clickInventorySlot(mf.selectedEquipSlot(), mf.MouseButton.Left);
+                    mf.clickInventorySlot(itemSlot, mf.MouseButton.Left);
+                    mf.closeWindow();
+                    if (callback !== undefined) {
+                        callback();
+                    }
+                    return true;
+                });
+                mf.openInventoryWindow();
+            }
         }
         return true;
     };
-
-    var switchSlot = undefined;
-    var switchCallback;
-   
-    mf.onWindowOpened(function(window_type) {
-        if (window_type !== mf.WindowType.Inventory) {
-            return;
-        }
-        if (switchSlot === undefined) {
-            return;
-        }
-        mf.clickInventorySlot(switchSlot, mf.MouseButton.Left);
-        mf.clickInventorySlot(mf.selectedEquipSlot(), mf.MouseButton.Left);
-        mf.clickInventorySlot(switchSlot, mf.MouseButton.Left);
-        switchSlot = undefined;
-        mf.closeWindow();
-        if (switchCallback !== undefined) {
-            switchCallback();
-        }
-    });
  
     /**
      * Gets the item you are holding.
