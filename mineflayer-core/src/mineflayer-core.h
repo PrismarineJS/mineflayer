@@ -453,7 +453,8 @@ MINEFLAYER_EXPORT void mineflayer_start(mineflayer_GamePtr game);
 // call every frame passing it the amount of time since the last frame
 MINEFLAYER_EXPORT void mineflayer_doPhysics(mineflayer_GamePtr game, float delta_seconds);
 
-MINEFLAYER_EXPORT void mineflayer_doCallbacks(mineflayer_GamePtr game);
+// eats a thread. must call this after creating a game for everything to work.
+MINEFLAYER_EXPORT int mineflayer_runEventLoop();
 
 // equivalent to pressing a button.
 MINEFLAYER_EXPORT void mineflayer_setControlActivated(mineflayer_GamePtr game, mineflayer_Control control, mineflayer_bool activated);

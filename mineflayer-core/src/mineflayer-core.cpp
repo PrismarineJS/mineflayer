@@ -42,9 +42,8 @@ mineflayer_GamePtr mineflayer_createGame(mineflayer_Url url, bool auto_physics_l
     return reinterpret_cast<mineflayer_GamePtr>(game_listener);
 }
 
-void mineflayer_doCallbacks(mineflayer_GamePtr game) {
-    Q_UNUSED(game);
-    QCoreApplication::instance()->processEvents();
+int mineflayer_runEventLoop() {
+    return QCoreApplication::instance()->exec();
 }
 
 void mineflayer_destroyGame(mineflayer_GamePtr _game) {

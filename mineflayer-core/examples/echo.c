@@ -33,7 +33,5 @@ int main() {
 
     mineflayer_start(game);
 
-    while(1) {
-        mineflayer_doCallbacks(game);
-    }
+    mineflayer_runEventLoop();
 }
