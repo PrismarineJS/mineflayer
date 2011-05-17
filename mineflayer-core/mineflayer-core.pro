@@ -22,7 +22,8 @@ SOURCES += \
     src/Item.cpp \
     src/Digger.cpp \
     src/mineflayer-core.cpp \
-    src/GameListener.cpp
+    src/GameListener.cpp \
+    src/PhysicsDoer.cpp
 
 HEADERS += \
     src/mineflayer-core.h \
@@ -37,7 +38,8 @@ HEADERS += \
     src/Block.h \
     src/Item.h \
     src/Digger.h \
-    src/GameListener.h
+    src/GameListener.h \
+    src/PhysicsDoer.h
 
 RESOURCES += mineflayer-core.qrc
 CONFIG += $$(EXTRA_CONFIG)

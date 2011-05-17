@@ -9,7 +9,6 @@
 
 #include <cmath>
 
-const int PhysicsDoer::c_physics_fps = 20;
 
 ScriptRunner::ScriptRunner(QUrl url, QString script_file, QStringList args, bool debug, QStringList lib_path) :
     QObject(NULL),
@@ -23,8 +22,7 @@ ScriptRunner::ScriptRunner(QUrl url, QString script_file, QStringList args, bool
     m_stderr(stderr),
     m_stdout(stdout),
     m_timer_count(0),
-    m_lib_path(lib_path),
-    m_physics_doer(NULL)
+    m_lib_path(lib_path)
 {
     mineflayer_Url mf_url;
     memset(&mf_url, 0, sizeof(mineflayer_Url));
@@ -32,7 +30,7 @@ ScriptRunner::ScriptRunner(QUrl url, QString script_file, QStringList args, bool
     mf_url.username = Util::toNewMfUtf8(url.userName());
     mf_url.password = Util::toNewMfUtf8(url.password());
     mf_url.port = url.port(0);
-    m_game = mineflayer_createGame(mf_url);
+    m_game = mineflayer_createGame(mf_url, true);
     Util::deallocMfUtf8(mf_url.hostname);
     Util::deallocMfUtf8(mf_url.username);
     Util::deallocMfUtf8(mf_url.password);
@@ -200,53 +198,9 @@ void ScriptRunner::bootstrap()
     success = connect(&m_stdin_reader, SIGNAL(eof()), QCoreApplication::instance(), SLOT(quit()));
     Q_ASSERT(success);
 
-    m_physics_doer = new PhysicsDoer(m_game);
-
     m_started_game = true;
     mineflayer_start(m_game);
     m_stdin_reader.start();
-}
-
-PhysicsDoer::PhysicsDoer(mineflayer_GamePtr game) :
-    m_game(game),
-    m_physics_timer(NULL)
-{
-    // run in our own thread
-    m_thread = new QThread();
-    m_thread->start();
-    this->moveToThread(m_thread);
-}
-
-void PhysicsDoer::doPhysics()
-{
-    float elapsed_time = m_physics_time.restart() / 1000.0f;
-    mineflayer_doPhysics(m_game, elapsed_time);
-}
-
-void PhysicsDoer::start()
-{
-    if (QThread::currentThread() != m_thread) {
-        bool success;
-        success = QMetaObject::invokeMethod(this, "start", Qt::QueuedConnection);
-        Q_ASSERT(success);
-        return;
-    }
-    m_physics_timer = new QTimer(this);
-
-    bool success;
-    success = connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(cleanup()));
-    Q_ASSERT(success);
-    success = connect(m_physics_timer, SIGNAL(timeout()), this, SLOT(doPhysics()));
-    Q_ASSERT(success);
-
-    m_physics_time.start();
-    m_physics_timer->start(1000 / c_physics_fps);
-}
-
-void PhysicsDoer::cleanup()
-{
-    m_physics_timer->stop();
-    m_thread->exit();
 }
 
 QString ScriptRunner::internalReadFile(const QString &path)
@@ -1216,10 +1170,9 @@ void ScriptRunner::handleTimeUpdated(double seconds)
 
 void ScriptRunner::handleLoginStatusUpdated(mineflayer_LoginStatus status)
 {
-    // note that game class already handles shutting down for Disconnected and SocketError.
+    // TODO: handle shutting down for Disconnected and SocketError.
     switch (status) {
         case mineflayer_SuccessStatus:
-            m_physics_doer->start();
             raiseEvent("onConnected");
             break;
         default:;

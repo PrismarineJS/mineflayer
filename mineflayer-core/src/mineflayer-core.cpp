@@ -8,10 +8,22 @@
 
 #include <QUrl>
 #include <QObject>
+#include <QCoreApplication>
 
-mineflayer_GamePtr mineflayer_createGame(mineflayer_Url url) {
-    CoreMetaTypes::coreRegisterMetaTypes();
-    Item::initializeStaticData();
+bool _mineflayer_doneInitializing = false;
+QCoreApplication * _mineflayer_app = NULL;
+
+mineflayer_GamePtr mineflayer_createGame(mineflayer_Url url, bool auto_physics_loop) {
+    if (! _mineflayer_doneInitializing) {
+        _mineflayer_doneInitializing = true;
+        CoreMetaTypes::coreRegisterMetaTypes();
+        Item::initializeStaticData();
+
+        if (QCoreApplication::instance() == NULL) {
+            int argc = 0;
+            _mineflayer_app = new QCoreApplication(argc, NULL);
+        }
+    }
 
     QUrl qurl;
     qurl.setUserName(Util::toQString(url.username));
@@ -19,13 +31,20 @@ mineflayer_GamePtr mineflayer_createGame(mineflayer_Url url) {
         qurl.setPassword(Util::toQString(url.password));
     if (url.hostname.byte_count > 0)
         qurl.setHost(Util::toQString(url.hostname));
+    else
+        qurl.setHost("localhost");
     if (url.port > 0)
         qurl.setPort(url.port);
 
     Game * game = new Game(qurl);
-    GameListener * game_listener = new GameListener(game, game);
+    GameListener * game_listener = new GameListener(game, auto_physics_loop, game);
 
     return reinterpret_cast<mineflayer_GamePtr>(game_listener);
+}
+
+void mineflayer_doCallbacks(mineflayer_GamePtr game) {
+    Q_UNUSED(game);
+    QCoreApplication::instance()->processEvents();
 }
 
 void mineflayer_destroyGame(mineflayer_GamePtr _game) {

@@ -76,8 +76,6 @@ private:
 
     QStringList m_lib_path;
 
-    PhysicsDoer * m_physics_doer;
-
     QSet<QString> m_included_filenames;
 private:
     void raiseEvent(QString event_name, const QScriptValueList & args = QScriptValueList());
@@ -207,23 +205,5 @@ private: // static callbacks
     static void equippedItemChanged(void * context);
 };
 
-
-class PhysicsDoer : public QObject {
-    Q_OBJECT
-public:
-    PhysicsDoer(mineflayer_GamePtr game);
-public slots:
-    void start();
-    void cleanup();
-private:
-    static const int c_physics_fps;
-
-    mineflayer_GamePtr m_game;
-    QTimer * m_physics_timer;
-    QTime m_physics_time;
-    QThread * m_thread;
-private slots:
-    void doPhysics();
-};
 
 #endif // SCRIPTRUNNER_H

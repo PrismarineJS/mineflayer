@@ -2,9 +2,11 @@
 
 mineflayer_Callbacks GameListener::s_cb;
 
-GameListener::GameListener(Game * _game, QObject *parent) :
+GameListener::GameListener(Game * _game, bool auto_physics, QObject *parent) :
     QObject(parent),
-    game(_game)
+    game(_game),
+    m_physics_doer(NULL),
+    m_auto_physics(auto_physics)
 {
     bool success;
 
@@ -47,6 +49,8 @@ GameListener::GameListener(Game * _game, QObject *parent) :
     success = connect(game, SIGNAL(equippedItemChanged()), this, SLOT(equippedItemChanged()));
     Q_ASSERT(success);
 
+    if (m_auto_physics)
+        m_physics_doer = new PhysicsDoer(this);
 }
 
 void GameListener::chatReceived(QString username, QString message)
@@ -200,6 +204,9 @@ void GameListener::stoppedDigging(mineflayer_StoppedDiggingReason reason)
 
 void GameListener::loginStatusUpdated(mineflayer_LoginStatus status)
 {
+    if (status == mineflayer_SuccessStatus && m_auto_physics)
+        m_physics_doer->start();
+
     if (s_cb.loginStatusUpdated == NULL)
         return;
 

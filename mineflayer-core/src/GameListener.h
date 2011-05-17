@@ -4,13 +4,14 @@
 #include "mineflayer-core.h"
 
 #include "Game.h"
+#include "PhysicsDoer.h"
 #include <QObject>
 
 class GameListener : public QObject
 {
     Q_OBJECT
 public:
-    explicit GameListener(Game * game, QObject *parent = 0);
+    explicit GameListener(Game * game, bool auto_physics, QObject *parent = 0);
 
     static mineflayer_Callbacks s_cb;
 
@@ -42,6 +43,10 @@ public slots:
     void inventoryUpdated();
     void equippedItemChanged();
 
+private:
+
+    PhysicsDoer * m_physics_doer;
+    bool m_auto_physics;
 
 };
 

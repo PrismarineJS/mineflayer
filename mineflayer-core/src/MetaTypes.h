@@ -8,14 +8,8 @@
 #include <QMetaType>
 #include <QAbstractSocket>
 
-bool _mineflayer_registered_meta_types = false;
-
 namespace CoreMetaTypes {
     void coreRegisterMetaTypes() {
-        if (_mineflayer_registered_meta_types)
-            return;
-        _mineflayer_registered_meta_types = true;
-
         qRegisterMetaType<QSharedPointer<IncomingResponse> >("QSharedPointer<IncomingResponse>");
         qRegisterMetaType<QSharedPointer<OutgoingRequest> >("QSharedPointer<OutgoingRequest>");
         qRegisterMetaType<QSharedPointer<Chunk> >("QSharedPointer<Chunk>");
