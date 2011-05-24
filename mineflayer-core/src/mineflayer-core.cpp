@@ -11,7 +11,6 @@
 #include <QCoreApplication>
 
 bool _mineflayer_doneInitializing = false;
-QCoreApplication * _mineflayer_app = NULL;
 
 mineflayer_GamePtr mineflayer_createGame(mineflayer_Url url, bool auto_physics_loop) {
     if (! _mineflayer_doneInitializing) {
@@ -21,7 +20,7 @@ mineflayer_GamePtr mineflayer_createGame(mineflayer_Url url, bool auto_physics_l
 
         if (QCoreApplication::instance() == NULL) {
             int argc = 0;
-            _mineflayer_app = new QCoreApplication(argc, NULL);
+            new QCoreApplication(argc, NULL);
         }
     }
 
