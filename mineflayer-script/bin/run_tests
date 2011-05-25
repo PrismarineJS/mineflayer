@@ -2,20 +2,170 @@
 
 import subprocess
 import sys
+import time
+import tempfile
+
+__version__ = '0.0'
+
+# dependencies:
+# bsdiff, bspatch
+# minecraft_server.jar
+
+base_test_folder = absolute(os.path.join('..', 'test'))
+base_world_tar = os.path.join(base_test_folder, 'base.tar')
+dirty_files = [
+    'world/',
+    'banned-ips.txt',
+    'banned-players.txt',
+    'ops.txt',
+    'server.log',
+    'server.properties',
+    'white-list.txt',
+]
+server_name = 'minecraft_server.jar'
+test_port = 25565
 
 def print_usage():
-    context = {'exe': sys.argv[0]}
+    context = {'exe': sys.argv[0], 'server_name': server_name}
     print("""
 Usage:
 
-%(exe)s minecraft_server.jar
+%(exe)s %(server_name)
 """ % context)
 
+def superwalk(folder):
+    for dirpath, _dirnames, filenames in os.walk(folder):
+        for filename in filenames:
+            yield os.path.join(dirpath, filename)
+
+def absolute(relative_path):
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), relative_path))
+
+def extract_tar_to(tar, path):
+    exe = subprocess.Popen(['tar', '-C', path, '-xf', tar])
+    exe.wait()
+
+def clean_folder(path):
+    for dirty_file in dirty_files:
+        abs_file = os.path.join(path, dirty_file)
+        if dirty_file.endswith('/'):
+            shutil.rmtree(abs_file, ignore_errors=True)
+        else:
+            try:
+                os.remove(abs_file)
+            except OSError:
+                pass
+
+def main(src_server_jar, mineflayer_exe):
+    print("Loading test suite...")
+
+    # get a list of tests to run
+    tests = superwalk(base_test_folder)
+    tests = filter(lambda t: t.endswith('.js'), tests)
+    if len(tests) == 0:
+        print("No tests to run.")
+        return
+
+    # copy server_jar to temp folder
+    tmpdir = tempfile.mkdtemp()
+    server_jar = os.path.join(tmpdir, server_name)
+    shutil.copy(src_server_jar, server_jar)
+
+    # run all tests
+    fail_count = 0
+    msgs = []
+    for test in tests:
+        success, msg = run_test(mineflayer_exe, tmpdir, test)
+        sys.stdout.write(success)
+        sys.stdout.flush()
+        if msg is not None:
+            msgs.append((test, msg))
+
+    print("")
+    if len(msgs) == 0:
+        print("All %i tests passed." % len(tests))
+    else:
+        print("%i passed, %i failed." % (len(tests) - len(msgs), len(msgs)))
+
+        sep = '=' * 80
+        print(sep)
+        for test, msg in msgs:
+            print("%s:" % test)
+            print(msg)
+            print(sep)
+
+    shutil.rmtree(tmpdir)
+
+def get_diff_for_test(test_file):
+    dirname = os.path.dirname(test_file)
+    world_diff = os.path.join(dirname, 'world.bsdiff')
+    if os.path.exists(world_diff):
+        return world_diff
+    else:
+        return get_diff_for_test(dirname)
+    
+def apply_patch(oldfile, newfile, patchfile):
+    exe = subprocess.Popen(['bspatch', oldfile, newfile, patchfile])
+    exe.wait()
+    
+def run_test(mineflayer_exe, server_path, test_js):
+    # figure out paths for files
+    diff_file = get_diff_for_test(test_js)
+    server_jar = os.path.join(server_path, server_name)
+
+    # apply diff to base tar
+    tarfile = tempfile.NamedTemporaryFile(mode='rb')
+    apply_patch(base_world_tar, tarfile, diff_file)
+    clean_folder(tmpdir)
+    extract_tar_to(tarfile, tmpdir)
+    tarfile.close()
+
+    # start server
+    mcserver = subprocess.Popen(['java', '-jar', server_jar, 'nogui'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+    while mcserver.poll() is None:
+        for full_line in mcserver.stdout:
+            if full_line.index('[INFO] Done') >= 0:
+                break
+        time.sleep(0.01)
+
+    # start test
+    url = (
+        'mineflayer',
+        'localhost',
+        test_port,
+    )
+    mf = subprocess.Popen([
+        mineflayer_exe, 
+        '--url', 
+        '%s@%s:%i' % url,
+        test_js,
+    ])
+    mf_stdout, mf_stderr = mf.communicate()
+
+    if mcserver.poll() is not None:
+        return 'C', 'Server crashed'
+
+    if mf.returncode != 0:
+        return 'E', mf_stderr
+
+    if len(mf_stderr) != 0:
+        return 'E', mf_stderr
+
+    if mf_stdout != expected_stdout:
+        return 'F', mf_stdout
+
+    # stop server
+    mcserver.terminate()
+    mcserver.wait()
+
+
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         print_usage()
         sys.exit(1)
 
     server_jar = sys.argv[1]
+    mineflayer_exe = sys.argv[2]
 
-
+    main(server_jar, mineflayer_exe)
