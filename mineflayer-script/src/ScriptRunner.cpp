@@ -232,8 +232,11 @@ void ScriptRunner::checkEngine(const QString & while_doing_what)
         m_stderr << m_engine->uncaughtException().toString() << "\n";
         m_stderr << m_engine->uncaughtExceptionBacktrace().join("\n") << "\n";
         m_stderr.flush();
+        QCoreApplication::instance()->exit(1);
+    } else {
+        QCoreApplication::instance()->exit(0);
     }
-    QCoreApplication::instance()->exit(1);
+    m_exiting = true;
 }
 
 void ScriptRunner::dispatchTimeout()

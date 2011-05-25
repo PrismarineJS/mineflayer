@@ -32,7 +32,6 @@ Core:
    etc.) (still a problem in latest version?)
  * handle forced window close events from the server
  * metadata for cake, repeater, bed, slab/doubleslab
- * don't segfault on shutdown
 
 Bot framework:
  * expose some kind of ItemData structure with bounding boxes and stuff
