@@ -1,15 +1,20 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import subprocess
 import sys
+import os
 import time
 import tempfile
+import shutil
 
 __version__ = '0.0'
 
 # dependencies:
 # bsdiff, bspatch
 # minecraft_server.jar
+
+def absolute(relative_path):
+    return os.path.normpath(os.path.join(os.path.dirname(__file__), relative_path))
 
 base_test_folder = absolute(os.path.join('..', 'test'))
 base_world_tar = os.path.join(base_test_folder, 'base.tar')
@@ -30,16 +35,13 @@ def print_usage():
     print("""
 Usage:
 
-%(exe)s %(server_name)
+%(exe)s %(server_name)s mineflayer_exe
 """ % context)
 
 def superwalk(folder):
     for dirpath, _dirnames, filenames in os.walk(folder):
         for filename in filenames:
             yield os.path.join(dirpath, filename)
-
-def absolute(relative_path):
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), relative_path))
 
 def extract_tar_to(tar, path):
     exe = subprocess.Popen(['tar', '-C', path, '-xf', tar])
@@ -61,7 +63,16 @@ def main(src_server_jar, mineflayer_exe):
 
     # get a list of tests to run
     tests = superwalk(base_test_folder)
-    tests = filter(lambda t: t.endswith('.js'), tests)
+    def get_test(testfile):
+        expected_out = ''
+        expected_out_file = "%s.out" % testfile
+        try:
+            with open(expected_out_file, 'rb') as fd:
+                expected_out = fd.read().decode('utf8')
+        except IOError:
+            print("Warning: missing %s" % expected_out_file)
+        return testfile, expected_out
+    tests = [get_test(t) for t in tests if t.endswith('.js')]
     if len(tests) == 0:
         print("No tests to run.")
         return
@@ -74,12 +85,13 @@ def main(src_server_jar, mineflayer_exe):
     # run all tests
     fail_count = 0
     msgs = []
-    for test in tests:
-        success, msg = run_test(mineflayer_exe, tmpdir, test)
+    for test, expected_out in tests:
+        success, msg = run_test(mineflayer_exe, tmpdir, test, expected_out)
+
         sys.stdout.write(success)
         sys.stdout.flush()
         if msg is not None:
-            msgs.append((test, msg))
+            msgs.append((test, expected_out, msg))
 
     print("")
     if len(msgs) == 0:
@@ -89,8 +101,11 @@ def main(src_server_jar, mineflayer_exe):
 
         sep = '=' * 80
         print(sep)
-        for test, msg in msgs:
+        for test, expected_out, msg in msgs:
             print("%s:" % test)
+            print("----------- Expected: -----------")
+            print(expected_out)
+            print("----------- Actual: -----------")
             print(msg)
             print(sep)
 
@@ -108,26 +123,25 @@ def apply_patch(oldfile, newfile, patchfile):
     exe = subprocess.Popen(['bspatch', oldfile, newfile, patchfile])
     exe.wait()
     
-def run_test(mineflayer_exe, server_path, test_js):
+def run_test(mineflayer_exe, server_path, test_js, expected_stdout):
     # figure out paths for files
     diff_file = get_diff_for_test(test_js)
     server_jar = os.path.join(server_path, server_name)
 
     # apply diff to base tar
     tarfile = tempfile.NamedTemporaryFile(mode='rb')
-    apply_patch(base_world_tar, tarfile, diff_file)
-    clean_folder(tmpdir)
-    extract_tar_to(tarfile, tmpdir)
+    apply_patch(base_world_tar, tarfile.name, diff_file)
+    clean_folder(server_path)
+    extract_tar_to(tarfile.name, server_path)
     tarfile.close()
 
     # start server
-    mcserver = subprocess.Popen(['java', '-jar', server_jar, 'nogui'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
+    mcserver = subprocess.Popen(['java', '-jar', server_jar, 'nogui'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=server_path)
 
-    while mcserver.poll() is None:
-        for full_line in mcserver.stdout:
-            if full_line.index('[INFO] Done') >= 0:
-                break
-        time.sleep(0.01)
+    for full_line in mcserver.stdout:
+        if full_line.find(b'[INFO] Done') >= 0:
+            break
+    time.sleep(0.01)
 
     # start test
     url = (
@@ -140,25 +154,30 @@ def run_test(mineflayer_exe, server_path, test_js):
         '--url', 
         '%s@%s:%i' % url,
         test_js,
-    ])
+    ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     mf_stdout, mf_stderr = mf.communicate()
+
+    mf_stdout = mf_stdout.decode('utf8')
+    mf_stderr = mf_stderr.decode('utf8')
 
     if mcserver.poll() is not None:
         return 'C', 'Server crashed'
 
+    # stop server
+    mcserver.stdin.write(b'stop\n')
+    mcserver.stdin.flush()
+    mcserver.wait()
+
     if mf.returncode != 0:
-        return 'E', mf_stderr
+        return 'E', "Return code: %i\n%s" % (mf.returncode, mf_stderr)
 
     if len(mf_stderr) != 0:
         return 'E', mf_stderr
 
     if mf_stdout != expected_stdout:
         return 'F', mf_stdout
-
-    # stop server
-    mcserver.terminate()
-    mcserver.wait()
-
+    
+    return '.', None
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:

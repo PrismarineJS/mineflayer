@@ -96,3 +96,9 @@ Documentation:
     ECMAScript reference:
         http://doc.qt.nokia.com/latest/ecmascript.html
 
+Running the test suite:
+
+    Command will look something like:
+
+    $ cd mineflayer-script
+    $ LD_LIBRARY_PATH=../../mineflayer-build-desktop/mineflayer-core bin/run_tests ~/apps/minecraft-server-1.5/minecraft_server.jar ../../mineflayer-build-desktop/mineflayer-script/mineflayer
