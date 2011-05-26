@@ -35,7 +35,7 @@ def print_usage():
     print("""
 Usage:
 
-%(exe)s %(server_name)s mineflayer_exe
+%(exe)s %(server_name)s mineflayer_exe [test1.js, [test2.js, ...]]
 """ % context)
 
 def superwalk(folder):
@@ -58,11 +58,9 @@ def clean_folder(path):
             except OSError:
                 pass
 
-def main(src_server_jar, mineflayer_exe):
+def main(src_server_jar, mineflayer_exe, _tests=None):
     print("Loading test suite...")
 
-    # get a list of tests to run
-    tests = superwalk(base_test_folder)
     def get_test(testfile):
         expected_out = ''
         expected_out_file = "%s.out" % testfile
@@ -72,7 +70,12 @@ def main(src_server_jar, mineflayer_exe):
         except IOError:
             print("Warning: missing %s" % expected_out_file)
         return testfile, expected_out
-    tests = [get_test(t) for t in tests if t.endswith('.js')]
+    if _tests is None:
+        # get a list of tests to run
+        tests = superwalk(base_test_folder)
+        tests = [get_test(t) for t in tests if t.endswith('.js')]
+    else:
+        tests = [get_test(t) for t in _tests]
     if len(tests) == 0:
         print("No tests to run.")
         return
@@ -149,12 +152,18 @@ def run_test(mineflayer_exe, server_path, test_js, expected_stdout):
         'localhost',
         test_port,
     )
-    mf = subprocess.Popen([
-        mineflayer_exe, 
-        '--url', 
-        '%s@%s:%i' % url,
-        test_js,
-    ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    lib_folders = [
+        absolute(os.path.join('..', 'lib')),
+        absolute(os.path.join('..', 'examples')),
+    ]
+    args = []
+    args.append(mineflayer_exe)
+    args += ['-I%s' % lib for lib in lib_folders]
+    args.append('--url')
+    args.append('%s@%s:%i' % url)
+    args.append(test_js)
+
+    mf = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     mf_stdout, mf_stderr = mf.communicate()
 
     mf_stdout = mf_stdout.decode('utf8')
@@ -180,11 +189,16 @@ def run_test(mineflayer_exe, server_path, test_js, expected_stdout):
     return '.', None
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
+    if len(sys.argv) < 3:
         print_usage()
         sys.exit(1)
 
     server_jar = sys.argv[1]
     mineflayer_exe = sys.argv[2]
 
-    main(server_jar, mineflayer_exe)
+    if len(sys.argv) > 3:
+        tests = sys.argv[3:]
+    else:
+        tests = None
+
+    main(server_jar, mineflayer_exe, tests)

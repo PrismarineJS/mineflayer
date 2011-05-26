@@ -1,6 +1,5 @@
-
 mf.include("assert.js");
-mf.include("path_finder.js");
+mf.include("a_star.js");
 mf.include("arrays.js");
 
 /**
@@ -9,9 +8,9 @@ mf.include("arrays.js");
  * The solution is [5, 4, 3, 2, 1, 0].
  */
 function test_linear() {
-    var path = path_finder.findPath({
+    var path = a_star.findPath({
         "start": 5,
-        "end": 0,
+        "is_end_func": function(n) { return n === 0; },
         "equator_func": function(a, b) { return a === b; },
         "neighbor_func": function(x) { return [x - 1, x + 1]; },
         "distance_func": function(a, b) { return 1; },
@@ -50,9 +49,9 @@ var rectilinear_distance = function(a, b) {
  */
 function test_plane(size) {
     var end = [0, 0];
-    var path = path_finder.findPath({
+    var path = a_star.findPath({
         "start": [size, size],
-        "end": end,
+        "is_end_func": function(n) {return n[0] === end[0] && n[1] === end[1];},
         "equator_func": function(a, b) { return a.equals(b); },
         "neighbor_func": planar_neighbors,
         "distance_func": euclidean_distance,
@@ -93,9 +92,9 @@ function test_maze(maze, node_count) {
     }
     assert.isTrue(end !== undefined);
 
-    var path = path_finder.findPath({
+    var path = a_star.findPath({
         "start": start,
-        "end": end,
+        "is_end_func": function(n) {return n[0] === end[0] && n[1] === end[1];},
         "equator_func": function(a, b) { return a.equals(b); },
         "neighbor_func": function(xy) {
             return planar_neighbors(xy).filtered(function(xy) {
