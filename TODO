@@ -59,14 +59,12 @@ Tests that need to be written:
  * test for player tracker
  * test for sending and receiving chat
  * test animation detection
- * test respawning
  * test small chests, large chests, dispenser, furnace
  * test jumping up a block
  * test signs
  * test time of day
  * test sleeping in a bed
  * test health knowledge
- * test mf.blockAt
  * test looking in a direction
  * test shooting an arrow
  * test killing an entity

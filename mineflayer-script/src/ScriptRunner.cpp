@@ -249,6 +249,7 @@ void ScriptRunner::dispatchTimeout()
         delete timer;
     }
     tf.function.call(tf.this_ref);
+    checkEngine("dispatching timeout");
 }
 
 QScriptValue ScriptRunner::setTimeout(QScriptContext *context, QScriptEngine *engine)

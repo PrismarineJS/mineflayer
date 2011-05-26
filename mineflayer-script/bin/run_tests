@@ -164,10 +164,14 @@ def run_test(mineflayer_exe, server_path, test_js, expected_stdout):
     args.append(test_js)
 
     mf = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    mf_stdout, mf_stderr = mf.communicate()
+    try:
+        mf_stdout, mf_stderr = mf.communicate()
 
-    mf_stdout = mf_stdout.decode('utf8')
-    mf_stderr = mf_stderr.decode('utf8')
+        mf_stdout = mf_stdout.decode('utf8')
+        mf_stderr = mf_stderr.decode('utf8')
+        interrupted = False
+    except KeyboardInterrupt:
+        interrupted = True
 
     if mcserver.poll() is not None:
         return 'C', 'Server crashed'
@@ -176,6 +180,9 @@ def run_test(mineflayer_exe, server_path, test_js, expected_stdout):
     mcserver.stdin.write(b'stop\n')
     mcserver.stdin.flush()
     mcserver.wait()
+
+    if interrupted:
+        return 'I', "Test interrupted with Ctrl+C"
 
     if mf.returncode != 0:
         return 'E', "Return code: %i\n%s" % (mf.returncode, mf_stderr)
