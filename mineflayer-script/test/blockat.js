@@ -1,3 +1,7 @@
+mf.setTimeout(function() {
+    mf.print("Test timed out.");
+    mf.exit();
+}, 5000);
 mf.onSpawn(function() {
     // set timeout to wait for blocks to load...
     mf.setTimeout(function(){
