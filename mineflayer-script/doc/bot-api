@@ -170,6 +170,12 @@ mf.WindowType
  */
 mf.MouseButton
 
+/**
+ * Members:
+ *      Normal
+ *      Nether
+ */ 
+mf.Dimension
 
 
 // Methods
@@ -517,8 +523,9 @@ mf.onSignUpdated(function(location, text) {...})
 
 /**
  * Called when you spawn. Happens after connecting and after respawning after death.
+ * @param {mf.Dimension} world Either mf.Dimension.Normal or mf.Dimension.Nether.
  */
-mf.onSpawn(function() {...})
+mf.onSpawn(function(dimension) {...})
 
 /**
  * Called when you move. See also self().

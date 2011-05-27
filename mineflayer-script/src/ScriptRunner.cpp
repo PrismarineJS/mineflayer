@@ -978,6 +978,17 @@ QScriptValue ScriptRunner::uniqueWindowItem(QScriptContext *context, QScriptEngi
     return me->jsItem(mineflayer_uniqueWindowItem(me->m_game, slot_id));
 }
 
+QScriptValue ScriptRunner::dimension(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+
+    QScriptValue error;
+    if (!me->argCount(context, error, 0))
+        return error;
+
+    return mineflayer_currentDimension(me->m_game);
+}
+
 QScriptValue ScriptRunner::setPosition(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
@@ -1154,9 +1165,9 @@ void ScriptRunner::handlePlayerDied()
 {
     raiseEvent("onDeath");
 }
-void ScriptRunner::handlePlayerSpawned()
+void ScriptRunner::handlePlayerSpawned(int world)
 {
-    raiseEvent("onSpawn");
+    raiseEvent("onSpawn", QScriptValueList() << world);
 }
 
 void ScriptRunner::handleChatReceived(QString username, QString message)
@@ -1291,10 +1302,10 @@ void ScriptRunner::playerDied(void * context)
     Q_ASSERT(success);
 }
 
-void ScriptRunner::playerSpawned(void * context)
+void ScriptRunner::playerSpawned(void * context, int world)
 {
     ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    bool success = QMetaObject::invokeMethod(runner, "handlePlayerSpawned");
+    bool success = QMetaObject::invokeMethod(runner, "handlePlayerSpawned", Q_ARG(int, world));
     Q_ASSERT(success);
 }
 

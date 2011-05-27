@@ -78,7 +78,7 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
     case Message::BlockChange: return new BlockChangeResponse;
     case Message::PlayNoteBlock: return new PlayNoteBlockResponse;
     case Message::InvalidBed: return new InvalidBedResponse;
-    case Message::Weather: return new WeatherResponse;
+    case Message::LightningBolt: return new LightningBoltResponse;
     case Message::Explosion: return new ExplosionResponse;
     case Message::OpenWindow: return new OpenWindowResponse;
     case Message::CloseWindow: return new CloseWindowResponse;
@@ -89,7 +89,8 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
     case Message::UpdateSign: return new UpdateSignResponse;
     case Message::IncrementStatistic: return new IncrementStatisticResponse;
     case Message::DisconnectOrKick: return new DisconnectOrKickResponse;
-
+    case Message::DoorChange: return new DoorChangeResponse;
+    case Message::MapData: return new MapDataResponse;
 
     case Message::Player:
     case Message::PlayerPosition:

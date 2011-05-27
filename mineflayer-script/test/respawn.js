@@ -3,7 +3,7 @@ var diedYet = false;
 mf.setTimeout(function() {
     mf.print("Test timed out.\n");
     mf.exit();
-}, 4000);
+}, 8000);
 
 mf.onDeath(function() {
     diedYet = true;
@@ -18,7 +18,9 @@ mf.onSpawn(function() {
         mf.print("I have respawned.\n");
         mf.exit();
     } else {
-        mf.print("I have spawned, killing myself.\n");
-        mf.chat("/kill");
+        mf.setTimeout(function() {
+            mf.print("I have spawned, killing myself.\n");
+            mf.chat("/kill");
+        }, 4000);
     }
 });

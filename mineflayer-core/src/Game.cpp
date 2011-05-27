@@ -59,7 +59,8 @@ Game::Game(QUrl connection_info) :
     m_next_action_id(0),
     m_equipped_slot_id(0),
     m_open_window_id(-1),
-    m_need_to_emit_window_opened(false)
+    m_need_to_emit_window_opened(false),
+    m_player_dimension(mineflayer_NormalDimension)
 {
     Item::initializeStaticData();
 
@@ -189,10 +190,10 @@ void Game::respawn()
 {
     QMutexLocker locker(&m_mutex);
     Q_ASSERT(m_player_health == 0);
-    m_server.sendRespawnRequest();
+    m_server.sendRespawnRequest(m_player_dimension);
 
     // assume this always works for now
-    emit playerSpawned();
+    emit playerSpawned(m_player_dimension);
 }
 
 void Game::start()
@@ -374,7 +375,7 @@ void Game::handlePlayerPositionAndLookUpdated(mineflayer_EntityPosition position
         success = connect(m_position_update_timer, SIGNAL(timeout()), this, SLOT(sendPosition()));
         Q_ASSERT(success);
         m_position_update_timer->start();
-        emit playerSpawned();
+        emit playerSpawned(m_player_dimension);
     }
     emit playerPositionUpdated();
 }
@@ -529,6 +530,7 @@ void Game::handleUnloadChunk(const Int3D &coord)
 void Game::handleMapChunkUpdated(QSharedPointer<Chunk>update)
 {
     QMutexLocker locker(&m_mutex);
+
     // update can be smaller than a full size chunk, and can exceed the bounds of a chunk.
     Int3D update_position = update.data()->position();
     Int3D chunk_position = chunkKey(update_position);
@@ -1371,5 +1373,10 @@ Item Game::uniqueWindowItem(int slot_id) const
     Q_ASSERT(m_open_window_id != -1);
 
     return m_unique_slots.at(slot_id);
+}
+
+void Game::handleRespawn(mineflayer_Dimension world)
+{
+    m_player_dimension = world;
 }
 

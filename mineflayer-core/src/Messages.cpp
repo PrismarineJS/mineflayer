@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-const qint32 OutgoingRequest::c_protocol_version = 11;
+const qint32 OutgoingRequest::c_protocol_version = 13;
 
 void OutgoingRequest::writeToStream(QDataStream &stream)
 {
@@ -96,6 +96,11 @@ void UseEntityRequest::writeMessageBody(QDataStream &stream)
     writeValue(stream, self_entity_id);
     writeValue(stream, target_entity_id);
     writeValue(stream, left_click);
+}
+
+void RespawnRequest::writeMessageBody(QDataStream &stream)
+{
+    writeValue(stream, world);
 }
 
 void PlayerPositionAndLookRequest::writeMessageBody(QDataStream &stream)
@@ -277,6 +282,17 @@ int IncomingResponse::parseStringUtf8(QByteArray buffer, int index, QString &val
     index += length;
     return index;
 }
+int IncomingResponse::parseStringAscii(QByteArray buffer, int index, QString &value)
+{
+    qint8 length;
+    if ((index = parseValue(buffer, index, length)) == -1)
+        return -1;
+    if (!(index + length <= buffer.size()))
+        return -1;
+    value = QString::fromUtf8(buffer.mid(index, length).constData(), length);
+    index += length;
+    return index;
+}
 int IncomingResponse::parseValue(QByteArray buffer, int index, Item &item)
 {
     qint16 tmp;
@@ -406,9 +422,11 @@ int UpdateHealthResponse::parse(QByteArray buffer)
     return index;
 }
 
-int RespawnResponse::parse(QByteArray)
+int RespawnResponse::parse(QByteArray buffer)
 {
     int index = 1;
+    if ((index = parseValue(buffer, index, world)) == -1)
+        return -1;
     return index;
 }
 
@@ -589,6 +607,18 @@ int AddObjectOrVehicleResponse::parse(QByteArray buffer)
         return -1;
     if ((index = parseValue(buffer, index, pixels_z)) == -1)
         return -1;
+
+    if ((index = parseValue(buffer, index, unknown_flag)) == -1)
+        return -1;
+    if (unknown_flag == 0)
+        return index;
+    if ((index = parseValue(buffer, index, unknown_x)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, unknown_y)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, unknown_z)) == -1)
+        return -1;
+
     return index;
 }
 
@@ -890,6 +920,22 @@ int PlayNoteBlockResponse::parse(QByteArray buffer)
     return index;
 }
 
+int DoorChangeResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, unknown_1)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, unknown_x)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, unknown_y)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, unknown_z)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, unknown_2)) == -1)
+        return -1;
+    return index;
+}
+
 int InvalidBedResponse::parse(QByteArray buffer)
 {
     int index = 1;
@@ -1028,6 +1074,18 @@ int UpdateSignResponse::parse(QByteArray buffer)
     return index;
 }
 
+int MapDataResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, unknown_1)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, unknown_2)) == -1)
+        return -1;
+    if ((index = parseStringAscii(buffer, index, text)) == -1)
+        return -1;
+    return index;
+}
+
 int IncrementStatisticResponse::parse(QByteArray buffer)
 {
     int index = 1;
@@ -1046,12 +1104,12 @@ int DisconnectOrKickResponse::parse(QByteArray buffer)
     return index;
 }
 
-int WeatherResponse::parse(QByteArray buffer)
+int LightningBoltResponse::parse(QByteArray buffer)
 {
     int index = 1;
     if ((index = parseValue(buffer, index, entity_id)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, raining)) == -1)
+    if ((index = parseValue(buffer, index, always_true)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, x)) == -1)
         return -1;
@@ -1062,4 +1120,3 @@ int WeatherResponse::parse(QByteArray buffer)
 
     return index;
 }
-

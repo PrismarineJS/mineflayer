@@ -14,6 +14,7 @@ namespace MetaTypes {
         qRegisterMetaType<mineflayer_AnimationType>("mineflayer_AnimationType");
         qRegisterMetaType<mineflayer_WindowType>("mineflayer_WindowType");
         qRegisterMetaType<mineflayer_Int3D>("mineflayer_Int3D");
+        qRegisterMetaType<mineflayer_Dimension>("mineflayer_Dimension");
     }
 }
 

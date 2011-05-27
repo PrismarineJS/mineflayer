@@ -131,3 +131,7 @@ mf.MouseButton = {
     "Left":         false,
     "Right":        true,
 };
+mf.Dimension = {
+    "Normal":   0,
+    "Nether":   -1,
+}

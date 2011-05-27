@@ -94,9 +94,9 @@ void Server::sendChat(QString message)
 {
     sendMessage(QSharedPointer<OutgoingRequest>(new ChatRequest(message)));
 }
-void Server::sendRespawnRequest()
+void Server::sendRespawnRequest(int world)
 {
-    sendMessage(QSharedPointer<OutgoingRequest>(new RespawnRequest));
+    sendMessage(QSharedPointer<OutgoingRequest>(new RespawnRequest(world)));
 }
 void Server::sendDiggingStatus(Message::DiggingStatus status, const Int3D &coord)
 {
@@ -485,6 +485,11 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             Int3D position = fromNotchianIntMeters(Int3D(message->meters_x, message->meters_y, message->meters_z));
             QString text = message->line_1 + "\n" + message->line_2 + "\n" + message->line_3 + "\n" + message->line_4;
             emit signUpdated(position, text);
+            break;
+        }
+        case Message::Respawn: {
+            RespawnResponse * message = (RespawnResponse *) incomingMessage.data();
+            emit respawned(message->world);
             break;
         }
         default: {

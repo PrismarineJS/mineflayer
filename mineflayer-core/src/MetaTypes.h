@@ -27,6 +27,7 @@ namespace CoreMetaTypes {
         qRegisterMetaType<mineflayer_AnimationType>("mineflayer_AnimationType");
         qRegisterMetaType<mineflayer_WindowType>("mineflayer_WindowType");
         qRegisterMetaType<QVector<Item> >("QVector<Item>");
+        qRegisterMetaType<mineflayer_Dimension>("mineflayer_Dimension");
     }
 }
 

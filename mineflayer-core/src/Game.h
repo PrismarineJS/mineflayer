@@ -85,6 +85,8 @@ public:
     // this one is cheating
     void setPlayerPosition(const Double3D & pt);
 
+    mineflayer_Dimension dimension() const { return m_player_dimension; }
+
 
     static const float c_standard_gravity; // m/s/s
 
@@ -104,7 +106,7 @@ signals:
     void playerPositionUpdated();
     void playerHealthUpdated();
     void playerDied();
-    void playerSpawned();
+    void playerSpawned(int world);
     void stoppedDigging(mineflayer_StoppedDiggingReason reason);
     void loginStatusUpdated(mineflayer_LoginStatus status);
 
@@ -200,6 +202,8 @@ private:
     QWaitCondition m_click_wait_condition;
     bool m_click_success;
 
+    mineflayer_Dimension m_player_dimension;
+
 private:
     static Int3D chunkKey(const Int3D & coord);
 
@@ -248,6 +252,8 @@ private slots:
     void handleHoldingChange(int slot_id);
     void handleTransaction(int window_id, int action_id, bool accepted);
     void handleOpenWindow(int window_id, mineflayer_WindowType inventory_type, int number_of_slots);
+
+    void handleRespawn(mineflayer_Dimension world);
 
     void sendPosition();
     void animateDigging();

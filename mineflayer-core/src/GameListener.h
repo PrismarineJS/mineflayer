@@ -34,7 +34,7 @@ public slots:
     void playerPositionUpdated();
     void playerHealthUpdated();
     void playerDied();
-    void playerSpawned();
+    void playerSpawned(int world);
     void stoppedDigging(mineflayer_StoppedDiggingReason reason);
     void loginStatusUpdated(mineflayer_LoginStatus status);
 

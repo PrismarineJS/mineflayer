@@ -36,7 +36,7 @@ GameListener::GameListener(Game * _game, bool auto_physics, QObject *parent) :
     Q_ASSERT(success);
     success = connect(game, SIGNAL(playerDied()), this, SLOT(playerDied()));
     Q_ASSERT(success);
-    success = connect(game, SIGNAL(playerSpawned()), this, SLOT(playerSpawned()));
+    success = connect(game, SIGNAL(playerSpawned(int)), this, SLOT(playerSpawned(int)));
     Q_ASSERT(success);
     success = connect(game, SIGNAL(stoppedDigging(mineflayer_StoppedDiggingReason)), this, SLOT(stoppedDigging(mineflayer_StoppedDiggingReason)));
     Q_ASSERT(success);
@@ -186,12 +186,12 @@ void GameListener::playerDied()
     s_cb.playerDied(context);
 }
 
-void GameListener::playerSpawned()
+void GameListener::playerSpawned(int world)
 {
     if (s_cb.playerSpawned == NULL)
         return;
 
-    s_cb.playerSpawned(context);
+    s_cb.playerSpawned(context, world);
 }
 
 void GameListener::stoppedDigging(mineflayer_StoppedDiggingReason reason)

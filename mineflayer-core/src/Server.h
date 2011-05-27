@@ -62,6 +62,7 @@ signals:
     void transaction(int window_id, int action_id, bool accepted);
     void openWindow(int window_id, mineflayer_WindowType inventory_type, int number_of_slots);
     void signUpdated(Int3D position, QString text);
+    void respawned(int world);
 
 public slots:
     // actually connect to the server
@@ -71,7 +72,7 @@ public:
     void sendPositionAndLook(mineflayer_EntityPosition positionAndLook);
     // sends a chat message. can start with '/' to be a command.
     void sendChat(QString message);
-    void sendRespawnRequest();
+    void sendRespawnRequest(int world);
     void sendDiggingStatus(Message::DiggingStatus status, const Int3D & coord);
     void sendBlockPlacement(const Int3D & coord, mineflayer_BlockFaceDirection face, Item block);
     void sendClickEntity(int self_entity_id, int target_entity_id, bool right_click);

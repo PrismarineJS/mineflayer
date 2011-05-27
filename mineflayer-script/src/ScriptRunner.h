@@ -142,6 +142,8 @@ private:
     static QScriptValue inventoryItem(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue uniqueWindowItem(QScriptContext * context, QScriptEngine * engine);
 
+    static QScriptValue dimension(QScriptContext * context, QScriptEngine * engine);
+
 
     // hax functions
     static QScriptValue setPosition(QScriptContext * context, QScriptEngine * engine);
@@ -170,7 +172,7 @@ private slots: // non-static callbacks
     void handlePlayerHealthUpdated();
     void handleInventoryUpdated();
     void handlePlayerDied();
-    void handlePlayerSpawned();
+    void handlePlayerSpawned(int world);
     void handleChatReceived(QString username, QString message);
     void handleNonSpokenChatReceived(QString message);
     void handleTimeUpdated(double seconds);
@@ -195,7 +197,7 @@ private: // static callbacks
     static void playerPositionUpdated(void * context);
     static void playerHealthUpdated(void * context);
     static void playerDied(void * context);
-    static void playerSpawned(void * context);
+    static void playerSpawned(void * context, int world);
     static void stoppedDigging(void * context, mineflayer_StoppedDiggingReason reason);
     static void loginStatusUpdated(void * context, mineflayer_LoginStatus status);
 

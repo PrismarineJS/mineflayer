@@ -53,8 +53,9 @@ public:
         MultiBlockChange=0x34,
         BlockChange=0x35,
         PlayNoteBlock=0x36,
+        DoorChange=0x3D,
         InvalidBed=0x46,
-        Weather=0x47,
+        LightningBolt=0x47,
         Explosion=0x3C,
         OpenWindow=0x64,
         CloseWindow=0x65,
@@ -64,6 +65,7 @@ public:
         UpdateProgressBar=0x69,
         Transaction=0x6A,
         UpdateSign=(qint8)0x82,
+        MapData=(qint8)0x83,
         IncrementStatistic=(qint8)0xC8,
         DisconnectOrKick=(qint8)0xFF,
     };
@@ -140,8 +142,9 @@ public:
 
 class RespawnRequest : public OutgoingRequest {
 public:
-    RespawnRequest() : OutgoingRequest(Respawn) {}
-    virtual void writeMessageBody(QDataStream &) {}
+    qint8 world;
+    RespawnRequest(qint8 _world) : OutgoingRequest(Respawn), world(_world) {}
+    virtual void writeMessageBody(QDataStream &);
 };
 
 class PlayerPositionAndLookRequest : public OutgoingRequest {
@@ -271,6 +274,7 @@ protected:
     static int parseValue(QByteArray buffer, int index, double &value);
     static int parseValue(QByteArray buffer, int index, QString &value);
     static int parseStringUtf8(QByteArray buffer, int index, QString &value);
+    static int parseStringAscii(QByteArray buffer, int index, QString &value);
     static int parseValue(QByteArray buffer, int index, Item &item);
     static int parseValue(QByteArray buffer, int index, QByteArray &value);
 };
@@ -355,6 +359,7 @@ public:
 
 class RespawnResponse : public IncomingResponse {
 public:
+    qint8 world;
     RespawnResponse() : IncomingResponse(Respawn) {}
     virtual int parse(QByteArray buffer);
 };
@@ -488,6 +493,12 @@ public:
     qint32 pixels_x;
     qint32 pixels_y;
     qint32 pixels_z;
+
+    qint32 unknown_flag;
+    qint16 unknown_x;
+    qint16 unknown_y;
+    qint16 unknown_z;
+
     AddObjectOrVehicleResponse() : IncomingResponse(AddObjectOrVehicle) {}
     virtual int parse(QByteArray buffer);
 };
@@ -522,10 +533,10 @@ class Unknown1BResponse : public IncomingResponse {
 public:
     float unknown_1;
     float unknown_2;
-    float unknown_3;
-    float unknown_4;
-    bool unknown_5;
-    bool unknown_6;
+    bool unknown_3;
+    bool unknown_4;
+    float unknown_5;
+    float unknown_6;
     Unknown1BResponse() : IncomingResponse(Unknown1B) {}
     virtual int parse(QByteArray buffer);
 };
@@ -687,6 +698,17 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class DoorChangeResponse : public IncomingResponse {
+public:
+    qint32 unknown_1;
+    qint32 unknown_x;
+    qint8 unknown_y;
+    qint32 unknown_z;
+    qint32 unknown_2;
+    DoorChangeResponse() : IncomingResponse(DoorChange) {}
+    virtual int parse(QByteArray buffer);
+};
+
 class InvalidBedResponse : public IncomingResponse {
 public:
     qint8 reason;
@@ -715,12 +737,12 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
-class WeatherResponse : public IncomingResponse {
+class LightningBoltResponse : public IncomingResponse {
 public:
     qint32 entity_id;
-    bool raining;
+    bool always_true;
     qint32 x, y, z;
-    WeatherResponse() : IncomingResponse(Weather) {}
+    LightningBoltResponse() : IncomingResponse(LightningBolt) {}
     virtual int parse(QByteArray buffer);
 };
 
@@ -779,6 +801,15 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class MapDataResponse : public IncomingResponse {
+public:
+    qint16 unknown_1;
+    qint16 unknown_2;
+    QString text;
+    MapDataResponse() : IncomingResponse(MapData) {}
+    virtual int parse(QByteArray buffer);
+};
+
 class IncrementStatisticResponse : public IncomingResponse {
 public:
     qint32 statistic_id;
@@ -793,5 +824,7 @@ public:
     DisconnectOrKickResponse() : IncomingResponse(DisconnectOrKick) {}
     virtual int parse(QByteArray buffer);
 };
+
+
 
 #endif // MESSAGES_H

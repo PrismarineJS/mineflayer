@@ -275,3 +275,9 @@ void mineflayer_setJesusModeEnabled(bool value) {
 float mineflayer_getStandardGravity() {
     return Game::c_standard_gravity;
 }
+
+mineflayer_Dimension mineflayer_currentDimension(mineflayer_GamePtr _game)
+{
+    Game * game = (reinterpret_cast<GameListener *>(_game))->game;
+    return game->dimension();
+}
