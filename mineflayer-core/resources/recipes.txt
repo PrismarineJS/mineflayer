@@ -807,3 +807,23 @@ Bed
 1=Wool
 2=WoodenPlank
 
+PoweredRail:6
+1 1
+121
+131
+1=GoldIngot
+2=Stick
+3=Redstone
+
+DetectorRail:6
+1 1
+121
+131
+1=IronIngot
+2=StonePressurePlate
+3=Redstone
+
+Trapdoor:2
+111
+111
+1=WoodenPlank

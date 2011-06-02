@@ -35,6 +35,11 @@
 0x18    Sandstone                   64  1   0   1   1   0   0   0.8 Stone
 0x19    NoteBlock                   64  1   0   1   1   1   0   0.8 Wood
 0x1A    Bed_placed                  1   1   0   1   1   1   0   0.2 Wool
+0x1B    PoweredRail                 64  1   0   0   1   0   1   0.7 Redstone
+0x1C    DetectorRail                64  1   0   0   1   0   1   0.7 Redstone
+0x1E    Cobweb                      64  1   0   1   1   0   0   0   Wool
+0x1F    TallGrass                   64  1   0   0   1   0   1   0   Crops
+0x20    DeadShrub                   64  1   0   0   1   0   1   0   Crops
 0x23    Wool                        64  1   0   1   1   0   0   0.8 Wool
 0x25    YellowFlower                64  1   0   0   1   0   1   0.0 Crops
 0x26    RedRose                     64  1   0   0   1   0   1   0.0 Crops
@@ -94,6 +99,7 @@
 0x5C    Cake_placed                 1   1   0   1   1   1   0   0.5 Cake
 0x5D    RedstoneRepeaterOff_placed  64  1   0   1   1   1   1   0.0 Redstone
 0x5E    RedstoneRepeaterOn_placed   64  1   0   1   1   1   1   0.0 Redstone
+0x60    Trapdoor                    64  1   0   1   1   1   0   3   Wood
 
 # items
 0x100   IronShovel                  1   0   0   0   1   0   1   0   Iron
