@@ -4,11 +4,12 @@
 #
 #-------------------------------------------------
 
-QT += core \
-    network
-
 TARGET = mineflayer-core
 TEMPLATE = lib
+
+# We only need these two so disable the gui
+CONFIG += qt
+QT = core network
 
 DEFINES += MINEFLAYERCORE_LIBRARY
 
