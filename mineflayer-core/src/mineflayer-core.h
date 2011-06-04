@@ -446,7 +446,12 @@ typedef struct {
 // auto_physics_loop: boolean, whether or not to call doPhysics for you automatically. if you set this to false,
 // you need to call doPhysics as often as possible. (20 fps is fine)
 MINEFLAYER_EXPORT mineflayer_GamePtr mineflayer_createGame(mineflayer_Url url, mineflayer_bool auto_physics_loop);
+// Same as above with auto_physics_loop set to true, you can also use doCallbacks now.
+MINEFLAYER_EXPORT mineflayer_GamePtr mineflayer_createGamePullCallbacks(mineflayer_Url url, mineflayer_Callbacks callbacks, void * context);
+// This doesn't do anything if game was created with PullCallbacks
 MINEFLAYER_EXPORT void mineflayer_setCallbacks(mineflayer_GamePtr game, mineflayer_Callbacks callbacks, void * context);
+
+MINEFLAYER_EXPORT void mineflayer_doCallbacks(mineflayer_GamePtr game);
 
 MINEFLAYER_EXPORT void mineflayer_destroyGame(mineflayer_GamePtr game);
 MINEFLAYER_EXPORT void mineflayer_destroyEntity(mineflayer_Entity * mineflayer_entity);
@@ -454,6 +459,9 @@ MINEFLAYER_EXPORT void mineflayer_destroyUtf8(mineflayer_Utf8 utf8);
 MINEFLAYER_EXPORT void mineflayer_destroyItemIdList(int * item_id_list);
 
 MINEFLAYER_EXPORT void mineflayer_start(mineflayer_GamePtr game);
+
+// call often
+MINEFLAYER_EXPORT void mineflayer_doCallbacks(mineflayer_GamePtr game);
 
 // call every frame passing it the amount of time since the last frame
 MINEFLAYER_EXPORT void mineflayer_doPhysics(mineflayer_GamePtr game, float delta_seconds);
