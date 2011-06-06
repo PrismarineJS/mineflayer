@@ -365,67 +365,27 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::MapChunk: {
             MapChunkResponse * message = (MapChunkResponse *) incomingMessage.data();
 
-            // determin the size of the chunk
-            Int3D notchian_size;
-            notchian_size.x = message->size_x_minus_one + 1;
-            notchian_size.y = message->size_y_minus_one + 1;
-            notchian_size.z = message->size_z_minus_one + 1;
-            Int3D rotated_size = fromNotchianIntMetersWithoutOffByOneCorrection(notchian_size);
-            Int3D positive_size;
-            positive_size.x = Util::abs(rotated_size.x);
-            positive_size.y = Util::abs(rotated_size.y);
-            positive_size.z = Util::abs(rotated_size.z);
-            int volume = positive_size.x * positive_size.y * positive_size.z;
-
-            // determin the position of the chunk
-            Int3D rotated_size_minus_positive_size = rotated_size - positive_size;
-            Int3D notchian_pos(message->x, message->y, message->z);
-            Int3D rotated_position = fromNotchianIntMetersWithoutOffByOneCorrection(notchian_pos);
-            Int3D position = rotated_position + rotated_size_minus_positive_size / 2;
+            Int3D position(message->x, message->y, message->z);
+            Int3D size(message->size_x_minus_one + 1, message->size_y_minus_one + 1, message->size_z_minus_one + 1);
 
             // decompress the data
             QByteArray uncrompressable_data = message->compressed_data;
             // prepend a guess of the final size. we know the final size is volume * 2.5;
-            qint32 decompressed_size = volume * 5 / 2;
+            qint32 decompressed_size = (size.x * size.y * size.z) * 5 / 2;
             QByteArray decompressed_size_array;
             QDataStream(&decompressed_size_array, QIODevice::WriteOnly) << decompressed_size;
             uncrompressable_data.prepend(decompressed_size_array);
+            // decompress
             QByteArray decompressed = qUncompress(uncrompressable_data);
             if (decompressed.size() != decompressed_size) {
-                qWarning() << "ignoring corrupt map chunk update";
+                qWarning() << "ignoring corrupt map chunk update with start" <<
+                        position.x << position.y << position.z << "and supposed size" <<
+                        size.x << size.y << size.z << "but decompressed size of" <<
+                        decompressed.size() << "instead of" << decompressed_size;
                 return;
             }
 
-            // parse and store the data
-            Chunk * chunk = new Chunk(position, positive_size);
-            int metadata_offset = volume * 2 / 2;
-            int light_offset = volume * 3 / 2;
-            int sky_light_offest = volume * 4 / 2;
-            int array_index = 0;
-            int nibble_shifter = 0; // start with low nibble
-            Int3D notchian_relative_pos;
-            // traversal order is x,z,y in notchian coordinates
-            for (notchian_relative_pos.x = 0; notchian_relative_pos.x < notchian_size.x; notchian_relative_pos.x++) {
-                for (notchian_relative_pos.z = 0; notchian_relative_pos.z < notchian_size.z; notchian_relative_pos.z++) {
-                    for (notchian_relative_pos.y = 0; notchian_relative_pos.y < notchian_size.y; notchian_relative_pos.y++) {
-                        // grab all the fields for each block at once even though they're strewn accross the data structure.
-                        Block block;
-                        block.setType((mineflayer_ItemType)(decompressed.at(array_index) & 0xff));
-                        block.setMetadata((decompressed.at( metadata_offset + array_index / 2) >> nibble_shifter) & 0xf);
-                        block.setLight(   (decompressed.at(    light_offset + array_index / 2) >> nibble_shifter) & 0xf);
-                        block.setSkyLight((decompressed.at(sky_light_offest + array_index / 2) >> nibble_shifter) & 0xf);
-
-                        array_index++;
-                        nibble_shifter = 4 - nibble_shifter; // toggle between 0 and 4.
-
-                        Int3D notchian_absolute_pos = notchian_pos + notchian_relative_pos;
-                        Int3D absolute_pos = fromNotchianIntMeters(notchian_absolute_pos);
-                        Int3D relative_pos = absolute_pos - position;
-                        chunk->setBlock(relative_pos, block);
-                    }
-                }
-            }
-            emit mapChunkUpdated(QSharedPointer<Chunk>(chunk));
+            emit mapChunkUpdated(QSharedPointer<Chunk>(new Chunk(position, size, decompressed)));
             break;
         }
         case Message::MultiBlockChange: {

@@ -548,16 +548,17 @@ void Game::handleMapChunkUpdated(QSharedPointer<Chunk>update)
             // ignore initialization garbage fragments
             return;
         }
-        chunk = QSharedPointer<Chunk>(new Chunk(chunk_position, c_chunk_size));
-        m_chunks.insert(chunk_position, chunk);
+        // we'll take the whole thing
+        m_chunks.insert(chunk_position, update);
+    } else {
+        // update part of a chunk
+        Int3D chunk_to_update = update_position - chunk_position;
+        Int3D update_offset, chunk_offset;
+        for (update_offset.x = 0, chunk_offset.x = chunk_to_update.x; update_offset.x < update_size.x; update_offset.x++, chunk_offset.x++)
+            for (update_offset.y = 0, chunk_offset.y = chunk_to_update.y; update_offset.y < update_size.y; update_offset.y++, chunk_offset.y++)
+                for (update_offset.z = 0, chunk_offset.z = chunk_to_update.z; update_offset.z < update_size.z; update_offset.z++, chunk_offset.z++)
+                    chunk.data()->setBlock(chunk_offset, update.data()->getBlock(update_offset));
     }
-    Int3D chunk_to_update = update_position - chunk_position;
-    Int3D update_offset, chunk_offset;
-    for (update_offset.x = 0, chunk_offset.x = chunk_to_update.x; update_offset.x < update_size.x; update_offset.x++, chunk_offset.x++)
-        for (update_offset.y = 0, chunk_offset.y = chunk_to_update.y; update_offset.y < update_size.y; update_offset.y++, chunk_offset.y++)
-            for (update_offset.z = 0, chunk_offset.z = chunk_to_update.z; update_offset.z < update_size.z; update_offset.z++, chunk_offset.z++)
-                chunk.data()->setBlock(chunk_offset, update.data()->getBlock(update_offset));
-
     emit chunkUpdated(update_position, update_size);
 }
 void Game::handleMultiBlockUpdate(Int3D chunk_key, QHash<Int3D, Block> new_blocks)

@@ -12,7 +12,7 @@
 
 class Chunk {
 public:
-    Chunk(const Int3D & pos, const Int3D & size);
+    Chunk(const Int3D &pos, const Int3D &size, QByteArray data);
 
     Block getBlock(const Int3D & coord) const;
     void setBlock(const Int3D & coord, const Block & value);
@@ -21,9 +21,13 @@ public:
     Int3D size() const { return m_size; }
 
 private:
-    Int3D m_pos;
-    Int3D m_size;
-    QVector<Block> m_blocks;
+    const Int3D m_pos;
+    const Int3D m_size;
+    const int m_volume;
+    const int m_metadata_offset;
+    const int m_light_offset;
+    const int m_sky_light_offest;
+    QByteArray m_data;
 
 private:
     int indexOf(const Int3D & coord) const;
