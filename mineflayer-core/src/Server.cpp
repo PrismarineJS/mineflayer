@@ -100,15 +100,13 @@ void Server::sendRespawnRequest(int world)
 }
 void Server::sendDiggingStatus(Message::DiggingStatus status, const Int3D &coord)
 {
-    Int3D notchian_coord = toNotchianIntMeters(coord);
-    sendMessage(QSharedPointer<OutgoingRequest>(new PlayerDiggingRequest(status, notchian_coord.x, notchian_coord.y, notchian_coord.z, mineflayer_PositiveY)));
+    sendMessage(QSharedPointer<OutgoingRequest>(new PlayerDiggingRequest(status, coord.x, coord.y, coord.z, mineflayer_PositiveY)));
 }
 
 void Server::sendBlockPlacement(const Int3D &coord, mineflayer_BlockFaceDirection face, Item block)
 {
-    Int3D notchian_coord = toNotchianIntMeters(coord);
     mineflayer_BlockFaceDirection notchian_face = toNotchianFace(face);
-    sendMessage(QSharedPointer<OutgoingRequest>(new PlayerBlockPlacementRequest(notchian_coord.x, notchian_coord.y, notchian_coord.z, notchian_face, block)));
+    sendMessage(QSharedPointer<OutgoingRequest>(new PlayerBlockPlacementRequest(coord.x, coord.y, coord.z, notchian_face, block)));
 }
 
 void Server::sendClickEntity(int self_entity_id, int target_entity_id, bool right_click)
@@ -258,8 +256,10 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::PlayerPositionAndLook: {
             PlayerPositionAndLookResponse * message = (PlayerPositionAndLookResponse *) incomingMessage.data();
             mineflayer_EntityPosition position;
-            fromNotchianDoubleMeters(position, Double3D(message->x, message->y, message->z));
-            position.height = message->stance - position.pos.z;
+            position.pos.x = message->x;
+            position.pos.y = message->y;
+            position.pos.z = message->z;
+            position.height = message->stance - position.pos.y;
             fromNotchianYawPitch(position, message->yaw, message->pitch);
             position.on_ground = message->on_ground;
             emit playerPositionAndLookUpdated(position);
@@ -273,7 +273,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::NamedEntitySpawn: {
             NamedEntitySpawnResponse * message = (NamedEntitySpawnResponse *) incomingMessage.data();
             mineflayer_EntityPosition position;
-            fromNotchianIntPixels(position, Int3D(message->pixels_x, message->pixels_y, message->pixels_z));
+            fromIntPixels(position, Int3D(message->pixels_x, message->pixels_y, message->pixels_z));
             fromNotchianYawPitchBytes(position, message->yaw_out_of_256, message->pitch_out_of_256);
             emit namedPlayerSpawned(message->entity_id, message->player_name, position, message->held_item);
             break;
@@ -281,7 +281,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::PickupSpawn: {
             PickupSpawnResponse * message = (PickupSpawnResponse *) incomingMessage.data();
             mineflayer_EntityPosition position;
-            fromNotchianIntPixels(position, Int3D(message->pixels_x, message->pixels_y, message->pixels_z));
+            fromIntPixels(position, Int3D(message->pixels_x, message->pixels_y, message->pixels_z));
             fromNotchianYawPitchBytes(position, message->yaw_out_of_256, message->pitch_out_of_256);
             // ignore roll
             emit pickupSpawned(message->entity_id, message->item, position);
@@ -290,7 +290,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::MobSpawn: {
             MobSpawnResponse * message = (MobSpawnResponse *) incomingMessage.data();
             mineflayer_EntityPosition position;
-            fromNotchianIntPixels(position, Int3D(message->pixels_x, message->pixels_y, message->pixels_z));
+            fromIntPixels(position, Int3D(message->pixels_x, message->pixels_y, message->pixels_z));
             fromNotchianYawPitchBytes(position, message->yaw_out_of_256, message->pitch_out_of_256);
             emit mobSpawned(message->entity_id, message->mob_type, position);
             break;
@@ -303,7 +303,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::EntityRelativeMove: {
             EntityRelativeMoveResponse * message = (EntityRelativeMoveResponse *) incomingMessage.data();
             mineflayer_EntityPosition movement;
-            fromNotchianIntPixels(movement, Int3D(message->pixels_dx, message->pixels_dy, message->pixels_dz));
+            fromIntPixels(movement, Int3D(message->pixels_dx, message->pixels_dy, message->pixels_dz));
             emit entityMovedRelatively(message->entity_id, movement);
             break;
         }
@@ -317,7 +317,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::EntityLookAndRelativeMove: {
             EntityLookAndRelativeMoveResponse * message = (EntityLookAndRelativeMoveResponse *) incomingMessage.data();
             mineflayer_EntityPosition position;
-            fromNotchianIntPixels(position, Int3D(message->pixels_dx, message->pixels_dy, message->pixels_dz));
+            fromIntPixels(position, Int3D(message->pixels_dx, message->pixels_dy, message->pixels_dz));
             fromNotchianYawPitchBytes(position, message->yaw_out_of_256, message->pitch_out_of_256);
             emit entityLookedAndMovedRelatively(message->entity_id, position);
             break;
@@ -325,7 +325,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::EntityTeleport: {
             EntityTeleportResponse * message = (EntityTeleportResponse *) incomingMessage.data();
             mineflayer_EntityPosition position;
-            fromNotchianIntPixels(position, Int3D(message->pixels_x, message->pixels_y, message->pixels_z));
+            fromIntPixels(position, Int3D(message->pixels_x, message->pixels_y, message->pixels_z));
             emit entityMoved(message->entity_id, position);
             break;
         }
@@ -356,7 +356,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::PreChunk: {
             PreChunkResponse * message = (PreChunkResponse *) incomingMessage.data();
             if (message->mode == PreChunkResponse::Unload) {
-                emit unloadChunk(fromNotchianChunk(message->x, message->z));
+                emit unloadChunk(fromChunkCoordinates(message->x, message->z));
             } else {
                 // don't care about Load Chunk messages
             }
@@ -390,11 +390,10 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         }
         case Message::MultiBlockChange: {
             MultiBlockChangeResponse * message = (MultiBlockChangeResponse *) incomingMessage.data();
-            Int3D notchian_chunk_corner(message->chunk_x, 0, message->chunk_z);
-            Int3D chunk_corner = fromNotchianChunk(message->chunk_x, message->chunk_z);
+            Int3D chunk_corner = fromChunkCoordinates(message->chunk_x, message->chunk_z);
             QHash<Int3D, Block> new_blocks;
             for (int i = 0; i < message->block_coords.size(); i++) {
-                Int3D absolute_location = fromNotchianIntMeters(notchian_chunk_corner + message->block_coords.at(i));
+                Int3D absolute_location = chunk_corner + message->block_coords.at(i);
                 Block block(message->new_block_types.at(i), message->new_block_metadatas.at(i), 0, 0);
                 new_blocks.insert(absolute_location, block);
             }
@@ -403,9 +402,9 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         }
         case Message::BlockChange: {
             BlockChangeResponse * message = (BlockChangeResponse *) incomingMessage.data();
-            Int3D coord = fromNotchianIntMeters(Int3D(message->x, message->y, message->z));
+            Int3D position(message->x, message->y, message->z);
             Block block(message->new_block_type, message->metadata, 0, 0);
-            emit blockUpdate(coord, block);
+            emit blockUpdate(position, block);
             break;
         }
         case Message::SetSlot: {
@@ -442,7 +441,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         }
         case Message::UpdateSign: {
             UpdateSignResponse * message = (UpdateSignResponse *) incomingMessage.data();
-            Int3D position = fromNotchianIntMeters(Int3D(message->meters_x, message->meters_y, message->meters_z));
+            Int3D position(message->meters_x, message->meters_y, message->meters_z);
             QString text = message->line_1 + "\n" + message->line_2 + "\n" + message->line_3 + "\n" + message->line_4;
             emit signUpdated(position, text);
             break;
@@ -459,67 +458,16 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
     }
 }
 
-void Server::fromNotchianDoubleMeters(mineflayer_EntityPosition &destination, Double3D notchian)
+void Server::fromIntPixels(mineflayer_EntityPosition &destination, Int3D pixels)
 {
-    // east
-    destination.pos.x = -notchian.z;
-    // north
-    destination.pos.y = -notchian.x;
-    // up
-    destination.pos.z = notchian.y;
-}
-void Server::fromNotchianIntPixels(mineflayer_EntityPosition &destination, Int3D pixels)
-{
-    fromNotchianDoubleMeters(destination, Double3D(pixels.x / 32.0, pixels.y / 32.0, pixels.z / 32.0));
+    destination.pos.x = pixels.x / 32.0;
+    destination.pos.y = pixels.y / 32.0;
+    destination.pos.z = pixels.z / 32.0;
 }
 
-Int3D Server::fromNotchianChunk(int notchian_chunk_x, int notchian_chunk_z)
+Int3D Server::fromChunkCoordinates(int chunk_x, int chunk_z)
 {
-    // 4 * 32 = 128
-    return fromNotchianIntMeters(Int3D(notchian_chunk_x, 4, notchian_chunk_z)) * 32;
-}
-Int3D Server::fromNotchianIntMeters(Int3D notchian_xyz)
-{
-    Int3D result;
-    // east
-    result.x = -notchian_xyz.z - 1;
-    // north
-    result.y = -notchian_xyz.x - 1;
-    // up
-    result.z = notchian_xyz.y;
-    return result;
-}
-Int3D Server::fromNotchianIntMetersWithoutOffByOneCorrection(Int3D notchian_xyz)
-{
-    Int3D result;
-    // east
-    result.x = -notchian_xyz.z;
-    // north
-    result.y = -notchian_xyz.x;
-    // up
-    result.z = notchian_xyz.y;
-    return result;
-}
-
-void Server::toNotchianDoubleMeters(const mineflayer_EntityPosition &source, double &destination_notchian_x, double &destination_notchian_y, double &destination_notchian_z)
-{
-    // east
-    destination_notchian_z = -source.pos.x;
-    // north
-    destination_notchian_x = -source.pos.y;
-    // up
-    destination_notchian_y = source.pos.z;
-}
-Int3D Server::toNotchianIntMeters(const Int3D &source)
-{
-    Int3D notchian;
-    // east
-    notchian.z = -source.x - 1;
-    // north
-    notchian.x = -source.y - 1;
-    // up
-    notchian.y = source.z;
-    return notchian;
+    return Int3D(chunk_x * 32, 0, chunk_z * 32);
 }
 
 void Server::fromNotchianYawPitch(mineflayer_EntityPosition &destination, float notchian_yaw, float notchian_pitch)
@@ -546,7 +494,9 @@ mineflayer_BlockFaceDirection Server::toNotchianFace(mineflayer_BlockFaceDirecti
 void Server::sendPositionAndLook(mineflayer_EntityPosition positionAndLook)
 {
     PlayerPositionAndLookRequest * request = new PlayerPositionAndLookRequest;
-    toNotchianDoubleMeters(positionAndLook, request->x, request->y, request->z);
+    positionAndLook.pos.x = request->x;
+    positionAndLook.pos.y = request->y;
+    positionAndLook.pos.z = request->z;
     request->stance = positionAndLook.height + positionAndLook.pos.z;
     toNotchianYawPitch(positionAndLook, request->yaw, request->pitch);
     request->on_ground = positionAndLook.on_ground;

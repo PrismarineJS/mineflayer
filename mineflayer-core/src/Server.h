@@ -106,13 +106,8 @@ private:
 private:
     void changeLoginState(mineflayer_LoginStatus state);
 
-    static void fromNotchianDoubleMeters(mineflayer_EntityPosition & destination, Double3D notchian);
-    static void fromNotchianIntPixels(mineflayer_EntityPosition & destination, Int3D pixels);
-    static Int3D fromNotchianChunk(int notchian_chunk_x, int notchian_chunk_z);
-    static Int3D fromNotchianIntMeters(Int3D notchian_xyz);
-    static Int3D fromNotchianIntMetersWithoutOffByOneCorrection(Int3D notchian_xyz);
-    static void toNotchianDoubleMeters(const mineflayer_EntityPosition &source, double & destination_notchian_x, double & destination_notchian_y, double & destination_notchian_z);
-    static Int3D toNotchianIntMeters(const Int3D &source);
+    static void fromIntPixels(mineflayer_EntityPosition & destination, Int3D pixels);
+    static Int3D fromChunkCoordinates(int chunk_x, int chunk_z);
     static void fromNotchianYawPitch(mineflayer_EntityPosition & destination, float notchian_yaw, float notchian_pitch);
     static void fromNotchianYawPitchBytes(mineflayer_EntityPosition & destination, qint8 yaw_out_of_255, qint8 pitch_out_of_255);
     static void toNotchianYawPitch(const mineflayer_EntityPosition &source, float & destination_notchian_yaw, float & destination_notchian_pitch);

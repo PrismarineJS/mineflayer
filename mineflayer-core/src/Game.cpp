@@ -231,8 +231,8 @@ Block Game::blockAt(const Int3D & absolute_location)
         return c_air;
     Int3D relative_location = absolute_location - chunk_key;
     Block probable_value = chunk.data()->getBlock(relative_location);
-    if (probable_value.type() == mineflayer_AirItem && relative_location.z != 0) {
-        Block maybe_a_fence = chunk.data()->getBlock(relative_location + Int3D(0, 0, -1));
+    if (probable_value.type() == mineflayer_AirItem && relative_location.y != 0) {
+        Block maybe_a_fence = chunk.data()->getBlock(relative_location + Int3D(0, -1, 0));
         if (maybe_a_fence.type() == mineflayer_FenceItem) {
             // say that the air immediately above a fence is also a fence.
             return maybe_a_fence;
@@ -727,16 +727,16 @@ void Game::doPhysics(float delta_seconds)
         float rotation_from_input = std::atan2(movement_forward, movement_right) - Util::half_pi;
         float input_yaw = m_player.position.yaw + rotation_from_input;
         acceleration.x += std::cos(input_yaw) * m_input_acceleration;
-        acceleration.y += std::sin(input_yaw) * m_input_acceleration;
+        acceleration.z += std::sin(input_yaw) * m_input_acceleration;
     }
 
     // jumping
     if ((m_control_state.at(mineflayer_JumpControl) || m_jump_was_pressed) && m_player.position.on_ground)
-        m_player.position.vel.z = c_jump_speed;
+        m_player.position.vel.y = c_jump_speed;
     m_jump_was_pressed = false;
 
     // gravity
-    acceleration.z -= m_gravity;
+    acceleration.y -= m_gravity;
 
     float old_ground_speed_squared = groundSpeedSquared();
     if (old_ground_speed_squared < std::numeric_limits<float>::epsilon()) {
@@ -770,10 +770,10 @@ void Game::doPhysics(float delta_seconds)
         m_player.position.vel.x *= correction_scale;
         m_player.position.vel.y *= correction_scale;
     }
-    if (m_player.position.vel.z < -m_terminal_velocity)
-        m_player.position.vel.z = -m_terminal_velocity;
-    else if (m_player.position.vel.z > m_terminal_velocity)
-        m_player.position.vel.z = m_terminal_velocity;
+    if (m_player.position.vel.y < -m_terminal_velocity)
+        m_player.position.vel.y = -m_terminal_velocity;
+    else if (m_player.position.vel.y > m_terminal_velocity)
+        m_player.position.vel.y = m_terminal_velocity;
 
 
     // calculate new positions and resolve collisions
@@ -802,14 +802,14 @@ void Game::doPhysics(float delta_seconds)
     }
 
     m_player.position.on_ground = false;
-    if (m_player.position.vel.z != 0) {
-        m_player.position.pos.z += m_player.position.vel.z * delta_seconds;
-        int block_z = (int)std::floor(m_player.position.pos.z + c_player_half_height + Util::sign(m_player.position.vel.z) * c_player_half_height);
+    if (m_player.position.vel.y != 0) {
+        m_player.position.pos.y += m_player.position.vel.y * delta_seconds;
+        int block_z = (int)std::floor(m_player.position.pos.y + c_player_half_height + Util::sign(m_player.position.vel.y) * c_player_half_height);
         if (collisionInRange(Int3D(boundingBoxMin.x, boundingBoxMin.y, block_z), Int3D(boundingBoxMax.x, boundingBoxMax.y, block_z))) {
-            m_player.position.pos.z = block_z + (m_player.position.vel.z < 0 ? 1 : -c_player_height) * 1.001;
-            if (m_player.position.vel.z < 0)
+            m_player.position.pos.y = block_z + (m_player.position.vel.y < 0 ? 1 : -c_player_height) * 1.001;
+            if (m_player.position.vel.y < 0)
                 m_player.position.on_ground = true;
-            m_player.position.vel.z = 0;
+            m_player.position.vel.y = 0;
         }
     }
 
@@ -821,11 +821,11 @@ void Game::getBoundingBox(const mineflayer_Entity * entity, Int3D &boundingBoxMi
 {
     // TODO: handle cases when entity is not a player
     boundingBoxMin.x = (int)std::floor(entity->position.pos.x - c_player_apothem);
-    boundingBoxMin.y = (int)std::floor(entity->position.pos.y - c_player_apothem);
-    boundingBoxMin.z = (int)std::floor(entity->position.pos.z - 0);
+    boundingBoxMin.y = (int)std::floor(entity->position.pos.y - 0);
+    boundingBoxMin.z = (int)std::floor(entity->position.pos.z - c_player_apothem);
     boundingBoxMax.x = (int)std::floor(entity->position.pos.x + c_player_apothem);
-    boundingBoxMax.y = (int)std::floor(entity->position.pos.y + c_player_apothem);
-    boundingBoxMax.z = (int)std::floor(entity->position.pos.z + c_player_height);
+    boundingBoxMax.y = (int)std::floor(entity->position.pos.y + c_player_height);
+    boundingBoxMax.z = (int)std::floor(entity->position.pos.z + c_player_apothem);
 }
 
 // TODO: check partial blocks
@@ -927,8 +927,8 @@ bool Game::canPlaceBlock(const Int3D &block_pos, mineflayer_BlockFaceDirection f
 
     Int3D new_block_pos = block_pos + c_side_offset[face];
 
-    // not if it's outside z boundaries
-    if (new_block_pos.z < 0 || new_block_pos.z >= 128)
+    // not if it's outside vertical boundaries
+    if (new_block_pos.y < 0 || new_block_pos.y >= 127)
         return false;
 
     // not if we're too far away

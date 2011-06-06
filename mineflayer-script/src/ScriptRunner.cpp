@@ -710,9 +710,9 @@ QScriptValue ScriptRunner::lookAt(QScriptContext *context, QScriptEngine *engine
     delta.y = point.y - my_position.pos.y;
     delta.z = point.z - my_position.pos.z;
 
-    double yaw = std::atan2(delta.y, delta.x);
-    double ground_distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
-    double pitch = std::atan2(delta.z, ground_distance);
+    double yaw = std::atan2(delta.z, delta.x);
+    double ground_distance = std::sqrt(delta.x * delta.x + delta.z * delta.z);
+    double pitch = std::atan2(delta.y, ground_distance);
     mineflayer_setPlayerLook(me->m_game, yaw, pitch, force);
     return QScriptValue();
 }
