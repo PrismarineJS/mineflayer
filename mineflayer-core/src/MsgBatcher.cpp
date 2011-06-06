@@ -136,8 +136,6 @@ void nonSpokenChatReceived(void * context, mineflayer_Utf8 message)
 
 /**
  * entitySpawned
- *
- * TODO: Not implemented
  */
 void entitySpawned(void * context, mineflayer_Entity * mineflayer_entity)
 {
@@ -149,16 +147,13 @@ void entitySpawned(void * context, mineflayer_Entity * mineflayer_entity)
         return;
 
     msg->type = msg_TypeEntitySpawned;
-    (void)mineflayer_entity;
+    msg->mineflayer_entity = *mineflayer_entity;
 
-    //batcher->msgDone((msg_Base *)msg);
-    batcher->msgFree((msg_Base *)msg);
+    batcher->msgDone((msg_Base *)msg);
 }
 
 /**
  * entityDespawned
- *
- * TODO: Not implemented
  */
 void entityDespawned(void * context, mineflayer_Entity * mineflayer_entity)
 {
@@ -170,16 +165,13 @@ void entityDespawned(void * context, mineflayer_Entity * mineflayer_entity)
         return;
 
     msg->type = msg_TypeEntityDespawned;
-    (void)mineflayer_entity;
+    msg->mineflayer_entity = *mineflayer_entity;
 
-    //batcher->msgDone((msg_Base *)msg);
-    batcher->msgFree((msg_Base *)msg);
+    batcher->msgDone((msg_Base *)msg);
 }
 
 /**
  * entityMoved
- *
- * TODO: Not implemented
  */
 void entityMoved(void * context, mineflayer_Entity * mineflayer_entity)
 {
@@ -191,16 +183,13 @@ void entityMoved(void * context, mineflayer_Entity * mineflayer_entity)
         return;
 
     msg->type = msg_TypeEntityMoved;
-    (void)mineflayer_entity;
+    msg->mineflayer_entity = *mineflayer_entity;
 
-    //batcher->msgDone((msg_Base *)msg);
-    batcher->msgFree((msg_Base *)msg);
+    batcher->msgDone((msg_Base *)msg);
 }
 
 /**
  * animation
- *
- * TODO: Not implemented
  */
 void animation(void * context,
         mineflayer_Entity * mineflayer_entity,
@@ -214,11 +203,10 @@ void animation(void * context,
         return;
 
     msg->type = msg_TypeAnimation;
-    (void)mineflayer_entity;
+    msg->mineflayer_entity = *mineflayer_entity;
     msg->animation_type = animation_type;
 
-    //batcher->msgDone((msg_Base *)msg);
-    batcher->msgFree((msg_Base *)msg);
+    batcher->msgDone((msg_Base *)msg);
 }
 
 /**
@@ -518,34 +506,22 @@ static void dispatchMsg(Batcher *batcher, msg_Base *base,
         }
         case msg_TypeEntitySpawned: {
             msg_EntitySpawned *msg = (msg_EntitySpawned *)base;
-            // TODO
-            //callbacks->entitySpawned(ctx, );
-            (void)msg;
-            assert(0);
+            callbacks->entitySpawned(ctx, &msg->mineflayer_entity);
             break;
         }
         case msg_TypeEntityDespawned: {
             msg_EntityDespawned *msg = (msg_EntityDespawned *)base;
-            // TODO
-            //callbacks->entityDespawned(ctx, );
-            (void)msg;
-            assert(0);
+            callbacks->entityDespawned(ctx, &msg->mineflayer_entity);
             break;
         }
         case msg_TypeEntityMoved: {
             msg_EntityMoved *msg = (msg_EntityMoved *)base;
-            // TODO
-            //callbacks->entityMoved(ctx, );
-            (void)msg;
-            assert(0);
+            callbacks->entityMoved(ctx, &msg->mineflayer_entity);
             break;
         }
         case msg_TypeAnimation: {
             msg_Animation *msg = (msg_Animation *)base;
-            // TODO
-            //callbacks->animation(ctx, );
-            (void)msg;
-            assert(0);
+            callbacks->animation(ctx, &msg->mineflayer_entity, msg->animation_type);
             break;
         }
         case msg_TypeChunkUpdated: {

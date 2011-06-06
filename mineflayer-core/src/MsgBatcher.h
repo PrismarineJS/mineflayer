@@ -56,25 +56,25 @@ typedef struct {
 typedef struct {
 	msg_Type type;
 	msg_Base *next;
-	mineflayer_Entity *mineflayer_entity;
+	mineflayer_Entity mineflayer_entity;
 } msg_EntitySpawned;
 
 typedef struct {
 	msg_Type type;
 	msg_Base *next;
-	mineflayer_Entity *mineflayer_entity;
+	mineflayer_Entity mineflayer_entity;
 } msg_EntityDespawned;
 
 typedef struct {
 	msg_Type type;
 	msg_Base *next;
-	mineflayer_Entity *mineflayer_entity;
+	mineflayer_Entity mineflayer_entity;
 } msg_EntityMoved;
 
 typedef struct {
 	msg_Type type;
 	msg_Base *next;
-	mineflayer_Entity *mineflayer_entity;
+	mineflayer_Entity mineflayer_entity;
 	mineflayer_AnimationType animation_type;
 } msg_Animation;
 
