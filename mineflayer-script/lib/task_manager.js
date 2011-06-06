@@ -52,6 +52,8 @@ var task_manager = {};
         if (tasks[0].started && tasks[0].resume !== undefined) {
             tasks[0].resume();
         } else {
+            tasks[0].started = true;
+            tasks[0].begin_time = new Date().getTime();
             tasks[0].start();
         }
     };
@@ -75,14 +77,26 @@ var task_manager = {};
     task_manager.done = function() {
         assert.isTrue(tasks.length !== 0);
         var length = tasks.length;
+        tasks[0].started = false;
         tasks.shift();
         assert.isTrue(length !== tasks.length);
         runNextCommand();
     };
 
-    task_manager.postpone = function() {
-        tasks.push(tasks[0]);
-        tasks.remove(tasks[0]);
+    task_manager.postpone = function(min_timeout) {
+        var task = tasks[0];
+        tasks.remove(task);
+        if (min_timeout > 0) {
+            task.postponed = mf.setTimeout(function resume() {
+                task.postponed = undefined;
+                tasks.push(task);
+                if (tasks.length === 1) {
+                    runNextCommand();
+                }
+            }, min_timeout);
+        } else {
+            tasks.push(task);
+        }
         runNextCommand();
     };
 
@@ -93,6 +107,11 @@ var task_manager = {};
             runNextCommand();
         } else {
             tasks.remove(task);
+            if (task.postponed !== undefined) {
+                mf.clearTimeout(task.postponed);
+                task.postponed = undefined;
+                task.stop();
+            }
         }
     }
 
