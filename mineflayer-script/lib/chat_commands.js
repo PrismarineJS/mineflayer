@@ -114,6 +114,7 @@ var chat_commands = {};
 
     var masters;
     var oblivious = false;
+    var silent_mode = false;
     (function() {
         var setup_commands = [];
         var args = mf.args();
@@ -219,7 +220,7 @@ var chat_commands = {};
                     continue;
                 }
                 if (responder_func === undefined) {
-                    if (whispered) {
+                    if (whispered || silent_mode) {
                         responder_func = function(message) {
                             mf.chat("/tell " + speaker + " " + message);
                         };
@@ -248,5 +249,14 @@ var chat_commands = {};
 
         mf.chat("/tell " + speaker_name + " available commands: " + command_names.join(", "));
     }, 0, Infinity);
+    chat_commands.registerCommand("silentmode", function(speaker, args, responder_fun) {
+        if (args[0] === "on") {
+            silent_mode = true;
+            mf.chat("/tell " + speaker + " silent mode is now activated.");
+        } else if (args[0] === "off") {
+            silent_mode = false;
+            responer_fun("silent mode is now deactivated.");
+        }
+    }, 1);
 })();
 
