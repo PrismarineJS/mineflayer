@@ -255,7 +255,7 @@ var chat_commands = {};
             mf.chat("/tell " + speaker + " silent mode is now activated.");
         } else if (args[0] === "off") {
             silent_mode = false;
-            responer_fun("silent mode is now deactivated.");
+            responder_fun("silent mode is now deactivated.");
         }
     }, 1);
 })();
