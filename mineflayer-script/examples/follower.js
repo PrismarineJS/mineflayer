@@ -56,10 +56,10 @@ mf.include("chat_commands.js");
                         // stopped
                         return;
                     }
-                    task_manager.postpone(current_task);
+                    task_manager.postpone(100);
                 },
                 cant_navto_func: function() {
-                    task_manager.postpone(current_task);
+                    task_manager.postpone(2000);
                 },                    
             });
             // recalculate path every 5 seconds even if don't make it in that long

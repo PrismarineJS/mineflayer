@@ -22,3 +22,4 @@ mf.include("console.js");
 mf.include("cook.js");
 mf.include("flatten.js");
 mf.include("fill.js");
+mf.include("use.js");
