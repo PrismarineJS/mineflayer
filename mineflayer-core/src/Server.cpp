@@ -494,10 +494,10 @@ mineflayer_BlockFaceDirection Server::toNotchianFace(mineflayer_BlockFaceDirecti
 void Server::sendPositionAndLook(mineflayer_EntityPosition positionAndLook)
 {
     PlayerPositionAndLookRequest * request = new PlayerPositionAndLookRequest;
-    positionAndLook.pos.x = request->x;
-    positionAndLook.pos.y = request->y;
-    positionAndLook.pos.z = request->z;
-    request->stance = positionAndLook.height + positionAndLook.pos.z;
+    request->x = positionAndLook.pos.x;
+    request->y = positionAndLook.pos.y;
+    request->z = positionAndLook.pos.z;
+    request->stance = positionAndLook.height + positionAndLook.pos.y;
     toNotchianYawPitch(positionAndLook, request->yaw, request->pitch);
     request->on_ground = positionAndLook.on_ground;
     sendMessage(QSharedPointer<OutgoingRequest>(request));
