@@ -531,11 +531,13 @@ void Game::handleMapChunkUpdated(QSharedPointer<Chunk>update)
 {
     QMutexLocker locker(&m_mutex);
 
-    // update can be smaller than a full size chunk, and can exceed the bounds of a chunk.
+    // update can be smaller than a full size chunk, and can (erroneously) exceed the bounds of a chunk.
     Int3D update_position = update.data()->position();
     Int3D chunk_position = chunkKey(update_position);
     Int3D update_size = update.data()->size();
     if (chunkKey(update_position + update_size - Int3D(1,1,1)) != chunk_position) {
+        // TODO: This is quite common. Determine what to do with the data rather than ignoring it.
+        //       It seems to happen when updates are happening near the very top of the world.
         qWarning() << "Ignoring cross-chunk map chunk update with start" <<
                 update_position.x <<update_position.y <<update_position.z << "and size" <<
                 update_size.x <<update_size.y <<update_size.z;
@@ -918,7 +920,7 @@ void Game::activateBlock(const Int3D &block)
 
     Item equipped_item = m_inventory.at(m_equipped_slot_id);
 
-    m_server.sendBlockPlacement(block, mineflayer_PositiveZ, equipped_item);
+    m_server.sendBlockPlacement(block, mineflayer_PositiveY, equipped_item);
 }
 
 bool Game::canPlaceBlock(const Int3D &block_pos, mineflayer_BlockFaceDirection face)
