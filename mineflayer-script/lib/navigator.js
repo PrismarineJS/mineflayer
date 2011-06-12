@@ -75,7 +75,7 @@ var navigator = {};
         navigator.stop();
         // go to the centers of blocks
         current_completed_callback = params.arrived_func;
-        current_course = path.mapped(function(node) { return node.point.offset(0.5, 0.5, 0); });
+        current_course = path.mapped(function(node) { return node.point.offset(0.5, 0, 0.5); });
         var last_node_time = new Date().getTime();
         function monitor_movement() {
             var next_point = current_course[0];
@@ -97,11 +97,11 @@ var navigator = {};
             }
             var delta = next_point.minus(current_position);
             var gotta_jump;
-            var horizontal_delta = Math.abs(delta.x + delta.y);
-            if (delta.z > 0.1) {
+            var horizontal_delta = Math.abs(delta.x + delta.z);
+            if (delta.y > 0.1) {
                 // gotta jump up when we're close enough
                 gotta_jump = horizontal_delta < 1.75;
-            } else if (delta.z > -0.1) {
+            } else if (delta.y > -0.1) {
                 // possibly jump over a hole
                 gotta_jump = 1.5 < horizontal_delta && horizontal_delta < 2.5;
             } else {
@@ -110,7 +110,7 @@ var navigator = {};
             mf.setControlState(mf.Control.Jump, gotta_jump);
 
             // run toward next point
-            var look_at_point = new mf.Point(next_point.x, next_point.y, current_position.z);
+            var look_at_point = new mf.Point(next_point.x, current_position.y, next_point.z);
             mf.lookAt(look_at_point);
             mf.setControlState(mf.Control.Forward, true);
 
@@ -143,11 +143,11 @@ var navigator = {};
     var current_completed_callback;
     var current_course = [];
     var cardinal_direction_vectors = [
-        new mf.Point( 0,  1, 0), // north
-        new mf.Point( 0, -1, 0), // south
-        new mf.Point( 1,  0, 0), // east
-        new mf.Point(-1,  0, 0), // west
-    ];
+        new mf.Point(-1, 0,  0), // north
+        new mf.Point( 1, 0,  0), // south
+        new mf.Point( 0, 0, -1), // east
+        new mf.Point( 0, 0,  1), // west
+    ]; 
     function getNeighbors(node) {
         // for each cardinal direction:
         // "." is head. "+" is feet and current location.
@@ -170,8 +170,8 @@ var navigator = {};
         var result = [];
         for (var i = 0; i < cardinal_direction_vectors.length; i++) {
             var direction_vector = cardinal_direction_vectors[i];
-            function pointAt(horizontal_offset, dz) {
-                return point.offset(direction_vector.x * horizontal_offset, direction_vector.y * horizontal_offset, dz);
+            function pointAt(horizontal_offset, dy) {
+                return point.offset(direction_vector.x * horizontal_offset, dy, direction_vector.z * horizontal_offset);
             }
             function properties(point) {
                 var type = mf.blockAt(point).type;
@@ -318,7 +318,7 @@ var navigator = {};
             }
         }
         return result.mapped(function(point) {
-            var face_block = mf.blockAt(point.offset(0, 0, 1));
+            var face_block = mf.blockAt(point.offset(0, 1, 0));
             var water = 0;
             if (face_block.type === mf.ItemType.Water || face_block.type === mf.ItemType.StationaryWater) {
                 water = node.water + 1;

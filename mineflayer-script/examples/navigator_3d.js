@@ -19,9 +19,9 @@ mf.include("quitter.js");
         }
         var end = entity.position.floored();
         var end_radius = undefined;
-        if (!(mf.isPhysical(mf.blockAt(end.offset(0, 0, -1)).type) &&
+        if (!(mf.isPhysical(mf.blockAt(end.offset(0, -1, 0)).type) &&
               mf.isSafe(mf.blockAt(end).type) &&
-              mf.isSafe(mf.blockAt(end.offset(0, 0, 1)).type))) {
+              mf.isSafe(mf.blockAt(end.offset(0, 1, 0)).type))) {
             // player is hanging over an edge or standing in a partial block. settle for a destination near by
             end_radius = 1.5;
         }
@@ -129,7 +129,7 @@ mf.include("quitter.js");
         }
         description += end;
         task_manager.doLater(new task_manager.Task(function start() {
-            responder_func("looking for a path from " + mf.self().position.toNotch().floored() + " to " + end.toNotch().floored() + "...");
+            responder_func("looking for a path from " + mf.self().position.floored() + " to " + end.floored() + "...");
             navigator.navigateTo(end, {
                 "end_radius": end_radius,
                 "timeout_milliseconds": 10 * 1000,

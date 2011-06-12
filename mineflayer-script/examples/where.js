@@ -4,7 +4,7 @@ mf.include("location_manager.js");
 
 (function() {
     function whereAreYou(speaker, args, responder_func) {
-        responder_func("I am at " + mf.self().position.toNotch().floored());
+        responder_func("I am at " + mf.self().position.floored());
     };
     chat_commands.registerCommand("whereareyou", whereAreYou);
 
@@ -13,11 +13,11 @@ mf.include("location_manager.js");
         if (location === undefined) {
             return;
         }
-        var absolute_position = location.point.toNotch().floored();
+        var absolute_position = location.point.floored();
         var player = player_tracker.entityForPlayer(speaker);
         if (player !== undefined) {
             // absolute and relative
-            var speaker_position = player.position.toNotch().floored();
+            var speaker_position = player.position.floored();
             var relative_position = absolute_position.minus(speaker_position);
             responder_func(location.name + " is at " + absolute_position + " which is " + relative_position + " from you");
         } else {

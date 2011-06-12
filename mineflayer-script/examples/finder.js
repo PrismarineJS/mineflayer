@@ -26,9 +26,9 @@ mf.include("block_finder.js");
 
         var relativeCoordinates = coordinates.minus(position);
 
-        eastWest = relativeCoordinates.x < 0 ? "West" : "East";
-        northSouth = relativeCoordinates.y < 0 ? "South" : "North";
-        upDown = relativeCoordinates.z < 0 ? "Down" : "Up";
+        northSouth = relativeCoordinates.x > 0 ? "South" : "North";
+        upDown = relativeCoordinates.y > 0 ? "Up" : "Down";
+        eastWest = relativeCoordinates.z > 0 ? "West" : "East";
 
         responder_func("I found some " + items.nameForId(type) + "! Go " + eastWest + " " + Math.abs(relativeCoordinates.x) + " blocks, " + northSouth + " " + Math.abs(relativeCoordinates.y) + " blocks, and " + upDown + " " + Math.abs(relativeCoordinates.z) + " blocks."); 
         mf.lookAt(coordinates);
