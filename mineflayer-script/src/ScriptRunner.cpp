@@ -709,11 +709,13 @@ QScriptValue ScriptRunner::lookAt(QScriptContext *context, QScriptEngine *engine
     delta.x = point.x - my_position.pos.x;
     delta.y = point.y - my_position.pos.y;
     delta.z = point.z - my_position.pos.z;
-
-    double yaw = std::atan2(delta.z, delta.x);
-    double ground_distance = std::sqrt(delta.x * delta.x + delta.z * delta.z);
-    double pitch = std::atan2(delta.y, ground_distance);
-    mineflayer_setPlayerLook(me->m_game, yaw, pitch, force);
+    if (delta.x * delta.x + delta.y * delta.y + delta.z * delta.z >= 0.1) {
+        // only go through with this if we're not trying to look too close (like at ourselves)
+        double yaw = std::atan2(-delta.x, -delta.z);
+        double ground_distance = std::sqrt(delta.x * delta.x + delta.z * delta.z);
+        double pitch = std::atan2(delta.y, ground_distance);
+        mineflayer_setPlayerLook(me->m_game, yaw, pitch, force);
+    }
     return QScriptValue();
 }
 

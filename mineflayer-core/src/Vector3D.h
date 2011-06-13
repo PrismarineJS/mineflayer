@@ -32,15 +32,6 @@ public:
     const Vector3D<T> operator-(const Vector3D<T> & other) const {
         return Vector3D<T>(*this) -= other;
     }
-    Vector3D<T> & operator-=(T offset) {
-    x -= offset;
-    y -= offset;
-    z -= offset;
-    return *this;
-    }
-    const Vector3D<T> operator-(T offset) const {
-        return Vector3D<T>(*this) -= offset;
-    }
     Vector3D<T> & operator/=(T divisor) {
         x /= divisor;
         y /= divisor;

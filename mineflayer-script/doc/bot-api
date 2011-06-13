@@ -12,9 +12,7 @@
 
 /**
  * Represents a 3D coordinate/location in meters.
- * NOTE: this East-North-Up coordinate system is different from Notch's
- * South-Up-West system.  Use toNotch() and fromNotch() to translate
- * between coordinate systems.
+ * X, Y, Z correspond to South, Up, West respectively.
  * 
  * Example:
  * var point = new mf.Point(0, 0, 0);
@@ -24,9 +22,9 @@
  * y {Number}
  * z {Number}
  *
- * @param {Number} x east
- * @param {Number} y north
- * @param {Number} z up
+ * @param {Number} x south
+ * @param {Number} y up
+ * @param {Number} z west
  */
 mf.Point(x, y, z)
 
@@ -40,7 +38,7 @@ mf.Point(x, y, z)
  * type {mf.EntityType}
  * position {mf.Point} The center of the bottom of of the entity.
  * velocity {mf.Point} The entity's velocity in meters per second squared.
- * yaw {Number} [0, 2pi] Rotation around z axis. 0 is +x. pi/2 is +y. pi is -x. 3pi/2 is -y.
+ * yaw {Number} [0, 2pi] Rotation around vertical axis. 0 is -z. pi/2 is -x. pi is +z. 3pi/2 is +x.
  * pitch {Number} [-pi/2, pi/2] 0 is parallel to the ground. pi/2 is up. -pi/2 is down.
  * on_ground {Boolean} True if you are not free-falling.
  * height {Number} Distance from ground to eyes. 0 for non-humanoid entities.
@@ -454,7 +452,7 @@ mf.stopDigging()
 /**
  * Looks in a direction.
  * NOT YET IMPLEMENTED
- * @param {Number} yaw The number of radians to rotate around the Z axis, starting from due east. Counter clockwise.
+ * @param {Number} yaw The number of radians to rotate around the vertical axis, starting from due east. Counter clockwise.
  * @param {Number} pitch Number of radians to point up or down. 0 means straight forward. pi / 2 means straight up. -pi / 2 means straight down.
  */
 mf.look(yaw, pitch)

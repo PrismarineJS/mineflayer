@@ -21,7 +21,7 @@ mf.include("location_manager.js");
             var relative_position = absolute_position.minus(speaker_position);
             responder_func(location.name + " is at " + absolute_position + " which is " + relative_position + " from you");
             // and look at it
-            mf.lookAt(absolute_position);
+            mf.lookAt(location.point);
         } else {
             // can't see speaker. just give absolute position.
             responder_func(location.name + " is at " + absolute_position);

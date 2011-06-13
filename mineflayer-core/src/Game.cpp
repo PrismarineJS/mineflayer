@@ -21,7 +21,7 @@ const float Game::c_yaw_speed = 3.0f; // seems good
 
 const int Game::c_position_update_interval_ms = 50;
 const int Game::c_chat_length_limit = 100;
-const Int3D Game::c_chunk_size(16, 16, 128);
+const Int3D Game::c_chunk_size(16, 128, 16);
 const Block Game::c_air(mineflayer_AirItem, 0, 0, 0);
 
 const int Game::c_inventory_count = 36;
