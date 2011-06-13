@@ -19,7 +19,7 @@ function go() {
     } else {
         // STAND ON THE CAKE
         var cake_pos = cake_pos_arr[0];
-        navigator.navigateTo(cake_pos.offset(0, 0, 1), {
+        navigator.navigateTo(cake_pos.offset(0, 1, 0), {
             "end_radius": 1,
             "arrived_func": function() {
                 // PUNCH THE CAKE

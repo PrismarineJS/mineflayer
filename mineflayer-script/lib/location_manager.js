@@ -9,8 +9,8 @@ var location_manager = {};
         if (literal_matches !== null) {
             literal_matches.shift();
             var coords = literal_matches.mapped(function(s) { return parseInt(s); });
-            var notch_point = new mf.Point(coords[0], coords[1], coords[2]);
-            return [{"name": "[literal]", "point": notch_point.fromNotch()}];
+            var point = new mf.Point(coords[0], coords[1], coords[2]);
+            return [{"name": "[literal]", "point": point}];
         }
         function filter_using_comparator(name, comparator) {
             var matches = [];

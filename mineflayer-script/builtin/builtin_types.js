@@ -32,12 +32,6 @@ mf.Point.prototype.distanceTo = function(other) {
     var dz = other.z - this.z;
     return Math.sqrt(dx * dx + dy * dy + dz * dz);
 };
-mf.Point.prototype.fromNotch = function() {
-    return new mf.Point(-this.z, -this.x, this.y);
-};
-mf.Point.prototype.toNotch = function() {
-    return new mf.Point(-this.y, this.z, -this.x);
-};
 mf.Point.prototype.equals = function(other) {
     return this.x === other.x && this.y === other.y && this.z === other.z;
 };

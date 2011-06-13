@@ -73,8 +73,8 @@ var navigator = {};
 
         // start
         navigator.stop();
-        // go to the centers of blocks
         current_completed_callback = params.arrived_func;
+        // go to the centers of blocks
         current_course = path.mapped(function(node) { return node.point.offset(0.5, 0, 0.5); });
         var last_node_time = new Date().getTime();
         function monitor_movement() {
@@ -147,7 +147,7 @@ var navigator = {};
         new mf.Point( 1, 0,  0), // south
         new mf.Point( 0, 0, -1), // east
         new mf.Point( 0, 0,  1), // west
-    ]; 
+    ];
     function getNeighbors(node) {
         // for each cardinal direction:
         // "." is head. "+" is feet and current location.

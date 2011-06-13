@@ -726,10 +726,10 @@ void Game::doPhysics(float delta_seconds)
     Double3D acceleration;
     if (movement_forward || movement_right) {
         // input acceleration
-        float rotation_from_input = std::atan2(movement_forward, movement_right) - Util::half_pi;
+        float rotation_from_input = std::atan2(-movement_right, movement_forward);
         float input_yaw = m_player.position.yaw + rotation_from_input;
-        acceleration.x += std::cos(input_yaw) * m_input_acceleration;
-        acceleration.z += std::sin(input_yaw) * m_input_acceleration;
+        acceleration.x += m_input_acceleration * -std::sin(input_yaw);
+        acceleration.z += m_input_acceleration * -std::cos(input_yaw);
     }
 
     // jumping
@@ -744,7 +744,7 @@ void Game::doPhysics(float delta_seconds)
     if (old_ground_speed_squared < std::numeric_limits<float>::epsilon()) {
         // stopped
         m_player.position.vel.x = 0;
-        m_player.position.vel.y = 0;
+        m_player.position.vel.z = 0;
     } else {
         // non-zero ground speed
         float old_ground_speed = std::sqrt(old_ground_speed_squared);
@@ -756,7 +756,7 @@ void Game::doPhysics(float delta_seconds)
             ground_friction = old_ground_speed / delta_seconds;
         }
         acceleration.x -= m_player.position.vel.x / old_ground_speed * ground_friction;
-        acceleration.y -= m_player.position.vel.y / old_ground_speed * ground_friction;
+        acceleration.z -= m_player.position.vel.z / old_ground_speed * ground_friction;
     }
 
     // calculate new speed
@@ -770,7 +770,7 @@ void Game::doPhysics(float delta_seconds)
         float ground_speed = std::sqrt(ground_speed_squared);
         float correction_scale = m_max_ground_speed / ground_speed;
         m_player.position.vel.x *= correction_scale;
-        m_player.position.vel.y *= correction_scale;
+        m_player.position.vel.z *= correction_scale;
     }
     if (m_player.position.vel.y < -m_terminal_velocity)
         m_player.position.vel.y = -m_terminal_velocity;
@@ -784,8 +784,7 @@ void Game::doPhysics(float delta_seconds)
 
     if (m_player.position.vel.x != 0) {
         m_player.position.pos.x += m_player.position.vel.x * delta_seconds;
-        double forward_x_edge = m_player.position.pos.x + Util::sign(m_player.position.vel.x) * c_player_apothem;
-        int block_x = (int)std::floor(forward_x_edge);
+        int block_x = (int)std::floor(m_player.position.pos.x + Util::sign(m_player.position.vel.x) * c_player_apothem);
         if (collisionInRange(Int3D(block_x, boundingBoxMin.y, boundingBoxMin.z), Int3D(block_x, boundingBoxMax.y, boundingBoxMax.z))) {
             m_player.position.pos.x = block_x + (m_player.position.vel.x < 0 ? 1 + c_player_apothem : -c_player_apothem) * 1.001;
             m_player.position.vel.x = 0;
@@ -793,12 +792,12 @@ void Game::doPhysics(float delta_seconds)
         }
     }
 
-    if (m_player.position.vel.y != 0) {
-        m_player.position.pos.y += m_player.position.vel.y * delta_seconds;
-        int block_y = (int)std::floor(m_player.position.pos.y + Util::sign(m_player.position.vel.y) * c_player_apothem);
-        if (collisionInRange(Int3D(boundingBoxMin.x, block_y, boundingBoxMin.z), Int3D(boundingBoxMax.x, block_y, boundingBoxMax.z))) {
-            m_player.position.pos.y = block_y + (m_player.position.vel.y < 0 ? 1 + c_player_apothem : -c_player_apothem) * 1.001;
-            m_player.position.vel.y = 0;
+    if (m_player.position.vel.z != 0) {
+        m_player.position.pos.z += m_player.position.vel.z * delta_seconds;
+        int block_z = (int)std::floor(m_player.position.pos.z + Util::sign(m_player.position.vel.z) * c_player_apothem);
+        if (collisionInRange(Int3D(boundingBoxMin.x, boundingBoxMin.y, block_z), Int3D(boundingBoxMax.x, boundingBoxMax.y, block_z))) {
+            m_player.position.pos.z = block_z + (m_player.position.vel.z < 0 ? 1 + c_player_apothem : -c_player_apothem) * 1.001;
+            m_player.position.vel.z = 0;
             getBoundingBox(&m_player, boundingBoxMin, boundingBoxMax);
         }
     }
@@ -806,9 +805,9 @@ void Game::doPhysics(float delta_seconds)
     m_player.position.on_ground = false;
     if (m_player.position.vel.y != 0) {
         m_player.position.pos.y += m_player.position.vel.y * delta_seconds;
-        int block_z = (int)std::floor(m_player.position.pos.y + c_player_half_height + Util::sign(m_player.position.vel.y) * c_player_half_height);
-        if (collisionInRange(Int3D(boundingBoxMin.x, boundingBoxMin.y, block_z), Int3D(boundingBoxMax.x, boundingBoxMax.y, block_z))) {
-            m_player.position.pos.y = block_z + (m_player.position.vel.y < 0 ? 1 : -c_player_height) * 1.001;
+        int block_y = (int)std::floor(m_player.position.pos.y + c_player_half_height + Util::sign(m_player.position.vel.y) * c_player_half_height);
+        if (collisionInRange(Int3D(boundingBoxMin.x, block_y, boundingBoxMin.z), Int3D(boundingBoxMax.x, block_y, boundingBoxMax.z))) {
+            m_player.position.pos.y = block_y + (m_player.position.vel.y < 0 ? 1 : -c_player_height) * 1.001;
             if (m_player.position.vel.y < 0)
                 m_player.position.on_ground = true;
             m_player.position.vel.y = 0;

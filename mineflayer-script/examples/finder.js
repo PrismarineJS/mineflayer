@@ -17,14 +17,14 @@ mf.include("block_finder.js");
         }
         var type = item.id;
         responder_func("Trying to find " + items.nameForId(type) + " closest to " + username + "...");
-        var position = player.position;
-        var coordinates = block_finder.findNearest(position,type).shift();
+        var player_position = player.position;
+        var coordinates = block_finder.findNearest(player_position,type).shift();
         if (coordinates === undefined) {
             responder_func("I couldn't find any " + itemName + ".");
             return;
         }
 
-        var relativeCoordinates = coordinates.minus(position);
+        var relativeCoordinates = coordinates.minus(player_position);
 
         northSouth = relativeCoordinates.x > 0 ? "South" : "North";
         upDown = relativeCoordinates.y > 0 ? "Up" : "Down";
@@ -32,7 +32,6 @@ mf.include("block_finder.js");
 
         responder_func("I found some " + items.nameForId(type) + "! Go " + eastWest + " " + Math.abs(relativeCoordinates.x) + " blocks, " + northSouth + " " + Math.abs(relativeCoordinates.y) + " blocks, and " + upDown + " " + Math.abs(relativeCoordinates.z) + " blocks."); 
         mf.lookAt(coordinates);
-        return coordinates;
     }
     chat_commands.registerCommand("find", find, 1, Infinity);
 })();

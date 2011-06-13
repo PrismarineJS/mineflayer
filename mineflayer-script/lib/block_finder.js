@@ -67,10 +67,10 @@ var block_finder = function() {
         for (var apothem = 1; apothem <= max_apothem; apothem++) {
             for (var side = 0; side < 6; side++) {
                 var max = zeroed[side].scaled(2 * apothem);
-                if (max.z > 127) {
-                    max.z = 127;
-                } else if (max.z < 0) {
-                    max.z = 0;
+                if (max.y > 127) {
+                    max.y = 127;
+                } else if (max.y < 0) {
+                    max.y = 0;
                 }
                 for (pt.x = 0; pt.x <= max.x; pt.x++) {
                     for (pt.y = 0; pt.y <= max.y; pt.y++) {
@@ -91,16 +91,16 @@ var block_finder = function() {
         return result;
     }
     /**
-    * Finds the highest blocks nearest a certain point.  Highest block is considered before close-ness.
-    * @param {Point} starting point to search outward from.
-    * @param {Object} params Optional parameters:
-    *      radius - how far to look.  defaults to 128.
-    *      block_type(block_type) - function that returns if the block should be considered for destroying
-    *      count - how many blocks to look for.  defaults to Infinity
-    *      top_threshold - Only look at blocks below this height.  defaults to 128.
-    *      bottom_threshold - Only look at blocks above this height.  defaults to 0.
-    * @returns {Array} An array of mf.Point.  The location of between 0 to count nearest blocks.
-    */    
+     * Finds the highest blocks nearest a certain point.  Highest block is considered before close-ness.
+     * @param {Point} starting point to search outward from.
+     * @param {Object} params Optional parameters:
+     *      radius - how far to look.  defaults to 128.
+     *      block_type(block_type) - function that returns if the block should be considered for destroying
+     *      count - how many blocks to look for.  defaults to Infinity. TODO: this parameter is currently ignored.
+     *      top_threshold - Only look at blocks below this height.  defaults to 128.
+     *      bottom_threshold - Only look at blocks above this height.  defaults to 0.
+     * @returns {Array} An array of mf.Point.  The location of between 0 to count nearest blocks.
+     */
     _public.findHighest = function(point, params) {
         if (point === undefined) {
             mf.debug("block_finder.findHighest given undefined point.");
@@ -136,29 +136,31 @@ var block_finder = function() {
         }
         var matches = [];
         var check_point = function(x, y, z) {
-            if (block_type(mf.blockAt(new mf.Point(x,y,z)).type)) {
-                matches.push(new mf.Point(x,y,z));
+            var point = new mf.Point(x,y,z);
+            if (block_type(mf.blockAt(point).type)) {
+                matches.push(point);
             }
             if (matches.length >= count) {
                 return matches;
             }
         };
-        for (var z = top_threshold; z >= bottom_threshold; z--) {
+        for (var y = top_threshold; y >= bottom_threshold; y--) {
             for (var r = 0; r <= radius; r++) {
-                var x = point.x - r;
-                for (var y = point.y-r; y < point.y+r; y++) {
+                var x, z;
+                x = point.x - r;
+                for (z = point.z-r; z < point.z+r; z++) {
                     check_point(x,y,z);
                 }
-                var y = point.y + r;
-                for (var x = point.x-r; x < point.x+r; x++) {
+                z = point.z + r;
+                for (x = point.x-r; x < point.x+r; x++) {
                     check_point(x,y,z);
                 }
-                var x = point.x + r;
-                for (var y = point.y+r; y > point.y-r; y--) {
+                x = point.x + r;
+                for (z = point.z+r; z > point.z-r; z--) {
                     check_point(x,y,z);
                 }
-                var y = point.y - r;
-                for (var x = point.x+r; x > point.x-r; x--) {
+                z = point.z - r;
+                for (x = point.x+r; x > point.x-r; x--) {
                     check_point(x,y,z);
                 }
             }
