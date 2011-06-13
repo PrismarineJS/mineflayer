@@ -128,10 +128,10 @@ mf.include("inventory.js");
                 responder_fun("Not a number: " + arg);
                 return;
             }
-            max_height_level = player_position.z + parseInt(arg);
+            max_height_level = player_position.y + parseInt(arg);
         }
         var respond = responder_fun;
-        var min_height_level = player.position.z;
+        var min_height_level = player.position.y;
         var has_pick = true;
         var has_axe = true;
         var has_shovel = true;
@@ -230,10 +230,10 @@ mf.include("inventory.js");
         };
         var start_mining = function() {
             block_positions = new iterators.StripeIterable({
-                corner1: new mf.Point(player_position.x - radius, player_position.y - radius, min_height_level),
-                corner2: new mf.Point(player_position.x + radius, player_position.y + radius, max_height_level),
+                corner1: new mf.Point(player_position.x - radius, min_height_level, player_position.z - radius),
+                corner2: new mf.Point(player_position.x + radius, max_height_level, player_position.z + radius),
                 stripe_width: 6,
-                z_direction: -1,
+                y_direction: -1,
             }).toArray();
             block_index = 0;
             flattened = false;
@@ -242,7 +242,7 @@ mf.include("inventory.js");
                 done();
                 return;
             }
-            max_height_level = block_positions[0].z;
+            max_height_level = block_positions[0].y;
             mine_blocks();
         };
         task_manager.doLater(new task_manager.Task(function start() {
@@ -265,9 +265,9 @@ mf.include("inventory.js");
                 running = false;
             }, function toString() {
                 if (block_positions !== undefined && block_positions.length > 0) {
-                    return "flatten (" + player_position.x + ", " + player_position.y + ") r=" + radius + " z=[" + min_height_level + " : " + block_positions[0].z + "]";
+                    return "flatten (" + player_position.x + ", " + player_position.y + ") r=" + radius + " y=[" + min_height_level + " : " + block_positions[0].y + "]";
                 } else {
-                    return "flatten (" + player_position.x + ", " + player_position.y + ") r=" + radius + " z=[" + min_height_level + " : " + max_height_level + "]";
+                    return "flatten (" + player_position.x + ", " + player_position.y + ") r=" + radius + " y=[" + min_height_level + " : " + max_height_level + "]";
                 }
 
             })

@@ -27,8 +27,8 @@ iterators.StripeIterable = function(params) {
     assert.classIs(params.corner2, mf.Point);
     var max = params.corner2.clone();
 
-    var z_direction = params.z_direction;
-    assert.isTrue(z_direction === 1 || z_direction === -1);
+    var y_direction = params.y_direction;
+    assert.isTrue(y_direction === 1 || y_direction === -1);
     var stripe_width = params.stripe_width;
     assert.isNumber(stripe_width);
     assert.isTrue(stripe_width >= 1);
@@ -45,9 +45,9 @@ iterators.StripeIterable = function(params) {
         }
     }
     var major_coordinate_name = "x";
-    var minor_coordinate_name = "y";
-    if (max.x - min.x < max.y - min.y) {
-        major_coordinate_name = "y";
+    var minor_coordinate_name = "z";
+    if (max.x - min.x < max.z - min.z) {
+        major_coordinate_name = "z";
         minor_coordinate_name = "x";
     }
     var start = min;
@@ -63,9 +63,9 @@ iterators.StripeIterable = function(params) {
             }
         }
     }
-    // z direction overrides nearest point check
-    if (start.z * z_direction > end.z * z_direction) {
-        swap(start, end, "z");
+    // y direction overrides nearest point check
+    if (start.y * y_direction > end.y * y_direction) {
+        swap(start, end, "y");
     }
 
     var points = [];
@@ -73,7 +73,7 @@ iterators.StripeIterable = function(params) {
     var stripe_direction = stripe_endpoints[0] < stripe_endpoints[1] ? 1 : -1;
     var major_endpoints = [start[major_coordinate_name], end[major_coordinate_name]];
     var major_direction = major_endpoints[0] < major_endpoints[1] ? 1 : -1;
-    for (var z = start.z; z * z_direction <= end.z * z_direction; z += z_direction) {
+    for (var y = start.y; y * y_direction <= end.y * y_direction; y += y_direction) {
         for (var stripe = stripe_endpoints[0]; stripe * stripe_direction <= stripe_endpoints[1] * stripe_direction; stripe += stripe_direction * stripe_width) {
             var minor_endpoints = [stripe, stripe + (stripe_width - 1) * stripe_direction];
             if (minor_endpoints[1] * stripe_direction > stripe_endpoints[1] * stripe_direction) {
@@ -83,7 +83,7 @@ iterators.StripeIterable = function(params) {
             var minor_direction = stripe_direction;
             for (var major = major_endpoints[0]; major * major_direction <= major_endpoints[1] * major_direction; major += major_direction) {
                 for (var minor = minor_endpoints[0]; minor * minor_direction <= minor_endpoints[1] * minor_direction; minor += minor_direction) {
-                    var point = new mf.Point(0, 0, z);
+                    var point = new mf.Point(0, y, 0);
                     point[major_coordinate_name] = major;
                     point[minor_coordinate_name] = minor;
                     points.push(point);
