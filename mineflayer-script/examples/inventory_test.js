@@ -81,10 +81,10 @@ chat_commands.registerCommand("where", function() {
 
 mf.onSelfMoved(function() {
     if (build_under_myself) {
-        var below = mf.self().position.offset(0, 0, -1.5).floored();
-        if (mf.blockAt(below.offset(0, 0, 1)).type == mf.ItemType.Air) {
+        var below = mf.self().position.offset(0, -1.5, 0).floored();
+        if (mf.blockAt(below.offset(0, 1, 0)).type == mf.ItemType.Air) {
             mf.debug("js: place block at "+ below.x + " " + below.y + " " + below.z);
-            mf.hax.placeBlock(below, mf.Face.PositiveZ);
+            mf.hax.placeBlock(below, mf.Face.PositiveY);
         }
     }
 });

@@ -166,7 +166,7 @@ var navigator = {};
         //  dz
         //
         var point = node.point;
-        var is_safe_a = mf.isSafe(mf.blockAt(point.offset(0, 0, 2)).type);
+        var is_safe_a = mf.isSafe(mf.blockAt(point.offset(0, 2, 0)).type);
         var result = [];
         for (var i = 0; i < cardinal_direction_vectors.length; i++) {
             var direction_vector = cardinal_direction_vectors[i];

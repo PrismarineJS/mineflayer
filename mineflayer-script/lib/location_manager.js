@@ -73,7 +73,7 @@ var location_manager = {};
             return;
         }
         var point;
-        var cursor = entity.position.offset(0, 0, entity.height);
+        var cursor = entity.position.offset(0, entity.height, 0);
         var yaw = entity.yaw, pitch = entity.pitch;
         var vector_length = 0.03125;
         var x = Math.cos(yaw) * Math.cos(pitch);

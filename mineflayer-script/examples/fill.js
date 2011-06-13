@@ -5,6 +5,7 @@ mf.include("player_tracker.js");
 mf.include("inventory.js");
 mf.include("navigator.js");
 mf.include("Set.js");
+mf.include("ray_tracer.js");
 
 (function() {
     var current_instructor_id;
@@ -38,21 +39,7 @@ mf.include("Set.js");
             return;
         }
 
-        var target_block_position;
-        var cursor = entity.position.offset(0, 0, entity.height);
-        var yaw = entity.yaw, pitch = entity.pitch;
-        var vector_length = 0.03125;
-        var x = Math.cos(yaw) * Math.cos(pitch);
-        var y = Math.sin(yaw) * Math.cos(pitch);
-        var z = Math.sin(pitch);
-        var step_delta = new mf.Point(x * vector_length, y * vector_length, z * vector_length);
-        for (var i = 0; i < 128; i++) {
-            cursor = cursor.plus(step_delta);
-            if (mf.isPhysical(mf.blockAt(cursor).type)) {
-                target_block_position = cursor.floored();
-                break;
-            }
-        }
+        var target_block_position = ray_tracer.find_physical_from_player(entity);
         if (target_block_position === undefined) {
             current_responder_func("you didn't punch anything physical");
             return;

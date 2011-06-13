@@ -6,6 +6,7 @@ mf.include("items.js");
 mf.include("inventory.js");
 mf.include("navigator.js");
 mf.include("task_manager.js");
+mf.include("ray_tracer.js");
 
 (function() {
     var findChestNearestPoint = function(point) {
@@ -78,21 +79,7 @@ mf.include("task_manager.js");
                     responder_fun("I can't see you, " + speaker + ".");
                     return;
                 }
-                var target_block_position;
-                var cursor = player.position.offset(0, 0, player.height);
-                var yaw = player.yaw, pitch = player.pitch;
-                var vector_length = 0.03125;
-                var x = Math.cos(yaw) * Math.cos(pitch);
-                var y = Math.sin(yaw) * Math.cos(pitch);
-                var z = Math.sin(pitch);
-                var step_delta = new mf.Point(x * vector_length, y * vector_length, z * vector_length);
-                for (var i = 0; i < 192; i++) {
-                    cursor = cursor.plus(step_delta);
-                    if (mf.isPhysical(mf.blockAt(cursor).type)) {
-                        target_block_position = cursor.floored();
-                        break;
-                    }
-                }
+                var target_block_position = ray_tracer.find_physical_from_player(player);
                 if (target_block_position === undefined) {
                     chest_position = player.position;
                 } else {

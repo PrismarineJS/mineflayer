@@ -33,7 +33,7 @@ function max(arr) {
 function next() {
     // do we have enough tnt?
     if (inventory.itemCount(mf.ItemType.Tnt) < 1828) {
-        mf.lookAt(mf.self().position.offset(0, 0, -1));
+        mf.lookAt(mf.self().position.offset(0, -1, 0));
         for (var i = 0; i < 10; i++) {
             mf.chat("/give " + mf.self().username + " 46 " + inventory.slotsLeft());
         }
@@ -94,14 +94,14 @@ function next() {
     }
 
     // place next TNT
-    if (mf.blockAt(current_pt.offset(0, 0, -1)).type == mf.ItemType.Air) {
-        mf.hax.placeBlock(current_pt.offset(0, 0, -2), mf.Face.PositiveZ);
+    if (mf.blockAt(current_pt.offset(0, -1, 0)).type == mf.ItemType.Air) {
+        mf.hax.placeBlock(current_pt.offset(0, -2, 0), mf.Face.PositiveY);
     }
-    while (mf.canPlaceBlock(current_pt.offset(0, 0, -1), mf.Face.PositiveZ)) {
+    while (mf.canPlaceBlock(current_pt.offset(0, -1, 0), mf.Face.PositiveY)) {
         if (current_pt.distanceTo(mf.self().position) > 2) {
             break;
         }
-        mf.hax.placeBlock(current_pt.offset(0, 0, -1), mf.Face.PositiveZ);
+        mf.hax.placeBlock(current_pt.offset(0, -1, 0), mf.Face.PositiveY);
 
         current_pt.y++;
         if (current_pt.y >= max_corner.y) {
@@ -130,7 +130,7 @@ function next() {
     if (mf.isPhysical(mf.blockAt(nav_point).type)) {
         nav_point.z++;
     }
-    if (! mf.isPhysical(mf.blockAt(nav_point.offset(0, 0, -1)).type)) {
+    if (! mf.isPhysical(mf.blockAt(nav_point.offset(0, -1, 0)).type)) {
         if (current_pt.y > min_corner.y + (max_corner.y - min_corner.y) / 2) {
             nav_point.y--;
         } else {
