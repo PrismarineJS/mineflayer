@@ -201,10 +201,40 @@ var chat_commands = {};
             responder_prefix = speaker + ", ";
             parts.shift();
         }
+        if (parts.length === 0) {
+            return;
+        }
         if (oblivious && (responder_prefix === "" && !whispered)) {
             // ignore global messages while in oblivious mode
             return;
         }
+        // determine suffix
+        var responder_suffix = "";
+        var last_part = parts[parts.length - 1];
+        while (last_part.endsWith("!")) {
+            last_part = last_part.substr(0, last_part.length - 1);
+            responder_suffix += "!";
+        }
+        parts[parts.length - 1] = last_part;
+        // determine responder func
+        if (responder_func === undefined) {
+            if (whispered || silent_mode) {
+                responder_func = function(message) {
+                    mf.chat("/tell " + speaker + " " + message);
+                };
+            } else {
+                responder_func = function(message) {
+                    mf.chat(responder_prefix + message);
+                };
+            }
+        }
+        if (responder_suffix !== "") {
+            var old_responder_func = responder_func;
+            responder_func = function(message) {
+                old_responder_func(message + responder_suffix);
+            };
+        }
+        // invoke callbacks
         var parts_list = parts.join(" ").split(" && ").mapped(function(command) { return command.split(" "); });
         for (var i = 0; i < parts_list.length; i++) {
             parts = parts_list[i];
@@ -218,17 +248,6 @@ var chat_commands = {};
                 if (!(entry.min_arg_count <= parts.length && parts.length <= entry.max_arg_count)) {
                     // ignore wrong usage
                     continue;
-                }
-                if (responder_func === undefined) {
-                    if (whispered || silent_mode) {
-                        responder_func = function(message) {
-                            mf.chat("/tell " + speaker + " " + message);
-                        };
-                    } else {
-                        responder_func = function(message) {
-                            mf.chat(responder_prefix + message);
-                        };
-                    }
                 }
                 entry.callback(speaker, parts, responder_func);
             }
