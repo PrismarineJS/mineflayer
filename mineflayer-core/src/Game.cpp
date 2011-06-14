@@ -575,6 +575,7 @@ void Game::handleMultiBlockUpdate(Int3D chunk_key, QHash<Int3D, Block> new_block
     Int3D max_corner = chunk_key;
     QHashIterator<Int3D, Block> iterator(new_blocks);
     while (iterator.hasNext()) {
+        iterator.next();
         Int3D absolute_location = iterator.key();
         Block new_block = iterator.value();
         // TODO: recalculate lighting :(

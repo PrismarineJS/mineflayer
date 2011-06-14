@@ -456,7 +456,7 @@ void Server::fromIntPixels(mineflayer_EntityPosition &destination, Int3D pixels)
 
 Int3D Server::fromChunkCoordinates(int chunk_x, int chunk_z)
 {
-    return Int3D(chunk_x * 32, 0, chunk_z * 32);
+    return Int3D(chunk_x * 16, 0, chunk_z * 16);
 }
 
 void Server::fromNotchianYawPitch(mineflayer_EntityPosition &destination, float notchian_yaw, float notchian_pitch)
