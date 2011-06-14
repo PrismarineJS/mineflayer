@@ -327,16 +327,16 @@ typedef struct {
 
 
 typedef struct {
-    unsigned type : 8;
-    unsigned metadata : 4;
-    unsigned light : 4;
-    unsigned sky_light : 4;
+    int type; // [0, 255]
+    int metadata; // [0, 15]
+    int light; // [0, 15]
+    int sky_light; // [0, 15]
 } mineflayer_Block;
 
 typedef struct {
     mineflayer_ItemType type;
-    unsigned count : 8;
-    unsigned metadata : 16;
+    int count; // [0, 255]
+    int metadata; // [0, 65535]
 } mineflayer_Item;
 
 
