@@ -12,13 +12,17 @@
 
 class Chunk {
 public:
-    Chunk(const Int3D &pos, const Int3D &size, QByteArray data);
+    static int bufferLengthFromSize(const Int3D &size) { return size.x * size.y * size.z * 5 / 2; }
 
-    Block getBlock(const Int3D & coord) const;
-    void setBlock(const Int3D & coord, const Block & value);
+public:
+    Chunk(const Int3D &pos, const Int3D &size, QByteArray data);
 
     Int3D position() const { return m_pos; }
     Int3D size() const { return m_size; }
+
+    Block getBlock(const Int3D & coord) const;
+    void setBlock(const Int3D & coord, const Block & value);
+    void copyDataTo(unsigned char * buffer);
 
 private:
     const Int3D m_pos;

@@ -316,12 +316,11 @@ typedef struct {
     int x,y,z;
 } mineflayer_Int3D;
 
-typedef struct
-{
-    mineflayer_Double3D pos; // east, north, up
+typedef struct {
+    mineflayer_Double3D pos; // south, up, west
     mineflayer_Double3D vel; // m/s
     double height; // [0.1, 1.65] how tall you are.
-    float yaw; // [0, 2pi] rotation around z axis. 0 is +x. pi/2 is +y. pi is -x. 3pi/2 is -y.
+    float yaw; // [0, 2pi] rotation around vertical axis. 0 is east. pi/2 is north, etc
     float pitch; // [-pi/2, pi/2] 0 is parallel to the ground. pi/2 is up. -pi/2 is down.
     mineflayer_bool on_ground;
 } mineflayer_EntityPosition;
@@ -482,6 +481,8 @@ MINEFLAYER_EXPORT mineflayer_Entity * mineflayer_entity(mineflayer_GamePtr game,
 
 MINEFLAYER_EXPORT mineflayer_Block mineflayer_blockAt(mineflayer_GamePtr game, mineflayer_Int3D absolute_location);
 MINEFLAYER_EXPORT mineflayer_bool mineflayer_isBlockLoaded(mineflayer_GamePtr game, mineflayer_Int3D absolute_location);
+// writes to buffer in message 0x33 format. not loaded blocks are all 0's.
+MINEFLAYER_EXPORT void mineflayer_getMapData(mineflayer_GamePtr game, mineflayer_Int3D min_corner, mineflayer_Int3D size, unsigned char * buffer);
 
 // call mineflayer_destroyUtf8 when you are done with the return value.
 MINEFLAYER_EXPORT mineflayer_Utf8 mineflayer_signTextAt(mineflayer_GamePtr game, mineflayer_Int3D absolute_location);
