@@ -243,7 +243,7 @@ Block Game::blockAt(const Int3D & absolute_location)
 void Game::getMapData(const Int3D & min_corner, const Int3D & size, unsigned char * buffer)
 {
     QMutexLocker locker(&m_mutex);
-    Chunk chunk_writer(min_corner, size, QByteArray(NULL, Chunk::bufferLengthFromSize(size)));
+    Chunk chunk_writer(min_corner, size, QByteArray(Chunk::bufferLengthFromSize(size), (char)0));
     Int3D min_chunk_key = chunkKey(min_corner);
     Int3D max_corner = min_corner + size;
     Int3D max_chunk_key = chunkKey(max_corner - Int3D(1,1,1)) + Int3D(1,1,1);
