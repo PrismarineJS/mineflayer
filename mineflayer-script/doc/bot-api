@@ -38,7 +38,7 @@ mf.Point(x, y, z)
  * type {mf.EntityType}
  * position {mf.Point} The center of the bottom of of the entity.
  * velocity {mf.Point} The entity's velocity in meters per second squared.
- * yaw {Number} [0, 2pi] Rotation around vertical axis. 0 is -z. pi/2 is -x. pi is +z. 3pi/2 is +x.
+ * yaw {Number} [0, 2pi] Rotation around vertical axis. 0 is -z (east). pi/2 is -x (north), etc.
  * pitch {Number} [-pi/2, pi/2] 0 is parallel to the ground. pi/2 is up. -pi/2 is down.
  * on_ground {Boolean} True if you are not free-falling.
  * height {Number} Distance from ground to eyes. 0 for non-humanoid entities.
@@ -56,7 +56,7 @@ mf.Point(x, y, z)
 mf.Entity
 
 /**
- * Represents a block or item or stack of items.
+ * Represents an item or stack of items.
  *
  * Examples:
  * var item1 = new mf.Item(mf.ItemType.Dirt, 64)
@@ -65,13 +65,29 @@ mf.Entity
  * Properties:
  * type {mf.ItemType}
  * count {Number}
+ * metadata {Number}
  *
- * TODO: include the uses/data field somehow
- *
- * @param {mf.ItemType}
- * @param {Number} optional, defaults to 1
+ * @param {mf.ItemType} type
+ * @param {Number} count, defaults to 1
+ * @param {Number} metadata, defaults to 0
  */
-mf.Item(type, count)
+mf.Item(type, count, metadata)
+
+/**
+ * Represents a block placed in the world
+ *
+ * Properties:
+ * type {mf.ItemType}
+ * metadata {Number}
+ * light {Number} light from local sources (not the sky)
+ * sky_light {Number} potential light from sky if it was daytime
+ *
+ * @param {mf.ItemType} type
+ * @param {Number} metadata, defaults to 0
+ * @param {Number} light, defaults to 0
+ * @param {Number} sky_light, defaults to 0
+ */
+mf.Block(type, metadata, light, sky_light)
 
 // Enums
 
@@ -305,7 +321,7 @@ mf.health()
  * If mf.isBlockLoaded returns false for the point, this function will return
  * some kind of Air.
  * @param {mf.Point} point Coordinates do not need to be rounded.
- * @return {mf.Item} block object
+ * @return {mf.Block} block object
  */
 mf.blockAt(point)
 

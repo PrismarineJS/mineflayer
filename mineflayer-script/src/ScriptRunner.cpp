@@ -95,6 +95,7 @@ void ScriptRunner::bootstrap()
         m_point_class = mf_obj.property("Point");
         m_entity_class = mf_obj.property("Entity");
         m_item_class = mf_obj.property("Item");
+        m_block_class = mf_obj.property("Block");
     }
     // create the mf.ItemType enum
     {
@@ -580,9 +581,7 @@ QScriptValue ScriptRunner::blockAt(QScriptContext *context, QScriptEngine *engin
     if (!fromJsPoint(context, error, js_pt, pt))
         return error;
     mineflayer_Block block = mineflayer_blockAt(me->m_game, pt);
-    QScriptValue result = engine->newObject();
-    result.setProperty("type", block.type);
-    return result;
+    return jsBlock(block);
 }
 
 QScriptValue ScriptRunner::isBlockLoaded(QScriptContext *context, QScriptEngine *engine)
@@ -1112,7 +1111,11 @@ bool ScriptRunner::fromJsPoint(QScriptContext *context, QScriptValue &error, QSc
 
 QScriptValue ScriptRunner::jsItem(mineflayer_Item item)
 {
-    return m_item_class.construct(QScriptValueList() << item.type << item.count);
+    return m_item_class.construct(QScriptValueList() << item.type << item.count << item.metadata);
+}
+QScriptValue ScriptRunner::jsBlock(mineflayer_Block block)
+{
+    return m_block_class.construct(QScriptValueList() << block.type << block.metadata << block.light << block.sky_light);
 }
 
 void ScriptRunner::handleEntitySpawned(mineflayer_Entity * entity)

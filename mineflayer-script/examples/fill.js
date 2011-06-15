@@ -6,6 +6,7 @@ mf.include("inventory.js");
 mf.include("navigator.js");
 mf.include("Set.js");
 mf.include("ray_tracer.js");
+mf.include("builder.js");
 
 (function() {
     var current_instructor_id;
@@ -149,32 +150,9 @@ mf.include("ray_tracer.js");
             if (current_end === undefined) {
                 return;
             }
-            // try placing on any face that will work
-            var faces = [
-                mf.Face.NegativeX,
-                mf.Face.PositiveX,
-                mf.Face.NegativeY,
-                mf.Face.PositiveY,
-                mf.Face.NegativeZ,
-                mf.Face.PositiveZ,
-            ];
-            var vectors = [
-                new mf.Point( 1,  0,  0),
-                new mf.Point(-1,  0,  0),
-                new mf.Point( 0,  1,  0),
-                new mf.Point( 0, -1,  0),
-                new mf.Point( 0,  0,  1),
-                new mf.Point( 0,  0, -1),
-            ];
-            for (var i = 0; i < faces.length; i++) {
-                var other_point = point.plus(vectors[i]);
-                if (mf.canPlaceBlock(other_point, faces[i])) {
-                    mf.hax.placeBlock(other_point, faces[i]);
-                    nextBlock();
-                    return;
-                }
+            if (!builder.placeEquippedBlock(point)) {
+                impossible_count++;
             }
-            impossible_count++;
             nextBlock();
         })) {
             current_responder_func("out of " + current_block.name);

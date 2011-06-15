@@ -51,14 +51,24 @@ mf.EntityType = {
 };
 
 mf._serializableTypeNames.push("Item");
-mf.Item = function(type, count) {
+mf.Item = function(type, count, metadata) {
     this._type = "Item";
     this.type = type;
-    if (count !== undefined) {
-        this.count = count;
-    } else {
-        this.count = 1;
-    }
+    this.count = count !== undefined ? count : 1;
+    this.metadata = metadata !== undefined ? metadata : 0;
+};
+
+mf._serializableTypeNames.push("Block");
+mf.Block = function(type, metadata, light, sky_light) {
+    this._type = "Block";
+    this.type = type;
+    this.metadata = metadata !== undefined ? metadata : 0;
+    this.light = light !== undefined ? light : 0;
+    this.sky_light = sky_light !== undefined ? sky_light : 0;
+};
+mf.Block.prototype.equals = function(other) {
+    // ignore light levels
+    return this.type === other.type && this.metadata === other.metadata;
 };
 
 mf.Face = {
