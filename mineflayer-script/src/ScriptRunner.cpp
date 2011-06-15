@@ -581,7 +581,7 @@ QScriptValue ScriptRunner::blockAt(QScriptContext *context, QScriptEngine *engin
     if (!fromJsPoint(context, error, js_pt, pt))
         return error;
     mineflayer_Block block = mineflayer_blockAt(me->m_game, pt);
-    return jsBlock(block);
+    return me->jsBlock(block);
 }
 
 QScriptValue ScriptRunner::isBlockLoaded(QScriptContext *context, QScriptEngine *engine)

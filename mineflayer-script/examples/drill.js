@@ -27,11 +27,11 @@ chat_commands.registerCommand("drill", function(speaker_name, args, responder_fu
                 new builder.BlockSpec(cursor.offset(0, 1, 0), new mf.Item(mf.ItemType.Air)),
                 new builder.BlockSpec(cursor,                 new mf.Item(mf.ItemType.Air)),
             ];
-            cursor = cursor.add(forward_vector);
+            cursor = cursor.plus(forward_vector);
             return result;
         };
     })();
 
-    builder.startBuilding(construction_project, "drill");
+    builder.startBuilding(construction_project, "drill", responder_func);
 });
 

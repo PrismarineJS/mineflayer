@@ -10,7 +10,7 @@ builder.BlockSpec = function(point, block) {
     this.block = block;
 }
 
-builder.startBuilding = function(construction_project, task_name) {
+builder.startBuilding = function(construction_project, task_name, responder_func) {
     var current_buffer = [];
     function getNextBlockSpec() {
         while (current_buffer.length === 0) {
@@ -27,14 +27,15 @@ builder.startBuilding = function(construction_project, task_name) {
             "arrived_func": arrived_func,
             "cant_find_func": function() {
                 responder_func("can't navigate");
-                stop();
+                done();
             },
         });
     }
     function dig(point, callback) {
         function doneEquipping() {
             navigateTo(point, function() {
-                mf.onStoppedDigging(function(reason) {
+                mf.onStoppedDigging(function asdf(reason) {
+                    mf.removeHandler(mf.onStoppedDigging, asdf);
                     if (reason === mf.StoppedDiggingReason.BlockBroken) {
                         callback();
                     }
@@ -56,7 +57,7 @@ builder.startBuilding = function(construction_project, task_name) {
                 tool_name = items.nameForId(missing_tools[0]);
             }
             responder_func("need a " + tool_name);
-            stop();
+            done();
         }
     }
     function place(point, block) {
@@ -67,13 +68,13 @@ builder.startBuilding = function(construction_project, task_name) {
                     dealWithNextThing();
                 } else {
                     responder_func("can't place block");
-                    stop();
+                    done();
                 }
             });
         }
         if (!inventory.equipItem(block.type, doneEquipping)) {
             responder_func("out of " + items.nameForId(block.type));
-            stop();
+            done();
         }
     }
     var current_block_spec = undefined;
@@ -99,7 +100,7 @@ builder.startBuilding = function(construction_project, task_name) {
         }
     }
     function start() {
-        responder_func("drilling " + shape_name);
+        responder_func("drilling");
         dealWithNextThing();
     }
     function done() {
@@ -110,7 +111,7 @@ builder.startBuilding = function(construction_project, task_name) {
         mf.stopDigging();
         navigator.stop();
     }
-    task_manager.doLater(new task_manager.Task(start, stop, task_name);
+    task_manager.doLater(new task_manager.Task(start, stop, task_name));
 };
 
 builder.placeEquippedBlock = function(point) {

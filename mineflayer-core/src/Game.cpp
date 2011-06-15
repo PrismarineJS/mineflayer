@@ -1343,7 +1343,7 @@ void Game::closeWindow()
 {
     QMutexLocker locker(&m_mutex);
 
-    Q_ASSERT(m_open_window_id >= 0 && m_open_window_id < 256);
+    Q_ASSERT(0 <= m_open_window_id && m_open_window_id < 256);
     m_server.sendCloseWindow(m_open_window_id);
 
     m_open_window_id = -1;
@@ -1355,7 +1355,7 @@ void Game::openInventoryWindow()
 {
     QMutexLocker locker(&m_mutex);
 
-    Q_ASSERT(m_open_window_id == -1);
+    Q_ASSERT_X(m_open_window_id == -1, "", QString::number(m_open_window_id).toStdString().c_str());
 
     m_open_window_id = 0;
     m_open_window_type = mineflayer_InventoryWindow;
