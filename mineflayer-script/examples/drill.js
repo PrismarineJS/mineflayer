@@ -62,7 +62,7 @@ chat_commands.registerCommand("drill", function(speaker_name, args, responder_fu
             var result = [];
             for (var h = 0; h < height; h++) {
                 for (var sub_cursor = min_corner.offset(0, h, 0); sub_cursor.x <= max_corner.x && sub_cursor.z <= max_corner.z; sub_cursor = sub_cursor.plus(sideways_vector)) {
-                    result.push(new builder.BlockSpec(sub_cursor, new mf.Item(mf.ItemType.Air)));
+                    result.push(builder.makeNonSolidBlockSpec(sub_cursor));
                 }
             }
             cursor = cursor.plus(forward_vector);

@@ -5,10 +5,28 @@ mf.include("navigator.js");
 
 var builder = {};
 
-builder.BlockSpec = function(point, block) {
+builder.BlockSpec = function(point, block_or_is_block_acceptable_func, placement_choices, placement_description) {
     this.point = point;
-    this.block = block;
-}
+    if (block_or_is_block_acceptable_func.constructor === mf.Block) {
+        var block = block_or_is_block_acceptable_func;
+        this.isBlockAcceptable = block.equals;
+        this.placement_choices = [items.itemToPlaceBlock(block)];
+        this.placement_description = items.nameForId(block.type);
+    } else {
+        this.isBlockAcceptable = block_or_is_block_acceptable_func;
+        assert.isFunction(this.isBlockAcceptable);
+        this.placement_choices = placement_choices;
+        assert.isArray(this.placement_choices);
+        this.placement_description = placement_description;
+        assert.isString(this.placement_description);
+    }
+};
+builder.makeNonSolidBlockSpec = function(point) {
+    function isNotPhysical(block) {
+        return !mf.isPhysical(block.type);
+    }
+    return new builder.BlockSpec(point, isNotPhysical, [], "");
+};
 
 builder.startBuilding = function(construction_project, task_name, responder_func) {
     var current_buffer = [];
@@ -40,6 +58,7 @@ builder.startBuilding = function(construction_project, task_name, responder_func
                         callback();
                     }
                 });
+                mf.lookAt(point);
                 mf.startDigging(point);
             });
         }
@@ -72,10 +91,7 @@ builder.startBuilding = function(construction_project, task_name, responder_func
                 }
             });
         }
-        if (!inventory.equipItem(block.type, doneEquipping)) {
-            responder_func("out of " + items.nameForId(block.type));
-            done();
-        }
+        return inventory.equipItem(block.type, doneEquipping);
     }
     var current_block_spec = undefined;
     function dealWithNextThing() {
@@ -87,7 +103,7 @@ builder.startBuilding = function(construction_project, task_name, responder_func
                 current_block_spec = getNextBlockSpec();
             }
             var current_block = mf.blockAt(current_block_spec.point);
-            if (current_block.equals(current_block_spec.block)) {
+            if (current_block_spec.isBlockAcceptable(current_block)) {
                 // done with this block
                 current_block_spec = undefined;
                 continue;
@@ -98,8 +114,15 @@ builder.startBuilding = function(construction_project, task_name, responder_func
                 return;
             }
             // put the right thing here
-            place(current_block_spec.point, current_block_spec.block, dealWithNextThing);
-            return;
+            var placement_choices = current_block_spec.placement_choices;
+            for (var i = 0; i < placement_choices.length; i++) {
+                var item = placement_choices[i];
+                if (place(current_block_spec.point, current_block_spec.block, dealWithNextThing)) {
+                    return;
+                }
+            }
+            responder_func("out of " + current_block_spec.placement_description);
+            done();
         }
     }
     var running;

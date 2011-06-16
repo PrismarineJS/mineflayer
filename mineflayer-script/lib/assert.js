@@ -18,4 +18,10 @@ var assert = {};
     assert.classIs = function(object, constructor) {
         assert.isTrue(object.constructor === constructor);
     };
+    function make_class_checker(constructor) {
+        return function(value) {
+            assert.classIs(value, constructor);
+        };
+    }
+    assert.isArray = make_class_checker(Array);
 })();
