@@ -11,30 +11,30 @@ Setting up build:
 
 1. Install prerequisites:
 
-		$ sudo apt-get install qt4-dev-tools
+		sudo apt-get install qt4-dev-tools
 
 2. Create a build folder OUTSIDE the source code tree:
 
-		$ mkdir ../mineflayer-build
-		$ cd ../mineflayer-build/
+		mkdir ../mineflayer-build
+		cd ../mineflayer-build/
 
 3. Configure with script debugging support (recommended):
 
-		$ qmake ../mineflayer/mineflayer.pro
+		qmake ../mineflayer/mineflayer.pro
 
 OR configure headless which removes any dependency on an X server:
 
-		$ EXTRA_CONFIG=headless qmake ../mineflayer/mineflayer.pro
+		EXTRA_CONFIG=headless qmake ../mineflayer/mineflayer.pro
 
 4. Build everything:
 
-		$ make
+		make
 
-5. Optionally install libmineflayer-core.so to /usr/lib:
+5. Optionally install `libmineflayer-core.so` to `/usr/lib`:
 
-		$ INSTALL_ROOT=/usr sudo make install
-		if you don't do this, you'll have to put the directory containing
-		the .so in the LD_LIBRARY_PATH variable whenever you run mineflayer.
+		INSTALL_ROOT=/usr sudo make install
+
+If you don't do this, you'll have to put the directory containing the .so in the `LD_LIBRARY_PATH` variable whenever you run mineflayer.
 
 ### Mac:
 
@@ -42,18 +42,17 @@ OR configure headless which removes any dependency on an X server:
 2. Create a build folder OUTSIDE the source code tree and cd to it.
 3. Configure:
 
-		$ qmake -spec macx-g++ path/to/mineflayer.pro
+	qmake -spec macx-g++ path/to/mineflayer.pro
 
 OR:
 
-		$ EXTRA_CONFIG=headless qmake -spec macx-g++ path/to/mineflayer.pro
+	EXTRA_CONFIG=headless qmake -spec macx-g++ path/to/mineflayer.pro
 
 4. Now whenever you want to build, use make.
 
 ### Windows:
 
-NOTE: these instructions are out of date. You don't need to do step 5 or
-			probably steps 2 - 6 at all.
+NOTE: these instructions are out of date. You don't need to do step 5 or probably steps 2 - 6 at all.
 
 1. Download and install the Qt SDK: http://qt.nokia.com/downloads/
 2. Open mineflayer.pro with Qt Creator
@@ -87,7 +86,7 @@ To connect to a server that requires authentication:
 
     mineflayer --url username@server --password 12345 bot.js
 
-NOTE: all parameters passed after the bot .js file are parameters passed to the bot script itself rather than mineflayer.
+NOTE: all parameters passed after the bot `.js` file are parameters passed to the bot script itself rather than mineflayer.
 
 
 Running the useful examples (multi.js):
@@ -101,16 +100,15 @@ Explanations of the `--master` and `--setup` commands can be found in `lib/chat_
 
 Documentation:
 --------------
-    * See doc/bot-api for comprehensive API documentation.
-    * See libs/ for more utility functions.
-    * See examples/ for examples of bot code.
+ * See `doc/bot-api` for comprehensive API documentation.
+ * See `libs/` for more utility functions.
+ * See `examples/` for examples of bot code.
 
-    ECMAScript reference:
-        http://doc.qt.nokia.com/latest/ecmascript.html
+ECMAScript reference: http://doc.qt.nokia.com/latest/ecmascript.html
 
 Running the test suite:
 -----------------------
 Command will look something like:
 
-    cd mineflayer-script
-    LD_LIBRARY_PATH=../../mineflayer-build-desktop/mineflayer-core bin/run_tests ~/apps/minecraft-server-1.5/minecraft_server.jar ../../mineflayer-build-desktop/mineflayer-script/mineflayer
+	cd mineflayer-script
+	LD_LIBRARY_PATH=../../mineflayer-build-desktop/mineflayer-core bin/run_tests ~/apps/minecraft-server-1.5/minecraft_server.jar ../../mineflayer-build-desktop/mineflayer-script/mineflayer
