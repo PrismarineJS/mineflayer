@@ -73,6 +73,7 @@ public:
 
     void openInventoryWindow();
     void closeWindow();
+    mineflayer_WindowType getOpenWindow();
 
     Item inventoryItem(int slot_id) const; // [0, 35]
     Item uniqueWindowItem(int slot_id) const;

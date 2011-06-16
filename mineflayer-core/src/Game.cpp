@@ -1335,6 +1335,11 @@ void Game::openInventoryWindow()
     emit windowOpened(mineflayer_InventoryWindow);
 }
 
+mineflayer_WindowType Game::getOpenWindow()
+{
+    return m_open_window_type;
+}
+
 bool Game::clickOutsideWindow(bool right_click)
 {
     WindowClick window_click;
