@@ -10,17 +10,28 @@ Setting up build:
 ### Linux:
 
 1. Install prerequisites:
+
 		$ sudo apt-get install qt4-dev-tools
+
 2. Create a build folder OUTSIDE the source code tree:
+
 		$ mkdir ../mineflayer-build
 		$ cd ../mineflayer-build/
+
 3. Configure with script debugging support (recommended):
+
 		$ qmake ../mineflayer/mineflayer.pro
+
 OR configure headless which removes any dependency on an X server:
+
 		$ EXTRA_CONFIG=headless qmake ../mineflayer/mineflayer.pro
+
 4. Build everything:
+
 		$ make
+
 5. Optionally install libmineflayer-core.so to /usr/lib:
+
 		$ INSTALL_ROOT=/usr sudo make install
 		if you don't do this, you'll have to put the directory containing
 		the .so in the LD_LIBRARY_PATH variable whenever you run mineflayer.
@@ -30,9 +41,13 @@ OR configure headless which removes any dependency on an X server:
 1. Download the Qt SDK for Mac from http://qt.nokia.com/downloads/
 2. Create a build folder OUTSIDE the source code tree and cd to it.
 3. Configure:
+
 		$ qmake -spec macx-g++ path/to/mineflayer.pro
+
 OR:
+
 		$ EXTRA_CONFIG=headless qmake -spec macx-g++ path/to/mineflayer.pro
+
 4. Now whenever you want to build, use make.
 
 ### Windows:
@@ -47,16 +62,15 @@ NOTE: these instructions are out of date. You don't need to do step 5 or
 5. Build Steps -> qmake -> Details -> additional arguments: CONFIG+=no_3d
 6. On the left above the run button, change the active build to Release
 7. Build -> Build All
-8. This generates mineflayer.exe in your build directory. Typically
-		you run bots from the command line. To do this you'll need to copy
-		a bunch of DLLs from Qt. These DLLs are:
-		* libgcc_s_dw2-1.dll
-		* mingwm10.dll
-		* QtCore4.dll
-		* QtGui4.dll
-		* QtNetwork4.dll
-		* QtScript4.dll
-		* QtScriptTools4.dll
+8. This generates mineflayer.exe in your build directory. Typically you run bots from the command line. To do this you'll need to copy a bunch of DLLs from Qt. These DLLs are:
+
+	* libgcc_s_dw2-1.dll
+	* mingwm10.dll
+	* QtCore4.dll
+	* QtGui4.dll
+	* QtNetwork4.dll
+	* QtScript4.dll
+	* QtScriptTools4.dll
 
 Running bots:
 -------------
