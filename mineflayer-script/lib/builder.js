@@ -80,6 +80,9 @@ builder.startBuilding = function(construction_project, task_name, responder_func
     var current_block_spec = undefined;
     function dealWithNextThing() {
         while (true) {
+            if (!running) {
+                return;
+            }
             if (current_block_spec === undefined) {
                 current_block_spec = getNextBlockSpec();
             }
@@ -99,7 +102,9 @@ builder.startBuilding = function(construction_project, task_name, responder_func
             return;
         }
     }
+    var running;
     function start() {
+        running = true;
         responder_func("drilling");
         dealWithNextThing();
     }
@@ -108,6 +113,7 @@ builder.startBuilding = function(construction_project, task_name, responder_func
         task_manager.done();
     }
     function stop() {
+        running = false;
         mf.stopDigging();
         navigator.stop();
     }
