@@ -1,27 +1,17 @@
-Core:
- * expose direct access to chunks in API
- * revert to notchian coordinate system :(
+See also https://github.com/superjoe30/mineflayer/issues
 
+Core:
  * handle specific metadata crafting
  * expose crafting and smelting recipes to API
  * dispenser is untested
  * physics
-   - partial blocks:
-       - slab
-       - cake
-       - bed
-       - stairs
-       - ladder
-       - door
-       - cactus
-       - fence
+   - partial blocks
    - climb ladders
    - swim & slow down in liquids: water, lava
    - less friction on ice
    - recoil when punched
    - vehicles: mine cart, boat, pig
    - entity collisions
-
  * handler for onHeardNoteBlock(type, pitch, volume)
  * clean up stray chunks that didn't get unloaded (still a problem in latest
    version?)
@@ -31,7 +21,7 @@ Core:
  * figure out when attached blocks fall off their host block (signs, torches,
    etc.) (still a problem in latest version?)
  * handle forced window close events from the server
- * metadata for cake, repeater, bed, slab/doubleslab
+ * metadata for cake, repeater, bed, slab/doubleslab (what does this mean?)
 
 Bot framework:
  * expose some kind of ItemData structure with bounding boxes and stuff

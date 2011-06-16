@@ -43,6 +43,7 @@ private:
     QScriptValue m_point_class;
     QScriptValue m_entity_class;
     QScriptValue m_item_class;
+    QScriptValue m_block_class;
 
     mineflayer_GamePtr m_game;
     bool m_started_game;
@@ -93,6 +94,7 @@ private:
     static bool fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, mineflayer_Double3D &point);
     static bool fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, mineflayer_Int3D &floored_point);
     QScriptValue jsItem(mineflayer_Item item);
+    QScriptValue jsBlock(mineflayer_Block block);
     QScriptValue jsEntity(mineflayer_Entity * entity);
 
 

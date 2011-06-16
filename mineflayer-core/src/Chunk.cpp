@@ -1,7 +1,5 @@
 #include "Chunk.h"
 
-#include <cstdlib>
-
 uint qHash(const Int3D & coord)
 {
     return (coord.x * 8191 + coord.z) * 131071 + coord.y;
@@ -50,4 +48,9 @@ void Chunk::setBlock(const Int3D &coord, const Block &value)
     m_data[ m_metadata_offset + array_index / 2] = (m_data.at( m_metadata_offset + array_index / 2) & innactive_nibble_mask) | (value.data.metadata  << nibble_shifter);
     m_data[    m_light_offset + array_index / 2] = (m_data.at(    m_light_offset + array_index / 2) & innactive_nibble_mask) | (value.data.light     << nibble_shifter);
     m_data[m_sky_light_offest + array_index / 2] = (m_data.at(m_sky_light_offest + array_index / 2) & innactive_nibble_mask) | (value.data.sky_light << nibble_shifter);
+}
+
+void Chunk::copyDataTo(unsigned char * buffer)
+{
+    memcpy(buffer, m_data.constData(), m_data.size());
 }

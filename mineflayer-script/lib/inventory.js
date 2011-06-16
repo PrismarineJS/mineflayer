@@ -277,12 +277,9 @@ var inventory = {};
                 }
                 mf.onWindowOpened(function equip(window_type) {
                     mf.removeHandler(mf.onWindowOpened, equip);
-                    if (window_type !== mf.WindowType.Inventory) {
-                        return false;
-                    }
-                    if (itemSlot === undefined) {
-                        return false;
-                    }
+                    assert.isTrue(window_type === mf.WindowType.Inventory);
+                    assert.isTrue(itemSlot !== undefined);
+
                     mf.clickInventorySlot(itemSlot, mf.MouseButton.Left);
                     mf.clickInventorySlot(mf.selectedEquipSlot(), mf.MouseButton.Left);
                     mf.clickInventorySlot(itemSlot, mf.MouseButton.Left);
@@ -290,7 +287,6 @@ var inventory = {};
                     if (callback !== undefined) {
                         callback();
                     }
-                    return true;
                 });
                 mf.openInventoryWindow();
             }

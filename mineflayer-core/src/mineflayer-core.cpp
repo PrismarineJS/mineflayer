@@ -134,6 +134,12 @@ bool mineflayer_isBlockLoaded(mineflayer_GamePtr _game, mineflayer_Int3D absolut
     Game * game = (reinterpret_cast<GameListener *>(_game))->game;
     return game->isBlockLoaded(Int3D(absolute_location.x, absolute_location.y, absolute_location.z));
 }
+void mineflayer_getMapData(mineflayer_GamePtr _game, mineflayer_Int3D min_corner, mineflayer_Int3D size, unsigned char * buffer) {
+    Game * game = (reinterpret_cast<GameListener *>(_game))->game;
+    game->getMapData(Int3D(min_corner.x, min_corner.y, min_corner.z), Int3D(size.x, size.y, size.z), buffer);
+}
+
+
 mineflayer_Utf8 mineflayer_signTextAt(mineflayer_GamePtr _game, mineflayer_Int3D absolute_location) {
     Game * game = (reinterpret_cast<GameListener *>(_game))->game;
     return Util::toNewMfUtf8(game->signTextAt(Int3D(absolute_location.x, absolute_location.y, absolute_location.z)));

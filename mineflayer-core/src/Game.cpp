@@ -240,6 +240,35 @@ Block Game::blockAt(const Int3D & absolute_location)
     }
     return probable_value;
 }
+void Game::getMapData(const Int3D & min_corner, const Int3D & size, unsigned char * buffer)
+{
+    QMutexLocker locker(&m_mutex);
+    Chunk chunk_writer(min_corner, size, QByteArray(Chunk::bufferLengthFromSize(size), (char)0));
+    Int3D min_chunk_key = chunkKey(min_corner);
+    Int3D max_corner = min_corner + size;
+    Int3D max_chunk_key = chunkKey(max_corner - Int3D(1,1,1)) + Int3D(1,1,1);
+    Int3D chunk_cursor;
+    for (chunk_cursor.x = min_chunk_key.x; chunk_cursor.x < max_chunk_key.x; chunk_cursor.x += c_chunk_size.x) {
+        for (chunk_cursor.z = min_chunk_key.z; chunk_cursor.z < max_chunk_key.z; chunk_cursor.z += c_chunk_size.z) {
+            for (chunk_cursor.y = min_chunk_key.y; chunk_cursor.y < max_chunk_key.y; chunk_cursor.y += c_chunk_size.y) {
+                QSharedPointer<Chunk> source_chunk = m_chunks.value(chunk_cursor, QSharedPointer<Chunk>());
+                if (source_chunk.isNull())
+                    continue;
+                Int3D chunk_max_corner = chunk_cursor + c_chunk_size;
+                Int3D block_cursor;
+                for (block_cursor.x = std::max(chunk_cursor.x, min_corner.x); block_cursor.x < std::min(chunk_max_corner.x, max_corner.x); block_cursor.x++) {
+                    for (block_cursor.y = std::max(chunk_cursor.y, min_corner.y); block_cursor.y < std::min(chunk_max_corner.y, max_corner.y); block_cursor.y++) {
+                        for (block_cursor.z = std::max(chunk_cursor.z, min_corner.z); block_cursor.z < std::min(chunk_max_corner.z, max_corner.z); block_cursor.z++) {
+                            chunk_writer.setBlock(block_cursor, source_chunk.data()->getBlock(block_cursor));
+                        }
+                    }
+                }
+            }
+        }
+    }
+    chunk_writer.copyDataTo(buffer);
+}
+
 QString Game::signTextAt(const Int3D &absolute_location)
 {
     QMutexLocker locker(&m_mutex);
@@ -1314,7 +1343,7 @@ void Game::closeWindow()
 {
     QMutexLocker locker(&m_mutex);
 
-    Q_ASSERT(m_open_window_id >= 0 && m_open_window_id < 256);
+    Q_ASSERT(0 <= m_open_window_id && m_open_window_id < 256);
     m_server.sendCloseWindow(m_open_window_id);
 
     m_open_window_id = -1;
@@ -1326,7 +1355,7 @@ void Game::openInventoryWindow()
 {
     QMutexLocker locker(&m_mutex);
 
-    Q_ASSERT(m_open_window_id == -1);
+    Q_ASSERT_X(m_open_window_id == -1, "", QString::number(m_open_window_id).toStdString().c_str());
 
     m_open_window_id = 0;
     m_open_window_type = mineflayer_InventoryWindow;
