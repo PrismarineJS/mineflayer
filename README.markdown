@@ -22,7 +22,7 @@ Setting up build:
 
 		qmake ../mineflayer/mineflayer.pro
 
-OR configure headless which removes any dependency on an X server:
+	OR configure headless which removes any dependency on an X server:
 
 		EXTRA_CONFIG=headless qmake ../mineflayer/mineflayer.pro
 
@@ -42,13 +42,13 @@ If you don't do this, you'll have to put the directory containing the .so in the
 2. Create a build folder OUTSIDE the source code tree and cd to it.
 3. Configure:
 
-	qmake -spec macx-g++ path/to/mineflayer.pro
+		qmake -spec macx-g++ path/to/mineflayer.pro
 
-OR:
+	OR:
 
-	EXTRA_CONFIG=headless qmake -spec macx-g++ path/to/mineflayer.pro
+		EXTRA_CONFIG=headless qmake -spec macx-g++ path/to/mineflayer.pro
 
-4. Now whenever you want to build, use make.
+4. Now whenever you want to build, use `make`.
 
 ### Windows:
 
