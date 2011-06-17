@@ -83,10 +83,38 @@ var items = {};
             return tools;
         }
         return items.tools.swords;
-    }
+    };
     items.isTool = function(item_id) {
         return all_tools.contains(item_id);
+    };
+
+    var block_to_item_that_places_it = {};
+    {
+        block_to_item_that_places_it[mf.ItemType.StationaryWater] = mf.ItemType.WaterBucket;
+        block_to_item_that_places_it[mf.ItemType.StationaryLava] = mf.ItemType.LavaBucket;
+        block_to_item_that_places_it[mf.ItemType.Bed_placed] = mf.ItemType.Bed;
+        block_to_item_that_places_it[mf.ItemType.RedstoneWire_placed] = mf.ItemType.Redstone;
+        block_to_item_that_places_it[mf.ItemType.SignPost_placed] = mf.ItemType.Sign;
+        block_to_item_that_places_it[mf.ItemType.WoodenDoor_placed] = mf.ItemType.WoodenDoor;
+        block_to_item_that_places_it[mf.ItemType.WallSign_placed] = mf.ItemType.Sign;
+        block_to_item_that_places_it[mf.ItemType.IronDoor_placed] = mf.ItemType.IronDoor;
+        block_to_item_that_places_it[mf.ItemType.RedstoneTorchOff_placed] = mf.ItemType.RedstoneTorchOn;
+        block_to_item_that_places_it[mf.ItemType.SugarCane_placed] = mf.ItemType.SugarCane;
+        block_to_item_that_places_it[mf.ItemType.Cake_placed] = mf.ItemType.Cake;
+        block_to_item_that_places_it[mf.ItemType.RedstoneRepeaterOff_placed] = mf.ItemType.RedstoneRepeater;
+        block_to_item_that_places_it[mf.ItemType.RedstoneRepeaterOn_placed] = mf.ItemType.RedstoneRepeater;
     }
+    items.itemToPlaceBlock = function(block) {
+        if (block.type === mf.ItemType.Air) {
+            return undefined;
+        }
+        var item_type = block_to_item_that_places_it[block.type];
+        if (item_type === undefined) {
+            // the common case is that the item is the same as the block
+            item_type = block.type;
+        }
+        return new mf.Item(item_type, undefined, block.metadata);
+    };
 
     /**
      * Returns number of half-hearts the food specified heals for.

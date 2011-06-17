@@ -9,7 +9,7 @@ builder.BlockSpec = function(point, block_or_is_block_acceptable_func, placement
     this.point = point;
     if (block_or_is_block_acceptable_func.constructor === mf.Block) {
         var block = block_or_is_block_acceptable_func;
-        this.isBlockAcceptable = block.equals;
+        this.isBlockAcceptable = function(other) { return block.equals(other); };
         this.placement_choices = [items.itemToPlaceBlock(block)];
         this.placement_description = items.nameForId(block.type);
     } else {
@@ -83,8 +83,7 @@ builder.startBuilding = function(construction_project, task_name, responder_func
             done();
         }
     }
-    function place(point, block) {
-        // TODO: metadata
+    function place(point, item) {
         function doneEquipping() {
             navigateTo(point, function () {
                 if (builder.placeEquippedBlock(point)) {
@@ -95,7 +94,8 @@ builder.startBuilding = function(construction_project, task_name, responder_func
                 }
             });
         }
-        return inventory.equipItem(block.type, doneEquipping);
+        // TODO: metadata
+        return inventory.equipItem(item.type, doneEquipping);
     }
     var current_block_spec = undefined;
     function dealWithNextThing() {
@@ -121,7 +121,7 @@ builder.startBuilding = function(construction_project, task_name, responder_func
             var placement_choices = current_block_spec.placement_choices;
             for (var i = 0; i < placement_choices.length; i++) {
                 var item = placement_choices[i];
-                if (place(current_block_spec.point, current_block_spec.block, dealWithNextThing)) {
+                if (place(current_block_spec.point, item, dealWithNextThing)) {
                     return;
                 }
             }
