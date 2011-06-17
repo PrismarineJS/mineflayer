@@ -68,59 +68,6 @@ mf.include("quitter.js");
     }, 2, Infinity);
 
     function goToPoint(end, end_radius, responder_func, wait_for_username) {
-        stopChecking();
-        var current_checker_interval_id;
-        function startMonitor() {
-            if (current_checker_interval_id !== undefined) {
-                // already started
-                return;
-            }
-            if (wait_for_username === undefined) {
-                // noboday to wait for
-                return;
-            }
-            var waiting = false;
-            current_checker_interval_id = mf.setInterval(function() {
-                // wait for someone maybe
-                if (current_checker_interval_id === undefined) {
-                    // race conditions
-                    return;
-                }
-                var current_position = mf.self().position;
-                var entity = player_tracker.entityForPlayer(wait_for_username);
-                var resume = false;
-                if (entity === undefined) {
-                    responder_func("can't see " + wait_for_username + " so i'm going on with them");
-                    stopChecking();
-                    if (waiting) {
-                        resume = true;
-                    }
-                } else if (waiting) {
-                    if (entity.position.distanceTo(mf.self().position) < 10) {
-                        // resume
-                        resume = true;
-                    }
-                } else {
-                    if (entity.position.distanceTo(current_position) > 20) {
-                        responder_func("waiting for " + wait_for_username + " to catch up");
-                        navigator.stop();
-                        waiting = true;
-                    }
-                }
-                if (resume) {
-                    goToPoint(end, end_radius, responder_func, wait_for_username);
-                    waiting = false;
-                }
-            }, 1000);
-        }
-        function stopChecking() {
-            if (current_checker_interval_id === undefined) {
-                // race conditions
-                return;
-            }
-            mf.clearInterval(current_checker_interval_id);
-            current_checker_interval_id = undefined;
-        }
         var description;
         if (wait_for_username !== undefined) {
             description = "lead " + wait_for_username + " to ";
@@ -128,33 +75,99 @@ mf.include("quitter.js");
             description = "goto ";
         }
         description += end;
+        var stop = function() {};
         task_manager.doLater(new task_manager.Task(function start() {
-            responder_func("looking for a path from " + mf.self().position.floored() + " to " + end.floored() + "...");
-            navigator.navigateTo(end, {
-                "end_radius": end_radius,
-                "timeout_milliseconds": 10 * 1000,
-                "cant_find_func": function() {
-                    responder_func("can't find a path");
-                    task_manager.done();
-                },
-                "path_part_found_func": function(path) {
-                    responder_func("k, i'm going to go " + path.length + " moves for now");
-                    startMonitor();
-                },
-                "path_found_func": function(path) {
-                    responder_func("i can get there in " + path.length + " moves");
-                    startMonitor();
-                },
-                "arrived_func": function() {
-                    responder_func("i have arrived");
-                    stopChecking();
-                    task_manager.done();
-                },
-            });
-        }, function stop() {
-            navigator.stop();
+            var running = true;
             stopChecking();
-        }, description));
+            var current_checker_interval_id;
+            function startMonitor() {
+                if (!running) {
+                    return;
+                }
+                if (current_checker_interval_id !== undefined) {
+                    // already started
+                    return;
+                }
+                if (wait_for_username === undefined) {
+                    // noboday to wait for
+                    return;
+                }
+                var waiting = false;
+                current_checker_interval_id = mf.setInterval(function() {
+                    if (!running) {
+                        return;
+                    }
+                    // wait for someone maybe
+                    var current_position = mf.self().position;
+                    var entity = player_tracker.entityForPlayer(wait_for_username);
+                    var resume = false;
+                    if (entity === undefined) {
+                        responder_func("can't see " + wait_for_username + " so i'm going on with them");
+                        stopChecking();
+                        if (waiting) {
+                            resume = true;
+                        }
+                    } else if (waiting) {
+                        if (entity.position.distanceTo(mf.self().position) < 10) {
+                            // resume
+                            resume = true;
+                        }
+                    } else {
+                        if (entity.position.distanceTo(current_position) > 20) {
+                            responder_func("waiting for " + wait_for_username + " to catch up");
+                            navigator.navigateTo(entity.position, {
+                                "end_radius": 5,
+                                "timeout_milliseconds": 2 * 1000,
+                            });
+                            waiting = true;
+                        }
+                    }
+                    if (resume) {
+                        doTheNavigation();
+                        waiting = false;
+                    }
+                }, 1000);
+            }
+            function stopChecking() {
+                if (current_checker_interval_id === undefined) {
+                    // race conditions
+                    return;
+                }
+                mf.clearInterval(current_checker_interval_id);
+                current_checker_interval_id = undefined;
+            }
+            stop = function() {
+                running = false;
+                navigator.stop();
+                stopChecking();
+            };
+
+            function doTheNavigation() {
+                responder_func("looking for a path from " + mf.self().position.floored() + " to " + end.floored() + "...");
+                navigator.navigateTo(end, {
+                    "end_radius": end_radius,
+                    "timeout_milliseconds": 10 * 1000,
+                    "cant_find_func": function() {
+                        responder_func("can't find a path");
+                        task_manager.done();
+                    },
+                    "path_part_found_func": function(path) {
+                        responder_func("k, i'm going to go " + path.length + " moves for now");
+                        startMonitor();
+                    },
+                    "path_found_func": function(path) {
+                        responder_func("i can get there in " + path.length + " moves");
+                        startMonitor();
+                    },
+                    "arrived_func": function() {
+                        responder_func("i have arrived");
+                        stopChecking();
+                        task_manager.done();
+                    },
+                });
+            }
+            doTheNavigation();
+        }, stop, description));
     }
 
 })();

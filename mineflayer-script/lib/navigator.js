@@ -19,6 +19,7 @@ var navigator = {};
      *      arrived_func() - called when the destination is reached.
      */
     navigator.navigateTo = function(end, params) {
+        navigator.stop();
         var start = mf.self().position.floored();
         end = end.floored();
         if (params.timeout_milliseconds === undefined) {
@@ -72,7 +73,6 @@ var navigator = {};
         }
 
         // start
-        navigator.stop();
         current_completed_callback = params.arrived_func;
         // go to the centers of blocks
         current_course = path.mapped(function(node) { return node.point.offset(0.5, 0, 0.5); });
