@@ -72,6 +72,10 @@ builder.startBuilding = function(construction_project, task_name, responder_func
                 tool_name = "pick";
             } else  if (missing_tools === items.tools.axes) {
                 tool_name = "axe";
+            } else if (missing_tools === undefined) {
+                current_block_spec = undefined;
+                callback();
+                return;
             } else {
                 tool_name = items.nameForId(missing_tools[0]);
             }
@@ -126,6 +130,7 @@ builder.startBuilding = function(construction_project, task_name, responder_func
         }
     }
     var running;
+    var timeout;
     function start() {
         running = true;
         responder_func("drilling");
@@ -136,6 +141,9 @@ builder.startBuilding = function(construction_project, task_name, responder_func
         task_manager.done();
     }
     function stop() {
+        if (timeout !== undefined) {
+            mf.clearTimeout(timeout);
+        }
         running = false;
         mf.stopDigging();
         navigator.stop();
