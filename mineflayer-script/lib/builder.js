@@ -130,7 +130,6 @@ builder.startBuilding = function(construction_project, task_name, responder_func
         }
     }
     var running;
-    var timeout;
     function start() {
         running = true;
         responder_func("drilling");
@@ -141,9 +140,6 @@ builder.startBuilding = function(construction_project, task_name, responder_func
         task_manager.done();
     }
     function stop() {
-        if (timeout !== undefined) {
-            mf.clearTimeout(timeout);
-        }
         running = false;
         mf.stopDigging();
         navigator.stop();
