@@ -30,7 +30,7 @@ mf.include("block_finder.js");
         upDown = relativeCoordinates.y > 0 ? "Up" : "Down";
         eastWest = relativeCoordinates.z > 0 ? "West" : "East";
 
-        responder_func("I found some " + items.nameForId(type) + "! Go " + eastWest + " " + Math.abs(relativeCoordinates.x) + " blocks, " + northSouth + " " + Math.abs(relativeCoordinates.y) + " blocks, and " + upDown + " " + Math.abs(relativeCoordinates.z) + " blocks."); 
+        responder_func("I found some " + items.nameForId(type) + "! Go " + northSouth + " " + Math.abs(relativeCoordinates.x) + " blocks, " + upDown + " " + Math.abs(relativeCoordinates.y) + " blocks, and " + eastWest + " " + Math.abs(relativeCoordinates.z) + " blocks."); 
         mf.lookAt(coordinates);
     }
     chat_commands.registerCommand("find", find, 1, Infinity);
