@@ -95,6 +95,14 @@ mf.include("builder.js");
         var placement_description = "cobblestone/dirt";
         return new builder.BlockSpec(point, isBlockAcceptable, placement_choices, placement_description);
     }
+    function makeAirBlockSpec(point) {
+        function isBlockAcceptable(block) {
+            return block.type === mf.ItemType.Air || block.type === mf.ItemType.Torch;
+        }
+        var placement_choices = [];
+        var placement_description = "air or torch";
+        return new builder.BlockSpec(point, isBlockAcceptable, placement_choices, placement_description);
+    }
     chat_commands.registerCommand("tunnel", function(speaker_name, args, responder_func) {
         var make_construction_project_func = function(cursor, sideways_vector, forward_vector, cursor_to_min_corner, cursor_to_max_corner) {
             var construction_project = {};
@@ -107,7 +115,7 @@ mf.include("builder.js");
                 for (var h = 0; h < height; h++) {
                     first_wall_yet = false;
                     for (var point = min_corner.offset(0, h, 0); point.x <= max_corner.x && point.z <= max_corner.z; point = point.plus(sideways_vector)) {
-                        result.push(new builder.BlockSpec(point, new mf.Block(mf.ItemType.Air)));
+                        result.push(makeAirBlockSpec(point));
                         if (h === 0) {
                             // floor
                             result.push(makeWallBlockSpec(point.offset(0, -1, 0)));
