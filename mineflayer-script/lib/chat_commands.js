@@ -105,11 +105,14 @@ var chat_commands = {};
     /**
      * Runs text-based commands as if they were whispered from myself
      */
-    chat_commands.talkToSelf = function(text, responder_func) {
+    chat_commands.talkToSelf = function(text, responder_func, speaker_name) {
         if (responder_func === undefined) {
             responder_func = function() {};
         }
-        handle_chat(mf.self().username, text, true, responder_func);
+        if (speaker_name === undefined) {
+            speaker_name = mf.self().username;
+        }
+        handle_chat(speaker_name, text, true, responder_func);
     };
 
     var masters;
