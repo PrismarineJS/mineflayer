@@ -112,7 +112,7 @@ builder.startBuilding = function(construction_project, task_name, responder_func
                 current_block_spec = undefined;
                 continue;
             }
-            if (current_block.type !== mf.ItemType.Air) {
+            if (mf.isDiggable(current_block.type)) {
                 // get this outta the way
                 dig(current_block_spec.point, dealWithNextThing);
                 return;
