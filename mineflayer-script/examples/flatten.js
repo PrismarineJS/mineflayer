@@ -165,6 +165,7 @@ mf.include("inventory.js");
                         mine_blocks();
                     });
                     flattened = true;
+                    mf.lookAt(block_positions[block_index]);
                     mf.startDigging(block_positions[block_index]);
                 },
                 cant_find_func: function() {

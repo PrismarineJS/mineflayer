@@ -1,5 +1,6 @@
 mf.include("assert.js");
 mf.include("strings.js");
+mf.include("arrays.js");
 mf.include("Set.js");
 mf.include("player_tracker.js");
 
@@ -56,10 +57,12 @@ mf.include("player_tracker.js");
  *  mineflayer whispers hello
  *
  * --setup="command ..."
+ * --setup=@setup_file
  *  This causes the command specified to be "run" once we log in. The
  *  responder_func for the commands whispers to each of the masters specified by
  *  --master (see above). If there are no masters, then the responder_func
- *  speaks openly. Example:
+ *  speaks openly. If the command begins with '@', commands are read from the
+ *  file specified, one per line. Example:
  *  --setup='echo Hello, World!'
  *
  */
@@ -143,7 +146,15 @@ var chat_commands = {};
             }
             var setup_arg_prefix = "--setup=";
             if (arg.startsWith(setup_arg_prefix)) {
-                setup_commands.push(arg.substr(setup_arg_prefix.length));
+                var cmd = arg.substr(setup_arg_prefix.length);
+                if (cmd.startsWith("@")) {
+                    // read commands from file
+                    var file_name = cmd.substr(1);
+                    var lines = mf.readFile(file_name).split("\n");
+                    setup_commands.extend(lines);
+                } else {
+                    setup_commands.push(cmd);
+                }
                 continue;
             }
         }
