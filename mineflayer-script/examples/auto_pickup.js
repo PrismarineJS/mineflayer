@@ -26,6 +26,9 @@ mf.include("navigator.js");
         // let it settle first
         mf.setTimeout(function() {
             entity = mf.entity(entity.entity_id);
+            if (entity === undefined) {
+                return;
+            }
             if (entity.position.distanceTo(mf.self().position) > 7) {
                 return;
             }

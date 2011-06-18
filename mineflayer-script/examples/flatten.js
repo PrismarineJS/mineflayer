@@ -160,6 +160,9 @@ mf.include("inventory.js");
                         return;
                     }
                     mf.onStoppedDigging(function asdf() {
+                        if (!running) {
+                            return;
+                        }
                         mf.removeHandler(mf.onStoppedDigging, asdf);
                         block_positions.removeAt(block_index);
                         mine_blocks();
@@ -247,32 +250,33 @@ mf.include("inventory.js");
             mine_blocks();
         };
         task_manager.doLater(new task_manager.Task(function start() {
-                navigator.navigateTo(player.position, {
-                    end_radius: 16,
-                    timeout_milliseconds: 1000 * 10,
-                    arrived_func: start_mining,
-                    path_found_func: function() {
-                        if (! running) {
-                            responder_fun("Going to try and flatten");
-                        }
-                        running = true;
-                    },
-                    cant_find_func: function() {
-                        responder_fun("Sorry, I can't get to you!");
-                        done();
-                    },
-                });
-            }, function stop() {
-                running = false;
-            }, function toString() {
-                if (block_positions !== undefined && block_positions.length > 0) {
-                    return "flatten (" + player_position.x + ", " + player_position.y + ") r=" + radius + " y=[" + min_height_level + " : " + block_positions[0].y + "]";
-                } else {
-                    return "flatten (" + player_position.x + ", " + player_position.y + ") r=" + radius + " y=[" + min_height_level + " : " + max_height_level + "]";
-                }
+            navigator.navigateTo(player.position, {
+                end_radius: 16,
+                timeout_milliseconds: 1000 * 10,
+                arrived_func: start_mining,
+                path_found_func: function() {
+                    if (!running) {
+                        responder_fun("Going to try and flatten");
+                    }
+                    running = true;
+                },
+                cant_find_func: function() {
+                    responder_fun("Sorry, I can't get to you!");
+                    done();
+                },
+            });
+        }, function stop() {
+            running = false;
+            navigator.stop();
+            mf.stopDigging();
+        }, function toString() {
+            if (block_positions !== undefined && block_positions.length > 0) {
+                return "flatten (" + player_position.x + ", " + player_position.z + ") r=" + radius + " y=[" + min_height_level + " : " + block_positions[0].y + "]";
+            } else {
+                return "flatten (" + player_position.x + ", " + player_position.z + ") r=" + radius + " y=[" + min_height_level + " : " + max_height_level + "]";
+            }
 
-            })
-        );
+        }));
     }, 0, 2);
 
 })();

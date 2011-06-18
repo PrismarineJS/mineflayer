@@ -128,6 +128,7 @@ var navigator = {};
             return; // already stopped
         }
         mf.clearInterval(current_callback_id);
+        current_callback_id = undefined;
         mf.clearControlStates();
     }
 
