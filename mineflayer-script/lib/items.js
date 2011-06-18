@@ -71,7 +71,6 @@ var items = {};
         block_type_to_tools[mf.ItemType.SnowBlock] = items.tools.shovels;
         block_type_to_tools[mf.ItemType.Clay] = items.tools.shovels;
         block_type_to_tools[mf.ItemType.Netherrack] = items.tools.pickaxes;
-        block_type_to_tools[mf.ItemType.SoulSand] = items.tools.shovels;
     }
 
     items.toolsForBlock = function(block_type) {
