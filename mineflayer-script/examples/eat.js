@@ -4,8 +4,7 @@ mf.include("inventory.js");
 mf.include("items.js");
 
 (function() {
-
-    function eat(speaker, args, responder_func) {
+    function eat(args, responder_func, force) {
         var item_to_eat;
         if (args.length !== 0) {
             // eat specific food
@@ -20,7 +19,9 @@ mf.include("items.js");
             // find the right food
             var health_to_be_gained = 20 - mf.health();
             if (health_to_be_gained === 0) {
-                responder_func("already at full health");
+                if (force) {
+                    responder_func("already at full health");
+                }
                 return;
             }
             var overkill_choice;
@@ -37,6 +38,10 @@ mf.include("items.js");
                     if (overkill_choice !== undefined && items.health_from_food(overkill_choice) < health_from_item) {
                         continue; // not better
                     }
+                    if (!force) {
+                        // don't bother
+                        continue;
+                    }
                     overkill_choice = item_type;
                 } else {
                     // efficient
@@ -51,7 +56,9 @@ mf.include("items.js");
             } else if (overkill_choice !== undefined) {
                 item_to_eat = overkill_choice;
             } else {
-                responder_func("don't have any food");
+                if (force) {
+                    responder_func("don't have any food");
+                }
                 return;
             }
         }
@@ -60,6 +67,26 @@ mf.include("items.js");
             mf.activateItem();
         });
     }
-    chat_commands.registerCommand("eat", eat, 0, Infinity);
+    chat_commands.registerCommand("eat", function(speaker_name, args, responder_func) {
+        eat(args, responder_func, true);
+    }, 0, Infinity);
+
+    var auto_eat_responder_func = undefined;
+    chat_commands.registerCommand("autoeat", function(speaker_name, args, responder_func) {
+        if (args[0] === "on") {
+            responder_func("autoeat is now ON");
+            auto_eat_responder_func = responder_func;
+        } else {
+            responder_func("autoeat is now OFF");
+            auto_eat_responder_func = undefined;
+        }
+    }, 1);
+    function checkAutoEat() {
+        if (auto_eat_responder_func === undefined) {
+            return;
+        }
+        eat([], auto_eat_responder_func, false);
+    };
+    mf.onHealthChanged(checkAutoEat);
 })();
 
