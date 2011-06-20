@@ -5,6 +5,7 @@ mf.include("chat_commands.js");
 (function() {
     var current_following_interval_id;
     var current_task = undefined;
+    var following = false;
     function follow(speaker, args, responder_func) {
         stop();
         var playerName = args[0];
@@ -29,18 +30,29 @@ mf.include("chat_commands.js");
         }
         current_task = new task_manager.Task(function start() {
             responder_func("I'm now following " + player.username + ".");
+            following = true;
             go();
         }, function pause() {
+            following = false;
             stop();
+            if (current_task !== undefined) {
+                var temp = current_task;
+                current_task = undefined;
+                task_manager.remove(temp);
+            }
         }, function toString() {
             return "follow " + player.username + " r=" + distance;
         }, function resume() {
             stop();
+            following = true;
             go();
         });
 
         function go() {
             stop();
+            if (! following) {
+                return;
+            }
             var entity = mf.entity(player.entity_id);
             if (entity === undefined) {
                 responder_func("can't see you anymore");
@@ -57,9 +69,11 @@ mf.include("chat_commands.js");
                         return;
                     }
                     task_manager.postpone(100);
+                    following = false;
                 },
                 cant_navto_func: function() {
                     task_manager.postpone(2000);
+                    following = false;
                 },                    
             });
             // recalculate path every 5 seconds even if don't make it in that long
