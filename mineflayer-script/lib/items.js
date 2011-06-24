@@ -115,6 +115,13 @@ var items = {};
         return new mf.Item(item_type, undefined, block.metadata);
     };
 
+    items.blockFalls = function(block) {
+        return block.type === mf.ItemType.Sand || block.type === mf.ItemType.Gravel;
+    };
+    items.isBlockLiquid = function(block) {
+        return block.type === mf.ItemType.StationaryWater || block.type === mf.ItemType.StationaryLava;
+    };
+
     /**
      * Returns number of half-hearts the food specified heals for.
      * @param {Number} item_type

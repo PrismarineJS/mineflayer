@@ -7,25 +7,20 @@ var builder = {};
 
 builder.BlockSpec = function(point, block_or_is_block_acceptable_func, placement_choices, placement_description) {
     this.point = point;
-    if (block_or_is_block_acceptable_func.constructor === mf.Block) {
-        var block = block_or_is_block_acceptable_func;
-        this.isBlockAcceptable = function(other) { return block.equals(other); };
-        this.placement_choices = [items.itemToPlaceBlock(block)];
-        this.placement_description = items.nameForId(block.type);
-    } else {
-        this.isBlockAcceptable = block_or_is_block_acceptable_func;
-        assert.isFunction(this.isBlockAcceptable);
-        this.placement_choices = placement_choices;
-        assert.isArray(this.placement_choices);
-        this.placement_description = placement_description;
-        assert.isString(this.placement_description);
-    }
+    this.isBlockAcceptable = block_or_is_block_acceptable_func;
+    assert.isFunction(this.isBlockAcceptable);
+    this.placement_choices = placement_choices;
+    assert.isArray(this.placement_choices);
+    this.placement_description = placement_description;
+    assert.isString(this.placement_description);
 };
-builder.makeNonSolidBlockSpec = function(point) {
-    function isNotPhysical(block) {
-        return !mf.isPhysical(block.type);
-    }
-    return new builder.BlockSpec(point, isNotPhysical, [], "");
+
+builder.ConstructionProject = function(next_group_func) {
+    this.nextGroup = next_group_func;
+    assert.isFunction(this.nextGroup);
+    // TODO: these are currently ignored
+    this.killSediments = true;
+    this.killLiquids = true;
 };
 
 builder.startBuilding = function(construction_project, task_name, responder_func) {
@@ -83,11 +78,11 @@ builder.startBuilding = function(construction_project, task_name, responder_func
             done();
         }
     }
-    function place(point, item) {
+    function place(point, item, callback) {
         function doneEquipping() {
             navigateTo(point, function () {
                 if (builder.placeEquippedBlock(point)) {
-                    dealWithNextThing();
+                    callback();
                 } else {
                     responder_func("can't place block");
                     done();
@@ -105,6 +100,22 @@ builder.startBuilding = function(construction_project, task_name, responder_func
             }
             if (current_block_spec === undefined) {
                 current_block_spec = getNextBlockSpec();
+                if (current_block_spec === undefined) {
+                    responder_func("done");
+                    done();
+                }
+            }
+            // check for liquids
+            for (var i = 0; i < builder.cardinal_vectors.length; i++) {
+                var neighbor_point = current_block_spec.point.plus(builder.cardinal_vectors[i]);
+                if (items.isBlockLiquid(mf.blockAt(neighbor_point))) {
+                    if (place(neighbor_point, new mf.Item(mf.ItemType.Dirt), dealWithNextThing)) {
+                        return;
+                    }
+                    responder_func("out of dirt to block liquids");
+                    done();
+                    return;
+                }
             }
             var current_block = mf.blockAt(current_block_spec.point);
             if (current_block_spec.isBlockAcceptable(current_block)) {
@@ -113,8 +124,44 @@ builder.startBuilding = function(construction_project, task_name, responder_func
                 continue;
             }
             if (mf.isDiggable(current_block.type)) {
-                // get this outta the way
-                dig(current_block_spec.point, dealWithNextThing);
+                // we'll need to dig this.
+                // check for falling stuff
+                var above_point = current_block_spec.point.offset(0, 1, 0);
+                var dig_callback = dealWithNextThing;
+                if (items.blockFalls(mf.blockAt(above_point))) {
+                    // there's falling stuff. figure out what we're going to do now, then bring it on.
+                    var block_will_fall_here = current_block_spec.point;
+                    while (!mf.isPhysical(mf.blockAt(block_will_fall_here.offset(0, -1, 0)).type)) {
+                        block_will_fall_here = block_will_fall_here.offset(0, -1, 0);
+                    }
+                    var number_of_falling_blocks = 1;
+                    while (items.blockFalls(mf.blockAt(current_block_spec.point.offset(0, number_of_falling_blocks, 0)))) {
+                        number_of_falling_blocks++;
+                    }
+                    dig_callback = function() {
+                        // wait a very short moment, then place a torch
+                        mf.setTimeout(function() {
+                            if (!place(block_will_fall_here, new mf.Item(mf.ItemType.Torch), function() {
+                                // placed a torch. wait, and then remove it.
+                                mf.setTimeout(function() {
+                                    dig(block_will_fall_here, dealWithNextThing);
+                                }, 250 * number_of_falling_blocks + 500);
+                            })) {
+                                // placing the torch failed. Keep digging the sediment where it lands.
+                                (function digTheSand() {
+                                    mf.setTimeout(function() {
+                                        if (!items.blockFalls(mf.blockAt(block_will_fall_here))) {
+                                            dealWithNextThing();
+                                            return;
+                                        }
+                                        dig(block_will_fall_here, digTheSand);
+                                    }, 1000);
+                                })();
+                            }
+                        }, 200);
+                    };
+                }
+                dig(current_block_spec.point, dig_callback);
                 return;
             }
             // put the right thing here
@@ -147,6 +194,15 @@ builder.startBuilding = function(construction_project, task_name, responder_func
     task_manager.doLater(new task_manager.Task(start, stop, task_name));
 };
 
+builder.cardinal_vectors = [
+    new mf.Point( 1,  0,  0),
+    new mf.Point(-1,  0,  0),
+    new mf.Point( 0,  1,  0),
+    new mf.Point( 0, -1,  0),
+    new mf.Point( 0,  0,  1),
+    new mf.Point( 0,  0, -1),
+];
+
 builder.placeEquippedBlock = function(point) {
     // try placing on any face that will work
     var faces = [
@@ -157,16 +213,8 @@ builder.placeEquippedBlock = function(point) {
         mf.Face.NegativeZ,
         mf.Face.PositiveZ,
     ];
-    var vectors = [
-        new mf.Point( 1,  0,  0),
-        new mf.Point(-1,  0,  0),
-        new mf.Point( 0,  1,  0),
-        new mf.Point( 0, -1,  0),
-        new mf.Point( 0,  0,  1),
-        new mf.Point( 0,  0, -1),
-    ];
     for (var i = 0; i < faces.length; i++) {
-        var other_point = point.plus(vectors[i]);
+        var other_point = point.plus(builder.cardinal_vectors[i]);
         if (mf.canPlaceBlock(other_point, faces[i])) {
             mf.hax.placeBlock(other_point, faces[i]);
             return true;

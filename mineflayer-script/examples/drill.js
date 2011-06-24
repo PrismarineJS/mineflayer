@@ -62,23 +62,27 @@ mf.include("builder.js");
         builder.startBuilding(construction_project, "drilling w=" + width + " h=" + height, responder_func);
     }
 
+    function makeNonSolidBlockSpec(point) {
+        function isNotPhysical(block) {
+            return !mf.isPhysical(block.type);
+        }
+        return new builder.BlockSpec(point, isNotPhysical, [], "[you should never see this text anywhere]");
+    }
     chat_commands.registerCommand("drill", function(speaker_name, args, responder_func) {
         var make_construction_project_func = function(cursor, sideways_vector, forward_vector, cursor_to_min_corner, cursor_to_max_corner) {
-            var construction_project = {};
-            construction_project.nextGroup = function() {
+            return new builder.ConstructionProject(function nextGroup() {
                 var min_corner = cursor.plus(cursor_to_min_corner);
                 var max_corner = cursor.plus(cursor_to_max_corner);
                 var height = cursor_to_max_corner.y;
                 var result = [];
                 for (var h = 0; h < height; h++) {
                     for (var sub_cursor = min_corner.offset(0, h, 0); sub_cursor.x <= max_corner.x && sub_cursor.z <= max_corner.z; sub_cursor = sub_cursor.plus(sideways_vector)) {
-                        result.push(builder.makeNonSolidBlockSpec(sub_cursor));
+                        result.push(makeNonSolidBlockSpec(sub_cursor));
                     }
                 }
                 cursor = cursor.plus(forward_vector);
                 return result;
-            };
-            return construction_project;
+            });
         };
         drillOrTunnelOrSomething(speaker_name, args, responder_func, make_construction_project_func);
     }, 0, 2);
@@ -105,8 +109,7 @@ mf.include("builder.js");
     }
     chat_commands.registerCommand("tunnel", function(speaker_name, args, responder_func) {
         var make_construction_project_func = function(cursor, sideways_vector, forward_vector, cursor_to_min_corner, cursor_to_max_corner) {
-            var construction_project = {};
-            construction_project.nextGroup = function() {
+            return new builder.ConstructionProject(function nextGroup() {
                 var min_corner = cursor.plus(cursor_to_min_corner);
                 var max_corner = cursor.plus(cursor_to_max_corner);
                 var height = cursor_to_max_corner.y;
@@ -134,8 +137,7 @@ mf.include("builder.js");
 
                 cursor = cursor.plus(forward_vector);
                 return result;
-            };
-            return construction_project;
+            });
         };
         drillOrTunnelOrSomething(speaker_name, args, responder_func, make_construction_project_func);
     }, 0, 2);
