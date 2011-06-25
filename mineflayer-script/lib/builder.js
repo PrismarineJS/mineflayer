@@ -18,9 +18,8 @@ builder.BlockSpec = function(point, block_or_is_block_acceptable_func, placement
 builder.ConstructionProject = function(next_group_func) {
     this.nextGroup = next_group_func;
     assert.isFunction(this.nextGroup);
-    // TODO: these are currently ignored
-    this.killSediments = true;
-    this.killLiquids = true;
+    this.kill_sediments = true;
+    this.kill_liquids = true;
 };
 
 builder.startBuilding = function(construction_project, task_name, responder_func) {
@@ -105,16 +104,18 @@ builder.startBuilding = function(construction_project, task_name, responder_func
                     done();
                 }
             }
-            // check for liquids
-            for (var i = 0; i < builder.cardinal_vectors.length; i++) {
-                var neighbor_point = current_block_spec.point.plus(builder.cardinal_vectors[i]);
-                if (items.isBlockLiquid(mf.blockAt(neighbor_point))) {
-                    if (place(neighbor_point, new mf.Item(mf.ItemType.Dirt), dealWithNextThing)) {
+            if (construction_project.kill_liquids) {
+                // check for liquids
+                for (var i = 0; i < builder.cardinal_vectors.length; i++) {
+                    var neighbor_point = current_block_spec.point.plus(builder.cardinal_vectors[i]);
+                    if (items.isBlockLiquid(mf.blockAt(neighbor_point))) {
+                        if (place(neighbor_point, new mf.Item(mf.ItemType.Dirt), dealWithNextThing)) {
+                            return;
+                        }
+                        responder_func("out of dirt to block liquids");
+                        done();
                         return;
                     }
-                    responder_func("out of dirt to block liquids");
-                    done();
-                    return;
                 }
             }
             var current_block = mf.blockAt(current_block_spec.point);
@@ -125,41 +126,43 @@ builder.startBuilding = function(construction_project, task_name, responder_func
             }
             if (mf.isDiggable(current_block.type)) {
                 // we'll need to dig this.
-                // check for falling stuff
-                var above_point = current_block_spec.point.offset(0, 1, 0);
-                var dig_callback = dealWithNextThing;
-                if (items.blockFalls(mf.blockAt(above_point))) {
-                    // there's falling stuff. figure out what we're going to do now, then bring it on.
-                    var block_will_fall_here = current_block_spec.point;
-                    while (!mf.isPhysical(mf.blockAt(block_will_fall_here.offset(0, -1, 0)).type)) {
-                        block_will_fall_here = block_will_fall_here.offset(0, -1, 0);
-                    }
-                    var number_of_falling_blocks = 1;
-                    while (items.blockFalls(mf.blockAt(current_block_spec.point.offset(0, number_of_falling_blocks, 0)))) {
-                        number_of_falling_blocks++;
-                    }
-                    dig_callback = function() {
-                        // wait a very short moment, then place a torch
-                        mf.setTimeout(function() {
-                            if (!place(block_will_fall_here, new mf.Item(mf.ItemType.Torch), function() {
-                                // placed a torch. wait, and then remove it.
-                                mf.setTimeout(function() {
-                                    dig(block_will_fall_here, dealWithNextThing);
-                                }, 250 * number_of_falling_blocks + 500);
-                            })) {
-                                // placing the torch failed. Keep digging the sediment where it lands.
-                                (function digTheSand() {
+                if (construction_project.kill_sediments) {
+                    // check for falling stuff
+                    var above_point = current_block_spec.point.offset(0, 1, 0);
+                    var dig_callback = dealWithNextThing;
+                    if (items.blockFalls(mf.blockAt(above_point))) {
+                        // there's falling stuff. figure out what we're going to do now, then bring it on.
+                        var block_will_fall_here = current_block_spec.point;
+                        while (!mf.isPhysical(mf.blockAt(block_will_fall_here.offset(0, -1, 0)).type)) {
+                            block_will_fall_here = block_will_fall_here.offset(0, -1, 0);
+                        }
+                        var number_of_falling_blocks = 1;
+                        while (items.blockFalls(mf.blockAt(current_block_spec.point.offset(0, number_of_falling_blocks, 0)))) {
+                            number_of_falling_blocks++;
+                        }
+                        dig_callback = function() {
+                            // wait a very short moment, then place a torch
+                            mf.setTimeout(function() {
+                                if (!place(block_will_fall_here, new mf.Item(mf.ItemType.Torch), function() {
+                                    // placed a torch. wait, and then remove it.
                                     mf.setTimeout(function() {
-                                        if (!items.blockFalls(mf.blockAt(block_will_fall_here))) {
-                                            dealWithNextThing();
-                                            return;
-                                        }
-                                        dig(block_will_fall_here, digTheSand);
-                                    }, 1000);
-                                })();
-                            }
-                        }, 200);
-                    };
+                                        dig(block_will_fall_here, dealWithNextThing);
+                                    }, 250 * number_of_falling_blocks + 500);
+                                })) {
+                                    // placing the torch failed. Keep digging the sediment where it lands.
+                                    (function digTheSand() {
+                                        mf.setTimeout(function() {
+                                            if (!items.blockFalls(mf.blockAt(block_will_fall_here))) {
+                                                dealWithNextThing();
+                                                return;
+                                            }
+                                            dig(block_will_fall_here, digTheSand);
+                                        }, 1000);
+                                    })();
+                                }
+                            }, 200);
+                        };
+                    }
                 }
                 dig(current_block_spec.point, dig_callback);
                 return;
