@@ -130,6 +130,10 @@ mf.include("inventory.js");
             }
             max_height_level = player_position.y + parseInt(arg);
         }
+        var bottom_up = false;
+        if (args.equals(["-b"])) {
+            bottom_up = true;
+        }
         var respond = responder_fun;
         var min_height_level = player.position.y;
         var has_pick = true;
@@ -237,7 +241,7 @@ mf.include("inventory.js");
                 corner1: new mf.Point(player_position.x - radius, min_height_level, player_position.z - radius),
                 corner2: new mf.Point(player_position.x + radius, max_height_level, player_position.z + radius),
                 stripe_width: 6,
-                y_direction: -1,
+                y_direction: bottom_up ? 1 : -1,
             }).toArray();
             block_index = 0;
             flattened = false;
@@ -277,6 +281,6 @@ mf.include("inventory.js");
             }
 
         }));
-    }, 0, 2);
+    }, 0, Infinity);
 
 })();
