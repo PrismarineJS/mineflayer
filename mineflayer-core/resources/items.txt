@@ -37,9 +37,13 @@
 0x1A    Bed_placed                  1   1   0   1   1   1   0   0.2 Wool
 0x1B    PoweredRail                 64  1   0   0   1   0   1   0.7 Redstone
 0x1C    DetectorRail                64  1   0   0   1   0   1   0.7 Redstone
+# guessing on some of these piston values
+0x1D    StickyPiston                64  1   0   0   1   0   1   1   Stone
 0x1E    Cobweb                      64  1   0   1   1   0   0   0   Wool
 0x1F    TallGrass                   64  1   0   0   1   0   1   0   Crops
 0x20    DeadShrub                   64  1   0   0   1   0   1   0   Crops
+0x21    Piston                      64  1   0   0   1   0   1   1   Stone
+0x22    PistonHead                  64  1   0   0   1   0   1   1   Stone
 0x23    Wool                        64  1   0   1   1   0   0   0.8 Wool
 0x25    YellowFlower                64  1   0   0   1   0   1   0.0 Crops
 0x26    RedRose                     64  1   0   0   1   0   1   0.0 Crops
@@ -203,6 +207,9 @@
 0x162   Cake                        1   1   0   0   1   0   1   0   NoMaterial
 0x163   Bed                         1   1   0   0   1   0   1   0   NoMaterial
 0x164   RedstoneRepeater            64  1   0   0   1   0   1   0   NoMaterial
+0x165   Cookie                      8   1   0   0   1   0   1   0   NoMaterial
+0x166   Map                         1   1   0   0   1   0   1   0   NoMaterial
+0x167   Shears                      1   1   0   0   1   0   1   0   NoMaterial
 0x8D0   GoldMusicDisc               1   1   0   0   1   0   1   0   NoMaterial
 0x8D1   GreenMusicDisc              1   1   0   0   1   0   1   0   NoMaterial
 
