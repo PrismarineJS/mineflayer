@@ -101,8 +101,8 @@
 0x5A    Portal                      64  1   0   0   1   0   1   -1  Portal
 0x5B    JackOLantern                64  1   0   1   1   0   0   1.0 Pumpkin
 0x5C    Cake_placed                 1   1   0   1   1   1   0   0.5 Cake
-0x5D    RedstoneRepeaterOff_placed  64  1   0   1   1   1   1   0.0 Redstone
-0x5E    RedstoneRepeaterOn_placed   64  1   0   1   1   1   1   0.0 Redstone
+0x5D    RedstoneRepeaterOff_placed  64  1   0   1   1   1   0   0.0 Redstone
+0x5E    RedstoneRepeaterOn_placed   64  1   0   1   1   1   0   0.0 Redstone
 0x60    Trapdoor                    64  1   0   1   1   1   0   3   Wood
 
 # items
