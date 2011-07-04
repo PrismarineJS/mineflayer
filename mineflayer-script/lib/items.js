@@ -160,6 +160,34 @@ var items = {};
         }
         return results[0];
     };
+
+    items.findItemTypesUnambiguously = function(names, responder_fun) {
+        return items.findAllUnambiguouslyInDatabase(names, responder_fun, item_database);
+    };
+
+    items.findBlockTypesUnambiguously = function(names, responder_fun) {
+        return items.findAllUnambiguouslyInDatabase(names, responder_fun, block_database);
+    };
+
+    items.findAllUnambiguouslyInDatabase = function(names, responder_fun, database) {
+        if (typeof names === "string") {
+            names = names.split(",");
+        }
+        var ambiguous = [];
+        var matches = [];
+        for (var i = 0; i < names.length; i++) {
+            names[i] = names[i].trim();
+            var results = items.lookupInDatabase(names[i], database);
+            if (results.length !== 1) {
+                ambiguous.push(names[i]);
+                continue;
+            }
+            matches.push(results[0]);
+        }
+        responder_fun("Names are ambiguous: " + ambiguous.join(", "));
+        return matches;
+    };
+
     items.lookupItemType = function(name) {
         return items.lookupInDatabase(name, item_database);
     };

@@ -79,24 +79,38 @@ mf.include("items.js");
         }, respond_message));
     }, 0, Infinity);
 
-    chat_commands.registerCommand("list", function(speaker_name, args, responder_func) {
-        var name_filter = args[0];
-        if (name_filter === undefined) {
-            name_filter = "";
-        }
-        var current_inventory = inventory.condensedSnapshot();
-        current_inventory[-1] = inventory.slotsLeft();
-        var result = [];
-        for (var type in current_inventory) {
-            var name = type !== "-1" ? items.nameForId(type) : "empty slots";
-            if (name.contains(name_filter)) {
-                result.push(current_inventory[type] + " " + name);
+    chat_commands.registerCommand("list", function(speaker_name, args, responder_fun) {
+        args = args.join(" ").split(",");
+        for (var i = 0; i < args.length; i++) {
+            args[i] = args[i].trim();
+            if (args[i] === "") {
+                args.splice(i, 1);
+                i--;
             }
         }
-        if (result.length !== 0) {
-            responder_func(result.join(", "));
-        } else {
-            responder_func("i have nothing matching \"" + name_filter + "\"");
+
+        var snapshot = inventory.condensedSnapshot();
+        if (args.length === 0 || (args.length === 1 && (args[0] === "all" || args[0] === "inventory" || args[0] === "*" || args[0] === "everything"))) {
+            var response = "";
+            for (var key in snapshot) {
+                response += snapshot[key] + " " + items.nameForId(key) + ", ";
+            }
+            if (inventory.slotsLeft() > 0) {
+                response += inventory.slotsLeft() + " empty slots";
+            } else {
+                response = response.slice(0, -2);
+            }
+            responder_fun(response);
+            return;
         }
-    }, 0, 1);
+
+        var database = inventory.getDatabase(inventory.InventoryFull);
+
+        var matching = items.findAllUnambiguouslyInDatabase(args, responder_fun, database);
+        if (matching.length === 0) {
+            return;
+        }
+        var response = matching.mapped(function(match) { return snapshot[match.id] + " " + match.name}).join(", ");
+        responder_fun(response);
+    }, 0, Infinity);
 })();
