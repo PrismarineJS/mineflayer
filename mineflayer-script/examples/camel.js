@@ -106,10 +106,22 @@ mf.include("items.js");
 
         var database = inventory.getDatabase(inventory.InventoryFull);
 
-        var matching = items.findAllUnambiguouslyInDatabase(args, responder_fun, database);
+        var matching = items.lookupAllInDatabase(args, database, true);
         if (matching.length === 0) {
+            responder_fun("I don't have any of those!");
             return;
         }
+        
+        //remove duplicates
+        for (var i = 0; i < matching.length; i++) {
+            for (var j = i+1; j < matching.length; j++) {
+                if (matching[i].id == matching[j].id) {
+                    matching.splice(j, 1);
+                    j--;
+                }
+            }
+        }
+
         var response = matching.mapped(function(match) { return snapshot[match.id] + " " + match.name}).join(", ");
         responder_fun(response);
     }, 0, Infinity);

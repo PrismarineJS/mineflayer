@@ -171,7 +171,11 @@ var items = {};
 
     items.findAllUnambiguouslyInDatabase = function(names, responder_fun, database) {
         if (typeof names === "string") {
-            names = names.split(",");
+            if (names.indexOf(",") !== -1) {
+                names = names.split(",");
+            } else {
+                names = [names]
+            }
         }
         var ambiguous = [];
         var matches = [];
@@ -188,13 +192,44 @@ var items = {};
         return matches;
     };
 
+    items.lookupItemTypes = function(names, greedy) {
+        return items.lookupAllInDatabase(names, item_database, greedy);
+    }
+
+    items.lookupBlockTypes = function(names, greedy) {
+        return items.lookupAllInDatabase(names, block_database, greedy);
+    }
+
+    items.lookupAllInDatabase = function(names, database, greedy) {
+        if (typeof names === "string") {
+            if (names.indexOf(",") !== -1) {
+                names = names.split(",");
+            } else {
+                names = [names]
+            }
+        }
+        var matches = [];
+        for (var i = 0; i < names.length; i++) {
+            names[i] = names[i].trim();
+            var results = items.lookupInDatabase(names[i], database, greedy);
+            for (var j = 0; j < results.length; j++) {
+                matches.push(results[j]);
+            }
+        }
+        return matches;
+    }
+
     items.lookupItemType = function(name) {
         return items.lookupInDatabase(name, item_database);
     };
     items.lookupBlockType = function(name) {
         return items.lookupInDatabase(name, block_database);
     };
-    items.lookupInDatabase = function(name, database) {
+
+    items.lookupInDatabase = function(name, database, greedy) {
+        if (greedy === undefined) {
+            greedy = false;
+        }
         function filter_using_comparator(name_parts, comparator) {
             var matches = [];
 
@@ -229,13 +264,17 @@ var items = {};
                 function(s1, s2) { return s1.startsWith(s2); },
                 function(s1, s2) { return s1.contains(s2); },
             ];
+            var results = [];
             for (i = 0; i < comparators.length; i++) {
-                var results = filter_using_comparator(name_parts, comparators[i]);
-                if (results.length !== 0) {
+                temp = filter_using_comparator(name_parts,comparators[i]);
+                for (var j = 0; j < temp.length; j++) {
+                    results.push(temp[j]);
+                }
+                if (results.length !== 0 && !greedy) {
                     return results;
                 }
             }
-            return [];
+            return results;
         }
         var name_parts = name.split(" ");
         var results = searchForNameParts(name_parts);
@@ -255,12 +294,14 @@ var items = {};
             }
         }
         var number_or_words_results = [];
-        if (results.length > 1) {
-            // try to resolve ambiguity by number of words
-            for (i = 0; i < results.length; i++) {
-                var result = results[i];
-                if (result.name.split(" ").length === name_parts.length) {
-                    number_or_words_results.push(result);
+        if (! greedy) {
+            if (results.length > 1) {
+                // try to resolve ambiguity by number of words
+                for (i = 0; i < results.length; i++) {
+                    var result = results[i];
+                    if (result.name.split(" ").length === name_parts.length) {
+                        number_or_words_results.push(result);
+                    }
                 }
             }
         }
