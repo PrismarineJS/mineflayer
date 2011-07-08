@@ -7,6 +7,8 @@
 #include "Item.h"
 
 #include <QUrl>
+#include <QMutex>
+#include <QThread>
 #include <QObject>
 #include <QCoreApplication>
 
@@ -41,6 +43,103 @@ mineflayer_GamePtr mineflayer_createGame(mineflayer_Url url, bool auto_physics_l
     return reinterpret_cast<mineflayer_GamePtr>(game_listener);
 }
 
+extern "C" void * go(void *arg);
+
+class MyThread
+{
+public:
+    pthread_t thread;
+    QMutex m_mutex;
+
+    Game * game;
+    GameListener * game_listener;
+
+    mineflayer_Callbacks m_cb;
+    void *m_ctx;
+    mineflayer_Url m_url;
+
+public:
+    MyThread(mineflayer_Url url, mineflayer_Callbacks cbs, void *ctx) :
+    m_mutex(),
+    m_cb(cbs),
+    m_ctx(ctx),
+    m_url(url)
+    {
+	m_mutex.lock();
+
+        // Need to use a pthread here in order to fool Qt
+        // that this is the main thread or it gets upset.
+        pthread_create(&thread, NULL, &go, this);
+    }
+
+    void run() {
+        if (! _mineflayer_doneInitializing) {
+            _mineflayer_doneInitializing = true;
+            CoreMetaTypes::coreRegisterMetaTypes();
+            Item::initializeStaticData();
+
+            if (QCoreApplication::instance() == NULL) {
+                int argc = 0;
+                new QCoreApplication(argc, NULL);
+            }
+        }
+
+        QUrl qurl;
+        qurl.setUserName(Util::toQString(m_url.username));
+        if (m_url.password.byte_count > 0)
+            qurl.setPassword(Util::toQString(m_url.password));
+        if (m_url.hostname.byte_count > 0)
+            qurl.setHost(Util::toQString(m_url.hostname));
+        else
+            qurl.setHost("localhost");
+        if (m_url.port > 0)
+            qurl.setPort(m_url.port);
+
+        game = new Game(qurl);
+        game_listener = new GameListener(game, 1, game);
+
+        game_listener->batcher = new Batcher();
+        game_listener->batcher->update(&m_cb, &game_listener->s_cb);
+        game_listener->context = game_listener->batcher;
+        game_listener->s_batchCb = m_cb;
+        game_listener->s_batchContext = m_ctx;
+
+        game->start();
+
+        m_mutex.unlock();
+
+        QCoreApplication::instance()->exec();
+    }
+
+    void waitTillStarted()
+    {
+        m_mutex.lock();
+        m_mutex.unlock();
+    }
+};
+
+extern "C" void * go(void *arg)
+{
+    MyThread *mt = reinterpret_cast<MyThread*>(arg);
+    mt->run();
+    return NULL;
+}
+
+mineflayer_GamePtr mineflayer_createGamePullCallbacks(mineflayer_Url url, mineflayer_Callbacks cbs, void *ctx) {
+    MyThread *t = new MyThread(url, cbs, ctx);
+
+    t->waitTillStarted();
+
+    return reinterpret_cast<mineflayer_GamePtr>(t->game_listener);
+}
+
+void mineflayer_doCallbacks(mineflayer_GamePtr _game)
+{
+    GameListener * game_listener = reinterpret_cast<GameListener *>(_game);
+    if (game_listener->batcher)
+        game_listener->batcher->msgEmit(&game_listener->s_batchCb, game_listener->s_batchContext);
+}
+
 int mineflayer_runEventLoop() {
     return QCoreApplication::instance()->exec();
 }
@@ -69,8 +168,10 @@ void mineflayer_destroyUtf8(mineflayer_Utf8 utf8) {
 void mineflayer_setCallbacks(mineflayer_GamePtr _game, mineflayer_Callbacks callbacks, void * context)
 {
     GameListener * game_listener = reinterpret_cast<GameListener *>(_game);
-    game_listener->s_cb = callbacks;
-    game_listener->context = context;
+    if (!game_listener->batcher) {
+        game_listener->s_cb = callbacks;
+        game_listener->context = context;
+    }
 }
 
 void mineflayer_start(mineflayer_GamePtr _game) {

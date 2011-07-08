@@ -16,6 +16,7 @@ DEFINES += MINEFLAYERCORE_LIBRARY
 SOURCES += \
     src/Server.cpp \
     src/Messages.cpp \
+    src/MsgBatcher.cpp \
     src/IncomingMessageParser.cpp \
     src/Chunk.cpp \
     src/Util.cpp \
@@ -30,6 +31,7 @@ HEADERS += \
     src/mineflayer-core.h \
     src/Server.h \
     src/Messages.h \
+    src/MsgBatcher.h \
     src/Chunk.h \
     src/IncomingMessageParser.h \
     src/MetaTypes.h \

@@ -1,6 +1,6 @@
 #include "GameListener.h"
 
-mineflayer_Callbacks GameListener::s_cb;
+//mineflayer_Callbacks GameListener::s_cb;
 
 GameListener::GameListener(Game * _game, bool auto_physics, QObject *parent) :
     QObject(parent),

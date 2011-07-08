@@ -4,6 +4,7 @@
 #include "mineflayer-core.h"
 
 #include "Game.h"
+#include "MsgBatcher.h"
 #include "PhysicsDoer.h"
 #include <QObject>
 
@@ -13,7 +14,11 @@ class GameListener : public QObject
 public:
     explicit GameListener(Game * game, bool auto_physics, QObject *parent = 0);
 
-    static mineflayer_Callbacks s_cb;
+    mineflayer_Callbacks s_cb;
+
+    Batcher *batcher;
+    mineflayer_Callbacks s_batchCb;
+    void * s_batchContext;
 
     Game * game;
     void * context;
