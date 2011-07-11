@@ -17,7 +17,18 @@ HEADERS += ../mineflayer-core/src/mineflayer-core.h \
     src/Util.h \
     src/MetaTypes.h
 INCLUDEPATH += ..
-LIBS += -L../mineflayer-core -lmineflayer-core
+win32 {
+    CONFIG( debug, debug|release ) {
+        # debug
+        LIBS += -L../mineflayer-core/debug
+    } else {
+        LIBS += -L../mineflayer-core/release
+        # release
+    }
+} else {
+    LIBS += -L../mineflayer-core
+}
+LIBS += -lmineflayer-core
 RESOURCES += mineflayer-script.qrc
 DEFINES += MINEFLAYER_GUI_ON
 CONFIG += $$(EXTRA_CONFIG)

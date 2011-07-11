@@ -52,24 +52,20 @@ If you don't do this, you'll have to put the directory containing the .so in the
 
 ### Windows:
 
-NOTE: these instructions are out of date. You don't need to do step 5 or probably steps 2 - 6 at all.
-
 1. Download and install the Qt SDK: http://qt.nokia.com/downloads/
-2. Open mineflayer.pro with Qt Creator
-3. On the left click Projects.
-4. Edit build configuration: Release
-5. Build Steps -> qmake -> Details -> additional arguments: CONFIG+=no_3d
-6. On the left above the run button, change the active build to Release
-7. Build -> Build All
-8. This generates mineflayer.exe in your build directory. Typically you run bots from the command line. To do this you'll need to copy a bunch of DLLs from Qt. These DLLs are:
-
-	* libgcc_s_dw2-1.dll
-	* mingwm10.dll
-	* QtCore4.dll
-	* QtGui4.dll
-	* QtNetwork4.dll
-	* QtScript4.dll
-	* QtScriptTools4.dll
+2. Open `mineflayer.pro` with Qt Creator
+3. Click `Projects`, and change the build configuration from `Debug` to `Release`.
+4. `Build` -> `Build All`. This generates `mineflayer.exe` in your build directory which is `mineflayer-build-desktop/mineflayer-script/relase` just outside the `mineflayer` directory.
+5. Copy a bunch of DLLs from Qt into the build directory:
+	* from `C:\Qt\[version]\mingw\bin`:
+		* `libgcc_s_dw2-1.dll`
+		* `mingwm10.dll`
+	* from `C:\Qt\[version]\qt\bin`:
+		* `QtCore4.dll`
+		* `QtGui4.dll`
+		* `QtNetwork4.dll`
+		* `QtScript4.dll`
+		* `QtScriptTools4.dll`
 
 Running bots:
 -------------
