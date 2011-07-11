@@ -18,19 +18,19 @@ Setting up build:
         mkdir ../mineflayer-build
         cd ../mineflayer-build/
 
-3. Configure with script debugging support (recommended):
+3. Optionally disable script debugging support (not recommended). This removes any dependency on an X server:
+
+        echo "CONFIG += headless" > ../minflayer-script/config.pro
+
+4. Run qmake once:
 
         qmake ../mineflayer/mineflayer.pro
 
-    OR configure headless which removes any dependency on an X server:
-
-        EXTRA_CONFIG=headless qmake ../mineflayer/mineflayer.pro
-
-4. Build everything:
+5. Build with `make`:
 
         make
 
-5. Optionally install `libmineflayer-core.so` to `/usr/lib`:
+6. Optionally install `libmineflayer-core.so` to `/usr/lib`:
 
         INSTALL_ROOT=/usr sudo make install
 
@@ -40,15 +40,15 @@ If you don't do this, you'll have to put the directory containing the .so in the
 
 1. Download the Qt SDK for Mac from http://qt.nokia.com/downloads/
 2. Create a build folder OUTSIDE the source code tree and cd to it.
-3. Configure:
+3. Optionally enable headless mode:
+
+        echo "CONFIG += headless" > ../minflayer-script/config.pro
+
+4. Run qmake:
 
         qmake -spec macx-g++ path/to/mineflayer.pro
 
-    OR:
-
-        EXTRA_CONFIG=headless qmake -spec macx-g++ path/to/mineflayer.pro
-
-4. Now whenever you want to build, use `make`.
+5. Now whenever you want to build, use `make`.
 
 ### Windows:
 

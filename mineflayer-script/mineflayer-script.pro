@@ -31,7 +31,6 @@ win32 {
 LIBS += -lmineflayer-core
 RESOURCES += mineflayer-script.qrc
 DEFINES += MINEFLAYER_GUI_ON
-CONFIG += $$(EXTRA_CONFIG)
 mac:CONFIG -= app_bundle
 win32:CONFIG += console
 
@@ -42,8 +41,11 @@ unix {
 }
 
 
-# if you want to run in headless mode, set environment variable EXTRA_CONFIG=headless or uncomment next line
+# if you want to run in headless mode, uncomment the next line or put it uncommented in config.pro
 # CONFIG += headless
+exists(config.pro) {
+    include(config.pro)
+}
 headless {
     DEFINES -= MINEFLAYER_GUI_ON
     QT -= gui scripttools

@@ -43,7 +43,6 @@ HEADERS += \
     src/PhysicsDoer.h
 
 RESOURCES += mineflayer-core.qrc
-CONFIG += $$(EXTRA_CONFIG)
 
 unix {
     target.path = /lib
