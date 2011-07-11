@@ -55,17 +55,20 @@ If you don't do this, you'll have to put the directory containing the .so in the
 1. Download and install the Qt SDK: http://qt.nokia.com/downloads/
 2. Open `mineflayer.pro` with Qt Creator
 3. Click `Projects`, and change the build configuration from `Debug` to `Release`.
-4. `Build` -> `Build All`. This generates `mineflayer.exe` in your build directory which is `mineflayer-build-desktop/mineflayer-script/relase` just outside the `mineflayer` directory.
-5. Copy a bunch of DLLs from Qt into the build directory:
-	* from `C:\Qt\[version]\mingw\bin`:
-		* `libgcc_s_dw2-1.dll`
-		* `mingwm10.dll`
-	* from `C:\Qt\[version]\qt\bin`:
-		* `QtCore4.dll`
-		* `QtGui4.dll`
-		* `QtNetwork4.dll`
-		* `QtScript4.dll`
-		* `QtScriptTools4.dll`
+4. `Build` -> `Build All`. This generates:
+    * `mineflayer-core.dll` in your library build directory which is `mineflayer-build-desktop/mineflayer-core/relase` just outside the `mineflayer` directory.
+    * `mineflayer.exe` in your build directory which is `mineflayer-build-desktop/mineflayer-script/relase` just outside the `mineflayer` directory.
+5. Put the absolute path of your library build directory in your PATH variable.
+6. Copy a bunch of DLLs from Qt into the build directory:
+    * from `C:\Qt\[version]\mingw\bin`:
+        * `libgcc_s_dw2-1.dll`
+        * `mingwm10.dll`
+    * from `C:\Qt\[version]\qt\bin`:
+        * `QtCore4.dll`
+        * `QtGui4.dll`
+        * `QtNetwork4.dll`
+        * `QtScript4.dll`
+        * `QtScriptTools4.dll`
 
 Running bots:
 -------------
