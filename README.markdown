@@ -11,28 +11,28 @@ Setting up build:
 
 1. Install prerequisites:
 
-		sudo apt-get install qt4-dev-tools
+        sudo apt-get install qt4-dev-tools
 
 2. Create a build folder OUTSIDE the source code tree:
 
-		mkdir ../mineflayer-build
-		cd ../mineflayer-build/
+        mkdir ../mineflayer-build
+        cd ../mineflayer-build/
 
 3. Configure with script debugging support (recommended):
 
-		qmake ../mineflayer/mineflayer.pro
+        qmake ../mineflayer/mineflayer.pro
 
-	OR configure headless which removes any dependency on an X server:
+    OR configure headless which removes any dependency on an X server:
 
-		EXTRA_CONFIG=headless qmake ../mineflayer/mineflayer.pro
+        EXTRA_CONFIG=headless qmake ../mineflayer/mineflayer.pro
 
 4. Build everything:
 
-		make
+        make
 
 5. Optionally install `libmineflayer-core.so` to `/usr/lib`:
 
-		INSTALL_ROOT=/usr sudo make install
+        INSTALL_ROOT=/usr sudo make install
 
 If you don't do this, you'll have to put the directory containing the .so in the `LD_LIBRARY_PATH` variable whenever you run mineflayer.
 
@@ -42,11 +42,11 @@ If you don't do this, you'll have to put the directory containing the .so in the
 2. Create a build folder OUTSIDE the source code tree and cd to it.
 3. Configure:
 
-		qmake -spec macx-g++ path/to/mineflayer.pro
+        qmake -spec macx-g++ path/to/mineflayer.pro
 
-	OR:
+    OR:
 
-		EXTRA_CONFIG=headless qmake -spec macx-g++ path/to/mineflayer.pro
+        EXTRA_CONFIG=headless qmake -spec macx-g++ path/to/mineflayer.pro
 
 4. Now whenever you want to build, use `make`.
 
@@ -56,10 +56,10 @@ If you don't do this, you'll have to put the directory containing the .so in the
 2. Open `mineflayer.pro` with Qt Creator
 3. Click `Projects`, and change the build configuration from `Debug` to `Release`.
 4. `Build` -> `Build All`. This generates:
-    * `mineflayer-core.dll` in your library build directory which is `mineflayer-build-desktop/mineflayer-core/relase` just outside the `mineflayer` directory.
-    * `mineflayer.exe` in your build directory which is `mineflayer-build-desktop/mineflayer-script/relase` just outside the `mineflayer` directory.
-5. Put the absolute path of your library build directory in your PATH variable.
-6. Copy a bunch of DLLs from Qt into the build directory:
+    * `mineflayer-core.dll` in your **library build directory** which is `mineflayer-build-desktop/mineflayer-core/relase` just outside the `mineflayer` directory.
+    * `mineflayer.exe` in your **build directory** which is `mineflayer-build-desktop/mineflayer-script/relase` just outside the `mineflayer` directory.
+5. Put the absolute path of your **library build directory** in your `PATH` variable.
+6. Copy a bunch of DLLs from Qt into the **build directory** or put these locations in your `PATH` variable:
     * from `C:\Qt\[version]\mingw\bin`:
         * `libgcc_s_dw2-1.dll`
         * `mingwm10.dll`
@@ -109,5 +109,5 @@ Running the test suite:
 -----------------------
 Command will look something like:
 
-	cd mineflayer-script
-	LD_LIBRARY_PATH=../../mineflayer-build-desktop/mineflayer-core bin/run_tests ~/apps/minecraft-server-1.5/minecraft_server.jar ../../mineflayer-build-desktop/mineflayer-script/mineflayer
+    cd mineflayer-script
+    LD_LIBRARY_PATH=../../mineflayer-build-desktop/mineflayer-core bin/run_tests ~/apps/minecraft-server-1.5/minecraft_server.jar ../../mineflayer-build-desktop/mineflayer-script/mineflayer
