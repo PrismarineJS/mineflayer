@@ -4,7 +4,7 @@ mf.include("auto_respawn.js");
 mf.include("items.js");
 mf.include("chat_commands.js");
 mf.include("navigator_3d.js");
-function() {
+(function() {
     var get_it;
 
     function go() {
@@ -45,4 +45,4 @@ function() {
         get_it = undefined;
         mf.stopDigging();
     });
-}();
+})();
