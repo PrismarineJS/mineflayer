@@ -20,7 +20,7 @@ Setting up build:
 
 3. Optionally disable script debugging support (not recommended). This removes any dependency on an X server:
 
-        echo "CONFIG += headless" > ../minflayer-script/config.pro
+        echo "CONFIG += headless" > ../mineflayer-script/config.pro
 
 4. Run qmake once:
 
@@ -42,7 +42,7 @@ If you don't do this, you'll have to put the directory containing the .so in the
 2. Create a build folder OUTSIDE the source code tree and cd to it.
 3. Optionally enable headless mode:
 
-        echo "CONFIG += headless" > ../minflayer-script/config.pro
+        echo "CONFIG += headless" > ../mineflayer-script/config.pro
 
 4. Run qmake:
 
