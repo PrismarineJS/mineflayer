@@ -4,6 +4,8 @@ Minecraft multiplayer client game logic library and bot scripting interface.
 
 **Homepage:** http://mineflayer.com
 
+**Online API Documentation** http://mineflayer.com/doc/html/mf.html - automatically compiled and uploaded when repository is updated.
+
 Setting up build:
 -----------------
 
