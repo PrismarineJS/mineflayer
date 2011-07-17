@@ -154,13 +154,13 @@ Classes
 
         :rtype: :class:`Point`
         :returns: A new point with each term offset by `other`.
-        :param mf.Point other: The :class:`Point` to add.
+        :param mf.Point other: The point to add.
 
     .. function:: minus(other)
 
         :rtype: :class:`Point`
         :returns: A new point with each term subtracted by `other`.
-        :param mf.Point other: The :class:`Point` to subtract.
+        :param mf.Point other: The point to subtract.
 
     .. function:: scaled(scalar)
 
@@ -177,13 +177,13 @@ Classes
 
         :rtype: Number
         :returns: The Euclidean distance from the point to `other`.
-        :param mf.Point other: The :class:`Point` to compute the distance to.
+        :param mf.Point other: The point to compute the distance to.
 
     .. function:: equals(other)
 
         :rtype: Boolean
         :returns: Whether or not the points are equal.
-        :param mf.Point other: The :class:`Point` to check.
+        :param mf.Point other: The point to check.
 
     .. function:: toString()
 
