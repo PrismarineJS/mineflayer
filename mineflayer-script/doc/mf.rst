@@ -125,8 +125,6 @@ Classes
 
         var point = new mf.Point(0, 0, 0);
 
-    TODO: document member functions of Point. you can find them in builtin/builtin_types.js.
-
     .. attribute:: Point.x
 
         `Number`, south
@@ -138,6 +136,64 @@ Classes
     .. attribute:: Point.z
 
         `Number`, west
+
+    .. function:: floored()
+
+       :rtype: :class:`Point`
+       :returns: A new point with each coordinate rounded down to the nearest integer.
+
+    .. function:: offset(dx, dy, dz)
+
+       :rtype: :class:`Point`
+       :returns: A new :class:`Point` offset by the amount specified.
+       :param Number dx: How much to offset x.
+       :param Number dy: How much to offset y.
+       :param Number dz: How much to offset z.
+
+    .. function:: plus(other)
+
+        :rtype: :class:`Point`
+        :returns: A new point with each term offset by `other`.
+        :param mf.Point other: The :class:`Point` to add.
+
+    .. function:: minus(other)
+
+        :rtype: :class:`Point`
+        :returns: A new point with each term subtracted by `other`.
+        :param mf.Point other: The :class:`Point` to subtract.
+
+    .. function:: scaled(scalar)
+
+        :rtype: :class:`Point`
+        :returns: A new point with each term multiplied by `scalar`.
+        :param Number other: The number to multiply by.
+
+    .. function:: abs()
+
+        :rtype: :class:`Point`
+        :returns: A new point with each term the absolute value of its former value.
+
+    .. function:: distanceTo(other)
+
+        :rtype: Number
+        :returns: The Euclidean distance from the point to `other`.
+        :param mf.Point other: The :class:`Point` to compute the distance to.
+
+    .. function:: equals(other)
+
+        :rtype: Boolean
+        :returns: Whether or not the points are equal.
+        :param mf.Point other: The :class:`Point` to check.
+
+    .. function:: toString()
+
+       :rtype: String
+       :returns: The point represented in text form.
+
+    .. function:: clone()
+
+       :rtype: :class:`Point`
+       :returns: A new point which is a copy of the original.
 
 .. class:: Entity
 
