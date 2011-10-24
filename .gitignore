@@ -1,2 +1,3 @@
 *.pro.user*
-mineflayer-script/config.pro
+config.pro
+build/

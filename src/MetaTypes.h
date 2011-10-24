@@ -1,7 +1,12 @@
 #ifndef METATYPES_H
 #define METATYPES_H
 
+#include "Server.h"
+#include "Vector3D.h"
+#include "Game.h"
+
 #include <QMetaType>
+#include <QAbstractSocket>
 
 namespace MetaTypes {
     void registerMetaTypes() {
@@ -15,6 +20,16 @@ namespace MetaTypes {
         qRegisterMetaType<mineflayer_WindowType>("mineflayer_WindowType");
         qRegisterMetaType<mineflayer_Int3D>("mineflayer_Int3D");
         qRegisterMetaType<mineflayer_Dimension>("mineflayer_Dimension");
+
+        qRegisterMetaType<QSharedPointer<IncomingResponse> >("QSharedPointer<IncomingResponse>");
+        qRegisterMetaType<QSharedPointer<OutgoingRequest> >("QSharedPointer<OutgoingRequest>");
+        qRegisterMetaType<QSharedPointer<Chunk> >("QSharedPointer<Chunk>");
+        qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError");
+        qRegisterMetaType<Int3D>("Int3D");
+        qRegisterMetaType<Block>("Block");
+        qRegisterMetaType<QHash<Int3D,Block> >("QHash<Int3D,Block>");
+        qRegisterMetaType<Item>("Item");
+        qRegisterMetaType<QVector<Item> >("QVector<Item>");
     }
 }
 
