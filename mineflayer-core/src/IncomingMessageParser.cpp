@@ -26,7 +26,10 @@ void IncomingMessageParser::readMessage()
         if (index == -1)
             return; // not done yet
         // message is complete. remove it from the buffer
-        m_buffer.remove(0, index);
+        QByteArray message_bytes = m_buffer.remove(0, index);
+        if (true) {
+            qDebug() << "incoming:" << m_in_progress_msg->messageType << "length:" << message_bytes.length();
+        }
         // emit and start over.
         emit messageReceived(QSharedPointer<IncomingResponse>(m_in_progress_msg));
         m_in_progress_msg = NULL;
@@ -72,12 +75,15 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
     case Message::EntityStatus: return new EntityStatusResponse;
     case Message::AttachEntity: return new AttachEntityResponse;
     case Message::EntityMetadata: return new EntityMetadataResponse;
+    case Message::EntityEffect: return new EntityEffectResponse;
+    case Message::Experience: return new ExperienceResponse;
+    case Message::RemoveEntityEffect: return new RemoveEntityEffectResponse;
     case Message::PreChunk: return new PreChunkResponse;
     case Message::MapChunk: return new MapChunkResponse;
     case Message::MultiBlockChange: return new MultiBlockChangeResponse;
     case Message::BlockChange: return new BlockChangeResponse;
     case Message::PlayNoteBlock: return new PlayNoteBlockResponse;
-    case Message::InvalidBed: return new InvalidBedResponse;
+    case Message::InvalidBedOrStateChange: return new InvalidBedOrStateChangeResponse;
     case Message::LightningBolt: return new LightningBoltResponse;
     case Message::Explosion: return new ExplosionResponse;
     case Message::OpenWindow: return new OpenWindowResponse;
@@ -86,8 +92,10 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
     case Message::WindowItems: return new WindowItemsResponse;
     case Message::UpdateProgressBar: return new UpdateProgressBarResponse;
     case Message::Transaction: return new TransactionResponse;
+    case Message::CreativeInventoryAction: return new CreativeInventoryActionResponse;
     case Message::UpdateSign: return new UpdateSignResponse;
     case Message::IncrementStatistic: return new IncrementStatisticResponse;
+    case Message::PlayerOnlineStatus: return new PlayerOnlineStatusResponse;
     case Message::DisconnectOrKick: return new DisconnectOrKickResponse;
     case Message::DoorChange: return new DoorChangeResponse;
     case Message::MapData: return new MapDataResponse;

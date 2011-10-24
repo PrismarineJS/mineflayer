@@ -48,13 +48,16 @@ public:
         EntityStatus=0x26,
         AttachEntity=0x27,
         EntityMetadata=0x28,
+        EntityEffect=0x29,
+        RemoveEntityEffect=0x2A,
+        Experience=0x2B,
         PreChunk=0x32,
         MapChunk=0x33,
         MultiBlockChange=0x34,
         BlockChange=0x35,
         PlayNoteBlock=0x36,
         DoorChange=0x3D,
-        InvalidBed=0x46,
+        InvalidBedOrStateChange=0x46,
         LightningBolt=0x47,
         Explosion=0x3C,
         OpenWindow=0x64,
@@ -64,9 +67,11 @@ public:
         WindowItems=0x68,
         UpdateProgressBar=0x69,
         Transaction=0x6A,
+        CreativeInventoryAction=0x6B,
         UpdateSign=(qint8)0x82,
         MapData=(qint8)0x83,
         IncrementStatistic=(qint8)0xC8,
+        PlayerOnlineStatus=(qint8)0xC9,
         DisconnectOrKick=(qint8)0xFF,
     };
 
@@ -266,6 +271,7 @@ protected:
     // parsing methods return -1 if they were unable to parse the data into the parameter.
     // if they're successful they return the index after the data.
     static int parseValue(QByteArray buffer, int index, bool &value);
+    static int parseValue(QByteArray buffer, int index, quint8 &value);
     static int parseValue(QByteArray buffer, int index, qint8 &value);
     static int parseValue(QByteArray buffer, int index, qint16 &value);
     static int parseValue(QByteArray buffer, int index, qint32 &value);
@@ -273,9 +279,8 @@ protected:
     static int parseValue(QByteArray buffer, int index, float &value);
     static int parseValue(QByteArray buffer, int index, double &value);
     static int parseValue(QByteArray buffer, int index, QString &value);
-    static int parseStringUtf8(QByteArray buffer, int index, QString &value);
     static int parseStringAscii(QByteArray buffer, int index, QString &value);
-    static int parseValue(QByteArray buffer, int index, Item &item);
+    static int parseItem(QByteArray buffer, int index, Item &item, bool force_complete_structure=false);
     static int parseValue(QByteArray buffer, int index, QByteArray &value);
 };
 
@@ -287,14 +292,28 @@ public:
 
 class LoginResponse : public IncomingResponse {
 public:
+    enum ServerMode {
+        Survival = 0,
+        Creative = 1,
+    };
     enum Dimension {
-        Normal = 0,
+        Overworld = 0,
         Nether = -1,
     };
+    enum Difficulty {
+        Peaceful = 0,
+        Easy = 1,
+        Normal = 2,
+        Hard = 3,
+    };
     qint32 entity_id;
-    QString _unknown_1;
+    QString _unused;
     qint64 map_seed;
+    ServerMode server_mode;
     Dimension dimension;
+    Difficulty difficulty;
+    quint8 world_height;
+    quint8 max_players;
     LoginResponse() : IncomingResponse(Login) {}
     virtual int parse(QByteArray buffer);
 };
@@ -353,6 +372,8 @@ public:
 class UpdateHealthResponse : public IncomingResponse {
 public:
     qint16 health;
+    qint16 food;
+    float food_saturation;
     UpdateHealthResponse() : IncomingResponse(UpdateHealth) {}
     virtual int parse(QByteArray buffer);
 };
@@ -360,6 +381,10 @@ public:
 class RespawnResponse : public IncomingResponse {
 public:
     qint8 world;
+    qint8 difficulty;
+    qint8 game_mode;
+    qint16 world_height;
+    qint64 seed;
     RespawnResponse() : IncomingResponse(Respawn) {}
     virtual int parse(QByteArray buffer);
 };
@@ -430,6 +455,9 @@ public:
     enum EntityActionType {
         Crouch=1,
         Uncrouch=2,
+        LeaveBed=3,
+        StartSprinting=4,
+        StopSprinting=5,
     };
     qint32 entity_id;
     EntityActionType entity_action_type;
@@ -632,6 +660,33 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class EntityEffectResponse : public IncomingResponse {
+public:
+    qint32 entity_id;
+    qint8 effect_id;
+    qint8 amplifier;
+    qint16 duration;
+    EntityEffectResponse() : IncomingResponse(EntityEffect) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class RemoveEntityEffectResponse : public IncomingResponse {
+public:
+    qint32 entity_id;
+    qint8 effect_id;
+    RemoveEntityEffectResponse() : IncomingResponse(RemoveEntityEffect) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class ExperienceResponse : public IncomingResponse {
+public:
+    qint8 experience_relative_to_current_level;
+    qint8 level;
+    qint16 total_experience;
+    ExperienceResponse() : IncomingResponse(RemoveEntityEffect) {}
+    virtual int parse(QByteArray buffer);
+};
+
 class PreChunkResponse : public IncomingResponse {
 public:
     enum Mode {
@@ -709,10 +764,17 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
-class InvalidBedResponse : public IncomingResponse {
+class InvalidBedOrStateChangeResponse : public IncomingResponse {
 public:
+    enum InvalidBedOrStateChangeCode {
+        InvalidBed=0,
+        BeginRain=1,
+        EndRain=2,
+        GameModeChange=3,
+    };
     qint8 reason;
-    InvalidBedResponse() : IncomingResponse(InvalidBed) {}
+    qint8 game_mode;
+    InvalidBedOrStateChangeResponse() : IncomingResponse(InvalidBedOrStateChange) {}
     virtual int parse(QByteArray buffer);
 };
 
@@ -780,6 +842,15 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class CreativeInventoryActionResponse : public IncomingResponse {
+public:
+    qint16 slot;
+    Item item;
+    CreativeInventoryActionResponse() : IncomingResponse(CreativeInventoryAction) {}
+    virtual int parse(QByteArray buffer);
+};
+
+
 class WindowItemsResponse : public IncomingResponse {
 public:
     qint8 window_id;
@@ -815,6 +886,15 @@ public:
     qint32 statistic_id;
     qint8 amount;
     IncrementStatisticResponse() : IncomingResponse(IncrementStatistic) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class PlayerOnlineStatusResponse : public IncomingResponse {
+public:
+    QString name;
+    bool online;
+    qint16 ping_milliseconds;
+    PlayerOnlineStatusResponse() : IncomingResponse(PlayerOnlineStatus) {}
     virtual int parse(QByteArray buffer);
 };
 

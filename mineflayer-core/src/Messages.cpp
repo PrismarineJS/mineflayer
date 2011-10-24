@@ -2,11 +2,11 @@
 
 #include <QDebug>
 
-const qint32 OutgoingRequest::c_protocol_version = 14;
+const qint32 OutgoingRequest::c_protocol_version = 17;
 
 void OutgoingRequest::writeToStream(QDataStream &stream)
 {
-    if (false) {
+    if (true) {
         // for printing outgoing binary
         QByteArray buffer;
         QDataStream fake_stream(&buffer, QIODevice::WriteOnly);
@@ -78,7 +78,11 @@ void LoginRequest::writeMessageBody(QDataStream &stream)
     writeValue(stream, c_protocol_version);
     writeValue(stream, username);
     writeValue(stream, (qint64)0); // map seed
+    writeValue(stream, (qint32)0); // game mode
     writeValue(stream, (qint8)0); // dimension
+    writeValue(stream, (qint8)0); // difficulty
+    writeValue(stream, (qint8)0); // world height
+    writeValue(stream, (qint8)0); // max players
 }
 
 void HandshakeRequest::writeMessageBody(QDataStream &stream)
@@ -101,6 +105,10 @@ void UseEntityRequest::writeMessageBody(QDataStream &stream)
 void RespawnRequest::writeMessageBody(QDataStream &stream)
 {
     writeValue(stream, world);
+    writeValue(stream, (qint8)0); // difficulty
+    writeValue(stream, (qint8)0); // game_mode
+    writeValue(stream, (qint16)0); // world_height
+    writeValue(stream, (qint64)0); // seed
 }
 
 void PlayerPositionAndLookRequest::writeMessageBody(QDataStream &stream)
@@ -188,6 +196,14 @@ int IncomingResponse::parseValue(QByteArray buffer, int index, bool &value)
     value = tmp;
     return index;
 }
+int IncomingResponse::parseValue(QByteArray buffer, int index, quint8 &value)
+{
+    qint8 tmp;
+    int result = parseValue(buffer, index, tmp);
+    value = tmp;
+    return result;
+}
+
 int IncomingResponse::parseValue(QByteArray buffer, int index, qint8 &value)
 {
     const int size = 1;
@@ -271,17 +287,6 @@ int IncomingResponse::parseValue(QByteArray buffer, int index, QString &value)
     index += length*2;
     return index;
 }
-int IncomingResponse::parseStringUtf8(QByteArray buffer, int index, QString &value)
-{
-    qint16 length;
-    if ((index = parseValue(buffer, index, length)) == -1)
-        return -1;
-    if (!(index + length <= buffer.size()))
-        return -1;
-    value = QString::fromUtf8(buffer.mid(index, length).constData(), length);
-    index += length;
-    return index;
-}
 int IncomingResponse::parseStringAscii(QByteArray buffer, int index, QString &value)
 {
     qint8 length;
@@ -293,13 +298,13 @@ int IncomingResponse::parseStringAscii(QByteArray buffer, int index, QString &va
     index += length;
     return index;
 }
-int IncomingResponse::parseValue(QByteArray buffer, int index, Item &item)
+int IncomingResponse::parseItem(QByteArray buffer, int index, Item &item, bool force_complete_structure)
 {
     qint16 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
     item.data.type = (mineflayer_ItemType)tmp;
-    if (item.data.type != mineflayer_NoItem) {
+    if (force_complete_structure || item.data.type != mineflayer_NoItem) {
         qint8 count;
         if ((index = parseValue(buffer, index, count)) == -1)
             return -1;
@@ -337,14 +342,25 @@ int LoginResponse::parse(QByteArray buffer)
     int index = 1;
     if ((index = parseValue(buffer, index, entity_id)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, _unknown_1)) == -1)
+    if ((index = parseValue(buffer, index, _unused)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, map_seed)) == -1)
         return -1;
-    qint8 tmp;
-    if ((index = parseValue(buffer, index, tmp)) == -1)
+    qint32 tmp32;
+    if ((index = parseValue(buffer, index, tmp32)) == -1)
         return -1;
-    dimension = (Dimension)tmp;
+    server_mode = (ServerMode)tmp32;
+    qint8 tmp8;
+    if ((index = parseValue(buffer, index, tmp8)) == -1)
+        return -1;
+    dimension = (Dimension)tmp8;
+    if ((index = parseValue(buffer, index, tmp8)) == -1)
+        return -1;
+    difficulty = (Difficulty)tmp8;
+    if ((index = parseValue(buffer, index, world_height)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, max_players)) == -1)
+        return -1;
     return index;
 }
 
@@ -419,6 +435,10 @@ int UpdateHealthResponse::parse(QByteArray buffer)
     int index = 1;
     if ((index = parseValue(buffer, index, health)) == -1)
         return -1;
+    if ((index = parseValue(buffer, index, food)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, food_saturation)) == -1)
+        return -1;
     return index;
 }
 
@@ -426,6 +446,14 @@ int RespawnResponse::parse(QByteArray buffer)
 {
     int index = 1;
     if ((index = parseValue(buffer, index, world)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, difficulty)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, game_mode)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, world_height)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, seed)) == -1)
         return -1;
     return index;
 }
@@ -499,7 +527,7 @@ int PlayerBlockPlacementResponse::parse(QByteArray buffer)
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
     block_face = (mineflayer_BlockFaceDirection)tmp;
-    if ((index = parseValue(buffer, index, item)) == -1)
+    if ((index = parseItem(buffer, index, item)) == -1)
         return -1;
     return index;
 }
@@ -565,7 +593,7 @@ int PickupSpawnResponse::parse(QByteArray buffer)
     int index = 1;
     if ((index = parseValue(buffer, index, entity_id)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, item)) == -1)
+    if ((index = parseItem(buffer, index, item)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, pixels_x)) == -1)
         return -1;
@@ -804,6 +832,42 @@ int EntityMetadataResponse::parse(QByteArray buffer)
     return index;
 }
 
+int EntityEffectResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, effect_id)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, amplifier)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, duration)) == -1)
+        return -1;
+    return index;
+}
+
+int RemoveEntityEffectResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, effect_id)) == -1)
+        return -1;
+    return index;
+}
+
+int ExperienceResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, experience_relative_to_current_level)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, level)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, total_experience)) == -1)
+        return -1;
+    return index;
+}
+
 int PreChunkResponse::parse(QByteArray buffer)
 {
     int index = 1;
@@ -936,10 +1000,12 @@ int DoorChangeResponse::parse(QByteArray buffer)
     return index;
 }
 
-int InvalidBedResponse::parse(QByteArray buffer)
+int InvalidBedOrStateChangeResponse::parse(QByteArray buffer)
 {
     int index = 1;
     if ((index = parseValue(buffer, index, reason)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, game_mode)) == -1)
         return -1;
     return index;
 }
@@ -984,7 +1050,7 @@ int OpenWindowResponse::parse(QByteArray buffer)
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
     inventory_type = (mineflayer_WindowType)tmp;
-    if ((index = parseStringUtf8(buffer, index, window_title)) == -1)
+    if ((index = parseValue(buffer, index, window_title)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, number_of_slots)) == -1)
         return -1;
@@ -1006,7 +1072,7 @@ int SetSlotResponse::parse(QByteArray buffer)
         return -1;
     if ((index = parseValue(buffer, index, slot)) == -1)
         return -1;
-    if ((index = parseValue(buffer, index, item)) == -1)
+    if ((index = parseItem(buffer, index, item)) == -1)
         return -1;
     return index;
 }
@@ -1035,6 +1101,16 @@ int TransactionResponse::parse(QByteArray buffer)
     return index;
 }
 
+int CreativeInventoryActionResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, slot)) == -1)
+        return -1;
+    if ((index = parseItem(buffer, index, item, true)) == -1)
+        return -1;
+    return index;
+}
+
 int WindowItemsResponse::parse(QByteArray buffer)
 {
     int index = 1;
@@ -1047,7 +1123,7 @@ int WindowItemsResponse::parse(QByteArray buffer)
     items.resize(count);
     for (int i = 0; i < count; i++) {
         Item item;
-        if ((index = parseValue(buffer, index, item)) == -1)
+        if ((index = parseItem(buffer, index, item)) == -1)
             return -1;
         items.replace(i, item);
     }
@@ -1092,6 +1168,18 @@ int IncrementStatisticResponse::parse(QByteArray buffer)
     if ((index = parseValue(buffer, index, statistic_id)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, amount)) == -1)
+        return -1;
+    return index;
+}
+
+int PlayerOnlineStatusResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, name)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, online)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, ping_milliseconds)) == -1)
         return -1;
     return index;
 }
