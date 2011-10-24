@@ -891,7 +891,7 @@ int BlockChangeResponse::parse(QByteArray buffer)
     qint8 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    new_block_type = (Item::Material)tmp;
+    new_block_type = (Item::ItemType)tmp;
     if ((index = parseValue(buffer, index, metadata)) == -1)
         return -1;
     return index;

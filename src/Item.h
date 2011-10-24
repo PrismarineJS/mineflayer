@@ -391,7 +391,7 @@ public:
     };
 
 
-    typedef struct {
+    struct ItemData {
         ItemType id;
         QString name;
         int stack_height;
@@ -403,7 +403,7 @@ public:
         bool safe; // false if your presence in this block causes you harm
         float hardness; // used for computing digging time
         Material material; // what the block is made out of
-    } ItemData;
+    };
 
 public:
     ItemType type;

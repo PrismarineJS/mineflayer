@@ -477,7 +477,7 @@ public:
     qint32 pixels_z;
     qint8 yaw_out_of_256;
     qint8 pitch_out_of_256;
-    ItemType held_item;
+    Item::ItemType held_item;
     NamedEntitySpawnResponse() : IncomingResponse(NamedEntitySpawn) {}
     virtual int parse(QByteArray buffer);
 };
@@ -721,7 +721,7 @@ public:
     qint32 x;
     qint8 y;
     qint32 z;
-    Item::Material new_block_type;
+    Item::ItemType new_block_type;
     qint8 metadata;
     BlockChangeResponse() : IncomingResponse(BlockChange) {}
     virtual int parse(QByteArray buffer);

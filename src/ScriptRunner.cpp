@@ -637,7 +637,7 @@ QScriptValue ScriptRunner::jsEntity(QSharedPointer<Game::Entity> entity)
 {
     QScriptValue result = m_entity_class.construct();
     result.setProperty("entity_id", entity->entity_id);
-    EntityPosition position = entity->position;
+    Server::EntityPosition position = entity->position;
     result.setProperty("position", jsPoint(position.pos));
     result.setProperty("velocity", jsPoint(position.vel));
     result.setProperty("yaw", position.yaw);
@@ -687,7 +687,7 @@ QScriptValue ScriptRunner::clearControlStates(QScriptContext *context, QScriptEn
     if (!me->argCount(context, error, 0))
         return error;
 
-    for (int control = Game::NoControl; control < Game::ControlCount; control++)
+    for (int control = 0; control < Game::ControlCount; control++)
         me->m_game->setControlActivated((Game::Control)control, false);
     return QScriptValue();
 }
@@ -1124,7 +1124,7 @@ QScriptValue ScriptRunner::jsItem(Item item)
 }
 QScriptValue ScriptRunner::jsBlock(Block block)
 {
-    return m_block_class.construct(QScriptValueList() << block.type << block.metadata << block.light << block.sky_light);
+    return m_block_class.construct(QScriptValueList() << block.type() << block.m_metadata << block.light() << block.m_sky_light);
 }
 
 void ScriptRunner::handleEntitySpawned(QSharedPointer<Game::Entity> entity)
@@ -1193,7 +1193,7 @@ void ScriptRunner::handleTimeUpdated(double seconds)
     raiseEvent("onTimeUpdated", QScriptValueList() << seconds);
 }
 
-void ScriptRunner::handleLoginStatusUpdated(LoginStatus status)
+void ScriptRunner::handleLoginStatusUpdated(Server::LoginStatus status)
 {
     // note that game class already handles shutting down for Disconnected and SocketError.
     switch (status) {

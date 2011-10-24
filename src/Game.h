@@ -49,7 +49,7 @@ public:
             // TODO: ObjectOrVehicle,
             MobEntity = 3,
             PickupEntity = 4,
-        } EntityType;
+        };
 
         const EntityType type;
         int entity_id;
@@ -68,7 +68,7 @@ public:
         const QString username;
         Item::ItemType held_item;
         NamedPlayerEntity(int entity_id, Server::EntityPosition position, QString username, Item::ItemType held_item) :
-                Entity(NamedPlayer, entity_id, position), username(username), held_item(held_item) {}
+                Entity(Entity::NamedPlayerEntity, entity_id, position), username(username), held_item(held_item) {}
         Entity * clone() { return new NamedPlayerEntity(entity_id, position, username, held_item); }
         void getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const;
     };
@@ -77,7 +77,7 @@ public:
     public:
         const MobSpawnResponse::MobType mob_type;
         MobEntity(int entity_id, Server::EntityPosition position, MobSpawnResponse::MobType mob_type) :
-                Entity(Mob, entity_id, position), mob_type(mob_type) {}
+                Entity(Entity::MobEntity, entity_id, position), mob_type(mob_type) {}
         Entity * clone() { return new MobEntity(entity_id, position, mob_type); }
         void getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const;
     };
@@ -85,7 +85,7 @@ public:
     public:
         const Item item;
         PickupEntity(int entity_id, Server::EntityPosition position, Item item) :
-                Entity(Pickup, entity_id, position), item(item) {}
+                Entity(Entity::PickupEntity, entity_id, position), item(item) {}
         Entity * clone() { return new PickupEntity(entity_id, position, item); }
         void getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const;
     };
@@ -163,7 +163,7 @@ public:
 
     void openInventoryWindow();
     void closeWindow();
-    WindowType getOpenWindow();
+    Message::WindowType getOpenWindow();
 
     Item inventoryItem(int slot_id) const; // [0, 35]
     Item uniqueWindowItem(int slot_id) const;

@@ -311,7 +311,7 @@ bool _Item::Recipe::operator ==(const _Item::Recipe & other) const
 
 bool Item::operator ==(const Item & other) const
 {
-    return other.type == this->data.type && other.metadata == this->data.metadata;
+    return other.type == this->type && other.metadata == this->metadata;
 }
 
 

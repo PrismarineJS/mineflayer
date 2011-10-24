@@ -963,7 +963,7 @@ bool Game::canPlaceBlock(const Int3D &block_pos, Message::BlockFaceDirection fac
         return false;
     // anyone else
     foreach (QSharedPointer<Entity> entity, m_entities)
-        if (entity.data()->type != Entity::Pickup)
+        if (entity.data()->type != Entity::PickupEntity)
             if (entityCollidesWithPoint(entity.data(), new_block_pos))
                 return false;
 
@@ -1353,7 +1353,7 @@ void Game::openInventoryWindow()
     emit windowOpened(Message::InventoryWindow);
 }
 
-WindowType Game::getOpenWindow()
+Message::WindowType Game::getOpenWindow()
 {
     return m_open_window_type;
 }

@@ -18,7 +18,7 @@ PhysicsDoer::PhysicsDoer(Game * game) :
 void PhysicsDoer::doPhysics()
 {
     float elapsed_time = m_physics_time.restart() / 1000.0f;
-    mineflayer_doPhysics(m_game, elapsed_time);
+    m_game->doPhysics(elapsed_time);
 }
 
 void PhysicsDoer::start()

@@ -8,12 +8,10 @@ TEMPLATE = app
 SOURCES += src/main.cpp \
     src/ScriptRunner.cpp \
     src/StdinReader.cpp \
-    src/Util.cpp \
     src/Server.cpp \
     src/Messages.cpp \
     src/IncomingMessageParser.cpp \
     src/Chunk.cpp \
-    src/Util.cpp \
     src/Game.cpp \
     src/Item.cpp \
     src/Digger.cpp \
@@ -30,7 +28,6 @@ HEADERS += \
     src/IncomingMessageParser.h \
     src/MetaTypes.h \
     src/Vector3D.h \
-    src/Util.h \
     src/Game.h \
     src/Block.h \
     src/Item.h \
@@ -57,5 +54,6 @@ headless {
     DEFINES -= MINEFLAYER_GUI_ON
     QT -= gui scripttools
 }
+
 
 
