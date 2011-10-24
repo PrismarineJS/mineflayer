@@ -1,6 +1,8 @@
 #include "ScriptRunner.h"
 
-#include "Util.h"
+#ifdef MINEFLAYER_GUI_ON
+#include <QMainWindow>
+#endif
 
 #include <QFile>
 #include <QDebug>
@@ -17,24 +19,15 @@ ScriptRunner::ScriptRunner(QUrl url, QString script_file, QStringList args, bool
     m_args(args),
     m_debug(debug),
     m_engine(NULL),
+    m_game(new Game(url)),
     m_started_game(false),
     m_exiting(false),
     m_stderr(stderr),
     m_stdout(stdout),
     m_timer_count(0),
+    m_debugger(NULL),
     m_lib_path(lib_path)
 {
-    mineflayer_Url mf_url;
-    memset(&mf_url, 0, sizeof(mineflayer_Url));
-    mf_url.hostname = Util::toNewMfUtf8(url.host());
-    mf_url.username = Util::toNewMfUtf8(url.userName());
-    mf_url.password = Util::toNewMfUtf8(url.password());
-    mf_url.port = url.port(0);
-    m_game = mineflayer_createGame(mf_url, true);
-    Util::deallocMfUtf8(mf_url.hostname);
-    Util::deallocMfUtf8(mf_url.username);
-    Util::deallocMfUtf8(mf_url.password);
-
     m_engine = new QScriptEngine(this);
 
 #ifdef MINEFLAYER_GUI_ON
@@ -102,14 +95,13 @@ void ScriptRunner::bootstrap()
         QScriptValue item_type_obj = m_engine->newObject();
         mf_obj.setProperty("ItemType", item_type_obj);
 
-        int * item_id_list = mineflayer_itemIdList();
-
-        for (int i = 0; i < item_id_list[0]; i++) {
-            mineflayer_ItemData * item_data = mineflayer_itemData((mineflayer_ItemType)item_id_list[1+i]);
-            item_type_obj.setProperty(Util::toQString(item_data->name), item_data->id);
+        const QHash<Item::ItemType, Item::ItemData*> * item_data_hash = Item::itemDataHash();
+        for (QHash<Item::ItemType, Item::ItemData*>::const_iterator it = item_data_hash->constBegin();
+             it != item_data_hash->constEnd(); ++it)
+        {
+            const Item::ItemData * item_data = it.value();
+            item_type_obj.setProperty(item_data->name, item_data->id);
         }
-
-        mineflayer_destroyItemIdList(item_id_list);
     }
 
     // hook up mf functions
@@ -150,6 +142,7 @@ void ScriptRunner::bootstrap()
     QScriptValue hax_obj = m_engine->newObject();
     mf_obj.setProperty("hax", hax_obj);
     hax_obj.setProperty("setPosition", m_engine->newFunction(setPosition));
+    hax_obj.setProperty("positionUpdateInterval", m_engine->newFunction(positionUpdateInterval));
     hax_obj.setProperty("setGravityEnabled", m_engine->newFunction(setGravityEnabled));
     hax_obj.setProperty("setJesusModeEnabled", m_engine->newFunction(setJesusModeEnabled));
 
@@ -170,29 +163,46 @@ void ScriptRunner::bootstrap()
     if (m_exiting)
         return;
 
-    mineflayer_Callbacks cbs;
-    memset(&cbs, 0, sizeof(mineflayer_Callbacks));
-    cbs.chatReceived = chatReceived;
-    cbs.timeUpdated = timeUpdated;
-    cbs.nonSpokenChatReceived = nonSpokenChatReceived;
-    cbs.entitySpawned = entitySpawned;
-    cbs.entityDespawned = entityDespawned;
-    cbs.entityMoved = entityMoved;
-    cbs.animation = animation;
-    cbs.chunkUpdated = chunkUpdated;
-    cbs.signUpdated = signUpdated;
-    cbs.playerPositionUpdated = playerPositionUpdated;
-    cbs.playerHealthUpdated = playerHealthUpdated;
-    cbs.playerDied = playerDied;
-    cbs.playerSpawned = playerSpawned;
-    cbs.stoppedDigging = stoppedDigging;
-    cbs.loginStatusUpdated = loginStatusUpdated;
-    cbs.windowOpened = windowOpened;
-    cbs.inventoryUpdated = inventoryUpdated;
-    cbs.equippedItemChanged = equippedItemChanged;
-    mineflayer_setCallbacks(m_game, cbs, this);
-
+    // connect to server
     bool success;
+
+    success = connect(m_game, SIGNAL(entitySpawned(QSharedPointer<Game::Entity>)), this, SLOT(handleEntitySpawned(QSharedPointer<Game::Entity>)));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(entityMoved(QSharedPointer<Game::Entity>)), this, SLOT(handleEntityMoved(QSharedPointer<Game::Entity>)));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(entityDespawned(QSharedPointer<Game::Entity>)), this, SLOT(handleEntityDespawned(QSharedPointer<Game::Entity>)));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(animation(QSharedPointer<Game::Entity>,Message::AnimationType)), this, SLOT(handleAnimation(QSharedPointer<Game::Entity>,Message::AnimationType)));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(handleChunkUpdated(Int3D,Int3D)));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(signUpdated(Int3D,QString)), this, SLOT(handleSignUpdated(Int3D,QString)));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(playerPositionUpdated()), this, SLOT(movePlayerPosition()));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SLOT(handleLoginStatusUpdated(Server::LoginStatus)));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(chatReceived(QString,QString)), this, SLOT(handleChatReceived(QString,QString)));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(nonSpokenChatReceived(QString)), this, SLOT(handleNonSpokenChatReceived(QString)));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(timeUpdated(double)), this, SLOT(handleTimeUpdated(double)));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(playerDied()), this, SLOT(handlePlayerDied()));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(playerSpawned()), this, SLOT(handlePlayerSpawned()));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(playerHealthUpdated()), this, SLOT(handlePlayerHealthUpdated()));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(inventoryUpdated()), this, SLOT(handleInventoryUpdated()));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(stoppedDigging(Game::StoppedDiggingReason)), this, SLOT(handleStoppedDigging(Game::StoppedDiggingReason)));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(windowOpened(Message::WindowType)), this, SLOT(handleWindowOpened(Message::WindowType)));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(equippedItemChanged()), this, SLOT(handleEquippedItemChanged()));
+    Q_ASSERT(success);
+
 
     success = connect(&m_stdin_reader, SIGNAL(readLine(QString)), this, SLOT(handleReadLine(QString)));
     Q_ASSERT(success);
@@ -200,7 +210,7 @@ void ScriptRunner::bootstrap()
     Q_ASSERT(success);
 
     m_started_game = true;
-    mineflayer_start(m_game);
+    m_game->start();
     m_stdin_reader.start();
 }
 
@@ -498,9 +508,7 @@ QScriptValue ScriptRunner::chat(QScriptContext *context, QScriptEngine *engine)
         return error;
     QString message = message_value.toString();
 
-    mineflayer_Utf8 utf8message = Util::toNewMfUtf8(message);
-    mineflayer_sendChat(me->m_game, utf8message);
-    Util::deallocMfUtf8(utf8message);
+    me->m_game->sendChat(message);
 
     return QScriptValue();
 }
@@ -510,7 +518,7 @@ QScriptValue ScriptRunner::timeOfDay(QScriptContext *context, QScriptEngine *eng
     QScriptValue error;
     if (!me->argCount(context, error, 0))
         return error;
-    return mineflayer_timeOfDay(me->m_game);
+    return me->m_game->timeOfDay();
 }
 
 QScriptValue ScriptRunner::itemStackHeight(QScriptContext *context, QScriptEngine *engine)
@@ -523,7 +531,7 @@ QScriptValue ScriptRunner::itemStackHeight(QScriptContext *context, QScriptEngin
     if (!me->maybeThrowArgumentError(context, error, value.isNumber()))
         return error;
 
-    return mineflayer_itemData((mineflayer_ItemType)value.toInt32())->stack_height;
+    return Item::itemData((Item::ItemType)value.toInt32())->stack_height;
 }
 QScriptValue ScriptRunner::isPhysical(QScriptContext *context, QScriptEngine *engine)
 {
@@ -534,7 +542,7 @@ QScriptValue ScriptRunner::isPhysical(QScriptContext *context, QScriptEngine *en
     QScriptValue value = context->argument(0);
     if (!me->maybeThrowArgumentError(context, error, value.isNumber()))
         return error;
-    return mineflayer_itemData((mineflayer_ItemType)value.toInt32())->physical;
+    return Item::itemData((Item::ItemType)value.toInt32())->physical;
 }
 QScriptValue ScriptRunner::isSafe(QScriptContext *context, QScriptEngine *engine)
 {
@@ -545,7 +553,7 @@ QScriptValue ScriptRunner::isSafe(QScriptContext *context, QScriptEngine *engine
     QScriptValue value = context->argument(0);
     if (!me->maybeThrowArgumentError(context, error, value.isNumber()))
         return error;
-    return mineflayer_itemData((mineflayer_ItemType)value.toInt32())->safe;
+    return Item::itemData((Item::ItemType)value.toInt32())->safe;
 }
 QScriptValue ScriptRunner::isDiggable(QScriptContext *context, QScriptEngine *engine)
 {
@@ -556,7 +564,7 @@ QScriptValue ScriptRunner::isDiggable(QScriptContext *context, QScriptEngine *en
     QScriptValue value = context->argument(0);
     if (!me->maybeThrowArgumentError(context, error, value.isNumber()))
         return error;
-    return mineflayer_itemData((mineflayer_ItemType)value.toInt32())->diggable;
+    return Item::itemData((Item::ItemType)value.toInt32())->diggable;
 }
 
 QScriptValue ScriptRunner::health(QScriptContext *context, QScriptEngine *engine)
@@ -565,7 +573,7 @@ QScriptValue ScriptRunner::health(QScriptContext *context, QScriptEngine *engine
     QScriptValue error;
     if (!me->argCount(context, error, 0))
         return error;
-    return mineflayer_playerHealth(me->m_game);
+    return me->m_game->playerHealth();
 }
 
 QScriptValue ScriptRunner::blockAt(QScriptContext *context, QScriptEngine *engine)
@@ -577,11 +585,10 @@ QScriptValue ScriptRunner::blockAt(QScriptContext *context, QScriptEngine *engin
     QScriptValue js_pt = context->argument(0);
     if (!me->maybeThrowArgumentError(context, error, js_pt.isObject()))
         return error;
-    mineflayer_Int3D pt;
+    Int3D pt;
     if (!fromJsPoint(context, error, js_pt, pt))
         return error;
-    mineflayer_Block block = mineflayer_blockAt(me->m_game, pt);
-    return me->jsBlock(block);
+    return me->jsBlock(me->m_game->blockAt(pt));
 }
 
 QScriptValue ScriptRunner::isBlockLoaded(QScriptContext *context, QScriptEngine *engine)
@@ -593,10 +600,10 @@ QScriptValue ScriptRunner::isBlockLoaded(QScriptContext *context, QScriptEngine 
     QScriptValue js_pt = context->argument(0);
     if (!me->maybeThrowArgumentError(context, error, js_pt.isObject()))
         return error;
-    mineflayer_Int3D pt;
+    Int3D pt;
     if (!fromJsPoint(context, error, js_pt, pt))
         return error;
-    return mineflayer_isBlockLoaded(me->m_game, pt);
+    return me->m_game->isBlockLoaded(pt);
 }
 
 QScriptValue ScriptRunner::signTextAt(QScriptContext *context, QScriptEngine *engine)
@@ -608,10 +615,10 @@ QScriptValue ScriptRunner::signTextAt(QScriptContext *context, QScriptEngine *en
     QScriptValue js_pt = context->argument(0);
     if (!me->maybeThrowArgumentError(context, error, js_pt.isObject()))
         return error;
-    mineflayer_Int3D pt;
+    Int3D pt;
     if (!fromJsPoint(context, error, js_pt, pt))
         return error;
-    QString text = Util::toQString(mineflayer_signTextAt(me->m_game, pt));
+    QString text = me->m_game->signTextAt(pt);
     if (text.isNull())
         return QScriptValue();
     return text;
@@ -623,17 +630,14 @@ QScriptValue ScriptRunner::self(QScriptContext *context, QScriptEngine *engine)
     QScriptValue error;
     if (!me->argCount(context, error, 0))
         return error;
-    int entity_id = mineflayer_playerEntityId(me->m_game);
-    mineflayer_Entity * entity = mineflayer_entity(me->m_game, entity_id);
-    QScriptValue return_value = me->jsEntity(entity);
-    mineflayer_destroyEntity(entity);
-    return return_value;
+    int entity_id = me->m_game->playerEntityId();
+    return me->jsEntity(me->m_game->entity(entity_id));
 }
-QScriptValue ScriptRunner::jsEntity(mineflayer_Entity * entity)
+QScriptValue ScriptRunner::jsEntity(QSharedPointer<Game::Entity> entity)
 {
     QScriptValue result = m_entity_class.construct();
     result.setProperty("entity_id", entity->entity_id);
-    mineflayer_EntityPosition position = entity->position;
+    EntityPosition position = entity->position;
     result.setProperty("position", jsPoint(position.pos));
     result.setProperty("velocity", jsPoint(position.vel));
     result.setProperty("yaw", position.yaw);
@@ -641,18 +645,18 @@ QScriptValue ScriptRunner::jsEntity(mineflayer_Entity * entity)
     result.setProperty("on_ground", position.on_ground);
     result.setProperty("height", position.height);
 
-    mineflayer_EntityType type = entity->type;
+    Game::Entity::EntityType type = entity->type;
     result.setProperty("type", (int)type);
     switch (type) {
-        case mineflayer_NamedPlayerEntity:
-            result.setProperty("username", Util::toQString(entity->username));
-            result.setProperty("held_item", (int)entity->held_item);
+        case Game::Entity::NamedPlayerEntity:
+            result.setProperty("username", ((Game::NamedPlayerEntity*)entity.data())->username);
+            result.setProperty("held_item", (int)((Game::NamedPlayerEntity*)entity.data())->held_item);
             break;
-        case mineflayer_MobEntity:
-            result.setProperty("mob_type", (int)entity->mob_type);
+        case Game::Entity::MobEntity:
+            result.setProperty("mob_type", (int)((Game::MobEntity*)entity.data())->mob_type);
             break;
-        case mineflayer_PickupEntity:
-            result.setProperty("item", jsItem(entity->item));
+        case Game::Entity::PickupEntity:
+            result.setProperty("item", jsItem(((Game::PickupEntity*)entity.data())->item));
             break;
         default:
             Q_ASSERT(false);
@@ -673,7 +677,7 @@ QScriptValue ScriptRunner::setControlState(QScriptContext *context, QScriptEngin
     if (!me->maybeThrowArgumentError(context, error, state.isBool()))
         return error;
 
-    mineflayer_setControlActivated(me->m_game, (mineflayer_Control) control.toInt32(), state.toBool());
+    me->m_game->setControlActivated((Game::Control) control.toInt32(), state.toBool());
     return QScriptValue();
 }
 QScriptValue ScriptRunner::clearControlStates(QScriptContext *context, QScriptEngine *engine)
@@ -683,8 +687,8 @@ QScriptValue ScriptRunner::clearControlStates(QScriptContext *context, QScriptEn
     if (!me->argCount(context, error, 0))
         return error;
 
-    for (int control = 0; control < mineflayer_ControlCount; control++)
-        mineflayer_setControlActivated(me->m_game, (mineflayer_Control)control, false);
+    for (int control = Game::NoControl; control < Game::ControlCount; control++)
+        me->m_game->setControlActivated((Game::Control)control, false);
     return QScriptValue();
 }
 
@@ -695,7 +699,7 @@ QScriptValue ScriptRunner::lookAt(QScriptContext *context, QScriptEngine *engine
     if (!me->argCount(context, error, 1, 2))
         return error;
     QScriptValue point_value = context->argument(0);
-    mineflayer_Double3D point;
+    Double3D point;
     if (!me->fromJsPoint(context, error, point_value, point))
         return error;
     QScriptValue force_value = context->argument(1);
@@ -703,17 +707,15 @@ QScriptValue ScriptRunner::lookAt(QScriptContext *context, QScriptEngine *engine
     if (force_value.isBool())
         force = force_value.toBool();
 
-    mineflayer_EntityPosition my_position = mineflayer_playerPosition(me->m_game);
-    mineflayer_Double3D delta;
-    delta.x = point.x - my_position.pos.x;
-    delta.y = point.y - my_position.pos.y;
-    delta.z = point.z - my_position.pos.z;
+    Server::EntityPosition my_position = me->m_game->playerPosition();
+    Double3D delta = point - my_position.pos;
+
     if (delta.x * delta.x + delta.y * delta.y + delta.z * delta.z >= 0.1) {
         // only go through with this if we're not trying to look too close (like at ourselves)
         double yaw = std::atan2(-delta.x, -delta.z);
         double ground_distance = std::sqrt(delta.x * delta.x + delta.z * delta.z);
         double pitch = std::atan2(delta.y, ground_distance);
-        mineflayer_setPlayerLook(me->m_game, yaw, pitch, force);
+        me->m_game->setPlayerLook(yaw, pitch, force);
     }
     return QScriptValue();
 }
@@ -724,7 +726,7 @@ QScriptValue ScriptRunner::respawn(QScriptContext *context, QScriptEngine *engin
     QScriptValue error;
     if (!me->argCount(context, error, 0))
         return error;
-    mineflayer_respawn(me->m_game);
+    me->m_game->respawn();
     return QScriptValue();
 }
 
@@ -740,12 +742,10 @@ QScriptValue ScriptRunner::entity(QScriptContext *context, QScriptEngine *engine
         return error;
     int entity_id = entity_id_value.toInt32();
 
-    mineflayer_Entity * entity = mineflayer_entity(me->m_game, entity_id);
-    QScriptValue return_value;
-    if (entity != NULL)
-        return_value = me->jsEntity(entity);
-    mineflayer_destroyEntity(entity);
-    return return_value;
+    QSharedPointer<Game::Entity> entity = me->m_game->entity(entity_id);
+    if (entity.isNull())
+        return QScriptValue();
+    return me->jsEntity(entity);
 }
 
 QScriptValue ScriptRunner::startDigging(QScriptContext *context, QScriptEngine *engine)
@@ -756,11 +756,11 @@ QScriptValue ScriptRunner::startDigging(QScriptContext *context, QScriptEngine *
         return error;
 
     QScriptValue point_value = context->argument(0);
-    mineflayer_Int3D point;
+    Int3D point;
     if (!me->fromJsPoint(context, error, point_value, point))
         return error;
 
-    mineflayer_startDigging(me->m_game, point);
+    me->m_game->startDigging(point);
     return QScriptValue();
 }
 QScriptValue ScriptRunner::stopDigging(QScriptContext *context, QScriptEngine *engine)
@@ -770,7 +770,7 @@ QScriptValue ScriptRunner::stopDigging(QScriptContext *context, QScriptEngine *e
     if (!me->argCount(context, error, 0))
         return error;
 
-    mineflayer_stopDigging(me->m_game);
+    me->m_game->stopDigging();
     return QScriptValue();
 }
 
@@ -782,18 +782,17 @@ QScriptValue ScriptRunner::placeBlock(QScriptContext *context, QScriptEngine *en
         return error;
 
     QScriptValue point_value = context->argument(0);
-    mineflayer_Int3D point;
+    Int3D point;
     if (!me->fromJsPoint(context, error, point_value, point))
         return error;
 
     QScriptValue face_value = context->argument(1);
     if (!me->maybeThrowArgumentError(context, error, face_value.isNumber()))
         return error;
-    mineflayer_BlockFaceDirection face = (mineflayer_BlockFaceDirection) face_value.toInt32();
+    Message::BlockFaceDirection face = (Message::BlockFaceDirection) face_value.toInt32();
 
-    if (! mineflayer_placeBlock(me->m_game, point, face))
-        return context->throwError("Unable to place block there.");
-
+    if (!me->m_game->placeBlock(point, face))
+        return context->throwError("Invalid Argument");
     return QScriptValue();
 }
 
@@ -804,7 +803,7 @@ QScriptValue ScriptRunner::activateItem(QScriptContext *context, QScriptEngine *
     if (!me->argCount(context, error, 0))
         return error;
 
-    if (! mineflayer_activateItem(me->m_game))
+    if (! me->m_game->activateItem())
         return context->throwError("That item is not activatable.");
 
     return QScriptValue();
@@ -818,16 +817,16 @@ QScriptValue ScriptRunner::canPlaceBlock(QScriptContext *context, QScriptEngine 
         return error;
 
     QScriptValue point_value = context->argument(0);
-    mineflayer_Int3D point;
+    Int3D point;
     if (!me->fromJsPoint(context, error, point_value, point))
         return error;
 
     QScriptValue face_value = context->argument(1);
     if (!me->maybeThrowArgumentError(context, error, face_value.isNumber()))
         return error;
-    mineflayer_BlockFaceDirection face = (mineflayer_BlockFaceDirection) face_value.toInt32();
+    Message::BlockFaceDirection face = (Message::BlockFaceDirection) face_value.toInt32();
 
-    return mineflayer_canPlaceBlock(me->m_game, point, face);
+    return me->m_game->canPlaceBlock(point, face);
 }
 
 QScriptValue ScriptRunner::activateBlock(QScriptContext *context, QScriptEngine *engine)
@@ -838,11 +837,11 @@ QScriptValue ScriptRunner::activateBlock(QScriptContext *context, QScriptEngine 
         return error;
 
     QScriptValue point_value = context->argument(0);
-    mineflayer_Int3D point;
+    Int3D point;
     if (!me->fromJsPoint(context, error, point_value, point))
         return error;
 
-    mineflayer_activateBlock(me->m_game, point);
+    me->m_game->activateBlock(point);
     return QScriptValue();
 }
 
@@ -858,7 +857,7 @@ QScriptValue ScriptRunner::selectEquipSlot(QScriptContext *context, QScriptEngin
         return error;
     int slot_id = slot_id_value.toInt32();
 
-    mineflayer_selectEquipSlot(me->m_game, slot_id);
+    me->m_game->selectEquipSlot(slot_id);
     return QScriptValue();
 }
 
@@ -869,7 +868,7 @@ QScriptValue ScriptRunner::selectedEquipSlot(QScriptContext *context, QScriptEng
     if (!me->argCount(context, error, 0))
         return error;
 
-    return mineflayer_selectedEquipSlot(me->m_game);
+    return me->m_game->selectedEquipSlot();
 }
 
 QScriptValue ScriptRunner::openInventoryWindow(QScriptContext *context, QScriptEngine *engine)
@@ -879,7 +878,7 @@ QScriptValue ScriptRunner::openInventoryWindow(QScriptContext *context, QScriptE
     if (!me->argCount(context, error, 0))
         return error;
 
-    mineflayer_openInventoryWindow(me->m_game);
+    me->m_game->openInventoryWindow();
     return QScriptValue();
 }
 
@@ -900,7 +899,7 @@ QScriptValue ScriptRunner::clickInventorySlot(QScriptContext *context, QScriptEn
         return error;
     bool right_click = right_click_value.toBool();
 
-    return mineflayer_clickInventorySlot(me->m_game, slot_id, right_click);
+    return me->m_game->clickInventorySlot(slot_id, right_click);
 }
 
 QScriptValue ScriptRunner::clickUniqueSlot(QScriptContext *context, QScriptEngine *engine)
@@ -920,7 +919,7 @@ QScriptValue ScriptRunner::clickUniqueSlot(QScriptContext *context, QScriptEngin
         return error;
     bool right_click = right_click_value.toBool();
 
-    return mineflayer_clickUniqueSlot(me->m_game, slot_id, right_click);
+    return me->m_game->clickUniqueSlot(slot_id, right_click);
 }
 
 QScriptValue ScriptRunner::clickOutsideWindow(QScriptContext *context, QScriptEngine *engine)
@@ -935,7 +934,7 @@ QScriptValue ScriptRunner::clickOutsideWindow(QScriptContext *context, QScriptEn
         return error;
     bool right_click = right_click_value.toBool();
 
-    return mineflayer_clickOutsideWindow(me->m_game, right_click);
+    return me->m_game->clickOutsideWindow(right_click);
 }
 
 QScriptValue ScriptRunner::closeWindow(QScriptContext *context, QScriptEngine *engine)
@@ -945,7 +944,7 @@ QScriptValue ScriptRunner::closeWindow(QScriptContext *context, QScriptEngine *e
     if (!me->argCount(context, error, 0))
         return error;
 
-    mineflayer_closeWindow(me->m_game);
+    me->m_game->closeWindow();
     return QScriptValue();
 }
 
@@ -961,7 +960,7 @@ QScriptValue ScriptRunner::inventoryItem(QScriptContext *context, QScriptEngine 
         return error;
     int slot_id = slot_id_value.toInt32();
 
-    return me->jsItem(mineflayer_inventoryItem(me->m_game, slot_id));
+    return me->jsItem(me->m_game->inventoryItem(slot_id));
 }
 
 QScriptValue ScriptRunner::uniqueWindowItem(QScriptContext *context, QScriptEngine *engine)
@@ -976,7 +975,7 @@ QScriptValue ScriptRunner::uniqueWindowItem(QScriptContext *context, QScriptEngi
         return error;
     int slot_id = slot_id_value.toInt32();
 
-    return me->jsItem(mineflayer_uniqueWindowItem(me->m_game, slot_id));
+    return me->jsItem(me->m_game->uniqueWindowItem(slot_id));
 }
 
 QScriptValue ScriptRunner::dimension(QScriptContext *context, QScriptEngine *engine)
@@ -987,7 +986,7 @@ QScriptValue ScriptRunner::dimension(QScriptContext *context, QScriptEngine *eng
     if (!me->argCount(context, error, 0))
         return error;
 
-    return mineflayer_currentDimension(me->m_game);
+    return me->m_game->dimension();
 }
 
 QScriptValue ScriptRunner::setPosition(QScriptContext *context, QScriptEngine *engine)
@@ -997,12 +996,22 @@ QScriptValue ScriptRunner::setPosition(QScriptContext *context, QScriptEngine *e
     if (!me->argCount(context, error, 1))
         return error;
     QScriptValue point_value = context->argument(0);
-    mineflayer_Double3D point;
+    Double3D point;
     if (!me->fromJsPoint(context, error, point_value, point))
         return error;
 
-    mineflayer_setPlayerPosition(me->m_game, point);
+    me->m_game->setPlayerPosition(point);
     return QScriptValue();
+}
+
+QScriptValue ScriptRunner::positionUpdateInterval(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 0))
+        return error;
+
+    return Game::c_position_update_interval_ms;
 }
 
 QScriptValue ScriptRunner::setGravityEnabled(QScriptContext *context, QScriptEngine *engine)
@@ -1015,7 +1024,7 @@ QScriptValue ScriptRunner::setGravityEnabled(QScriptContext *context, QScriptEng
     if (!me->maybeThrowArgumentError(context, error, value_value.isBool()))
         return error;
 
-    mineflayer_setGravity(me->m_game, value_value.toBool() ? mineflayer_getStandardGravity() : 0);
+    me->m_game->setGravity(value_value.toBool() ? Game::c_standard_gravity : 0);
     return QScriptValue();
 }
 QScriptValue ScriptRunner::attackEntity(QScriptContext *context, QScriptEngine *engine)
@@ -1029,7 +1038,7 @@ QScriptValue ScriptRunner::attackEntity(QScriptContext *context, QScriptEngine *
         return error;
     int entity_id = entity_id_value.toInt32();
 
-    mineflayer_attackEntity(me->m_game, entity_id);
+    me->m_game->attackEntity(entity_id);
     return QScriptValue();
 }
 
@@ -1044,7 +1053,7 @@ QScriptValue ScriptRunner::setJesusModeEnabled(QScriptContext *context, QScriptE
         return error;
     bool value = value_value.toBool();
 
-    mineflayer_setJesusModeEnabled(value);
+    Item::setJesusModeEnabled(value);
     return QScriptValue();
 }
 
@@ -1073,15 +1082,15 @@ bool ScriptRunner::maybeThrowArgumentError(QScriptContext *context, QScriptValue
     return false;
 }
 
-QScriptValue ScriptRunner::jsPoint(const mineflayer_Int3D &pt)
+QScriptValue ScriptRunner::jsPoint(const Int3D &pt)
 {
     return m_point_class.construct(QScriptValueList() << pt.x << pt.y << pt.z);
 }
-QScriptValue ScriptRunner::jsPoint(const mineflayer_Double3D &pt)
+QScriptValue ScriptRunner::jsPoint(const Double3D &pt)
 {
     return m_point_class.construct(QScriptValueList() << pt.x << pt.y << pt.z);
 }
-bool ScriptRunner::fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, mineflayer_Double3D &point)
+bool ScriptRunner::fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, Double3D &point)
 {
     QScriptValue property;
     property = point_value.property("x");
@@ -1098,9 +1107,9 @@ bool ScriptRunner::fromJsPoint(QScriptContext *context, QScriptValue &error, QSc
     point.z = property.toNumber();
     return true;
 }
-bool ScriptRunner::fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, mineflayer_Int3D &floored_point)
+bool ScriptRunner::fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, Int3D &floored_point)
 {
-    mineflayer_Double3D double_point;
+    Double3D double_point;
     if (!fromJsPoint(context, error, point_value, double_point))
         return false;
     floored_point.x = std::floor(double_point.x);
@@ -1109,41 +1118,37 @@ bool ScriptRunner::fromJsPoint(QScriptContext *context, QScriptValue &error, QSc
     return true;
 }
 
-QScriptValue ScriptRunner::jsItem(mineflayer_Item item)
+QScriptValue ScriptRunner::jsItem(Item item)
 {
     return m_item_class.construct(QScriptValueList() << item.type << item.count << item.metadata);
 }
-QScriptValue ScriptRunner::jsBlock(mineflayer_Block block)
+QScriptValue ScriptRunner::jsBlock(Block block)
 {
     return m_block_class.construct(QScriptValueList() << block.type << block.metadata << block.light << block.sky_light);
 }
 
-void ScriptRunner::handleEntitySpawned(mineflayer_Entity * entity)
+void ScriptRunner::handleEntitySpawned(QSharedPointer<Game::Entity> entity)
 {
     raiseEvent("onEntitySpawned", QScriptValueList() << jsEntity(entity));
-    Util::destroyEntity(entity);
 }
-void ScriptRunner::handleEntityMoved(mineflayer_Entity * entity)
+void ScriptRunner::handleEntityMoved(QSharedPointer<Game::Entity> entity)
 {
     raiseEvent("onEntityMoved", QScriptValueList() << jsEntity(entity));
-    Util::destroyEntity(entity);
 }
-void ScriptRunner::handleEntityDespawned(mineflayer_Entity * entity)
+void ScriptRunner::handleEntityDespawned(QSharedPointer<Game::Entity> entity)
 {
     raiseEvent("onEntityDespawned", QScriptValueList() << jsEntity(entity));
-    Util::destroyEntity(entity);
 }
-void ScriptRunner::handleAnimation(mineflayer_Entity * entity, mineflayer_AnimationType animation_type)
+void ScriptRunner::handleAnimation(QSharedPointer<Game::Entity> entity, Message::AnimationType animation_type)
 {
     raiseEvent("onAnimation", QScriptValueList() << jsEntity(entity) << animation_type);
-    Util::destroyEntity(entity);
 }
 
-void ScriptRunner::handleChunkUpdated(const mineflayer_Int3D &start, const mineflayer_Int3D &size)
+void ScriptRunner::handleChunkUpdated(const Int3D &start, const Int3D &size)
 {
     raiseEvent("onChunkUpdated", QScriptValueList() << jsPoint(start) << jsPoint(size));
 }
-void ScriptRunner::handleSignUpdated(const mineflayer_Int3D &location, QString text)
+void ScriptRunner::handleSignUpdated(const Int3D &location, QString text)
 {
     QScriptValue text_value;
     if (!text.isNull())
@@ -1151,7 +1156,7 @@ void ScriptRunner::handleSignUpdated(const mineflayer_Int3D &location, QString t
     raiseEvent("onSignUpdated", QScriptValueList() << jsPoint(location) << text_value);
 }
 
-void ScriptRunner::handlePlayerPositionUpdated()
+void ScriptRunner::movePlayerPosition()
 {
     raiseEvent("onSelfMoved");
 }
@@ -1188,23 +1193,23 @@ void ScriptRunner::handleTimeUpdated(double seconds)
     raiseEvent("onTimeUpdated", QScriptValueList() << seconds);
 }
 
-void ScriptRunner::handleLoginStatusUpdated(mineflayer_LoginStatus status)
+void ScriptRunner::handleLoginStatusUpdated(LoginStatus status)
 {
-    // TODO: handle shutting down for Disconnected and SocketError.
+    // note that game class already handles shutting down for Disconnected and SocketError.
     switch (status) {
-        case mineflayer_SuccessStatus:
+        case Server::SuccessStatus:
             raiseEvent("onConnected");
             break;
         default:;
     }
 }
 
-void ScriptRunner::handleStoppedDigging(mineflayer_StoppedDiggingReason reason)
+void ScriptRunner::handleStoppedDigging(Game::StoppedDiggingReason reason)
 {
     raiseEvent("onStoppedDigging", QScriptValueList() << reason);
 }
 
-void ScriptRunner::handleWindowOpened(mineflayer_WindowType window_type)
+void ScriptRunner::handleWindowOpened(Message::WindowType window_type)
 {
     raiseEvent("onWindowOpened", QScriptValueList() << window_type);
 }
@@ -1219,132 +1224,3 @@ void ScriptRunner::handleReadLine(QString line)
     raiseEvent("onStdinLine", QScriptValueList() << line);
 }
 
-void ScriptRunner::chatReceived(void * context, mineflayer_Utf8 username, mineflayer_Utf8 message)
-{
-    ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    bool success = QMetaObject::invokeMethod(runner, "handleChatReceived",
-        Q_ARG(QString, Util::toQString(username)), Q_ARG(QString, Util::toQString(message)));
-    Q_ASSERT(success);
-}
-
-void ScriptRunner::timeUpdated(void * context, double seconds)
-{
-    ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    bool success = QMetaObject::invokeMethod(runner, "handleTimeUpdated", Q_ARG(double, seconds));
-    Q_ASSERT(success);
-}
-
-void ScriptRunner::nonSpokenChatReceived(void * context, mineflayer_Utf8 message)
-{
-    ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    bool success = QMetaObject::invokeMethod(runner, "handleNonSpokenChatReceived", Q_ARG(QString, Util::toQString(message)));
-    Q_ASSERT(success);
-}
-
-void ScriptRunner::entitySpawned(void * context, mineflayer_Entity *entity)
-{
-    ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    bool success = QMetaObject::invokeMethod(runner, "handleEntitySpawned", Q_ARG(mineflayer_Entity *, Util::cloneEntity(entity)));
-    Q_ASSERT(success);
-}
-
-void ScriptRunner::entityDespawned(void * context, mineflayer_Entity *entity)
-{
-    ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    bool success = QMetaObject::invokeMethod(runner, "handleEntityDespawned", Q_ARG(mineflayer_Entity *, Util::cloneEntity(entity)));
-    Q_ASSERT(success);
-}
-
-void ScriptRunner::entityMoved(void * context, mineflayer_Entity *entity)
-{
-    ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    bool success = QMetaObject::invokeMethod(runner, "handleEntityMoved", Q_ARG(mineflayer_Entity *, Util::cloneEntity(entity)));
-    Q_ASSERT(success);
-}
-
-void ScriptRunner::animation(void * context, mineflayer_Entity *entity, mineflayer_AnimationType animation_type)
-{
-    ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    bool success = QMetaObject::invokeMethod(runner, "handleAnimation",
-        Q_ARG(mineflayer_Entity *, Util::cloneEntity(entity)), Q_ARG(mineflayer_AnimationType, animation_type));
-    Q_ASSERT(success);
-}
-
-void ScriptRunner::chunkUpdated(void * context, mineflayer_Int3D start, mineflayer_Int3D size)
-{
-    ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    bool success = QMetaObject::invokeMethod(runner, "handleChunkUpdated",
-        Q_ARG(mineflayer_Int3D, start), Q_ARG(mineflayer_Int3D, size));
-    Q_ASSERT(success);
-}
-
-void ScriptRunner::signUpdated(void * context, mineflayer_Int3D location, mineflayer_Utf8 text)
-{
-    ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    bool success = QMetaObject::invokeMethod(runner, "handleSignUpdated",
-        Q_ARG(mineflayer_Int3D, location), Q_ARG(QString, Util::toQString(text)));
-    Q_ASSERT(success);
-}
-
-void ScriptRunner::playerPositionUpdated(void * context)
-{
-    ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    bool success = QMetaObject::invokeMethod(runner, "handlePlayerPositionUpdated");
-    Q_ASSERT(success);
-}
-
-void ScriptRunner::playerHealthUpdated(void * context)
-{
-    ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    bool success = QMetaObject::invokeMethod(runner, "handlePlayerHealthUpdated");
-    Q_ASSERT(success);
-}
-
-void ScriptRunner::playerDied(void * context)
-{
-    ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    bool success = QMetaObject::invokeMethod(runner, "handlePlayerDied");
-    Q_ASSERT(success);
-}
-
-void ScriptRunner::playerSpawned(void * context, int world)
-{
-    ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    bool success = QMetaObject::invokeMethod(runner, "handlePlayerSpawned", Q_ARG(int, world));
-    Q_ASSERT(success);
-}
-
-void ScriptRunner::stoppedDigging(void * context, mineflayer_StoppedDiggingReason reason)
-{
-    ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    bool success = QMetaObject::invokeMethod(runner, "handleStoppedDigging", Q_ARG(mineflayer_StoppedDiggingReason, reason));
-    Q_ASSERT(success);
-}
-
-void ScriptRunner::loginStatusUpdated(void * context, mineflayer_LoginStatus status)
-{
-    ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    bool success = QMetaObject::invokeMethod(runner, "handleLoginStatusUpdated", Q_ARG(mineflayer_LoginStatus, status));
-    Q_ASSERT(success);
-}
-
-void ScriptRunner::windowOpened(void * context, mineflayer_WindowType window_type)
-{
-    ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    bool success = QMetaObject::invokeMethod(runner, "handleWindowOpened", Q_ARG(mineflayer_WindowType, window_type));
-    Q_ASSERT(success);
-}
-
-void ScriptRunner::inventoryUpdated(void * context)
-{
-    ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    bool success = QMetaObject::invokeMethod(runner, "handleInventoryUpdated");
-    Q_ASSERT(success);
-}
-
-void ScriptRunner::equippedItemChanged(void * context)
-{
-    ScriptRunner * runner = reinterpret_cast<ScriptRunner *>(context);
-    bool success = QMetaObject::invokeMethod(runner, "handleEquippedItemChanged");
-    Q_ASSERT(success);
-}

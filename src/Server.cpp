@@ -3,6 +3,7 @@
 #include "Util.h"
 
 #include <QDir>
+#include <QCoreApplication>
 
 const float Server::c_walking_speed = 4.27;
 const int Server::c_notchian_tick_ms = 200;
@@ -17,7 +18,7 @@ Server::Server(QUrl connection_info) :
     m_parser(NULL),
     m_network(NULL),
     m_physics_timer(NULL),
-    m_login_state(mineflayer_DisconnectedStatus)
+    m_login_state(DisconnectedStatus)
 {
     // we run in m_thread
     m_thread = new QThread(this);
@@ -25,6 +26,7 @@ Server::Server(QUrl connection_info) :
     this->moveToThread(m_thread);
 
     bool success;
+    success = connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(cleanup()));
     success = QMetaObject::invokeMethod(this, "initialize", Qt::QueuedConnection);
     Q_ASSERT(success);
 }
@@ -42,6 +44,8 @@ void Server::initialize()
 
     m_socket = new QTcpSocket(this);
     success = connect(m_socket, SIGNAL(connected()), this, SLOT(handleConnected()));
+    Q_ASSERT(success);
+    success = connect(m_socket, SIGNAL(disconnected()), QCoreApplication::instance(), SLOT(quit()));
     Q_ASSERT(success);
     success = connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(handleSocketError(QAbstractSocket::SocketError)));
     Q_ASSERT(success);
@@ -61,7 +65,7 @@ void Server::socketConnect()
     }
     Q_ASSERT(m_socket);
 
-    changeLoginState(mineflayer_ConnectingStatus);
+    changeLoginState(ConnectingStatus);
     m_socket->connectToHost(m_connection_info.host(), m_connection_info.port(25565));
 }
 
@@ -90,10 +94,10 @@ void Server::sendRespawnRequest(int world)
 }
 void Server::sendDiggingStatus(Message::DiggingStatus status, const Int3D &coord)
 {
-    sendMessage(QSharedPointer<OutgoingRequest>(new PlayerDiggingRequest(status, coord.x, coord.y, coord.z, mineflayer_PositiveY)));
+    sendMessage(QSharedPointer<OutgoingRequest>(new PlayerDiggingRequest(status, coord.x, coord.y, coord.z, Message::PositiveY)));
 }
 
-void Server::sendBlockPlacement(const Int3D &coord, mineflayer_BlockFaceDirection face, Item block)
+void Server::sendBlockPlacement(const Int3D &coord, Message::BlockFaceDirection face, Item block)
 {
     sendMessage(QSharedPointer<OutgoingRequest>(new PlayerBlockPlacementRequest(coord.x, coord.y, coord.z, face, block)));
 }
@@ -102,7 +106,7 @@ void Server::sendClickEntity(int self_entity_id, int target_entity_id, bool righ
 {
     sendMessage(QSharedPointer<OutgoingRequest>(new UseEntityRequest(self_entity_id, target_entity_id, !right_click)));
 }
-void Server::sendAnimation(int entity_id, mineflayer_AnimationType animation_type)
+void Server::sendAnimation(int entity_id, Message::AnimationType animation_type)
 {
     sendMessage(QSharedPointer<OutgoingRequest>(new AnimationRequest(entity_id, animation_type)));
 }
@@ -126,7 +130,7 @@ void Server::handleConnected()
     success = connect(m_parser, SIGNAL(messageReceived(QSharedPointer<IncomingResponse>)), this, SLOT(processIncomingMessage(QSharedPointer<IncomingResponse>)));
     Q_ASSERT(success);
 
-    changeLoginState(mineflayer_WaitingForHandshakeResponseStatus);
+    changeLoginState(WaitingForHandshakeResponseStatus);
     sendMessage(QSharedPointer<OutgoingRequest>(new HandshakeRequest(m_connection_info.userName())));
 }
 
@@ -142,7 +146,7 @@ void Server::cleanup()
     }
 
     m_thread->exit();
-    changeLoginState(mineflayer_DisconnectedStatus);
+    changeLoginState(DisconnectedStatus);
 }
 
 void Server::handleFinishedRequest(QNetworkReply * reply)
@@ -154,7 +158,7 @@ void Server::handleFinishedRequest(QNetworkReply * reply)
         m_network->get(QNetworkRequest(QUrl(new_url)));
         return;
     }
-    if (m_login_state == mineflayer_WaitingForSessionIdStatus) {
+    if (m_login_state == WaitingForSessionIdStatus) {
         QByteArray data = reply->readAll();
         QString response = QString::fromUtf8(data.constData(), data.size());
         if(response == "Old Version") {
@@ -175,8 +179,8 @@ void Server::handleFinishedRequest(QNetworkReply * reply)
         request_url.addEncodedQueryItem("serverId", notchUrlEncode(m_connection_hash));
         qDebug() << "sending joinserver: " << request_url.toString();
         m_network->get(QNetworkRequest(request_url));
-        changeLoginState(mineflayer_WaitingForNameVerificationStatus);
-    } else if (m_login_state == mineflayer_WaitingForNameVerificationStatus) {
+        changeLoginState(WaitingForNameVerificationStatus);
+    } else if (m_login_state == WaitingForNameVerificationStatus) {
         QByteArray data = reply->readAll();
         QString response = QString::fromUtf8(data.constData(), data.size());
         if (response != "OK") {
@@ -185,7 +189,7 @@ void Server::handleFinishedRequest(QNetworkReply * reply)
         }
 
         qDebug() << "Authentication success. sending login request.";
-        changeLoginState(mineflayer_WaitingForLoginResponseStatus);
+        changeLoginState(WaitingForLoginResponseStatus);
         sendMessage(QSharedPointer<OutgoingRequest>(new LoginRequest(m_connection_info.userName())));
     }
 }
@@ -200,20 +204,20 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
     switch (incomingMessage.data()->messageType) {
         case Message::Login: {
             LoginResponse * message = (LoginResponse *)incomingMessage.data();
-            Q_ASSERT(m_login_state == mineflayer_WaitingForLoginResponseStatus);
-            changeLoginState(mineflayer_SuccessStatus);
+            Q_ASSERT(m_login_state == WaitingForLoginResponseStatus);
+            changeLoginState(SuccessStatus);
             emit loginCompleted((int)message->entity_id);
             break;
         }
         case Message::Handshake: {
             HandshakeResponse * message = (HandshakeResponse *)incomingMessage.data();
             m_connection_hash = message->connectionHash;
-            Q_ASSERT(m_login_state == mineflayer_WaitingForHandshakeResponseStatus);
+            Q_ASSERT(m_login_state == WaitingForHandshakeResponseStatus);
             if (m_connection_hash == HandshakeResponse::AuthenticationNotRequired ||
                 m_connection_hash == HandshakeResponse::PasswordAuthenticationRequired)
             {
                 // no minecraf.net authentication required
-                changeLoginState(mineflayer_WaitingForLoginResponseStatus);
+                changeLoginState(WaitingForLoginResponseStatus);
                 sendMessage(QSharedPointer<OutgoingRequest>(new LoginRequest(m_connection_info.userName())));
             } else {
                 // authentication with minecraft.net required
@@ -223,7 +227,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
                 request_url.addEncodedQueryItem("version", "12");
                 qDebug() << "Sending authentication request: " << request_url.toString();
                 m_network->get(QNetworkRequest(request_url));
-                changeLoginState(mineflayer_WaitingForSessionIdStatus);
+                changeLoginState(WaitingForSessionIdStatus);
             }
             break;
         }
@@ -244,7 +248,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         }
         case Message::PlayerPositionAndLook: {
             PlayerPositionAndLookResponse * message = (PlayerPositionAndLookResponse *) incomingMessage.data();
-            mineflayer_EntityPosition position;
+            EntityPosition position;
             position.pos.x = message->x;
             position.pos.y = message->y;
             position.pos.z = message->z;
@@ -261,7 +265,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         }
         case Message::NamedEntitySpawn: {
             NamedEntitySpawnResponse * message = (NamedEntitySpawnResponse *) incomingMessage.data();
-            mineflayer_EntityPosition position;
+            EntityPosition position;
             fromIntPixels(position, Int3D(message->pixels_x, message->pixels_y, message->pixels_z));
             fromNotchianYawPitchBytes(position, message->yaw_out_of_256, message->pitch_out_of_256);
             emit namedPlayerSpawned(message->entity_id, message->player_name, position, message->held_item);
@@ -269,7 +273,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         }
         case Message::PickupSpawn: {
             PickupSpawnResponse * message = (PickupSpawnResponse *) incomingMessage.data();
-            mineflayer_EntityPosition position;
+            EntityPosition position;
             fromIntPixels(position, Int3D(message->pixels_x, message->pixels_y, message->pixels_z));
             fromNotchianYawPitchBytes(position, message->yaw_out_of_256, message->pitch_out_of_256);
             // ignore roll
@@ -278,7 +282,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         }
         case Message::MobSpawn: {
             MobSpawnResponse * message = (MobSpawnResponse *) incomingMessage.data();
-            mineflayer_EntityPosition position;
+            EntityPosition position;
             fromIntPixels(position, Int3D(message->pixels_x, message->pixels_y, message->pixels_z));
             fromNotchianYawPitchBytes(position, message->yaw_out_of_256, message->pitch_out_of_256);
             emit mobSpawned(message->entity_id, message->mob_type, position);
@@ -291,21 +295,21 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         }
         case Message::EntityRelativeMove: {
             EntityRelativeMoveResponse * message = (EntityRelativeMoveResponse *) incomingMessage.data();
-            mineflayer_EntityPosition movement;
+            EntityPosition movement;
             fromIntPixels(movement, Int3D(message->pixels_dx, message->pixels_dy, message->pixels_dz));
             emit entityMovedRelatively(message->entity_id, movement);
             break;
         }
         case Message::EntityLook: {
             EntityLookResponse * message = (EntityLookResponse *) incomingMessage.data();
-            mineflayer_EntityPosition look;
+            EntityPosition look;
             fromNotchianYawPitchBytes(look, message->yaw_out_of_256, message->pitch_out_of_256);
             emit entityLooked(message->entity_id, look);
             break;
         }
         case Message::EntityLookAndRelativeMove: {
             EntityLookAndRelativeMoveResponse * message = (EntityLookAndRelativeMoveResponse *) incomingMessage.data();
-            mineflayer_EntityPosition position;
+            EntityPosition position;
             fromIntPixels(position, Int3D(message->pixels_dx, message->pixels_dy, message->pixels_dz));
             fromNotchianYawPitchBytes(position, message->yaw_out_of_256, message->pitch_out_of_256);
             emit entityLookedAndMovedRelatively(message->entity_id, position);
@@ -313,7 +317,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         }
         case Message::EntityTeleport: {
             EntityTeleportResponse * message = (EntityTeleportResponse *) incomingMessage.data();
-            mineflayer_EntityPosition position;
+            EntityPosition position;
             fromIntPixels(position, Int3D(message->pixels_x, message->pixels_y, message->pixels_z));
             emit entityMoved(message->entity_id, position);
             break;
@@ -322,10 +326,10 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             EntityStatusResponse * message = (EntityStatusResponse *) incomingMessage.data();
             switch (message->status) {
                 case 2: // enum this?
-                    emit animation(message->entity_id, mineflayer_DamageAnimation);
+                    emit animation(message->entity_id, Message::DamageAnimation);
                     break;
                 case 3:
-                    emit animation(message->entity_id, mineflayer_DeathAnimation);
+                    emit animation(message->entity_id, Message::DeathAnimation);
                     break;
             }
             break;
@@ -334,10 +338,10 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             EntityActionResponse * message = (EntityActionResponse *) incomingMessage.data();
             switch (message->entity_action_type) {
                 case EntityActionResponse::Crouch:
-                    emit animation(message->entity_id, mineflayer_CrouchAnimation);
+                    emit animation(message->entity_id, Message::CrouchAnimation);
                     break;
                 case EntityActionResponse::Uncrouch:
-                    emit animation(message->entity_id, mineflayer_UncrouchAnimation);
+                    emit animation(message->entity_id, Message::UncrouchAnimation);
                     break;
             }
             break;
@@ -447,7 +451,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
     }
 }
 
-void Server::fromIntPixels(mineflayer_EntityPosition &destination, Int3D pixels)
+void Server::fromIntPixels(EntityPosition &destination, Int3D pixels)
 {
     destination.pos.x = pixels.x / 32.0;
     destination.pos.y = pixels.y / 32.0;
@@ -459,23 +463,23 @@ Int3D Server::fromChunkCoordinates(int chunk_x, int chunk_z)
     return Int3D(chunk_x * 16, 0, chunk_z * 16);
 }
 
-void Server::fromNotchianYawPitch(mineflayer_EntityPosition &destination, float notchian_yaw, float notchian_pitch)
+void Server::fromNotchianYawPitch(EntityPosition &destination, float notchian_yaw, float notchian_pitch)
 {
     destination.yaw = Util::euclideanMod(Util::pi - Util::degreesToRadians(notchian_yaw), Util::two_pi);
     destination.pitch = Util::euclideanMod(Util::degreesToRadians(-notchian_pitch) + Util::pi, Util::two_pi) - Util::pi;
 }
-void Server::fromNotchianYawPitchBytes(mineflayer_EntityPosition &destination, qint8 yaw_out_of_255, qint8 pitch_out_of_255)
+void Server::fromNotchianYawPitchBytes(EntityPosition &destination, qint8 yaw_out_of_255, qint8 pitch_out_of_255)
 {
     fromNotchianYawPitch(destination, yaw_out_of_255 * 360.0 / 256.0, pitch_out_of_255 * 360.0 / 256.0);
 }
 
-void Server::toNotchianYawPitch(const mineflayer_EntityPosition &source, float &destination_notchian_yaw, float &destination_notchian_pitch)
+void Server::toNotchianYawPitch(const EntityPosition &source, float &destination_notchian_yaw, float &destination_notchian_pitch)
 {
     destination_notchian_yaw = Util::radiansToDegrees(Util::pi - source.yaw);
     destination_notchian_pitch = Util::radiansToDegrees(-source.pitch);
 }
 
-void Server::sendPositionAndLook(mineflayer_EntityPosition positionAndLook)
+void Server::sendPositionAndLook(EntityPosition positionAndLook)
 {
     PlayerPositionAndLookRequest * request = new PlayerPositionAndLookRequest;
     request->x = positionAndLook.pos.x;
@@ -487,7 +491,7 @@ void Server::sendPositionAndLook(mineflayer_EntityPosition positionAndLook)
     sendMessage(QSharedPointer<OutgoingRequest>(request));
 }
 
-void Server::changeLoginState(mineflayer_LoginStatus state)
+void Server::changeLoginState(LoginStatus state)
 {
     m_login_state = state;
     emit loginStatusUpdated(state);
@@ -502,7 +506,7 @@ void Server::handleSocketError(QAbstractSocket::SocketError error)
     case QAbstractSocket::ProxyConnectionRefusedError:
     case QAbstractSocket::ProxyNotFoundError:
         qDebug() << "Could not make connection: " << error;
-        changeLoginState(mineflayer_SocketErrorStatus);
+        changeLoginState(SocketErrorStatus);
         break;
     default:;
     }

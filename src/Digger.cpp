@@ -28,7 +28,7 @@ Digger::Digger(Game * game, QObject *parent) :
     m_tool_effectiveness.insert(mineflayer_DiamondMaterial, 8.0f);
     m_tool_effectiveness.insert(mineflayer_GoldMaterial, 12.0f);
 
-    QSet<mineflayer_ItemType> pick_blocks;
+    QSet<ItemType> pick_blocks;
     pick_blocks.insert(mineflayer_CobblestoneItem);
     pick_blocks.insert(mineflayer_DoubleSlabItem);
     pick_blocks.insert(mineflayer_SlabItem);
@@ -48,14 +48,14 @@ Digger::Digger(Game * game, QObject *parent) :
     pick_blocks.insert(mineflayer_LapisLazuliBlockItem);
     m_tool_effective_against.insert(Pickaxe, pick_blocks);
 
-    QSet<mineflayer_ItemType> axe_blocks;
+    QSet<ItemType> axe_blocks;
     axe_blocks.insert(mineflayer_WoodenPlankItem);
     axe_blocks.insert(mineflayer_BookshelfItem);
     axe_blocks.insert(mineflayer_WoodItem);
     axe_blocks.insert(mineflayer_ChestItem);
     m_tool_effective_against.insert(Axe, axe_blocks);
 
-    QSet<mineflayer_ItemType> shovel_blocks;
+    QSet<ItemType> shovel_blocks;
     shovel_blocks.insert(mineflayer_GrassItem);
     shovel_blocks.insert(mineflayer_DirtItem);
     shovel_blocks.insert(mineflayer_SandItem);
@@ -67,9 +67,9 @@ Digger::Digger(Game * game, QObject *parent) :
 
 }
 
-bool Digger::itemCanHarvest(mineflayer_ItemType tool, mineflayer_ItemType block_type) const
+bool Digger::itemCanHarvest(ItemType tool, ItemType block_type) const
 {
-    const mineflayer_ItemData * item_data = Item::itemData(block_type);
+    const ItemData * item_data = Item::itemData(block_type);
     if (item_data->material != mineflayer_StoneMaterial &&
         item_data->material != mineflayer_IronMaterial &&
         item_data->material != mineflayer_SnowMaterial &&
@@ -135,7 +135,7 @@ bool Digger::itemCanHarvest(mineflayer_ItemType tool, mineflayer_ItemType block_
     return false;
 }
 
-Digger::ToolType Digger::toolType(mineflayer_ItemType tool) const
+Digger::ToolType Digger::toolType(ItemType tool) const
 {
     switch (tool) {
     case mineflayer_WoodenPickaxeItem:
@@ -165,10 +165,10 @@ Digger::ToolType Digger::toolType(mineflayer_ItemType tool) const
 }
 
 
-float Digger::strengthVsBlock(mineflayer_ItemType tool, mineflayer_ItemType block, bool underwater, bool on_ground)
+float Digger::strengthVsBlock(ItemType tool, ItemType block, bool underwater, bool on_ground)
 {
-    const mineflayer_ItemData * tool_data = Item::itemData(tool);
-    const mineflayer_ItemData * block_data = Item::itemData(block);
+    const ItemData * tool_data = Item::itemData(tool);
+    const ItemData * block_data = Item::itemData(block);
 
 
     if (block_data->hardness < 0)
@@ -188,7 +188,7 @@ float Digger::strengthVsBlock(mineflayer_ItemType tool, mineflayer_ItemType bloc
     return multiplier / block_data->hardness / 30.0f;
 }
 
-void Digger::start(mineflayer_ItemType tool, mineflayer_ItemType block)
+void Digger::start(ItemType tool, ItemType block)
 {
     stop();
     m_sum = 0;
@@ -199,8 +199,8 @@ void Digger::start(mineflayer_ItemType tool, mineflayer_ItemType block)
 
 void Digger::tick()
 {
-    mineflayer_EntityPosition pos = m_game->playerPosition();
-    mineflayer_ItemType block_at_type = m_game->blockAt(Int3D(pos.pos.x, pos.pos.y, pos.pos.z + 1)).type();
+    EntityPosition pos = m_game->playerPosition();
+    ItemType block_at_type = m_game->blockAt(Int3D(pos.pos.x, pos.pos.y, pos.pos.z + 1)).type();
     m_sum += strengthVsBlock(m_tool, m_block, block_at_type == mineflayer_WaterItem, pos.on_ground);
     if (m_sum >= 1.0f) {
         stop();

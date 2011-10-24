@@ -31,7 +31,7 @@ Block Chunk::getBlock(const Int3D & coord) const
     int array_index = indexOf(coord);
     int nibble_shifter = (array_index & 1) * 4;
     Block block;
-    block.setType((mineflayer_ItemType)(m_data.at(array_index) & 0xff));
+    block.setType((ItemType)(m_data.at(array_index) & 0xff));
     block.setMetadata((m_data.at( m_metadata_offset + array_index / 2) >> nibble_shifter) & 0xf);
     block.setLight(   (m_data.at(    m_light_offset + array_index / 2) >> nibble_shifter) & 0xf);
     block.setSkyLight((m_data.at(m_sky_light_offest + array_index / 2) >> nibble_shifter) & 0xf);

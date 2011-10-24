@@ -17,7 +17,6 @@ SOURCES += src/main.cpp \
     src/Game.cpp \
     src/Item.cpp \
     src/Digger.cpp \
-    src/GameListener.cpp \
     src/PhysicsDoer.cpp
 
 HEADERS += \
@@ -36,7 +35,6 @@ HEADERS += \
     src/Block.h \
     src/Item.h \
     src/Digger.h \
-    src/GameListener.h \
     src/PhysicsDoer.h
 
 RESOURCES += mineflayer.qrc
@@ -59,3 +57,5 @@ headless {
     DEFINES -= MINEFLAYER_GUI_ON
     QT -= gui scripttools
 }
+
+

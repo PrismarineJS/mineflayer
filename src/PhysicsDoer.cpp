@@ -5,7 +5,7 @@
 const int PhysicsDoer::c_physics_fps = 20;
 
 
-PhysicsDoer::PhysicsDoer(mineflayer_GamePtr game) :
+PhysicsDoer::PhysicsDoer(Game * game) :
     m_game(game),
     m_physics_timer(NULL)
 {

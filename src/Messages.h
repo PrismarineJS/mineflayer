@@ -78,6 +78,37 @@ public:
         DropItem=4,
     };
 
+    enum BlockFaceDirection {
+        NoDirection=-1,
+        NegativeY=0,
+        PositiveY=1,
+        NegativeZ=2,
+        PositiveZ=3,
+        NegativeX=4,
+        PositiveX=5,
+    };
+
+    enum WindowType {
+        // ours
+        InventoryWindow=-1,
+
+        // notch's
+        ChestWindow=0,
+        CraftingTableWindow=1,
+        FurnaceWindow=2,
+        DispenserWindow=3,
+    };
+
+    enum AnimationType {
+        NoAnimation=0,
+        SwingArmAnimation=1,
+        DamageAnimation=2,
+        CrouchAnimation=104,
+        UncrouchAnimation=105,
+        DeathAnimation=55061, // random out-of-the-way number
+    };
+
+
     MessageType messageType;
 
 protected:
@@ -167,8 +198,8 @@ public:
     qint32 x;
     qint8 y;
     qint32 z;
-    mineflayer_BlockFaceDirection block_face;
-    PlayerDiggingRequest(DiggingStatus status, qint32 x, qint8 y, qint32 z, mineflayer_BlockFaceDirection block_face) : OutgoingRequest(PlayerDigging),
+    BlockFaceDirection block_face;
+    PlayerDiggingRequest(DiggingStatus status, qint32 x, qint8 y, qint32 z, BlockFaceDirection block_face) : OutgoingRequest(PlayerDigging),
         status(status), x(x), y(y), z(z), block_face(block_face) {}
 protected:
     virtual void writeMessageBody(QDataStream &stream);
@@ -179,9 +210,9 @@ public:
     qint32 meters_x;
     qint8 meters_y;
     qint32 meters_z;
-    mineflayer_BlockFaceDirection block_face;
+    BlockFaceDirection block_face;
     Item item;
-    PlayerBlockPlacementRequest(qint32 meters_x, qint8 meters_y, qint32 meters_z, mineflayer_BlockFaceDirection block_face, Item item) : OutgoingRequest(PlayerBlockPlacement),
+    PlayerBlockPlacementRequest(qint32 meters_x, qint8 meters_y, qint32 meters_z, BlockFaceDirection block_face, Item item) : OutgoingRequest(PlayerBlockPlacement),
         meters_x(meters_x), meters_y(meters_y), meters_z(meters_z), block_face(block_face), item(item) {}
     virtual void writeMessageBody(QDataStream &stream);
 };
@@ -189,8 +220,8 @@ public:
 class AnimationRequest : public OutgoingRequest {
 public:
     qint32 entity_id;
-    mineflayer_AnimationType animation_type;
-    AnimationRequest(qint32 entity_id, mineflayer_AnimationType animation_type) : OutgoingRequest(Animation),
+    AnimationType animation_type;
+    AnimationRequest(qint32 entity_id, AnimationType animation_type) : OutgoingRequest(Animation),
         entity_id(entity_id), animation_type(animation_type) {}
     virtual void writeMessageBody(QDataStream &stream);
 };
@@ -326,7 +357,7 @@ class EntityEquipmentResponse : public IncomingResponse {
 public:
     qint32 entity_id;
     qint16 slot;
-    mineflayer_ItemType item_type;
+    Item::ItemType item_type;
     qint16 unknown;
     EntityEquipmentResponse() : IncomingResponse(EntityEquipment) {}
     virtual int parse(QByteArray buffer);
@@ -394,7 +425,7 @@ public:
     qint32 meters_x;
     qint8 meters_y;
     qint32 meters_z;
-    mineflayer_BlockFaceDirection block_face;
+    BlockFaceDirection block_face;
     PlayerDiggingResponse() : IncomingResponse(PlayerDigging) {}
     virtual int parse(QByteArray buffer);
 };
@@ -404,7 +435,7 @@ public:
     qint32 meters_x;
     qint8 meters_y;
     qint32 meters_z;
-    mineflayer_BlockFaceDirection block_face;
+    BlockFaceDirection block_face;
     Item item;
     PlayerBlockPlacementResponse() : IncomingResponse(PlayerBlockPlacement) {}
     virtual int parse(QByteArray buffer);
@@ -420,7 +451,7 @@ public:
 class AnimationResponse : public IncomingResponse {
 public:
     qint32 entity_id;
-    mineflayer_AnimationType animation_type;
+    AnimationType animation_type;
     AnimationResponse() : IncomingResponse(Animation) {}
     virtual int parse(QByteArray buffer);
 };
@@ -446,7 +477,7 @@ public:
     qint32 pixels_z;
     qint8 yaw_out_of_256;
     qint8 pitch_out_of_256;
-    mineflayer_ItemType held_item;
+    ItemType held_item;
     NamedEntitySpawnResponse() : IncomingResponse(NamedEntitySpawn) {}
     virtual int parse(QByteArray buffer);
 };
@@ -505,8 +536,24 @@ public:
 
 class MobSpawnResponse : public IncomingResponse {
 public:
+    enum MobType {
+        CreeperMob=50,
+        SkeletonMob=51,
+        SpiderMob=52,
+        GiantZombieMob=53,
+        ZombieMob=54,
+        SlimeMob=55,
+        GhastMob=56,
+        ZombiePigmanMob=57,
+        PigMob=90,
+        SheepMob=91,
+        CowMob=92,
+        ChickenMob=93,
+    };
+
+
     qint32 entity_id;
-    mineflayer_MobType mob_type;
+    MobType mob_type;
     qint32 pixels_x;
     qint32 pixels_y;
     qint32 pixels_z;
@@ -663,7 +710,7 @@ public:
     qint32 chunk_x;
     qint32 chunk_z;
     QVector<Int3D> block_coords;
-    QVector<mineflayer_ItemType> new_block_types;
+    QVector<Item::ItemType> new_block_types;
     QVector<qint8> new_block_metadatas;
     MultiBlockChangeResponse() : IncomingResponse(MultiBlockChange) {}
     virtual int parse(QByteArray buffer);
@@ -674,7 +721,7 @@ public:
     qint32 x;
     qint8 y;
     qint32 z;
-    mineflayer_ItemType new_block_type;
+    Item::Material new_block_type;
     qint8 metadata;
     BlockChangeResponse() : IncomingResponse(BlockChange) {}
     virtual int parse(QByteArray buffer);
@@ -730,7 +777,7 @@ public:
 class OpenWindowResponse : public IncomingResponse {
 public:
     qint8 window_id;
-    mineflayer_WindowType inventory_type;
+    WindowType inventory_type;
     QString window_title;
     qint8 number_of_slots;
     OpenWindowResponse() : IncomingResponse(OpenWindow) {}

@@ -4,7 +4,6 @@
 #include "Messages.h"
 #include "IncomingMessageParser.h"
 #include "Chunk.h"
-#include "mineflayer-core.h"
 
 #include <QObject>
 #include <QThread>
@@ -23,11 +22,31 @@ class Server : public QObject
 {
     Q_OBJECT
 public:
+    enum LoginStatus {
+        DisconnectedStatus,
+        ConnectingStatus,
+        WaitingForHandshakeResponseStatus,
+        WaitingForSessionIdStatus,
+        WaitingForNameVerificationStatus,
+        WaitingForLoginResponseStatus,
+        SuccessStatus,
+        SocketErrorStatus,
+    };
+
+    struct EntityPosition {
+        Double3D pos; // south, up, west
+        Double3D vel; // m/s
+        double height; // [0.1, 1.65] how tall you are.
+        float yaw; // [0, 2pi] rotation around vertical axis. 0 is east. pi/2 is north, etc
+        float pitch; // [-pi/2, pi/2] 0 is parallel to the ground. pi/2 is up. -pi/2 is down.
+        bool on_ground;
+    };
+
     explicit Server(QUrl connection_info);
     ~Server();
 
 signals:
-    void loginStatusUpdated(mineflayer_LoginStatus status);
+    void loginStatusUpdated(LoginStatus status);
     // emitted in addition to login status
     void loginCompleted(int entity_id);
 
@@ -35,32 +54,32 @@ signals:
     void timeUpdated(double seconds);
     void playerHealthUpdated(int new_health);
 
-    void namedPlayerSpawned(int entity_id, QString player_name, mineflayer_EntityPosition position, mineflayer_ItemType held_item);
-    void pickupSpawned(int entity_id, Item item, mineflayer_EntityPosition position);
-    void mobSpawned(int entity_id, mineflayer_MobType mob_type, mineflayer_EntityPosition position);
+    void namedPlayerSpawned(int entity_id, QString player_name, EntityPosition position, Item::ItemType held_item);
+    void pickupSpawned(int entity_id, Item item, EntityPosition position);
+    void mobSpawned(int entity_id, MobSpawnResponse::MobType mob_type, EntityPosition position);
 
     void entityDestroyed(int entity_id);
     // use the .x .y .z for relative motion
-    void entityMovedRelatively(int entity_id, mineflayer_EntityPosition movement);
+    void entityMovedRelatively(int entity_id, EntityPosition movement);
     // use .yaw and .pitch
-    void entityLooked(int entity_id, mineflayer_EntityPosition look);
+    void entityLooked(int entity_id, EntityPosition look);
     // use .x .y .z for relative motion and .yaw and .pitch
-    void entityLookedAndMovedRelatively(int entity_id, mineflayer_EntityPosition position);
+    void entityLookedAndMovedRelatively(int entity_id, EntityPosition position);
     // use .x .y .z for absolute position
-    void entityMoved(int entity_id, mineflayer_EntityPosition position);
-    void animation(int entity_id, mineflayer_AnimationType animation);
+    void entityMoved(int entity_id, EntityPosition position);
+    void animation(int entity_id, Message::AnimationType animation);
 
     void mapChunkUpdated(QSharedPointer<Chunk> chunk);
     // will always be contained within a chunk
     void multiBlockUpdate(Int3D chunk_corner, QHash<Int3D, Block> new_blocks);
     void blockUpdate(Int3D absolute_location, Block new_block);
     void unloadChunk(const Int3D & coord);
-    void playerPositionAndLookUpdated(mineflayer_EntityPosition position);
+    void playerPositionAndLookUpdated(EntityPosition position);
     void windowItemsUpdated(int window_id, QVector<Item> items);
     void windowSlotUpdated(int window_id, int slot, Item item);
     void holdingChange(int slot);
     void transaction(int window_id, int action_id, bool accepted);
-    void openWindow(int window_id, mineflayer_WindowType inventory_type, int number_of_slots);
+    void openWindow(int window_id, Message::WindowType inventory_type, int number_of_slots);
     void signUpdated(Int3D position, QString text);
     void respawned(int world);
 
@@ -69,14 +88,14 @@ public slots:
     void socketConnect();
 
 public:
-    void sendPositionAndLook(mineflayer_EntityPosition positionAndLook);
+    void sendPositionAndLook(EntityPosition positionAndLook);
     // sends a chat message. can start with '/' to be a command.
     void sendChat(QString message);
     void sendRespawnRequest(int world);
     void sendDiggingStatus(Message::DiggingStatus status, const Int3D & coord);
-    void sendBlockPlacement(const Int3D & coord, mineflayer_BlockFaceDirection face, Item block);
+    void sendBlockPlacement(const Int3D & coord, Message::BlockFaceDirection face, Item block);
     void sendClickEntity(int self_entity_id, int target_entity_id, bool right_click);
-    void sendAnimation(int entity_id, mineflayer_AnimationType animation_type);
+    void sendAnimation(int entity_id, Message::AnimationType animation_type);
 
     void sendWindowClick(qint8 window_id, qint16 slot, bool is_right_click, qint16 action_id, bool is_shift, Item item);
     void sendHoldingChange(qint16 slot);
@@ -97,19 +116,19 @@ private:
     static const float c_gravity; // m/s^2
     QTimer * m_physics_timer;
 
-    mineflayer_LoginStatus m_login_state;
+    LoginStatus m_login_state;
 
 
     QString m_connection_hash;
 
 private:
-    void changeLoginState(mineflayer_LoginStatus state);
+    void changeLoginState(LoginStatus state);
 
-    static void fromIntPixels(mineflayer_EntityPosition & destination, Int3D pixels);
+    static void fromIntPixels(EntityPosition & destination, Int3D pixels);
     static Int3D fromChunkCoordinates(int chunk_x, int chunk_z);
-    static void fromNotchianYawPitch(mineflayer_EntityPosition & destination, float notchian_yaw, float notchian_pitch);
-    static void fromNotchianYawPitchBytes(mineflayer_EntityPosition & destination, qint8 yaw_out_of_255, qint8 pitch_out_of_255);
-    static void toNotchianYawPitch(const mineflayer_EntityPosition &source, float & destination_notchian_yaw, float & destination_notchian_pitch);
+    static void fromNotchianYawPitch(EntityPosition & destination, float notchian_yaw, float notchian_pitch);
+    static void fromNotchianYawPitchBytes(EntityPosition & destination, qint8 yaw_out_of_255, qint8 pitch_out_of_255);
+    static void toNotchianYawPitch(const EntityPosition &source, float & destination_notchian_yaw, float & destination_notchian_pitch);
     QByteArray notchUrlEncode(QString param);
 
 private slots:

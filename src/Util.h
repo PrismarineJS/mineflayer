@@ -4,8 +4,6 @@
 #include <cmath>
 #include <QString>
 
-#include "mineflayer-core.h"
-
 namespace Util
 {
     const float half_pi = 1.57079633f;
@@ -38,12 +36,6 @@ namespace Util
 
     int abs(int number);
 
-    QString toQString(mineflayer_Utf8 utf8);
-    mineflayer_Utf8 toNewMfUtf8(QString qstring);
-    void deallocMfUtf8(mineflayer_Utf8 utf8);
-    mineflayer_Utf8 copyMfUtf8(mineflayer_Utf8 utf8);
-
-    mineflayer_Entity * cloneEntity(mineflayer_Entity * orig);
 }
 
 #endif // UTIL_H
