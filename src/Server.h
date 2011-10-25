@@ -103,6 +103,7 @@ public:
 
 private:
     static const QString c_auth_server;
+    static const QString c_session_server;
     QUrl m_connection_info;
 
     QThread * m_thread;
@@ -112,6 +113,7 @@ private:
 
     static const int c_notchian_tick_ms;
     static const int c_physics_fps;
+    static const int c_protocol_version;
     QTimer * m_physics_timer;
 
     LoginStatus m_login_state;

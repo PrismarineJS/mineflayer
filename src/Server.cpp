@@ -7,8 +7,10 @@
 
 const int Server::c_notchian_tick_ms = 200;
 const int Server::c_physics_fps = 60;
+const int Server::c_protocol_version = 17;
 
-const QString Server::c_auth_server = "www.minecraft.net";
+const QString Server::c_auth_server = "login.minecraft.net";
+const QString Server::c_session_server = "session.minecraft.net";
 
 Server::Server(QUrl connection_info) :
     m_connection_info(connection_info),
@@ -173,7 +175,7 @@ void Server::handleFinishedRequest(QNetworkReply * reply)
 
         QUrl request_url;
         request_url.setScheme("http");
-        request_url.setHost(c_auth_server);
+        request_url.setHost(c_session_server);
         request_url.setPath("/game/joinserver.jsp");
         request_url.addEncodedQueryItem("user", notchUrlEncode(m_connection_info.userName()));
         request_url.addEncodedQueryItem("sessionId", notchUrlEncode(session_id));
@@ -217,15 +219,18 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             if (m_connection_hash == HandshakeResponse::AuthenticationNotRequired ||
                 m_connection_hash == HandshakeResponse::PasswordAuthenticationRequired)
             {
-                // no minecraf.net authentication required
+                // no minecraft.net authentication required
                 changeLoginState(WaitingForLoginResponseStatus);
                 sendMessage(QSharedPointer<OutgoingRequest>(new LoginRequest(m_connection_info.userName())));
             } else {
                 // authentication with minecraft.net required
-                QUrl request_url(QString("http://") + c_auth_server + QString("/game/getversion.jsp"));
+                QUrl request_url;
+                request_url.setScheme("https");
+                request_url.setHost(c_auth_server);
+                request_url.setPath("/");
                 request_url.addEncodedQueryItem("user", notchUrlEncode(m_connection_info.userName()));
                 request_url.addEncodedQueryItem("password", notchUrlEncode(m_connection_info.password()));
-                request_url.addEncodedQueryItem("version", "12");
+                request_url.addQueryItem(QString("version"), QString::number(c_protocol_version));
                 qDebug() << "Sending authentication request: " << request_url.toString();
                 m_network->get(QNetworkRequest(request_url));
                 changeLoginState(WaitingForSessionIdStatus);
