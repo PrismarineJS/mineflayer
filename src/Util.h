@@ -12,17 +12,17 @@ namespace Util
     const float degrees_per_radian = 57.2957795f;
     const float radians_per_degree = 0.0174532925f;
 
-    float degreesToRadians(float degrees)
+    inline float degreesToRadians(float degrees)
     {
         return degrees * radians_per_degree;
     }
 
-    float radiansToDegrees(float radians)
+    inline float radiansToDegrees(float radians)
     {
         return radians * degrees_per_radian;
     }
 
-    int abs(int number)
+    inline int abs(int number)
     {
         return number < 0 ? -number : number;
     }
