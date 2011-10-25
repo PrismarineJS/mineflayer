@@ -66,7 +66,7 @@ Game::Game(QUrl connection_info) :
 {
     Item::initializeStaticData();
 
-    foreach (QChar c, QString(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~⌂Çüéâä� åçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»" ))
+    foreach (QChar c, QString(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~" ))
         m_legal_chat_chars.insert(c);
 
     bool success;
