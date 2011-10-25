@@ -5,10 +5,8 @@
 #include <QDir>
 #include <QCoreApplication>
 
-const float Server::c_walking_speed = 4.27;
 const int Server::c_notchian_tick_ms = 200;
 const int Server::c_physics_fps = 60;
-const float Server::c_gravity = -9.81;
 
 const QString Server::c_auth_server = "www.minecraft.net";
 
@@ -173,7 +171,10 @@ void Server::handleFinishedRequest(QNetworkReply * reply)
         m_connection_info.setUserName(values.at(2));
         QString session_id = values.at(3);
 
-        QUrl request_url(QString("http://") + c_auth_server + QString("/game/joinserver.jsp"));
+        QUrl request_url;
+        request_url.setScheme("http");
+        request_url.setHost(c_auth_server);
+        request_url.setPath("/game/joinserver.jsp");
         request_url.addEncodedQueryItem("user", notchUrlEncode(m_connection_info.userName()));
         request_url.addEncodedQueryItem("sessionId", notchUrlEncode(session_id));
         request_url.addEncodedQueryItem("serverId", notchUrlEncode(m_connection_hash));

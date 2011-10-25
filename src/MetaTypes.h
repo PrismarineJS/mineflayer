@@ -28,6 +28,7 @@ namespace MetaTypes {
         qRegisterMetaType<QHash<Int3D,Block> >("QHash<Int3D,Block>");
         qRegisterMetaType<Item>("Item");
         qRegisterMetaType<QVector<Item> >("QVector<Item>");
+        qRegisterMetaType<QSharedPointer<Game::Entity> >("QSharedPointer<Game::Entity>");
     }
 }
 

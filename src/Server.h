@@ -110,10 +110,8 @@ private:
     IncomingMessageParser * m_parser;
     QNetworkAccessManager * m_network;
 
-    static const float c_walking_speed; // m/s
     static const int c_notchian_tick_ms;
     static const int c_physics_fps;
-    static const float c_gravity; // m/s^2
     QTimer * m_physics_timer;
 
     LoginStatus m_login_state;
