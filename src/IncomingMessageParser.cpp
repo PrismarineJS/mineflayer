@@ -17,6 +17,8 @@ void IncomingMessageParser::readMessage()
     m_buffer.append(m_device->readAll());
     // flush any messages we can from out buffer
     forever {
+        if (m_buffer.isEmpty())
+            return;
         if (m_in_progress_msg == NULL) {
             // we'll always have at least 1 byte here
             qint8 type = m_buffer.at(0);
@@ -33,8 +35,6 @@ void IncomingMessageParser::readMessage()
         // emit and start over.
         emit messageReceived(QSharedPointer<IncomingResponse>(m_in_progress_msg));
         m_in_progress_msg = NULL;
-        if (m_buffer.isEmpty())
-            return;
     }
 }
 
