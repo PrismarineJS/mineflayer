@@ -66,7 +66,7 @@ Game::Game(QUrl connection_info) :
 {
     Item::initializeStaticData();
 
-    foreach (QChar c, QString(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~⌂ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»" ))
+    foreach (QChar c, QString(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~⌂Çüéâä� åçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»" ))
         m_legal_chat_chars.insert(c);
 
     bool success;
@@ -732,7 +732,7 @@ void Game::doPhysics(float delta_seconds)
     Double3D acceleration;
     if (movement_forward || movement_right) {
         // input acceleration
-        float rotation_from_input = std::atan2(-movement_right, movement_forward);
+        float rotation_from_input = std::atan2((float) -movement_right, (float) movement_forward);
         float input_yaw = m_player.position.yaw + rotation_from_input;
         acceleration.x += m_input_acceleration * -std::sin(input_yaw);
         acceleration.z += m_input_acceleration * -std::cos(input_yaw);
@@ -1256,7 +1256,7 @@ void Game::handleTransaction(int window_id, int action_id, bool accepted)
                 if (m_held_item.type == Item::NoItem) {
                     // take half. if uneven, take the extra as well.
                     Item slot_item = getWindowSlot(window_click.slot);
-                    int amt_to_take = std::floor((slot_item.count + 1) / 2);
+                    int amt_to_take = std::floor((float) (slot_item.count + 1) / 2);
                     int amt_to_leave = slot_item.count - amt_to_take;
                     m_held_item.count = amt_to_take;
                     m_held_item.type = slot_item.type;

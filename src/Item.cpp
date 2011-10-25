@@ -342,7 +342,7 @@ const _Item::Recipe * Item::recipeFor(const _Item::Recipe & recipe)
     // try flipping the recipe horizontally and see if we get any results
     _Item::Recipe flipped_recipe = recipe; // copy
     for (int y = 0; y < flipped_recipe.size.height(); y++) {
-        for (int x = 0; x < std::floor(flipped_recipe.size.width() / 2); x++) {
+        for (int x = 0; x < std::floor((float) flipped_recipe.size.width() / 2); x++) {
             int index = y*flipped_recipe.size.width()+x;
             int index2= y*flipped_recipe.size.width()+(flipped_recipe.size.width() - 1 - x);
             int tmp = flipped_recipe.design.at(index);
