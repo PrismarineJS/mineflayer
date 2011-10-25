@@ -37,6 +37,7 @@ public:
         AddObjectOrVehicle=0x17,
         MobSpawn=0x18,
         EntityPainting=0x19,
+        ExperienceOrb=0x1A,
         Unknown1B=0x1B,
         EntityVelocity=0x1C,
         DestroyEntity=0x1D,
@@ -286,8 +287,9 @@ protected:
 
 class KeepAliveResponse : public IncomingResponse {
 public:
+    qint32 keep_alive_id;
     KeepAliveResponse() : IncomingResponse(KeepAlive) {}
-    virtual int parse(QByteArray) { return 1; }
+    virtual int parse(QByteArray buffer);
 };
 
 class LoginResponse : public IncomingResponse {
@@ -554,6 +556,17 @@ public:
     qint32 z;
     qint32 type;
     EntityPaintingResponse() : IncomingResponse(EntityPainting) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class ExperienceOrbResponse : public IncomingResponse {
+public:
+    qint32 entity_id;
+    qint32 x;
+    qint32 y;
+    qint32 z;
+    qint16 count;
+    ExperienceOrbResponse() : IncomingResponse(ExperienceOrb) {}
     virtual int parse(QByteArray buffer);
 };
 

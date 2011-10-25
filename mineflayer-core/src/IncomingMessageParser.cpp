@@ -26,9 +26,9 @@ void IncomingMessageParser::readMessage()
         if (index == -1)
             return; // not done yet
         // message is complete. remove it from the buffer
-        QByteArray message_bytes = m_buffer.remove(0, index);
-        if (true) {
-            qDebug() << "incoming:" << m_in_progress_msg->messageType << "length:" << message_bytes.length();
+        m_buffer.remove(0, index);
+        if (false) {
+            qDebug() << "incoming:" << m_in_progress_msg->messageType << "length:" << index;
         }
         // emit and start over.
         emit messageReceived(QSharedPointer<IncomingResponse>(m_in_progress_msg));
@@ -64,6 +64,7 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
     case Message::AddObjectOrVehicle: return new AddObjectOrVehicleResponse;
     case Message::MobSpawn: return new MobSpawnResponse;
     case Message::EntityPainting: return new EntityPaintingResponse;
+    case Message::ExperienceOrb: return new ExperienceOrbResponse;
     case Message::Unknown1B: return new Unknown1BResponse;
     case Message::EntityVelocity: return new EntityVelocityResponse;
     case Message::DestroyEntity: return new DestroyEntityResponse;

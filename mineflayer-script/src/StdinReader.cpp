@@ -24,7 +24,6 @@ void StdinReader::run()
     success = connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(cleanup()));
     Q_ASSERT(success);
 
-    if (false)
     forever {
         QString line = m_stdin.readLine();
 

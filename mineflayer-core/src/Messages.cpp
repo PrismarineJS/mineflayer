@@ -6,7 +6,7 @@ const qint32 OutgoingRequest::c_protocol_version = 17;
 
 void OutgoingRequest::writeToStream(QDataStream &stream)
 {
-    if (true) {
+    if (false) {
         // for printing outgoing binary
         QByteArray buffer;
         QDataStream fake_stream(&buffer, QIODevice::WriteOnly);
@@ -334,6 +334,14 @@ int IncomingResponse::parseValue(QByteArray buffer, int index, QByteArray &value
     i++; // include the terminator
     value = buffer.mid(index, i - index);
     index = i;
+    return index;
+}
+
+int KeepAliveResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, keep_alive_id)) == -1)
+        return -1;
     return index;
 }
 
@@ -688,6 +696,22 @@ int EntityPaintingResponse::parse(QByteArray buffer)
     if ((index = parseValue(buffer, index, z)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, type)) == -1)
+        return -1;
+    return index;
+}
+
+int ExperienceOrbResponse::parse(QByteArray buffer)
+{
+    int index = 1;
+    if ((index = parseValue(buffer, index, entity_id)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, x)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, y)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, z)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, count)) == -1)
         return -1;
     return index;
 }
