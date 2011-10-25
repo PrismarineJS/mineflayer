@@ -46,7 +46,7 @@ public:
     ~Server();
 
 signals:
-    void loginStatusUpdated(LoginStatus status);
+    void loginStatusUpdated(Server::LoginStatus status);
     // emitted in addition to login status
     void loginCompleted(int entity_id);
 
@@ -54,19 +54,19 @@ signals:
     void timeUpdated(double seconds);
     void playerHealthUpdated(int new_health);
 
-    void namedPlayerSpawned(int entity_id, QString player_name, EntityPosition position, Item::ItemType held_item);
-    void pickupSpawned(int entity_id, Item item, EntityPosition position);
-    void mobSpawned(int entity_id, MobSpawnResponse::MobType mob_type, EntityPosition position);
+    void namedPlayerSpawned(int entity_id, QString player_name, Server::EntityPosition position, Item::ItemType held_item);
+    void pickupSpawned(int entity_id, Item item, Server::EntityPosition position);
+    void mobSpawned(int entity_id, MobSpawnResponse::MobType mob_type, Server::EntityPosition position);
 
     void entityDestroyed(int entity_id);
     // use the .x .y .z for relative motion
-    void entityMovedRelatively(int entity_id, EntityPosition movement);
+    void entityMovedRelatively(int entity_id, Server::EntityPosition movement);
     // use .yaw and .pitch
-    void entityLooked(int entity_id, EntityPosition look);
+    void entityLooked(int entity_id, Server::EntityPosition look);
     // use .x .y .z for relative motion and .yaw and .pitch
-    void entityLookedAndMovedRelatively(int entity_id, EntityPosition position);
+    void entityLookedAndMovedRelatively(int entity_id, Server::EntityPosition position);
     // use .x .y .z for absolute position
-    void entityMoved(int entity_id, EntityPosition position);
+    void entityMoved(int entity_id, Server::EntityPosition position);
     void animation(int entity_id, Message::AnimationType animation);
 
     void mapChunkUpdated(QSharedPointer<Chunk> chunk);
@@ -74,7 +74,7 @@ signals:
     void multiBlockUpdate(Int3D chunk_corner, QHash<Int3D, Block> new_blocks);
     void blockUpdate(Int3D absolute_location, Block new_block);
     void unloadChunk(const Int3D & coord);
-    void playerPositionAndLookUpdated(EntityPosition position);
+    void playerPositionAndLookUpdated(Server::EntityPosition position);
     void windowItemsUpdated(int window_id, QVector<Item> items);
     void windowSlotUpdated(int window_id, int slot, Item item);
     void holdingChange(int slot);

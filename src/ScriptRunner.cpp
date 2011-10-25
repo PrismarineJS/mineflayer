@@ -190,7 +190,7 @@ void ScriptRunner::bootstrap()
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(playerDied()), this, SLOT(handlePlayerDied()));
     Q_ASSERT(success);
-    success = connect(m_game, SIGNAL(playerSpawned()), this, SLOT(handlePlayerSpawned()));
+    success = connect(m_game, SIGNAL(playerSpawned(int)), this, SLOT(handlePlayerSpawned(int)));
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(playerHealthUpdated()), this, SLOT(handlePlayerHealthUpdated()));
     Q_ASSERT(success);
