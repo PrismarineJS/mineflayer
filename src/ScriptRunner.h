@@ -78,6 +78,8 @@ private:
     QStringList m_lib_path;
 
     QSet<QString> m_included_filenames;
+
+    PhysicsDoer * m_physics_doer;
 private:
     void raiseEvent(QString event_name, const QScriptValueList & args = QScriptValueList());
     static bool argCount(QScriptContext *context, QScriptValue & error, int arg_count_min, int arg_count_max = -1);

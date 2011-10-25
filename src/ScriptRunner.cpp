@@ -1,4 +1,5 @@
 #include "ScriptRunner.h"
+#include "PhysicsDoer.h"
 
 #ifdef MINEFLAYER_GUI_ON
 #include <QMainWindow>
@@ -26,7 +27,8 @@ ScriptRunner::ScriptRunner(QUrl url, QString script_file, QStringList args, bool
     m_stdout(stdout),
     m_timer_count(0),
     m_debugger(NULL),
-    m_lib_path(lib_path)
+    m_lib_path(lib_path),
+    m_physics_doer(NULL)
 {
     m_engine = new QScriptEngine(this);
 
@@ -208,6 +210,8 @@ void ScriptRunner::bootstrap()
     Q_ASSERT(success);
     success = connect(&m_stdin_reader, SIGNAL(eof()), QCoreApplication::instance(), SLOT(quit()));
     Q_ASSERT(success);
+
+    m_physics_doer = new PhysicsDoer(m_game);
 
     m_started_game = true;
     m_game->start();
@@ -1198,6 +1202,7 @@ void ScriptRunner::handleLoginStatusUpdated(Server::LoginStatus status)
     // note that game class already handles shutting down for Disconnected and SocketError.
     switch (status) {
         case Server::SuccessStatus:
+            m_physics_doer->start();
             raiseEvent("onConnected");
             break;
         default:;
