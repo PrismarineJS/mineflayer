@@ -66,11 +66,11 @@ void OutgoingRequest::writeStringUtf8(QDataStream & stream, QString value)
 }
 void OutgoingRequest::writeValue(QDataStream &stream, Item value)
 {
-    writeValue(stream, (qint16)value.data.type);
-    if (value.data.type == mineflayer_NoItem)
+    writeValue(stream, (qint16)value.type);
+    if (value.type == Item::NoItem)
         return;
-    writeValue(stream, (qint8) value.data.count);
-    writeValue(stream, (qint16) value.data.metadata);
+    writeValue(stream, (qint8) value.count);
+    writeValue(stream, (qint16) value.metadata);
 }
 
 void LoginRequest::writeMessageBody(QDataStream &stream)
@@ -303,20 +303,15 @@ int IncomingResponse::parseItem(QByteArray buffer, int index, Item &item, bool f
     qint16 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    item.data.type = (mineflayer_ItemType)tmp;
-    if (force_complete_structure || item.data.type != mineflayer_NoItem) {
-        qint8 count;
-        if ((index = parseValue(buffer, index, count)) == -1)
+    item.type = (Item::ItemType)tmp;
+    if (force_complete_structure || item.type != Item::NoItem) {
+        if ((index = parseValue(buffer, index, item.count)) == -1)
             return -1;
-        item.data.count = count;
-
-        qint16 metadata;
-        if ((index = parseValue(buffer, index, metadata)) == -1)
+        if ((index = parseValue(buffer, index, item.metadata)) == -1)
             return -1;
-        item.data.metadata = metadata;
     } else {
-        item.data.count = 0;
-        item.data.metadata = 0;
+        item.count = 0;
+        item.metadata = 0;
     }
     return index;
 }
@@ -408,7 +403,7 @@ int EntityEquipmentResponse::parse(QByteArray buffer)
     qint16 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    item_type = (mineflayer_ItemType)tmp;
+    item_type = (Item::ItemType)tmp;
     if ((index = parseValue(buffer, index, unknown)) == -1)
         return -1;
     return index;
@@ -518,7 +513,7 @@ int PlayerDiggingResponse::parse(QByteArray buffer)
         return -1;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    block_face = (mineflayer_BlockFaceDirection)tmp;
+    block_face = (BlockFaceDirection)tmp;
     return index;
 }
 
@@ -534,7 +529,7 @@ int PlayerBlockPlacementResponse::parse(QByteArray buffer)
     qint8 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    block_face = (mineflayer_BlockFaceDirection)tmp;
+    block_face = (BlockFaceDirection)tmp;
     if ((index = parseItem(buffer, index, item)) == -1)
         return -1;
     return index;
@@ -556,7 +551,7 @@ int AnimationResponse::parse(QByteArray buffer)
     qint8 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    animation_type = (mineflayer_AnimationType)tmp;
+    animation_type = (AnimationType)tmp;
     return index;
 }
 
@@ -592,7 +587,7 @@ int NamedEntitySpawnResponse::parse(QByteArray buffer)
     qint16 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    held_item = (mineflayer_ItemType)tmp;
+    held_item = (Item::ItemType)tmp;
     return index;
 }
 
@@ -666,7 +661,7 @@ int MobSpawnResponse::parse(QByteArray buffer)
     qint8 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    mob_type = (mineflayer_MobType)tmp;
+    mob_type = (MobType)tmp;
     if ((index = parseValue(buffer, index, pixels_x)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, pixels_y)) == -1)
@@ -959,7 +954,7 @@ int MultiBlockChangeResponse::parse(QByteArray buffer)
         qint8 block_type = 0;
         if ((index = parseValue(buffer, index, block_type)) == -1)
             return -1;
-        new_block_types.replace(i, (mineflayer_ItemType)block_type);
+        new_block_types.replace(i, (Item::ItemType)block_type);
     }
     new_block_metadatas.clear();
     new_block_metadatas.resize(block_count);
@@ -984,7 +979,7 @@ int BlockChangeResponse::parse(QByteArray buffer)
     qint8 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    new_block_type = (mineflayer_ItemType)tmp;
+    new_block_type = (Item::ItemType)tmp;
     if ((index = parseValue(buffer, index, metadata)) == -1)
         return -1;
     return index;
@@ -1073,7 +1068,7 @@ int OpenWindowResponse::parse(QByteArray buffer)
     qint8 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
-    inventory_type = (mineflayer_WindowType)tmp;
+    inventory_type = (WindowType)tmp;
     if ((index = parseValue(buffer, index, window_title)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, number_of_slots)) == -1)

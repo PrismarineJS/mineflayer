@@ -1,8 +1,9 @@
 #ifndef SCRIPTRUNNER_H
 #define SCRIPTRUNNER_H
 
-#include "mineflayer-core/src/mineflayer-core.h"
 #include "StdinReader.h"
+#include "Vector3D.h"
+#include "Game.h"
 
 #ifdef MINEFLAYER_GUI_ON
 #include <QScriptEngineDebugger>
@@ -17,7 +18,6 @@
 #include <QTime>
 #include <QThread>
 #include <QStringList>
-#include <QSet>
 
 class PhysicsDoer;
 
@@ -45,7 +45,7 @@ private:
     QScriptValue m_item_class;
     QScriptValue m_block_class;
 
-    mineflayer_GamePtr m_game;
+    Game * m_game;
     bool m_started_game;
 
     bool m_exiting;
@@ -89,13 +89,13 @@ private:
     QString internalReadFile(const QString &path);
     QScriptValue evalJsonContents(const QString &file_contents, const QString &file_name = QString());
     void checkEngine(const QString & while_doing_what = QString());
-    QScriptValue jsPoint(const mineflayer_Int3D &pt);
-    QScriptValue jsPoint(const mineflayer_Double3D &pt);
-    static bool fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, mineflayer_Double3D &point);
-    static bool fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, mineflayer_Int3D &floored_point);
-    QScriptValue jsItem(mineflayer_Item item);
-    QScriptValue jsBlock(mineflayer_Block block);
-    QScriptValue jsEntity(mineflayer_Entity * entity);
+    QScriptValue jsPoint(const Int3D &pt);
+    QScriptValue jsPoint(const Double3D &pt);
+    static bool fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, Double3D &point);
+    static bool fromJsPoint(QScriptContext *context, QScriptValue &error, QScriptValue point_value, Int3D &floored_point);
+    QScriptValue jsItem(Item item);
+    QScriptValue jsBlock(Block block);
+    QScriptValue jsEntity(QSharedPointer<Game::Entity> entity);
 
 
 
@@ -149,6 +149,7 @@ private:
 
     // hax functions
     static QScriptValue setPosition(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue positionUpdateInterval(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue setGravityEnabled(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue attackEntity(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue setJesusModeEnabled(QScriptContext * context, QScriptEngine * engine);
@@ -158,19 +159,14 @@ private:
     static QScriptValue activateBlock(QScriptContext * context, QScriptEngine * engine);
 
 
-private slots:
-    void dispatchTimeout();
-    void cleanup();
-    void handleReadLine(QString line);
-
 private slots: // non-static callbacks
-    void handlePlayerPositionUpdated();
-    void handleEntitySpawned(mineflayer_Entity * entity);
-    void handleEntityDespawned(mineflayer_Entity * entity);
-    void handleEntityMoved(mineflayer_Entity * entity);
-    void handleAnimation(mineflayer_Entity * entity, mineflayer_AnimationType animation_type);
-    void handleChunkUpdated(const mineflayer_Int3D &start, const mineflayer_Int3D &size);
-    void handleSignUpdated(const mineflayer_Int3D &location, QString text);
+    void movePlayerPosition();
+    void handleEntitySpawned(QSharedPointer<Game::Entity> entity);
+    void handleEntityDespawned(QSharedPointer<Game::Entity> entity);
+    void handleEntityMoved(QSharedPointer<Game::Entity> entity);
+    void handleAnimation(QSharedPointer<Game::Entity> entity, Message::AnimationType animation_type);
+    void handleChunkUpdated(const Int3D &start, const Int3D &size);
+    void handleSignUpdated(const Int3D &location, QString text);
     void handlePlayerHealthUpdated();
     void handleInventoryUpdated();
     void handlePlayerDied();
@@ -178,35 +174,15 @@ private slots: // non-static callbacks
     void handleChatReceived(QString username, QString message);
     void handleNonSpokenChatReceived(QString message);
     void handleTimeUpdated(double seconds);
-    void handleLoginStatusUpdated(mineflayer_LoginStatus status);
-    void handleStoppedDigging(mineflayer_StoppedDiggingReason reason);
-    void handleWindowOpened(mineflayer_WindowType window_type);
+    void handleLoginStatusUpdated(Server::LoginStatus status);
+    void handleStoppedDigging(Game::StoppedDiggingReason reason);
+    void handleWindowOpened(Message::WindowType window_type);
     void handleEquippedItemChanged();
 
+    void handleReadLine(QString line);
+    void dispatchTimeout();
+    void cleanup();
 
-private: // static callbacks
-    static void chatReceived (void * context, mineflayer_Utf8 username, mineflayer_Utf8 message);
-    static void timeUpdated (void * context, double seconds);
-    static void nonSpokenChatReceived (void * context, mineflayer_Utf8 message);
-
-    static void entitySpawned(void * context, mineflayer_Entity * entity);
-    static void entityDespawned(void * context, mineflayer_Entity * entity);
-    static void entityMoved(void * context, mineflayer_Entity * entity);
-    static void animation(void * context, mineflayer_Entity * entity, mineflayer_AnimationType animation_type);
-
-    static void chunkUpdated(void * context, mineflayer_Int3D start, mineflayer_Int3D size);
-    static void signUpdated(void * context, mineflayer_Int3D location, mineflayer_Utf8 text);
-    static void playerPositionUpdated(void * context);
-    static void playerHealthUpdated(void * context);
-    static void playerDied(void * context);
-    static void playerSpawned(void * context, int world);
-    static void stoppedDigging(void * context, mineflayer_StoppedDiggingReason reason);
-    static void loginStatusUpdated(void * context, mineflayer_LoginStatus status);
-
-    static void windowOpened(void * context, mineflayer_WindowType window_type);
-
-    static void inventoryUpdated(void * context);
-    static void equippedItemChanged(void * context);
 };
 
 

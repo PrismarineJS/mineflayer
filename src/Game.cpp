@@ -2,6 +2,7 @@
 
 #include "Digger.h"
 
+#include <QCoreApplication>
 #include <QHashIterator>
 #include <QStringList>
 
@@ -22,7 +23,7 @@ const float Game::c_yaw_speed = 3.0f; // seems good
 const int Game::c_position_update_interval_ms = 50;
 const int Game::c_chat_length_limit = 100;
 const Int3D Game::c_chunk_size(16, 128, 16);
-const Block Game::c_air(mineflayer_AirItem, 0, 0, 0);
+const Block Game::c_air(Item::Air, 0, 0, 0);
 
 const int Game::c_inventory_count = 36;
 const int Game::c_inventory_window_unique_count = 9;
@@ -45,6 +46,7 @@ Game::Game(QUrl connection_info) :
     m_digger(new Digger(this, this)),
     m_waiting_for_dig_confirmation(false),
     m_digging_animation_timer(new QTimer(this)),
+    m_player(-1, Server::EntityPosition(), connection_info.userName(), Item::NoItem),
     m_player_health(20),
     m_current_time_seconds(0),
     m_current_time_recorded_time(QTime::currentTime()),
@@ -60,46 +62,40 @@ Game::Game(QUrl connection_info) :
     m_equipped_slot_id(0),
     m_open_window_id(-1),
     m_need_to_emit_window_opened(false),
-    m_player_dimension(mineflayer_NormalDimension)
+    m_player_dimension(NormalDimension)
 {
     Item::initializeStaticData();
-
-    m_player.entity_id = -1;
-    memset(&(m_player.position), 0, sizeof(m_player.position));
-    m_player.type = mineflayer_NamedPlayerEntity;
-    m_player.username = Util::toNewMfUtf8(connection_info.userName());
-    m_player.held_item = mineflayer_NoItem;
 
     foreach (QChar c, QString(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~⌂ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜø£Ø×ƒáíóúñÑªº¿®¬½¼¡«»" ))
         m_legal_chat_chars.insert(c);
 
     bool success;
-    success = connect(&m_server, SIGNAL(loginStatusUpdated(mineflayer_LoginStatus)), this, SLOT(handleLoginStatusChanged(mineflayer_LoginStatus)));
+    success = connect(&m_server, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SLOT(handleLoginStatusChanged(Server::LoginStatus)));
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(loginCompleted(int)), this, SLOT(handleLoginCompleted(int)));
     Q_ASSERT(success);
-    success = connect(&m_server, SIGNAL(playerPositionAndLookUpdated(mineflayer_EntityPosition)), this, SLOT(handlePlayerPositionAndLookUpdated(mineflayer_EntityPosition)));
+    success = connect(&m_server, SIGNAL(playerPositionAndLookUpdated(Server::EntityPosition)), this, SLOT(handlePlayerPositionAndLookUpdated(Server::EntityPosition)));
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(playerHealthUpdated(int)), this, SLOT(handlePlayerHealthUpdated(int)));
     Q_ASSERT(success);
 
-    success = connect(&m_server, SIGNAL(namedPlayerSpawned(int,QString,mineflayer_EntityPosition,mineflayer_ItemType)), this, SLOT(handleNamedPlayerSpawned(int,QString,mineflayer_EntityPosition,mineflayer_ItemType)));
+    success = connect(&m_server, SIGNAL(namedPlayerSpawned(int,QString,Server::EntityPosition,Item::ItemType)), this, SLOT(handleNamedPlayerSpawned(int,QString,Server::EntityPosition,Item::ItemType)));
     Q_ASSERT(success);
-    success = connect(&m_server, SIGNAL(pickupSpawned(int,Item,mineflayer_EntityPosition)), this, SLOT(handlePickupSpawned(int,Item,mineflayer_EntityPosition)));
+    success = connect(&m_server, SIGNAL(pickupSpawned(int,Item,Server::EntityPosition)), this, SLOT(handlePickupSpawned(int,Item,Server::EntityPosition)));
     Q_ASSERT(success);
-    success = connect(&m_server, SIGNAL(mobSpawned(int,mineflayer_MobType,mineflayer_EntityPosition)), this, SLOT(handleMobSpawned(int,mineflayer_MobType,mineflayer_EntityPosition)));
+    success = connect(&m_server, SIGNAL(mobSpawned(int,MobSpawnResponse::MobType,Server::EntityPosition)), this, SLOT(handleMobSpawned(int,MobSpawnResponse::MobType,Server::EntityPosition)));
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(entityDestroyed(int)), this, SLOT(handleEntityDestroyed(int)));
     Q_ASSERT(success);
-    success = connect(&m_server, SIGNAL(entityMovedRelatively(int,mineflayer_EntityPosition)), this, SLOT(handleEntityMovedRelatively(int,mineflayer_EntityPosition)));
+    success = connect(&m_server, SIGNAL(entityMovedRelatively(int,Server::EntityPosition)), this, SLOT(handleEntityMovedRelatively(int,Server::EntityPosition)));
     Q_ASSERT(success);
-    success = connect(&m_server, SIGNAL(entityLooked(int,mineflayer_EntityPosition)), this, SLOT(handleEntityLooked(int,mineflayer_EntityPosition)));
+    success = connect(&m_server, SIGNAL(entityLooked(int,Server::EntityPosition)), this, SLOT(handleEntityLooked(int,Server::EntityPosition)));
     Q_ASSERT(success);
-    success = connect(&m_server, SIGNAL(entityLookedAndMovedRelatively(int,mineflayer_EntityPosition)), this, SLOT(handleEntityLookedAndMovedRelatively(int,mineflayer_EntityPosition)));
+    success = connect(&m_server, SIGNAL(entityLookedAndMovedRelatively(int,Server::EntityPosition)), this, SLOT(handleEntityLookedAndMovedRelatively(int,Server::EntityPosition)));
     Q_ASSERT(success);
-    success = connect(&m_server, SIGNAL(entityMoved(int,mineflayer_EntityPosition)), this, SLOT(handleEntityMoved(int,mineflayer_EntityPosition)));
+    success = connect(&m_server, SIGNAL(entityMoved(int,Server::EntityPosition)), this, SLOT(handleEntityMoved(int,Server::EntityPosition)));
     Q_ASSERT(success);
-    success = connect(&m_server, SIGNAL(animation(int,mineflayer_AnimationType)), this, SLOT(handleAnimation(int,mineflayer_AnimationType)));
+    success = connect(&m_server, SIGNAL(animation(int,Message::AnimationType)), this, SLOT(handleAnimation(int,Message::AnimationType)));
     Q_ASSERT(success);
 
     success = connect(&m_server, SIGNAL(mapChunkUpdated(QSharedPointer<Chunk>)), this, SLOT(handleMapChunkUpdated(QSharedPointer<Chunk>)));
@@ -123,7 +119,7 @@ Game::Game(QUrl connection_info) :
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(transaction(int,int,bool)), this, SLOT(handleTransaction(int,int,bool)));
     Q_ASSERT(success);
-    success = connect(&m_server, SIGNAL(openWindow(int,mineflayer_WindowType,int)), this, SLOT(handleOpenWindow(int,mineflayer_WindowType,int)));
+    success = connect(&m_server, SIGNAL(openWindow(int,Message::WindowType,int)), this, SLOT(handleOpenWindow(int,Message::WindowType,int)));
     Q_ASSERT(success);
 
 
@@ -138,18 +134,18 @@ Game::Game(QUrl connection_info) :
     success = connect(m_digger, SIGNAL(finished()), this, SLOT(sendDiggingComplete()));
     Q_ASSERT(success);
 
-    m_control_state.fill(false, (int)mineflayer_ControlCount);
+    m_control_state.fill(false, (int)ControlCount);
 
     m_digging_animation_timer->setInterval(1000 / 4); // guess
     success = connect(m_digging_animation_timer, SIGNAL(timeout()), this, SLOT(animateDigging()));
     Q_ASSERT(success);
 }
 
-void Game::setControlActivated(mineflayer_Control control, bool activated)
+void Game::setControlActivated(Control control, bool activated)
 {
     QMutexLocker locker(&m_mutex);
     m_control_state[control] = activated;
-    if (activated && control == mineflayer_JumpControl)
+    if (activated && control == JumpControl)
         m_jump_was_pressed = true;
 }
 
@@ -173,9 +169,7 @@ void Game::setPlayerLook(float yaw, float pitch, bool force)
 void Game::setPlayerPosition(const Double3D & pt)
 {
     QMutexLocker locker(&m_mutex);
-    m_player.position.pos.x = pt.x;
-    m_player.position.pos.y = pt.y;
-    m_player.position.pos.z = pt.z;
+    m_player.position.pos = pt;
     emit playerPositionUpdated();
 }
 
@@ -183,7 +177,7 @@ void Game::attackEntity(int entity_id)
 {
     QMutexLocker locker(&m_mutex);
     m_server.sendClickEntity(m_player.entity_id, entity_id, false);
-    m_server.sendAnimation(m_player.entity_id, mineflayer_SwingArmAnimation);
+    m_server.sendAnimation(m_player.entity_id, Message::SwingArmAnimation);
 }
 
 void Game::respawn()
@@ -202,21 +196,21 @@ void Game::start()
     m_server.socketConnect();
 }
 
-mineflayer_Entity * Game::entity(int entity_id)
+QSharedPointer<Game::Entity> Game::entity(int entity_id)
 {
     QMutexLocker locker(&m_mutex);
 
     if (entity_id == m_player.entity_id)
-        return Util::cloneEntity(&m_player);
+        return QSharedPointer<Entity>(m_player.clone());
 
-    mineflayer_Entity * entity = m_entities.value(entity_id, NULL);
-    if (entity == NULL)
-        return NULL;
+    QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
+    if (entity.isNull())
+        return entity;
 
-    return Util::cloneEntity(entity);
+    return QSharedPointer<Entity>(entity.data()->clone());
 }
 
-mineflayer_EntityPosition Game::playerPosition()
+Server::EntityPosition Game::playerPosition()
 {
     QMutexLocker locker(&m_mutex);
     return m_player.position;
@@ -231,9 +225,9 @@ Block Game::blockAt(const Int3D & absolute_location)
         return c_air;
     Int3D relative_location = absolute_location - chunk_key;
     Block probable_value = chunk.data()->getBlock(relative_location);
-    if (probable_value.type() == mineflayer_AirItem && relative_location.y != 0) {
+    if (probable_value.type() == Item::Air && relative_location.y != 0) {
         Block maybe_a_fence = chunk.data()->getBlock(relative_location + Int3D(0, -1, 0));
-        if (maybe_a_fence.type() == mineflayer_FenceItem) {
+        if (maybe_a_fence.type() == Item::Fence) {
             // say that the air immediately above a fence is also a fence.
             return maybe_a_fence;
         }
@@ -299,7 +293,7 @@ void Game::startDigging(const Int3D &block)
     stopDigging();
     m_digging_location = block;
     m_server.sendDiggingStatus(Message::StartDigging, m_digging_location);
-    m_digger->start(inventoryItem(m_equipped_slot_id).data.type, blockAt(m_digging_location).type());
+    m_digger->start(inventoryItem(m_equipped_slot_id).type, blockAt(m_digging_location).type());
 
     m_digging_animation_timer->start();
 }
@@ -314,7 +308,7 @@ void Game::stopDigging()
         return;
 
     m_digger->stop();
-    emit stoppedDigging(mineflayer_AbortedReason);
+    emit stoppedDigging(AbortedReason);
 }
 
 void Game::sendDiggingComplete()
@@ -325,17 +319,17 @@ void Game::sendDiggingComplete()
     m_waiting_for_dig_confirmation = true;
 }
 
-void Game::handleLoginStatusChanged(mineflayer_LoginStatus status)
+void Game::handleLoginStatusChanged(Server::LoginStatus status)
 {
     QMutexLocker locker(&m_mutex);
     switch (status) {
-        case mineflayer_SocketErrorStatus:
+        case Server::SocketErrorStatus:
             qWarning() << "Game: Unable to connect to server";
-            // TODO: quit? indicate that we couldn't connect?
+            QCoreApplication::instance()->exit(1);
             break;
-        case mineflayer_DisconnectedStatus:
+        case Server::DisconnectedStatus:
             qWarning() << "Game: Disconnected from server";
-            // TODO: quit? indicate that we couldn't connect?
+            QCoreApplication::instance()->exit(m_return_code);
             break;
         default:;
     }
@@ -358,7 +352,7 @@ void Game::handleChatReceived(QString message)
         QString username = message.mid(1, pos-1);
         QString content = message.mid(pos+2);
         // suppress talking to yourself
-        if (username == Util::toQString(m_player.username))
+        if (username == m_player.username)
             return;
         emit chatReceived(username, content);
     } else {
@@ -381,7 +375,7 @@ void Game::handleTimeUpdated(double seconds)
     emit timeUpdated(seconds);
 }
 
-void Game::handlePlayerPositionAndLookUpdated(mineflayer_EntityPosition position)
+void Game::handlePlayerPositionAndLookUpdated(Server::EntityPosition position)
 {
     QMutexLocker locker(&m_mutex);
     m_player.position.pos = position.pos;
@@ -421,46 +415,33 @@ void Game::handlePlayerHealthUpdated(int new_health)
         emit playerDied();
 }
 
-void Game::handleNamedPlayerSpawned(int entity_id, QString player_name, mineflayer_EntityPosition position, mineflayer_ItemType held_item)
+void Game::handleNamedPlayerSpawned(int entity_id, QString player_name, Server::EntityPosition position, Item::ItemType held_item)
 {
     QMutexLocker locker(&m_mutex);
 
     // TODO: don't assume never crouching
     position.height = 1.62;
 
-    mineflayer_Entity * entity = new mineflayer_Entity;
-    entity->entity_id = entity_id;
-    entity->position = position;
-    entity->username = Util::toNewMfUtf8(player_name);
-    entity->type = mineflayer_NamedPlayerEntity;
-    entity->held_item = held_item;
-
-    m_entities.insert(entity_id, entity);
-    mineflayer_Entity * clone = Util::cloneEntity(entity);
-    emit entitySpawned(clone);
+    Entity * entity = new NamedPlayerEntity(entity_id, position, player_name, held_item);
+    m_entities.insert(entity_id, QSharedPointer<Entity>(entity));
+    emit entitySpawned(QSharedPointer<Entity>(entity->clone()));
 }
-void Game::handlePickupSpawned(int entity_id, Item item, mineflayer_EntityPosition position)
+void Game::handlePickupSpawned(int entity_id, Item item, Server::EntityPosition position)
 {
     QMutexLocker locker(&m_mutex);
 
-    mineflayer_Entity * entity = new mineflayer_Entity;
-    entity->type = mineflayer_PickupEntity;
-    entity->entity_id = entity_id;
-    entity->position = position;
-    entity->item = item.data;
-
-    m_entities.insert(entity_id, entity);
-    mineflayer_Entity * clone = Util::cloneEntity(entity);
-    emit entitySpawned(clone);
+    Entity * entity = new PickupEntity(entity_id, position, item);
+    m_entities.insert(entity_id, QSharedPointer<Entity>(entity));
+    emit entitySpawned(QSharedPointer<Entity>(entity->clone()));
 }
-void Game::handleMobSpawned(int entity_id, mineflayer_MobType mob_type, mineflayer_EntityPosition position)
+void Game::handleMobSpawned(int entity_id, MobSpawnResponse::MobType mob_type, Server::EntityPosition position)
 {
     QMutexLocker locker(&m_mutex);
     switch (mob_type) {
-        case mineflayer_CreeperMob:
-        case mineflayer_SkeletonMob:
-        case mineflayer_ZombieMob:
-        case mineflayer_ZombiePigmanMob:
+        case MobSpawnResponse::CreeperMob:
+        case MobSpawnResponse::SkeletonMob:
+        case MobSpawnResponse::ZombieMob:
+        case MobSpawnResponse::ZombiePigmanMob:
             // humanoids get a human-ish height
             position.height = 1.62;
             break;
@@ -468,85 +449,80 @@ void Game::handleMobSpawned(int entity_id, mineflayer_MobType mob_type, mineflay
             break;
     }
 
-    mineflayer_Entity * entity = new mineflayer_Entity;
-    entity->type = mineflayer_MobEntity;
-    entity->entity_id = entity_id;
-    entity->position = position;
-    entity->mob_type = mob_type;
-
-    m_entities.insert(entity_id, entity);
-    mineflayer_Entity * clone = Util::cloneEntity(entity);
-    emit entitySpawned(clone);
+    Entity * entity = new MobEntity(entity_id, position, mob_type);
+    m_entities.insert(entity_id, QSharedPointer<Entity>(entity));
+    emit entitySpawned(QSharedPointer<Entity>(entity->clone()));
 }
 void Game::handleEntityDestroyed(int entity_id)
 {
     QMutexLocker locker(&m_mutex);
-    mineflayer_Entity * entity = m_entities.take(entity_id);
-    if (entity == NULL)
+
+    QSharedPointer<Entity> entity = m_entities.take(entity_id);
+    if (entity.isNull())
         return;
 
     // don't clone, we want the only ref to be deleted
     emit entityDespawned(entity);
 }
-void Game::handleEntityMovedRelatively(int entity_id, mineflayer_EntityPosition movement)
+void Game::handleEntityMovedRelatively(int entity_id, Server::EntityPosition movement)
 {
     QMutexLocker locker(&m_mutex);
-    mineflayer_Entity * entity = m_entities.value(entity_id, NULL);
-    if (entity == NULL)
-        return;
-    entity->position.pos.x += movement.pos.x;
-    entity->position.pos.y += movement.pos.y;
-    entity->position.pos.z += movement.pos.z;
 
-    emit entityMoved(Util::cloneEntity(entity));
+    QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
+    if (entity.isNull())
+        return;
+
+    entity.data()->position.pos += movement.pos;
+    emit entityMoved(QSharedPointer<Entity>(entity.data()->clone()));
 }
 
 
-void Game::handleEntityLooked(int entity_id, mineflayer_EntityPosition look)
+void Game::handleEntityLooked(int entity_id, Server::EntityPosition look)
 {
     QMutexLocker locker(&m_mutex);
-    mineflayer_Entity * entity = m_entities.value(entity_id, NULL);
-    if (entity == NULL)
-        return;
-    entity->position.yaw = look.yaw;
-    entity->position.pitch = look.pitch;
 
-    emit entityMoved(Util::cloneEntity(entity));
+    QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
+    if (entity.isNull())
+        return;
+
+    entity.data()->position.yaw = look.yaw;
+    entity.data()->position.pitch = look.pitch;
+    emit entityMoved(QSharedPointer<Entity>(entity.data()->clone()));
 }
-void Game::handleEntityLookedAndMovedRelatively(int entity_id, mineflayer_EntityPosition position)
+void Game::handleEntityLookedAndMovedRelatively(int entity_id, Server::EntityPosition position)
 {
     QMutexLocker locker(&m_mutex);
-    mineflayer_Entity * entity = m_entities.value(entity_id, NULL);
-    if (entity == NULL)
+
+    QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
+    if (entity.isNull())
         return;
-    entity->position.pos.x += position.pos.x;
-    entity->position.pos.y += position.pos.y;
-    entity->position.pos.z += position.pos.z;
 
-
-    entity->position.yaw = position.yaw;
-    entity->position.pitch = position.pitch;
-
-    emit entityMoved(Util::cloneEntity(entity));
+    entity.data()->position.pos += position.pos;
+    entity.data()->position.yaw = position.yaw;
+    entity.data()->position.pitch = position.pitch;
+    emit entityMoved(QSharedPointer<Entity>(entity.data()->clone()));
 }
-void Game::handleEntityMoved(int entity_id, mineflayer_EntityPosition position)
+void Game::handleEntityMoved(int entity_id, Server::EntityPosition position)
 {
     QMutexLocker locker(&m_mutex);
-    mineflayer_Entity * entity = m_entities.value(entity_id, NULL);
-    if (entity == NULL)
-        return;
-    entity->position.pos = position.pos;
 
-    emit entityMoved(Util::cloneEntity(entity));
+    QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
+    if (entity.isNull())
+        return;
+
+    entity.data()->position.pos = position.pos;
+    emit entityMoved(QSharedPointer<Entity>(entity.data()->clone()));
 }
-void Game::handleAnimation(int entity_id, mineflayer_AnimationType animation_type)
+void Game::handleAnimation(int entity_id, Message::AnimationType animation_type)
 {
     QMutexLocker locker(&m_mutex);
-    mineflayer_Entity * entity = m_entities.value(entity_id, NULL);
-    if (entity == NULL)
+
+    QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
+
+    if (entity.isNull())
         return;
 
-    emit animation(Util::cloneEntity(entity), animation_type);
+    emit animation(QSharedPointer<Entity>(entity.data()->clone()), animation_type);
 }
 
 void Game::handleUnloadChunk(const Int3D &coord)
@@ -659,7 +635,7 @@ void Game::checkForDiggingStopped(const Int3D &start, const Int3D &size)
         bool success = !Item::itemData(blockAt(m_digging_location).type())->diggable;
         m_server.sendDiggingStatus(Message::BlockBroken, m_digging_location);
         stopDigging();
-        emit stoppedDigging(success ? mineflayer_BlockBrokenReason : mineflayer_AbortedReason);
+        emit stoppedDigging(success ? BlockBrokenReason : AbortedReason);
     }
 }
 
@@ -672,7 +648,7 @@ void Game::checkForDestroyedSigns(const Int3D &start, const Int3D &size)
         if (!m_signs.contains(start))
             return; // wasn't a sign
         Block supposed_sign = blockAt(start);
-        if (supposed_sign.type() == mineflayer_SignPost_placedItem || supposed_sign.type() == mineflayer_WallSign_placedItem)
+        if (supposed_sign.type() == Item::SignPost_placed || supposed_sign.type() == Item::WallSign_placed)
             return; // still a sign
         removed_signs.append(start);
     } else {
@@ -682,7 +658,7 @@ void Game::checkForDestroyedSigns(const Int3D &start, const Int3D &size)
                   location.x < start.x + size.x && location.y < start.y + size.y && location.z < start.z + size.z))
                 continue; // out of bounds
             Block supposed_sign = blockAt(location);
-            if (supposed_sign.type() == mineflayer_SignPost_placedItem || supposed_sign.type() == mineflayer_WallSign_placedItem)
+            if (supposed_sign.type() == Item::SignPost_placed || supposed_sign.type() == Item::WallSign_placed)
                 continue; // still a sign
             removed_signs.append(location);
         }
@@ -703,7 +679,7 @@ void Game::sendPosition()
     QMutexLocker locker(&m_mutex);
 
     // increment the yaw in baby steps so that notchian clients (not the server) can keep up.
-    mineflayer_EntityPosition sent_position = m_player.position;
+    Server::EntityPosition sent_position = m_player.position;
     sent_position.yaw = Util::euclideanMod(sent_position.yaw, Util::two_pi);
     float delta_yaw = sent_position.yaw - m_last_sent_yaw;
     if (delta_yaw < 0) {
@@ -730,7 +706,7 @@ void Game::sendPosition()
 void Game::animateDigging()
 {
     QMutexLocker locker(&m_mutex);
-    m_server.sendAnimation(m_player.entity_id, mineflayer_SwingArmAnimation);
+    m_server.sendAnimation(m_player.entity_id, Message::SwingArmAnimation);
 }
 
 void Game::doPhysics(float delta_seconds)
@@ -742,14 +718,14 @@ void Game::doPhysics(float delta_seconds)
 
     // derive xy movement vector from controls
     int movement_right = 0;
-    if (m_control_state.at(mineflayer_RightControl))
+    if (m_control_state.at(RightControl))
         movement_right += 1;
-    if (m_control_state.at(mineflayer_LeftControl))
+    if (m_control_state.at(LeftControl))
         movement_right -= 1;
     int movement_forward = 0;
-    if (m_control_state.at(mineflayer_ForwardControl))
+    if (m_control_state.at(ForwardControl))
         movement_forward += 1;
-    if (m_control_state.at(mineflayer_BackControl))
+    if (m_control_state.at(BackControl))
         movement_forward -= 1;
 
     // acceleration is m/s/s
@@ -763,7 +739,7 @@ void Game::doPhysics(float delta_seconds)
     }
 
     // jumping
-    if ((m_control_state.at(mineflayer_JumpControl) || m_jump_was_pressed) && m_player.position.on_ground)
+    if ((m_control_state.at(JumpControl) || m_jump_was_pressed) && m_player.position.on_ground)
         m_player.position.vel.y = c_jump_speed;
     m_jump_was_pressed = false;
 
@@ -790,9 +766,7 @@ void Game::doPhysics(float delta_seconds)
     }
 
     // calculate new speed
-    m_player.position.vel.x += acceleration.x * delta_seconds;
-    m_player.position.vel.y += acceleration.y * delta_seconds;
-    m_player.position.vel.z += acceleration.z * delta_seconds;
+    m_player.position.vel += acceleration * delta_seconds;
 
     // limit speed
     double ground_speed_squared = groundSpeedSquared();
@@ -810,7 +784,7 @@ void Game::doPhysics(float delta_seconds)
 
     // calculate new positions and resolve collisions
     Int3D boundingBoxMin, boundingBoxMax;
-    getBoundingBox(&m_player, boundingBoxMin, boundingBoxMax);
+    m_player.getBoundingBox(boundingBoxMin, boundingBoxMax);
 
     if (m_player.position.vel.x != 0) {
         m_player.position.pos.x += m_player.position.vel.x * delta_seconds;
@@ -818,7 +792,7 @@ void Game::doPhysics(float delta_seconds)
         if (collisionInRange(Int3D(block_x, boundingBoxMin.y, boundingBoxMin.z), Int3D(block_x, boundingBoxMax.y, boundingBoxMax.z))) {
             m_player.position.pos.x = block_x + (m_player.position.vel.x < 0 ? 1 + c_player_apothem : -c_player_apothem) * 1.001;
             m_player.position.vel.x = 0;
-            getBoundingBox(&m_player, boundingBoxMin, boundingBoxMax);
+            m_player.getBoundingBox(boundingBoxMin, boundingBoxMax);
         }
     }
 
@@ -828,7 +802,7 @@ void Game::doPhysics(float delta_seconds)
         if (collisionInRange(Int3D(boundingBoxMin.x, boundingBoxMin.y, block_z), Int3D(boundingBoxMax.x, boundingBoxMax.y, block_z))) {
             m_player.position.pos.z = block_z + (m_player.position.vel.z < 0 ? 1 + c_player_apothem : -c_player_apothem) * 1.001;
             m_player.position.vel.z = 0;
-            getBoundingBox(&m_player, boundingBoxMin, boundingBoxMax);
+            m_player.getBoundingBox(boundingBoxMin, boundingBoxMax);
         }
     }
 
@@ -848,32 +822,49 @@ void Game::doPhysics(float delta_seconds)
     emit playerPositionUpdated();
 }
 
-void Game::getBoundingBox(const mineflayer_Entity * entity, Int3D &boundingBoxMin, Int3D &boundingBoxMax) const
+void Game::NamedPlayerEntity::getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const
 {
-    // TODO: handle cases when entity is not a player
-    boundingBoxMin.x = (int)std::floor(entity->position.pos.x - c_player_apothem);
-    boundingBoxMin.y = (int)std::floor(entity->position.pos.y - 0);
-    boundingBoxMin.z = (int)std::floor(entity->position.pos.z - c_player_apothem);
-    boundingBoxMax.x = (int)std::floor(entity->position.pos.x + c_player_apothem);
-    boundingBoxMax.y = (int)std::floor(entity->position.pos.y + c_player_height);
-    boundingBoxMax.z = (int)std::floor(entity->position.pos.z + c_player_apothem);
+    boundingBoxMin.x = (int)std::floor(position.pos.x - Game::c_player_apothem);
+    boundingBoxMin.y = (int)std::floor(position.pos.y - Game::c_player_apothem);
+    boundingBoxMin.z = (int)std::floor(position.pos.z - 0);
+    boundingBoxMax.x = (int)std::floor(position.pos.x + Game::c_player_apothem);
+    boundingBoxMax.y = (int)std::floor(position.pos.y + Game::c_player_apothem);
+    boundingBoxMax.z = (int)std::floor(position.pos.z + Game::c_player_height);
 }
+
+void Game::MobEntity::getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const
+{
+    // TODO: use the real bounding box instead of a human shape for all of them
+    boundingBoxMin.x = (int)std::floor(position.pos.x - Game::c_player_apothem);
+    boundingBoxMin.y = (int)std::floor(position.pos.y - Game::c_player_apothem);
+    boundingBoxMin.z = (int)std::floor(position.pos.z - 0);
+    boundingBoxMax.x = (int)std::floor(position.pos.x + Game::c_player_apothem);
+    boundingBoxMax.y = (int)std::floor(position.pos.y + Game::c_player_apothem);
+    boundingBoxMax.z = (int)std::floor(position.pos.z + Game::c_player_height);
+}
+
+void Game::PickupEntity::getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const
+{
+    boundingBoxMin.x = (int)std::floor(position.pos.x - 1);
+    boundingBoxMin.y = (int)std::floor(position.pos.y - 1);
+    boundingBoxMin.z = (int)std::floor(position.pos.z - 0);
+    boundingBoxMax.x = (int)std::floor(position.pos.x + 1);
+    boundingBoxMax.y = (int)std::floor(position.pos.y + 1);
+    boundingBoxMax.z = (int)std::floor(position.pos.z + 1);
+}
+
 
 // TODO: check partial blocks
 bool Game::collisionInRange(const Int3D & boundingBoxMin, const Int3D & boundingBoxMax)
 {
     // no mutex locker; private function
     Int3D cursor;
-    for (cursor.x = boundingBoxMin.x; cursor.x <= boundingBoxMax.x; cursor.x++) {
-        for (cursor.y = boundingBoxMin.y; cursor.y <= boundingBoxMax.y; cursor.y++) {
-            for (cursor.z = boundingBoxMin.z; cursor.z <= boundingBoxMax.z; cursor.z++) {
-                Block block = blockAt(cursor);
-                mineflayer_ItemData * item_data = Item::itemData(block.type());
-                if (item_data->physical)
+    for (cursor.x = boundingBoxMin.x; cursor.x <= boundingBoxMax.x; cursor.x++)
+        for (cursor.y = boundingBoxMin.y; cursor.y <= boundingBoxMax.y; cursor.y++)
+            for (cursor.z = boundingBoxMin.z; cursor.z <= boundingBoxMax.z; cursor.z++)
+                if (Item::itemData(blockAt(cursor).type())->physical)
                     return true;
-            }
-        }
-    }
+
     return false;
 }
 
@@ -913,19 +904,19 @@ double Game::timeOfDay()
     return Util::euclideanMod(m_current_time_seconds + m_current_time_recorded_time.msecsTo(QTime::currentTime()) / 1000.0, 1200.0);
 }
 
-bool Game::placeBlock(const Int3D &block, mineflayer_BlockFaceDirection face)
+bool Game::placeBlock(const Int3D &block, Message::BlockFaceDirection face)
 {
     QMutexLocker locker(&m_mutex);
 
     Item equipped_item = m_inventory.at(m_equipped_slot_id);
-    if (!Item::itemData(equipped_item.data.type)->placeable) {
-        qWarning() << "trying to place: " << equipped_item.data.type;
+    if (!Item::itemData(equipped_item.type)->placeable) {
+        qWarning() << "trying to place: " << equipped_item.type;
         return false;
     }
     if (!canPlaceBlock(block, face))
         return false;
     Int3D new_block_pos = block + c_side_offset[face];
-    updateBlock(new_block_pos, Block(equipped_item.data.type, equipped_item.data.metadata, 0, 0));
+    updateBlock(new_block_pos, Block(equipped_item.type, equipped_item.metadata, 0, 0));
     sendPosition();
     m_server.sendBlockPlacement(block, face, equipped_item);
     return true;
@@ -935,11 +926,11 @@ bool Game::activateItem()
     QMutexLocker locker(&m_mutex);
 
     Item item = m_inventory.at(m_equipped_slot_id);
-    if (!Item::itemData(item.data.type)->item_activatable) {
-        qWarning() << "trying to activate: " << item.data.type;
+    if (!Item::itemData(item.type)->item_activatable) {
+        qWarning() << "trying to activate: " << item.type;
         return false;
     }
-    m_server.sendBlockPlacement(Int3D(-1, -1, -1), mineflayer_NoDirection, item);
+    m_server.sendBlockPlacement(Int3D(-1, -1, -1), Message::NoDirection, item);
     return true;
 }
 
@@ -949,10 +940,10 @@ void Game::activateBlock(const Int3D &block)
 
     Item equipped_item = m_inventory.at(m_equipped_slot_id);
 
-    m_server.sendBlockPlacement(block, mineflayer_PositiveY, equipped_item);
+    m_server.sendBlockPlacement(block, Message::PositiveY, equipped_item);
 }
 
-bool Game::canPlaceBlock(const Int3D &block_pos, mineflayer_BlockFaceDirection face)
+bool Game::canPlaceBlock(const Int3D &block_pos, Message::BlockFaceDirection face)
 {
     QMutexLocker locker(&m_mutex);
 
@@ -963,7 +954,7 @@ bool Game::canPlaceBlock(const Int3D &block_pos, mineflayer_BlockFaceDirection f
         return false;
 
     // not if we're too far away
-    if (new_block_pos.distanceTo(Double3D(m_player.position.pos.x, m_player.position.pos.y, m_player.position.pos.z)) > 6.0)
+    if (new_block_pos.distanceTo(m_player.position.pos) > 6.0)
         return false;
 
     // not if there's an entity in the way
@@ -971,16 +962,14 @@ bool Game::canPlaceBlock(const Int3D &block_pos, mineflayer_BlockFaceDirection f
     if (entityCollidesWithPoint(&m_player, new_block_pos))
         return false;
     // anyone else
-    foreach (mineflayer_Entity * entity, m_entities) {
-        if (entity->type != mineflayer_PickupEntity) {
-            if (entityCollidesWithPoint(entity, new_block_pos))
+    foreach (QSharedPointer<Entity> entity, m_entities)
+        if (entity.data()->type != Entity::PickupEntity)
+            if (entityCollidesWithPoint(entity.data(), new_block_pos))
                 return false;
-        }
-    }
 
     Block target_block = blockAt(block_pos);
 
-    const mineflayer_ItemData * item_data = Item::itemData(target_block.type());
+    const Item::ItemData * item_data = Item::itemData(target_block.type());
 
     // not against water, lava, air, etc
     if (! item_data->diggable)
@@ -992,17 +981,17 @@ bool Game::canPlaceBlock(const Int3D &block_pos, mineflayer_BlockFaceDirection f
 
     // not if our equipment isn't placeable
     Item equipped_item = m_inventory.at(m_equipped_slot_id);
-    if (! Item::itemData(equipped_item.data.type)->placeable)
+    if (! Item::itemData(equipped_item.type)->placeable)
         return false;
 
     return true;
 }
 
-bool Game::entityCollidesWithPoint(const mineflayer_Entity * entity, const Int3D & point)
+bool Game::entityCollidesWithPoint(const Entity * entity, const Int3D & point)
 {
     // no mutex locker; private method
     Int3D min, max, it;
-    getBoundingBox(entity, min, max);
+    entity->getBoundingBox(min, max);
     for (it.x = min.x; it.x <= max.x; it.x++) {
         for (it.y = min.y; it.y <= max.y; it.y++) {
             for (it.z = min.z; it.z <= max.z; it.z++) {
@@ -1116,7 +1105,7 @@ _Item::Recipe Game::buildRecipeForItems(QVector<Item> items, QSize size)
     for (int x = 0; x < size.width(); x++) {
         for (int y = 0; y < size.height(); y++) {
             int index = y * size.width() + x;
-            if (items.at(index).data.type != mineflayer_NoItem) {
+            if (items.at(index).type != Item::NoItem) {
                 if (min_x == -1) min_x = x;
                 if (min_y == -1) min_y = y;
                 if (x > max_x) max_x = x;
@@ -1196,11 +1185,11 @@ bool Game::doWindowClick(const WindowClick &window_click)
         QMutexLocker locker(&m_mutex);
 
         // if they click in the crafting area, we need to set the value of unique_slots[0]
-        if (m_open_window_type == mineflayer_InventoryWindow && window_click.slot >= 1 && window_click.slot <= 4) {
+        if (m_open_window_type == Message::InventoryWindow && window_click.slot >= 1 && window_click.slot <= 4) {
             // make a recipe out of the crafting area and see what we need to set the result
             const _Item::Recipe * recipe = Item::recipeFor(buildRecipeForItems(m_unique_slots.mid(1, 4), QSize(2,2)));
             m_unique_slots.replace(0, (recipe == NULL) ? Item() : recipe->result);
-        } else if (m_open_window_type == mineflayer_CraftingTableWindow && window_click.slot >= 1 && window_click.slot <= 9) {
+        } else if (m_open_window_type == Message::CraftingTableWindow && window_click.slot >= 1 && window_click.slot <= 9) {
             const _Item::Recipe * recipe = Item::recipeFor(buildRecipeForItems(m_unique_slots.mid(1, 9), QSize(3,3)));
             m_unique_slots.replace(0, (recipe == NULL) ? Item() : recipe->result);
         }
@@ -1223,28 +1212,28 @@ void Game::handleTransaction(int window_id, int action_id, bool accepted)
             window_click = m_window_click_queue.dequeue();
 
         if (accepted) {
-            if ((m_open_window_type == mineflayer_InventoryWindow || m_open_window_type == mineflayer_CraftingTableWindow) &&
+            if ((m_open_window_type == Message::InventoryWindow || m_open_window_type == Message::CraftingTableWindow) &&
                 window_click.slot == 0)
             {
                 // take the crafting output and add it to your hand.
                 // if you're holding something else, clicking does nothing.
                 Item slot_item = getWindowSlot(window_click.slot);
-                if (m_held_item.data.type == mineflayer_NoItem ||
-                    (slot_item.data.type == m_held_item.data.type && slot_item.data.metadata == m_held_item.data.metadata))
+                if (m_held_item.type == Item::NoItem ||
+                    (slot_item.type == m_held_item.type && slot_item.metadata == m_held_item.metadata))
                 {
-                    if (m_held_item.data.type == mineflayer_NoItem)
+                    if (m_held_item.type == Item::NoItem)
                         m_held_item = slot_item;
-                    else if (slot_item.data.type == m_held_item.data.type && slot_item.data.metadata == m_held_item.data.metadata)
-                        m_held_item.data.count += slot_item.data.count;
+                    else if (slot_item.type == m_held_item.type && slot_item.metadata == m_held_item.metadata)
+                        m_held_item.count += slot_item.count;
                     slot_item = Item();
                     updateWindowSlot(window_click.slot, slot_item);
 
                     // decrement the count of every slot in the crafting area
                     int decrement_start, decrement_end;
-                    if (m_open_window_type == mineflayer_InventoryWindow) {
+                    if (m_open_window_type == Message::InventoryWindow) {
                         decrement_start = 1;
                         decrement_end = 4;
-                    } else if (m_open_window_type == mineflayer_CraftingTableWindow) {
+                    } else if (m_open_window_type == Message::CraftingTableWindow) {
                         decrement_start = 1;
                         decrement_end = 9;
                     } else {
@@ -1255,44 +1244,44 @@ void Game::handleTransaction(int window_id, int action_id, bool accepted)
 
                     for (int i = decrement_start; i <= decrement_end; i++) {
                         Item slot_item = getWindowSlot(i);
-                        if (slot_item.data.type != mineflayer_NoItem) {
-                            slot_item.data.count--;
-                            if (slot_item.data.count == 0)
+                        if (slot_item.type != Item::NoItem) {
+                            slot_item.count--;
+                            if (slot_item.count == 0)
                                 slot_item = Item();
                             updateWindowSlot(i, slot_item);
                         }
                     }
                 }
             } else if (window_click.right_click) {
-                if (m_held_item.data.type == mineflayer_NoItem) {
+                if (m_held_item.type == Item::NoItem) {
                     // take half. if uneven, take the extra as well.
                     Item slot_item = getWindowSlot(window_click.slot);
-                    int amt_to_take = std::floor((slot_item.data.count + 1) / 2);
-                    int amt_to_leave = slot_item.data.count - amt_to_take;
-                    m_held_item.data.count = amt_to_take;
-                    m_held_item.data.type = slot_item.data.type;
-                    m_held_item.data.metadata = slot_item.data.metadata;
-                    if (m_held_item.data.count == 0)
+                    int amt_to_take = std::floor((slot_item.count + 1) / 2);
+                    int amt_to_leave = slot_item.count - amt_to_take;
+                    m_held_item.count = amt_to_take;
+                    m_held_item.type = slot_item.type;
+                    m_held_item.metadata = slot_item.metadata;
+                    if (m_held_item.count == 0)
                         m_held_item = Item();
-                    slot_item.data.count = amt_to_leave;
-                    if (slot_item.data.count == 0)
+                    slot_item.count = amt_to_leave;
+                    if (slot_item.count == 0)
                         slot_item = Item();
                     updateWindowSlot(window_click.slot, slot_item);
                 } else {
                     Item slot_item = getWindowSlot(window_click.slot);
-                    if (slot_item.data.type == mineflayer_NoItem ||
-                        (slot_item.data.type == m_held_item.data.type && slot_item.data.metadata == m_held_item.data.metadata))
+                    if (slot_item.type == Item::NoItem ||
+                        (slot_item.type == m_held_item.type && slot_item.metadata == m_held_item.metadata))
                     {
                         // drop 1 if the stack height allows it
-                        slot_item.data.type = m_held_item.data.type;
-                        slot_item.data.metadata = m_held_item.data.metadata;
+                        slot_item.type = m_held_item.type;
+                        slot_item.metadata = m_held_item.metadata;
 
-                        if (slot_item.data.count < Item::itemData(slot_item.data.type)->stack_height) {
-                            slot_item.data.count++;
+                        if (slot_item.count < Item::itemData(slot_item.type)->stack_height) {
+                            slot_item.count++;
 
                             updateWindowSlot(window_click.slot, slot_item);
-                            m_held_item.data.count--;
-                            if (m_held_item.data.count == 0)
+                            m_held_item.count--;
+                            if (m_held_item.count == 0)
                                 m_held_item = Item();
                         }
                     } else {
@@ -1307,17 +1296,17 @@ void Game::handleTransaction(int window_id, int action_id, bool accepted)
                     m_held_item = Item();
                 } else {
                     Item slot_item = getWindowSlot(window_click.slot);
-                    if (slot_item.data.type == m_held_item.data.type && slot_item.data.metadata == m_held_item.data.metadata) {
+                    if (slot_item.type == m_held_item.type && slot_item.metadata == m_held_item.metadata) {
                         // drop as many held item counts into the slot as we can.
-                        int new_count = slot_item.data.count + m_held_item.data.count;
-                        int max = Item::itemData(slot_item.data.type)->stack_height;
+                        int new_count = slot_item.count + m_held_item.count;
+                        int max = Item::itemData(slot_item.type)->stack_height;
                         int leftover = new_count - max;
                         if (leftover <= 0) {
-                            slot_item.data.count = new_count;
+                            slot_item.count = new_count;
                             m_held_item = Item();
                         } else {
-                            slot_item.data.count = max;
-                            m_held_item.data.count = leftover;
+                            slot_item.count = max;
+                            m_held_item.count = leftover;
                         }
                         updateWindowSlot(window_click.slot, slot_item);
                     } else {
@@ -1358,13 +1347,13 @@ void Game::openInventoryWindow()
     Q_ASSERT_X(m_open_window_id == -1, "", QString::number(m_open_window_id).toStdString().c_str());
 
     m_open_window_id = 0;
-    m_open_window_type = mineflayer_InventoryWindow;
+    m_open_window_type = Message::InventoryWindow;
     m_unique_slots.resize(c_inventory_window_unique_count);
 
-    emit windowOpened(mineflayer_InventoryWindow);
+    emit windowOpened(Message::InventoryWindow);
 }
 
-mineflayer_WindowType Game::getOpenWindow()
+Message::WindowType Game::getOpenWindow()
 {
     return m_open_window_type;
 }
@@ -1383,7 +1372,7 @@ bool Game::clickOutsideWindow(bool right_click)
     return doWindowClick(window_click);
 }
 
-void Game::handleOpenWindow(int window_id, mineflayer_WindowType window_type, int number_of_slots)
+void Game::handleOpenWindow(int window_id, Message::WindowType window_type, int number_of_slots)
 {
     QMutexLocker locker(&m_mutex);
 
@@ -1412,7 +1401,7 @@ Item Game::uniqueWindowItem(int slot_id) const
     return m_unique_slots.at(slot_id);
 }
 
-void Game::handleRespawn(mineflayer_Dimension world)
+void Game::handleRespawn(Dimension world)
 {
     m_player_dimension = world;
 }

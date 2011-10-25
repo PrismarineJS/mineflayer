@@ -31,7 +31,7 @@ Block Chunk::getBlock(const Int3D & coord) const
     int array_index = indexOf(coord);
     int nibble_shifter = (array_index & 1) * 4;
     Block block;
-    block.setType((mineflayer_ItemType)(m_data.at(array_index) & 0xff));
+    block.setType((Item::ItemType)(m_data.at(array_index) & 0xff));
     block.setMetadata((m_data.at( m_metadata_offset + array_index / 2) >> nibble_shifter) & 0xf);
     block.setLight(   (m_data.at(    m_light_offset + array_index / 2) >> nibble_shifter) & 0xf);
     block.setSkyLight((m_data.at(m_sky_light_offest + array_index / 2) >> nibble_shifter) & 0xf);
@@ -44,10 +44,10 @@ void Chunk::setBlock(const Int3D &coord, const Block &value)
     int array_index = indexOf(coord);
     int nibble_shifter = (array_index & 1) * 4;
     quint8 innactive_nibble_mask = 0xf0 >> nibble_shifter;
-    m_data[array_index] = (quint8)value.data.type;
-    m_data[ m_metadata_offset + array_index / 2] = (m_data.at( m_metadata_offset + array_index / 2) & innactive_nibble_mask) | (value.data.metadata  << nibble_shifter);
-    m_data[    m_light_offset + array_index / 2] = (m_data.at(    m_light_offset + array_index / 2) & innactive_nibble_mask) | (value.data.light     << nibble_shifter);
-    m_data[m_sky_light_offest + array_index / 2] = (m_data.at(m_sky_light_offest + array_index / 2) & innactive_nibble_mask) | (value.data.sky_light << nibble_shifter);
+    m_data[array_index] = (quint8)value.type();
+    m_data[ m_metadata_offset + array_index / 2] = (m_data.at( m_metadata_offset + array_index / 2) & innactive_nibble_mask) | (value.m_metadata  << nibble_shifter);
+    m_data[    m_light_offset + array_index / 2] = (m_data.at(    m_light_offset + array_index / 2) & innactive_nibble_mask) | (value.light()     << nibble_shifter);
+    m_data[m_sky_light_offest + array_index / 2] = (m_data.at(m_sky_light_offest + array_index / 2) & innactive_nibble_mask) | (value.m_sky_light << nibble_shifter);
 }
 
 void Chunk::copyDataTo(unsigned char * buffer)

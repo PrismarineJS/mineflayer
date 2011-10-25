@@ -32,11 +32,9 @@ Setting up build:
 
         make
 
-6. Optionally install `libmineflayer-core.so` to `/usr/lib`:
+6. Optionally install `mineflayer` to `/usr/bin`:
 
         INSTALL_ROOT=/usr sudo make install
-
-If you don't do this, you'll have to put the directory containing the .so in the `LD_LIBRARY_PATH` variable whenever you run mineflayer.
 
 ### Mac:
 
@@ -95,7 +93,7 @@ Running the useful examples (multi.js):
 
 The script `examples/multi.js` is a meta-script that includes most all of the useful bot scripts found in the `examples/` directory. Here's an example invocation command from the build directory (this assumes you don't have a `MINEFLAYER_LIB` variable defined):
 
-    ./mineflayer-script/mineflayer -I../mineflayer/mineflayer-script/lib/ --url BOT_USER_NAME@SERVER_HOSTNAME ../mineflayer/mineflayer-script/examples/multi.js --master=YOUR_USER_NAME --setup="jesusmode on" --setup="healthreport on"
+    mineflayer -I../mineflayer/lib/ --url BOT_USER_NAME@SERVER_HOSTNAME ../mineflayer/examples/multi.js --master=YOUR_USER_NAME --setup="jesusmode on" --setup="healthreport on"
 
 Explanations of the `--master` and `--setup` commands can be found in `lib/chat_commands.js`. If you and your bot are logged in, say "help" via chat for a list of known chat commands (such as "jesusmode" and "healthreport").
 
@@ -111,5 +109,4 @@ Running the test suite:
 -----------------------
 Command will look something like:
 
-    cd mineflayer-script
-    LD_LIBRARY_PATH=../../mineflayer-build-desktop/mineflayer-core bin/run_tests ~/apps/minecraft-server-1.5/minecraft_server.jar ../../mineflayer-build-desktop/mineflayer-script/mineflayer
+    ../mineflayer-build-desktop/mineflayer bin/run_tests ~/apps/minecraft-server-1.5/minecraft_server.jar ../mineflayer-build-desktop/mineflayer

@@ -1,7 +1,5 @@
 #include "Item.h"
 
-#include "Util.h"
-
 #include <cmath>
 
 #include <QFile>
@@ -11,11 +9,11 @@
 
 bool Item::s_initialized = false;
 
-QHash<mineflayer_ItemType, mineflayer_ItemData *> Item::s_item_data;
-QHash<QString, mineflayer_ItemData *> Item::s_item_by_name;
+QHash<Item::ItemType, Item::ItemData *> Item::s_item_data;
+QHash<QString, Item::ItemData *> Item::s_item_by_name;
 QHash<_Item::Recipe, _Item::Recipe *> Item::s_recipes;
 QMultiHash<Item, _Item::Recipe *> Item::s_item_recipe;
-QHash<QString, mineflayer_Material> Item::s_materials;
+QHash<QString, Item::Material> Item::s_materials;
 
 void Item::initializeStaticData()
 {
@@ -38,7 +36,7 @@ void Item::initializeStaticData()
             int part_index = 0;
 
             QString name = parts.at(part_index++);
-            mineflayer_Material value = static_cast<mineflayer_Material>(parts.at(part_index++).toInt());
+            Material value = static_cast<Material>(parts.at(part_index++).toInt());
             s_materials.insert(name, value);
 
             Q_ASSERT(parts.size() == part_index);
@@ -61,14 +59,14 @@ void Item::initializeStaticData()
 
             int part_index = 0;
 
-            mineflayer_ItemData * item_data = new mineflayer_ItemData;
+            ItemData * item_data = new ItemData;
 
             // ID
             bool ok;
-            item_data->id                   = (mineflayer_ItemType)parts.at(part_index++).toInt(&ok, 0);
+            item_data->id                   = (ItemType)parts.at(part_index++).toInt(&ok, 0);
             Q_ASSERT(ok);
 
-            item_data->name                 = Util::toNewMfUtf8(parts.at(part_index++));
+            item_data->name                 = parts.at(part_index++);
             item_data->stack_height         = parts.at(part_index++).toInt();
             item_data->placeable            = static_cast<bool>(parts.at(part_index++).toInt());
             item_data->item_activatable     = static_cast<bool>(parts.at(part_index++).toInt());
@@ -92,11 +90,11 @@ void Item::initializeStaticData()
     }
 
     // create an indexing using name
-    for (QHash<mineflayer_ItemType, mineflayer_ItemData*>::iterator it = s_item_data.begin();
+    for (QHash<ItemType, ItemData*>::iterator it = s_item_data.begin();
         it != s_item_data.end(); ++it)
     {
-        mineflayer_ItemData * item_data = it.value();
-        s_item_by_name.insert(Util::toQString(item_data->name), item_data);
+        ItemData * item_data = it.value();
+        s_item_by_name.insert(item_data->name, item_data);
     }
 
     {
@@ -191,10 +189,10 @@ void Item::initializeStaticData()
 
 void Item::setJesusModeEnabled(bool value)
 {
-    s_item_data.value(mineflayer_WaterItem)->physical = value;
-    s_item_data.value(mineflayer_WaterItem)->safe = !value;
-    s_item_data.value(mineflayer_StationaryWaterItem)->physical = value;
-    s_item_data.value(mineflayer_StationaryWaterItem)->safe = !value;
+    s_item_data.value(Water)->physical = value;
+    s_item_data.value(Water)->safe = !value;
+    s_item_data.value(StationaryWater)->physical = value;
+    s_item_data.value(StationaryWater)->safe = !value;
 }
 
 Item Item::parseItem(QString item_string, bool * metadata_matters)
@@ -202,15 +200,15 @@ Item Item::parseItem(QString item_string, bool * metadata_matters)
     QStringList parts = item_string.split(":", QString::SkipEmptyParts);
     int part_index = 0;
     Item item;
-    item.data.type = s_item_by_name.value(parts.at(part_index++))->id;
-    item.data.count = 1;
-    item.data.metadata = 0;
+    item.type = s_item_by_name.value(parts.at(part_index++))->id;
+    item.count = 1;
+    item.metadata = 0;
     if (parts.size() > part_index)
-        item.data.count = parts.at(part_index++).toInt();
+        item.count = parts.at(part_index++).toInt();
 
     bool _metadata_matters = false;
     if (parts.size() > part_index) {
-        item.data.metadata = parts.at(part_index++).toInt();
+        item.metadata = parts.at(part_index++).toInt();
         _metadata_matters = true;
     }
 
@@ -236,9 +234,9 @@ uint qHash(const _Item::Recipe & recipe)
         // no design - only the ingredients matter. we have conveniently sorted them.
         for (int i = 0; i < recipe.ingredients.size(); i++) {
             const _Item::Ingredient * ingredient = &(recipe.ingredients.at(i));
-            h = h * big_prime + ingredient->item.data.type;
+            h = h * big_prime + ingredient->item.type;
             if (ingredient->metadata_matters)
-                h = h * big_prime + ingredient->item.data.metadata;
+                h = h * big_prime + ingredient->item.metadata;
         }
     } else {
         foreach (int ingredient_index, recipe.design) {
@@ -247,9 +245,9 @@ uint qHash(const _Item::Recipe & recipe)
             } else {
                 const _Item::Ingredient * ingredient = &(recipe.ingredients.at(ingredient_index));
 
-                h = h * big_prime + ingredient->item.data.type;
+                h = h * big_prime + ingredient->item.type;
                 if (ingredient->metadata_matters)
-                    h = h * big_prime + ingredient->item.data.metadata;
+                    h = h * big_prime + ingredient->item.metadata;
             }
         }
     }
@@ -262,8 +260,8 @@ uint qHash(const Item & item)
     const int big_prime = 8191;
 
     uint h = 0;
-    h = h * big_prime + item.data.type;
-    h = h * big_prime + item.data.metadata;
+    h = h * big_prime + item.type;
+    h = h * big_prime + item.metadata;
 
     return h;
 }
@@ -313,20 +311,20 @@ bool _Item::Recipe::operator ==(const _Item::Recipe & other) const
 
 bool Item::operator ==(const Item & other) const
 {
-    return other.data.type == this->data.type && other.data.metadata == this->data.metadata;
+    return other.type == this->type && other.metadata == this->metadata;
 }
 
 
 bool _Item::Ingredient::operator <(const Ingredient & other) const
 {
-    return this->item.data.type < other.item.data.type ||
-        (this->item.data.type == other.item.data.type && this->item.data.metadata < other.item.data.metadata);
+    return this->item.type < other.item.type ||
+        (this->item.type == other.item.type && this->item.metadata < other.item.metadata);
 }
 
 bool _Item::Ingredient::operator ==(const Ingredient & other) const
 {
-    return this->item.data.type == other.item.data.type &&
-            (! this->metadata_matters || this->item.data.metadata == other.item.data.metadata) &&
+    return this->item.type == other.item.type &&
+            (! this->metadata_matters || this->item.metadata == other.item.metadata) &&
             this->result == other.result;
 }
 

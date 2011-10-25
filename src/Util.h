@@ -4,8 +4,6 @@
 #include <cmath>
 #include <QString>
 
-#include "mineflayer-core.h"
-
 namespace Util
 {
     const float half_pi = 1.57079633f;
@@ -14,8 +12,20 @@ namespace Util
     const float degrees_per_radian = 57.2957795f;
     const float radians_per_degree = 0.0174532925f;
 
-    float degreesToRadians(float degrees);
-    float radiansToDegrees(float radians);
+    inline float degreesToRadians(float degrees)
+    {
+        return degrees * radians_per_degree;
+    }
+
+    inline float radiansToDegrees(float radians)
+    {
+        return radians * degrees_per_radian;
+    }
+
+    inline int abs(int number)
+    {
+        return number < 0 ? -number : number;
+    }
 
     template <class T>
     T euclideanMod(T numerator, T denominator)
@@ -38,12 +48,6 @@ namespace Util
 
     int abs(int number);
 
-    QString toQString(mineflayer_Utf8 utf8);
-    mineflayer_Utf8 toNewMfUtf8(QString qstring);
-    void deallocMfUtf8(mineflayer_Utf8 utf8);
-    mineflayer_Utf8 copyMfUtf8(mineflayer_Utf8 utf8);
-
-    mineflayer_Entity * cloneEntity(mineflayer_Entity * orig);
 }
 
 #endif // UTIL_H

@@ -5,7 +5,7 @@
 const int PhysicsDoer::c_physics_fps = 20;
 
 
-PhysicsDoer::PhysicsDoer(mineflayer_GamePtr game) :
+PhysicsDoer::PhysicsDoer(Game * game) :
     m_game(game),
     m_physics_timer(NULL)
 {
@@ -18,7 +18,7 @@ PhysicsDoer::PhysicsDoer(mineflayer_GamePtr game) :
 void PhysicsDoer::doPhysics()
 {
     float elapsed_time = m_physics_time.restart() / 1000.0f;
-    mineflayer_doPhysics(m_game, elapsed_time);
+    m_game->doPhysics(elapsed_time);
 }
 
 void PhysicsDoer::start()

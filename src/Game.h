@@ -3,7 +3,6 @@
 
 #include "Server.h"
 #include "Block.h"
-#include "mineflayer-core.h"
 
 #include <QMutex>
 #include <QMutexLocker>
@@ -19,111 +18,79 @@ class Game : public QObject
 {
     Q_OBJECT
 public:
-    Game(QUrl connection_info);
 
-    void start();
+    enum Dimension {
+        NormalDimension = 0,
+        NetherDimension = -1,
+    };
 
-    // call every frame passing it the amount of time since the last frame
-    void doPhysics(float delta_seconds);
+    enum Control {
+        ForwardControl,
+        BackControl,
+        LeftControl,
+        RightControl,
+        JumpControl,
+        CrouchControl, // TODO: not yet supported
+        DiscardItemControl, // TODO: not yet supported
 
-    // equivalent to pressing a button.
-    void setControlActivated(mineflayer_Control control, bool activated = true);
+        ControlCount
+    };
 
-    // immediately emits a position update
-    void updatePlayerLook(float delta_yaw, float delta_pitch);
-    void setPlayerLook(float yaw, float pitch, bool force);
+    enum StoppedDiggingReason {
+        BlockBrokenReason=0,
+        AbortedReason=1,
+    };
 
-    // left-clicks an entity. no support for right-clicking entities yet.
-    void attackEntity(int entity_id);
+    // must be valid array indexes
+    class Entity {
+    public:
+        enum EntityType {
+            NamedPlayerEntity = 1,
+            // TODO: ObjectOrVehicle,
+            MobEntity = 3,
+            PickupEntity = 4,
+        };
 
-    // only valid to call this after you die
-    void respawn();
+        const EntityType type;
+        int entity_id;
+        Server::EntityPosition position;
+        virtual ~Entity() {}
+        virtual Entity * clone() = 0;
+        virtual void getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const = 0;
+    protected:
+        Entity(EntityType type, int entity_id, Server::EntityPosition position) :
+            type(type), entity_id(entity_id), position(position) {}
 
-    int playerEntityId() const { QMutexLocker locker(&m_mutex); return m_player.entity_id; }
-    mineflayer_EntityPosition playerPosition();
+    };
 
-    // you must call mineflayer_destroyEntity when done with this.
-    mineflayer_Entity * entity(int entity_id);
+    class NamedPlayerEntity : public Entity {
+    public:
+        const QString username;
+        Item::ItemType held_item;
+        NamedPlayerEntity(int entity_id, Server::EntityPosition position, QString username, Item::ItemType held_item) :
+                Entity(Entity::NamedPlayerEntity, entity_id, position), username(username), held_item(held_item) {}
+        Entity * clone() { return new NamedPlayerEntity(entity_id, position, username, held_item); }
+        void getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const;
+    };
 
-    Block blockAt(const Int3D & absolute_location);
-    void getMapData(const Int3D & min_corner, const Int3D & size, unsigned char * buffer);
-    bool isBlockLoaded(const Int3D & absolute_location);
-    QString signTextAt(const Int3D & absolute_location);
-    int playerHealth() { return m_player_health; }
-
-    void startDigging(const Int3D &block);
-    void stopDigging();
-
-    // returns whether you're equipped with a proper item
-    bool placeBlock(const Int3D &block, mineflayer_BlockFaceDirection face);
-    // returns whether you're equipped with a proper item
-    bool activateItem();
-    bool canPlaceBlock(const Int3D &block, mineflayer_BlockFaceDirection face);
-    void activateBlock(const Int3D &block);
-
-    void sendChat(QString message);
-    double timeOfDay();
-
-    int selectedEquipSlot() const { QMutexLocker locker(&m_mutex); return m_equipped_slot_id; }
-    void selectEquipSlot(int slot_id); // [27, 35]
-
-    // blocks and returns success
-    bool clickInventorySlot(int slot_id, bool right_click); // slot_id [0, 35]
-    bool clickUniqueSlot(int slot_id, bool right_click); // slot_id range depends on window
-    bool clickOutsideWindow(bool right_click);
-
-    void openInventoryWindow();
-    void closeWindow();
-    mineflayer_WindowType getOpenWindow();
-
-    Item inventoryItem(int slot_id) const; // [0, 35]
-    Item uniqueWindowItem(int slot_id) const;
-
-    // if you want you can cheat and override the default physics settings:
-    void setInputAcceleration(float value) { QMutexLocker locker(&m_mutex); m_input_acceleration = value; }
-    void setGravity(float value) { QMutexLocker locker(&m_mutex); m_gravity = value; }
-    void setMaxGroundSpeed(float value) { QMutexLocker locker(&m_mutex); m_max_ground_speed = value; }
-
-    // this one is cheating
-    void setPlayerPosition(const Double3D & pt);
-
-    mineflayer_Dimension dimension() const { return m_player_dimension; }
-
+    class MobEntity : public Entity {
+    public:
+        const MobSpawnResponse::MobType mob_type;
+        MobEntity(int entity_id, Server::EntityPosition position, MobSpawnResponse::MobType mob_type) :
+                Entity(Entity::MobEntity, entity_id, position), mob_type(mob_type) {}
+        Entity * clone() { return new MobEntity(entity_id, position, mob_type); }
+        void getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const;
+    };
+    class PickupEntity : public Entity {
+    public:
+        const Item item;
+        PickupEntity(int entity_id, Server::EntityPosition position, Item item) :
+                Entity(Entity::PickupEntity, entity_id, position), item(item) {}
+        Entity * clone() { return new PickupEntity(entity_id, position, item); }
+        void getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const;
+    };
 
     static const float c_standard_gravity; // m/s/s
-
-signals:
-    void chatReceived(QString username, QString message);
-    void timeUpdated(double seconds);
-    void nonSpokenChatReceived(QString message);
-
-    void entitySpawned(mineflayer_Entity * entity);
-    void entityDespawned(mineflayer_Entity * entity);
-    void entityMoved(mineflayer_Entity * entity);
-    void animation(mineflayer_Entity * entity, mineflayer_AnimationType animation_type);
-
-    void chunkUpdated(const Int3D &start, const Int3D &size);
-    void unloadChunk(const Int3D &coord);
-    void signUpdated(const Int3D &location, QString text);
-    void playerPositionUpdated();
-    void playerHealthUpdated();
-    void playerDied();
-    void playerSpawned(int world);
-    void stoppedDigging(mineflayer_StoppedDiggingReason reason);
-    void loginStatusUpdated(mineflayer_LoginStatus status);
-
-    void windowOpened(mineflayer_WindowType);
-
-    void inventoryUpdated();
-    void equippedItemChanged();
-
-private:
-    mutable QMutex m_mutex;
-
-    static const Int3D c_chunk_size;
-    static const Block c_air;
-    static const Int3D c_side_offset[];
-
 
     static const float c_standard_max_ground_speed; // m/s
     static const float c_standard_terminal_velocity; // m/s
@@ -141,6 +108,111 @@ private:
     static const int c_inventory_window_unique_count;
 
     static const int c_outside_window_slot;
+public:
+
+    Game(QUrl connection_info);
+
+    void start();
+
+    // call every frame passing it the amount of time since the last frame
+    void doPhysics(float delta_seconds);
+
+    // equivalent to pressing a button.
+    void setControlActivated(Control control, bool activated = true);
+
+    // immediately emits a position update
+    void updatePlayerLook(float delta_yaw, float delta_pitch);
+    void setPlayerLook(float yaw, float pitch, bool force);
+
+    // left-clicks an entity. no support for right-clicking entities yet.
+    void attackEntity(int entity_id);
+
+    // only valid to call this after you die
+    void respawn();
+
+    int playerEntityId() const { QMutexLocker locker(&m_mutex); return m_player.entity_id; }
+    Server::EntityPosition playerPosition();
+    QSharedPointer<Entity> entity(int entity_id);
+
+    Block blockAt(const Int3D & absolute_location);
+    void getMapData(const Int3D & min_corner, const Int3D & size, unsigned char * buffer);
+    bool isBlockLoaded(const Int3D & absolute_location);
+    QString signTextAt(const Int3D & absolute_location);
+    int playerHealth() { return m_player_health; }
+
+    void startDigging(const Int3D &block);
+    void stopDigging();
+
+    // returns whether you're equipped with a proper item
+    bool placeBlock(const Int3D &block, Message::BlockFaceDirection face);
+    // returns whether you're equipped with a proper item
+    bool activateItem();
+    bool canPlaceBlock(const Int3D &block, Message::BlockFaceDirection face);
+    void activateBlock(const Int3D &block);
+
+    void sendChat(QString message);
+    double timeOfDay();
+
+    int selectedEquipSlot() const { QMutexLocker locker(&m_mutex); return m_equipped_slot_id; }
+    void selectEquipSlot(int slot_id); // [27, 35]
+
+    // blocks and returns success
+    bool clickInventorySlot(int slot_id, bool right_click); // slot_id [0, 35]
+    bool clickUniqueSlot(int slot_id, bool right_click); // slot_id range depends on window
+    bool clickOutsideWindow(bool right_click);
+
+    void openInventoryWindow();
+    void closeWindow();
+    Message::WindowType getOpenWindow();
+
+    Item inventoryItem(int slot_id) const; // [0, 35]
+    Item uniqueWindowItem(int slot_id) const;
+
+    // if you want you can cheat and override the default physics settings:
+    void setInputAcceleration(float value) { QMutexLocker locker(&m_mutex); m_input_acceleration = value; }
+    void setGravity(float value) { QMutexLocker locker(&m_mutex); m_gravity = value; }
+    void setMaxGroundSpeed(float value) { QMutexLocker locker(&m_mutex); m_max_ground_speed = value; }
+
+    // this one is cheating
+    void setPlayerPosition(const Double3D & pt);
+
+    Dimension dimension() const { return m_player_dimension; }
+
+
+
+signals:
+    void chatReceived(QString username, QString message);
+    void timeUpdated(double seconds);
+    void nonSpokenChatReceived(QString message);
+
+    void entitySpawned(QSharedPointer<Game::Entity> entity);
+    void entityDespawned(QSharedPointer<Game::Entity> entity);
+    void entityMoved(QSharedPointer<Game::Entity> entity);
+    void animation(QSharedPointer<Game::Entity> entity, Message::AnimationType animation_type);
+
+    void chunkUpdated(const Int3D &start, const Int3D &size);
+    void unloadChunk(const Int3D &coord);
+    void signUpdated(const Int3D &location, QString text);
+    void playerPositionUpdated();
+    void playerHealthUpdated();
+    void playerDied();
+    void playerSpawned(int world);
+    void stoppedDigging(Game::StoppedDiggingReason reason);
+    void loginStatusUpdated(Server::LoginStatus status);
+
+    void windowOpened(Message::WindowType);
+
+    void inventoryUpdated();
+    void equippedItemChanged();
+
+private:
+    mutable QMutex m_mutex;
+
+    static const Int3D c_chunk_size;
+    static const Block c_air;
+    static const Int3D c_side_offset[];
+
+
 
 
     Server m_server;
@@ -153,13 +225,13 @@ private:
     bool m_waiting_for_dig_confirmation;
     QTimer * m_digging_animation_timer;
 
-    mineflayer_Entity m_player;
+    NamedPlayerEntity m_player;
     float m_last_sent_yaw;
     QTime m_last_position_sent_time;
     int m_player_health;
     QHash<Int3D, QSharedPointer<Chunk> > m_chunks;
     QHash<Int3D, QString> m_signs;
-    QHash<int, mineflayer_Entity * > m_entities;
+    QHash<int, QSharedPointer<Entity> > m_entities;
     double m_current_time_seconds;
     QTime m_current_time_recorded_time;
 
@@ -198,13 +270,13 @@ private:
     QQueue<WindowClick> m_window_click_queue;
 
     bool m_need_to_emit_window_opened;
-    mineflayer_WindowType m_open_window_type;
+    Message::WindowType m_open_window_type;
 
     QMutex m_click_mutex;
     QWaitCondition m_click_wait_condition;
     bool m_click_success;
 
-    mineflayer_Dimension m_player_dimension;
+    Dimension m_player_dimension;
 
 private:
     static Int3D chunkKey(const Int3D & coord);
@@ -219,30 +291,30 @@ private:
     Item getWindowSlot(int slot);
 
     void updateBlock(const Int3D & absolute_location, Block new_block);
-    bool entityCollidesWithPoint(const mineflayer_Entity * entity, const Int3D & point);
+    bool entityCollidesWithPoint(const Entity * entity, const Int3D & point);
 
     bool doWindowClick(const WindowClick & window_click);
 
     _Item::Recipe buildRecipeForItems(QVector<Item> items, QSize size);
 
 private slots:
-    void handleLoginStatusChanged(mineflayer_LoginStatus status);
+    void handleLoginStatusChanged(Server::LoginStatus status);
     void handleLoginCompleted(int entity_id);
     void handleChatReceived(QString content);
     void handleTimeUpdated(double seconds);
-    void handlePlayerPositionAndLookUpdated(mineflayer_EntityPosition position);
+    void handlePlayerPositionAndLookUpdated(Server::EntityPosition position);
     void handlePlayerHealthUpdated(int new_health);
     void handleUnloadChunk(const Int3D & coord);
 
-    void handleNamedPlayerSpawned(int entity_id, QString player_name, mineflayer_EntityPosition position, mineflayer_ItemType held_item);
-    void handlePickupSpawned(int entity_id, Item item, mineflayer_EntityPosition position);
-    void handleMobSpawned(int entity_id, mineflayer_MobType mob_type, mineflayer_EntityPosition position);
+    void handleNamedPlayerSpawned(int entity_id, QString player_name, Server::EntityPosition position, Item::ItemType held_item);
+    void handlePickupSpawned(int entity_id, Item item, Server::EntityPosition position);
+    void handleMobSpawned(int entity_id, MobSpawnResponse::MobType mob_type, Server::EntityPosition position);
     void handleEntityDestroyed(int entity_id);
-    void handleEntityMovedRelatively(int entity_id, mineflayer_EntityPosition movement);
-    void handleEntityLooked(int entity_id, mineflayer_EntityPosition look);
-    void handleEntityLookedAndMovedRelatively(int entity_id, mineflayer_EntityPosition position);
-    void handleEntityMoved(int entity_id, mineflayer_EntityPosition position);
-    void handleAnimation(int entity_id, mineflayer_AnimationType animation_type);
+    void handleEntityMovedRelatively(int entity_id, Server::EntityPosition movement);
+    void handleEntityLooked(int entity_id, Server::EntityPosition look);
+    void handleEntityLookedAndMovedRelatively(int entity_id, Server::EntityPosition position);
+    void handleEntityMoved(int entity_id, Server::EntityPosition position);
+    void handleAnimation(int entity_id, Message::AnimationType animation_type);
 
     void handleMapChunkUpdated(QSharedPointer<Chunk> update);
     void handleMultiBlockUpdate(Int3D chunk_key, QHash<Int3D,Block> new_blocks);
@@ -253,9 +325,9 @@ private slots:
     void handleWindowSlotUpdated(int window_id, int slot, Item item);
     void handleHoldingChange(int slot_id);
     void handleTransaction(int window_id, int action_id, bool accepted);
-    void handleOpenWindow(int window_id, mineflayer_WindowType inventory_type, int number_of_slots);
+    void handleOpenWindow(int window_id, Message::WindowType inventory_type, int number_of_slots);
 
-    void handleRespawn(mineflayer_Dimension world);
+    void handleRespawn(Dimension world);
 
     void sendPosition();
     void animateDigging();
@@ -263,8 +335,6 @@ private slots:
     void checkForDiggingStopped(const Int3D &start, const Int3D &size);
     void checkForDestroyedSigns(const Int3D &start, const Int3D &size);
     void sendDiggingComplete();
-
-    void getBoundingBox(const mineflayer_Entity *player, Int3D &boundingBoxMin, Int3D &boundingBoxMax) const;
 
 };
 

@@ -8,26 +8,26 @@
 #include <QMetaType>
 #include <QAbstractSocket>
 
-namespace CoreMetaTypes {
-    void coreRegisterMetaTypes() {
+namespace MetaTypes {
+    void registerMetaTypes() {
+        qRegisterMetaType<Server::LoginStatus>("Server::LoginStatus");
+        qRegisterMetaType<Server::EntityPosition>("Server::EntityPosition");
+        qRegisterMetaType<MobSpawnResponse::MobType>("MobSpawnResponse::MobType");
+        qRegisterMetaType<Item::ItemType>("Item::ItemType");
+        qRegisterMetaType<Game::StoppedDiggingReason>("Game::StoppedDiggingReason");
+        qRegisterMetaType<Message::AnimationType>("Message::AnimationType");
+        qRegisterMetaType<Message::WindowType>("Message::WindowType");
+        qRegisterMetaType<Game::Dimension>("Game::Dimension");
+
         qRegisterMetaType<QSharedPointer<IncomingResponse> >("QSharedPointer<IncomingResponse>");
         qRegisterMetaType<QSharedPointer<OutgoingRequest> >("QSharedPointer<OutgoingRequest>");
         qRegisterMetaType<QSharedPointer<Chunk> >("QSharedPointer<Chunk>");
-        qRegisterMetaType<mineflayer_LoginStatus>("mineflayer_LoginStatus");
         qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError");
-        qRegisterMetaType<mineflayer_EntityPosition>("mineflayer_EntityPosition");
         qRegisterMetaType<Int3D>("Int3D");
         qRegisterMetaType<Block>("Block");
         qRegisterMetaType<QHash<Int3D,Block> >("QHash<Int3D,Block>");
-        qRegisterMetaType<mineflayer_MobType>("mineflayer_MobType");
-        qRegisterMetaType<mineflayer_ItemType>("mineflayer_ItemType");
         qRegisterMetaType<Item>("Item");
-        qRegisterMetaType<mineflayer_Entity*>("mineflayer_Entity*");
-        qRegisterMetaType<mineflayer_StoppedDiggingReason>("mineflayer_StoppedDiggingReason");
-        qRegisterMetaType<mineflayer_AnimationType>("mineflayer_AnimationType");
-        qRegisterMetaType<mineflayer_WindowType>("mineflayer_WindowType");
         qRegisterMetaType<QVector<Item> >("QVector<Item>");
-        qRegisterMetaType<mineflayer_Dimension>("mineflayer_Dimension");
     }
 }
 

@@ -17,7 +17,7 @@ public:
     explicit Digger(Game * game, QObject *parent = 0);
 
     // start digging against block with tool
-    void start(mineflayer_ItemType tool, mineflayer_ItemType block);
+    void start(Item::ItemType tool, Item::ItemType block);
     void stop();
 
     bool isActive() const { return m_timer.isActive(); }
@@ -35,24 +35,24 @@ private:
         Axe,
     };
 
-    QHash<mineflayer_Material, int> m_harvest_level;
-    QHash<mineflayer_Material, float> m_tool_effectiveness;
-    QHash<ToolType, QSet<mineflayer_ItemType> > m_tool_effective_against;
+    QHash<Item::Material, int> m_harvest_level;
+    QHash<Item::Material, float> m_tool_effectiveness;
+    QHash<ToolType, QSet<Item::ItemType> > m_tool_effective_against;
 
     // done digging when this is >= 1.0f
     float m_sum;
-    mineflayer_ItemType m_tool;
-    mineflayer_ItemType m_block;
+    Item::ItemType m_tool;
+    Item::ItemType m_block;
 
     QTimer m_timer;
 
     Game * m_game;
 private:
-    bool itemCanHarvest(mineflayer_ItemType tool, mineflayer_ItemType block_type) const;
+    bool itemCanHarvest(Item::ItemType tool, Item::ItemType block_type) const;
 
-    ToolType toolType(mineflayer_ItemType tool) const;
+    ToolType toolType(Item::ItemType tool) const;
 
-    float strengthVsBlock(mineflayer_ItemType tool, mineflayer_ItemType block, bool underwater, bool on_ground);
+    float strengthVsBlock(Item::ItemType tool, Item::ItemType block, bool underwater, bool on_ground);
 
 
 private slots:
