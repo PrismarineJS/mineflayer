@@ -93,12 +93,20 @@ mf.MobType = {
     "Slime": 55,
     "Ghast": 56,
     "ZombiePigman": 57,
+    "Enderman": 58,
+    "CaveSpider": 59,
+    "Silverfish": 60,
+    "Blaze": 61,
+    "MagmaCube": 62,
+    "EnderDragon": 63,
     "Pig": 90,
     "Sheep": 91,
     "Cow": 92,
     "Chicken": 93,
     "Squid": 94,
-    "Wolf": 95
+    "Wolf": 95,
+    "Snowman": 97,
+    "Villager": 120
 };
 
 mf.StoppedDiggingReason = {
