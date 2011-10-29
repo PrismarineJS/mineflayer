@@ -4,7 +4,7 @@
 #                                           Item-Activatable    Hardness
 #                                               Physical            Material
 #                                                   Diggable
-#                                                   
+#
 
 # blocks
 -1      NoItem                      0   1   0   0   0   0   1   0   NoMaterial

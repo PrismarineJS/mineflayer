@@ -22,11 +22,11 @@ mf.include("ray_tracer.js");
         /*
         Parsing:
         case 1: Dump everything into nearest chest
-            "dump" 
+            "dump"
             "dump all/inventory/ * /everything"
-        
+
         case 2: Dump everything into chest nearest entity(speaker)
-            "dump here" 
+            "dump here"
             "dump all/inventory/ * /everything here"
 
         case 3: Dump everything into chest nearest location
@@ -172,7 +172,7 @@ mf.include("ray_tracer.js");
                             responder_fun("Going to go " + command + " everything from the chest at " + chest_position.floored() + ".");
                         } else {
                             responder_fun("Going to go " + command + " everything into the chest at " + chest_position.floored() + ".");
-                        } 
+                        }
                     }
                     navigator.navigateTo(chest_position.floored(),{
                         end_radius : 3,
@@ -202,7 +202,7 @@ mf.include("ray_tracer.js");
                             } else {
                                 var success = inventory.moveAll(inventory.InventoryFull,inventory.ChestFull);
                             }
-                            
+
                             if (success) {
                                 responder_fun("Done!");
                             } else {
@@ -318,7 +318,7 @@ mf.include("ray_tracer.js");
     };
 
     chat_commands.registerCommand("loot", function(speaker, args, responder_fun) {
-       useChest(speaker, args, responder_fun, "loot"); 
+       useChest(speaker, args, responder_fun, "loot");
     }, 0, Infinity);
 
     chat_commands.registerCommand("dump", function(speaker, args, responder_fun) {

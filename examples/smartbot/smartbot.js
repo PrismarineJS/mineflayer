@@ -189,7 +189,7 @@
             if (goals_achieved) {
                 break;
             }
-        
+
             // find actions whose effects fulfill the goal state
             var actions_to_try = relevant_actions[];
 
