@@ -121,11 +121,11 @@ def get_diff_for_test(test_file):
         return world_diff
     else:
         return get_diff_for_test(dirname)
-    
+
 def apply_patch(oldfile, newfile, patchfile):
     exe = subprocess.Popen(['bspatch', oldfile, newfile, patchfile])
     exe.wait()
-    
+
 def run_test(mineflayer_exe, server_path, test_js, expected_stdout):
     # figure out paths for files
     diff_file = get_diff_for_test(test_js)
@@ -192,7 +192,7 @@ def run_test(mineflayer_exe, server_path, test_js, expected_stdout):
 
     if mf_stdout != expected_stdout:
         return 'F', mf_stdout
-    
+
     return '.', None
 
 if __name__ == '__main__':

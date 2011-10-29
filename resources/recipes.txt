@@ -6,7 +6,7 @@
 # 010 # 0 means empty, and nonzero means look it up in the palette below
 # 000 # if omitted, means design doesn't matter.
 # palette_index=IngredientName[:count[:metadata]]
-# 
+#
 # default result count: 1
 # default result metadata: 0
 # default ingredient count: 1

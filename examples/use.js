@@ -16,7 +16,7 @@ mf.include("task_manager.js");
                 responder_fun("I couldn't find any " + args.join(" "));
                 return;
             }
-            
+
 
             navigator.navigateTo(block_position,{
                 end_radius: 3,

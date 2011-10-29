@@ -186,7 +186,7 @@ chat_commands.registerCommand("craft", function() {
     }
 
     var table_pt_arr = block_finder.findNearest(mf.self().position, mf.ItemType.CraftingTable, 20, 1);
-    
+
     if (table_pt_arr.length === 0) {
         mf.chat("I see no crafting table.");
         return;
