@@ -14,8 +14,8 @@ Enums
    .. attribute:: Mob
    .. attribute:: Pickup
 
-.. class:: ItemType 
-   
+.. class:: ItemType
+
    The id of blocks and items. See the output of
    `examples/reflect.js` for a full listing of names.
 
@@ -81,7 +81,7 @@ Enums
 
        TODO (not hooked up)
 
-    .. attribute:: DiscardItem 
+    .. attribute:: DiscardItem
 
        TODO (not hooked up)
 
@@ -256,7 +256,7 @@ Classes
 .. class:: Item(type, [count, [metadata]])
 
     Represents an item or stack of items.
-    
+
     .. attribute:: type
 
        :class:`mf.ItemType`
@@ -280,12 +280,12 @@ Classes
 
     .. attribute:: type
 
-       :class:`mf.ItemType` 
+       :class:`mf.ItemType`
 
     .. attribute:: metadata
 
        `Number`, defaults to 0
-    
+
     .. attribute:: light
 
        `Number`, defaults to 0, light from local sources (not the sky)

@@ -4,7 +4,7 @@ mf.include("chat_commands.js");
 mf.include("items.js");
 
 (function() {
-    
+
 
     chat_commands.registerCommand("drop", function(username, args, responder_func) {
         var dropSlots = [];
@@ -32,7 +32,7 @@ mf.include("items.js");
             } else {
                 respond_message = "Dropping " + item_count + " " + item.name + ".";
             }
-            
+
             for (var i = 0; i < current_inventory.length; i++) {
                 if (current_inventory[i].type === parseInt(item.id)) {
                     if (item_count === undefined) {
@@ -111,7 +111,7 @@ mf.include("items.js");
             responder_fun("I don't have any of those!");
             return;
         }
-        
+
         //remove duplicates
         for (var i = 0; i < matching.length; i++) {
             for (var j = i+1; j < matching.length; j++) {

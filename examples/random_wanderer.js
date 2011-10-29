@@ -15,12 +15,12 @@ function goToRandomLocation() {
         target_pos.z -= 1;
     }
     mf.chat("going to " + target_pos.floored());
-    
+
     navigator.navigateTo(target_pos, {
         // get within 10 blocks
-        'end_radius': 20, 
+        'end_radius': 20,
         // give up if it takes longer than 5 seconds to compute
-        'timeout_milliseconds': 5000,  
+        'timeout_milliseconds': 5000,
         'cant_find_func': function() {
             mf.chat("can't figure out how to get there. recomputing");
             goToRandomLocation();

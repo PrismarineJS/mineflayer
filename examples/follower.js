@@ -74,7 +74,7 @@ mf.include("chat_commands.js");
                 cant_navto_func: function() {
                     task_manager.postpone(2000);
                     following = false;
-                },                    
+                },
             });
             // recalculate path every 5 seconds even if don't make it in that long
             current_following_interval_id = mf.setInterval(go, 5 * 1000);

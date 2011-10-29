@@ -75,7 +75,7 @@ Actions:
          effects:
              item is equipped
              10ms time passes by
-         
+
 
     PlaceBlock(position)
 
@@ -115,10 +115,10 @@ Laws:
 Algorithm:
 
     parameters:
-        goal_state: some subset of the state of the world. for example, "diamond sword is equipped". 
+        goal_state: some subset of the state of the world. for example, "diamond sword is equipped".
         start_state: the real state of the world when the algorithm is run
 
-    
+
     until start_state contains goal_state:
         find an Action or whose effects fulfill the goal state
             use a map to find a small list of actions that can achieve goal state
