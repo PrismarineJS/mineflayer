@@ -41,7 +41,7 @@ mf.include("arrays.js");
     var Neutral = 1;
     var Aggressive = 2;
 
-    var mob_stance = {}; 
+    var mob_stance = {};
     mob_stance[mf.MobType.Creeper] = Aggressive;
     mob_stance[mf.MobType.Skeleton] = Aggressive;
     mob_stance[mf.MobType.Spider] = Aggressive; //Worst case for spiders
@@ -105,7 +105,7 @@ mf.include("arrays.js");
                     continue;
                 }
             }
-    
+
             var distance = bad_guy.position.distanceTo(current_defended_entity_position);
             if (distance > 20) {
                 // not a threat

@@ -158,6 +158,6 @@ mf.onChat(function(user, msg) {
     } else if (msg == "stop") {
         stop();
     } else if (msg == "detonate") {
-        
+
     }
 });
