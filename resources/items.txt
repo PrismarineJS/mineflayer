@@ -44,7 +44,8 @@
 0x20    DeadShrub                   64  1   0   0   1   0   1   0   Crops
 0x21    Piston                      64  1   0   0   1   0   1   1   Stone
 0x22    PistonHead                  64  1   0   0   1   0   1   1   Stone
-0x23    Wool                        64  1   0   1   1   0   0   0.8 Wool
+0x23    Wool                        64  0   0   1   1   0   0   0.8 Wool
+0x24    Block36                     64  1   0   0   1   1   1   1.5 Stone
 0x25    YellowFlower                64  1   0   0   1   0   1   0.0 Crops
 0x26    RedRose                     64  1   0   0   1   0   1   0.0 Crops
 0x27    BrownMushroom               64  1   0   0   1   0   1   0.0 Crops
@@ -103,7 +104,34 @@
 0x5C    Cake_placed                 1   1   0   1   1   1   0   0.5 Cake
 0x5D    RedstoneRepeaterOff_placed  64  1   0   1   1   1   0   0.0 Redstone
 0x5E    RedstoneRepeaterOn_placed   64  1   0   1   1   1   0   0.0 Redstone
+0x5F    LockedChest                 64  1   0   1   1   1   0   2.5 Wood 
 0x60    Trapdoor                    64  1   0   1   1   1   0   3   Wood
+# following blocks all from beta1.8.  Guessing on some of the values.
+0x61    HiddenSilverfish            64  1   0   1   1   0   0   1.5 Stone
+0x62    StoneBricks                 64  1   0   1   1   0   0   2.0 Stone 
+0x63    HugeBrownMushroom           64  1   0   1   1   0   0   2.0 Pumpkin
+0x64    HugeRedMushroom             64  1   0   1   1   0   0   2.0 Pumpkin
+0x65    IronBars                    64  1   0   1   1   0   0   5.0 Iron
+0x66    GlassPane                   64  1   0   1   1   0   0   0.3 Glass 
+0x67    Melon                       64  1   0   1   1   0   0   0.5 Pumpkin
+0x68    PumpkinStem                 64  1   0   0   1   0   0   0.0 Crops
+0x69    MelonStem                   64  1   0   0   1   0   0   0.0 Crops
+0x6A    Vines                       64  1   0   0   1   0   0   0.2 Leaves
+0x6B    FenceGate                   64  1   0   1   1   1   0   2.0 Wood
+0x6C    BrickStairs                 64  1   0   1   1   0   0   2.0 Stone
+0x6D    StoneBrickStairs            64  1   0   1   1   0   0   2.0 Stone
+0x6E    Mycelium                    64  1   0   1   1   0   0   0.6 Dirt
+0x6F    LilyPad                     64  1   0   0   1   0   0   0.0 Crops
+0x70    NetherBrick                 64  1   0   1   1   0   0   2.0 Stone
+0x71    NetherBrickFence            64  1   0   1   1   0   0   2.0 Stone
+0x72    NetherBrickStairs           64  1   0   1   1   0   0   2.0 Stone
+0x73    NetherWart_placed           64  1   0   0   1   0   0   0.0 Crops
+0x74    EnchantmentTable_placed     64  1   0   1   1   1   0   3.5 Stone
+0x75    BrewingStand_placed         64  1   0   1   1   1   0   3.5 Stone
+0x76    Cauldron_placed             64  1   0   1   1   1   0   3.5 Stone
+0x77    EndPortal                   64  1   0   0   1   0   1   -1  Portal
+0x78    EndPortalFrame              64  1   0   1   1   1   0   2.0 Wood
+0x79    EndStone                    64  1   0   1   1   0   0   1.5 Stone
 
 # items
 0x100   IronShovel                  1   0   0   0   1   0   1   0   Iron
@@ -210,6 +238,38 @@
 0x165   Cookie                      8   1   0   0   1   0   1   0   NoMaterial
 0x166   Map                         1   1   0   0   1   0   1   0   NoMaterial
 0x167   Shears                      1   1   0   0   1   0   1   0   NoMaterial
-0x8D0   GoldMusicDisc               1   1   0   0   1   0   1   0   NoMaterial
-0x8D1   GreenMusicDisc              1   1   0   0   1   0   1   0   NoMaterial
-
+# Following items are from beta1.8.  Guessing on some of the values.
+0x168   MelonSlice                  64  0   1   0   1   0   1   0   NoMaterial
+0x169   PumpkinSeeds                64  1   0   0   1   0   1   0   NoMaterial
+0x16A   MelonSeeds                  64  1   0   0   1   0   1   0   NoMaterial
+0x16B   RawBeef                     64  0   1   0   1   0   1   0   NoMaterial
+0x16C   Steak                       64  0   1   0   1   0   1   0   NoMaterial
+0x16D   RawChicken                  64  0   1   0   1   0   1   0   NoMaterial
+0x16E   CookedChicken               64  0   1   0   1   0   1   0   NoMaterial
+0x16F   RottenFlesh                 64  0   1   0   1   0   1   0   NoMaterial
+0x170   EnderPearl                  64  1   0   0   1   0   1   0   NoMaterial
+0x171   BlazeRod                    64  0   0   0   1   0   1   0   NoMaterial
+0x172   GhastTear                   64  0   0   0   1   0   1   0   NoMaterial
+0x173   GoldNugget                  64  0   0   0   1   0   1   0   NoMaterial
+0x174   NetherWart                  64  1   0   0   1   0   1   0   NoMaterial
+0x175   Potions                     1   1   0   0   1   0   1   0   NoMaterial
+0x176   GlassBottle                 64  1   0   0   1   0   1   0   NoMaterial
+0x177   SpiderEye                   64  0   1   0   1   0   1   0   NoMaterial
+0x178   FermentedSpiderEye          64  0   0   0   1   0   1   0   NoMaterial
+0x179   BlazePowder                 64  0   0   0   1   0   1   0   NoMaterial
+0x17A   MagmaCream                  64  0   0   0   1   0   1   0   NoMaterial
+0x17B   BrewingStand                64  1   0   0   1   0   1   0   NoMaterial
+0x17C   Cauldron                    1   1   0   0   1   0   1   0   NoMaterial
+0x17D   EyeOfEnder                  64  0   1   0   1   0   1   0   NoMaterial
+0x17E   GlisteringMelon             64  0   0   0   1   0   1   0   NoMaterial
+0x8D0   13Disc                      1   1   0   0   1   0   1   0   NoMaterial
+0x8D1   CatDisc                     1   1   0   0   1   0   1   0   NoMaterial
+0x8D2   BlocksDisc                  1   1   0   0   1   0   1   0   NoMaterial
+0x8D3   ChirpDisc                   1   1   0   0   1   0   1   0   NoMaterial
+0x8D4   FarDisc                     1   1   0   0   1   0   1   0   NoMaterial
+0x8D5   MallDisc                    1   1   0   0   1   0   1   0   NoMaterial
+0x8D6   MellohiDisc                 1   1   0   0   1   0   1   0   NoMaterial
+0x8D7   StalDisc                    1   1   0   0   1   0   1   0   NoMaterial
+0x8D8   StradDisc                   1   1   0   0   1   0   1   0   NoMaterial
+0x8D9   WardDisc                    1   1   0   0   1   0   1   0   NoMaterial
+0x8DA   11Disc                      1   1   0   0   1   0   1   0   NoMaterial
