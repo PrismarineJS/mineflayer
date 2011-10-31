@@ -825,29 +825,29 @@ void Game::doPhysics(float delta_seconds)
 void Game::NamedPlayerEntity::getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const
 {
     boundingBoxMin.x = (int)std::floor(position.pos.x - Game::c_player_apothem);
-    boundingBoxMin.y = (int)std::floor(position.pos.y - Game::c_player_apothem);
-    boundingBoxMin.z = (int)std::floor(position.pos.z - 0);
+    boundingBoxMin.y = (int)std::floor(position.pos.y - 0);
+    boundingBoxMin.z = (int)std::floor(position.pos.z - Game::c_player_apothem);
     boundingBoxMax.x = (int)std::floor(position.pos.x + Game::c_player_apothem);
-    boundingBoxMax.y = (int)std::floor(position.pos.y + Game::c_player_apothem);
-    boundingBoxMax.z = (int)std::floor(position.pos.z + Game::c_player_height);
+    boundingBoxMax.y = (int)std::floor(position.pos.y + Game::c_player_height);
+    boundingBoxMax.z = (int)std::floor(position.pos.z + Game::c_player_apothem);
 }
 
 void Game::MobEntity::getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const
 {
     // TODO: use the real bounding box instead of a human shape for all of them
     boundingBoxMin.x = (int)std::floor(position.pos.x - Game::c_player_apothem);
-    boundingBoxMin.y = (int)std::floor(position.pos.y - Game::c_player_apothem);
-    boundingBoxMin.z = (int)std::floor(position.pos.z - 0);
+    boundingBoxMin.y = (int)std::floor(position.pos.y - 0);
+    boundingBoxMin.z = (int)std::floor(position.pos.z - Game::c_player_apothem);
     boundingBoxMax.x = (int)std::floor(position.pos.x + Game::c_player_apothem);
-    boundingBoxMax.y = (int)std::floor(position.pos.y + Game::c_player_apothem);
-    boundingBoxMax.z = (int)std::floor(position.pos.z + Game::c_player_height);
+    boundingBoxMax.y = (int)std::floor(position.pos.y + Game::c_player_height);
+    boundingBoxMax.z = (int)std::floor(position.pos.z + Game::c_player_apothem);
 }
 
 void Game::PickupEntity::getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const
 {
     boundingBoxMin.x = (int)std::floor(position.pos.x - 1);
-    boundingBoxMin.y = (int)std::floor(position.pos.y - 1);
-    boundingBoxMin.z = (int)std::floor(position.pos.z - 0);
+    boundingBoxMin.y = (int)std::floor(position.pos.y - 0);
+    boundingBoxMin.z = (int)std::floor(position.pos.z - 1);
     boundingBoxMax.x = (int)std::floor(position.pos.x + 1);
     boundingBoxMax.y = (int)std::floor(position.pos.y + 1);
     boundingBoxMax.z = (int)std::floor(position.pos.z + 1);
