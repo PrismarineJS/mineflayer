@@ -1,6 +1,6 @@
 Mineflayer
 ==========
-Minecraft multiplayer client game logic library and bot scripting interface.
+Minecraft multiplayer client with a bot scripting interface.
 
 **Homepage:** http://mineflayer.com
 
