@@ -40,9 +40,7 @@ void Item::initializeStaticData()
             s_materials.insert(name, value);
 
             Q_ASSERT(parts.size() == part_index);
-
         }
-        materials_file.close();
     }
 
     {
@@ -86,7 +84,6 @@ void Item::initializeStaticData()
             s_item_data.insert(item_data->id, item_data);
 
         }
-        item_data_file.close();
     }
 
     // create an indexing using name
@@ -173,9 +170,7 @@ void Item::initializeStaticData()
                 // design
                 design << line;
             }
-
         }
-        recipe_file.close();
     }
 
     // create mapping from item type

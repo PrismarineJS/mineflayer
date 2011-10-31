@@ -5,6 +5,8 @@
 #include <QCoreApplication>
 #include <QHashIterator>
 #include <QStringList>
+#include <QFile>
+#include <QTextStream>
 
 #include <cmath>
 
@@ -64,8 +66,15 @@ Game::Game(QUrl connection_info) :
 {
     Item::initializeStaticData();
 
-    foreach (QChar c, QString(" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~" ))
-        m_legal_chat_chars.insert(c);
+    // chat chars
+    {
+        QFile chat_chars_file(":/game/chat_chars.utf8");
+        chat_chars_file.open(QFile::ReadOnly);
+        QTextStream stream(&chat_chars_file);
+        stream.setCodec("UTF-8");
+        while (!stream.atEnd())
+            m_legal_chat_chars.insert(stream.read(1).at(0));
+    }
 
     bool success;
     success = connect(&m_server, SIGNAL(loginStatusUpdated(Server::LoginStatus)), this, SLOT(handleLoginStatusChanged(Server::LoginStatus)));
