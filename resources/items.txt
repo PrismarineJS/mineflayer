@@ -138,7 +138,7 @@
 0x101   IronPickaxe                 1   0   0   0   1   0   1   0   Iron
 0x102   IronAxe                     1   0   0   0   1   0   1   0   Iron
 0x103   FlintAndSteel               1   0   0   0   1   0   1   0   NoMaterial
-0x104   Apple                       1   0   1   0   1   0   1   0   NoMaterial
+0x104   Apple                       64  0   1   0   1   0   1   0   NoMaterial
 0x105   Bow                         1   0   1   0   1   0   1   0   NoMaterial
 0x106   Arrow                       64  0   0   0   1   0   1   0   NoMaterial
 0x107   Coal                        64  0   0   0   1   0   1   0   NoMaterial
@@ -175,7 +175,7 @@
 0x126   GoldHoe                     1   1   0   0   1   0   1   0   Gold
 0x127   Seeds                       64  1   0   0   1   0   1   0   NoMaterial
 0x128   Wheat                       64  0   0   0   1   0   1   0   NoMaterial
-0x129   Bread                       1   0   1   0   1   0   1   0   NoMaterial
+0x129   Bread                       64  0   1   0   1   0   1   0   NoMaterial
 0x12A   LeatherHelmet               1   0   0   0   1   0   1   0   NoMaterial
 0x12B   LeatherChestplate           1   0   0   0   1   0   1   0   NoMaterial
 0x12C   LeatherLeggings             1   0   0   0   1   0   1   0   NoMaterial
@@ -197,10 +197,10 @@
 0x13C   GoldLeggings                1   0   0   0   1   0   1   0   NoMaterial
 0x13D   GoldBoots                   1   0   0   0   1   0   1   0   NoMaterial
 0x13E   Flint                       64  0   0   0   1   0   1   0   NoMaterial
-0x13F   RawPorkchop                 1   0   1   0   1   0   1   0   NoMaterial
-0x140   CookedPorkchop              1   0   1   0   1   0   1   0   NoMaterial
+0x13F   RawPorkchop                 64  0   1   0   1   0   1   0   NoMaterial
+0x140   CookedPorkchop              64  0   1   0   1   0   1   0   NoMaterial
 0x141   Painting                    64  1   0   0   1   0   1   0   NoMaterial
-0x142   GoldenApple                 1   0   1   0   1   0   1   0   NoMaterial
+0x142   GoldenApple                 64  0   1   0   1   0   1   0   NoMaterial
 0x143   Sign                        1   1   0   0   1   0   1   0   NoMaterial
 0x144   WoodenDoor                  1   1   0   0   1   0   1   0   NoMaterial
 0x145   Bucket                      1   1   0   0   1   0   1   0   NoMaterial
@@ -227,8 +227,8 @@
 0x15A   FishingRod                  64  0   1   0   1   0   1   0   NoMaterial
 0x15B   Clock                       64  0   0   0   1   0   1   0   NoMaterial
 0x15C   GlowstoneDust               64  0   0   0   1   0   1   0   NoMaterial
-0x15D   RawFish                     1   0   1   0   1   0   1   0   NoMaterial
-0x15E   CookedFish                  1   0   1   0   1   0   1   0   NoMaterial
+0x15D   RawFish                     64  0   1   0   1   0   1   0   NoMaterial
+0x15E   CookedFish                  64  0   1   0   1   0   1   0   NoMaterial
 0x15F   InkSac                      64  1   0   0   1   0   1   0   NoMaterial
 0x160   Bone                        64  0   0   0   1   0   1   0   NoMaterial
 0x161   Sugar                       64  0   0   0   1   0   1   0   NoMaterial
