@@ -22,7 +22,7 @@ Setting up build:
 
 3. Optionally disable script debugging support (not recommended). This removes any dependency on an X server:
 
-        echo "CONFIG += headless" > ../mineflayer-script/config.pro
+        echo "CONFIG += headless" > ../config.pro
 
 4. Run qmake once:
 
