@@ -249,7 +249,7 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         }
         case Message::UpdateHealth: {
             UpdateHealthResponse * message = (UpdateHealthResponse*) incomingMessage.data();
-            emit playerHealthUpdated(message->health);
+            emit playerHealthStatusUpdated(message->health, message->food, message->food_saturation);
             break;
         }
         case Message::PlayerPositionAndLook: {

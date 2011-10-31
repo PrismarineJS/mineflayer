@@ -7,7 +7,6 @@
 #include <QStringList>
 
 #include <cmath>
-#include <limits>
 
 const float Game::c_standard_max_ground_speed = 4.27; // according to the internet
 const float Game::c_standard_terminal_velocity = 20.0; // guess
@@ -47,7 +46,6 @@ Game::Game(QUrl connection_info) :
     m_waiting_for_dig_confirmation(false),
     m_digging_animation_timer(new QTimer(this)),
     m_player(-1, Server::EntityPosition(), connection_info.userName(), Item::NoItem),
-    m_player_health(20),
     m_current_time_seconds(0),
     m_current_time_recorded_time(QTime::currentTime()),
     m_max_ground_speed(c_standard_max_ground_speed),
@@ -76,7 +74,7 @@ Game::Game(QUrl connection_info) :
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(playerPositionAndLookUpdated(Server::EntityPosition)), this, SLOT(handlePlayerPositionAndLookUpdated(Server::EntityPosition)));
     Q_ASSERT(success);
-    success = connect(&m_server, SIGNAL(playerHealthUpdated(int)), this, SLOT(handlePlayerHealthUpdated(int)));
+    success = connect(&m_server, SIGNAL(playerHealthStatusUpdated(int,int,float)), this, SLOT(handlePlayerHealthStatusUpdated(int,int,float)));
     Q_ASSERT(success);
 
     success = connect(&m_server, SIGNAL(namedPlayerSpawned(int,QString,Server::EntityPosition,Item::ItemType)), this, SLOT(handleNamedPlayerSpawned(int,QString,Server::EntityPosition,Item::ItemType)));
@@ -183,7 +181,7 @@ void Game::attackEntity(int entity_id)
 void Game::respawn()
 {
     QMutexLocker locker(&m_mutex);
-    Q_ASSERT(m_player_health == 0);
+    Q_ASSERT(m_player_health_status.health == 0);
     m_server.sendRespawnRequest(m_player_dimension);
 
     // assume this always works for now
@@ -403,15 +401,14 @@ void Game::handlePlayerPositionAndLookUpdated(Server::EntityPosition position)
     emit playerPositionUpdated();
 }
 
-void Game::handlePlayerHealthUpdated(int new_health)
+void Game::handlePlayerHealthStatusUpdated(int new_health, int new_food, float new_food_saturation)
 {
     QMutexLocker locker(&m_mutex);
-    m_player_health = new_health;
-    if (m_player_health <= 0) {
-        m_player_health = 0;
-    }
-    emit playerHealthUpdated();
-    if (m_player_health == 0)
+    m_player_health_status.health = Util::clamp(new_health, 0, 20);
+    m_player_health_status.food = Util::clamp(new_food, 0, 20);
+    m_player_health_status.food_saturation = new_food_saturation;
+    emit playerHealthStatusUpdated();
+    if (m_player_health_status.health == 0)
         emit playerDied();
 }
 

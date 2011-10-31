@@ -11,6 +11,8 @@
 #include <QTime>
 #include <QSet>
 
+#include <limits>
+
 class Digger;
 
 // This class is thread-safe.
@@ -41,6 +43,20 @@ public:
         AbortedReason=1,
     };
 
+    struct StatusEffect {
+        int effect_id;
+        int amplifier;
+        int duration;
+    };
+
+    class HealthStatus {
+    public:
+        int health;
+        int food;
+        float food_saturation;
+        HealthStatus() : health(-1), food(-1), food_saturation(-std::numeric_limits<float>::infinity()) {}
+    };
+
     // must be valid array indexes
     class Entity {
     public:
@@ -60,13 +76,13 @@ public:
     protected:
         Entity(EntityType type, int entity_id, Server::EntityPosition position) :
             type(type), entity_id(entity_id), position(position) {}
-
     };
 
     class NamedPlayerEntity : public Entity {
     public:
         const QString username;
         Item::ItemType held_item;
+        QMap<int, StatusEffect> effects;
         NamedPlayerEntity(int entity_id, Server::EntityPosition position, QString username, Item::ItemType held_item) :
                 Entity(Entity::NamedPlayerEntity, entity_id, position), username(username), held_item(held_item) {}
         Entity * clone() { return new NamedPlayerEntity(entity_id, position, username, held_item); }
@@ -138,7 +154,7 @@ public:
     void getMapData(const Int3D & min_corner, const Int3D & size, unsigned char * buffer);
     bool isBlockLoaded(const Int3D & absolute_location);
     QString signTextAt(const Int3D & absolute_location);
-    int playerHealth() { return m_player_health; }
+    const HealthStatus & playerHealthStatus() const { return m_player_health_status; }
 
     void startDigging(const Int3D &block);
     void stopDigging();
@@ -194,7 +210,7 @@ signals:
     void unloadChunk(const Int3D &coord);
     void signUpdated(const Int3D &location, QString text);
     void playerPositionUpdated();
-    void playerHealthUpdated();
+    void playerHealthStatusUpdated();
     void playerDied();
     void playerSpawned(int world);
     void stoppedDigging(Game::StoppedDiggingReason reason);
@@ -228,7 +244,7 @@ private:
     NamedPlayerEntity m_player;
     float m_last_sent_yaw;
     QTime m_last_position_sent_time;
-    int m_player_health;
+    HealthStatus m_player_health_status;
     QHash<Int3D, QSharedPointer<Chunk> > m_chunks;
     QHash<Int3D, QString> m_signs;
     QHash<int, QSharedPointer<Entity> > m_entities;
@@ -303,7 +319,7 @@ private slots:
     void handleChatReceived(QString content);
     void handleTimeUpdated(double seconds);
     void handlePlayerPositionAndLookUpdated(Server::EntityPosition position);
-    void handlePlayerHealthUpdated(int new_health);
+    void handlePlayerHealthStatusUpdated(int new_health, int new_food, float new_food_saturation);
     void handleUnloadChunk(const Int3D & coord);
 
     void handleNamedPlayerSpawned(int entity_id, QString player_name, Server::EntityPosition position, Item::ItemType held_item);

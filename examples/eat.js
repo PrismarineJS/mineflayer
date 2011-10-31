@@ -17,10 +17,10 @@ mf.include("items.js");
             item_to_eat = item.id;
         } else {
             // find the right food
-            var health_to_be_gained = 20 - mf.health();
-            if (health_to_be_gained === 0) {
+            var nutrition_to_be_gained = 20 - mf.healthStatus().food;
+            if (nutrition_to_be_gained === 0) {
                 if (force) {
-                    responder_func("already at full health");
+                    responder_func("already at full food");
                 }
                 return;
             }
@@ -29,13 +29,13 @@ mf.include("items.js");
             var inv = inventory.condensedSnapshot();
             for (var item_type_str in inv) {
                 var item_type = parseInt(item_type_str);
-                var health_from_item = items.health_from_food(item_type);
-                if (health_from_item === undefined) {
+                var nutrition_from_item = items.nutrition_from_food(item_type);
+                if (nutrition_from_item === undefined) {
                     continue; // not food
                 }
-                if (health_from_item > health_to_be_gained) {
+                if (nutrition_from_item > nutrition_to_be_gained) {
                     // overkill
-                    if (overkill_choice !== undefined && items.health_from_food(overkill_choice) < health_from_item) {
+                    if (overkill_choice !== undefined && items.nutrition_from_food(overkill_choice) < nutrition_from_item) {
                         continue; // not better
                     }
                     if (!force) {
@@ -45,7 +45,7 @@ mf.include("items.js");
                     overkill_choice = item_type;
                 } else {
                     // efficient
-                    if (efficient_choice !== undefined && items.health_from_food(efficient_choice) > health_from_item) {
+                    if (efficient_choice !== undefined && items.nutrition_from_food(efficient_choice) > nutrition_from_item) {
                         continue; // not better
                     }
                     efficient_choice = item_type;
@@ -87,6 +87,6 @@ mf.include("items.js");
         }
         eat([], auto_eat_responder_func, false);
     };
-    mf.onHealthChanged(checkAutoEat);
+    mf.onHealthStatusChanged(checkAutoEat);
 })();
 

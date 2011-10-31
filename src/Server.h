@@ -52,7 +52,7 @@ signals:
 
     void chatReceived(QString message);
     void timeUpdated(double seconds);
-    void playerHealthUpdated(int new_health);
+    void playerHealthStatusUpdated(int new_health, int new_food, float new_food_saturation);
 
     void namedPlayerSpawned(int entity_id, QString player_name, Server::EntityPosition position, Item::ItemType held_item);
     void pickupSpawned(int entity_id, Item item, Server::EntityPosition position);

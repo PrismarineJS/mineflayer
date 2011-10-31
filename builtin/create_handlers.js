@@ -21,7 +21,7 @@ function() {
         "onSignUpdated",
         "onSpawn",
         "onSelfMoved",
-        "onHealthChanged",
+        "onHealthStatusChanged",
         "onDeath",
         "onEntitySpawned",
         "onEntityDespawned",

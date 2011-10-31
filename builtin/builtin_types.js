@@ -74,6 +74,17 @@ mf.Block.prototype.equals = function(other) {
     return this.type === other.type && this.metadata === other.metadata;
 };
 
+mf._serializableTypeNames.push("HealthStatus");
+mf.HealthStatus = function(health, food, food_saturation) {
+    this._type = "HealthStatus";
+    this.health = health;
+    this.food = food;
+    this.food_saturation = food_saturation;
+};
+mf.HealthStatus.prototype.equals = function(other) {
+    return this.health === other.health && this.food === other.food && this.food_saturation === other.food_saturation;
+};
+
 mf.Face = {
     "NoDirection": -1,
     "NegativeY": 0,

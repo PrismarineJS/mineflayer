@@ -44,6 +44,7 @@ private:
     QScriptValue m_entity_class;
     QScriptValue m_item_class;
     QScriptValue m_block_class;
+    QScriptValue m_health_status_class;
 
     Game * m_game;
     bool m_started_game;
@@ -121,7 +122,7 @@ private:
     static QScriptValue isPhysical(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue isSafe(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue isDiggable(QScriptContext * context, QScriptEngine * engine);
-    static QScriptValue health(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue healthStatus(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue blockAt(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue isBlockLoaded(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue signTextAt(QScriptContext * context, QScriptEngine * engine);
@@ -169,7 +170,7 @@ private slots: // non-static callbacks
     void handleAnimation(QSharedPointer<Game::Entity> entity, Message::AnimationType animation_type);
     void handleChunkUpdated(const Int3D &start, const Int3D &size);
     void handleSignUpdated(const Int3D &location, QString text);
-    void handlePlayerHealthUpdated();
+    void handlePlayerHealthStatusUpdated();
     void handleInventoryUpdated();
     void handlePlayerDied();
     void handlePlayerSpawned(int world);

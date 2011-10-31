@@ -91,6 +91,7 @@ void ScriptRunner::bootstrap()
         m_entity_class = mf_obj.property("Entity");
         m_item_class = mf_obj.property("Item");
         m_block_class = mf_obj.property("Block");
+        m_health_status_class = mf_obj.property("HealthStatus");
     }
     // create the mf.ItemType enum
     {
@@ -113,7 +114,7 @@ void ScriptRunner::bootstrap()
     mf_obj.setProperty("isPhysical", m_engine->newFunction(isPhysical));
     mf_obj.setProperty("isSafe", m_engine->newFunction(isSafe));
     mf_obj.setProperty("isDiggable", m_engine->newFunction(isDiggable));
-    mf_obj.setProperty("health", m_engine->newFunction(health));
+    mf_obj.setProperty("healthStatus", m_engine->newFunction(healthStatus));
     mf_obj.setProperty("blockAt", m_engine->newFunction(blockAt));
     mf_obj.setProperty("isBlockLoaded", m_engine->newFunction(isBlockLoaded));
     mf_obj.setProperty("signTextAt", m_engine->newFunction(signTextAt));
@@ -194,7 +195,7 @@ void ScriptRunner::bootstrap()
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(playerSpawned(int)), this, SLOT(handlePlayerSpawned(int)));
     Q_ASSERT(success);
-    success = connect(m_game, SIGNAL(playerHealthUpdated()), this, SLOT(handlePlayerHealthUpdated()));
+    success = connect(m_game, SIGNAL(playerHealthStatusUpdated()), this, SLOT(handlePlayerHealthStatusUpdated()));
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(inventoryUpdated()), this, SLOT(handleInventoryUpdated()));
     Q_ASSERT(success);
@@ -571,13 +572,16 @@ QScriptValue ScriptRunner::isDiggable(QScriptContext *context, QScriptEngine *en
     return Item::itemData((Item::ItemType)value.toInt32())->diggable;
 }
 
-QScriptValue ScriptRunner::health(QScriptContext *context, QScriptEngine *engine)
+QScriptValue ScriptRunner::healthStatus(QScriptContext *context, QScriptEngine *engine)
 {
     ScriptRunner * me = (ScriptRunner *) engine->parent();
     QScriptValue error;
     if (!me->argCount(context, error, 0))
         return error;
-    return me->m_game->playerHealth();
+    return me->m_health_status_class.construct(QScriptValueList()
+                                               << me->m_game->playerHealthStatus().health
+                                               << me->m_game->playerHealthStatus().food
+                                               << me->m_game->playerHealthStatus().food_saturation);
 }
 
 QScriptValue ScriptRunner::blockAt(QScriptContext *context, QScriptEngine *engine)
@@ -1165,9 +1169,9 @@ void ScriptRunner::movePlayerPosition()
     raiseEvent("onSelfMoved");
 }
 
-void ScriptRunner::handlePlayerHealthUpdated()
+void ScriptRunner::handlePlayerHealthStatusUpdated()
 {
-    raiseEvent("onHealthChanged");
+    raiseEvent("onHealthStatusChanged");
 }
 
 void ScriptRunner::handleInventoryUpdated()
