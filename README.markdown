@@ -1,6 +1,6 @@
 Mineflayer
 ==========
-Minecraft multiplayer client with a bot scripting interface.
+Minecraft multiplayer client with a bot scripting interface. Currently supporting protocol for Minecraft Beta 1.8.1.
 
 **Homepage:** http://mineflayer.com
 
