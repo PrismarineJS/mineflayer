@@ -5,7 +5,7 @@ mf.include("items.js");
 
 (function() {
     function eat(args, responder_func, force) {
-        var item_to_eat;
+        var item_to_eat = undefined;
         if (args.length !== 0) {
             // eat specific food
             var item_name = args.join(" ");
@@ -24,43 +24,51 @@ mf.include("items.js");
                 }
                 return;
             }
-            var overkill_choice;
-            var efficient_choice;
             var inv = inventory.condensedSnapshot();
+            var choices = [];
             for (var item_type_str in inv) {
                 var item_type = parseInt(item_type_str);
                 var nutrition_from_item = items.nutrition_from_food(item_type);
                 if (nutrition_from_item === undefined) {
                     continue; // not food
                 }
-                if (nutrition_from_item > nutrition_to_be_gained) {
-                    // overkill
-                    if (overkill_choice !== undefined && items.nutrition_from_food(overkill_choice) < nutrition_from_item) {
-                        continue; // not better
-                    }
-                    if (!force) {
-                        // don't bother
-                        continue;
-                    }
-                    overkill_choice = item_type;
-                } else {
-                    // efficient
-                    if (efficient_choice !== undefined && items.nutrition_from_food(efficient_choice) > nutrition_from_item) {
-                        continue; // not better
-                    }
-                    efficient_choice = item_type;
+                if (item_type === mf.ItemType.RottenFlesh ||
+                    item_type === mf.ItemType.SpiderEye) {
+                    continue; // no thanks
                 }
+                if (items.nameForId(item_type).startsWith("raw")) {
+                    // let's not eat raw stuff
+                    continue;
+                }
+                choices.push({"id": item_type, "value": nutrition_from_item});
             }
-            if (efficient_choice !== undefined) {
-                item_to_eat = efficient_choice;
-            } else if (overkill_choice !== undefined) {
-                item_to_eat = overkill_choice;
-            } else {
+            if (choices.length === 0) {
                 if (force) {
                     responder_func("don't have any food");
                 }
                 return;
             }
+            choices.sort(function(left, right) {
+                return left.value - right.value;
+            });
+            for (var i = choices.length - 1; i >= 0; i--) {
+                if (choices[i].value <= nutrition_to_be_gained) {
+                    item_to_eat = choices[i].id;
+                    break;
+                }
+            }
+            if (item_to_eat === undefined) {
+                // only overkill is available
+                var we_need_food = mf.healthStatus().health < 20 &&
+                                   mf.healthStatus().food < 18;
+                if (force || we_need_food) {
+                    // eat the smallest overkill
+                    item_to_eat = choices[0].id;
+                }
+            }
+        }
+        if (item_to_eat === undefined) {
+            return;
         }
         responder_func("eating " + items.nameForId(item_to_eat));
         inventory.equipItem(item_to_eat, function() {

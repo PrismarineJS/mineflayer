@@ -21,7 +21,7 @@
             on_health_func = function() {
                 responder_func(healthStatusToString());
             };
-            mf.onHealthChanged(on_health_func);
+            mf.onHealthStatusChanged(on_health_func);
             responder_func("health report is now ON");
         } else {
             if (just_turned_off) {
