@@ -352,6 +352,16 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             }
             break;
         }
+        case Message::EntityEffect: {
+            EntityEffectResponse * message = (EntityEffectResponse *) incomingMessage.data();
+            emit entityEffect(message->entity_id, message->effect_id, message->amplifier, message->duration);
+            break;
+        }
+        case Message::RemoveEntityEffect: {
+            RemoveEntityEffectResponse * message = (RemoveEntityEffectResponse *) incomingMessage.data();
+            emit removeEntityEffect(message->entity_id, message->effect_id);
+            break;
+        }
         case Message::PreChunk: {
             PreChunkResponse * message = (PreChunkResponse *) incomingMessage.data();
             if (message->mode == PreChunkResponse::Unload) {

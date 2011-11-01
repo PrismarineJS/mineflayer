@@ -29,6 +29,7 @@ namespace MetaTypes {
         qRegisterMetaType<Item>("Item");
         qRegisterMetaType<QVector<Item> >("QVector<Item>");
         qRegisterMetaType<QSharedPointer<Game::Entity> >("QSharedPointer<Game::Entity>");
+        qRegisterMetaType<QSharedPointer<Game::StatusEffect> >("QSharedPointer<Game::StatusEffect>");
     }
 }
 

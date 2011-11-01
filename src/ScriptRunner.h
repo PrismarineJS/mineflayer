@@ -45,6 +45,7 @@ private:
     QScriptValue m_item_class;
     QScriptValue m_block_class;
     QScriptValue m_health_status_class;
+    QScriptValue m_status_effect_class;
 
     Game * m_game;
     bool m_started_game;
@@ -99,6 +100,7 @@ private:
     QScriptValue jsItem(Item item);
     QScriptValue jsBlock(Block block);
     QScriptValue jsEntity(QSharedPointer<Game::Entity> entity);
+    QScriptValue jsStatusEffect(QSharedPointer<Game::StatusEffect> effect_pointer);
 
 
 
@@ -111,6 +113,7 @@ private:
     static QScriptValue clearTimeout(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue setInterval(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue clearInterval(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue currentTimestamp(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue readFile(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue writeFile(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue args(QScriptContext * context, QScriptEngine * engine);
@@ -168,6 +171,8 @@ private slots: // non-static callbacks
     void handleEntityDespawned(QSharedPointer<Game::Entity> entity);
     void handleEntityMoved(QSharedPointer<Game::Entity> entity);
     void handleAnimation(QSharedPointer<Game::Entity> entity, Message::AnimationType animation_type);
+    void handleEntityEffect(QSharedPointer<Game::Entity> player_entity, QSharedPointer<Game::StatusEffect> effect);
+    void handleRemoveEntityEffect(QSharedPointer<Game::Entity> player_entity, QSharedPointer<Game::StatusEffect> effect);
     void handleChunkUpdated(const Int3D &start, const Int3D &size);
     void handleSignUpdated(const Int3D &location, QString text);
     void handlePlayerHealthStatusUpdated();

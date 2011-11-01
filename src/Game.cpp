@@ -104,6 +104,10 @@ Game::Game(QUrl connection_info) :
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(animation(int,Message::AnimationType)), this, SLOT(handleAnimation(int,Message::AnimationType)));
     Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(entityEffect(int,int,int,int)), this, SLOT(handleEntityEffect(int,int,int,int)));
+    Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(removeEntityEffect(int,int)), this, SLOT(handleRemoveEntityEffect(int,int)));
+    Q_ASSERT(success);
 
     success = connect(&m_server, SIGNAL(mapChunkUpdated(QSharedPointer<Chunk>)), this, SLOT(handleMapChunkUpdated(QSharedPointer<Chunk>)));
     Q_ASSERT(success);
@@ -203,18 +207,31 @@ void Game::start()
     m_server.socketConnect();
 }
 
+Game::Entity* Game::findEntity(int entity_id)
+{
+    if (entity_id == m_player.entity_id)
+        return &m_player;
+    return m_entities.value(entity_id, QSharedPointer<Entity>()).data();
+}
+
 QSharedPointer<Game::Entity> Game::entity(int entity_id)
 {
     QMutexLocker locker(&m_mutex);
 
-    if (entity_id == m_player.entity_id)
-        return QSharedPointer<Entity>(m_player.clone());
-
-    QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
-    if (entity.isNull())
-        return entity;
-
-    return QSharedPointer<Entity>(entity.data()->clone());
+    Entity * entity = findEntity(entity_id);
+    if (entity != NULL) {
+        if (entity->type == Entity::NamedPlayerEntity) {
+            // TODO: Issue #37: sneak in a check here for stale effects
+            NamedPlayerEntity * named_entity = (NamedPlayerEntity*)entity;
+            foreach (QSharedPointer<StatusEffect> effect_pointer, named_entity->effects.values()) {
+                StatusEffect * effect = effect_pointer.data();
+                if (effect->start_timestamp + effect->duration_milliseconds < QDateTime::currentMSecsSinceEpoch())
+                    named_entity->effects.remove(effect->effect_id);
+            }
+        }
+        entity = entity->clone();
+    }
+    return QSharedPointer<Entity>(entity);
 }
 
 Server::EntityPosition Game::playerPosition()
@@ -524,11 +541,38 @@ void Game::handleAnimation(int entity_id, Message::AnimationType animation_type)
     QMutexLocker locker(&m_mutex);
 
     QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
-
     if (entity.isNull())
         return;
-
     emit animation(QSharedPointer<Entity>(entity.data()->clone()), animation_type);
+}
+void Game::handleEntityEffect(int entity_id, int effect_id, int amplifier, int duration)
+{
+    QMutexLocker locker(&m_mutex);
+    Entity* entity = findEntity(entity_id);
+    if (entity == NULL)
+        return;
+    if (entity->type != Entity::NamedPlayerEntity)
+        return;
+    NamedPlayerEntity * named_entity = (NamedPlayerEntity *) entity;
+    int duration_milliseconds = duration * 50;
+    qint64 start_timestamp = QDateTime::currentMSecsSinceEpoch();
+    QSharedPointer<StatusEffect> effect(new StatusEffect(effect_id, amplifier, start_timestamp, duration_milliseconds));
+    named_entity->effects.insert(effect_id, effect);
+    emit entityEffect(QSharedPointer<Entity>(entity->clone()), effect);
+}
+void Game::handleRemoveEntityEffect(int entity_id, int effect_id)
+{
+    QMutexLocker locker(&m_mutex);
+    QSharedPointer<Entity> entity = m_entities.value(entity_id, QSharedPointer<Entity>());
+    if (entity.isNull())
+        return;
+    if (entity.data()->type != Entity::NamedPlayerEntity)
+        return;
+    NamedPlayerEntity * named_entity = (NamedPlayerEntity *) entity.data();
+    QSharedPointer<StatusEffect> effect = named_entity->effects.take(effect_id);
+    if (effect.isNull())
+        return;
+    emit removeEntityEffect(entity, effect);
 }
 
 void Game::handleUnloadChunk(const Int3D &coord)

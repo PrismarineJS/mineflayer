@@ -251,6 +251,10 @@ Classes
 
           :class:`mf.ItemType`, the item the player is holding in their hand
 
+       .. attribute:: effects
+
+          `Object`, maps :class:`mf.StatusEffectType` to :class:`mf.StatusEffect`
+
    Additional properties when :attr:`type` is :attr:`mf.EntityType.Mob`:
 
        .. attribute:: mob_type
@@ -320,6 +324,26 @@ Classes
 
        `Number`, currently always 0
 
+.. class:: StatusEffect(effect_id, amplifier, start_timestamp, duration_milliseconds)
+
+    Represents the health and food status of the player
+
+    .. attribute:: effect_id
+
+       :class:`mf.StatusEffectType`
+
+    .. attribute:: amplifier
+
+       `Number`, always 0?
+
+    .. attribute:: start_timestamp
+
+       `Number`, see :func:`mf.currentTimestamp`
+
+    .. attribute:: duration_milliseconds
+
+       `Number`
+
 Methods
 =======
 
@@ -360,6 +384,10 @@ Methods
     Stop an interval that is in progress
 
     :param Number id: The ID which you got from :func:`setInterval`.
+
+.. function:: currentTimestamp()
+
+    Returns the number of milliseconds since some arbitrary fixed event in the past.
 
 .. function:: debug(line)
 
@@ -772,6 +800,22 @@ Fill in the ... part of the function. See examples for more information.
 
     :param mf.Entity entity:
     :param mf.AnimationType animation_type: which animation was performed.
+
+.. function:: onEntityEffect(function(entity, effect) {...})
+
+    Called when an effect is observerd on an entity, possibly yourself.
+
+    :param mf.Entity entity:
+    :param mf.StatusEffect effect:
+
+.. function:: onRemoveEntityEffect(function(entity, effect) {...})
+
+    Called when an effect is observerd to have stopped on an entity, possibly yourself.
+
+    TODO: Issue #37: this callback is unreliable.
+
+    :param mf.Entity entity:
+    :param mf.StatusEffect effect: previous effect
 
 .. function:: onStoppedDigging(function(reason) {...})
 

@@ -27,6 +27,8 @@ function() {
         "onEntityDespawned",
         "onEntityMoved",
         "onAnimation",
+        "onEntityEffect",
+        "onRemoveEntityEffect",
         "onStoppedDigging",
         "onEquippedItemChanged",
         "onInventoryUpdated",

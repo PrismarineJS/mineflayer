@@ -72,6 +72,7 @@ void ScriptRunner::bootstrap()
     mf_obj.setProperty("clearTimeout", m_engine->newFunction(clearTimeout));
     mf_obj.setProperty("setInterval", m_engine->newFunction(setInterval));
     mf_obj.setProperty("clearInterval", m_engine->newFunction(clearTimeout));
+    mf_obj.setProperty("currentTimestamp", m_engine->newFunction(currentTimestamp));
     mf_obj.setProperty("readFile", m_engine->newFunction(readFile));
     mf_obj.setProperty("writeFile", m_engine->newFunction(writeFile));
     mf_obj.setProperty("args", m_engine->newFunction(args));
@@ -92,6 +93,7 @@ void ScriptRunner::bootstrap()
         m_item_class = mf_obj.property("Item");
         m_block_class = mf_obj.property("Block");
         m_health_status_class = mf_obj.property("HealthStatus");
+        m_status_effect_class = mf_obj.property("StatusEffect");
     }
     // create the mf.ItemType enum
     {
@@ -176,6 +178,10 @@ void ScriptRunner::bootstrap()
     success = connect(m_game, SIGNAL(entityDespawned(QSharedPointer<Game::Entity>)), this, SLOT(handleEntityDespawned(QSharedPointer<Game::Entity>)));
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(animation(QSharedPointer<Game::Entity>,Message::AnimationType)), this, SLOT(handleAnimation(QSharedPointer<Game::Entity>,Message::AnimationType)));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(entityEffect(QSharedPointer<Game::Entity>,QSharedPointer<Game::StatusEffect>)), this, SLOT(handleEntityEffect(QSharedPointer<Game::Entity>,QSharedPointer<Game::StatusEffect>)));
+    Q_ASSERT(success);
+    success = connect(m_game, SIGNAL(removeEntityEffect(QSharedPointer<Game::Entity>,QSharedPointer<Game::StatusEffect>)), this, SLOT(handleRemoveEntityEffect(QSharedPointer<Game::Entity>,QSharedPointer<Game::StatusEffect>)));
     Q_ASSERT(success);
     success = connect(m_game, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(handleChunkUpdated(Int3D,Int3D)));
     Q_ASSERT(success);
@@ -330,6 +336,15 @@ QScriptValue ScriptRunner::clearTimeout(QScriptContext *context, QScriptEngine *
     me->m_script_timers.remove(ptr);
     delete ptr;
     return QScriptValue();
+}
+
+QScriptValue ScriptRunner::currentTimestamp(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+    QScriptValue error;
+    if (!me->argCount(context, error, 0))
+        return error;
+    return QScriptValue((double)QDateTime::currentMSecsSinceEpoch());
 }
 
 QScriptValue ScriptRunner::readFile(QScriptContext *context, QScriptEngine *engine)
@@ -656,10 +671,16 @@ QScriptValue ScriptRunner::jsEntity(QSharedPointer<Game::Entity> entity)
     Game::Entity::EntityType type = entity->type;
     result.setProperty("type", (int)type);
     switch (type) {
-        case Game::Entity::NamedPlayerEntity:
+        case Game::Entity::NamedPlayerEntity: {
             result.setProperty("username", ((Game::NamedPlayerEntity*)entity.data())->username);
             result.setProperty("held_item", (int)((Game::NamedPlayerEntity*)entity.data())->held_item);
+            QScriptValue effects_obj = m_engine->newObject();
+            QMap<int, QSharedPointer<Game::StatusEffect> >* effects = &((Game::NamedPlayerEntity*)entity.data())->effects;
+            foreach (QSharedPointer<Game::StatusEffect> effect, effects->values())
+                effects_obj.setProperty(effect.data()->effect_id, jsStatusEffect(effect));
+            result.setProperty("effects", effects_obj);
             break;
+        }
         case Game::Entity::MobEntity:
             result.setProperty("mob_type", (int)((Game::MobEntity*)entity.data())->mob_type);
             break;
@@ -670,6 +691,12 @@ QScriptValue ScriptRunner::jsEntity(QSharedPointer<Game::Entity> entity)
             Q_ASSERT(false);
     }
     return result;
+}
+
+QScriptValue ScriptRunner::jsStatusEffect(QSharedPointer<Game::StatusEffect> effect_pointer)
+{
+    Game::StatusEffect * effect = effect_pointer.data();
+    return m_status_effect_class.construct(QScriptValueList() << effect->effect_id << effect->amplifier << (double)effect->start_timestamp << effect->duration_milliseconds);
 }
 
 QScriptValue ScriptRunner::setControlState(QScriptContext *context, QScriptEngine *engine)
@@ -1150,6 +1177,14 @@ void ScriptRunner::handleEntityDespawned(QSharedPointer<Game::Entity> entity)
 void ScriptRunner::handleAnimation(QSharedPointer<Game::Entity> entity, Message::AnimationType animation_type)
 {
     raiseEvent("onAnimation", QScriptValueList() << jsEntity(entity) << animation_type);
+}
+void ScriptRunner::handleEntityEffect(QSharedPointer<Game::Entity> player_entity, QSharedPointer<Game::StatusEffect> effect)
+{
+    raiseEvent("onEntityEffect", QScriptValueList() << jsEntity(player_entity) << jsStatusEffect(effect));
+}
+void ScriptRunner::handleRemoveEntityEffect(QSharedPointer<Game::Entity> player_entity, QSharedPointer<Game::StatusEffect> effect)
+{
+    raiseEvent("onRemoveEntityEffect", QScriptValueList() << jsEntity(player_entity) << jsStatusEffect(effect));
 }
 
 void ScriptRunner::handleChunkUpdated(const Int3D &start, const Int3D &size)

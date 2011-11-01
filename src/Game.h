@@ -46,7 +46,10 @@ public:
     struct StatusEffect {
         int effect_id;
         int amplifier;
-        int duration;
+        qint64 start_timestamp;
+        int duration_milliseconds;
+        StatusEffect(int effect_id, int amplifier, qint64 start_timestamp, int duration_milliseconds)
+            : effect_id(effect_id), amplifier(amplifier), start_timestamp(start_timestamp), duration_milliseconds(duration_milliseconds) {}
     };
 
     class HealthStatus {
@@ -82,10 +85,14 @@ public:
     public:
         const QString username;
         Item::ItemType held_item;
-        QMap<int, StatusEffect> effects;
+        QMap<int, QSharedPointer<StatusEffect> > effects;
         NamedPlayerEntity(int entity_id, Server::EntityPosition position, QString username, Item::ItemType held_item) :
                 Entity(Entity::NamedPlayerEntity, entity_id, position), username(username), held_item(held_item) {}
-        Entity * clone() { return new NamedPlayerEntity(entity_id, position, username, held_item); }
+        Entity * clone() {
+            NamedPlayerEntity* result = new NamedPlayerEntity(entity_id, position, username, held_item);
+            result->effects = effects;
+            return result;
+        }
         void getBoundingBox(Int3D &boundingBoxMin, Int3D &boundingBoxMax) const;
     };
 
@@ -205,6 +212,8 @@ signals:
     void entityDespawned(QSharedPointer<Game::Entity> entity);
     void entityMoved(QSharedPointer<Game::Entity> entity);
     void animation(QSharedPointer<Game::Entity> entity, Message::AnimationType animation_type);
+    void entityEffect(QSharedPointer<Game::Entity> player_entity, QSharedPointer<Game::StatusEffect> effect);
+    void removeEntityEffect(QSharedPointer<Game::Entity> player_entity, QSharedPointer<Game::StatusEffect> effect);
 
     void chunkUpdated(const Int3D &start, const Int3D &size);
     void unloadChunk(const Int3D &coord);
@@ -303,6 +312,8 @@ private:
 
     int nextActionId();
 
+    Game::Entity* findEntity(int entity_id);
+
     void updateWindowSlot(int slot_id, Item item);
     Item getWindowSlot(int slot);
 
@@ -331,6 +342,8 @@ private slots:
     void handleEntityLookedAndMovedRelatively(int entity_id, Server::EntityPosition position);
     void handleEntityMoved(int entity_id, Server::EntityPosition position);
     void handleAnimation(int entity_id, Message::AnimationType animation_type);
+    void handleEntityEffect(int entity_id, int effect_id, int amplifier, int duration);
+    void handleRemoveEntityEffect(int entity_id, int effect_id);
 
     void handleMapChunkUpdated(QSharedPointer<Chunk> update);
     void handleMultiBlockUpdate(Int3D chunk_key, QHash<Int3D,Block> new_blocks);

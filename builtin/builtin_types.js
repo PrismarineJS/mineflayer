@@ -47,6 +47,10 @@ mf.Point.prototype.clone = function() {
 
 mf.Entity = function() {
 };
+mf.Entity.prototype.equals = function(other) {
+    return this.entity_id === other.entity_id;
+};
+
 mf.EntityType = {
     "Player": 1,
     "Mob": 3,
@@ -85,6 +89,18 @@ mf.HealthStatus.prototype.equals = function(other) {
     return this.health === other.health && this.food === other.food && this.food_saturation === other.food_saturation;
 };
 
+mf._serializableTypeNames.push("StatusEffect");
+mf.StatusEffect = function(effect_id, amplifier, start_timestamp, duration_milliseconds) {
+    this._type = "StatusEffect";
+    this.effect_id = effect_id;
+    this.amplifier = amplifier;
+    this.start_timestamp = start_timestamp;
+    this.duration_milliseconds = duration_milliseconds;
+};
+mf.StatusEffect.prototype.equals = function(other) {
+    return this.effect_id === other.effect_id && this.amplifier === other.amplifier && this.start_timestamp === other.start_timestamp && this.duration_milliseconds === other.duration_milliseconds;
+};
+
 mf.Face = {
     "NoDirection": -1,
     "NegativeY": 0,
@@ -118,6 +134,12 @@ mf.MobType = {
     "Wolf": 95,
     "Snowman": 97,
     "Villager": 120
+};
+
+mf.StatusEffectType = {
+    "Regeneration": 10,
+    "Hunger": 17,
+    "Poison": 19,
 };
 
 mf.StoppedDiggingReason = {

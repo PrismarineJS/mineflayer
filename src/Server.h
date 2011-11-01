@@ -68,6 +68,8 @@ signals:
     // use .x .y .z for absolute position
     void entityMoved(int entity_id, Server::EntityPosition position);
     void animation(int entity_id, Message::AnimationType animation);
+    void entityEffect(int entity_id, int effect_id, int amplifier, int duration);
+    void removeEntityEffect(int entity_id, int effect_id);
 
     void mapChunkUpdated(QSharedPointer<Chunk> chunk);
     // will always be contained within a chunk
