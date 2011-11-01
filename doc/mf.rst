@@ -26,27 +26,27 @@ Enums
    .. attribute:: NoDirection
    .. attribute:: NegativeX
 
-      West
+      North
 
    .. attribute:: PositiveX
 
-      East
+      South
 
    .. attribute:: NegativeY
 
-      South
+      Down
 
    .. attribute:: PositiveY
 
-      North
+      Up
 
    .. attribute:: NegativeZ
 
-      Down
+      East
 
    .. attribute:: PositiveZ
 
-      Up
+      West
 
 .. class:: MobType
 
@@ -58,10 +58,20 @@ Enums
     .. attribute:: Slime
     .. attribute:: Ghast
     .. attribute:: ZombiePigman
+    .. attribute:: Enderman
+    .. attribute:: CaveSpider
+    .. attribute:: Silverfish
+    .. attribute:: Blaze
+    .. attribute:: MagmaCube
+    .. attribute:: EnderDragon
     .. attribute:: Pig
     .. attribute:: Sheep
     .. attribute:: Cow
     .. attribute:: Chicken
+    .. attribute:: Squid
+    .. attribute:: Wolf
+    .. attribute:: Snowman
+    .. attribute:: Villager
 
 .. class:: StoppedDiggingReason
 
