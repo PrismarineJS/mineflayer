@@ -294,6 +294,22 @@ Classes
 
        `Number`, defaults to 0, potential light from sky if it was daytime
 
+.. class:: HealthStatus(health, food, food_saturation)
+
+    Represents the health and food status of the player
+
+    .. attribute:: health
+
+       `Number`, in the range [0, 20] representing the number of half-hearts
+
+    .. attribute:: food
+
+       `Number`, in the range [0, 20] representing the number of half-turkey-legs
+
+    .. attribute:: food_saturation
+
+       `Number`, currently always 0
+
 Methods
 =======
 
@@ -417,10 +433,10 @@ Methods
     :param mf.ItemType block_type:
     :rtype: Boolean
 
-.. function:: health()
+.. function:: healthStatus()
 
-    :rtype: Number
-    :returns: The number of half-hearts that you have, out of 20.
+    :rtype: :class:`HealthStatus`
+    :returns: A snapshot of your current health and food status
 
 .. function:: blockAt(point)
 
@@ -712,9 +728,9 @@ Fill in the ... part of the function. See examples for more information.
 
     Called when you move. See also :func:`self()`.
 
-.. function:: onHealthChanged(function() {...})
+.. function:: onHealthStatusChanged(function() {...})
 
-    Called when you get hit, take fall damage, eat food, etc. See also :func:`health()`.
+    Called when your health/food status changes. See also :func:`healthStatus()`.
 
 .. function:: onDeath(function() {...})
 
