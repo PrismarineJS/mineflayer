@@ -141,6 +141,8 @@ void ScriptRunner::bootstrap()
     mf_obj.setProperty("uniqueWindowItem", m_engine->newFunction(uniqueWindowItem));
     mf_obj.setProperty("canPlaceBlock", m_engine->newFunction(canPlaceBlock));
     mf_obj.setProperty("activateItem", m_engine->newFunction(activateItem));
+    mf_obj.setProperty("dimension", m_engine->newFunction(dimension));
+    mf_obj.setProperty("onlinePlayers", m_engine->newFunction(onlinePlayers));
 
 
     // hook up hax functions
@@ -1022,6 +1024,21 @@ QScriptValue ScriptRunner::dimension(QScriptContext *context, QScriptEngine *eng
         return error;
 
     return me->m_game->dimension();
+}
+
+QScriptValue ScriptRunner::onlinePlayers(QScriptContext *context, QScriptEngine *engine)
+{
+    ScriptRunner * me = (ScriptRunner *) engine->parent();
+
+    QScriptValue error;
+    if (!me->argCount(context, error, 0))
+        return error;
+
+    QScriptValue result = me->m_engine->newObject();
+    QMapIterator<QString, int> iterator(me->m_game->onlinePlayers());
+    while (iterator.hasNext())
+        result.setProperty(iterator.key(), iterator.value());
+    return result;
 }
 
 QScriptValue ScriptRunner::setPosition(QScriptContext *context, QScriptEngine *engine)

@@ -545,6 +545,18 @@ Methods
     Eat, shoot, throw, etc. your currently equipped item.
     Throws an exception if your currently equipped item can't be activated.
 
+.. function:: dimension()
+
+    The dimension you currently occupy.
+
+    :rtype: :class:`Dimension`
+
+.. function:: onlinePlayers()
+
+    An object containing all the online players and their pings.
+
+    :rtype: `Object` mapping names to `Number` pings in milliseconds.
+
 Cheating methods
 ----------------
 

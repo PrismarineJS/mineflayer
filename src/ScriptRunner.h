@@ -151,6 +151,7 @@ private:
     static QScriptValue uniqueWindowItem(QScriptContext * context, QScriptEngine * engine);
 
     static QScriptValue dimension(QScriptContext * context, QScriptEngine * engine);
+    static QScriptValue onlinePlayers(QScriptContext * context, QScriptEngine * engine);
 
 
     // hax functions
@@ -163,7 +164,6 @@ private:
     static QScriptValue placeBlock(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue activateItem(QScriptContext * context, QScriptEngine * engine);
     static QScriptValue activateBlock(QScriptContext * context, QScriptEngine * engine);
-
 
 private slots: // non-static callbacks
     void movePlayerPosition();
