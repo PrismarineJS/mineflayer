@@ -201,6 +201,7 @@ public:
 
     Dimension dimension() const { return m_player_dimension; }
 
+    QMap<QString, int> onlinePlayers() { return m_online_players; }
 
 
 signals:
@@ -236,8 +237,6 @@ private:
     static const Int3D c_chunk_size;
     static const Block c_air;
     static const Int3D c_side_offset[];
-
-
 
 
     Server m_server;
@@ -303,6 +302,8 @@ private:
 
     Dimension m_player_dimension;
 
+    QMap<QString, int> m_online_players;
+
 private:
     static Int3D chunkKey(const Int3D & coord);
 
@@ -357,6 +358,9 @@ private slots:
     void handleOpenWindow(int window_id, Message::WindowType inventory_type, int number_of_slots);
 
     void handleRespawn(Dimension world);
+
+    void handlePlayerPing(QString name, int ping);
+    void handlePlayerDisconnected(QString name);
 
     void sendPosition();
     void animateDigging();

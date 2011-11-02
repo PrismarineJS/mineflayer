@@ -460,6 +460,14 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
             emit respawned(message->world);
             break;
         }
+        case Message::PlayerOnlineStatus: {
+            PlayerOnlineStatusResponse * message = (PlayerOnlineStatusResponse *) incomingMessage.data();
+            if (message->online)
+                emit playerPing(message->name, message->ping_milliseconds);
+            else
+                emit playerDisconnected(message->name);
+            break;
+        }
         default: {
 //            qDebug() << "ignoring message type: 0x" << QString::number(incomingMessage.data()->messageType, 16).toStdString().c_str();
             break;

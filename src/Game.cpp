@@ -132,10 +132,12 @@ Game::Game(QUrl connection_info) :
     Q_ASSERT(success);
     success = connect(&m_server, SIGNAL(openWindow(int,Message::WindowType,int)), this, SLOT(handleOpenWindow(int,Message::WindowType,int)));
     Q_ASSERT(success);
-
-
-    // pass directly through
     success = connect(&m_server, SIGNAL(unloadChunk(Int3D)), this, SLOT(handleUnloadChunk(Int3D)));
+    Q_ASSERT(success);
+
+    success = connect(&m_server, SIGNAL(playerPing(QString,int)), this, SLOT(handlePlayerPing(QString,int)));
+    Q_ASSERT(success);
+    success = connect(&m_server, SIGNAL(playerDisconnected(QString)), this, SLOT(handlePlayerDisconnected(QString)));
     Q_ASSERT(success);
 
     success = connect(this, SIGNAL(chunkUpdated(Int3D,Int3D)), this, SLOT(checkForDiggingStopped(Int3D,Int3D)));
@@ -1456,3 +1458,11 @@ void Game::handleRespawn(Dimension world)
     m_player_dimension = world;
 }
 
+void Game::handlePlayerPing(QString name, int ping)
+{
+    m_online_players.insert(name, ping);
+}
+void Game::handlePlayerDisconnected(QString name)
+{
+    m_online_players.remove(name);
+}

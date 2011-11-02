@@ -84,6 +84,8 @@ signals:
     void openWindow(int window_id, Message::WindowType inventory_type, int number_of_slots);
     void signUpdated(Int3D position, QString text);
     void respawned(int world);
+    void playerPing(QString name, int ping);
+    void playerDisconnected(QString name);
 
 public slots:
     // actually connect to the server
