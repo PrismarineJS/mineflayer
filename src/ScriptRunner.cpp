@@ -1036,8 +1036,10 @@ QScriptValue ScriptRunner::onlinePlayers(QScriptContext *context, QScriptEngine 
 
     QScriptValue result = me->m_engine->newObject();
     QMapIterator<QString, int> iterator(me->m_game->onlinePlayers());
-    while (iterator.hasNext())
+    while (iterator.hasNext()) {
+        iterator.next();
         result.setProperty(iterator.key(), iterator.value());
+    }
     return result;
 }
 

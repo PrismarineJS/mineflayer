@@ -553,7 +553,7 @@ Methods
 
 .. function:: onlinePlayers()
 
-    An object containing all the online players and their pings.
+    An object containing all the online players and their pings. Includes yourself.
 
     :rtype: `Object` mapping names to `Number` pings in milliseconds.
 
