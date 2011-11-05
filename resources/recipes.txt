@@ -808,7 +808,7 @@ Bed
 2=WoodenPlank
 
 PoweredRail:6
-1 1
+101
 121
 131
 1=GoldIngot
@@ -816,7 +816,7 @@ PoweredRail:6
 3=Redstone
 
 DetectorRail:6
-1 1
+101
 121
 131
 1=IronIngot
