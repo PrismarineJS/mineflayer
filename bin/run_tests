@@ -10,8 +10,11 @@ import shutil
 __version__ = '0.0'
 
 # dependencies:
-# bsdiff, bspatch
-# minecraft_server.jar
+#   bsdiff, bspatch
+#   minecraft_server.jar
+
+# how it works:
+#   it merges world.bsdiff with base.tar in the folder of the test to run
 
 def absolute(relative_path):
     return os.path.normpath(os.path.join(os.path.dirname(__file__), relative_path))
