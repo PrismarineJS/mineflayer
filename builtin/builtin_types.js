@@ -78,6 +78,34 @@
         return this.type === other.type && this.metadata === other.metadata;
     };
 
+    mf.Block.prototype.isOccupied = function() {
+        if (this.type === 26) { // Bed only
+            return (this.metadata & 4) === 4;
+        }
+        return undefined;
+    };
+
+    mf.Block.prototype.isUnoccupied = function() {
+        if (this.type === 26) { // Bed only
+            return (this.metadata & 4) === 0;
+        }
+        return undefined;
+    };
+
+    mf.Block.prototype.isHead = function() {
+        if (this.type === 26) { // Bed only
+            return (this.metadata & 8) === 8;
+        }
+        return undefined;
+    };
+
+    mf.Block.prototype.isFoot = function() {
+        if (this.type === 26) { // Bed only
+            return (this.metadata & 8) === 0;
+        }
+        return undefined;
+    };
+
     /** Whether a block is activated or not */
     mf.Block.prototype.isActivated = function() {
         switch(this.type) {

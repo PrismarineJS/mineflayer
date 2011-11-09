@@ -22,7 +22,7 @@ mf.include("console.js");
 mf.include("cook.js");
 mf.include("flatten.js");
 mf.include("fill.js");
-mf.include("use.js");
+mf.include("sleeper.js");
 mf.include("drill.js");
 mf.include("aliases.js");
 mf.include("auto_pickup.js");
