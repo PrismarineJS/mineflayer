@@ -65,6 +65,80 @@
         this.metadata = metadata !== undefined ? metadata : 0;
     };
 
+    mf.MetadataUse = {
+        "ItemUnknown": 0
+        "ItemHealth": 1,
+        "ItemType": 2,
+        "ItemMap": 3
+    };
+
+    mf.Item.prototype.useForMetadata = function() {
+        switch(this.type) {
+            case 256: // Iron Shovel
+            case 257: // Iron Pickaxe
+            case 258: // Iron Axe
+            case 259: // Flint and Steel
+            case 267: // Iron Sword
+            case 268: // Wooden Sword
+            case 269: // Wooden Shovel
+            case 270: // Wooden Pickaxe
+            case 271: // Wooden Axe
+            case 272: // Stone Sword
+            case 273: // Stone Shovel
+            case 274: // Stone Pickaxe
+            case 275: // Stone Axe
+            case 276: // Diamond Sword
+            case 277: // Diamond Shovel
+            case 278: // Diamond Pickaxe
+            case 279: // Diamond Axe
+            case 283: // Gold Sword
+            case 284: // Gold Shovel
+            case 285: // Gold Pickaxe
+            case 286: // Gold Axe
+            case 290: // Wooden Hoe
+            case 291: // Stone Hoe
+            case 292: // Iron Hoe
+            case 293: // Diamond Hoe
+            case 294: // Gold Hoe
+            case 298: // Leather Helmet
+            case 299: // Leather Chestplate
+            case 300: // Leather Leggings (Spartan Leggings?)
+            case 301: // Leather Boots
+            case 302: // Chain Helmet
+            case 303: // Chain Chestplate
+            case 304: // Chain Leggings
+            case 305: // Chain Boots
+            case 306: // Iron Helmet
+            case 307: // Iron Chestplate
+            case 308: // Iron Leggings
+            case 309: // Iron Boots
+            case 310: // Diamond Helmet
+            case 311: // Diamond Chestplate
+            case 312: // Diamond Leggings
+            case 313: // Dimaond Boots
+            case 314: // Gold Helmet
+            case 315: // Gold Chestplate
+            case 316: // Gold Leggings
+            case 317: // Gold Boots
+            case 346: // Fishing Rod
+            case 359: // Shears
+                return mf.MetadataUse.ItemHealth;
+            case 31: // Tall Grass (Dead Shrub/Tall Grass/Fern)
+            case 35: // Wool (Color)
+            case 43: // Double Slabs
+            case 44: // Slabs
+            case 98: // Stone Bricks (Normal/Cracked/Mossy)
+            case 263: // Coal / Charcoal
+            case 351: // Dye (Color)
+            case 373: // Potion (type)
+                return mf.MetadataUse.ItemType;
+            case 358: // Map
+                return mf.MetadataUse.ItemMap;
+            default:
+                return mf.MetadataUse.ItemUnknown;
+        }
+    };
+
     mf._serializableTypeNames.push("Block");
     mf.Block = function(type, metadata, light, sky_light) {
         this._type = "Block";
