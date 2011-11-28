@@ -99,13 +99,13 @@
 0x57    Netherrack                  64  1   0   1   1   0   0   0.4 Stone
 0x58    SoulSand                    64  1   0   1   1   0   0   0.5 Sand
 0x59    Glowstone                   64  1   0   1   1   0   0   0.3 Glass
-0x5A    Portal                      64  1   0   0   1   0   1   -1  Portal
+0x5A    Portal                      64  1   0   0   1   0   1   0.0 Portal
 0x5B    JackOLantern                64  1   0   1   1   0   0   1.0 Pumpkin
 0x5C    Cake_placed                 1   1   0   1   1   1   0   0.5 Cake
 0x5D    RedstoneRepeaterOff_placed  64  1   0   1   1   1   0   0.0 Redstone
 0x5E    RedstoneRepeaterOn_placed   64  1   0   1   1   1   0   0.0 Redstone
 0x5F    LockedChest                 64  1   0   1   1   1   0   2.5 Wood 
-0x60    Trapdoor                    64  1   0   1   1   1   0   3   Wood
+0x60    Trapdoor                    64  1   0   1   1   1   0   3.0 Wood
 # following blocks all from beta1.8.  Guessing on some of the values.
 0x61    HiddenSilverfish            64  1   0   1   1   0   0   1.5 Stone
 0x62    StoneBricks                 64  1   0   1   1   0   0   2.0 Stone 
@@ -129,9 +129,10 @@
 0x74    EnchantmentTable_placed     64  1   0   1   1   1   0   3.5 Stone
 0x75    BrewingStand_placed         64  1   0   1   1   1   0   3.5 Stone
 0x76    Cauldron_placed             64  1   0   1   1   1   0   3.5 Stone
-0x77    EndPortal                   64  1   0   0   1   0   1   -1  Portal
-0x78    EndPortalFrame              64  1   0   1   1   1   0   2.0 Wood
+0x77    EndPortal                   64  1   0   0   0   0   1   0.0 Portal
+0x78    EndPortalFrame              64  1   0   1   0   1   0   0.0 Wood
 0x79    EndStone                    64  1   0   1   1   0   0   1.5 Stone
+0x7A    DragonEgg                   64  1   0   1   1   1   0   
 
 # items
 0x100   IronShovel                  1   0   0   0   1   0   1   0   Iron
@@ -262,6 +263,7 @@
 0x17C   Cauldron                    1   1   0   0   1   0   1   0   NoMaterial
 0x17D   EyeOfEnder                  64  0   1   0   1   0   1   0   NoMaterial
 0x17E   GlisteringMelon             64  0   0   0   1   0   1   0   NoMaterial
+
 0x8D0   13Disc                      1   1   0   0   1   0   1   0   NoMaterial
 0x8D1   CatDisc                     1   1   0   0   1   0   1   0   NoMaterial
 0x8D2   BlocksDisc                  1   1   0   0   1   0   1   0   NoMaterial

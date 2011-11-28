@@ -78,6 +78,7 @@
             case 257: // Iron Pickaxe
             case 258: // Iron Axe
             case 259: // Flint and Steel
+            case 261: // Bow
             case 267: // Iron Sword
             case 268: // Wooden Sword
             case 269: // Wooden Shovel
