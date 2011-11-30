@@ -18,7 +18,7 @@ const float Game::c_standard_ground_friction = Game::c_standard_walking_accelera
 const float Game::c_player_apothem = 0.32; // notch's client F3 says 0.30, but that caused spankings
 const float Game::c_player_height = 1.74; // tested with a binary search
 const float Game::c_player_half_height = Game::c_player_height / 2;
-const float Game::c_jump_speed = 8.2f; // seems good
+const float Game::c_jump_speed = 9.0f; // seems good
 const float Game::c_yaw_speed = 3.0f; // seems good
 
 const int Game::c_position_update_interval_ms = 50;
