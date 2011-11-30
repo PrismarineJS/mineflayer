@@ -58,7 +58,7 @@
 0x2E    Tnt                         64  1   0   1   1   0   0   0.0 Tnt
 0x2F    Bookshelf                   64  1   0   1   1   0   0   1.5 Wood
 0x30    MossStone                   64  1   0   1   1   0   0   2.0 Stone
-0x31    Obsidian                    64  1   0   1   1   0   0   10  Stone
+0x31    Obsidian                    64  1   0   1   1   0   0   50  Stone
 0x32    Torch                       64  1   0   0   1   0   1   0.0 Redstone
 0x33    Fire                        64  1   0   0   0   0   0   0.0 Fire
 0x34    MonsterSpawner              64  1   0   1   1   0   0   5   Stone
@@ -108,7 +108,7 @@
 0x60    Trapdoor                    64  1   0   1   1   1   0   3.0 Wood
 # following blocks all from beta1.8.  Guessing on some of the values.
 0x61    HiddenSilverfish            64  1   0   1   1   0   0   1.5 Stone
-0x62    StoneBricks                 64  1   0   1   1   0   0   2.0 Stone 
+0x62    StoneBrick                  64  1   0   1   1   0   0   2.0 Stone
 0x63    HugeBrownMushroom           64  1   0   1   1   0   0   2.0 Pumpkin
 0x64    HugeRedMushroom             64  1   0   1   1   0   0   2.0 Pumpkin
 0x65    IronBars                    64  1   0   1   1   0   0   5.0 Iron
@@ -126,13 +126,13 @@
 0x71    NetherBrickFence            64  1   0   1   1   0   0   2.0 Stone
 0x72    NetherBrickStairs           64  1   0   1   1   0   0   2.0 Stone
 0x73    NetherWart_placed           64  1   0   0   1   0   0   0.0 Crops
-0x74    EnchantmentTable_placed     64  1   0   1   1   1   0   3.5 Stone
-0x75    BrewingStand_placed         64  1   0   1   1   1   0   3.5 Stone
-0x76    Cauldron_placed             64  1   0   1   1   1   0   3.5 Stone
+0x74    EnchantmentTable            64  1   1   1   1   1   0   5.0 Stone
+0x75    BrewingStand_placed         64  1   0   1   1   1   0   0.5 Stone
+0x76    Cauldron_placed             64  1   0   1   1   1   0   2.0 Stone
 0x77    EndPortal                   64  1   0   0   0   0   1   0.0 Portal
 0x78    EndPortalFrame              64  1   0   1   0   1   0   0.0 Wood
-0x79    EndStone                    64  1   0   1   1   0   0   1.5 Stone
-0x7A    DragonEgg                   64  1   0   1   1   1   0   
+0x79    EndStone                    64  1   0   1   1   0   0   3.0 Stone
+0x7A    DragonEgg                   64  1   0   1   1   1   0   3.0 Stone
 
 # items
 0x100   IronShovel                  1   0   0   0   1   0   1   0   Iron
@@ -253,7 +253,7 @@
 0x172   GhastTear                   64  0   0   0   1   0   1   0   NoMaterial
 0x173   GoldNugget                  64  0   0   0   1   0   1   0   NoMaterial
 0x174   NetherWart                  64  1   0   0   1   0   1   0   NoMaterial
-0x175   Potions                     1   1   0   0   1   0   1   0   NoMaterial
+0x175   Potion                      1   1   0   0   1   0   1   0   NoMaterial
 0x176   GlassBottle                 64  1   0   0   1   0   1   0   NoMaterial
 0x177   SpiderEye                   64  0   1   0   1   0   1   0   NoMaterial
 0x178   FermentedSpiderEye          64  0   0   0   1   0   1   0   NoMaterial

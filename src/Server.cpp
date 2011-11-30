@@ -7,7 +7,7 @@
 
 const int Server::c_notchian_tick_ms = 200;
 const int Server::c_physics_fps = 60;
-const int Server::c_protocol_version = 17;
+const int Server::c_protocol_version = 22;
 
 const QString Server::c_auth_server = "login.minecraft.net";
 const QString Server::c_session_server = "session.minecraft.net";
