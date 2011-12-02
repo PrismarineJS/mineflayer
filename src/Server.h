@@ -103,6 +103,7 @@ public:
 
     void sendWindowClick(qint8 window_id, qint16 slot, bool is_right_click, qint16 action_id, bool is_shift, Item item);
     void sendHoldingChange(qint16 slot);
+    void sendEnchantItem(qint8 window_id, qint8 enchant_index);
     void sendCloseWindow(qint8 window_id);
 
 private:

@@ -121,6 +121,11 @@ void Server::sendHoldingChange(qint16 slot)
     sendMessage(QSharedPointer<OutgoingRequest>(new HoldingChangeRequest(slot)));
 }
 
+void Server::sendEnchantItem(qint8 window_id, qint8 enchant_index)
+{
+    sendMessage(QSharedPointer<OutgoingRequest>(new EnchantItemRequest(window_id, enchant_index)));
+}
+
 void Server::handleConnected()
 {
     delete m_parser;

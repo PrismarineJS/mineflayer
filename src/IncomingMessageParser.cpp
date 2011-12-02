@@ -105,6 +105,7 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
     case Message::PlayerPosition:
     case Message::PlayerLook:
     case Message::WindowClick:
+    case Message::EnchantItem:
         Q_ASSERT_X(false, "", (QString("client only message from server: 0x") + QString::number(type, 16)).toStdString().c_str());
         return NULL;
     }

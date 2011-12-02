@@ -188,6 +188,12 @@ void IncrementStatisticRequest::writeMessageBody(QDataStream &stream)
     writeValue(stream, amount);
 }
 
+void EnchantItemRequest::writeMessageBody(QDataStream &stream)
+{
+    writeValue(stream, window_id);
+    writeValue(stream, enchant_index);
+}
+
 int IncomingResponse::parseValue(QByteArray buffer, int index, bool &value)
 {
     qint8 tmp = 0;
@@ -297,6 +303,39 @@ int IncomingResponse::parseStringAscii(QByteArray buffer, int index, QString &va
     value = QString::fromUtf8(buffer.mid(index, length).constData(), length);
     index += length;
     return index;
+}
+int IncomingResponse::parseValue(QByteArray buffer, int index, QByteArray &value, qint16 length)
+{
+    qint8 tmp;
+    for (qint16 i = 0; i < length; i++) {
+        if ((index = parseValue(buffer, index, tmp)) == -1)
+            return -1;
+        value.push_back(tmp);
+    }
+    return index;
+}
+int IncomingResponse::parseSlot(QByteArray buffer, int index, Item &item, bool force_complete_structure)
+{
+    qint16 tmp;
+    if ((index = parseValue(buffer, index, tmp)) == -1)
+        return -1;
+    item.type = (Item::ItemType)tmp;
+    if (force_complete_structure || item.type != Item::NoItem) {
+        if ((index = parseValue(buffer, index, item.count)) == -1)
+            return -1;
+        if ((index = parseValue(buffer, index, item.metadata)) == -1)
+            return -1;
+        if ((index = parseValue(buffer, index, tmp)) == -1)
+            return -1;
+        QByteArray enchantments;
+        if ((index = parseValue(buffer, index, enchantments, tmp)) == -1)
+            return -1;
+    } else {
+        item.count = 0;
+        item.metadata = 0;
+    }
+    return index;
+
 }
 int IncomingResponse::parseItem(QByteArray buffer, int index, Item &item, bool force_complete_structure)
 {
