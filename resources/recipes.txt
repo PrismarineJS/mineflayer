@@ -681,21 +681,12 @@ Bowl:4
 010
 1=WoodenPlank
 
+# Mushroom Stew can be placed in any combination!
 MushroomStew
-1
-2
+12
 3
 1=RedMushroom
 2=BrownMushroom
-3=Bowl
-
-# Mushroom Stew can be placed in any combination!
-MushroomStew
-1
-2
-3
-1=BrownMushroom
-2=RedMushroom
 3=Bowl
 
 Bread

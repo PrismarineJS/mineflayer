@@ -264,7 +264,7 @@
 0x17D   EyeOfEnder                  64  0   1   0   1   0   1   0   NoMaterial
 0x17E   GlisteringMelon             64  0   0   0   1   0   1   0   NoMaterial
 
-0x8D0   13Disc                      1   1   0   0   1   0   1   0   NoMaterial
+0x8D0   GoldDisc                    1   1   0   0   1   0   1   0   NoMaterial
 0x8D1   CatDisc                     1   1   0   0   1   0   1   0   NoMaterial
 0x8D2   BlocksDisc                  1   1   0   0   1   0   1   0   NoMaterial
 0x8D3   ChirpDisc                   1   1   0   0   1   0   1   0   NoMaterial
@@ -274,4 +274,4 @@
 0x8D7   StalDisc                    1   1   0   0   1   0   1   0   NoMaterial
 0x8D8   StradDisc                   1   1   0   0   1   0   1   0   NoMaterial
 0x8D9   WardDisc                    1   1   0   0   1   0   1   0   NoMaterial
-0x8DA   11Disc                      1   1   0   0   1   0   1   0   NoMaterial
+0x8DA   BrokenDisc                  1   1   0   0   1   0   1   0   NoMaterial
