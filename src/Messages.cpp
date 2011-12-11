@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-const qint32 OutgoingRequest::c_protocol_version = 17;
+const qint32 OutgoingRequest::c_protocol_version = 22;
 
 void OutgoingRequest::writeToStream(QDataStream &stream)
 {

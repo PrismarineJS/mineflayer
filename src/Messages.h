@@ -343,6 +343,7 @@ public:
     enum Dimension {
         Overworld = 0,
         Nether = -1,
+        TheEnd = 1
     };
     enum Difficulty {
         Peaceful = 0,
