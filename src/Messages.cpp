@@ -138,6 +138,16 @@ void PlayerBlockPlacementRequest::writeMessageBody(QDataStream &stream)
     writeValue(stream, meters_z);
     writeValue(stream, (qint8)block_face);
     writeValue(stream, item);
+    if (Item::enchantable(item.type)) {
+        if (item.enchantmentData.length() <= 0) {
+            writeValue(stream, -1);
+        } else {
+            writeValue(stream, (qint16) item.enchantmentData.length());
+            for (int i = 0; i < item.enchantmentData.length(); i++) {
+                writeValue(stream, item.enchantmentData.at(i));
+            }
+        }
+    }
 }
 
 void AnimationRequest::writeMessageBody(QDataStream &stream)
@@ -159,6 +169,16 @@ void WindowClickRequest::writeMessageBody(QDataStream &stream)
     writeValue(stream, action_id);
     writeValue(stream, is_shift);
     writeValue(stream, item);
+    if (Item::enchantable(item.type)) {
+        if (item.enchantmentData.length() <= 0) {
+            writeValue(stream, -1);
+        } else {
+            writeValue(stream, (qint16) item.enchantmentData.length());
+            for (int i = 0; i < item.enchantmentData.length(); i++) {
+                writeValue(stream, item.enchantmentData.at(i));
+            }
+        }
+    }
 }
 
 void HoldingChangeRequest::writeMessageBody(QDataStream &stream)
@@ -325,11 +345,12 @@ int IncomingResponse::parseSlot(QByteArray buffer, int index, Item &item, bool f
             return -1;
         if ((index = parseValue(buffer, index, item.metadata)) == -1)
             return -1;
-        if ((index = parseValue(buffer, index, tmp)) == -1)
-            return -1;
-        QByteArray enchantments;
-        if ((index = parseValue(buffer, index, enchantments, tmp)) == -1)
-            return -1;
+        if (Item::enchantable(item.type)) {
+            if ((index = parseValue(buffer, index, tmp)) == -1)
+                return -1;
+            if ((index = parseValue(buffer, index, item.enchantmentData, tmp)) == -1)
+                return -1;
+        }
     } else {
         item.count = 0;
         item.metadata = 0;
@@ -569,7 +590,7 @@ int PlayerBlockPlacementResponse::parse(QByteArray buffer)
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
     block_face = (BlockFaceDirection)tmp;
-    if ((index = parseItem(buffer, index, item)) == -1)
+    if ((index = parseSlot(buffer, index, item)) == -1)
         return -1;
     return index;
 }
@@ -1130,7 +1151,7 @@ int SetSlotResponse::parse(QByteArray buffer)
         return -1;
     if ((index = parseValue(buffer, index, slot)) == -1)
         return -1;
-    if ((index = parseItem(buffer, index, item)) == -1)
+    if ((index = parseSlot(buffer, index, item)) == -1)
         return -1;
     return index;
 }
@@ -1164,7 +1185,7 @@ int CreativeInventoryActionResponse::parse(QByteArray buffer)
     int index = 1;
     if ((index = parseValue(buffer, index, slot)) == -1)
         return -1;
-    if ((index = parseItem(buffer, index, item, true)) == -1)
+    if ((index = parseSlot(buffer, index, item, true)) == -1)
         return -1;
     return index;
 }
@@ -1181,7 +1202,7 @@ int WindowItemsResponse::parse(QByteArray buffer)
     items.resize(count);
     for (int i = 0; i < count; i++) {
         Item item;
-        if ((index = parseItem(buffer, index, item)) == -1)
+        if ((index = parseSlot(buffer, index, item)) == -1)
             return -1;
         items.replace(i, item);
     }

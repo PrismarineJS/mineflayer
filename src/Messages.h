@@ -502,7 +502,7 @@ public:
         Uncrouch=2,
         LeaveBed=3,
         StartSprinting=4,
-        StopSprinting=5,
+        StopSprinting=5
     };
     qint32 entity_id;
     EntityActionType entity_action_type;

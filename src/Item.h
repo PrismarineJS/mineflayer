@@ -4,7 +4,6 @@
 #include <QSize>
 #include <QVector>
 
-
 class Item;
 
 namespace _Item {
@@ -16,6 +15,7 @@ uint qHash(const _Item::Recipe & recipe);
 uint qHash(const Item & item);
 
 #include <QHash>
+#include <QSet>
 
 class Item {
 public:
@@ -480,6 +480,7 @@ public:
     static void setJesusModeEnabled(bool value);
     inline static ItemData * itemData(ItemType item_id) { return s_item_data.value(item_id, NULL); }
     inline static const QHash<ItemType, ItemData *> * itemDataHash() { return &s_item_data; }
+    inline static bool enchantable(ItemType item_id) { return s_enchantable_types.contains(item_id); }
 
     static const _Item::Recipe * recipeFor(const _Item::Recipe & recipe);
     inline static QList<_Item::Recipe *> recipesToMake(const Item & item) { return s_item_recipe.values(item); }
@@ -499,6 +500,9 @@ private:
     static QHash<_Item::Recipe, _Item::Recipe *> s_recipes;
     // match result item type to list of recipes that can make it.
     static QMultiHash<Item, _Item::Recipe *> s_item_recipe;
+
+    // all types which can have an enchant
+    static QSet<ItemType> s_enchantable_types;
 
     static const Item * c_no_item;
 

@@ -14,6 +14,7 @@ QHash<QString, Item::ItemData *> Item::s_item_by_name;
 QHash<_Item::Recipe, _Item::Recipe *> Item::s_recipes;
 QMultiHash<Item, _Item::Recipe *> Item::s_item_recipe;
 QHash<QString, Item::Material> Item::s_materials;
+QSet<Item::ItemType> Item::s_enchantable_types;
 
 void Item::initializeStaticData()
 {
@@ -180,6 +181,61 @@ void Item::initializeStaticData()
         _Item::Recipe * recipe = it.value();
         s_item_recipe.insert(recipe->result, recipe);
     }
+
+    s_enchantable_types.insert(WoodenSword);
+    s_enchantable_types.insert(WoodenShovel);
+    s_enchantable_types.insert(WoodenPickaxe);
+    s_enchantable_types.insert(WoodenAxe);
+    s_enchantable_types.insert(WoodenHoe);
+
+    s_enchantable_types.insert(StoneSword);
+    s_enchantable_types.insert(StoneShovel);
+    s_enchantable_types.insert(StonePickaxe);
+    s_enchantable_types.insert(StoneAxe);
+    s_enchantable_types.insert(StoneHoe);
+
+    s_enchantable_types.insert(IronSword);
+    s_enchantable_types.insert(IronShovel);
+    s_enchantable_types.insert(IronPickaxe);
+    s_enchantable_types.insert(IronAxe);
+    s_enchantable_types.insert(IronHoe);
+
+    s_enchantable_types.insert(DiamondSword);
+    s_enchantable_types.insert(DiamondShovel);
+    s_enchantable_types.insert(DiamondPickaxe);
+    s_enchantable_types.insert(DiamondAxe);
+    s_enchantable_types.insert(DiamondHoe);
+
+    s_enchantable_types.insert(GoldSword);
+    s_enchantable_types.insert(GoldShovel);
+    s_enchantable_types.insert(GoldPickaxe);
+    s_enchantable_types.insert(GoldAxe);
+    s_enchantable_types.insert(GoldHoe);
+
+    s_enchantable_types.insert(LeatherHelmet);
+    s_enchantable_types.insert(LeatherChestplate);
+    s_enchantable_types.insert(LeatherLeggings);
+    s_enchantable_types.insert(LeatherBoots);
+
+    s_enchantable_types.insert(ChainmailHelmet);
+    s_enchantable_types.insert(ChainmailChestplate);
+    s_enchantable_types.insert(ChainmailLeggings);
+    s_enchantable_types.insert(ChainmailBoots);
+
+    s_enchantable_types.insert(IronHelmet);
+    s_enchantable_types.insert(IronChestplate);
+    s_enchantable_types.insert(IronLeggings);
+    s_enchantable_types.insert(IronBoots);
+
+    s_enchantable_types.insert(DiamondHelmet);
+    s_enchantable_types.insert(DiamondChestplate);
+    s_enchantable_types.insert(DiamondLeggings);
+    s_enchantable_types.insert(DiamondBoots);
+
+    s_enchantable_types.insert(GoldHelmet);
+    s_enchantable_types.insert(GoldChestplate);
+    s_enchantable_types.insert(GoldLeggings);
+    s_enchantable_types.insert(GoldBoots);
 }
 
 void Item::setJesusModeEnabled(bool value)
