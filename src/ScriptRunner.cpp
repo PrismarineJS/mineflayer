@@ -26,7 +26,9 @@ ScriptRunner::ScriptRunner(QUrl url, QString script_file, QStringList args, bool
     m_stderr(stderr),
     m_stdout(stdout),
     m_timer_count(0),
+#ifdef MINEFLAYER_GUI_ON
     m_debugger(NULL),
+#endif
     m_lib_path(lib_path),
     m_physics_doer(NULL)
 {
