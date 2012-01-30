@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-const qint32 OutgoingRequest::c_protocol_version = 22;
+const qint32 OutgoingRequest::c_protocol_version = 23;
 
 void OutgoingRequest::writeToStream(QDataStream &stream)
 {
@@ -78,6 +78,7 @@ void LoginRequest::writeMessageBody(QDataStream &stream)
     writeValue(stream, c_protocol_version);
     writeValue(stream, username);
     writeValue(stream, (qint64)0); // map seed
+    writeValue(stream, (QString)"");
     writeValue(stream, (qint32)0); // game mode
     writeValue(stream, (qint8)0); // dimension
     writeValue(stream, (qint8)0); // difficulty
