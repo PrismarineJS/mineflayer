@@ -431,6 +431,7 @@ public:
     qint8 game_mode;
     qint16 world_height;
     qint64 seed;
+    QString level_type;
     RespawnResponse() : IncomingResponse(Respawn) {}
     virtual int parse(QByteArray buffer);
 };
