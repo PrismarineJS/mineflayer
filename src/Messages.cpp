@@ -110,6 +110,7 @@ void RespawnRequest::writeMessageBody(QDataStream &stream)
     writeValue(stream, (qint8)0); // game_mode
     writeValue(stream, (qint16)0); // world_height
     writeValue(stream, (qint64)0); // seed
+    writeValue(stream, (QString)""); // level type
 }
 
 void PlayerPositionAndLookRequest::writeMessageBody(QDataStream &stream)
@@ -520,6 +521,8 @@ int RespawnResponse::parse(QByteArray buffer)
     if ((index = parseValue(buffer, index, world_height)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, seed)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, level_type)) == -1)
         return -1;
     return index;
 }
