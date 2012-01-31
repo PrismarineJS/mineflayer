@@ -410,6 +410,8 @@ int LoginResponse::parse(QByteArray buffer)
         return -1;
     if ((index = parseValue(buffer, index, map_seed)) == -1)
         return -1;
+    if ((index = parseValue(buffer, index, level_type)) == -1)
+        return -1;
     qint32 tmp32;
     if ((index = parseValue(buffer, index, tmp32)) == -1)
         return -1;
