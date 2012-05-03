@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-const qint32 OutgoingRequest::c_protocol_version = 22;
+const qint32 OutgoingRequest::c_protocol_version = 23;
 
 void OutgoingRequest::writeToStream(QDataStream &stream)
 {
@@ -78,6 +78,7 @@ void LoginRequest::writeMessageBody(QDataStream &stream)
     writeValue(stream, c_protocol_version);
     writeValue(stream, username);
     writeValue(stream, (qint64)0); // map seed
+    writeValue(stream, (QString)"");
     writeValue(stream, (qint32)0); // game mode
     writeValue(stream, (qint8)0); // dimension
     writeValue(stream, (qint8)0); // difficulty
@@ -109,6 +110,7 @@ void RespawnRequest::writeMessageBody(QDataStream &stream)
     writeValue(stream, (qint8)0); // game_mode
     writeValue(stream, (qint16)0); // world_height
     writeValue(stream, (qint64)0); // seed
+    writeValue(stream, (QString)""); // level type
 }
 
 void PlayerPositionAndLookRequest::writeMessageBody(QDataStream &stream)
@@ -409,6 +411,8 @@ int LoginResponse::parse(QByteArray buffer)
         return -1;
     if ((index = parseValue(buffer, index, map_seed)) == -1)
         return -1;
+    if ((index = parseValue(buffer, index, level_type)) == -1)
+        return -1;
     qint32 tmp32;
     if ((index = parseValue(buffer, index, tmp32)) == -1)
         return -1;
@@ -517,6 +521,8 @@ int RespawnResponse::parse(QByteArray buffer)
     if ((index = parseValue(buffer, index, world_height)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, seed)) == -1)
+        return -1;
+    if ((index = parseValue(buffer, index, level_type)) == -1)
         return -1;
     return index;
 }

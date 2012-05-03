@@ -354,6 +354,7 @@ public:
     qint32 entity_id;
     QString _unused;
     qint64 map_seed;
+    QString level_type;
     ServerMode server_mode;
     Dimension dimension;
     Difficulty difficulty;
@@ -430,6 +431,7 @@ public:
     qint8 game_mode;
     qint16 world_height;
     qint64 seed;
+    QString level_type;
     RespawnResponse() : IncomingResponse(Respawn) {}
     virtual int parse(QByteArray buffer);
 };
