@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-const qint32 OutgoingRequest::c_protocol_version = 19;
+const qint32 OutgoingRequest::c_protocol_version = 22;
 
 void OutgoingRequest::writeToStream(QDataStream &stream)
 {
@@ -153,6 +153,12 @@ void AnimationRequest::writeMessageBody(QDataStream &stream)
 void CloseWindowRequest::writeMessageBody(QDataStream &stream)
 {
     writeValue(stream, window_id);
+}
+
+void EnchantItemRequest::writeMessageBody(QDataStream &stream)
+{
+    writeValue(stream, window_id);
+    writeValue(stream, enchantment);
 }
 
 void WindowClickRequest::writeMessageBody(QDataStream &stream)
@@ -315,13 +321,16 @@ int IncomingResponse::parseEnchantmentList(QByteArray buffer, int index)
     return index;
 }
 
-int IncomingResponse::parseItem(QByteArray buffer, int index, Item &item, bool force_complete_structure)
+int IncomingResponse::parseItem(QByteArray buffer, int index, Item &item)
 {
     qint16 tmp;
     if ((index = parseValue(buffer, index, tmp)) == -1)
         return -1;
     item.type = (Item::ItemType)tmp;
-    if (force_complete_structure || item.type != Item::NoItem) {
+    if (item.type == Item::NoItem) {
+        item.count = 0;
+        item.metadata = 0;
+    } else {
         if ((index = parseValue(buffer, index, item.count)) == -1)
             return -1;
         if ((index = parseValue(buffer, index, item.metadata)) == -1)
@@ -330,9 +339,6 @@ int IncomingResponse::parseItem(QByteArray buffer, int index, Item &item, bool f
             if ((index = parseEnchantmentList(buffer, index)) == -1)
                 return -1;
         }
-    } else {
-        item.count = 0;
-        item.metadata = 0;
     }
     return index;
 }
@@ -900,7 +906,7 @@ int RemoveEntityEffectResponse::parse(QByteArray buffer)
 int ExperienceResponse::parse(QByteArray buffer)
 {
     int index = 1;
-    if ((index = parseValue(buffer, index, experience_relative_to_current_level)) == -1)
+    if ((index = parseValue(buffer, index, experience_bar)) == -1)
         return -1;
     if ((index = parseValue(buffer, index, level)) == -1)
         return -1;
@@ -1147,7 +1153,7 @@ int CreativeInventoryActionResponse::parse(QByteArray buffer)
     int index = 1;
     if ((index = parseValue(buffer, index, slot)) == -1)
         return -1;
-    if ((index = parseItem(buffer, index, item, true)) == -1)
+    if ((index = parseItem(buffer, index, item)) == -1)
         return -1;
     return index;
 }

@@ -69,6 +69,7 @@ public:
         UpdateProgressBar=0x69,
         Transaction=0x6A,
         CreativeInventoryAction=0x6B,
+        EnchantItem=0x6C,
         UpdateSign=(qint8)0x82,
         MapData=(qint8)0x83,
         IncrementStatistic=(qint8)0xC8,
@@ -240,6 +241,15 @@ public:
     virtual void writeMessageBody(QDataStream &stream);
 };
 
+class EnchantItemRequest : public OutgoingRequest {
+public:
+    qint8 window_id;
+    qint8 enchantment;
+    EnchantItemRequest(qint8 window_id, qint8 enchantment) : OutgoingRequest(EnchantItem),
+        window_id(window_id), enchantment(enchantment) {}
+    virtual void writeMessageBody(QDataStream &stream);
+};
+
 class WindowClickRequest : public OutgoingRequest {
 public:
     qint8 window_id;
@@ -313,7 +323,7 @@ protected:
     static int parseValue(QByteArray buffer, int index, QString &value);
     static int parseStringAscii(QByteArray buffer, int index, QString &value);
     static int parseEnchantmentList(QByteArray buffer, int index);
-    static int parseItem(QByteArray buffer, int index, Item &item, bool force_complete_structure=false);
+    static int parseItem(QByteArray buffer, int index, Item &item);
     static int parseValue(QByteArray buffer, int index, QByteArray &value);
 };
 
@@ -741,8 +751,8 @@ public:
 
 class ExperienceResponse : public IncomingResponse {
 public:
-    qint8 experience_relative_to_current_level;
-    qint8 level;
+    float experience_bar;
+    qint16 level;
     qint16 total_experience;
     ExperienceResponse() : IncomingResponse(RemoveEntityEffect) {}
     virtual int parse(QByteArray buffer);
