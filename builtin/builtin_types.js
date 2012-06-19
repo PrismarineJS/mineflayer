@@ -66,7 +66,7 @@
     };
 
     mf.MetadataUse = {
-        "ItemUnknown": 0
+        "ItemUnknown": 0,
         "ItemHealth": 1,
         "ItemType": 2,
         "ItemMap": 3
