@@ -62,6 +62,7 @@ StickyPiston
 2
 1=Slimeball
 2=Piston
+
 Piston
 111
 232
@@ -354,14 +355,14 @@ FenceGate
 2=WoodenPlank
 
 BrickStairs:4
-1
-11
+100
+110
 111
 1=Brick
 
 StoneBrickStairs:4
-1
-11
+100
+110
 111
 1=StoneBricks
 
@@ -946,6 +947,5 @@ BlazePowder:2
 1=BlazeRod
 
 MagmaCream
-12
 1=Slimeball
 2=BlazePowder
