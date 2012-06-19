@@ -312,6 +312,7 @@ protected:
     static int parseValue(QByteArray buffer, int index, double &value);
     static int parseValue(QByteArray buffer, int index, QString &value);
     static int parseStringAscii(QByteArray buffer, int index, QString &value);
+    static int parseEnchantmentList(QByteArray buffer, int index);
     static int parseItem(QByteArray buffer, int index, Item &item, bool force_complete_structure=false);
     static int parseValue(QByteArray buffer, int index, QByteArray &value);
 };

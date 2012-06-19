@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-const qint32 OutgoingRequest::c_protocol_version = 17;
+const qint32 OutgoingRequest::c_protocol_version = 19;
 
 void OutgoingRequest::writeToStream(QDataStream &stream)
 {
@@ -71,6 +71,10 @@ void OutgoingRequest::writeValue(QDataStream &stream, Item value)
         return;
     writeValue(stream, (qint8) value.count);
     writeValue(stream, (qint16) value.metadata);
+    if (Item::itemData(value.type)->enchantable) {
+        // TODO handle item enchantments
+        writeValue(stream, (qint16)-1);
+    }
 }
 
 void LoginRequest::writeMessageBody(QDataStream &stream)
@@ -298,6 +302,19 @@ int IncomingResponse::parseStringAscii(QByteArray buffer, int index, QString &va
     index += length;
     return index;
 }
+
+int IncomingResponse::parseEnchantmentList(QByteArray buffer, int index)
+{
+    // TODO actually return the value
+    qint16 length;
+    if ((index = parseValue(buffer, index, length)) == -1)
+        return -1;
+    if (!(index + length <= buffer.size()))
+        return -1;
+    index += length;
+    return index;
+}
+
 int IncomingResponse::parseItem(QByteArray buffer, int index, Item &item, bool force_complete_structure)
 {
     qint16 tmp;
@@ -309,6 +326,10 @@ int IncomingResponse::parseItem(QByteArray buffer, int index, Item &item, bool f
             return -1;
         if ((index = parseValue(buffer, index, item.metadata)) == -1)
             return -1;
+        if (Item::itemData(item.type)->enchantable) {
+            if ((index = parseEnchantmentList(buffer, index)) == -1)
+                return -1;
+        }
     } else {
         item.count = 0;
         item.metadata = 0;
@@ -331,6 +352,7 @@ int IncomingResponse::parseValue(QByteArray buffer, int index, QByteArray &value
     index = i;
     return index;
 }
+
 
 int KeepAliveResponse::parse(QByteArray buffer)
 {

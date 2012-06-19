@@ -53,7 +53,7 @@ void Item::initializeStaticData()
             if (line.isEmpty() || line.startsWith("#"))
                 continue;
             QStringList parts = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-            Q_ASSERT(parts.size() == 11);
+            Q_ASSERT(parts.size() == 12);
 
             int part_index = 0;
 
@@ -73,6 +73,7 @@ void Item::initializeStaticData()
             item_data->block_activatable    = static_cast<bool>(parts.at(part_index++).toInt());
             item_data->safe                 = static_cast<bool>(parts.at(part_index++).toInt());
             item_data->hardness             = static_cast<float>(parts.at(part_index++).toFloat());
+            item_data->enchantable          = static_cast<bool>(parts.at(part_index++).toInt());
 
             // material
             QString material_name = parts.at(part_index++);

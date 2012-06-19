@@ -479,6 +479,7 @@ public:
         bool block_activatable; // true if right clicking on the block in the world activates the block
         bool safe; // false if your presence in this block causes you harm
         float hardness; // used for computing digging time
+        bool enchantable; // playerblockplacement message depends on this value
         Material material; // what the block is made out of
     };
 
