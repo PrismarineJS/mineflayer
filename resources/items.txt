@@ -132,7 +132,18 @@
 0x77    EndPortal                   64  1   0   0   0   0   1   0.0 Portal
 0x78    EndPortalFrame              64  1   0   1   0   1   0   0.0 Wood
 0x79    EndStone                    64  1   0   1   1   0   0   1.5 Stone
-0x7A    DragonEgg                   64  1   0   1   1   1   0   
+0x7A    DragonEgg                   64  1   0   1   1   0   0   0.0 Stone
+0x7B    RedstoneLamp_inactive       64  1   0   1   1   0   0   0.3 Glass
+0x7C    RedstoneLamp_active         64  1   0   1   1   0   0   0.3 Glass
+0x7D    WoodenDoubleSlab            64  1   0   1   1   0   0   2.0 Wood
+0x7E    WoodenSlab                  64  1   0   1   1   0   0   2.0 Wood
+0x7F    CocoaPlant                  64  1   0   1   1   0   0   0.0 Crops
+0x80    SandstoneStairs             64  1   0   1   1   0   0   0.0 Stone
+0x81    EmeraldOre                  64  1   0   1   1   0   0   0.0 Stone
+0x82    EnderChest                  64  1   0   1   1   1   0   2.5 Wood
+0x83    TripwireHook                64  1   0   0   1   0   1   0.5 Redstone
+0x84    Tripwire                    64  1   0   0   1   0   1   0.0 Redstone
+0x85    EmeraldBlock                64  1   0   1   1   0   0   5   Iron
 
 # items
 0x100   IronShovel                  1   0   0   0   1   0   1   0   Iron
@@ -248,13 +259,13 @@
 0x16D   RawChicken                  64  0   1   0   1   0   1   0   NoMaterial
 0x16E   CookedChicken               64  0   1   0   1   0   1   0   NoMaterial
 0x16F   RottenFlesh                 64  0   1   0   1   0   1   0   NoMaterial
-0x170   EnderPearl                  64  1   0   0   1   0   1   0   NoMaterial
+0x170   EnderPearl                  64  0   1   0   1   0   1   0   NoMaterial
 0x171   BlazeRod                    64  0   0   0   1   0   1   0   NoMaterial
 0x172   GhastTear                   64  0   0   0   1   0   1   0   NoMaterial
 0x173   GoldNugget                  64  0   0   0   1   0   1   0   NoMaterial
 0x174   NetherWart                  64  1   0   0   1   0   1   0   NoMaterial
-0x175   Potions                     1   1   0   0   1   0   1   0   NoMaterial
-0x176   GlassBottle                 64  1   0   0   1   0   1   0   NoMaterial
+0x175   Potion                      1   0   1   0   1   0   1   0   NoMaterial
+0x176   GlassBottle                 64  0   1   0   1   0   1   0   NoMaterial
 0x177   SpiderEye                   64  0   1   0   1   0   1   0   NoMaterial
 0x178   FermentedSpiderEye          64  0   0   0   1   0   1   0   NoMaterial
 0x179   BlazePowder                 64  0   0   0   1   0   1   0   NoMaterial
@@ -264,14 +275,21 @@
 0x17D   EyeOfEnder                  64  0   1   0   1   0   1   0   NoMaterial
 0x17E   GlisteringMelon             64  0   0   0   1   0   1   0   NoMaterial
 
-0x8D0   13Disc                      1   1   0   0   1   0   1   0   NoMaterial
-0x8D1   CatDisc                     1   1   0   0   1   0   1   0   NoMaterial
-0x8D2   BlocksDisc                  1   1   0   0   1   0   1   0   NoMaterial
-0x8D3   ChirpDisc                   1   1   0   0   1   0   1   0   NoMaterial
-0x8D4   FarDisc                     1   1   0   0   1   0   1   0   NoMaterial
-0x8D5   MallDisc                    1   1   0   0   1   0   1   0   NoMaterial
-0x8D6   MellohiDisc                 1   1   0   0   1   0   1   0   NoMaterial
-0x8D7   StalDisc                    1   1   0   0   1   0   1   0   NoMaterial
-0x8D8   StradDisc                   1   1   0   0   1   0   1   0   NoMaterial
-0x8D9   WardDisc                    1   1   0   0   1   0   1   0   NoMaterial
-0x8DA   11Disc                      1   1   0   0   1   0   1   0   NoMaterial
+0x17F   SpawnEgg                    64  0   0   0   1   0   1   0   NoMaterial
+0x180   BottleOEnchanting           64  0   1   0   1   0   1   0   NoMaterial
+0x181   FireCharge                  64  0   1   0   1   0   1   0   NoMaterial
+0x182   BookAndQuill                1   0   1   0   1   0   1   0   NoMaterial
+0x183   WrittenBook                 1   0   1   0   1   0   1   0   NoMaterial
+0x184   Emerald                     64  0   0   0   1   0   1   0   NoMaterial
+
+0x8D0   ThirteenDisc                1   0   1   0   1   0   1   0   NoMaterial
+0x8D1   CatDisc                     1   0   1   0   1   0   1   0   NoMaterial
+0x8D2   BlocksDisc                  1   0   1   0   1   0   1   0   NoMaterial
+0x8D3   ChirpDisc                   1   0   1   0   1   0   1   0   NoMaterial
+0x8D4   FarDisc                     1   0   1   0   1   0   1   0   NoMaterial
+0x8D5   MallDisc                    1   0   1   0   1   0   1   0   NoMaterial
+0x8D6   MellohiDisc                 1   0   1   0   1   0   1   0   NoMaterial
+0x8D7   StalDisc                    1   0   1   0   1   0   1   0   NoMaterial
+0x8D8   StradDisc                   1   0   1   0   1   0   1   0   NoMaterial
+0x8D9   WardDisc                    1   0   1   0   1   0   1   0   NoMaterial
+0x8DA   ElevenDisc                  1   0   1   0   1   0   1   0   NoMaterial
