@@ -45,6 +45,10 @@ public:
     explicit Server(QUrl connection_info);
     ~Server();
 
+    static const Int3D c_chunk_size;
+    static const Int3D c_column_size;
+
+
 signals:
     void loginStatusUpdated(Server::LoginStatus status);
     // emitted in addition to login status

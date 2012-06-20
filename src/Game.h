@@ -158,7 +158,6 @@ public:
     QSharedPointer<Entity> entity(int entity_id);
 
     Block blockAt(const Int3D & absolute_location);
-    void getMapData(const Int3D & min_corner, const Int3D & size, unsigned char * buffer);
     bool isBlockLoaded(const Int3D & absolute_location);
     QString signTextAt(const Int3D & absolute_location);
     const HealthStatus & playerHealthStatus() const { return m_player_health_status; }

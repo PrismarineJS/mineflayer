@@ -38,7 +38,6 @@ public:
         MobSpawn=0x18,
         EntityPainting=0x19,
         ExperienceOrb=0x1A,
-        Unknown1B=0x1B,
         EntityVelocity=0x1C,
         DestroyEntity=0x1D,
         Entity=0x1E,
@@ -46,6 +45,7 @@ public:
         EntityLook=0x20,
         EntityLookAndRelativeMove=0x21,
         EntityTeleport=0x22,
+        EntityHeadLook=0x23,
         EntityStatus=0x26,
         AttachEntity=0x27,
         EntityMetadata=0x28,
@@ -72,8 +72,11 @@ public:
         EnchantItem=0x6C,
         UpdateSign=(qint8)0x82,
         MapData=(qint8)0x83,
+        UpdateTileEntity=(qint8)0x84,
+        PlayerAbilities=(qint8)0xCA,
         IncrementStatistic=(qint8)0xC8,
         PlayerOnlineStatus=(qint8)0xC9,
+        PluginMessage=(qint8)0xFA,
         DisconnectOrKick=(qint8)0xFF,
     };
 
@@ -180,8 +183,8 @@ public:
 
 class RespawnRequest : public OutgoingRequest {
 public:
-    qint8 world;
-    RespawnRequest(qint8 _world) : OutgoingRequest(Respawn), world(_world) {}
+    qint32 world;
+    RespawnRequest(qint32 _world) : OutgoingRequest(Respawn), world(_world) {}
     virtual void writeMessageBody(QDataStream &);
 };
 
@@ -300,7 +303,6 @@ public:
     virtual void writeMessageBody(QDataStream &stream);
 };
 
-
 class IncomingResponse : public Message {
 public:
     virtual ~IncomingResponse() {}
@@ -315,7 +317,9 @@ protected:
     static int parseValue(QByteArray buffer, int index, bool &value);
     static int parseValue(QByteArray buffer, int index, quint8 &value);
     static int parseValue(QByteArray buffer, int index, qint8 &value);
+    static int parseValue(QByteArray buffer, int index, quint16 &value);
     static int parseValue(QByteArray buffer, int index, qint16 &value);
+    static int parseValue(QByteArray buffer, int index, quint32 &value);
     static int parseValue(QByteArray buffer, int index, qint32 &value);
     static int parseValue(QByteArray buffer, int index, qint64 &value);
     static int parseValue(QByteArray buffer, int index, float &value);
@@ -352,11 +356,11 @@ public:
     };
     qint32 entity_id;
     QString _unused;
-    qint64 map_seed;
+    QString level_type;
     ServerMode server_mode;
     Dimension dimension;
     Difficulty difficulty;
-    quint8 world_height;
+    quint8 _unused2;
     quint8 max_players;
     LoginResponse() : IncomingResponse(Login) {}
     virtual int parse(QByteArray buffer);
@@ -424,11 +428,11 @@ public:
 
 class RespawnResponse : public IncomingResponse {
 public:
-    qint8 world;
+    qint32 world;
     qint8 difficulty;
     qint8 game_mode;
     qint16 world_height;
-    qint64 seed;
+    QString level_type;
     RespawnResponse() : IncomingResponse(Respawn) {}
     virtual int parse(QByteArray buffer);
 };
@@ -600,6 +604,7 @@ public:
     qint32 pixels_z;
     qint8 yaw_out_of_256;
     qint8 pitch_out_of_256;
+    qint8 head_yaw_out_of_256;
     QByteArray metadata;
     MobSpawnResponse() : IncomingResponse(MobSpawn) {}
     virtual int parse(QByteArray buffer);
@@ -625,18 +630,6 @@ public:
     qint32 z;
     qint16 count;
     ExperienceOrbResponse() : IncomingResponse(ExperienceOrb) {}
-    virtual int parse(QByteArray buffer);
-};
-
-class Unknown1BResponse : public IncomingResponse {
-public:
-    float unknown_1;
-    float unknown_2;
-    bool unknown_3;
-    bool unknown_4;
-    float unknown_5;
-    float unknown_6;
-    Unknown1BResponse() : IncomingResponse(Unknown1B) {}
     virtual int parse(QByteArray buffer);
 };
 
@@ -707,6 +700,14 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class EntityHeadLookResponse : public IncomingResponse {
+public:
+    qint32 entity_id;
+    qint8 head_yaw_out_of_256;
+    EntityHeadLookResponse() : IncomingResponse(EntityHeadLook) {}
+    virtual int parse(QByteArray buffer);
+};
+
 class EntityStatusResponse : public IncomingResponse {
 public:
     qint32 entity_id;
@@ -773,12 +774,13 @@ public:
 
 class MapChunkResponse : public IncomingResponse {
 public:
-    qint32 x;
-    qint16 y;
-    qint32 z;
-    qint8 size_x_minus_one;
-    qint8 size_y_minus_one;
-    qint8 size_z_minus_one;
+    qint32 chunk_x;
+    qint32 chunk_z;
+    bool ground_up_continuous;
+    quint16 primary_bit_map;
+    quint16 add_bit_map;
+    qint32 compressed_size;
+    qint32 _unused;
     QByteArray compressed_data;
     MapChunkResponse() : IncomingResponse(MapChunk) {}
     virtual int parse(QByteArray buffer);
@@ -786,11 +788,17 @@ public:
 
 class MultiBlockChangeResponse : public IncomingResponse {
 public:
+    struct Record {
+        unsigned metadata : 4;
+        unsigned block_id : 12;
+        unsigned y : 8;
+        unsigned relative_z : 4;
+        unsigned relative_x : 4;
+    };
+
     qint32 chunk_x;
     qint32 chunk_z;
-    QVector<Int3D> block_coords;
-    QVector<Item::ItemType> new_block_types;
-    QVector<qint8> new_block_metadatas;
+    QVector<Record> records;
     MultiBlockChangeResponse() : IncomingResponse(MultiBlockChange) {}
     virtual int parse(QByteArray buffer);
 };
@@ -952,6 +960,28 @@ public:
     virtual int parse(QByteArray buffer);
 };
 
+class UpdateTileEntityResponse : public IncomingResponse {
+public:
+    qint32 x;
+    qint16 y;
+    qint32 z;
+    qint8 action;
+    qint32 custom1;
+    qint32 custom2;
+    qint32 custom3;
+    UpdateTileEntityResponse() : IncomingResponse(UpdateTileEntity) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class PlayerAbilitiesResponse : public IncomingResponse {
+public:
+    bool invulnerability;
+    bool is_flying;
+    bool can_fly;
+    bool instant_destroy;
+    PlayerAbilitiesResponse() : IncomingResponse(PlayerAbilities) {}
+    virtual int parse(QByteArray buffer);
+};
 class IncrementStatisticResponse : public IncomingResponse {
 public:
     qint32 statistic_id;
@@ -966,6 +996,15 @@ public:
     bool online;
     qint16 ping_milliseconds;
     PlayerOnlineStatusResponse() : IncomingResponse(PlayerOnlineStatus) {}
+    virtual int parse(QByteArray buffer);
+};
+
+class PluginMessageResponse : public IncomingResponse {
+public:
+    QString channel;
+    qint16 length;
+    QByteArray data;
+    PluginMessageResponse() : IncomingResponse(PluginMessage) {}
     virtual int parse(QByteArray buffer);
 };
 

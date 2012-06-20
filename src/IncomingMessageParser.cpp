@@ -65,7 +65,6 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
     case Message::MobSpawn: return new MobSpawnResponse;
     case Message::EntityPainting: return new EntityPaintingResponse;
     case Message::ExperienceOrb: return new ExperienceOrbResponse;
-    case Message::Unknown1B: return new Unknown1BResponse;
     case Message::EntityVelocity: return new EntityVelocityResponse;
     case Message::DestroyEntity: return new DestroyEntityResponse;
     case Message::Entity: return new EntityResponse;
@@ -73,6 +72,7 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
     case Message::EntityLook: return new EntityLookResponse;
     case Message::EntityLookAndRelativeMove: return new EntityLookAndRelativeMoveResponse;
     case Message::EntityTeleport: return new EntityTeleportResponse;
+    case Message::EntityHeadLook: return new EntityHeadLookResponse;
     case Message::EntityStatus: return new EntityStatusResponse;
     case Message::AttachEntity: return new AttachEntityResponse;
     case Message::EntityMetadata: return new EntityMetadataResponse;
@@ -100,11 +100,15 @@ IncomingResponse * IncomingMessageParser::createMessageOfType(IncomingResponse::
     case Message::DisconnectOrKick: return new DisconnectOrKickResponse;
     case Message::DoorChange: return new DoorChangeResponse;
     case Message::MapData: return new MapDataResponse;
+    case Message::UpdateTileEntity: return new UpdateTileEntityResponse;
+    case Message::PlayerAbilities: return new PlayerAbilitiesResponse;
+    case Message::PluginMessage: return new PluginMessageResponse;
 
     case Message::Player:
     case Message::PlayerPosition:
     case Message::PlayerLook:
     case Message::WindowClick:
+    case Message::EnchantItem:
         Q_ASSERT_X(false, "", (QString("client only message from server: 0x") + QString::number(type, 16)).toStdString().c_str());
         return NULL;
     }

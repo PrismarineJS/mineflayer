@@ -8,6 +8,9 @@
 const int Server::c_notchian_tick_ms = 200;
 const int Server::c_physics_fps = 60;
 const int Server::c_protocol_version = OutgoingRequest::c_protocol_version;
+const Int3D Server::c_chunk_size(16, 16, 16);
+const Int3D Server::c_column_size(16, 256, 16);
+
 
 const QString Server::c_auth_server = "login.minecraft.net";
 const QString Server::c_session_server = "session.minecraft.net";
@@ -374,36 +377,43 @@ void Server::processIncomingMessage(QSharedPointer<IncomingResponse> incomingMes
         case Message::MapChunk: {
             MapChunkResponse * message = (MapChunkResponse *) incomingMessage.data();
 
-            Int3D position(message->x, message->y, message->z);
-            Int3D size(message->size_x_minus_one + 1, message->size_y_minus_one + 1, message->size_z_minus_one + 1);
-
             // decompress the data
-            QByteArray uncrompressable_data = message->compressed_data;
-            // prepend a guess of the final size. we know the final size is volume * 2.5;
-            qint32 decompressed_size = (size.x * size.y * size.z) * 5 / 2;
+            QByteArray data_missing_length = message->compressed_data;
+            // prepend a guess of the final size.
+            qint32 decompressed_size = 2; // seems like a good guess.
             QByteArray decompressed_size_array;
             QDataStream(&decompressed_size_array, QIODevice::WriteOnly) << decompressed_size;
-            uncrompressable_data.prepend(decompressed_size_array);
+            data_missing_length.prepend(decompressed_size_array);
             // decompress
-            QByteArray decompressed = qUncompress(uncrompressable_data);
-            if (decompressed.size() != decompressed_size) {
-                qWarning() << "ignoring corrupt map chunk update with start" <<
-                        position.x << position.y << position.z << "and supposed size" <<
-                        size.x << size.y << size.z << "but decompressed size of" <<
-                        decompressed.size() << "instead of" << decompressed_size;
-                return;
+            const QByteArray decompressed = qUncompress(data_missing_length);
+
+            // loop over 16x16x16 chunks in the 16x256x16 column
+            const int chunk_count = c_column_size.y / c_chunk_size.y;
+            Int3D position = fromChunkCoordinates(message->chunk_x, message->chunk_z);
+            int cursor = 0;
+            // block type array
+            for (int y = 0; y < chunk_count; y++) {
+                position.y = y * c_chunk_size.y;
+                // if the bitmask indicates this chunk has been sent
+                if (message->primary_bit_map & (1 << y)) {
+                    bool contains_add_data = message->add_bit_map & (1 << y);
+                    bool contains_biome_data = message->ground_up_continuous;
+                    QSharedPointer<Chunk> chunk(new Chunk(position, c_chunk_size, decompressed.mid(cursor), contains_add_data, contains_biome_data));
+                    cursor += chunk->dataSize();
+                    emit mapChunkUpdated(chunk);
+                }
             }
 
-            emit mapChunkUpdated(QSharedPointer<Chunk>(new Chunk(position, size, decompressed)));
             break;
         }
         case Message::MultiBlockChange: {
             MultiBlockChangeResponse * message = (MultiBlockChangeResponse *) incomingMessage.data();
             Int3D chunk_corner = fromChunkCoordinates(message->chunk_x, message->chunk_z);
             QHash<Int3D, Block> new_blocks;
-            for (int i = 0; i < message->block_coords.size(); i++) {
-                Int3D absolute_location = chunk_corner + message->block_coords.at(i);
-                Block block(message->new_block_types.at(i), message->new_block_metadatas.at(i), 0, 0);
+            for (int i = 0; i < message->records.size(); i++) {
+                MultiBlockChangeResponse::Record record = message->records.at(i);
+                Int3D absolute_location = chunk_corner + Int3D(record.relative_x, record.y, record.relative_z);
+                Block block((Item::ItemType)record.block_id, record.metadata, 0, 0);
                 new_blocks.insert(absolute_location, block);
             }
             emit multiBlockUpdate(chunk_corner, new_blocks);
@@ -484,7 +494,7 @@ void Server::fromIntPixels(EntityPosition &destination, Int3D pixels)
 
 Int3D Server::fromChunkCoordinates(int chunk_x, int chunk_z)
 {
-    return Int3D(chunk_x * 16, 0, chunk_z * 16);
+    return Int3D(chunk_x * c_chunk_size.x, 0, chunk_z * c_chunk_size.z);
 }
 
 void Server::fromNotchianYawPitch(EntityPosition &destination, float notchian_yaw, float notchian_pitch)
