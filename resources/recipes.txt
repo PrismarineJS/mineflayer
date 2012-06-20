@@ -886,7 +886,6 @@ InkSac:2:1
 1=RedRose
 
 Sugar
-1
 1=SugarCane
 
 Cake
@@ -924,11 +923,9 @@ Shears
 1=IronIngot
 
 PumpkinSeeds:4
-1
 1=Pumpkin
 
 MelonSeeds
-1
 1=MelonSlice
 
 GlassBottle:3
@@ -943,7 +940,6 @@ FermentedSpiderEye
 3=SpiderEye
 
 BlazePowder:2
-1
 1=BlazeRod
 
 MagmaCream
