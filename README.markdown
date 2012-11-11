@@ -6,6 +6,14 @@ Minecraft multiplayer client with a bot scripting interface. Currently supportin
 
 **Online API Documentation** http://mineflayer.com/doc/html/mf.html - automatically compiled and uploaded when repository is updated.
 
+Current Project Status:
+-----------------------
+
+This project is **no longer maintained**. Sorry.
+
+Should I decide to resume development work, I would re-do it as a [node.js](http://nodejs.org/) module.
+
+
 Setting up build:
 -----------------
 
