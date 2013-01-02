@@ -27,11 +27,6 @@ bot.on('chat', function(username, message) {
 
 `npm install mineflayer`
 
-Due to an ongoing dispute about the `minecraft-protocol` npm name, you then
-need to install `minecraft-protocl` from git:
-
-`npm install git://github.com/superjoe30/node-minecraft-protocol.git`
-
 ## Documentation
 
  * See `doc/api.md`.
