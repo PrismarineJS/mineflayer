@@ -1,0 +1,19 @@
+{
+  "name": "mineflayer",
+  "version": "0.0.0",
+  "description": "create minecraft bots with a stable, high level API",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/superjoe30/mineflayer.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "requireindex": "~1.0.0",
+    "minecraft-protocol": "0.0.1",
+    "quotemeta": "0.0.0"
+  }
+}

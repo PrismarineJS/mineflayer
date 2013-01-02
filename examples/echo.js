@@ -1,6 +1,10 @@
-mf.include("chat_commands.js");
-
-var echo = function(username,message,respond) {
-    mf.chat(message.join(" "));
-};
-chat_commands.registerCommand("echo",echo,0,Infinity);
+var mineflayer = require('../');
+var bot = mineflayer.createBot({
+  username: "player",
+  // either put email and password here,
+  // or test this against a server with
+  // online-mode set to false.
+});
+bot.on('chat', function(username, message) {
+  bot.chat(message);
+});

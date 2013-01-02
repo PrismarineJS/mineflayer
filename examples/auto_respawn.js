@@ -1,1 +1,0 @@
-mf.onDeath(mf.respawn);
