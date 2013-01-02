@@ -14,7 +14,8 @@
   "dependencies": {
     "requireindex": "~1.0.0",
     "minecraft-protocol": "0.0.2",
-    "quotemeta": "0.0.0"
+    "quotemeta": "0.0.0",
+    "vec3": "0.0.1"
   },
   "devDependencies": {
     "mocha": "~1.7.4"
