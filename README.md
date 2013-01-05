@@ -34,7 +34,7 @@ bot.on('chat', function(username, message) {
 
 ## Testing
 
-(TODO) `npm test`
+`npm test`
 
 ## Updating to a newer protocol version
 
