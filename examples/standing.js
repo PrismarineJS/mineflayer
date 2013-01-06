@@ -6,6 +6,7 @@ bot.on('health', function() {
 });
 bot.on('login', function() {
   console.log("I'm in.", bot.game);
+  console.log("settings", bot.settings);
 });
 bot.on('rain', function() {
   if (bot.isRaining) {
@@ -24,5 +25,7 @@ bot.on('chat', function(username, message) {
     bot.chat("spawn is at " + bot.game.spawnPoint);
   } else if (message === 'quit') {
     bot.quit(username + "told me to");
+  } else if (message === 'set') {
+    bot.setSettings({viewDistance: 'normal'});
   }
 });
