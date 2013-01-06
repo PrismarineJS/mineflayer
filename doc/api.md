@@ -213,7 +213,7 @@ An entity picked up an item.
 
 #### "entityGone" (entity)
 #### "entityMoved" (entity)
-#### "entityDetach" (entity)
+#### "entityDetach" (entity, vehicle)
 #### "entityAttach" (entity, vehicle)
 
 An entity is attached to a vehicle, such as a mine cart
@@ -224,7 +224,7 @@ or boat.
 
 #### "entityUpdate" (entity)
 #### "entityEffect" (entity, effect)
-#### "entityEffectEnd" (entity, effectId)
+#### "entityEffectEnd" (entity, effect)
 #### "playerJoined" (player)
 #### "playerLeft" (player)
 
