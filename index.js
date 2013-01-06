@@ -4,8 +4,10 @@ var mc = require('minecraft-protocol')
   , path = require('path')
   , plugins = require('requireindex')(path.join(__dirname, 'lib', 'plugins'))
 
-exports.Vec3 = require('vec3');
-exports.createBot = createBot;
+module.exports = {
+  vec3: require('vec3'),
+  createBot: createBot,
+};
 
 function createBot(options) {
   var bot = new Bot();
@@ -36,6 +38,6 @@ Bot.prototype.connect = function(options) {
     self.emit('end');
   });
   for (var pluginName in plugins) {
-    plugins[pluginName](self);
+    plugins[pluginName](self, options);
   }
 };

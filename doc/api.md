@@ -20,6 +20,10 @@ All points in mineflayer are supplied as instances of this class.
 
 Use this to find out your own name.
 
+#### bot.game.spawnPoint
+
+Coordinates to the main spawn point, where all compasses point to.
+
 ### Events
 
 #### "chat" (username, message, rawMessage)
