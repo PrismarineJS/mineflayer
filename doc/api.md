@@ -12,6 +12,50 @@ All points in mineflayer are supplied as instances of this class.
  * y - up
  * z - west
 
+### Entity
+
+#### entity.id
+
+#### entity.type
+
+Choices:
+
+ * `player`
+ * `mob`
+ * `object`
+
+#### entity.username
+
+If the entity type is `player`, this field will be set.
+
+#### entity.mobType
+
+If the entity type is `mob`, this field will be set.
+
+#### entity.objectType
+
+If the entity type is `object`, this field will be set.
+
+#### entity.position
+
+#### entity.velocity
+
+#### entity.yaw
+
+#### entity.pitch
+
+#### entity.height
+
+#### entity.onGround
+
+#### entity.equipment[5]
+
+0 = held item, 1-4 = armor slot
+
+#### entity.heldItem
+
+Equivalent to `entity.equipment[0]`.
+
 ## Bot
 
 ### Properties
@@ -37,6 +81,18 @@ Coordinates to the main spawn point, where all compasses point to.
 #### bot.game.worldHeight
 
 #### bot.game.maxPlayers
+
+#### bot.game.players
+
+List of people playing the game. A player looks like this:
+
+```js
+{
+  username: 'player',
+  ping: 28,
+  entity: entity, // null if you are too far away
+}
+```
 
 #### bot.isRaining
 
@@ -138,6 +194,39 @@ Fires when you die.
 #### "health"
 
 Fires when your hp or food change.
+
+#### "entitySwingArm" (entity)
+#### "entityHurt" (entity)
+#### "entityWake" (entity)
+#### "entityEat" (entity)
+#### "entityCrouch" (entity)
+#### "entityUncrouch" (entity)
+#### "entityEquipmentChange" (entity)
+#### "entitySleep" (entity)
+#### "entitySpawn" (entity)
+#### "playerCollect" (collector, collected)
+
+An entity picked up an item.
+
+ * `collector` - entity that picked up the item.
+ * `collected` - the entity that was the item on the ground.
+
+#### "entityGone" (entity)
+#### "entityMoved" (entity)
+#### "entityDetach" (entity)
+#### "entityAttach" (entity, vehicle)
+
+An entity is attached to a vehicle, such as a mine cart
+or boat.
+
+ * `entity` - the entity hitching a ride
+ * `vehicle` - the entity that is the vehicle
+
+#### "entityUpdate" (entity)
+#### "entityEffect" (entity, effect)
+#### "entityEffectEnd" (entity, effectId)
+#### "playerJoined" (player)
+#### "playerLeft" (player)
 
 ### Methods
 

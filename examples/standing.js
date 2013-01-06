@@ -8,6 +8,12 @@ bot.on('login', function() {
   console.log("I'm in.", bot.game);
   console.log("settings", bot.settings);
 });
+bot.on('playerJoined', function(player) {
+  console.log("hello, " + player.username + "! welcome to the server.");
+});
+bot.on('playerLeft', function(player) {
+  console.log("bye " + player.username);
+});
 bot.on('rain', function() {
   if (bot.isRaining) {
     bot.chat("it started raining");
