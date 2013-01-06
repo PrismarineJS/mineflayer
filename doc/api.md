@@ -79,6 +79,20 @@ Total experience points.
 
 Between 0 and 1 - amount to get to the next level.
 
+#### bot.health
+
+Number in the range [0, 20] representing the number of half-hearts.
+
+#### bot.food
+
+Number, in the range [0, 20] representing the number of half-turkey-legs.
+
+#### bot.foodSaturation
+
+Food saturation acts as a food "overcharge". Food values will not decrease
+while the saturation is over zero. Players logging in automatically get a
+saturation of 5.0. Eating food increases the saturation as well as the food bar.
+
 ### Events
 
 #### "chat" (username, message, rawMessage)
@@ -115,10 +129,15 @@ is a string explaining why you were kicked.
 
 #### "spawnReset"
 
-Fires when you cannot spawn in your bed and your spawn point gets reset
+Fires when you cannot spawn in your bed and your spawn point gets reset.
 
-Emitted when the bot is kicked from the server. `reason`
-is a string explaining why you were kicked.
+#### "death"
+
+Fires when you die.
+
+#### "health"
+
+Fires when your hp or food change.
 
 ### Methods
 
