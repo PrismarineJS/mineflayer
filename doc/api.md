@@ -113,6 +113,13 @@ server where it is already raining, this event will fire.
 Emitted when the bot is kicked from the server. `reason`
 is a string explaining why you were kicked.
 
+#### "spawnReset"
+
+Fires when you cannot spawn in your bed and your spawn point gets reset
+
+Emitted when the bot is kicked from the server. `reason`
+is a string explaining why you were kicked.
+
 ### Methods
 
 #### chat(message)
@@ -128,3 +135,11 @@ to the `options` argument of `createBot`.
 #### setSettings(options)
 
 See the bot.settings property above.
+
+#### sleep(bedPosition)
+
+Sleep in a bed. `bedPosition` should be a point which contains a bed.
+
+#### wake()
+
+Get out of bed.
