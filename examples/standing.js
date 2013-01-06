@@ -2,14 +2,14 @@ var mineflayer = require('../');
 var vec3 = mineflayer.vec3;
 var bot = mineflayer.createBot({ username: "player", });
 bot.on('health', function() {
-  bot.chat("I have " + bot.health + " and " + bot.food + " food");
+  bot.chat("I have " + bot.health + " health and " + bot.food + " food");
 });
 bot.on('login', function() {
-  console.log("I'm in.", bot.game);
+  console.log("I logged in.");
   console.log("settings", bot.settings);
 });
 bot.on('playerJoined', function(player) {
-  console.log("hello, " + player.username + "! welcome to the server.");
+  bot.chat("hello, " + player.username + "! welcome to the server.");
 });
 bot.on('playerLeft', function(player) {
   console.log("bye " + player.username);
@@ -23,6 +23,10 @@ bot.on('rain', function() {
 });
 bot.on('kicked', function(reason) {
   console.log("I got kicked for", reason, "lol");
+});
+bot.on('spawn', function() {
+  bot.chat("I have spawned");
+  console.log("game", bot.game);
 });
 bot.on('death', function() {
   bot.chat("I died x.x");
