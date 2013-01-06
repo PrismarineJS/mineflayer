@@ -69,6 +69,16 @@ Same as from server.properties.
 
 If you have a cape you can turn it off by setting this to false.
 
+#### bot.experience.level
+
+#### bot.experience.points
+
+Total experience points.
+
+#### bot.experience.progress
+
+Between 0 and 1 - amount to get to the next level.
+
 ### Events
 
 #### "chat" (username, message, rawMessage)
