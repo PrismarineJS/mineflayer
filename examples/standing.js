@@ -14,10 +14,15 @@ bot.on('rain', function() {
     bot.chat("it stopped raining.");
   }
 });
+bot.on('kicked', function(reason) {
+  console.log("I got kicked for", reason, "lol");
+});
 bot.on('chat', function(username, message) {
   if (message === 'pos') {
     bot.chat("I am at " + bot.entity.position + ", you are at " + bot.game.players[username].entity.position);
   } else if (message === 'spawn') {
     bot.chat("spawn is at " + bot.game.spawnPoint);
+  } else if (message === 'quit') {
+    bot.quit(username + "told me to");
   }
 });
