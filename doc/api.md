@@ -24,6 +24,20 @@ Use this to find out your own name.
 
 Coordinates to the main spawn point, where all compasses point to.
 
+#### bot.game.levelType
+
+#### bot.game.dimension
+
+#### bot.game.difficulty
+
+#### bot.game.gameMode
+
+#### bot.game.hardcore
+
+#### bot.game.worldHeight
+
+#### bot.game.maxPlayers
+
 ### Events
 
 #### "chat" (username, message, rawMessage)
@@ -42,3 +56,9 @@ Coordinates to the main spawn point, where all compasses point to.
 #### chat(message)
 
 Sends a publicly broadcast chat message. Breaks up big messages into multiple chat messages as necessary. If message begins with "/tell <username> ", then all split messages will be whispered as well.
+
+#### spawn()
+
+Spawn is called automatically upon login and death. If you wish to
+disable this behavior and do it manually, pass `autoSpawn` `false`
+to the `options` argument of `createBot`.
