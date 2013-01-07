@@ -18,6 +18,7 @@
     "vec3": "~0.0.8"
   },
   "devDependencies": {
-    "mocha": "~1.7.4"
+    "mocha": "~1.7.4",
+    "batch": "~0.2.1"
   }
 }

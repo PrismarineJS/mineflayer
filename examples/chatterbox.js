@@ -1,6 +1,9 @@
 var mineflayer = require('../');
 var vec3 = mineflayer.vec3;
-var bot = mineflayer.createBot({ username: "player", });
+var bot = mineflayer.createBot({
+  username: "chatterbox",
+  viewDistance: "tiny",
+});
 bot.on('health', function() {
   bot.chat("I have " + bot.health + " health and " + bot.food + " food");
 });
@@ -32,6 +35,7 @@ bot.on('death', function() {
   bot.chat("I died x.x");
 });
 bot.on('chat', function(username, message) {
+  var block, pos;
   if (message === 'pos') {
     bot.chat("I am at " + bot.entity.position + ", you are at " + bot.game.players[username].entity.position);
   } else if (message === 'spawn') {
@@ -40,6 +44,18 @@ bot.on('chat', function(username, message) {
     bot.quit(username + "told me to");
   } else if (message === 'set') {
     bot.setSettings({viewDistance: 'normal'});
+  } else if (message === 'block') {
+    block = bot.blockAt(bot.game.players[username].entity.position.offset(0, -1, 0));
+    bot.chat("block under you is " + block.displayName + " in the " + block.biome.name + " biome");
+  } else if (message === 'blocksdown') {
+    pos = bot.game.players[username].entity.position.clone();
+    setInterval(function() {
+      var block = bot.blockAt(pos);
+      console.log("pos " + pos + ": " + block.displayName + ", " + block.biome.name);
+      pos.translate(0, -1, 0);
+    }, 500);
+  } else {
+    bot.chat("That's nice.");
   }
 });
 bot.on('nonSpokenChat', function(message) {
@@ -80,12 +96,12 @@ bot.on('entityEquipmentChange', function(entity) {
   console.log("entityEquipmentChange", entity)
 });
 bot.on('entitySpawn', function(entity) {
-  if (entity.type === 'mob') {
+  if (entity.type === 'mob' && false) {
     bot.chat("look out - a " + entity.mobType + " spawned at " + entity.position);
   } else if (entity.type === 'player') {
     bot.chat("look who decided to show up: " + entity.username);
   } else if (entity.type === 'object') {
-    bot.chat("there's a " + entity.objectType + " at " + entity.position);
+    //bot.chat("there's a " + entity.objectType + " at " + entity.position);
   }
 });
 bot.on('playerCollect', function(collector, collected) {

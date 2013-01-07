@@ -2,11 +2,15 @@ var mc = require('minecraft-protocol')
   , EventEmitter = require('events').EventEmitter
   , util = require('util')
   , path = require('path')
-  , plugins = require('requireindex')(path.join(__dirname, 'lib', 'plugins'))
+  , requireIndex = require('requireindex')
+  , plugins = requireIndex(path.join(__dirname, 'lib', 'plugins'))
 
 module.exports = {
   vec3: require('vec3'),
   createBot: createBot,
+  blocks: require('./lib/enums/blocks'),
+  biomes: require('./lib/enums/biomes'),
+  items: require('./lib/enums/items'),
 };
 
 function createBot(options) {
@@ -40,4 +44,8 @@ Bot.prototype.connect = function(options) {
   for (var pluginName in plugins) {
     plugins[pluginName](self, options);
   }
+};
+
+Bot.prototype.end = function() {
+  this.client.end();
 };

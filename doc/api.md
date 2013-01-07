@@ -14,6 +14,9 @@ All points in mineflayer are supplied as instances of this class.
 
 ### Entity
 
+Entities represent players, mobs, and objects. They are emitted
+in many events, and you can access your own entity with `bot.entity`.
+
 #### entity.id
 
 #### entity.type
@@ -56,9 +59,54 @@ If the entity type is `object`, this field will be set.
 
 Equivalent to `entity.equipment[0]`.
 
+### Block
+
+#### type
+
+Numerical id.
+
+#### name
+
+#### displayName
+
+#### meta
+
+#### light
+
+#### skyLight
+
+#### hardness
+
+#### add
+
+#### biome
+
+A biome instance. See `Biome`.
+
+### Biome
+
+#### id
+
+Numerical id.
+
+#### color
+
+#### height
+
+#### name
+
+#### rainfall
+
+#### temperature
+
+
 ## Bot
 
 ### Properties
+
+#### bot.entity
+
+Your own entity. See `Entity`.
 
 #### bot.username
 
@@ -228,6 +276,13 @@ or boat.
 #### "playerJoined" (player)
 #### "playerLeft" (player)
 
+### Functions
+
+#### blockAt(point)
+
+Returns the block at `point` or `null` if that point is not loaded.
+See `Block`.
+
 ### Methods
 
 #### chat(message)
@@ -242,7 +297,7 @@ to the `options` argument of `createBot`.
 
 #### setSettings(options)
 
-See the bot.settings property above.
+See the `bot.settings` property.
 
 #### sleep(bedPosition)
 
@@ -251,3 +306,4 @@ Sleep in a bed. `bedPosition` should be a point which contains a bed.
 #### wake()
 
 Get out of bed.
+
