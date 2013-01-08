@@ -2,7 +2,7 @@
 
 ## Classes
 
-### mineflayer.Vec3
+### mineflayer.vec3
 
 See [superjoe30/node-vec3](https://github.com/superjoe30/node-vec3)
 
@@ -65,43 +65,43 @@ Equivalent to `entity.equipment[0]`.
 
 ### Block
 
-#### type
+#### block.type
 
 Numerical id.
 
-#### name
+#### block.name
 
-#### displayName
+#### block.displayName
 
-#### meta
+#### block.meta
 
-#### light
+#### block.light
 
-#### skyLight
+#### block.skyLight
 
-#### hardness
+#### block.hardness
 
-#### add
+#### block.add
 
-#### biome
+#### block.biome
 
 A biome instance. See `Biome`.
 
 ### Biome
 
-#### id
+#### biome.id
 
 Numerical id.
 
-#### color
+#### biome.color
 
-#### height
+#### biome.height
 
-#### name
+#### biome.name
 
-#### rainfall
+#### biome.rainfall
 
-#### temperature
+#### biome.temperature
 
 
 ## Bot
@@ -279,6 +279,11 @@ or boat.
 #### "entityEffectEnd" (entity, effect)
 #### "playerJoined" (player)
 #### "playerLeft" (player)
+
+#### "chunk" (point)
+
+Fires when a chunk has updated. `point` is the coordinates to the corner
+with the smallest x, y, and z values.
 
 ### Functions
 
