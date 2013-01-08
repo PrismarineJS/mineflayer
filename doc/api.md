@@ -16,7 +16,7 @@ Functions and methods which require a point argument accept `Vec3` instances
 as well as an array with 3 values, and an object with `x`, `y`, and `z`
 properties.
 
-### Entity
+### mineflayer.Entity
 
 Entities represent players, mobs, and objects. They are emitted
 in many events, and you can access your own entity with `bot.entity`.
@@ -63,7 +63,7 @@ If the entity type is `object`, this field will be set.
 
 Equivalent to `entity.equipment[0]`.
 
-### Block
+### mineflayer.Block
 
 #### block.type
 
@@ -87,7 +87,7 @@ Numerical id.
 
 A biome instance. See `Biome`.
 
-### Biome
+### mineflayer.Biome
 
 #### biome.id
 
