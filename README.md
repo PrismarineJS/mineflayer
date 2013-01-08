@@ -30,6 +30,7 @@ bot.on('chat', function(username, message) {
 ## Documentation
 
  * See `doc/api.md`.
+ * See `doc/history.md`.
  * See `examples/`.
 
 ## Testing
