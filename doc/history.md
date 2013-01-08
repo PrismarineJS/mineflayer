@@ -1,3 +1,7 @@
+## 0.0.4
+
+ * expose Block, Biome, and Entity
+
 ## 0.0.3
 
  * add `blockAt(point)` which returns a `Block`
