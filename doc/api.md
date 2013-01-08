@@ -287,32 +287,32 @@ with the smallest x, y, and z values.
 
 ### Functions
 
-#### blockAt(point)
+#### bot.blockAt(point)
 
 Returns the block at `point` or `null` if that point is not loaded.
 See `Block`.
 
 ### Methods
 
-#### chat(message)
+#### bot.chat(message)
 
 Sends a publicly broadcast chat message. Breaks up big messages into multiple chat messages as necessary. If message begins with "/tell <username> ", then all split messages will be whispered as well.
 
-#### spawn()
+#### bot.spawn()
 
 Spawn is called automatically upon login and death. If you wish to
 disable this behavior and do it manually, pass `autoSpawn` `false`
 to the `options` argument of `createBot`.
 
-#### setSettings(options)
+#### bot.setSettings(options)
 
 See the `bot.settings` property.
 
-#### sleep(bedPosition)
+#### bot.sleep(bedPosition)
 
 Sleep in a bed. `bedPosition` should be a point which contains a bed.
 
-#### wake()
+#### bot.wake()
 
 Get out of bed.
 
