@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "requireindex": "~1.0.0",
-    "minecraft-protocol": "~0.5.1",
+    "minecraft-protocol": "~0.6.0",
     "quotemeta": "0.0.0",
     "vec3": "~0.1.0"
   },

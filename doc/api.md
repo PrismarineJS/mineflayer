@@ -12,6 +12,10 @@ All points in mineflayer are supplied as instances of this class.
  * y - up
  * z - west
 
+Functions and methods which require a point argument accept `Vec3` instances
+as well as an array with 3 values, and an object with `x`, `y`, and `z`
+properties.
+
 ### Entity
 
 Entities represent players, mobs, and objects. They are emitted
