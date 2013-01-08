@@ -19,7 +19,7 @@ These things are in the works:
  * Physics and movement
  * Inventory management
  * Ability to use items and vehicles and attack
- * Digging
+ * Digging and building
 
 ## Usage
 
