@@ -280,10 +280,12 @@ or boat.
 #### "playerJoined" (player)
 #### "playerLeft" (player)
 
-#### "chunk" (point)
+#### "blockUpdate" (point)
+#### "chunkColumnLoad" (point)
+#### "chunkColumnUnload" (point)
 
 Fires when a chunk has updated. `point` is the coordinates to the corner
-with the smallest x, y, and z values.
+of the chunk with the smallest x, y, and z values.
 
 ### Functions
 

@@ -14,6 +14,15 @@ bot.on('login', function() {
 bot.on('playerJoined', function(player) {
   bot.chat("hello, " + player.username + "! welcome to the server.");
 });
+bot.on('chunkColumnLoad', function(point) {
+  //console.log("chunkColumnLoad", point);
+});
+bot.on('chunkColumnUnload', function(point) {
+  //console.log("chunkColumnUnload", point);
+});
+bot.on('blockUpdate', function(point) {
+  //console.log("blockUpdate", point);
+});
 bot.on('playerLeft', function(player) {
   console.log("bye " + player.username);
 });
@@ -72,9 +81,9 @@ bot.on('entitySwingArm', function(entity) {
 });
 bot.on('entityHurt', function(entity) {
   if (entity.type === 'mob') {
-    bot.chat("Haha! The " + entity.mobType + " got hurt!");
+    console.log("Haha! The " + entity.mobType + " got hurt!");
   } else if (entity.type === 'player') {
-    bot.chat("aww, poor " + entity.username + " got hurt. maybe you shouldn't have a ping of " + bot.game.players[entity.username].ping);
+    console.log("aww, poor " + entity.username + " got hurt. maybe you shouldn't have a ping of " + bot.game.players[entity.username].ping);
   }
 });
 bot.on('entityWake', function(entity) {

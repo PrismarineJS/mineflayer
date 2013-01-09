@@ -51,7 +51,7 @@
     "scripturl"     : false,   // Tolerate script-targeted URLs.
     "shadow"        : false,  // Allows re-define variables later in code e.g. `var x=1; x=2;`.
     "supernew"      : false,  // Tolerate `new function () { ... };` and `new Object;`.
-    "undef"         : false,   // Require all non-global variables be declared before they are used.
+    "undef"         : true,   // Require all non-global variables be declared before they are used.
 
 
     // Persone styling prefrences.
