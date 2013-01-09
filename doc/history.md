@@ -1,3 +1,9 @@
+## 0.0.5
+
+ * unload chunks when changing dimensions
+ * blocks: handle all forms of block changing so that `blockAt` is always
+   accurate.
+
 ## 0.0.4
 
  * expose Block, Biome, and Entity
