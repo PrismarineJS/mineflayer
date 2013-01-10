@@ -65,6 +65,10 @@ Equivalent to `entity.equipment[0]`.
 
 ### mineflayer.Block
 
+#### block.pos
+
+Vec3 instance.
+
 #### block.type
 
 Numerical id.
@@ -216,10 +220,17 @@ saturation of 5.0. Eating food increases the saturation as well as the food bar.
 
 #### "login"
 
+Fires after you successfully login to the server.
+You probably want to wait for the `spawn` event
+before doing anything though.
+
 #### "spawn"
 
 Emitted once after you log in and spawn for the first time
 and then emitted when you respawn after death.
+
+This is usually the event that you want to listen to
+before doing anything on the server.
 
 #### "game"
 
@@ -286,6 +297,23 @@ or boat.
 
 Fires when a chunk has updated. `point` is the coordinates to the corner
 of the chunk with the smallest x, y, and z values.
+
+#### "noteHeard" (block, instrument, pitch)
+
+Fires when a note block goes off somewhere.
+
+ * `block`: a Block instance, the block at emitted the noise
+ * `instrument`:
+   - `id`: integer id
+   - `name`: one of [`harp`, `doubleBass`, `snareDrum`, `sticks`, `bassDrum`].
+ * `pitch`: The pitch of the note (between 0-24 inclusive where 0 is the
+   lowest and 24 is the highest). More information about how the pitch values
+   correspond to notes in real life are available on the
+   [official Minecraft wiki](http://www.minecraftwiki.net/wiki/Note_Block).
+
+#### "pistonMove" (block, isPulling, direction)
+
+#### "chestLidMove" (block, isOpen)
 
 ### Functions
 

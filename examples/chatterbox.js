@@ -14,6 +14,17 @@ bot.on('login', function() {
 bot.on('playerJoined', function(player) {
   bot.chat("hello, " + player.username + "! welcome to the server.");
 });
+bot.on('noteHeard', function(block, instrument, pitch) {
+  console.log("note", instrument.name, "pitch", pitch);
+});
+bot.on('pistonMove', function(block, isPulling, direction) {
+  var action = isPulling ? "pull" : "push";
+  console.log("piston " + action, "direction", direction);
+});
+bot.on('chestLidMove', function(block, isOpen) {
+  var lidStatus = isOpen ? "opened" : "closed";
+  console.log("chest " + lidStatus);
+});
 bot.on('chunkColumnLoad', function(point) {
   //console.log("chunkColumnLoad", point);
 });
@@ -81,7 +92,7 @@ bot.on('entitySwingArm', function(entity) {
 });
 bot.on('entityHurt', function(entity) {
   if (entity.type === 'mob') {
-    console.log("Haha! The " + entity.mobType + " got hurt!");
+    //console.log("Haha! The " + entity.mobType + " got hurt!");
   } else if (entity.type === 'player') {
     console.log("aww, poor " + entity.username + " got hurt. maybe you shouldn't have a ping of " + bot.game.players[entity.username].ping);
   }

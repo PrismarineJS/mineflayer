@@ -14,6 +14,7 @@ module.exports = {
   blocks: require('./lib/enums/blocks'),
   biomes: require('./lib/enums/biomes'),
   items: require('./lib/enums/items'),
+  instruments: require('./lib/enums/instruments'),
 };
 
 function createBot(options) {

@@ -1,0 +1,22 @@
+{
+  "0": {
+    "id": 0,
+    "name": "harp"
+  },
+  "1": {
+    "id": 1,
+    "name": "doubleBass"
+  },
+  "2": {
+    "id": 2,
+    "name": "snareDrum"
+  },
+  "3": {
+    "id": 3,
+    "name": "sticks"
+  },
+  "4": {
+    "id": 4,
+    "name": "bassDrum"
+  }
+}
