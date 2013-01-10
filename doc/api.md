@@ -294,6 +294,14 @@ See `Block`.
 
 ### Methods
 
+#### bot.end()
+
+End the connection with the server.
+
+#### bot.quit(reason)
+
+Gracefully disconnect from the server with the given reason (defaults to 'disconnect.quitting').
+
 #### bot.chat(message)
 
 Sends a publicly broadcast chat message. Breaks up big messages into multiple chat messages as necessary. If message begins with "/tell <username> ", then all split messages will be whispered as well.
