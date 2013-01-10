@@ -46,18 +46,18 @@ bot.on('death', function() {
 bot.on('chat', function(username, message) {
   var block, pos;
   if (message === 'pos') {
-    bot.chat("I am at " + bot.entity.position + ", you are at " + bot.game.players[username].entity.position);
+    bot.chat("I am at " + bot.entity.position + ", you are at " + bot.players[username].entity.position);
   } else if (message === 'spawn') {
-    bot.chat("spawn is at " + bot.game.spawnPoint);
+    bot.chat("spawn is at " + bot.spawnPoint);
   } else if (message === 'quit') {
     bot.quit(username + "told me to");
   } else if (message === 'set') {
     bot.setSettings({viewDistance: 'normal'});
   } else if (message === 'block') {
-    block = bot.blockAt(bot.game.players[username].entity.position.offset(0, -1, 0));
+    block = bot.blockAt(bot.players[username].entity.position.offset(0, -1, 0));
     bot.chat("block under you is " + block.displayName + " in the " + block.biome.name + " biome");
   } else if (message === 'blocksdown') {
-    pos = bot.game.players[username].entity.position.clone();
+    pos = bot.players[username].entity.position.clone();
     setInterval(function() {
       var block = bot.blockAt(pos);
       console.log("pos " + pos + ": " + block.displayName + ", " + block.biome.name);
@@ -80,7 +80,7 @@ bot.on('entityHurt', function(entity) {
   if (entity.type === 'mob') {
     console.log("Haha! The " + entity.mobType + " got hurt!");
   } else if (entity.type === 'player') {
-    console.log("aww, poor " + entity.username + " got hurt. maybe you shouldn't have a ping of " + bot.game.players[entity.username].ping);
+    console.log("aww, poor " + entity.username + " got hurt. maybe you shouldn't have a ping of " + bot.players[entity.username].ping);
   }
 });
 bot.on('entityWake', function(entity) {
