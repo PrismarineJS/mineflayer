@@ -34,7 +34,7 @@ describe("mineflayer", function() {
       var bot = mineflayer.createBot({
         username: "player",
       });
-      bot.on('chunk', function(columnPoint) {
+      bot.on('chunkColumnLoad', function(columnPoint) {
         assert.strictEqual(columnPoint.x, 0);
         assert.strictEqual(columnPoint.z, 0);
         assert.strictEqual(bot.blockAt(pos).type, goldId);
