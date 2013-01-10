@@ -3,856 +3,1002 @@
     "id": 0,
     "name": "air",
     "displayName": "Air",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "empty"
   },
   "1": {
     "id": 1,
     "displayName": "Stone",
     "name": "stone",
-    "hardness": 1.5
+    "hardness": 1.5,
+    "boundingBox": "block"
   },
   "2": {
     "id": 2,
     "displayName": "Grass Block",
     "name": "grass",
-    "hardness": 0.6
+    "hardness": 0.6,
+    "boundingBox": "block"
   },
   "3": {
     "id": 3,
     "displayName": "Dirt",
     "name": "dirt",
-    "hardness": 0.5
+    "hardness": 0.5,
+    "boundingBox": "block"
   },
   "4": {
     "id": 4,
     "displayName": "Cobblestone",
     "name": "stonebrick",
-    "hardness": 2
+    "hardness": 2,
+    "boundingBox": "block"
   },
   "5": {
     "id": 5,
     "displayName": "Wooden Planks",
     "name": "wood",
-    "hardness": 2
+    "hardness": 2,
+    "boundingBox": "block"
   },
   "6": {
     "id": 6,
     "name": "sapling",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "7": {
     "id": 7,
     "displayName": "Bedrock",
     "name": "bedrock",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "8": {
     "id": 8,
     "displayName": "Water",
     "name": "water",
-    "hardness": 100
+    "hardness": 100,
+    "boundingBox": "block"
   },
   "9": {
     "id": 9,
     "displayName": "Water",
     "name": "water",
-    "hardness": 100
+    "hardness": 100,
+    "boundingBox": "block"
   },
   "10": {
     "id": 10,
     "displayName": "Lava",
     "name": "lava",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "11": {
     "id": 11,
     "displayName": "Lava",
     "name": "lava",
-    "hardness": 100
+    "hardness": 100,
+    "boundingBox": "block"
   },
   "12": {
     "id": 12,
     "displayName": "Sand",
     "name": "sand",
-    "hardness": 0.5
+    "hardness": 0.5,
+    "boundingBox": "block"
   },
   "13": {
     "id": 13,
     "displayName": "Gravel",
     "name": "gravel",
-    "hardness": 0.6
+    "hardness": 0.6,
+    "boundingBox": "block"
   },
   "14": {
     "id": 14,
     "displayName": "Gold Ore",
     "name": "oreGold",
-    "hardness": 3
+    "hardness": 3,
+    "boundingBox": "block"
   },
   "15": {
     "id": 15,
     "displayName": "Iron Ore",
     "name": "oreIron",
-    "hardness": 3
+    "hardness": 3,
+    "boundingBox": "block"
   },
   "16": {
     "id": 16,
     "displayName": "Coal Ore",
     "name": "oreCoal",
-    "hardness": 3
+    "hardness": 3,
+    "boundingBox": "block"
   },
   "17": {
     "id": 17,
     "displayName": "Wood",
     "name": "log",
-    "hardness": 2
+    "hardness": 2,
+    "boundingBox": "block"
   },
   "18": {
     "id": 18,
     "displayName": "Leaves",
     "name": "leaves",
-    "hardness": 0.2
+    "hardness": 0.2,
+    "boundingBox": "block"
   },
   "19": {
     "id": 19,
     "displayName": "Sponge",
     "name": "sponge",
-    "hardness": 0.6
+    "hardness": 0.6,
+    "boundingBox": "block"
   },
   "20": {
     "id": 20,
     "displayName": "Glass",
     "name": "glass",
-    "hardness": 0.3
+    "hardness": 0.3,
+    "boundingBox": "block"
   },
   "21": {
     "id": 21,
     "displayName": "Lapis Lazuli Ore",
     "name": "oreLapis",
-    "hardness": 3
+    "hardness": 3,
+    "boundingBox": "block"
   },
   "22": {
     "id": 22,
     "displayName": "Lapis Lazuli Block",
     "name": "blockLapis",
-    "hardness": 3
+    "hardness": 3,
+    "boundingBox": "block"
   },
   "23": {
     "id": 23,
     "displayName": "Dispenser",
     "name": "dispenser",
-    "hardness": 3.5
+    "hardness": 3.5,
+    "boundingBox": "block"
   },
   "24": {
     "id": 24,
     "displayName": "Sandstone",
     "name": "sandStone",
-    "hardness": 0.8
+    "hardness": 0.8,
+    "boundingBox": "block"
   },
   "25": {
     "id": 25,
     "displayName": "Note Block",
     "name": "musicBlock",
-    "hardness": 0.8
+    "hardness": 0.8,
+    "boundingBox": "block"
   },
   "26": {
     "id": 26,
     "displayName": "Bed",
     "name": "bed",
-    "hardness": 0.2
+    "hardness": 0.2,
+    "boundingBox": "block"
   },
   "27": {
     "id": 27,
     "displayName": "Powered Rail",
     "name": "goldenRail",
-    "hardness": 0.7
+    "hardness": 0.7,
+    "boundingBox": "empty"
   },
   "28": {
     "id": 28,
     "displayName": "Detector Rail",
     "name": "detectorRail",
-    "hardness": 0.7
+    "hardness": 0.7,
+    "boundingBox": "empty"
   },
   "29": {
     "id": 29,
     "displayName": "Sticky Piston",
     "name": "pistonStickyBase",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "30": {
     "id": 30,
     "displayName": "Cobweb",
     "name": "web",
-    "hardness": 4
+    "hardness": 4,
+    "boundingBox": "empty"
   },
   "31": {
     "id": 31,
     "displayName": "Grass",
     "name": "tallgrass",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "32": {
     "id": 32,
     "displayName": "Dead Bush",
     "name": "deadbush",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "33": {
     "id": 33,
     "displayName": "Piston",
     "name": "pistonBase",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "34": {
     "id": 34,
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "35": {
     "id": 35,
     "displayName": "Wool",
     "name": "cloth",
-    "hardness": 0.8
+    "hardness": 0.8,
+    "boundingBox": "block"
   },
   "36": {
     "id": 36,
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "37": {
     "id": 37,
     "displayName": "Flower",
     "name": "flower",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "empty"
   },
   "38": {
     "id": 38,
     "displayName": "Rose",
     "name": "rose",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "empty"
   },
   "39": {
     "id": 39,
     "displayName": "Mushroom",
     "name": "mushroom",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "empty"
   },
   "40": {
     "id": 40,
     "displayName": "Mushroom",
     "name": "mushroom",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "empty"
   },
   "41": {
     "id": 41,
     "displayName": "Block of Gold",
     "name": "blockGold",
-    "hardness": 3
+    "hardness": 3,
+    "boundingBox": "block"
   },
   "42": {
     "id": 42,
     "displayName": "Block of Iron",
     "name": "blockIron",
-    "hardness": 5
+    "hardness": 5,
+    "boundingBox": "block"
   },
   "43": {
     "id": 43,
     "name": "stoneSlab",
-    "hardness": 2
+    "hardness": 2,
+    "boundingBox": "block"
   },
   "44": {
     "id": 44,
     "name": "stoneSlab",
-    "hardness": 2
+    "hardness": 2,
+    "boundingBox": "block"
   },
   "45": {
     "id": 45,
     "displayName": "Bricks",
     "name": "brick",
-    "hardness": 2
+    "hardness": 2,
+    "boundingBox": "block"
   },
   "46": {
     "id": 46,
     "displayName": "TNT",
     "name": "tnt",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "47": {
     "id": 47,
     "displayName": "Bookshelf",
     "name": "bookshelf",
-    "hardness": 1.5
+    "hardness": 1.5,
+    "boundingBox": "block"
   },
   "48": {
     "id": 48,
     "displayName": "Moss Stone",
     "name": "stoneMoss",
-    "hardness": 2
+    "hardness": 2,
+    "boundingBox": "block"
   },
   "49": {
     "id": 49,
     "displayName": "Obsidian",
     "name": "obsidian",
-    "hardness": 50
+    "hardness": 50,
+    "boundingBox": "block"
   },
   "50": {
     "id": 50,
     "displayName": "Torch",
     "name": "torch",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "empty"
   },
   "51": {
     "id": 51,
     "displayName": "Fire",
     "name": "fire",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "empty"
   },
   "52": {
     "id": 52,
     "displayName": "Monster Spawner",
     "name": "mobSpawner",
-    "hardness": 5
+    "hardness": 5,
+    "boundingBox": "block"
   },
   "53": {
     "id": 53,
     "displayName": "Oak Wood Stairs",
     "name": "stairsWood",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "54": {
     "id": 54,
     "displayName": "Chest",
     "name": "chest",
-    "hardness": 2.5
+    "hardness": 2.5,
+    "boundingBox": "block"
   },
   "55": {
     "id": 55,
     "displayName": "Redstone Dust",
     "name": "redstoneDust",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "empty"
   },
   "56": {
     "id": 56,
     "displayName": "Diamond Ore",
     "name": "oreDiamond",
-    "hardness": 3
+    "hardness": 3,
+    "boundingBox": "block"
   },
   "57": {
     "id": 57,
     "displayName": "Block of Diamond",
     "name": "blockDiamond",
-    "hardness": 5
+    "hardness": 5,
+    "boundingBox": "block"
   },
   "58": {
     "id": 58,
     "displayName": "Crafting Table",
     "name": "workbench",
-    "hardness": 2.5
+    "hardness": 2.5,
+    "boundingBox": "block"
   },
   "59": {
     "id": 59,
     "displayName": "Crops",
     "name": "crops",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "empty"
   },
   "60": {
     "id": 60,
     "displayName": "Farmland",
     "name": "farmland",
-    "hardness": 0.6
+    "hardness": 0.6,
+    "boundingBox": "block"
   },
   "61": {
     "id": 61,
     "displayName": "Furnace",
     "name": "furnace",
-    "hardness": 3.5
+    "hardness": 3.5,
+    "boundingBox": "block"
   },
   "62": {
     "id": 62,
     "displayName": "Furnace",
     "name": "furnace",
-    "hardness": 3.5
+    "hardness": 3.5,
+    "boundingBox": "block"
   },
   "63": {
     "id": 63,
     "displayName": "Sign",
     "name": "sign",
-    "hardness": 1
+    "hardness": 1,
+    "boundingBox": "empty"
   },
   "64": {
     "id": 64,
     "displayName": "Wooden Door",
     "name": "doorWood",
-    "hardness": 3
+    "hardness": 3,
+    "boundingBox": "block"
   },
   "65": {
     "id": 65,
     "displayName": "Ladder",
     "name": "ladder",
-    "hardness": 0.4
+    "hardness": 0.4,
+    "boundingBox": "empty"
   },
   "66": {
     "id": 66,
     "displayName": "Rail",
     "name": "rail",
-    "hardness": 0.7
+    "hardness": 0.7,
+    "boundingBox": "empty"
   },
   "67": {
     "id": 67,
     "displayName": "Stone Stairs",
     "name": "stairsStone",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "68": {
     "id": 68,
     "displayName": "Sign",
     "name": "sign",
-    "hardness": 1
+    "hardness": 1,
+    "boundingBox": "empty"
   },
   "69": {
     "id": 69,
     "displayName": "Lever",
     "name": "lever",
-    "hardness": 0.5
+    "hardness": 0.5,
+    "boundingBox": "empty"
   },
   "70": {
     "id": 70,
     "displayName": "Pressure Plate",
     "name": "pressurePlate",
-    "hardness": 0.5
+    "hardness": 0.5,
+    "boundingBox": "empty"
   },
   "71": {
     "id": 71,
     "displayName": "Iron Door",
     "name": "doorIron",
-    "hardness": 5
+    "hardness": 5,
+    "boundingBox": "block"
   },
   "72": {
     "id": 72,
     "displayName": "Pressure Plate",
     "name": "pressurePlate",
-    "hardness": 0.5
+    "hardness": 0.5,
+    "boundingBox": "empty"
   },
   "73": {
     "id": 73,
     "displayName": "Redstone Ore",
     "name": "oreRedstone",
-    "hardness": 3
+    "hardness": 3,
+    "boundingBox": "block"
   },
   "74": {
     "id": 74,
     "displayName": "Redstone Ore",
     "name": "oreRedstone",
-    "hardness": 3
+    "hardness": 3,
+    "boundingBox": "block"
   },
   "75": {
     "id": 75,
     "displayName": "Redstone Torch",
     "name": "notGate",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "empty"
   },
   "76": {
     "id": 76,
     "displayName": "Redstone Torch",
     "name": "notGate",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "empty"
   },
   "77": {
     "id": 77,
     "displayName": "Button",
     "name": "button",
-    "hardness": 0.5
+    "hardness": 0.5,
+    "boundingBox": "empty"
   },
   "78": {
     "id": 78,
     "displayName": "Snow",
     "name": "snow",
-    "hardness": 0.1
+    "hardness": 0.1,
+    "boundingBox": "block"
   },
   "79": {
     "id": 79,
     "displayName": "Ice",
     "name": "ice",
-    "hardness": 0.5
+    "hardness": 0.5,
+    "boundingBox": "block"
   },
   "80": {
     "id": 80,
     "displayName": "Snow",
     "name": "snow",
-    "hardness": 0.2
+    "hardness": 0.2,
+    "boundingBox": "block"
   },
   "81": {
     "id": 81,
     "displayName": "Cactus",
     "name": "cactus",
-    "hardness": 0.4
+    "hardness": 0.4,
+    "boundingBox": "block"
   },
   "82": {
     "id": 82,
     "displayName": "Clay",
     "name": "clay",
-    "hardness": 0.6
+    "hardness": 0.6,
+    "boundingBox": "block"
   },
   "83": {
     "id": 83,
     "displayName": "Sugar cane",
     "name": "reeds",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "empty"
   },
   "84": {
     "id": 84,
     "displayName": "Jukebox",
     "name": "jukebox",
-    "hardness": 2
+    "hardness": 2,
+    "boundingBox": "block"
   },
   "85": {
     "id": 85,
     "displayName": "Fence",
     "name": "fence",
-    "hardness": 2
+    "hardness": 2,
+    "boundingBox": "block"
   },
   "86": {
     "id": 86,
     "displayName": "Pumpkin",
     "name": "pumpkin",
-    "hardness": 1
+    "hardness": 1,
+    "boundingBox": "block"
   },
   "87": {
     "id": 87,
     "displayName": "Netherrack",
     "name": "hellrock",
-    "hardness": 0.4
+    "hardness": 0.4,
+    "boundingBox": "block"
   },
   "88": {
     "id": 88,
     "displayName": "Soul Sand",
     "name": "hellsand",
-    "hardness": 0.5
+    "hardness": 0.5,
+    "boundingBox": "block"
   },
   "89": {
     "id": 89,
     "displayName": "Glowstone",
     "name": "lightgem",
-    "hardness": 0.3
+    "hardness": 0.3,
+    "boundingBox": "block"
   },
   "90": {
     "id": 90,
     "displayName": "Portal",
     "name": "portal",
-    "hardness": -1
+    "hardness": -1,
+    "boundingBox": "empty"
   },
   "91": {
     "id": 91,
     "displayName": "Jack 'o' Lantern",
     "name": "litpumpkin",
-    "hardness": 1
+    "hardness": 1,
+    "boundingBox": "block"
   },
   "92": {
     "id": 92,
     "displayName": "Cake",
     "name": "cake",
-    "hardness": 0.5
+    "hardness": 0.5,
+    "boundingBox": "block"
   },
   "93": {
     "id": 93,
     "name": "diode",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "94": {
     "id": 94,
     "name": "diode",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "95": {
     "id": 95,
     "displayName": "Locked chest",
     "name": "lockedchest",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "96": {
     "id": 96,
     "displayName": "Trapdoor",
     "name": "trapdoor",
-    "hardness": 3
+    "hardness": 3,
+    "boundingBox": "block"
   },
   "97": {
     "id": 97,
     "name": "monsterStoneEgg",
-    "hardness": 0.75
+    "hardness": 0.75,
+    "boundingBox": "block"
   },
   "98": {
     "id": 98,
     "displayName": "Stone Bricks",
     "name": "stonebricksmooth",
-    "hardness": 1.5
+    "hardness": 1.5,
+    "boundingBox": "block"
   },
   "99": {
     "id": 99,
     "displayName": "Mushroom",
     "name": "mushroom",
-    "hardness": 0.2
+    "hardness": 0.2,
+    "boundingBox": "block"
   },
   "100": {
     "id": 100,
     "displayName": "Mushroom",
     "name": "mushroom",
-    "hardness": 0.2
+    "hardness": 0.2,
+    "boundingBox": "block"
   },
   "101": {
     "id": 101,
     "displayName": "Iron Bars",
     "name": "fenceIron",
-    "hardness": 5
+    "hardness": 5,
+    "boundingBox": "block"
   },
   "102": {
     "id": 102,
     "displayName": "Glass Pane",
     "name": "thinGlass",
-    "hardness": 0.3
+    "hardness": 0.3,
+    "boundingBox": "block"
   },
   "103": {
     "id": 103,
     "displayName": "Melon",
     "name": "melon",
-    "hardness": 1
+    "hardness": 1,
+    "boundingBox": "block"
   },
   "104": {
     "id": 104,
     "name": "pumpkinStem",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "empty"
   },
   "105": {
     "id": 105,
     "name": "pumpkinStem",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "empty"
   },
   "106": {
     "id": 106,
     "displayName": "Vines",
     "name": "vine",
-    "hardness": 0.2
+    "hardness": 0.2,
+    "boundingBox": "vines"
   },
   "107": {
     "id": 107,
     "displayName": "Fence Gate",
     "name": "fenceGate",
-    "hardness": 2
+    "hardness": 2,
+    "boundingBox": "block"
   },
   "108": {
     "id": 108,
     "displayName": "Brick Stairs",
     "name": "stairsBrick",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "109": {
     "id": 109,
     "displayName": "Stone Brick Stairs",
     "name": "stairsStoneBrickSmooth",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "110": {
     "id": 110,
     "displayName": "Mycelium",
     "name": "mycel",
-    "hardness": 0.6
+    "hardness": 0.6,
+    "boundingBox": "block"
   },
   "111": {
     "id": 111,
     "displayName": "Lily Pad",
     "name": "waterlily",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "112": {
     "id": 112,
     "displayName": "Nether Brick",
     "name": "netherBrick",
-    "hardness": 2
+    "hardness": 2,
+    "boundingBox": "block"
   },
   "113": {
     "id": 113,
     "displayName": "Nether Brick Fence",
     "name": "netherFence",
-    "hardness": 2
+    "hardness": 2,
+    "boundingBox": "block"
   },
   "114": {
     "id": 114,
     "displayName": "Nether Brick Stairs",
     "name": "stairsNetherBrick",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "115": {
     "id": 115,
     "displayName": "Nether Wart",
     "name": "netherStalk",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "empty"
   },
   "116": {
     "id": 116,
     "displayName": "Enchantment Table",
     "name": "enchantmentTable",
-    "hardness": 5
+    "hardness": 5,
+    "boundingBox": "block"
   },
   "117": {
     "id": 117,
     "name": "brewingStand",
-    "hardness": 0.5
+    "hardness": 0.5,
+    "boundingBox": "block"
   },
   "118": {
     "id": 118,
     "displayName": "Cauldron",
     "name": "cauldron",
-    "hardness": 2
+    "hardness": 2,
+    "boundingBox": "block"
   },
   "119": {
     "id": 119,
-    "hardness": -1
+    "hardness": -1,
+    "boundingBox": "empty"
   },
   "120": {
     "id": 120,
     "displayName": "End Portal",
     "name": "endPortalFrame",
-    "hardness": -1
+    "hardness": -1,
+    "boundingBox": "block"
   },
   "121": {
     "id": 121,
     "displayName": "End Stone",
     "name": "whiteStone",
-    "hardness": 3
+    "hardness": 3,
+    "boundingBox": "block"
   },
   "122": {
     "id": 122,
     "displayName": "Dragon Egg",
     "name": "dragonEgg",
-    "hardness": 3
+    "hardness": 3,
+    "boundingBox": "block"
   },
   "123": {
     "id": 123,
     "displayName": "Redstone Lamp",
     "name": "redstoneLight",
-    "hardness": 0.3
+    "hardness": 0.3,
+    "boundingBox": "block"
   },
   "124": {
     "id": 124,
     "displayName": "Redstone Lamp",
     "name": "redstoneLight",
-    "hardness": 0.3
+    "hardness": 0.3,
+    "boundingBox": "block"
   },
   "125": {
     "id": 125,
     "name": "woodSlab",
-    "hardness": 2
+    "hardness": 2,
+    "boundingBox": "block"
   },
   "126": {
     "id": 126,
     "name": "woodSlab",
-    "hardness": 2
+    "hardness": 2,
+    "boundingBox": "block"
   },
   "127": {
     "id": 127,
     "displayName": "Cocoa",
     "name": "cocoa",
-    "hardness": 0.2
+    "hardness": 0.2,
+    "boundingBox": "block"
   },
   "128": {
     "id": 128,
     "displayName": "Sandstone Stairs",
     "name": "stairsSandStone",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "129": {
     "id": 129,
     "displayName": "Emerald Ore",
     "name": "oreEmerald",
-    "hardness": 3
+    "hardness": 3,
+    "boundingBox": "block"
   },
   "130": {
     "id": 130,
     "displayName": "Ender Chest",
     "name": "enderChest",
-    "hardness": 22.5
+    "hardness": 22.5,
+    "boundingBox": "block"
   },
   "131": {
     "id": 131,
     "displayName": "Tripwire Hook",
     "name": "tripWireSource",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "132": {
     "id": 132,
     "displayName": "Tripwire",
     "name": "tripWire",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "empty"
   },
   "133": {
     "id": 133,
     "displayName": "Block of Emerald",
     "name": "blockEmerald",
-    "hardness": 5
+    "hardness": 5,
+    "boundingBox": "block"
   },
   "134": {
     "id": 134,
     "displayName": "Spruce Wood Stairs",
     "name": "stairsWoodSpruce",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "135": {
     "id": 135,
     "displayName": "Birch Wood Stairs",
     "name": "stairsWoodBirch",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "136": {
     "id": 136,
     "displayName": "Jungle Wood Stairs",
     "name": "stairsWoodJungle",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "137": {
     "id": 137,
     "displayName": "Command Block",
     "name": "commandBlock",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "138": {
     "id": 138,
     "displayName": "Beacon",
     "name": "beacon",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "139": {
     "id": 139,
     "name": "cobbleWall",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "140": {
     "id": 140,
     "name": "flowerPot",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "block"
   },
   "141": {
     "id": 141,
     "displayName": "Carrots",
     "name": "carrots",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "empty"
   },
   "142": {
     "id": 142,
     "displayName": "Potatoes",
     "name": "potatoes",
-    "hardness": 0
+    "hardness": 0,
+    "boundingBox": "empty"
   },
   "143": {
     "id": 143,
     "displayName": "Button",
     "name": "button",
-    "hardness": 0.5
+    "hardness": 0.5,
+    "boundingBox": "block"
   },
   "144": {
     "id": 144,
     "name": "skull",
-    "hardness": 1
+    "hardness": 1,
+    "boundingBox": "block"
   },
   "145": {
     "id": 145,
     "displayName": "Anvil",
     "name": "anvil",
-    "hardness": 5
+    "hardness": 5,
+    "boundingBox": "block"
   }
 }

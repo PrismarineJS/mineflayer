@@ -37,7 +37,7 @@ bot.on('kicked', function(reason) {
   console.log("I got kicked for", reason, "lol");
 });
 bot.on('spawn', function() {
-  bot.chat("I have spawned");
+  console.log("I have spawned");
   console.log("game", bot.game);
 });
 bot.on('death', function() {
@@ -73,11 +73,8 @@ bot.on('nonSpokenChat', function(message) {
 bot.on('spawnReset', function(message) {
   console.log("oh noez!! my bed is broken.");
 });
-var map = {};
 bot.on('entitySwingArm', function(entity) {
-  map[entity.id] = map[entity.id] || 0;
-  map[entity.id] += 1;
-  bot.chat(entity.username + ", you've swung your arm " + map[entity.id] + "times.");
+  //console.log(entity.username + ", you've swung your arm " + map[entity.id] + "times.");
 });
 bot.on('entityHurt', function(entity) {
   if (entity.type === 'mob') {
