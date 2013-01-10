@@ -287,6 +287,12 @@ or boat.
 Fires when a chunk has updated. `point` is the coordinates to the corner
 of the chunk with the smallest x, y, and z values.
 
+#### "move"
+
+Fires when the bot moves. If you want the current position, use
+`bot.entity.position` and if you want the previous position, use
+`bot.entity.position.minus(bot.entity.velocity)`.
+
 ### Functions
 
 #### bot.blockAt(point)
