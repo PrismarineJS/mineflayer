@@ -1,3 +1,14 @@
+## 0.0.6
+
+ * add a physics engine which understands gravity
+ * add jumper example, jumps whenever you chat
+ * add `respawn` event which fires when you die or change dimensions
+ * Block instances have a `boundingBox` property, which is currently either
+   `solid` or `empty`.
+ * fix `game` event to fire correctly
+ * `bot.game.spawnPoint` moved to `bot.spawnPoint`.
+ * `bot.game.players` moved to `bot.players`.
+
 ## 0.0.5
 
  * unload chunks when changing dimensions
