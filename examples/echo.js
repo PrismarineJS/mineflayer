@@ -6,5 +6,6 @@ var bot = mineflayer.createBot({
   // online-mode set to false.
 });
 bot.on('chat', function(username, message) {
+  if (username === bot.username) return;
   bot.chat(message);
 });

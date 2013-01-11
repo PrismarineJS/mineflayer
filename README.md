@@ -35,6 +35,7 @@ var bot = mineflayer.createBot({
   password: "12345678",       // online-mode=true servers
 });
 bot.on('chat', function(username, message) {
+  if (username === bot.username) return;
   bot.chat(message);
 });
 ```
