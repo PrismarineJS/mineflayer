@@ -351,6 +351,17 @@ Fires when the bot moves. If you want the current position, use
 `bot.entity.position` and if you want the previous position, use
 `bot.entity.position.minus(bot.entity.velocity)`.
 
+#### "mount"
+
+Fires when you mount an entity such as a minecart. To get access
+to the entity, use `bot.vehicle`.
+
+To mount an entity, use `mount`.
+
+#### "dismount" (vehicle)
+
+Fires when you dismount from an entity.
+
 
 ### Functions
 
@@ -417,3 +428,15 @@ Set the direction your head is facing.
    Specify this to true if you need the server to know exactly where you
    are looking, such as for dropping items or shooting arrows. This is not
    needed for client-side calculation such as walking direction.
+
+#### bot.attack(entity)
+
+Attack a player or a mob.
+
+#### bot.mount(entity)
+
+Mount a vehicle. To get back out, use `bot.dismount`.
+
+#### bot.dismount()
+
+Dismounts from the vehicle you are in.
