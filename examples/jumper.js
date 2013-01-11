@@ -2,7 +2,17 @@ var mineflayer = require('../');
 var bot = mineflayer.createBot({
   username: "jumper",
 });
+bot.once('spawn', function() {
+  // so creepy
+  setInterval(watch, 50);
+});
+var target = null;
+function watch() {
+  if (! target) return;
+  bot.lookAt(target.position.offset(0, target.height, 0));
+}
 bot.on('chat', function(username, message) {
+  target = bot.players[username].entity;
   if (message === 'jump') {
     bot.setControlState('jump', true);
     bot.setControlState('jump', false);

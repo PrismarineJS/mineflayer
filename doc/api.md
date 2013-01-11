@@ -399,3 +399,11 @@ Get out of bed.
 #### bot.clearControlStates()
 
 Sets all controls to off.
+
+#### bot.lookAt(point, [force])
+
+Tilts your head so that it is directly facing the point.
+
+#### bot.look(yaw, pitch, [force])
+
+Set the direction your head is facing.
