@@ -116,7 +116,7 @@ Your own entity. See `Entity`.
 
 Use this to find out your own name.
 
-#### bot.game.spawnPoint
+#### bot.spawnPoint
 
 Coordinates to the main spawn point, where all compasses point to.
 
@@ -134,7 +134,7 @@ Coordinates to the main spawn point, where all compasses point to.
 
 #### bot.game.maxPlayers
 
-#### bot.game.players
+#### bot.players
 
 List of people playing the game. A player looks like this:
 
@@ -200,6 +200,11 @@ Number, in the range [0, 20] representing the number of half-turkey-legs.
 Food saturation acts as a food "overcharge". Food values will not decrease
 while the saturation is over zero. Players logging in automatically get a
 saturation of 5.0. Eating food increases the saturation as well as the food bar.
+
+#### bot.physics
+
+Edit these numbers to tweak gravity, jump speed, terminal velocity, etc.
+Do this at your own risk.
 
 ### Events
 
@@ -331,4 +336,12 @@ Sleep in a bed. `bedPosition` should be a point which contains a bed.
 #### bot.wake()
 
 Get out of bed.
+
+#### bot.setControlState(control, state)
+
+ * `control` - one of ['forward', 'back', 'left', 'right', 'jump']
+ * `state` - `true` or `false`
+
+#### bot.clearControlStates()
+
 
