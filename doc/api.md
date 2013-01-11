@@ -205,10 +205,26 @@ Food saturation acts as a food "overcharge". Food values will not decrease
 while the saturation is over zero. Players logging in automatically get a
 saturation of 5.0. Eating food increases the saturation as well as the food bar.
 
+
 #### bot.physics
 
 Edit these numbers to tweak gravity, jump speed, terminal velocity, etc.
 Do this at your own risk.
+
+#### bot.time.day
+
+Time of the day, in ticks.
+
+Time is based on ticks, where 20 ticks happen every second. There are 24000
+ticks in a day, making Minecraft days exactly 20 minutes long.
+
+The time of day is based on the timestamp modulo 24000. 0 is sunrise, 6000
+is noon, 12000 is sunset, and 18000 is midnight.
+
+#### bot.time.age
+
+Age of the world, in ticks.
+
 
 ### Events
 
@@ -245,6 +261,10 @@ Emitted when the server changes any of the game properties.
 
 Emitted when it starts or stops raining. If you join a
 server where it is already raining, this event will fire.
+
+#### "time"
+
+Emitted when the server sends a time update. See `bot.time`.
 
 #### "kicked" (reason)
 

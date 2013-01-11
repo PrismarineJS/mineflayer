@@ -11,6 +11,9 @@ bot.on('login', function() {
   console.log("I logged in.");
   console.log("settings", bot.settings);
 });
+bot.on('time', function() {
+  console.log("current time", bot.time);
+});
 bot.on('playerJoined', function(player) {
   bot.chat("hello, " + player.username + "! welcome to the server.");
 });
