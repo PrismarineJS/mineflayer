@@ -1,3 +1,9 @@
+## 0.0.7
+
+ * add `bot.time.day` and `bot.time.age` and "time" event
+ * add `bot.entities` which is a map of the entities around you
+ * add `bot.look(yaw, pitch, force)` and `bot.lookAt(point, force)`
+
 ## 0.0.6
 
  * add a physics engine which understands gravity

@@ -402,8 +402,18 @@ Sets all controls to off.
 
 #### bot.lookAt(point, [force])
 
-Tilts your head so that it is directly facing the point.
+ * `point` - tilts your head so that it is directly facing this point.
+ * `force` - See `force` in `bot.lookAt`
 
 #### bot.look(yaw, pitch, [force])
 
 Set the direction your head is facing.
+
+ * `yaw` - The number of radians to rotate around the vertical axis, starting
+   from due east. Counter clockwise.
+ * `pitch` - Number of radians to point up or down. 0 means straight forward.
+   pi / 2 means straight up. -pi / 2 means straight down.
+ * `force` - If present and true, skips the smooth server-side transition.
+   Specify this to true if you need the server to know exactly where you
+   are looking, such as for dropping items or shooting arrows. This is not
+   needed for client-side calculation such as walking direction.
