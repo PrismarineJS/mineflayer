@@ -8,6 +8,7 @@
  * fix `game` event to fire correctly
  * `bot.game.spawnPoint` moved to `bot.spawnPoint`.
  * `bot.game.players` moved to `bot.players`.
+ * `bot.quit` has a default reason of "disconnect.quitting" (thanks Darthfett)
 
 ## 0.0.5
 
