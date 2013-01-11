@@ -234,7 +234,7 @@ Age of the world, in ticks.
 
 #### "chat" (username, message, rawMessage)
 
- * `username` - who said the message
+ * `username` - who said the message (compare with bot.username to ignore your own chat)
  * `message` - stripped of any control characters
  * `rawMessage` - unmodified message from the server
 

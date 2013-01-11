@@ -20,7 +20,7 @@ describe("mineflayer", function() {
     server.close();
   });
   it("chat", function(done) {
-    bot.on('chat', function(username, message) {
+    bot.once('chat', function(username, message) {
       assert.strictEqual(username, "gary");
       assert.strictEqual(message, "hello");
       bot.chat("hi");
