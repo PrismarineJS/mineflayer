@@ -26,5 +26,7 @@ bot.on('chat', function(username, message) {
     bot.setControlState('right', true);
   } else if (message === 'stop') {
     bot.clearControlStates();
+  } else if (message === 'tp') {
+    bot.entity.position.y += 10;
   }
 });
