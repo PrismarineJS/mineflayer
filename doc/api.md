@@ -116,6 +116,10 @@ Numerical id.
 
 Your own entity. See `Entity`.
 
+#### bot.entities
+
+All nearby entities. This object is a map of entityId to entity.
+
 #### bot.username
 
 Use this to find out your own name.
