@@ -374,4 +374,4 @@ Get out of bed.
 
 #### bot.clearControlStates()
 
-
+Sets all controls to off.

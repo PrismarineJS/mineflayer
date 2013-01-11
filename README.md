@@ -11,15 +11,16 @@ Create Minecraft bots with a powerful, stable, and high level JavaScript API.
  * Chat
  * Lots of miscellaneous stuff such as knowing your health and whether it
    is raining.
+ * Basic physics and movement - currently blocks are either "solid" or "empty".
 
 ### Roadmap
 
 These things are in the works:
 
- * Physics and movement
  * Inventory management
  * Ability to use items and vehicles and attack
  * Digging and building
+ * Better physics (support doors, ladders, water, etc).
 
 ## Usage
 
@@ -38,15 +39,20 @@ bot.on('chat', function(username, message) {
 });
 ```
 
+## Projects Using Mineflayer
+
+ * [Contra/minebot](https://github.com/Contra/minebot)
+ * [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot)
+
 ## Installation
 
 `npm install mineflayer`
 
 ## Documentation
 
- * See `doc/api.md`.
- * See `doc/history.md`.
- * See `examples/`.
+ * See [doc/api.md](https://github.com/superjoe30/mineflayer/blob/master/doc/api.md).
+ * See [doc/history.md](https://github.com/superjoe30/mineflayer/blob/master/doc/history.md).
+ * See [examples/](https://github.com/superjoe30/mineflayer/tree/master/examples).
 
 ## Testing
 
