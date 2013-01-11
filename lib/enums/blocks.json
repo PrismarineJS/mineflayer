@@ -220,14 +220,14 @@
     "displayName": "Grass",
     "name": "tallgrass",
     "hardness": 0,
-    "boundingBox": "block"
+    "boundingBox": "empty"
   },
   "32": {
     "id": 32,
     "displayName": "Dead Bush",
     "name": "deadbush",
     "hardness": 0,
-    "boundingBox": "block"
+    "boundingBox": "empty"
   },
   "33": {
     "id": 33,
