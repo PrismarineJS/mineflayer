@@ -257,6 +257,12 @@ and then emitted when you respawn after death.
 This is usually the event that you want to listen to
 before doing anything on the server.
 
+#### "respawn"
+
+Emitted when you change dimensions and just before you spawn.
+Usually you want to ignore this event and wait until the "spawn"
+event instead.
+
 #### "game"
 
 Emitted when the server changes any of the game properties.
@@ -383,12 +389,6 @@ Gracefully disconnect from the server with the given reason (defaults to 'discon
 #### bot.chat(message)
 
 Sends a publicly broadcast chat message. Breaks up big messages into multiple chat messages as necessary. If message begins with "/tell <username> ", then all split messages will be whispered as well.
-
-#### bot.spawn()
-
-Spawn is called automatically upon login and death. If you wish to
-disable this behavior and do it manually, pass `autoSpawn` `false`
-to the `options` argument of `createBot`.
 
 #### bot.setSettings(options)
 

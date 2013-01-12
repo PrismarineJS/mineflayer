@@ -44,6 +44,12 @@ bot.on('chat', function(username, message) {
     bot.attack(entity);
   } else if (message === 'tp') {
     bot.entity.position.y += 10;
+  } else if (message === 'spawn') {
+    bot.spawn();
+  } else if (message === 'pos') {
+    bot.chat(bot.entity.position.toString());
+  } else if (message === 'yp') {
+    bot.chat("Yaw " + bot.entity.yaw + ", pitch: " + bot.entity.pitch);
   }
 });
 
