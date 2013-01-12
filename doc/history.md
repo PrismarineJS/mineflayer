@@ -1,3 +1,16 @@
+## 0.0.8
+
+ * chat: no longer suppress "chat" events for your own chat (thanks Darthfett).
+ * ability to mount / dismount vehicles and attack
+ * physics: fix tall grass and dead bushes treated as solid
+ * fix "respawn" event firing twice sometimes
+ * remove `bot.spawn()` and `autoSpawn` option. auto spawn is now mandatory.
+ * fix sending spawn packet twice on init
+ * fix bots spawning with their heads on backwards
+ * fix bots jumping when they get hit
+ * update player heights when they crouch
+ * add support for signs: `block.signText` and `bot.updateSign(block, text)`
+
 ## 0.0.7
 
  * add `bot.time.day` and `bot.time.age` and "time" event
