@@ -33,6 +33,37 @@ describe("mineflayer", function() {
       });
     });
   });
+  it("entity effects", function(done) {
+    bot.once('entityEffect', function(entity, effect) {
+      assert.strictEqual(entity.mobType, "creeper");
+      assert.strictEqual(effect.id, 10);
+      assert.strictEqual(effect.amplifier, 1);
+      assert.strictEqual(effect.duration, 11);
+      done();
+    });
+    server.on('login', function(client) {
+      client.write(0x18, {
+        entityId: 8, // random
+        type: 50, // creeper
+        x: 10,
+        y: 11,
+        z: 12,
+        yaw: 13,
+        pitch: 14,
+        headYaw: 15,
+        velocityX: 16,
+        velocityY: 17,
+        velocityZ: 18,
+        metadata: [],
+      });
+      client.write(0x29, {
+        entityId: 8,
+        effectId: 10,
+        amplifier: 1,
+        duration: 11,
+      });
+    });
+  });
   it("blockAt", function(done) {
     var pos = vec3(1, 65, 1);
     var goldId = 41;
