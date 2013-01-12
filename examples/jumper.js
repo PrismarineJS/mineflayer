@@ -50,6 +50,8 @@ bot.on('chat', function(username, message) {
     bot.chat(bot.entity.position.toString());
   } else if (message === 'yp') {
     bot.chat("Yaw " + bot.entity.yaw + ", pitch: " + bot.entity.pitch);
+  } else if (message === 'sprint') {
+    bot.setControlState('sprint', true);
   }
 });
 

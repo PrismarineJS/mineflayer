@@ -416,7 +416,7 @@ Get out of bed.
 
 #### bot.setControlState(control, state)
 
- * `control` - one of ['forward', 'back', 'left', 'right', 'jump']
+ * `control` - one of ['forward', 'back', 'left', 'right', 'jump', 'sprint']
  * `state` - `true` or `false`
 
 #### bot.clearControlStates()
