@@ -19,6 +19,7 @@ bot.on("dismount", function(vehicle) {
 });
 bot.on('chat', function(username, message) {
   target = bot.players[username].entity;
+  if (username === bot.username) return;
   var entity;
   if (message === 'jump') {
     bot.setControlState('jump', true);

@@ -59,6 +59,7 @@ bot.on('death', function() {
 });
 bot.on('chat', function(username, message) {
   var block, pos;
+  if (username === bot.username) return;
   if (message === 'pos') {
     bot.chat("I am at " + bot.entity.position + ", you are at " + bot.players[username].entity.position);
   } else if (message === 'spawn') {
