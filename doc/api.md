@@ -238,13 +238,17 @@ Age of the world, in ticks.
 
 #### "chat" (username, message, rawMessage)
 
+Only emitted when a player chats publicly.
+
  * `username` - who said the message (compare with bot.username to ignore your own chat)
- * `message` - stripped of any control characters
+ * `message` - stripped of all color and control characters
  * `rawMessage` - unmodified message from the server
 
-#### "nonSpokenChat" (message, rawMessage)
+#### "message" (message, rawMessage)
 
- * `message` - stripped of all control characters
+Emitted for every server message, including chats.
+
+ * `message` - stripped of all color and control characters
  * `rawMessage` - unmodified message from the server
 
 #### "login"
@@ -392,7 +396,11 @@ Gracefully disconnect from the server with the given reason (defaults to 'discon
 
 #### bot.chat(message)
 
-Sends a publicly broadcast chat message. Breaks up big messages into multiple chat messages as necessary. If message begins with "/tell <username> ", then all split messages will be whispered as well.
+Sends a publicly broadcast chat message. Breaks up big messages into multiple chat messages as necessary.
+
+#### bot.tell(username, message)
+
+Shortcut for "/tell <username>". All split messages will be whispered to username.
 
 #### bot.setSettings(options)
 

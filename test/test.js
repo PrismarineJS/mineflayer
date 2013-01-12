@@ -26,7 +26,7 @@ describe("mineflayer", function() {
       bot.chat("hi");
     });
     server.on('login', function(client) {
-      client.write(0x03, { message: "<gary> hello" } );
+      client.write(0x03, { message: "<gary> §0hello" } );
       client.on(0x03, function(packet) {
         assert.strictEqual(packet.message, "hi");
         done();
