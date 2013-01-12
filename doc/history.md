@@ -1,3 +1,13 @@
+## 0.0.9
+
+ * ability to sprint (thanks ruan942)
+ * fix color code stripping (thanks rom1504)
+ * event "onNonSpokenChat" deleted
+ * new event "message" which fires for all messages
+ * `bot.chat` no longer checks for "/tell" at the beginning
+ * add `bot.tell(username, message)` method
+ * fix crash when an entity effect occurs
+
 ## 0.0.8
 
  * chat: no longer suppress "chat" events for your own chat (thanks Darthfett).
