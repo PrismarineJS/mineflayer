@@ -91,6 +91,10 @@ Numerical id.
 
 A biome instance. See `Biome`.
 
+#### block.signText
+
+If the block is a sign, contains the sign text.
+
 ### mineflayer.Biome
 
 #### biome.id
@@ -440,3 +444,7 @@ Mount a vehicle. To get back out, use `bot.dismount`.
 #### bot.dismount()
 
 Dismounts from the vehicle you are in.
+
+#### bot.updateSign(block, text)
+
+Changes the text on the sign.
