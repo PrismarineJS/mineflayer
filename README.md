@@ -4,21 +4,21 @@ Create Minecraft bots with a powerful, stable, and high level JavaScript API.
 
 ## Features
 
- * Supports Minecraft 1.4.6.
+ * Supports Minecraft 1.4.7.
  * Entity knowledge - it knows when and where players, mobs, and objects spawn
    and despawn.
  * Block knowledge. You can query the world around you.
- * Chat
+ * Basic physics and movement - currently blocks are either "solid" or "empty".
+ * Attacking entities and using vehicles.
  * Lots of miscellaneous stuff such as knowing your health and whether it
    is raining.
- * Basic physics and movement - currently blocks are either "solid" or "empty".
+ * Chat
 
 ### Roadmap
 
 These things are in the works:
 
- * Inventory management
- * Ability to use items and vehicles and attack
+ * Inventory management, crafting, and ability to use items
  * Digging and building
  * Better physics (support doors, ladders, water, etc).
 
