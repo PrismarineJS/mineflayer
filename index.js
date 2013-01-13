@@ -18,6 +18,8 @@ module.exports = {
 };
 
 function createBot(options) {
+  options = options || {};
+  options.username = options.username || 'Player';
   var bot = new Bot();
   bot.connect(options);
   return bot;
