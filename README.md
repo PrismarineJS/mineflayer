@@ -40,6 +40,14 @@ bot.on('chat', function(username, message) {
 });
 ```
 
+## Third Party Plugins
+
+Mineflayer is pluggable, so anyone can create a plugin that adds an even
+higher level API on top of Mineflayer.
+
+ * [navigate](https://github.com/superjoe30/mineflayer-navigate/) - get around
+   easily using A* pathfinding.
+
 ## Projects Using Mineflayer
 
  * [Contra/minebot](https://github.com/Contra/minebot)
