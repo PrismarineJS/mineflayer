@@ -1,3 +1,7 @@
+## 0.0.10
+
+ * physics: fix bug: walking too slowly on Z axis
+
 ## 0.0.9
 
  * ability to sprint (thanks ruan942)
