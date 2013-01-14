@@ -123,6 +123,10 @@ bot.on('entitySpawn', function(entity) {
     bot.chat("look who decided to show up: " + entity.username);
   } else if (entity.type === 'object') {
     //bot.chat("there's a " + entity.objectType + " at " + entity.position);
+  } else if (entity.type === 'global') {
+    bot.chat("ooh lightning!");
+  } else if (entity.type === 'orb') {
+    bot.chat("gimme dat exp orb");
   }
 });
 bot.on('playerCollect', function(collector, collected) {

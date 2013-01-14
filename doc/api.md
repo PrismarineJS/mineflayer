@@ -30,6 +30,7 @@ Choices:
  * `player`
  * `mob`
  * `object`
+ * `orb` - experience orb.
 
 #### entity.username
 
@@ -42,6 +43,11 @@ If the entity type is `mob`, this field will be set.
 #### entity.objectType
 
 If the entity type is `object`, this field will be set.
+
+#### entity.count
+
+If the entity type is `orb`, this field will be how much experience you
+get from collecting the orb.
 
 #### entity.position
 
