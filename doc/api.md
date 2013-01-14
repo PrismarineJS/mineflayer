@@ -95,6 +95,15 @@ A biome instance. See `Biome`.
 
 If the block is a sign, contains the sign text.
 
+#### block.painting
+
+If the block is a painting, contains information about the painting.
+
+ * `id`
+ * `position`
+ * `name`
+ * `direction` - direction vector telling how the painting is facing.
+
 ### mineflayer.Biome
 
 #### biome.id
