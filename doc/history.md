@@ -1,3 +1,8 @@
+## 0.0.11
+
+ * physics: skip frames instead of glitching out
+ * default bot name to Player - `createBot` can take no arguments now.
+
 ## 0.0.10
 
  * physics: fix bug: walking too slowly on Z axis
