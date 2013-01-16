@@ -30,6 +30,7 @@ Choices:
  * `player`
  * `mob`
  * `object`
+ * `global` - lightning
  * `orb` - experience orb.
 
 #### entity.username
