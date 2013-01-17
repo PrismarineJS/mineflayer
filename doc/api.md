@@ -523,5 +523,12 @@ Equips an item from your inventory. Returns the item that you equipped, or
    - `"torso"`
    - `"legs"`
    - `"feet"`
- * `callback` (error) - called when you have successfully equipped the item
+ * `callback(error)` - called when you have successfully equipped the item
    or when you learn that you have failed to equip the item.
+
+#### bot.tossStack(item, callback)
+
+ * `item` - the stack of items you wish to toss
+ * `callback(error)` - called when tossing is done. if error is truthy,
+   you were not able to complete the toss.
+

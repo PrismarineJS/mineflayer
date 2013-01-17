@@ -4,30 +4,43 @@ var bot = mineflayer.createBot({
 });
 
 bot.on('chat', function(username, message) {
+  var words, name, item;
   if (message === 'debug') {
     console.log(bot.inventory);
   } else if (message === 'list') {
     listInventory();
-  } else if (/^equip /.test(message)) {
-    var words = message.split(" ");
-    var destination = words[1];
-    var name = words[2];
-    var item, block;
-    for (var i = 0; i < bot.inventory.slots.length; ++i) {
-      item = bot.inventory.slots[i];
-      if (item && item.name === name) {
-        bot.equip(item.type, destination, onEquip);
-        return;
-      }
-    }
-    bot.chat("I have no " + name);
-  }
-  function onEquip(err) {
-    if (err) {
-      bot.chat("unable to equip " + item.name);
-      console.log(err.stack);
+  } else if (/^toss /.test(message)) {
+    words = message.split(" ");
+    name = words[1];
+    item = itemByName(name);
+    if (item) {
+      bot.tossStack(item, function(err) {
+        if (err) {
+          bot.chat("unable to toss " + item.name);
+          console.log(err.stack);
+        } else {
+          bot.chat("tossed " + item.name);
+        }
+      });
     } else {
-      bot.chat("equipping " + item.name);
+      bot.chat("I have no " + name);
+    }
+  } else if (/^equip /.test(message)) {
+    words = message.split(" ");
+    var destination = words[1];
+    name = words[2];
+    item = itemByName(name);
+    if (item) {
+      bot.equip(item.type, destination, function(err) {
+        if (err) {
+          bot.chat("unable to equip " + item.name);
+          console.log(err.stack);
+        } else {
+          bot.chat("equipped " + item.name);
+        }
+      });
+    } else {
+      bot.chat("I have no " + name);
     }
   }
 });
@@ -41,4 +54,13 @@ function listInventory() {
     if (count) output += item.name + ": " + count + ", ";
   }
   bot.chat(output);
+}
+
+function itemByName(name) {
+  var item, i;
+  for (i = 0; i < bot.inventory.slots.length; ++i) {
+    item = bot.inventory.slots[i];
+    if (item && item.name === name) return item;
+  }
+  return null;
 }
