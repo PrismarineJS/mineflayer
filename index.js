@@ -12,6 +12,7 @@ module.exports = {
   Biome: require('./lib/biome'),
   Entity: require('./lib/entity'),
   Painting: require('./lib/painting'),
+  Item: require('./lib/item'),
   blocks: require('./lib/enums/blocks'),
   biomes: require('./lib/enums/biomes'),
   items: require('./lib/enums/items'),

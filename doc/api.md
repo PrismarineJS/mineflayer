@@ -64,7 +64,11 @@ get from collecting the orb.
 
 #### entity.equipment[5]
 
-0 = held item, 1-4 = armor slot
+ * `0` - held item
+ * `1` - head
+ * `2` - torso
+ * `3` - legging
+ * `4` - shoes
 
 #### entity.heldItem
 
@@ -127,6 +131,25 @@ Numerical id.
 
 #### biome.temperature
 
+### mineflayer.Item
+
+#### item.type
+
+Numerical id.
+
+#### item.count
+
+#### item.meta
+
+#### item.nbt
+
+Buffer.
+
+#### item.name
+
+#### item.displayName
+
+#### item.stackSize
 
 ## Bot
 
@@ -249,6 +272,21 @@ is noon, 12000 is sunset, and 18000 is midnight.
 
 Age of the world, in ticks.
 
+#### bot.inventory.count
+
+Map of item id to how many you have in your inventory.
+
+#### bot.inventory.slots
+
+Map of slot index to `Item` instance.
+
+#### bot.inventory.quickBarSlot
+
+Which quick bar slot is selected (0 - 8).
+
+#### bot.inventory.selectedItem
+
+In vanilla client, this is the item you are holding with the mouse cursor.
 
 ### Events
 
@@ -472,3 +510,18 @@ Dismounts from the vehicle you are in.
 #### bot.updateSign(block, text)
 
 Changes the text on the sign.
+
+#### bot.equip(itemType, destination, callback)
+
+Equips an item from your inventory. Returns the item that you equipped, or
+`null` if unable to equip.
+
+ * `itemType` - numerical item id
+ * `destination`
+   - `"hand"`
+   - `"head"`
+   - `"torso"`
+   - `"legs"`
+   - `"feet"`
+ * `callback` (error) - called when you have successfully equipped the item
+   or when you learn that you have failed to equip the item.
