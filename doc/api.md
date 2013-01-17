@@ -288,6 +288,10 @@ Which quick bar slot is selected (0 - 8).
 
 In vanilla client, this is the item you are holding with the mouse cursor.
 
+#### bot.targetDigBlock
+
+The `block` that you are currently digging, or `null`.
+
 ### Events
 
 #### "chat" (username, message, rawMessage)
@@ -413,6 +417,10 @@ Fires when a note block goes off somewhere.
 
 #### "chestLidMove" (block, isOpen)
 
+#### "diggingCompleted" (block)
+
+ * `block` - the block that no longer exists
+
 #### "move"
 
 Fires when the bot moves. If you want the current position, use
@@ -532,3 +540,12 @@ Equips an item from your inventory. Returns the item that you equipped, or
  * `callback(error)` - called when tossing is done. if error is truthy,
    you were not able to complete the toss.
 
+#### bot.startDigging(block)
+
+Begin digging into `block` with the currently equipped item. When you
+finally break through the block, you get a "diggingCompleted" event.
+There is currently no way to stop digging.
+
+#### bot.canDigBlock(block)
+
+Returns whether `block` is diggable and within range.
