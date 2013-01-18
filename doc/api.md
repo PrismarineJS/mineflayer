@@ -559,3 +559,7 @@ Returns whether `block` is diggable and within range.
  * `referenceBlock` - the block you want to place a new block next to
  * `faceVector` - a direction vector pointing to the face of `referenceBlock`
    which you want to place the new block next to.
+
+#### bot.setQuickBarSlot(slot)
+
+ * `slot` - 0-8 the quick bar slot to select.
