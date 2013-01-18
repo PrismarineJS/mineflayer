@@ -1,3 +1,22 @@
+## 0.0.12
+
+ * add inventory support
+   - add `Item` class which is exposed on `mineflayer`
+   - add `bot.inventory` (see docs for more details)
+   - add `bot.equip(itemType, destination, [callback])`
+   - add `bot.tossStack(item, [callback])`
+ * add digging support
+   - add `bot.startDigging(block)`
+   - add `bot.canDigBlock(block)`
+ * blocks: add `blockUpdate:(x, y, z)` event.
+ * add building support
+   - add `bot.placeBlock(referenceBlock, faceVector)`
+ * add `block.painting`
+ * add `Painting` class which is exposed on `mineflayer`
+ * add experience orb support
+   - `entity.type` can be `orb` now
+   - `entity.count` is how much experience you get for collecting it
+
 ## 0.0.11
 
  * physics: skip frames instead of glitching out

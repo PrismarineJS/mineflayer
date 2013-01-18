@@ -393,6 +393,10 @@ or boat.
 #### "playerLeft" (player)
 
 #### "blockUpdate" (point)
+#### "blockUpdate:(x, y, z)"
+
+Fires for a specific point. Replace x, y, and z with real integer values.
+
 #### "chunkColumnLoad" (point)
 #### "chunkColumnUnload" (point)
 
@@ -534,11 +538,11 @@ Equips an item from your inventory. Returns the item that you equipped, or
  * `callback(error)` - optional. called when you have successfully equipped
    the item or when you learn that you have failed to equip the item.
 
-#### bot.tossStack(item, callback)
+#### bot.tossStack(item, [callback])
 
  * `item` - the stack of items you wish to toss
- * `callback(error)` - called when tossing is done. if error is truthy,
-   you were not able to complete the toss.
+ * `callback(error)` - optional, called when tossing is done. if error is
+   truthy, you were not able to complete the toss.
 
 #### bot.startDigging(block)
 
