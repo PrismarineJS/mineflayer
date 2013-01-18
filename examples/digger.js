@@ -11,7 +11,15 @@ bot.on('chat', function(username, message) {
     build();
   } else if (message === 'dirt') {
     bot.equip(0x03, 'hand');
+  } else if (message === 'creative') {
+    bot.chat("/gamemode 1");
+  } else if (message === 'survival') {
+    bot.chat("/gamemode 0");
   }
+});
+
+bot.on('game', function() {
+  bot.chat("game mode is " + bot.game.gameMode);
 });
 
 function dig() {
