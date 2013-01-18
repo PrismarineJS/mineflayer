@@ -54,6 +54,7 @@ higher level API on top of Mineflayer.
 
  * [Contra/minebot](https://github.com/Contra/minebot)
  * [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot)
+ * [rom1504/rbot](https://github.com/rom1504/rbot)
 
 ## Installation
 
