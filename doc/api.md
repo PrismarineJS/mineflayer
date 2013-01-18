@@ -187,7 +187,7 @@ Coordinates to the main spawn point, where all compasses point to.
 
 #### bot.players
 
-List of people playing the game. A player looks like this:
+Map of username to people playing the game. A player looks like this:
 
 ```js
 {
