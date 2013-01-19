@@ -59,7 +59,7 @@
     "hardness": 0,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "empty"
   },
   "7": {
     "id": 7,
@@ -584,7 +584,7 @@
     "hardness": 0.4,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "empty"
+    "boundingBox": "block"
   },
   "66": {
     "id": 66,
@@ -701,7 +701,7 @@
     "hardness": 0.1,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "empty"
   },
   "79": {
     "id": 79,
@@ -948,7 +948,7 @@
     "hardness": 0.2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "vines"
+    "boundingBox": "empty"
   },
   "107": {
     "id": 107,
@@ -1274,7 +1274,7 @@
     "hardness": 0.5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "empty"
   },
   "144": {
     "id": 144,
