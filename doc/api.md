@@ -115,6 +115,13 @@ If the block is a painting, contains information about the painting.
  * `name`
  * `direction` - direction vector telling how the painting is facing.
 
+#### block.boundingBox
+
+The shape of the block according to the physics engine's collision decection. Currently one of:
+
+ * `block` - currently, partially solid blocks, such as half-slabs and ladders, are considered entirely solid.
+ * `empty` - such as flowers and lava.
+
 ### mineflayer.Biome
 
 #### biome.id
