@@ -122,6 +122,8 @@ The shape of the block according to the physics engine's collision decection. Cu
  * `block` - currently, partially solid blocks, such as half-slabs and ladders, are considered entirely solid.
  * `empty` - such as flowers and lava.
 
+Note that some api's will override the boundingBox to `block` if there's a fence just below it.
+
 ### mineflayer.Biome
 
 #### biome.id
