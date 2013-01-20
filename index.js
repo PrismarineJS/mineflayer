@@ -16,6 +16,7 @@ module.exports = {
   blocks: require('./lib/enums/blocks'),
   biomes: require('./lib/enums/biomes'),
   items: require('./lib/enums/items'),
+  recipes: require('./lib/enums/recipes'),
   instruments: require('./lib/enums/instruments'),
 };
 
