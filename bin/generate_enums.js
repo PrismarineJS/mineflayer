@@ -14,6 +14,7 @@ var outputs = [
   items,
   blocks,
   biomes,
+  recipes,
 ];
 
 fs.readFile(burgerJsonPath, 'utf8', function(err, json) {
@@ -106,3 +107,48 @@ function biomes(burger, cb) {
   });
 }
 
+function recipes(burger, cb) {
+  var recipesJson = burger[0].recipes;
+  var recipeEnum = {};
+  var recipeItemList, recipeItem, ingredients;
+  for (var makesId in recipesJson) {
+    var recipeList = recipesJson[makesId];
+    recipeEnum[makesId] = recipeItemList = [];
+    var j, shape, shapeLine;
+    for (var i = 0; i < recipeList.length; ++i) {
+      var recipe = recipeList[i];
+      if (recipe.type === 'shape') {
+        recipeItemList.push({
+          count: recipe.amount,
+          metadata: recipe.metadata,
+          inShape: shape = [],
+        });
+        for (j = recipe.shape.length - 1; j >= 0; --j) {
+          var line = recipe.shape[j];
+          shape.push(shapeLine = []);
+          for (var k = 0; k < line.length; ++k) {
+            shapeLine.push(line[k] || null);
+          }
+        }
+      } else if (recipe.type === 'shapeless') {
+        recipeItemList.push({
+          count: recipe.amount,
+          metadata: recipe.metadata,
+          ingredients: ingredients = [],
+        });
+        for(j = 0; j < recipe.ingredients.length; ++j) {
+          var ingredient = recipe.ingredients[j];
+          ingredients.push({
+            id: ingredient.id,
+          });
+        }
+      } else {
+        throw new Error("unexpected recipe type: " + recipe.type)
+      }
+    }
+  }
+  cb(null, {
+    name: "recipes",
+    json: recipeEnum,
+  });
+}
