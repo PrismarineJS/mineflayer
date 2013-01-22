@@ -1,3 +1,10 @@
+## 0.0.13
+
+ * fix `bot.equip` when already equipping the item
+ * fix some incorrect block physics
+ * add `mineflayer.recipes` enum
+ * fix crash when digging at a high elevation
+
 ## 0.0.12
 
  * add inventory support
