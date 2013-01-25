@@ -42,6 +42,11 @@ bot.on('chat', function(username, message) {
 });
 ```
 
+#### More Examples
+
+ * In the examples folder.
+ * [vogonistic's REPL bot](https://gist.github.com/4631678)
+
 ## Third Party Plugins
 
 Mineflayer is pluggable; anyone can create a plugin that adds an even
