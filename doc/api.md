@@ -401,10 +401,15 @@ or boat.
 #### "playerJoined" (player)
 #### "playerLeft" (player)
 
-#### "blockUpdate" (point)
-#### "blockUpdate:(x, y, z)"
+#### "blockUpdate" (point, block)
 
-Fires for a specific point. Replace x, y, and z with real integer values.
+Fires when a block updates. `point` is the position that updated and `block`
+is the old block. Get the new one for comparison with `bot.blockAt(block.pos)`
+
+#### "blockUpdate:(x, y, z)" (block)
+
+Fires for a specific point. `block` is the old block. Get the new one for
+comparison with `bot.blockAt(block.pos)`
 
 #### "chunkColumnLoad" (point)
 #### "chunkColumnUnload" (point)
