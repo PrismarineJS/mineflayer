@@ -40,10 +40,19 @@ function dig() {
     var target = bot.blockAt(bot.entity.position.offset(0, -1,  0));
     if (target && bot.canDigBlock(target)) {
       bot.chat("starting to dig " + target.name);
-      bot.startDigging(target);
+      bot.startDigging(target, onDiggingCompleted);
     } else {
       bot.chat("cannot dig");
     }
+  }
+}
+
+function onDiggingCompleted(err, oldBlock) {
+  if (err) {
+    bot.chat('unable to dig the ' + oldBlock.name+'!');
+    bot.chat('check that the bot isn\'t in the protected spawn zone or give it /op')
+  } else {
+    bot.chat('finished digging ' + oldBlock.name);
   }
 }
 
@@ -61,12 +70,6 @@ function build() {
     }
   }
 }
-bot.on('diggingCompleted', function(oldBlock) {
-  bot.chat("finished digging " + oldBlock.name);
-});
-bot.on('diggingFailure', function(block) {
-  bot.chat("unable to dig the " + block.name);
-});
 
 function listInventory() {
   var id, count, item;

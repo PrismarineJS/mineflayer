@@ -435,8 +435,9 @@ Fires when a note block goes off somewhere.
 
 #### "chestLidMove" (block, isOpen)
 
-#### "diggingCompleted" (block)
+#### "diggingCompleted" (err, block)
 
+ * `err` - set to true if digging failed
  * `block` - the block that no longer exists
 
 #### "move"
