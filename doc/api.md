@@ -76,7 +76,7 @@ Equivalent to `entity.equipment[0]`.
 
 ### mineflayer.Block
 
-#### block.pos
+#### block.position
 
 Vec3 instance.
 
