@@ -4,11 +4,28 @@ var bot = mineflayer.createBot({
 });
 
 bot.on('chat', function(username, message) {
-  var words, name, item;
+  var words, name, item, amount;
   if (message === 'debug') {
     console.log(bot.inventory);
   } else if (message === 'list') {
     listInventory();
+  } else if (/^toss (\d+) /.test(message)) {
+    words = message.split(" ");
+    amount = parseInt(words[1], 10);
+    name = words[2];
+    item = itemByName(name);
+    if (item) {
+      bot.toss(item.type, null, amount, function(err) {
+        if (err) {
+          bot.chat("unable to toss " + item.name);
+          console.log(err.stack);
+        } else {
+          bot.chat("tossed " + amount + " " + item.name);
+        }
+      });
+    } else {
+      bot.chat("I have no " + name);
+    }
   } else if (/^toss /.test(message)) {
     words = message.split(" ");
     name = words[1];

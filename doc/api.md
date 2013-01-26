@@ -580,6 +580,14 @@ Equips an item from your inventory. Returns the item that you equipped, or
  * `callback(error)` - optional, called when tossing is done. if error is
    truthy, you were not able to complete the toss.
 
+#### bot.toss(itemType, metadata, count, [callback])
+
+ * `itemType` - numerical id of the item you wish to toss
+ * `metadata` - metadata of the item you wish to toss. Use `null`
+   to match any metadata
+ * `count` - how many you want to toss. `null` is an alias for `1`.
+ * `callback(err)` - (optional) called once tossing is complete
+
 #### bot.startDigging(block)
 
 Begin digging into `block` with the currently equipped item. When you
