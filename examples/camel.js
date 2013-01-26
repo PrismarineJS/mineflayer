@@ -74,15 +74,17 @@ bot.on('chat', function(username, message) {
     words = message.split(" ");
     name = words[1];
     item = findItemType(name);
+    var workbench = findCraftingTable();
+    var wbText = workbench ? "with a workbench, " : "without a workbench, ";
     if (item == null) {
-      bot.chat("unknown item: " + name);
+      bot.chat(wbText + "unknown item: " + name);
     } else {
-      var recipes = bot.recipesFor(item.id);
+      var recipes = bot.recipesFor(item.id, null, 1, workbench);
       if (recipes.length) {
-        bot.chat("I can make " + item.name);
+        bot.chat(wbText + "I can make " + item.name);
         console.log(recipes);
       } else {
-        bot.chat("I can't make " + item.name);
+        bot.chat(wbText + "I can't make " + item.name);
       }
     }
   }
@@ -110,9 +112,27 @@ function itemByName(name) {
 }
 
 function findItemType(name) {
-  for (var id in mineflayer.items) {
+  var id;
+  for (id in mineflayer.items) {
     var item = mineflayer.items[id];
     if (item.name.indexOf(name) !== -1) return item;
   }
+  for (id in mineflayer.blocks) {
+    var block = mineflayer.blocks[id];
+    if (block.name == null) console.log(block);
+    if (block.name.indexOf(name) !== -1) return block;
+  }
   return null;
+}
+
+function findCraftingTable() {
+  var cursor = mineflayer.vec3();
+  for(cursor.x = bot.entity.position.x - 4; cursor.x < bot.entity.position.x + 4; cursor.x++) {
+    for(cursor.y = bot.entity.position.y - 4; cursor.y < bot.entity.position.y + 4; cursor.y++) {
+      for(cursor.z = bot.entity.position.z - 4; cursor.z < bot.entity.position.z + 4; cursor.z++) {
+        var block = bot.blockAt(cursor);
+        if (block.type === 58) return block;
+      }
+    }
+  }
 }
