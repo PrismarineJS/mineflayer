@@ -4,7 +4,7 @@ var bot = mineflayer.createBot({
 });
 
 bot.on('chat', function(username, message) {
-  var words, name, item, amount;
+  var words, name, item, amount, destination;
   if (message === 'debug') {
     console.log(bot.inventory);
   } else if (message === 'list') {
@@ -18,7 +18,7 @@ bot.on('chat', function(username, message) {
       bot.toss(item.type, null, amount, function(err) {
         if (err) {
           bot.chat("unable to toss " + item.name);
-          console.log(err.stack);
+          console.error(err.stack);
         } else {
           bot.chat("tossed " + amount + " " + item.name);
         }
@@ -34,7 +34,7 @@ bot.on('chat', function(username, message) {
       bot.tossStack(item, function(err) {
         if (err) {
           bot.chat("unable to toss " + item.name);
-          console.log(err.stack);
+          console.error(err.stack);
         } else {
           bot.chat("tossed " + item.name);
         }
@@ -44,14 +44,14 @@ bot.on('chat', function(username, message) {
     }
   } else if (/^equip /.test(message)) {
     words = message.split(" ");
-    var destination = words[1];
+    destination = words[1];
     name = words[2];
     item = itemByName(name);
     if (item) {
       bot.equip(item.type, destination, function(err) {
         if (err) {
           bot.chat("unable to equip " + item.name);
-          console.log(err.stack);
+          console.error(err.stack);
         } else {
           bot.chat("equipped " + item.name);
         }
@@ -59,6 +59,17 @@ bot.on('chat', function(username, message) {
     } else {
       bot.chat("I have no " + name);
     }
+  } else if (/^unequip /.test(message)) {
+    words = message.split(" ");
+    destination = words[1];
+    bot.unequip(destination, function(err) {
+      if (err) {
+        bot.chat("unable to unequip");
+        console.error(err.stack);
+      } else {
+        bot.chat("unequipped");
+      }
+    });
   }
 });
 

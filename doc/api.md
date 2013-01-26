@@ -574,13 +574,17 @@ Equips an item from your inventory. Returns the item that you equipped, or
 
  * `itemType` - numerical item id
  * `destination`
-   - `"hand"`
+   - `"hand"` - `null` aliases to this
    - `"head"`
    - `"torso"`
    - `"legs"`
    - `"feet"`
  * `callback(error)` - optional. called when you have successfully equipped
    the item or when you learn that you have failed to equip the item.
+
+#### bot.unequip(destination, [callback])
+
+Remove an article of equipment.
 
 #### bot.tossStack(item, [callback])
 
