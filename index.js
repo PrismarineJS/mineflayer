@@ -13,6 +13,7 @@ module.exports = {
   Entity: require('./lib/entity'),
   Painting: require('./lib/painting'),
   Item: require('./lib/item'),
+  Window: require('./lib/window'),
   blocks: require('./lib/enums/blocks'),
   biomes: require('./lib/enums/biomes'),
   items: require('./lib/enums/items'),

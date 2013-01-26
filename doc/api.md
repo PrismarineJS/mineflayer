@@ -160,6 +160,34 @@ Buffer.
 
 #### item.stackSize
 
+### mineflayer.Window
+
+#### window.id
+
+#### window.type
+
+#### window.title
+
+"Inventory", "Chest", "Large chest", "Crafting", "Furnace", or "Trap"
+
+#### window.slots
+
+Map of slot index to `Item` instance.
+
+#### window.count
+
+Map of item id to how many you have in your inventory.
+
+#### window.selectedItem
+
+In vanilla client, this is the item you are holding with the mouse cursor.
+
+#### window.findItem(itemType, [metadata])
+
+ * `itemType` - numerical id that you are looking for
+ * `metadata` - (optional) metadata value that you are looking for.
+   defaults to unspecified.
+
 ## Bot
 
 ### Properties
@@ -281,21 +309,13 @@ is noon, 12000 is sunset, and 18000 is midnight.
 
 Age of the world, in ticks.
 
-#### bot.inventory.count
-
-Map of item id to how many you have in your inventory.
-
-#### bot.inventory.slots
-
-Map of slot index to `Item` instance.
-
-#### bot.inventory.quickBarSlot
+#### bot.quickBarSlot
 
 Which quick bar slot is selected (0 - 8).
 
-#### bot.inventory.selectedItem
+#### bot.inventory
 
-In vanilla client, this is the item you are holding with the mouse cursor.
+A `Window` instance representing your inventory.
 
 #### bot.targetDigBlock
 
@@ -451,6 +471,13 @@ To mount an entity, use `mount`.
 
 Fires when you dismount from an entity.
 
+#### "windowOpen" (window)
+
+Fires when you begin using a workbench, chest, brewing stand, etc.
+
+#### "windowClose" (window)
+
+Fires when you may no longer work with a workbench, chest, etc.
 
 ### Functions
 
@@ -573,9 +600,9 @@ Returns whether `block` is diggable and within range.
 
  * `slot` - 0-8 the quick bar slot to select.
 
-#### bot.craft(itemType, [options], [callback])
+#### bot.craft(recipe, [options], [callback])
 
- * `itemType` - The numerical id of the item you wish to craft.
+ * `recipe` - A `Recipe` instance. See `bot.recipesFor`.
  * `options.craftingTable` - A `Block` instance, the crafting table you wish to
    use. If the recipe does not require a crafting table, you may leave out
    this option.
@@ -586,3 +613,15 @@ Returns whether `block` is diggable and within range.
    result to be. Defaults to `0`.
  * `callback` - (optional) Called when the crafting is complete and your
    inventory is updated.
+
+#### bot.recipesFor(itemType, metadata, minResultCount, craftingTable)
+
+Returns a list of `Recipe` instances that you could use to craft `itemType`
+with `metadata`.
+
+ * `itemType` - numerical item id of the thing you want to craft
+ * `metadata` - the numerical metadata value of the item you want to craft
+ * `minResultCount` - based on your current inventory, any recipe from the
+   returned list will be able to produce this many items.
+ * `craftingTable` - a `Block` instance. If `null`, only recipes that can
+   be performed in your inventory window will be included in the list.
