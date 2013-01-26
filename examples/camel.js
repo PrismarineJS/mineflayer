@@ -74,13 +74,10 @@ bot.on('chat', function(username, message) {
 });
 
 function listInventory() {
-  var id, count, item;
   var output = "";
-  for (id in bot.inventory.count) {
-    count = bot.inventory.count[id];
-    item = mineflayer.items[id] || mineflayer.blocks[id];
-    if (count) output += item.name + ": " + count + ", ";
-  }
+  bot.inventory.items().forEach(function(item) {
+    output += item.name + ": " + item.count + ", ";
+  });
   if (output) {
     bot.chat(output);
   } else {

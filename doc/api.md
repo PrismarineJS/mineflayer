@@ -174,10 +174,6 @@ Buffer.
 
 Map of slot index to `Item` instance.
 
-#### window.count
-
-Map of item id to how many you have in your inventory.
-
 #### window.selectedItem
 
 In vanilla client, this is the item you are holding with the mouse cursor.
@@ -187,6 +183,18 @@ In vanilla client, this is the item you are holding with the mouse cursor.
  * `itemType` - numerical id that you are looking for
  * `metadata` - (optional) metadata value that you are looking for.
    defaults to unspecified.
+
+#### window.count(itemType, [metadata])
+
+Returns how many you have in the inventory section of the window.
+
+ * `itemType` - numerical id that you are looking for
+ * `metadata` - (optional) metadata value that you are looking for.
+   defaults to unspecified
+
+#### window.items()
+
+Returns a list of `Item` instances from the inventory section of the window.
 
 ### mineflayer.windows.InventoryWindow
 ### mineflayer.windows.ChestWindow
