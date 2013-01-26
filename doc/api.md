@@ -160,7 +160,7 @@ Buffer.
 
 #### item.stackSize
 
-### mineflayer.Window
+### mineflayer.windows.Window (base class)
 
 #### window.id
 
@@ -182,11 +182,19 @@ Map of item id to how many you have in your inventory.
 
 In vanilla client, this is the item you are holding with the mouse cursor.
 
-#### window.findItem(itemType, [metadata])
+#### window.findInventoryItem(itemType, [metadata])
 
  * `itemType` - numerical id that you are looking for
  * `metadata` - (optional) metadata value that you are looking for.
    defaults to unspecified.
+
+### mineflayer.windows.InventoryWindow
+### mineflayer.windows.ChestWindow
+### mineflayer.windows.CraftingTableWindow
+### mineflayer.windows.FurnaceWindow
+### mineflayer.windows.DispenserWindow
+### mineflayer.windows.EnchantmentTableWindow
+### mineflayer.windows.BrewingStandWindow
 
 ## Bot
 
