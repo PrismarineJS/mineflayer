@@ -53,7 +53,11 @@ function listInventory() {
     item = mineflayer.items[id] || mineflayer.blocks[id];
     if (count) output += item.name + ": " + count + ", ";
   }
-  bot.chat(output);
+  if (output) {
+    bot.chat(output);
+  } else {
+    bot.chat("empty inventory");
+  }
 }
 
 function itemByName(name) {
