@@ -649,7 +649,9 @@ with `metadata`.
 
  * `itemType` - numerical item id of the thing you want to craft
  * `metadata` - the numerical metadata value of the item you want to craft
+   `null` matches any metadata.
  * `minResultCount` - based on your current inventory, any recipe from the
-   returned list will be able to produce this many items.
+   returned list will be able to produce this many items. `null` is an
+   alias for `1`.
  * `craftingTable` - a `Block` instance. If `null`, only recipes that can
    be performed in your inventory window will be included in the list.

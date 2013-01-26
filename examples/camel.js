@@ -70,6 +70,21 @@ bot.on('chat', function(username, message) {
         bot.chat("unequipped");
       }
     });
+  } else if (/^recipe /.test(message)) {
+    words = message.split(" ");
+    name = words[1];
+    item = findItemType(name);
+    if (item == null) {
+      bot.chat("unknown item: " + name);
+    } else {
+      var recipes = bot.recipesFor(item.id);
+      if (recipes.length) {
+        bot.chat("I can make " + item.name);
+        console.log(recipes);
+      } else {
+        bot.chat("I can't make " + item.name);
+      }
+    }
   }
 });
 
@@ -90,6 +105,14 @@ function itemByName(name) {
   for (i = 0; i < bot.inventory.slots.length; ++i) {
     item = bot.inventory.slots[i];
     if (item && item.name === name) return item;
+  }
+  return null;
+}
+
+function findItemType(name) {
+  for (var id in mineflayer.items) {
+    var item = mineflayer.items[id];
+    if (item.name.indexOf(name) !== -1) return item;
   }
   return null;
 }
