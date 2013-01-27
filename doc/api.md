@@ -178,11 +178,13 @@ Map of slot index to `Item` instance.
 
 In vanilla client, this is the item you are holding with the mouse cursor.
 
-#### window.findInventoryItem(itemType, [metadata])
+#### window.findInventoryItem(itemType, metadata, [notFull])
 
  * `itemType` - numerical id that you are looking for
- * `metadata` - (optional) metadata value that you are looking for.
-   defaults to unspecified.
+ * `metadata` -  metadata value that you are looking for. `null`
+   means unspecified.
+ * `notFull` - (optional) - if `true`, means that the returned
+   item should not be at its `stackSize`.
 
 #### window.count(itemType, [metadata])
 
