@@ -1,3 +1,12 @@
+## 0.0.15
+
+ * fix `bot.sleep` not working at all
+ * add `bot.isSleeping`
+ * add "sleep" event
+ * add "wake" event
+ * `bot.sleep(bedPoint)` changed to `bot.sleep(bedBlock)`
+ * fix `mineflayer.Recipe` not exposed
+
 ## 0.0.14
 
  * add crafting support
