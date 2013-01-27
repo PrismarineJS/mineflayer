@@ -364,6 +364,10 @@ A `Window` instance representing your inventory.
 
 The `block` that you are currently digging, or `null`.
 
+#### bot.isSleeping
+
+Boolean, whether or not you are in bed.
+
 ### Events
 
 #### "chat" (username, message, rawMessage)
@@ -531,6 +535,14 @@ Fires when you begin using a workbench, chest, brewing stand, etc.
 
 Fires when you may no longer work with a workbench, chest, etc.
 
+#### "sleep"
+
+Fires when you sleep.
+
+#### "wake"
+
+Fires when you wake up.
+
 ### Functions
 
 #### bot.blockAt(point)
@@ -560,9 +572,9 @@ Shortcut for "/tell <username>". All split messages will be whispered to usernam
 
 See the `bot.settings` property.
 
-#### bot.sleep(bedPosition)
+#### bot.sleep(bedBlock)
 
-Sleep in a bed. `bedPosition` should be a point which contains a bed.
+Sleep in a bed. `bedBlock` should be a `Block` instance which is a bed.
 
 #### bot.wake()
 
