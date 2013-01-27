@@ -502,6 +502,10 @@ Fires when a note block goes off somewhere.
 
  * `block` - the block that no longer exists
 
+#### "diggingAborted" (block)
+
+ * `block` - the block that still exists
+
 #### "move"
 
 Fires when the bot moves. If you want the current position, use
@@ -640,11 +644,22 @@ Remove an article of equipment.
  * `count` - how many you want to toss. `null` is an alias for `1`.
  * `callback(err)` - (optional) called once tossing is complete
 
-#### bot.startDigging(block)
+#### bot.dig(block, [timeout], [callback])
 
-Begin digging into `block` with the currently equipped item. When you
-finally break through the block, you get a "diggingCompleted" event.
-There is currently no way to stop digging.
+Begin digging into `block` with the currently equipped item.
+See also "diggingCompleted" and "diggingAborted" events.
+
+Note that once you begin digging into a block, you may not
+dig any other blocks until the block has been broken.
+
+This API is subject to change when a more sophisticated digging
+is implemented which gives you the ability to abort digging.
+
+ * `block` - the block to start digging into
+ * `timeout` - (optional) number of milliseconds to wait before giving up
+   digging. Defaults to `5000`.
+ * `callback(err)` - (optional) called when the block is broken or you
+   are interrupted.
 
 #### bot.canDigBlock(block)
 
