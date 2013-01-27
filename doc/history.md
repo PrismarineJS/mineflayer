@@ -1,3 +1,27 @@
+## 0.0.14
+
+ * add crafting support
+   - add `mineflayer.windows`
+   - add `mineflayer.Recipe`
+   - `bot.inventory` is now an instance of `InventoryWindow`
+   - `bot.inventory.count` is no longer a map of id to count.
+     `Window` instances have a `count(itemType, [metadata])` method.
+   - `bot.inventory.quickBarSlot` moved to `bot.quickBarSlot`.
+   - add `'windowOpen' (window)` event
+   - add `'windowClose' (window)` event
+   - add `bot.craft(recipe, count, craftingTable, [callback])`
+   - add `bot.recipesFor(itemType, metadata, minResultCount, craftingTable)`
+ * `block.pos` renamed to `block.position`.
+ * `'blockUpdate' (point)` event signature changed to
+   `'blockUpdate' (oldBlock, newBlock)`
+ * `'blockUpdate:(x, y, z)'` event signature changed to
+   `'blockUpdate:(x, y, z)' (oldBlock, newBlock)`
+ * add `'diggingAborted' (block)` event
+ * add `bot.unequip(destination, [callback])`
+ * add `bot.toss(itemType, metadata, count, [callback])`
+ * `bot.startDigging(block)` changed to `bot.dig(block, [timeout], [callback])`.
+ * add `bot.activateBlock(block)`
+
 ## 0.0.13
 
  * fix `bot.equip` when already equipping the item
