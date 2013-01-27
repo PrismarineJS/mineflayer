@@ -204,6 +204,31 @@ Returns a list of `Item` instances from the inventory section of the window.
 ### mineflayer.windows.EnchantmentTableWindow
 ### mineflayer.windows.BrewingStandWindow
 
+### mineflayer.Recipe
+
+#### Recipe.find(itemType, [metadata])
+
+Returns a list of matching `Recipe` instances.
+
+ * `itemType` - numerical id
+ * `metadata` - metadata to match. `null` means match anything.
+
+#### recipe.type
+
+#### recipe.count
+
+#### recipe.metadata
+
+#### recipe.inShape
+
+#### recipe.outShape
+
+#### recipe.ingredients
+
+#### recipe.requiresTable
+
+#### recipe.delta
+
 ## Bot
 
 ### Properties
