@@ -1,7 +1,5 @@
 var mineflayer = require('../');
-var bot = mineflayer.createBot({
-  username: "camel",
-});
+var bot = mineflayer.createBot();
 
 bot.on('chat', function(username, message) {
   var words, name, item, amount, destination;
