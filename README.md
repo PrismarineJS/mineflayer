@@ -10,9 +10,10 @@ Create Minecraft bots with a powerful, stable, and high level JavaScript API.
  * Block knowledge. You can query the world around you.
  * Basic physics and movement - currently blocks are either "solid" or "empty".
  * Attacking entities and using vehicles.
- * Basic inventory management.
+ * Inventory management.
  * Digging and building.
  * Miscellaneous stuff such as knowing your health and whether it is raining.
+ * Crafting.
  * Chat.
 
 ### Roadmap
@@ -20,7 +21,6 @@ Create Minecraft bots with a powerful, stable, and high level JavaScript API.
 These things are in the works:
 
  * Ability to activate blocks and use items.
- * Crafting.
  * Chests, dispensers, brewing stands, anvils, etc.
  * Better physics (support doors, ladders, water, etc).
 
