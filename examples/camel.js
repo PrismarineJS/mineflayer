@@ -70,19 +70,26 @@ bot.on('chat', function(username, message) {
         bot.chat("unequipped");
       }
     });
-  } else if (/^recipe /.test(message)) {
+  } else if (/^craft /.test(message)) {
     words = message.split(" ");
     name = words[1];
     item = findItemType(name);
-    var workbench = findCraftingTable();
-    var wbText = workbench ? "with a workbench, " : "without a workbench, ";
+    var craftingTable = findCraftingTable();
+    var wbText = craftingTable ? "with a crafting table, " : "without a crafting table, ";
     if (item == null) {
       bot.chat(wbText + "unknown item: " + name);
     } else {
-      var recipes = bot.recipesFor(item.id, null, 1, workbench);
+      var recipes = bot.recipesFor(item.id, null, 1, craftingTable);
       if (recipes.length) {
         bot.chat(wbText + "I can make " + item.name);
-        console.log(recipes);
+        bot.craft(recipes[0], 1, craftingTable, function(err) {
+          if (err) {
+            bot.chat("error making " + item.name);
+            console.error(err.stack);
+          } else {
+            bot.chat("made " + item.name);
+          }
+        });
       } else {
         bot.chat(wbText + "I can't make " + item.name);
       }

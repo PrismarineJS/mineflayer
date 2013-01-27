@@ -624,21 +624,23 @@ Returns whether `block` is diggable and within range.
  * `faceVector` - a direction vector pointing to the face of `referenceBlock`
    which you want to place the new block next to.
 
+#### bot.activateBlock(block)
+
+Punch a note block, open a door, etc.
+
 #### bot.setQuickBarSlot(slot)
 
  * `slot` - 0-8 the quick bar slot to select.
 
-#### bot.craft(recipe, [options], [callback])
+#### bot.craft(recipe, count, craftingTable, [callback])
 
  * `recipe` - A `Recipe` instance. See `bot.recipesFor`.
- * `options.craftingTable` - A `Block` instance, the crafting table you wish to
-   use. If the recipe does not require a crafting table, you may leave out
-   this option.
- * `options.count` - (optional) How many times you wish to perform the
-   operation. If you want to craft planks into 8 sticks, you would set
-   `options.count` to `2`. Defaults to `1`.
- * `options.metadata` - (optional) The numerical metadata value you want the
-   result to be. Defaults to `0`.
+ * `count` - How many times you wish to perform the operation.
+   If you want to craft planks into `8` sticks, you would set
+   `count` to `2`. `null` is an alias for `1`.
+ * `craftingTable` - A `Block` instance, the crafting table you wish to
+   use. If the recipe does not require a crafting table, you may use
+   `null` for this argument.
  * `callback` - (optional) Called when the crafting is complete and your
    inventory is updated.
 
