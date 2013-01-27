@@ -76,7 +76,7 @@ Equivalent to `entity.equipment[0]`.
 
 ### mineflayer.Block
 
-#### block.pos
+#### block.position
 
 Vec3 instance.
 
@@ -437,10 +437,15 @@ or boat.
 #### "playerJoined" (player)
 #### "playerLeft" (player)
 
-#### "blockUpdate" (point)
-#### "blockUpdate:(x, y, z)"
+#### "blockUpdate" (oldBlock, newBlock)
 
-Fires for a specific point. Replace x, y, and z with real integer values.
+Fires when a block updates. Both `oldBlock` and `newBlock` provided for
+comparison.
+
+#### "blockUpdate:(x, y, z)" (oldBlock, newBlock)
+
+Fires for a specific point. Both `oldBlock` and `newBlock` provided for
+comparison.
 
 #### "chunkColumnLoad" (point)
 #### "chunkColumnUnload" (point)

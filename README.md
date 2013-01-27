@@ -42,6 +42,11 @@ bot.on('chat', function(username, message) {
 });
 ```
 
+#### More Examples
+
+ * In the examples folder.
+ * [vogonistic's REPL bot](https://gist.github.com/4631678)
+
 ## Third Party Plugins
 
 Mineflayer is pluggable; anyone can create a plugin that adds an even
@@ -49,12 +54,14 @@ higher level API on top of Mineflayer.
 
  * [navigate](https://github.com/superjoe30/mineflayer-navigate/) - get around
    easily using A* pathfinding. [YouTube Demo](http://www.youtube.com/watch?v=O6lQdmRz8eE)
+ * [radar](https://github.com/superjoe30/mineflayer-radar/) - web based radar
+   interface using canvas and socket.io. [YouTube Demo](http://www.youtube.com/watch?v=FjDmAfcVulQ)
 
 ## Projects Using Mineflayer
 
- * [Contra/minebot](https://github.com/Contra/minebot)
- * [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot)
  * [rom1504/rbot](https://github.com/rom1504/rbot)
+ * [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot)
+ * [Contra/minebot](https://github.com/Contra/minebot)
 
 ## Installation
 

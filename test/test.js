@@ -146,4 +146,33 @@ describe("mineflayer", function() {
       });
     });
   });
+  describe("entities", function() {
+    it("sets players[player].entity to null upon despawn", function(done) {
+      var serverClient = null;
+      bot.once('entitySpawn', function(entity) {
+        assert.ok(bot.players.playerName.entity);
+        serverClient.write(0x1d, {
+          entityIds: [8],
+        });
+      });
+      bot.once("entityGone", function(entity) {
+        assert.equal(bot.players.playerName.entity, null);
+        done();
+      });
+      server.on('login', function(client) {
+        serverClient = client;
+        client.write(0x14, {
+          entityId: 8,
+          name: "playerName",
+          x: 1,
+          y: 2,
+          z: 3,
+          yaw: 0,
+          pitch: 0,
+          currentItem: -1,
+          metadata: [],
+        });
+      });
+    });
+  });
 });
