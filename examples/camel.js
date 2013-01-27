@@ -70,9 +70,10 @@ bot.on('chat', function(username, message) {
         bot.chat("unequipped");
       }
     });
-  } else if (/^craft /.test(message)) {
+  } else if (/^craft (\d+)/.test(message)) {
     words = message.split(" ");
-    name = words[1];
+    amount = parseInt(words[1], 10);
+    name = words[2];
     item = findItemType(name);
     var craftingTable = findCraftingTable();
     var wbText = craftingTable ? "with a crafting table, " : "without a crafting table, ";
@@ -82,12 +83,12 @@ bot.on('chat', function(username, message) {
       var recipes = bot.recipesFor(item.id, null, 1, craftingTable);
       if (recipes.length) {
         bot.chat(wbText + "I can make " + item.name);
-        bot.craft(recipes[0], 1, craftingTable, function(err) {
+        bot.craft(recipes[0], amount, craftingTable, function(err) {
           if (err) {
             bot.chat("error making " + item.name);
             console.error(err.stack);
           } else {
-            bot.chat("made " + item.name);
+            bot.chat("made " + amount + " " + item.name);
           }
         });
       } else {
@@ -122,12 +123,11 @@ function findItemType(name) {
   var id;
   for (id in mineflayer.items) {
     var item = mineflayer.items[id];
-    if (item.name.indexOf(name) !== -1) return item;
+    if (item.name === name) return item;
   }
   for (id in mineflayer.blocks) {
     var block = mineflayer.blocks[id];
-    if (block.name == null) console.log(block);
-    if (block.name.indexOf(name) !== -1) return block;
+    if (block.name === name) return block;
   }
   return null;
 }
