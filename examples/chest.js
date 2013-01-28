@@ -1,6 +1,14 @@
 var mineflayer = require('../');
 var bot = mineflayer.createBot();
 
+bot.on('end', function(reason) {
+  console.log("end", reason);
+});
+
+bot.on('kicked', function(reason) {
+  console.log("kicked for", reason);
+});
+
 bot.on('chat', function(username, message) {
   if (message === "list") {
     listInventory();
