@@ -88,7 +88,7 @@ Numerical id.
 
 #### block.displayName
 
-#### block.meta
+#### block.metadata
 
 #### block.light
 
@@ -148,7 +148,7 @@ Numerical id.
 
 #### item.count
 
-#### item.meta
+#### item.metadata
 
 #### item.nbt
 
