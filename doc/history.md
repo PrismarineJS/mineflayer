@@ -1,3 +1,13 @@
+## 0.0.16
+
+ * add chest support
+   - add `mineflayer.Chest`
+   - add `bot.openChest(chestBlock)`
+ * `block.meta` renamed to `block.metadata`
+ * `item.meta` renamed to `item.metadata`
+ * fix crash when player causes entityGone message
+ * update to minecraft-protocol 0.6.6
+
 ## 0.0.15
 
  * fix `bot.sleep` not working at all
