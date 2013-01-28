@@ -90,6 +90,6 @@ higher level API on top of Mineflayer.
 1. Wait for a new version of
    [mineflayer-protocol](https://github.com/superjoe30/node-minecraft-protocol)
    to be released which supports the new Minecraft version.
-2. `npm install --save minecraft-protocol`
+2. `npm install --save minecraft-protocol@latest`
 3. Apply the [protocol changes](http://wiki.vg/Protocol_History) where necessary.
 4. Run the test suite. See Testing above.
