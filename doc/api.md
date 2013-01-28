@@ -568,10 +568,14 @@ or boat.
 Fires when a block updates. Both `oldBlock` and `newBlock` provided for
 comparison.
 
+Note that `oldBlock` may be `null`.
+
 #### "blockUpdate:(x, y, z)" (oldBlock, newBlock)
 
 Fires for a specific point. Both `oldBlock` and `newBlock` provided for
 comparison.
+
+Note that `oldBlock` may be `null`.
 
 #### "chunkColumnLoad" (point)
 #### "chunkColumnUnload" (point)
