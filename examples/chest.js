@@ -35,7 +35,6 @@ function watchChest() {
     bot.chat("no chest found");
     return;
   }
-  console.log("opening chest");
   var chest = bot.openChest(chestBlock);
   chest.on('open', function() {
     var output = "";
