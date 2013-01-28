@@ -217,19 +217,62 @@ Returns a list of matching `Recipe` instances.
 
 #### recipe.type
 
+The type of the output item.
+
 #### recipe.count
+
+How many of the output item this recipe makes.
 
 #### recipe.metadata
 
 #### recipe.inShape
 
+Looks like this:
+
+```js
+[
+  [{id, metadata}, {id, metadata}],
+  [{id, metadata}, {id, metadata}],
+  [{id, metadata}, {id, metadata}],
+]
+```
+
+Metadata may be `null`.
+
 #### recipe.outShape
+
+Looks the same as `inShape`. Only relevant for cake.
 
 #### recipe.ingredients
 
+List of shape-independent ingredients. Looks like this:
+
+```js
+[
+  {id, metadata},
+  {id, metadata},
+]
+```
+
+`metadata` may be `null`.
+
 #### recipe.requiresTable
 
+Boolean.
+
 #### recipe.delta
+
+Map of item type to how much more or less you will have after you use
+the recipe.
+
+This is what it looks like for the chest recipe:
+
+```js
+{
+  5: -8,
+  54: 1,
+}
+```
 
 ### mineflayer.Chest
 
