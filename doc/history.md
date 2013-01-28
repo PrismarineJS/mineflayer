@@ -1,3 +1,7 @@
+## 0.0.17
+
+ * fix crash for some block updates
+
 ## 0.0.16
 
  * add chest support
