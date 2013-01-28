@@ -90,6 +90,9 @@ Numerical id.
 
 #### block.metadata
 
+Number which represents different things depending on the block.
+See http://www.minecraftwiki.net/wiki/Data_values#Data
+
 #### block.light
 
 #### block.skyLight
@@ -149,6 +152,9 @@ Numerical id.
 #### item.count
 
 #### item.metadata
+
+Number which represents different things depending on the item.
+See http://www.minecraftwiki.net/wiki/Data_values#Data
 
 #### item.nbt
 
