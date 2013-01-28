@@ -15,6 +15,7 @@ module.exports = {
   Item: require('./lib/item'),
   Recipe: require('./lib/recipe'),
   windows: require('./lib/windows'),
+  Chest: require('./lib/chest'),
   blocks: require('./lib/enums/blocks'),
   biomes: require('./lib/enums/biomes'),
   items: require('./lib/enums/items'),

@@ -13,15 +13,16 @@ Create Minecraft bots with a powerful, stable, and high level JavaScript API.
  * Inventory management.
  * Digging and building.
  * Miscellaneous stuff such as knowing your health and whether it is raining.
- * Crafting.
+ * Crafting and accessing chests.
+ * Activating blocks.
  * Chat.
 
 ### Roadmap
 
 These things are in the works:
 
- * Ability to activate blocks and use items.
- * Chests, dispensers, brewing stands, anvils, etc.
+ * Ability to use items.
+ * Dispensers, brewing stands, anvils, etc.
  * Better physics (support doors, ladders, water, etc).
 
 ## Usage

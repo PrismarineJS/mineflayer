@@ -88,7 +88,7 @@ Numerical id.
 
 #### block.displayName
 
-#### block.meta
+#### block.metadata
 
 #### block.light
 
@@ -148,7 +148,7 @@ Numerical id.
 
 #### item.count
 
-#### item.meta
+#### item.metadata
 
 #### item.nbt
 
@@ -230,6 +230,52 @@ Returns a list of matching `Recipe` instances.
 #### recipe.requiresTable
 
 #### recipe.delta
+
+### mineflayer.Chest
+
+#### chest.window
+
+If the chest is open, this property is a `ChestWindow` instance.
+If the chest is closed, this property is `null`.
+
+#### chest "open"
+
+Fires when the chest has successfully been opened.
+
+#### chest "close"
+
+Fires when the chest closes.
+
+#### chest "update" (oldItem, newItem)
+
+Fires when the chest you are looking at is updated.
+
+#### chest.close()
+
+#### chest.deposit(itemType, metadata, count, [callback])
+
+ * `itemType` - numerical item id
+ * `metadata` - numerical value. `null` means match anything.
+ * `count` - how many to deposit. `null` is an alias to 1.
+ * `callback(err)` - (optional) - called when done depositing
+
+#### chest.withdraw(itemType, metadata, count, [callback])
+
+ * `itemType` - numerical item id
+ * `metadata` - numerical value. `null` means match anything.
+ * `count` - how many to withdraw. `null` is an alias to 1.
+ * `callback(err)` - (optional) - called when done withdrawing
+
+#### chest.count(itemType, [metadata])
+
+Return how many of a certain type of item are in the chest.
+
+ * `itemType` - numerical item id
+ * `metadata` - (optional) numerical value. `null` means match anything.
+
+#### chest.items()
+
+Returns a list of `Item` instances from the chest.
 
 ## Bot
 
@@ -716,3 +762,8 @@ with `metadata`.
    alias for `1`.
  * `craftingTable` - a `Block` instance. If `null`, only recipes that can
    be performed in your inventory window will be included in the list.
+
+#### bot.openChest(chestBlock)
+
+Returns a `Chest` instance which represents the chest you are opening.
+
