@@ -282,6 +282,9 @@ This is what it looks like for the chest recipe:
 
 ### mineflayer.Chest
 
+Represents a single session of opening and closing a chest.
+See `bot.openChest(chestBlock)`.
+
 #### chest.window
 
 If the chest is open, this property is a `ChestWindow` instance.
@@ -295,7 +298,7 @@ Fires when the chest has successfully been opened.
 
 Fires when the chest closes.
 
-#### chest "update" (oldItem, newItem)
+#### chest "updateSlot" (oldItem, newItem)
 
 Fires when the chest you are looking at is updated.
 
@@ -325,6 +328,63 @@ Return how many of a certain type of item are in the chest.
 #### chest.items()
 
 Returns a list of `Item` instances from the chest.
+
+### mineflayer.Furnace
+
+#### furnace "open"
+
+Fires when the furnace has successfully been opened.
+
+#### furnace "close"
+
+Fires when the furnace closes.
+
+#### furnace "update"
+
+Fires when `furnace.fuel` and/or `furnace.progress` update.
+
+#### furnace "updateSlot" (oldItem, newItem)
+
+Fires when a slot in the furnace you have open has updated.
+
+#### furnace.close()
+
+#### furnace.takeInput([callback])
+
+ * `callback(err, item)`
+
+#### furnace.takeFuel([callback])
+
+ * `callback(err, item)`
+
+#### furnace.takeOutput([callback])
+
+ * `callback(err, item)`
+
+#### furnace.putInput(itemType, metadata, count, [cb])
+
+#### furnace.putFuel(itemType, metadata, count, [cb])
+
+#### furnace.inputItem()
+
+Returns `Item` instance which is the input.
+
+#### furnace.fuelItem()
+
+Returns `Item` instance which is the fuel.
+
+#### furnace.outputItem()
+
+Returns `Item` instance which is the output.
+
+#### furnace.fuel
+
+How much fuel is left between 0 and 1.
+
+#### furnace.progress
+
+How much cooked the input is between 0 and 1.
+
 
 ## Bot
 
@@ -819,4 +879,8 @@ with `metadata`.
 #### bot.openChest(chestBlock)
 
 Returns a `Chest` instance which represents the chest you are opening.
+
+#### bot.openFurnace(furnaceBlock)
+
+Returns a `Furnace` instance which represents the furnace you are opening.
 
