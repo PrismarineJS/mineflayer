@@ -782,12 +782,11 @@ Dismounts from the vehicle you are in.
 
 Changes the text on the sign.
 
-#### bot.equip(itemType, destination, [callback])
+#### bot.equip(item, destination, [callback])
 
-Equips an item from your inventory. Returns the item that you equipped, or
-`null` if unable to equip.
+Equips an item from your inventory.
 
- * `itemType` - numerical item id
+ * `item` - `Item` instance. See `window.items()`.
  * `destination`
    - `"hand"` - `null` aliases to this
    - `"head"`
