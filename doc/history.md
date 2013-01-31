@@ -1,6 +1,12 @@
+## 0.0.20
+
+ * add dispenser support
+   - add `mineflayer.Dispenser`
+   - add `bot.openDispenser(dispenserBlock)`
+
 ## 0.0.19
 
- * added furnace support
+ * add furnace support
    - add `mineflayer.Furnace`
    - add `bot.openFurnace(furnaceBlock)`
  * `mineflayer.Chest`: "update" event renamed to "updateSlot"
