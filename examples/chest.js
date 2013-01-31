@@ -16,6 +16,8 @@ bot.on('chat', function(username, message) {
     watchChest();
   } else if (message === "furnace") {
     watchFurnace();
+  } else if (message === "dispenser") {
+    watchDispenser();
   }
 });
 
@@ -28,6 +30,74 @@ function listInventory() {
     bot.chat(output);
   } else {
     bot.chat("empty");
+  }
+}
+
+function watchDispenser() {
+  var dispenserBlock = findBlock([23]);
+  if (! dispenserBlock) {
+    bot.chat("no dispenser found");
+    return;
+  }
+  var dispenser = bot.openDispenser(dispenserBlock);
+  dispenser.on('open', function() {
+    var output = "";
+    dispenser.items().forEach(function(item) {
+      output += itemStr(item) + ", ";
+    });
+    if (output) {
+      bot.chat(output);
+    } else {
+      bot.chat("empty");
+    }
+  });
+  dispenser.on('updateSlot', function(oldItem, newItem) {
+    bot.chat("dispenser update: " + itemStr(oldItem) + " -> " + itemStr(newItem));
+  });
+  dispenser.on('close', function() {
+    bot.chat("dispenser closed");
+  });
+
+  bot.on('chat', onChat);
+
+  function onChat(username, message) {
+    var words, name, amount, item;
+    if (message === 'close') {
+      dispenser.close();
+      bot.removeListener('chat', onChat);
+    } else if (/^withdraw (\d+)/.test(message)) {
+      words = message.split(/\s+/);
+      amount = parseInt(words[1], 10);
+      name = words[2];
+      item = itemByName(dispenser.items(), name);
+      if (!item) {
+        bot.chat("unknown item " + name);
+        return;
+      }
+      dispenser.withdraw(item.type, null, amount, function(err) {
+        if (err) {
+          bot.chat("unable to withdraw " + amount + " " + item.name);
+        } else {
+          bot.chat("withdrew " + amount + " " + item.name);
+        }
+      });
+    } else if (/^deposit (\d+)/.test(message)) {
+      words = message.split(/\s+/);
+      amount = parseInt(words[1], 10);
+      name = words[2];
+      item = itemByName(bot.inventory.items(), name);
+      if (!item) {
+        bot.chat("unknown item " + name);
+        return;
+      }
+      dispenser.deposit(item.type, null, amount, function(err) {
+        if (err) {
+          bot.chat("unable to deposit " + amount + " " + item.name);
+        } else {
+          bot.chat("deposited " + amount + " " + item.name);
+        }
+      });
+    }
   }
 }
 
@@ -177,23 +247,19 @@ function itemStr(item) {
 }
 
 function findFurnace() {
-  var cursor = mineflayer.vec3();
-  for(cursor.x = bot.entity.position.x - 4; cursor.x < bot.entity.position.x + 4; cursor.x++) {
-    for(cursor.y = bot.entity.position.y - 4; cursor.y < bot.entity.position.y + 4; cursor.y++) {
-      for(cursor.z = bot.entity.position.z - 4; cursor.z < bot.entity.position.z + 4; cursor.z++) {
-        var block = bot.blockAt(cursor);
-        if (block.type === 61 || block.type === 62) return block;
-      }
-    }
-  }
+  return findBlock([61, 62]);
 }
 function findChest() {
+  return findBlock([54, 130]);
+}
+
+function findBlock(listOfIds) {
   var cursor = mineflayer.vec3();
   for(cursor.x = bot.entity.position.x - 4; cursor.x < bot.entity.position.x + 4; cursor.x++) {
     for(cursor.y = bot.entity.position.y - 4; cursor.y < bot.entity.position.y + 4; cursor.y++) {
       for(cursor.z = bot.entity.position.z - 4; cursor.z < bot.entity.position.z + 4; cursor.z++) {
         var block = bot.blockAt(cursor);
-        if (block.type === 54) return block;
+        if (listOfIds.indexOf(block.type) >= 0) return block;
       }
     }
   }

@@ -385,6 +385,46 @@ How much fuel is left between 0 and 1.
 
 How much cooked the input is between 0 and 1.
 
+### mineflayer.Dispenser
+
+#### dispenser "open"
+
+Fires when the furnace has successfully been opened.
+
+#### dispenser "close"
+
+Fires when the furnace closes.
+
+#### dispenser "updateSlot" (oldItem, newItem)
+
+Fires when a slot in the dispenser you have open has updated.
+
+#### dispenser.close()
+
+#### dispenser.items()
+
+Returns a list of `Item` instances from the dispenser.
+
+#### dispenser.deposit(itemType, metadata, count, [callback])
+
+ * `itemType` - numerical item id
+ * `metadata` - numerical value. `null` means match anything.
+ * `count` - how many to deposit. `null` is an alias to 1.
+ * `callback(err)` - (optional) - called when done depositing
+
+#### dispenser.withdraw(itemType, metadata, count, [callback])
+
+ * `itemType` - numerical item id
+ * `metadata` - numerical value. `null` means match anything.
+ * `count` - how many to withdraw. `null` is an alias to 1.
+ * `callback(err)` - (optional) - called when done withdrawing
+
+#### dispenser.count(itemType, [metadata])
+
+Return how many of a certain type of item are in the dispenser.
+
+ * `itemType` - numerical item id
+ * `metadata` - (optional) numerical value. `null` means match anything.
 
 ## Bot
 
