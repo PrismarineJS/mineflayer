@@ -13,6 +13,17 @@
  * `bot.equip(itemType, destination, [callback])` changed to
    `bot.equip(item, destination, [callback])`. Use `bot.inventory.items()`
    to get a list of what items you can choose from to equip.
+ * fix `bot.openChest` not working for ender chests
+ * fix incorrectly scaled fuel percentage
+ * upgrade to minecraft-protocol 0.7.0
+   - `mineflayer.createBot` no longer takes a `email` argument.
+   - The `username` and `password` arguments are used to authenticate with the
+     official minecraft servers and determine the case-correct username. If
+     you have migrated your user account to a mojang login, `username` looks
+     like an email address.
+   - If you leave out the `password` argument, `username` is used to connect
+     directly to the server. In this case you will get kicked if the server is
+     in online mode.
 
 ## 0.0.18
 
