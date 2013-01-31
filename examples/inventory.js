@@ -46,7 +46,7 @@ bot.on('chat', function(username, message) {
     name = words[2];
     item = itemByName(name);
     if (item) {
-      bot.equip(item.type, destination, function(err) {
+      bot.equip(item, destination, function(err) {
         if (err) {
           bot.chat("unable to equip " + item.name);
           console.error(err.stack);
@@ -109,12 +109,9 @@ function listInventory() {
 }
 
 function itemByName(name) {
-  var item, i;
-  for (i = 0; i < bot.inventory.slots.length; ++i) {
-    item = bot.inventory.slots[i];
-    if (item && item.name === name) return item;
-  }
-  return null;
+  return bot.inventory.items().filter(function(item) {
+    return item.name === name;
+  })[0];
 }
 
 function findItemType(name) {
