@@ -1,3 +1,13 @@
+## 0.0.19
+
+ * added furnace support
+   - add `mineflayer.Furnace`
+   - add `bot.openFurnace(furnaceBlock)`
+ * `mineflayer.Chest`: "update" event renamed to "updateSlot"
+ * `bot.equip(itemType, destination, [callback])` changed to
+   `bot.equip(item, destination, [callback])`. Use `bot.inventory.items()`
+   to get a list of what items you can choose from to equip.
+
 ## 0.0.18
 
  * fix crash for some block updates
