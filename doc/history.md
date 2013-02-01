@@ -1,3 +1,12 @@
+## 0.0.21
+
+This release is feature-complete with the old
+[C++/Qt based version of mineflayer](https://github.com/superjoe30/mineflayer/blob/cpp-qt-end).
+
+ * add `bot.activateItem()`
+ * add `bot.deactivateItem()`
+ * add `bot.useOn(targetEntity)`
+
 ## 0.0.20
 
  * add dispenser support
