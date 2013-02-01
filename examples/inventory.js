@@ -7,6 +7,9 @@ bot.on('chat', function(username, message) {
     console.log(bot.inventory);
   } else if (message === 'list') {
     listInventory();
+  } else if (message === 'look') {
+    var entity = bot.players[username].entity;
+    bot.lookAt(entity.position.offset(0, entity.height, 0));
   } else if (/^toss (\d+) /.test(message)) {
     words = message.split(" ");
     amount = parseInt(words[1], 10);
@@ -93,8 +96,24 @@ bot.on('chat', function(username, message) {
         bot.chat(wbText + "I can't make " + item.name);
       }
     }
+  } else if (message === "use") {
+    bot.chat("activating");
+    bot.activateItem();
+  } else if (message === "stop") {
+    bot.chat("stopping");
+    bot.clearControlStates();
+    bot.deactivateItem();
+  } else if (message === "food") {
+    bot.chat("food: " + bot.food);
+  } else if (message === "jump") {
+    bot.setControlState('jump', true);
+  } else if (message === "health") {
+    bot.chat("health: " + bot.health);
+  } else if (message === "difficulty") {
+    bot.chat("difficulty: " + bot.game.difficulty);
   }
 });
+
 
 function listInventory() {
   var output = "";

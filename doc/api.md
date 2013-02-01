@@ -806,18 +806,6 @@ Set the direction your head is facing.
    are looking, such as for dropping items or shooting arrows. This is not
    needed for client-side calculation such as walking direction.
 
-#### bot.attack(entity)
-
-Attack a player or a mob.
-
-#### bot.mount(entity)
-
-Mount a vehicle. To get back out, use `bot.dismount`.
-
-#### bot.dismount()
-
-Dismounts from the vehicle you are in.
-
 #### bot.updateSign(block, text)
 
 Changes the text on the sign.
@@ -884,6 +872,31 @@ Returns whether `block` is diggable and within range.
 #### bot.activateBlock(block)
 
 Punch a note block, open a door, etc.
+
+#### bot.activateItem()
+
+Activates the currently held item. This is how you eat, shoot bows, throw an egg, etc.
+
+#### bot.deactivateItem()
+
+Deactivates the currently held item. This is how you release an arrow, stop eating, etc.
+
+#### bot.useOn(targetEntity)
+
+Use the currently held item on an `Entity` instance. This is how you apply a saddle and
+use shears.
+
+#### bot.attack(entity)
+
+Attack a player or a mob.
+
+#### bot.mount(entity)
+
+Mount a vehicle. To get back out, use `bot.dismount`.
+
+#### bot.dismount()
+
+Dismounts from the vehicle you are in.
 
 #### bot.setQuickBarSlot(slot)
 
