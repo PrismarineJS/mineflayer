@@ -569,7 +569,15 @@ Boolean, whether or not you are in bed.
 
 Only emitted when a player chats publicly.
 
- * `username` - who said the message (compare with bot.username to ignore your own chat)
+ * `username` - who said the message (compare with `bot.username` to ignore your own chat)
+ * `message` - stripped of all color and control characters
+ * `rawMessage` - unmodified message from the server
+
+#### "whisper" (username, message, rawMessage)
+
+Only emitted when a player chats to you privately.
+
+ * `username` - who said the message
  * `message` - stripped of all color and control characters
  * `rawMessage` - unmodified message from the server
 

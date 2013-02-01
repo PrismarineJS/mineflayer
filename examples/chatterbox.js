@@ -57,6 +57,10 @@ bot.on('spawn', function() {
 bot.on('death', function() {
   bot.chat("I died x.x");
 });
+bot.on('whisper', function(username, message, rawMessage) {
+  console.log("message", message, "rawMessage", rawMessage);
+  bot.tell(username, "I can tell secrets too.");
+});
 bot.on('chat', function(username, message) {
   var block, pos;
   if (username === bot.username) return;
