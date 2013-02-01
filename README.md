@@ -5,24 +5,20 @@ Create Minecraft bots with a powerful, stable, and high level JavaScript API.
 ## Features
 
  * Supports Minecraft 1.4.7.
- * Entity knowledge - it knows when and where players, mobs, and objects spawn
-   and despawn.
+ * Entity knowledge and tracking.
  * Block knowledge. You can query the world around you.
  * Basic physics and movement - currently blocks are either "solid" or "empty".
  * Attacking entities and using vehicles.
  * Inventory management.
+ * Crafting, chests, and dispensers.
  * Digging and building.
  * Miscellaneous stuff such as knowing your health and whether it is raining.
- * Crafting and accessing chests.
- * Activating blocks.
+ * Activating blocks and using items.
  * Chat.
 
 ### Roadmap
 
-These things are in the works:
-
- * Ability to use items.
- * Dispensers, brewing stands, anvils, etc.
+ * Brewing stands, anvils, and enchanting tables.
  * Better physics (support doors, ladders, water, etc).
 
 ## Usage
@@ -44,7 +40,7 @@ bot.on('chat', function(username, message) {
 
 #### More Examples
 
- * In the examples folder.
+ * In the [examples](https://github.com/superjoe30/mineflayer/tree/master/examples) folder.
  * [vogonistic's REPL bot](https://gist.github.com/4631678)
 
 ## Third Party Plugins
