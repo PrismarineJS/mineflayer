@@ -1,3 +1,8 @@
+## 0.0.22
+
+ * update vec3 to 0.1.3
+ * add "whisper" chat event
+
 ## 0.0.21
 
 This release is feature-complete with the old
