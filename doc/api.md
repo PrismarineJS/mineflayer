@@ -446,6 +446,11 @@ Fires when the enchantment table closes.
 
 Fires when a slot in the enchantment table you have open has updated.
 
+#### enchantmentTable "ready"
+
+Fires when `enchantmentTable.enchantments` is fully populated and you
+may make a selection by calling `enchantmentTable.enchant(choice)`.
+
 #### enchantmentTable.close()
 
 #### enchantmentTable.targetItem()
@@ -477,7 +482,7 @@ Looks like:
 #### enchantmentTable.enchant(choice, [callback])
 
  * `choice` - [0-2], the index of the enchantment you want to pick.
- * `callback` - (optional) called when the item has been enchanted
+ * `callback(err, item)` - (optional) called when the item has been enchanted
 
 #### enchantmentTable.takeTargetItem([callback])
 
@@ -485,7 +490,7 @@ Looks like:
 
 #### enchantmentTable.putTargetItem(item, [callback])
 
- * `callback(err, item)`
+ * `callback(err)`
 
 ## Bot
 
