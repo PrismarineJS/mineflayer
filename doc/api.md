@@ -331,6 +331,8 @@ Returns a list of `Item` instances from the chest.
 
 ### mineflayer.Furnace
 
+See `bot.openFurnace(furnaceBlock)`.
+
 #### furnace "open"
 
 Fires when the furnace has successfully been opened.
@@ -387,13 +389,15 @@ How much cooked the input is between 0 and 1.
 
 ### mineflayer.Dispenser
 
+See `bot.openDispenser(dispenserBlock)`.
+
 #### dispenser "open"
 
-Fires when the furnace has successfully been opened.
+Fires when the dispenser has successfully been opened.
 
 #### dispenser "close"
 
-Fires when the furnace closes.
+Fires when the dispenser closes.
 
 #### dispenser "updateSlot" (oldItem, newItem)
 
@@ -425,6 +429,63 @@ Return how many of a certain type of item are in the dispenser.
 
  * `itemType` - numerical item id
  * `metadata` - (optional) numerical value. `null` means match anything.
+
+### mineflayer.EnchantmentTable
+
+See `bot.openEnchantmentTable(enchantmentTableBlock)`.
+
+#### enchantmentTable "open"
+
+Fires when the enchantment table has successfully been opened.
+
+#### enchantmentTable "close"
+
+Fires when the enchantment table closes.
+
+#### enchantmentTable "updateSlot" (oldItem, newItem)
+
+Fires when a slot in the enchantment table you have open has updated.
+
+#### enchantmentTable.close()
+
+#### enchantmentTable.targetItem()
+
+Gets the target item. This is both the input and the output of the
+enchantment table.
+
+#### enchantmentTable.enchantments
+
+Array of length 3 which are the 3 enchantments to choose from.
+`level` can be `null` if the server has not sent the data yet.
+
+Looks like:
+
+```js
+[
+  {
+    "level": 3
+  },
+  {
+    "level": 4
+  },
+  {
+    "level": 9
+  }
+]
+```
+
+#### enchantmentTable.enchant(choice, [callback])
+
+ * `choice` - [0-2], the index of the enchantment you want to pick.
+ * `callback` - (optional) called when the item has been enchanted
+
+#### enchantmentTable.takeTargetItem([callback])
+
+ * `callback(err, item)`
+
+#### enchantmentTable.putTargetItem(item, [callback])
+
+ * `callback(err, item)`
 
 ## Bot
 
@@ -944,3 +1005,11 @@ Returns a `Chest` instance which represents the chest you are opening.
 
 Returns a `Furnace` instance which represents the furnace you are opening.
 
+#### bot.openDispenser(dispenserBlock)
+
+Returns a `Dispenser` instance which represents the dispenser you are opening.
+
+#### bot.openEnchantmentTable(enchantmentTableBlock)
+
+Returns an `EnchantmentTable` instance which represents the enchantment table
+you are opening.

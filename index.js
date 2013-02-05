@@ -18,6 +18,7 @@ module.exports = {
   Chest: require('./lib/chest'),
   Furnace: require('./lib/furnace'),
   Dispenser: require('./lib/dispenser'),
+  EnchantmentTable: require('./lib/enchantment_table'),
   blocks: require('./lib/enums/blocks'),
   biomes: require('./lib/enums/biomes'),
   items: require('./lib/enums/items'),
