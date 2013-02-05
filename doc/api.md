@@ -1,3 +1,230 @@
+**Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
+
+- [API](#api)
+   - [Classes](#classes)
+		- [mineflayer.vec3](#mineflayervec3)
+		- [mineflayer.Entity](#mineflayerentity)
+			- [entity.id](#entityid)
+			- [entity.type](#entitytype)
+			- [entity.username](#entityusername)
+			- [entity.mobType](#entitymobtype)
+			- [entity.objectType](#entityobjecttype)
+			- [entity.count](#entitycount)
+			- [entity.position](#entityposition)
+			- [entity.velocity](#entityvelocity)
+			- [entity.yaw](#entityyaw)
+			- [entity.pitch](#entitypitch)
+			- [entity.height](#entityheight)
+			- [entity.onGround](#entityonground)
+			- [entity.equipment[5]](#entityequipment5)
+			- [entity.heldItem](#entityhelditem)
+		- [mineflayer.Block](#mineflayerblock)
+			- [block.position](#blockposition)
+			- [block.type](#blocktype)
+			- [block.name](#blockname)
+			- [block.displayName](#blockdisplayname)
+			- [block.metadata](#blockmetadata)
+			- [block.light](#blocklight)
+			- [block.skyLight](#blockskylight)
+			- [block.hardness](#blockhardness)
+			- [block.add](#blockadd)
+			- [block.biome](#blockbiome)
+			- [block.signText](#blocksigntext)
+			- [block.painting](#blockpainting)
+			- [block.boundingBox](#blockboundingbox)
+		- [mineflayer.Biome](#mineflayerbiome)
+			- [biome.id](#biomeid)
+			- [biome.color](#biomecolor)
+			- [biome.height](#biomeheight)
+			- [biome.name](#biomename)
+			- [biome.rainfall](#biomerainfall)
+			- [biome.temperature](#biometemperature)
+		- [mineflayer.Item](#mineflayeritem)
+			- [item.type](#itemtype)
+			- [item.count](#itemcount)
+			- [item.metadata](#itemmetadata)
+			- [item.nbt](#itemnbt)
+			- [item.name](#itemname)
+			- [item.displayName](#itemdisplayname)
+			- [item.stackSize](#itemstacksize)
+		- [mineflayer.windows.Window (base class)](#mineflayerwindowswindow-base-class)
+			- [window.id](#windowid)
+			- [window.type](#windowtype)
+			- [window.title](#windowtitle)
+			- [window.slots](#windowslots)
+			- [window.selectedItem](#windowselecteditem)
+			- [window.findInventoryItem(itemType, metadata, [notFull])](#windowfindinventoryitemitemtype-metadata-notfull)
+			- [window.count(itemType, [metadata])](#windowcountitemtype-metadata)
+			- [window.items()](#windowitems)
+		- [mineflayer.windows.InventoryWindow](#mineflayerwindowsinventorywindow)
+		- [mineflayer.windows.ChestWindow](#mineflayerwindowschestwindow)
+		- [mineflayer.windows.CraftingTableWindow](#mineflayerwindowscraftingtablewindow)
+		- [mineflayer.windows.FurnaceWindow](#mineflayerwindowsfurnacewindow)
+		- [mineflayer.windows.DispenserWindow](#mineflayerwindowsdispenserwindow)
+		- [mineflayer.windows.EnchantmentTableWindow](#mineflayerwindowsenchantmenttablewindow)
+		- [mineflayer.windows.BrewingStandWindow](#mineflayerwindowsbrewingstandwindow)
+		- [mineflayer.Recipe](#mineflayerrecipe)
+			- [Recipe.find(itemType, [metadata])](#recipefinditemtype-metadata)
+			- [recipe.type](#recipetype)
+			- [recipe.count](#recipecount)
+			- [recipe.metadata](#recipemetadata)
+			- [recipe.inShape](#recipeinshape)
+			- [recipe.outShape](#recipeoutshape)
+			- [recipe.ingredients](#recipeingredients)
+			- [recipe.requiresTable](#reciperequirestable)
+			- [recipe.delta](#recipedelta)
+		- [mineflayer.Chest](#mineflayerchest)
+			- [chest.window](#chestwindow)
+			- [chest "open"](#chest-open)
+			- [chest "close"](#chest-close)
+			- [chest "updateSlot" (oldItem, newItem)](#chest-updateslot-olditem-newitem)
+			- [chest.close()](#chestclose)
+			- [chest.deposit(itemType, metadata, count, [callback])](#chestdeposititemtype-metadata-count-callback)
+			- [chest.withdraw(itemType, metadata, count, [callback])](#chestwithdrawitemtype-metadata-count-callback)
+			- [chest.count(itemType, [metadata])](#chestcountitemtype-metadata)
+			- [chest.items()](#chestitems)
+		- [mineflayer.Furnace](#mineflayerfurnace)
+			- [furnace "open"](#furnace-open)
+			- [furnace "close"](#furnace-close)
+			- [furnace "update"](#furnace-update)
+			- [furnace "updateSlot" (oldItem, newItem)](#furnace-updateslot-olditem-newitem)
+			- [furnace.close()](#furnaceclose)
+			- [furnace.takeInput([callback])](#furnacetakeinputcallback)
+			- [furnace.takeFuel([callback])](#furnacetakefuelcallback)
+			- [furnace.takeOutput([callback])](#furnacetakeoutputcallback)
+			- [furnace.putInput(itemType, metadata, count, [cb])](#furnaceputinputitemtype-metadata-count-cb)
+			- [furnace.putFuel(itemType, metadata, count, [cb])](#furnaceputfuelitemtype-metadata-count-cb)
+			- [furnace.inputItem()](#furnaceinputitem)
+			- [furnace.fuelItem()](#furnacefuelitem)
+			- [furnace.outputItem()](#furnaceoutputitem)
+			- [furnace.fuel](#furnacefuel)
+			- [furnace.progress](#furnaceprogress)
+		- [mineflayer.Dispenser](#mineflayerdispenser)
+			- [dispenser "open"](#dispenser-open)
+			- [dispenser "close"](#dispenser-close)
+			- [dispenser "updateSlot" (oldItem, newItem)](#dispenser-updateslot-olditem-newitem)
+			- [dispenser.close()](#dispenserclose)
+			- [dispenser.items()](#dispenseritems)
+			- [dispenser.deposit(itemType, metadata, count, [callback])](#dispenserdeposititemtype-metadata-count-callback)
+			- [dispenser.withdraw(itemType, metadata, count, [callback])](#dispenserwithdrawitemtype-metadata-count-callback)
+			- [dispenser.count(itemType, [metadata])](#dispensercountitemtype-metadata)
+	- [Bot](#bot)
+		- [Properties](#properties)
+			- [bot.entity](#botentity)
+			- [bot.entities](#botentities)
+			- [bot.username](#botusername)
+			- [bot.spawnPoint](#botspawnpoint)
+			- [bot.game.levelType](#botgameleveltype)
+			- [bot.game.dimension](#botgamedimension)
+			- [bot.game.difficulty](#botgamedifficulty)
+			- [bot.game.gameMode](#botgamegamemode)
+			- [bot.game.hardcore](#botgamehardcore)
+			- [bot.game.worldHeight](#botgameworldheight)
+			- [bot.game.maxPlayers](#botgamemaxplayers)
+			- [bot.players](#botplayers)
+			- [bot.isRaining](#botisraining)
+			- [bot.settings.chat](#botsettingschat)
+			- [bot.settings.colorsEnabled](#botsettingscolorsenabled)
+			- [bot.settings.viewDistance](#botsettingsviewdistance)
+			- [bot.settings.difficulty](#botsettingsdifficulty)
+			- [bot.settings.showCape](#botsettingsshowcape)
+			- [bot.experience.level](#botexperiencelevel)
+			- [bot.experience.points](#botexperiencepoints)
+			- [bot.experience.progress](#botexperienceprogress)
+			- [bot.health](#bothealth)
+			- [bot.food](#botfood)
+			- [bot.foodSaturation](#botfoodsaturation)
+			- [bot.physics](#botphysics)
+			- [bot.time.day](#bottimeday)
+			- [bot.time.age](#bottimeage)
+			- [bot.quickBarSlot](#botquickbarslot)
+			- [bot.inventory](#botinventory)
+			- [bot.targetDigBlock](#bottargetdigblock)
+			- [bot.isSleeping](#botissleeping)
+		- [Events](#events)
+			- ["chat" (username, message, rawMessage)](#chat-username-message-rawmessage)
+			- ["whisper" (username, message, rawMessage)](#whisper-username-message-rawmessage)
+			- ["message" (message, rawMessage)](#message-message-rawmessage)
+			- ["login"](#login)
+			- ["spawn"](#spawn)
+			- ["respawn"](#respawn)
+			- ["game"](#game)
+			- ["rain"](#rain)
+			- ["time"](#time)
+			- ["kicked" (reason)](#kicked-reason)
+			- ["spawnReset"](#spawnreset)
+			- ["death"](#death)
+			- ["health"](#health)
+			- ["entitySwingArm" (entity)](#entityswingarm-entity)
+			- ["entityHurt" (entity)](#entityhurt-entity)
+			- ["entityWake" (entity)](#entitywake-entity)
+			- ["entityEat" (entity)](#entityeat-entity)
+			- ["entityCrouch" (entity)](#entitycrouch-entity)
+			- ["entityUncrouch" (entity)](#entityuncrouch-entity)
+			- ["entityEquipmentChange" (entity)](#entityequipmentchange-entity)
+			- ["entitySleep" (entity)](#entitysleep-entity)
+			- ["entitySpawn" (entity)](#entityspawn-entity)
+			- ["playerCollect" (collector, collected)](#playercollect-collector-collected)
+			- ["entityGone" (entity)](#entitygone-entity)
+			- ["entityMoved" (entity)](#entitymoved-entity)
+			- ["entityDetach" (entity, vehicle)](#entitydetach-entity-vehicle)
+			- ["entityAttach" (entity, vehicle)](#entityattach-entity-vehicle)
+			- ["entityUpdate" (entity)](#entityupdate-entity)
+			- ["entityEffect" (entity, effect)](#entityeffect-entity-effect)
+			- ["entityEffectEnd" (entity, effect)](#entityeffectend-entity-effect)
+			- ["playerJoined" (player)](#playerjoined-player)
+			- ["playerLeft" (player)](#playerleft-player)
+			- ["blockUpdate" (oldBlock, newBlock)](#blockupdate-oldblock-newblock)
+			- ["blockUpdate:(x, y, z)" (oldBlock, newBlock)](#blockupdatex-y-z-oldblock-newblock)
+			- ["chunkColumnLoad" (point)](#chunkcolumnload-point)
+			- ["chunkColumnUnload" (point)](#chunkcolumnunload-point)
+			- ["noteHeard" (block, instrument, pitch)](#noteheard-block-instrument-pitch)
+			- ["pistonMove" (block, isPulling, direction)](#pistonmove-block-ispulling-direction)
+			- ["chestLidMove" (block, isOpen)](#chestlidmove-block-isopen)
+			- ["diggingCompleted" (block)](#diggingcompleted-block)
+			- ["diggingAborted" (block)](#diggingaborted-block)
+			- ["move"](#move)
+			- ["mount"](#mount)
+			- ["dismount" (vehicle)](#dismount-vehicle)
+			- ["windowOpen" (window)](#windowopen-window)
+			- ["windowClose" (window)](#windowclose-window)
+			- ["sleep"](#sleep)
+			- ["wake"](#wake)
+		- [Functions](#functions)
+			- [bot.blockAt(point)](#botblockatpoint)
+   		- [bot.canDigBlock(block)](#botcandigblockblock)
+   		- [bot.recipesFor(itemType, metadata, minResultCount, craftingTable)](#botrecipesforitemtype-metadata-minresultcount-craftingtable)
+		- [Methods](#methods)
+			- [bot.end()](#botend)
+			- [bot.quit(reason)](#botquitreason)
+			- [bot.chat(message)](#botchatmessage)
+			- [bot.tell(username, message)](#bottellusername-message)
+			- [bot.setSettings(options)](#botsetsettingsoptions)
+			- [bot.sleep(bedBlock)](#botsleepbedblock)
+			- [bot.wake()](#botwake)
+			- [bot.setControlState(control, state)](#botsetcontrolstatecontrol-state)
+			- [bot.clearControlStates()](#botclearcontrolstates)
+			- [bot.lookAt(point, [force])](#botlookatpoint-force)
+			- [bot.look(yaw, pitch, [force])](#botlookyaw-pitch-force)
+			- [bot.updateSign(block, text)](#botupdatesignblock-text)
+			- [bot.equip(item, destination, [callback])](#botequipitem-destination-callback)
+			- [bot.unequip(destination, [callback])](#botunequipdestination-callback)
+			- [bot.tossStack(item, [callback])](#bottossstackitem-callback)
+			- [bot.toss(itemType, metadata, count, [callback])](#bottossitemtype-metadata-count-callback)
+			- [bot.dig(block, [timeout], [callback])](#botdigblock-timeout-callback)
+			- [bot.placeBlock(referenceBlock, faceVector)](#botplaceblockreferenceblock-facevector)
+			- [bot.activateBlock(block)](#botactivateblockblock)
+			- [bot.activateItem()](#botactivateitem)
+			- [bot.deactivateItem()](#botdeactivateitem)
+			- [bot.useOn(targetEntity)](#botuseontargetentity)
+			- [bot.attack(entity)](#botattackentity)
+			- [bot.mount(entity)](#botmountentity)
+			- [bot.dismount()](#botdismount)
+			- [bot.setQuickBarSlot(slot)](#botsetquickbarslotslot)
+			- [bot.craft(recipe, count, craftingTable, [callback])](#botcraftrecipe-count-craftingtable-callback)
+			- [bot.openChest(chestBlock)](#botopenchestchestblock)
+			- [bot.openFurnace(furnaceBlock)](#botopenfurnacefurnaceblock)
+
 # API
 
 ## Classes
@@ -757,6 +984,24 @@ Fires when you wake up.
 Returns the block at `point` or `null` if that point is not loaded.
 See `Block`.
 
+#### bot.canDigBlock(block)
+
+Returns whether `block` is diggable and within range.
+
+#### bot.recipesFor(itemType, metadata, minResultCount, craftingTable)
+
+Returns a list of `Recipe` instances that you could use to craft `itemType`
+with `metadata`.
+
+ * `itemType` - numerical item id of the thing you want to craft
+ * `metadata` - the numerical metadata value of the item you want to craft
+   `null` matches any metadata.
+ * `minResultCount` - based on your current inventory, any recipe from the
+   returned list will be able to produce this many items. `null` is an
+   alias for `1`.
+ * `craftingTable` - a `Block` instance. If `null`, only recipes that can
+   be performed in your inventory window will be included in the list.
+
 ### Methods
 
 #### bot.end()
@@ -867,10 +1112,6 @@ is implemented which gives you the ability to abort digging.
  * `callback(err)` - (optional) called when the block is broken or you
    are interrupted.
 
-#### bot.canDigBlock(block)
-
-Returns whether `block` is diggable and within range.
-
 #### bot.placeBlock(referenceBlock, faceVector)
 
  * `referenceBlock` - the block you want to place a new block next to
@@ -921,20 +1162,6 @@ Dismounts from the vehicle you are in.
    `null` for this argument.
  * `callback` - (optional) Called when the crafting is complete and your
    inventory is updated.
-
-#### bot.recipesFor(itemType, metadata, minResultCount, craftingTable)
-
-Returns a list of `Recipe` instances that you could use to craft `itemType`
-with `metadata`.
-
- * `itemType` - numerical item id of the thing you want to craft
- * `metadata` - the numerical metadata value of the item you want to craft
-   `null` matches any metadata.
- * `minResultCount` - based on your current inventory, any recipe from the
-   returned list will be able to produce this many items. `null` is an
-   alias for `1`.
- * `craftingTable` - a `Block` instance. If `null`, only recipes that can
-   be performed in your inventory window will be included in the list.
 
 #### bot.openChest(chestBlock)
 
