@@ -198,7 +198,7 @@
 			- [bot.end()](#botend)
 			- [bot.quit(reason)](#botquitreason)
 			- [bot.chat(message)](#botchatmessage)
-			- [bot.tell(username, message)](#bottellusername-message)
+			- [bot.whisper(username, message)](#botwhisperusername-message)
 			- [bot.setSettings(options)](#botsetsettingsoptions)
 			- [bot.sleep(bedBlock)](#botsleepbedblock)
 			- [bot.wake()](#botwake)
@@ -1016,7 +1016,7 @@ Gracefully disconnect from the server with the given reason (defaults to 'discon
 
 Sends a publicly broadcast chat message. Breaks up big messages into multiple chat messages as necessary.
 
-#### bot.tell(username, message)
+#### bot.whisper(username, message)
 
 Shortcut for "/tell <username>". All split messages will be whispered to username.
 
