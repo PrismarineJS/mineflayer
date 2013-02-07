@@ -9,6 +9,10 @@ bot.on('kicked', function(reason) {
   console.log("kicked for", reason);
 });
 
+bot.on('experience', function() {
+  bot.chat("I am level " + bot.experience.level);
+});
+
 bot.on('chat', function(username, message) {
   if (message === "list") {
     listInventory();
@@ -18,6 +22,8 @@ bot.on('chat', function(username, message) {
     watchFurnace();
   } else if (message === "dispenser") {
     watchDispenser();
+  } else if (message === "enchant") {
+    watchEnchantmentTable();
   }
 });
 
@@ -30,6 +36,70 @@ function listInventory() {
     bot.chat(output);
   } else {
     bot.chat("empty");
+  }
+}
+
+function watchEnchantmentTable() {
+  var enchantTableBlock = findBlock([116]);
+  if (! enchantTableBlock) {
+    bot.chat("no enchantment table found");
+    return;
+  }
+  var table = bot.openEnchantmentTable(enchantTableBlock);
+  table.on('open', function() {
+    bot.chat(itemStr(table.targetItem()));
+  });
+  table.on('updateSlot', function (oldItem, newItem) {
+    bot.chat("enchantment table update: " + itemStr(oldItem) + " -> " + itemStr(newItem));
+  });
+  table.on('close', function() {
+    bot.chat("enchantment table closed");
+  });
+  table.on('ready', function() {
+    bot.chat("ready to enchant. choices are " + table.enchantments.map(function(o) {
+      return o.level;
+    }).join(', '));
+  });
+  bot.on('chat', onChat);
+
+  function onChat(username, message) {
+    var words, choice, name, item;
+    if (message === 'close') {
+      table.close();
+    } else if (message === 'take') {
+      table.takeTargetItem(function(err, item) {
+        if (err) {
+          bot.chat("error getting item");
+        } else {
+          bot.chat("got " + itemStr(item));
+        }
+      });
+    } else if (/^enchant (\d+)/.test(message)) {
+      words = message.split(/\s+/);
+      choice = parseInt(words[1], 10);
+      table.enchant(choice, function(err, item) {
+        if (err) {
+          bot.chat("error enchanting");
+        } else {
+          bot.chat("enchanted " + itemStr(item));
+        }
+      });
+    } else if (/^put /.test(message)) {
+      words = message.split(/\s+/);
+      name = words[1];
+      item = itemByName(table.window.items(), name);
+      if (!item) {
+        bot.chat("unknown item " + name);
+        return;
+      }
+      table.putTargetItem(item, function(err) {
+        if (err) {
+          bot.chat("error putting " + itemStr(item));
+        } else {
+          bot.chat("put " + itemStr(item));
+        }
+      });
+    }
   }
 }
 
