@@ -10,7 +10,7 @@ Create Minecraft bots with a powerful, stable, and high level JavaScript API.
  * Basic physics and movement - currently blocks are either "solid" or "empty".
  * Attacking entities and using vehicles.
  * Inventory management.
- * Crafting, chests, and dispensers.
+ * Crafting, chests, dispensers, enchantment tables.
  * Digging and building.
  * Miscellaneous stuff such as knowing your health and whether it is raining.
  * Activating blocks and using items.
@@ -18,7 +18,7 @@ Create Minecraft bots with a powerful, stable, and high level JavaScript API.
 
 ### Roadmap
 
- * Brewing stands, anvils, and enchanting tables.
+ * Brewing stands, and anvils.
  * Better physics (support doors, ladders, water, etc).
 
 ## Usage
