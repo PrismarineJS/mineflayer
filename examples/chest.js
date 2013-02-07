@@ -9,6 +9,10 @@ bot.on('kicked', function(reason) {
   console.log("kicked for", reason);
 });
 
+bot.on('experience', function() {
+  bot.chat("I am level " + bot.experience.level);
+});
+
 bot.on('chat', function(username, message) {
   if (message === "list") {
     listInventory();
@@ -36,7 +40,7 @@ function listInventory() {
 }
 
 function watchEnchantmentTable() {
-  var enchantTableBlock = findBlock([118]);
+  var enchantTableBlock = findBlock([116]);
   if (! enchantTableBlock) {
     bot.chat("no enchantment table found");
     return;
@@ -83,7 +87,7 @@ function watchEnchantmentTable() {
     } else if (/^put /.test(message)) {
       words = message.split(/\s+/);
       name = words[1];
-      item = itemByName(bot.inventory.items(), name);
+      item = itemByName(table.window.items(), name);
       if (!item) {
         bot.chat("unknown item " + name);
         return;

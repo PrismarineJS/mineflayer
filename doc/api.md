@@ -816,6 +816,10 @@ Fires when you sleep.
 
 Fires when you wake up.
 
+#### "experience"
+
+Fires when `bot.experience.*` has updated.
+
 ### Functions
 
 #### bot.blockAt(point)
