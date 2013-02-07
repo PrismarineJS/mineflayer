@@ -1,3 +1,9 @@
+## 0.0.23
+
+ * add enchantment table support. See `examples/chest.js` for an example.
+ * rename `bot.tell` to `bot.whisper` to be consistent with 'whisper' event.
+   (thanks Darthfett)
+
 ## 0.0.22
 
  * update vec3 to 0.1.3
