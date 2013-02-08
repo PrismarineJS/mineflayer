@@ -31,6 +31,7 @@
 			- [block.biome](#blockbiome)
 			- [block.signText](#blocksigntext)
 			- [block.painting](#blockpainting)
+			- [block.diggable](#blockdiggable)
 			- [block.boundingBox](#blockboundingbox)
 		- [mineflayer.Biome](#mineflayerbiome)
 			- [biome.id](#biomeid)
@@ -358,6 +359,10 @@ If the block is a painting, contains information about the painting.
  * `position`
  * `name`
  * `direction` - direction vector telling how the painting is facing.
+
+#### block.diggable
+
+Boolean, whether the block is considered diggable.
 
 #### block.boundingBox
 
