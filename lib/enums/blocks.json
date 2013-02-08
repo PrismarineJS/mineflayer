@@ -77,7 +77,7 @@
     "hardness": 100,
     "stackSize": 64,
     "diggable": false,
-    "boundingBox": "block"
+    "boundingBox": "empty"
   },
   "9": {
     "id": 9,
@@ -86,7 +86,7 @@
     "hardness": 100,
     "stackSize": 64,
     "diggable": false,
-    "boundingBox": "block"
+    "boundingBox": "empty"
   },
   "10": {
     "id": 10,
@@ -95,7 +95,7 @@
     "hardness": 0,
     "stackSize": 64,
     "diggable": false,
-    "boundingBox": "block"
+    "boundingBox": "empty"
   },
   "11": {
     "id": 11,
@@ -104,7 +104,7 @@
     "hardness": 100,
     "stackSize": 64,
     "diggable": false,
-    "boundingBox": "block"
+    "boundingBox": "empty"
   },
   "12": {
     "id": 12,
