@@ -1,3 +1,7 @@
+## 0.0.25
+
+ * `bot.equip` - wait at least a tick before calling callback
+
 ## 0.0.24
 
  * fix digging leaves not calling callback.
