@@ -1,3 +1,8 @@
+## 0.0.26
+
+ * fix `bot.heldItem` being wrong sometimes
+ * water and lava are not solid
+
 ## 0.0.25
 
  * `bot.equip` - wait at least a tick before calling callback
