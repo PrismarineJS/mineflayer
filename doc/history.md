@@ -1,3 +1,7 @@
+## 0.0.24
+
+ * fix digging leaves not calling callback.
+
 ## 0.0.23
 
  * add enchantment table support. See `examples/chest.js` for an example.
