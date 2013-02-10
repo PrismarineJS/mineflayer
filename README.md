@@ -52,6 +52,7 @@ higher level API on top of Mineflayer.
    easily using A* pathfinding. [YouTube Demo](http://www.youtube.com/watch?v=O6lQdmRz8eE)
  * [radar](https://github.com/superjoe30/mineflayer-radar/) - web based radar
    interface using canvas and socket.io. [YouTube Demo](http://www.youtube.com/watch?v=FjDmAfcVulQ)
+ * [blockfinder](https://github.com/Darthfett/mineflayer-blockFinder) - find blocks in the 3D world
 
 ## Projects Using Mineflayer
 
