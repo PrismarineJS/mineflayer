@@ -126,7 +126,7 @@ bot.on('entitySpawn', function(entity) {
   } else if (entity.type === 'player') {
     bot.chat("look who decided to show up: " + entity.username);
   } else if (entity.type === 'object') {
-    //bot.chat("there's a " + entity.objectType + " at " + entity.position);
+    console.log("there's a " + entity.objectType + " at " + entity.position);
   } else if (entity.type === 'global') {
     bot.chat("ooh lightning!");
   } else if (entity.type === 'orb') {
@@ -135,7 +135,9 @@ bot.on('entitySpawn', function(entity) {
 });
 bot.on('playerCollect', function(collector, collected) {
   if (collector.type === 'player' && collected.type === 'object') {
-    bot.chat("I'm so jealous. " + collector.username + " collected " + collected.objectType);
+    var rawItem = collected.metadata[10];
+    var item = itemFromNotch(rawItem);
+    bot.chat("I'm so jealous. " + collector.username + " collected " + item.count + " " + item.displayName);
   }
 });
 bot.on('entityDetach', function(entity, vehicle) {
@@ -154,3 +156,8 @@ bot.on('entityEffect', function(entity, effect) {
 bot.on('entityEffectEnd', function(entity, effect) {
   console.log("entityEffectEnd", entity, effect);
 });
+function itemFromNotch(item) {
+  return item.id === -1 ? null :
+    new mineflayer.Item(item.id, item.itemCount, item.itemDamage, item.nbtData);
+}
+

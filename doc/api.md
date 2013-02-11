@@ -316,6 +316,10 @@ get from collecting the orb.
 
 Equivalent to `entity.equipment[0]`.
 
+#### entity.metadata
+
+See http://wiki.vg/Entities#Entity_Metadata_Format for more details.
+
 ### mineflayer.Block
 
 #### block.position
