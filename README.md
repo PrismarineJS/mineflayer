@@ -60,8 +60,9 @@ higher level API on top of Mineflayer.
 ## Projects Using Mineflayer
 
  * [rom1504/rbot](https://github.com/rom1504/rbot)
+   - [YouTube - building a spiral staircase](http://www.youtube.com/watch?v=UM1ZV5200S0)
+   - [YouTube - replicating a building](http://www.youtube.com/watch?v=0cQxg9uDnzA)
  * [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot)
- * [Contra/minebot](https://github.com/Contra/minebot)
 
 ## Installation
 
