@@ -3,6 +3,7 @@
 - [API](#api)
 	- [Classes](#classes)
 		- [mineflayer.vec3](#mineflayervec3)
+		- [mineflayer.Location](#mineflayerlocation)
 		- [mineflayer.Entity](#mineflayerentity)
 			- [entity.id](#entityid)
 			- [entity.type](#entitytype)
@@ -18,6 +19,7 @@
 			- [entity.onGround](#entityonground)
 			- [entity.equipment[5]](#entityequipment5)
 			- [entity.heldItem](#entityhelditem)
+			- [entity.metadata](#entitymetadata)
 		- [mineflayer.Block](#mineflayerblock)
 			- [block.position](#blockposition)
 			- [block.type](#blocktype)
@@ -257,6 +259,8 @@ All points in mineflayer are supplied as instances of this class.
 Functions and methods which require a point argument accept `Vec3` instances
 as well as an array with 3 values, and an object with `x`, `y`, and `z`
 properties.
+
+### mineflayer.Location
 
 ### mineflayer.Entity
 

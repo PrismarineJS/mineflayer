@@ -9,6 +9,7 @@ module.exports = {
   vec3: require('vec3'),
   createBot: createBot,
   Block: require('./lib/block'),
+  Location: require('./lib/location'),
   Biome: require('./lib/biome'),
   Entity: require('./lib/entity'),
   Painting: require('./lib/painting'),
