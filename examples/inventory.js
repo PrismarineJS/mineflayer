@@ -72,30 +72,33 @@ bot.on('chat', function(username, message) {
       }
     });
   } else if (/^craft (\d+)/.test(message)) {
-    words = message.split(" ");
-    amount = parseInt(words[1], 10);
-    name = words[2];
-    item = findItemType(name);
-    var craftingTable = findCraftingTable();
-    var wbText = craftingTable ? "with a crafting table, " : "without a crafting table, ";
-    if (item == null) {
-      bot.chat(wbText + "unknown item: " + name);
-    } else {
-      var recipes = bot.recipesFor(item.id, null, 1, craftingTable);
-      if (recipes.length) {
-        bot.chat(wbText + "I can make " + item.name);
-        bot.craft(recipes[0], amount, craftingTable, function(err) {
-          if (err) {
-            bot.chat("error making " + item.name);
-            console.error(err.stack);
-          } else {
-            bot.chat("made " + amount + " " + item.name);
-          }
-        });
-      } else {
-        bot.chat(wbText + "I can't make " + item.name);
-      }
-    }
+	var words = message.split(" ");
+    var amount = parseInt(words[1], 10);
+    var name = words[2];
+	var item=findItemType(name);
+	var craftingTable=findCraftingTable();
+	var wbText = craftingTable ? "with a crafting table, " : "without a crafting table, ";
+	if (item == null) bot.chat(wbText + "unknown item: " + name);
+	else
+	{
+		var recipes = bot.recipesFor(item.id, null, amount, craftingTable);
+		if (recipes.length)
+		{
+			bot.chat(wbText + "I can make " + item.name);
+			var numberOfOperation=Math.ceil(amount/recipes[0].count);
+			var newAmount=numberOfOperation*recipes[0].count;
+			bot.craft(recipes[0], numberOfOperation, craftingTable, function(err)
+			{
+				if (err)
+				{
+					bot.chat("error making " + item.name);
+					console.error(err.stack);
+				}
+				else bot.chat("made " + newAmount + " " + item.name);
+			});
+		}
+		else bot.chat(wbText + "I can't make " + item.name);
+	}
   } else if (message === "use") {
     bot.chat("activating");
     bot.activateItem();
