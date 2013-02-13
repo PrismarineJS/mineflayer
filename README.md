@@ -56,6 +56,8 @@ higher level API on top of Mineflayer.
  * [scaffold](https://github.com/superjoe30/mineflayer-scaffold) - get to
    a target destination even if you have to build or break blocks to do so.
    [YouTube Demo](http://youtu.be/jkg6psMUSE0)
+ * [voxel](https://github.com/vogonistic/mineflayer-voxel) - visualize what
+   the bot is up to using voxel.js
 
 ## Projects Using Mineflayer
 
