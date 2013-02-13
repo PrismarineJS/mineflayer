@@ -1,3 +1,10 @@
+## 0.0.27
+
+ * add `mineflayer.Location` which can help you locate chunk boundaries
+ * `entity.metadata` is formatted as an object instead of an array for
+   easier access
+ * `canDigBlock` returns `false` if `block` is `null` instead of crashing.
+
 ## 0.0.26
 
  * fix `bot.heldItem` being wrong sometimes
