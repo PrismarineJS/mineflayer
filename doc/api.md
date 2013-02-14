@@ -59,6 +59,7 @@
 			- [window.findInventoryItem(itemType, metadata, [notFull])](#windowfindinventoryitemitemtype-metadata-notfull)
 			- [window.count(itemType, [metadata])](#windowcountitemtype-metadata)
 			- [window.items()](#windowitems)
+			- [window.emptySlotCount()](#windowemptyslotcount)
 		- [mineflayer.windows.InventoryWindow](#mineflayerwindowsinventorywindow)
 		- [mineflayer.windows.ChestWindow](#mineflayerwindowschestwindow)
 		- [mineflayer.windows.CraftingTableWindow](#mineflayerwindowscraftingtablewindow)
@@ -455,6 +456,8 @@ Returns how many you have in the inventory section of the window.
 #### window.items()
 
 Returns a list of `Item` instances from the inventory section of the window.
+
+#### window.emptySlotCount()
 
 ### mineflayer.windows.InventoryWindow
 ### mineflayer.windows.ChestWindow
