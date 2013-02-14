@@ -15,7 +15,15 @@
     "hardness": 1.5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "2": {
     "id": 2,
@@ -24,7 +32,8 @@
     "hardness": 0.6,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "dirt"
   },
   "3": {
     "id": 3,
@@ -33,7 +42,8 @@
     "hardness": 0.5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "dirt"
   },
   "4": {
     "id": 4,
@@ -42,7 +52,15 @@
     "hardness": 2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "5": {
     "id": 5,
@@ -51,10 +69,12 @@
     "hardness": 2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "wood"
   },
   "6": {
     "id": 6,
+    "displayName": "Sapling",
     "name": "sapling",
     "hardness": 0,
     "stackSize": 64,
@@ -65,7 +85,7 @@
     "id": 7,
     "displayName": "Bedrock",
     "name": "bedrock",
-    "hardness": 0,
+    "hardness": null,
     "stackSize": 64,
     "diggable": false,
     "boundingBox": "block"
@@ -81,8 +101,8 @@
   },
   "9": {
     "id": 9,
-    "displayName": "Water",
-    "name": "water",
+    "displayName": "Stationary Water",
+    "name": "waterStationary",
     "hardness": 100,
     "stackSize": 64,
     "diggable": false,
@@ -99,8 +119,8 @@
   },
   "11": {
     "id": 11,
-    "displayName": "Lava",
-    "name": "lava",
+    "displayName": "Stationary Lava",
+    "name": "lavaStationary",
     "hardness": 100,
     "stackSize": 64,
     "diggable": false,
@@ -113,7 +133,8 @@
     "hardness": 0.5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "dirt"
   },
   "13": {
     "id": 13,
@@ -122,7 +143,8 @@
     "hardness": 0.6,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "dirt"
   },
   "14": {
     "id": 14,
@@ -131,7 +153,12 @@
     "hardness": 3,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "257": true,
+      "278": true
+    }
   },
   "15": {
     "id": 15,
@@ -140,7 +167,13 @@
     "hardness": 3,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "274": true,
+      "257": true,
+      "278": true
+    }
   },
   "16": {
     "id": 16,
@@ -149,7 +182,15 @@
     "hardness": 3,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "17": {
     "id": 17,
@@ -158,7 +199,8 @@
     "hardness": 2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "wood"
   },
   "18": {
     "id": 18,
@@ -167,7 +209,8 @@
     "hardness": 0.2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "leaves"
   },
   "19": {
     "id": 19,
@@ -194,7 +237,13 @@
     "hardness": 3,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "274": true,
+      "257": true,
+      "278": true
+    }
   },
   "22": {
     "id": 22,
@@ -203,7 +252,13 @@
     "hardness": 3,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "274": true,
+      "257": true,
+      "278": true
+    }
   },
   "23": {
     "id": 23,
@@ -212,7 +267,15 @@
     "hardness": 3.5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "24": {
     "id": 24,
@@ -221,7 +284,15 @@
     "hardness": 0.8,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "25": {
     "id": 25,
@@ -230,7 +301,8 @@
     "hardness": 0.8,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "wood"
   },
   "26": {
     "id": 26,
@@ -248,7 +320,8 @@
     "hardness": 0.7,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "empty"
+    "boundingBox": "empty",
+    "material": "rock"
   },
   "28": {
     "id": 28,
@@ -257,7 +330,8 @@
     "hardness": 0.7,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "empty"
+    "boundingBox": "empty",
+    "material": "rock"
   },
   "29": {
     "id": 29,
@@ -275,7 +349,16 @@
     "hardness": 4,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "empty"
+    "boundingBox": "empty",
+    "material": "web",
+    "harvestTools": {
+      "359": true,
+      "267": true,
+      "268": true,
+      "272": true,
+      "276": true,
+      "283": true
+    }
   },
   "31": {
     "id": 31,
@@ -320,7 +403,8 @@
     "hardness": 0.8,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "wool"
   },
   "36": {
     "id": 36,
@@ -351,8 +435,8 @@
   },
   "39": {
     "id": 39,
-    "displayName": "Mushroom",
-    "name": "mushroom",
+    "displayName": "Brown Mushroom",
+    "name": "mushroomBrown",
     "hardness": 0,
     "stackSize": 64,
     "diggable": true,
@@ -360,8 +444,8 @@
   },
   "40": {
     "id": 40,
-    "displayName": "Mushroom",
-    "name": "mushroom",
+    "displayName": "Red Mushroom",
+    "name": "mushroomRed",
     "hardness": 0,
     "stackSize": 64,
     "diggable": true,
@@ -374,7 +458,12 @@
     "hardness": 3,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "257": true,
+      "278": true
+    }
   },
   "42": {
     "id": 42,
@@ -383,18 +472,34 @@
     "hardness": 5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "274": true,
+      "257": true,
+      "278": true
+    }
   },
   "43": {
     "id": 43,
-    "name": "stoneSlab",
+    "displayName": "Double Stone Slab",
+    "name": "stoneSlabDouble",
     "hardness": 2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "44": {
     "id": 44,
+    "displayName": "Stone Slab",
     "name": "stoneSlab",
     "hardness": 2,
     "stackSize": 64,
@@ -408,7 +513,15 @@
     "hardness": 2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "46": {
     "id": 46,
@@ -426,7 +539,8 @@
     "hardness": 1.5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "wood"
   },
   "48": {
     "id": 48,
@@ -435,7 +549,15 @@
     "hardness": 2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "49": {
     "id": 49,
@@ -444,7 +566,11 @@
     "hardness": 50,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "278": true
+    }
   },
   "50": {
     "id": 50,
@@ -471,16 +597,25 @@
     "hardness": 5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "53": {
     "id": 53,
-    "displayName": "Oak Wood Stairs",
+    "displayName": "Wooden Stairs",
     "name": "stairsWood",
     "hardness": 0,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "wood"
   },
   "54": {
     "id": 54,
@@ -489,7 +624,8 @@
     "hardness": 2.5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "wood"
   },
   "55": {
     "id": 55,
@@ -507,7 +643,12 @@
     "hardness": 3,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "257": true,
+      "278": true
+    }
   },
   "57": {
     "id": 57,
@@ -516,7 +657,12 @@
     "hardness": 5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "257": true,
+      "278": true
+    }
   },
   "58": {
     "id": 58,
@@ -525,7 +671,8 @@
     "hardness": 2.5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "wood"
   },
   "59": {
     "id": 59,
@@ -543,7 +690,8 @@
     "hardness": 0.6,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "dirt"
   },
   "61": {
     "id": 61,
@@ -552,25 +700,42 @@
     "hardness": 3.5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "62": {
     "id": 62,
-    "displayName": "Furnace",
-    "name": "furnace",
+    "displayName": "Burning Furnace",
+    "name": "furnaceBurning",
     "hardness": 3.5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "63": {
     "id": 63,
-    "displayName": "Sign",
-    "name": "sign",
+    "displayName": "Sign Post",
+    "name": "signPost",
     "hardness": 1,
     "stackSize": 1,
     "diggable": true,
-    "boundingBox": "empty"
+    "boundingBox": "empty",
+    "material": "wood"
   },
   "64": {
     "id": 64,
@@ -579,7 +744,8 @@
     "hardness": 3,
     "stackSize": 1,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "wood"
   },
   "65": {
     "id": 65,
@@ -597,21 +763,30 @@
     "hardness": 0.7,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "empty"
+    "boundingBox": "empty",
+    "material": "rock"
   },
   "67": {
     "id": 67,
-    "displayName": "Stone Stairs",
+    "displayName": "Cobblestone Stairs",
     "name": "stairsStone",
     "hardness": 0,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "68": {
     "id": 68,
-    "displayName": "Sign",
-    "name": "sign",
+    "displayName": "Wall Sign",
+    "name": "signWall",
     "hardness": 1,
     "stackSize": 1,
     "diggable": true,
@@ -628,12 +803,20 @@
   },
   "70": {
     "id": 70,
-    "displayName": "Pressure Plate",
-    "name": "pressurePlate",
+    "displayName": "Stone Pressure Plate",
+    "name": "stonePressurePlate",
     "hardness": 0.5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "empty"
+    "boundingBox": "empty",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "71": {
     "id": 71,
@@ -642,16 +825,25 @@
     "hardness": 5,
     "stackSize": 1,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "72": {
     "id": 72,
-    "displayName": "Pressure Plate",
-    "name": "pressurePlate",
+    "displayName": "Wooden Pressure Plate",
+    "name": "woodPressurePlate",
     "hardness": 0.5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "empty"
+    "boundingBox": "empty",
+    "material": "wood"
   },
   "73": {
     "id": 73,
@@ -660,21 +852,31 @@
     "hardness": 3,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "257": true,
+      "278": true
+    }
   },
   "74": {
     "id": 74,
-    "displayName": "Redstone Ore",
-    "name": "oreRedstone",
+    "displayName": "Glowing Redstone Ore",
+    "name": "oreRedstoneGlowing",
     "hardness": 3,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "257": true,
+      "278": true
+    }
   },
   "75": {
     "id": 75,
-    "displayName": "Redstone Torch",
-    "name": "notGate",
+    "displayName": "Redstone Torch (Inactive)",
+    "name": "notGateInactive",
     "hardness": 0,
     "stackSize": 64,
     "diggable": true,
@@ -682,8 +884,8 @@
   },
   "76": {
     "id": 76,
-    "displayName": "Redstone Torch",
-    "name": "notGate",
+    "displayName": "Redstone Torch (Active)",
+    "name": "notGateActive",
     "hardness": 0,
     "stackSize": 64,
     "diggable": true,
@@ -691,8 +893,8 @@
   },
   "77": {
     "id": 77,
-    "displayName": "Button",
-    "name": "button",
+    "displayName": "Stone Button",
+    "name": "buttonStone",
     "hardness": 0.5,
     "stackSize": 64,
     "diggable": true,
@@ -705,7 +907,15 @@
     "hardness": 0.1,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "empty"
+    "boundingBox": "empty",
+    "material": "dirt",
+    "harvestTools": {
+      "269": true,
+      "273": true,
+      "256": true,
+      "277": true,
+      "284": true
+    }
   },
   "79": {
     "id": 79,
@@ -714,16 +924,25 @@
     "hardness": 0.5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock"
   },
   "80": {
     "id": 80,
-    "displayName": "Snow",
-    "name": "snow",
+    "displayName": "Snow Block",
+    "name": "snowBlock",
     "hardness": 0.2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "dirt",
+    "harvestTools": {
+      "269": true,
+      "273": true,
+      "256": true,
+      "277": true,
+      "284": true
+    }
   },
   "81": {
     "id": 81,
@@ -741,7 +960,8 @@
     "hardness": 0.6,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "dirt"
   },
   "83": {
     "id": 83,
@@ -759,7 +979,8 @@
     "hardness": 2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "wood"
   },
   "85": {
     "id": 85,
@@ -768,7 +989,8 @@
     "hardness": 2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "wood"
   },
   "86": {
     "id": 86,
@@ -777,7 +999,8 @@
     "hardness": 1,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "plant"
   },
   "87": {
     "id": 87,
@@ -786,7 +1009,15 @@
     "hardness": 0.4,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "88": {
     "id": 88,
@@ -795,7 +1026,8 @@
     "hardness": 0.5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "dirt"
   },
   "89": {
     "id": 89,
@@ -810,7 +1042,7 @@
     "id": 90,
     "displayName": "Portal",
     "name": "portal",
-    "hardness": -1,
+    "hardness": null,
     "stackSize": 64,
     "diggable": false,
     "boundingBox": "empty"
@@ -822,7 +1054,8 @@
     "hardness": 1,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "plant"
   },
   "92": {
     "id": 92,
@@ -835,7 +1068,8 @@
   },
   "93": {
     "id": 93,
-    "name": "diode",
+    "displayName": "Redstone Repeater (Inactive)",
+    "name": "redstoneRepeaterInactive",
     "hardness": 0,
     "stackSize": 64,
     "diggable": true,
@@ -843,7 +1077,8 @@
   },
   "94": {
     "id": 94,
-    "name": "diode",
+    "displayName": "Redstone Repeater (Active)",
+    "name": "redstoneRepeaterActive",
     "hardness": 0,
     "stackSize": 64,
     "diggable": true,
@@ -865,10 +1100,12 @@
     "hardness": 3,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "wood"
   },
   "97": {
     "id": 97,
+    "displayName": "Monster Egg",
     "name": "monsterStoneEgg",
     "hardness": 0.75,
     "stackSize": 64,
@@ -877,30 +1114,40 @@
   },
   "98": {
     "id": 98,
-    "displayName": "Stone Bricks",
+    "displayName": "Stone Brick",
     "name": "stonebricksmooth",
     "hardness": 1.5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "99": {
     "id": 99,
-    "displayName": "Mushroom",
-    "name": "mushroom",
+    "displayName": "Huge Brown Mushroom",
+    "name": "mushroomHugeBrown",
     "hardness": 0.2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "wood"
   },
   "100": {
     "id": 100,
-    "displayName": "Mushroom",
-    "name": "mushroom",
+    "displayName": "Huge Red Mushroom",
+    "name": "mushroomHugeRed",
     "hardness": 0.2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "wood"
   },
   "101": {
     "id": 101,
@@ -909,7 +1156,15 @@
     "hardness": 5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "102": {
     "id": 102,
@@ -927,10 +1182,12 @@
     "hardness": 1,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "melon"
   },
   "104": {
     "id": 104,
+    "displayName": "Pumpkin Stem",
     "name": "pumpkinStem",
     "hardness": 0,
     "stackSize": 64,
@@ -939,7 +1196,8 @@
   },
   "105": {
     "id": 105,
-    "name": "pumpkinStem",
+    "displayName": "Melon Stem",
+    "name": "melonStem",
     "hardness": 0,
     "stackSize": 64,
     "diggable": true,
@@ -952,7 +1210,8 @@
     "hardness": 0.2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "empty"
+    "boundingBox": "empty",
+    "material": "plant"
   },
   "107": {
     "id": 107,
@@ -961,7 +1220,8 @@
     "hardness": 2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "wood"
   },
   "108": {
     "id": 108,
@@ -970,7 +1230,15 @@
     "hardness": 0,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "109": {
     "id": 109,
@@ -979,7 +1247,15 @@
     "hardness": 0,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "110": {
     "id": 110,
@@ -988,7 +1264,8 @@
     "hardness": 0.6,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "dirt"
   },
   "111": {
     "id": 111,
@@ -1006,7 +1283,15 @@
     "hardness": 2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "113": {
     "id": 113,
@@ -1015,7 +1300,15 @@
     "hardness": 2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "114": {
     "id": 114,
@@ -1024,7 +1317,15 @@
     "hardness": 0,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "115": {
     "id": 115,
@@ -1042,15 +1343,32 @@
     "hardness": 5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "117": {
     "id": 117,
+    "displayName": "Brewing Stand",
     "name": "brewingStand",
     "hardness": 0.5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "118": {
     "id": 118,
@@ -1059,22 +1377,30 @@
     "hardness": 2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "119": {
     "id": 119,
     "name": "endPortal",
     "displayName": "End Portal",
-    "hardness": -1,
+    "hardness": null,
     "stackSize": 64,
     "diggable": false,
     "boundingBox": "empty"
   },
   "120": {
     "id": 120,
-    "displayName": "End Portal",
+    "displayName": "End Portal Frame",
     "name": "endPortalFrame",
-    "hardness": -1,
+    "hardness": null,
     "stackSize": 64,
     "diggable": false,
     "boundingBox": "block"
@@ -1086,7 +1412,15 @@
     "hardness": 3,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "122": {
     "id": 122,
@@ -1099,8 +1433,8 @@
   },
   "123": {
     "id": 123,
-    "displayName": "Redstone Lamp",
-    "name": "redstoneLight",
+    "displayName": "Redstone Lamp (Inactive)",
+    "name": "redstoneLightInactive",
     "hardness": 0.3,
     "stackSize": 64,
     "diggable": true,
@@ -1108,8 +1442,8 @@
   },
   "124": {
     "id": 124,
-    "displayName": "Redstone Lamp",
-    "name": "redstoneLight",
+    "displayName": "Redstone Lamp (Active)",
+    "name": "redstoneLightActive",
     "hardness": 0.3,
     "stackSize": 64,
     "diggable": true,
@@ -1117,14 +1451,17 @@
   },
   "125": {
     "id": 125,
-    "name": "woodSlab",
+    "displayName": "Wooden Double Slab",
+    "name": "woodSlabDouble",
     "hardness": 2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "wood"
   },
   "126": {
     "id": 126,
+    "displayName": "Wooden Slab",
     "name": "woodSlab",
     "hardness": 2,
     "stackSize": 64,
@@ -1133,12 +1470,13 @@
   },
   "127": {
     "id": 127,
-    "displayName": "Cocoa",
+    "displayName": "Cocoa Pod",
     "name": "cocoa",
     "hardness": 0.2,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "plant"
   },
   "128": {
     "id": 128,
@@ -1147,7 +1485,15 @@
     "hardness": 0,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "129": {
     "id": 129,
@@ -1156,7 +1502,12 @@
     "hardness": 3,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "257": true,
+      "278": true
+    }
   },
   "130": {
     "id": 130,
@@ -1165,7 +1516,15 @@
     "hardness": 22.5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "131": {
     "id": 131,
@@ -1192,7 +1551,12 @@
     "hardness": 5,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "257": true,
+      "278": true
+    }
   },
   "134": {
     "id": 134,
@@ -1228,27 +1592,45 @@
     "hardness": 0,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "138": {
     "id": 138,
     "displayName": "Beacon",
     "name": "beacon",
-    "hardness": 0,
+    "hardness": 3,
     "stackSize": 64,
     "diggable": true,
     "boundingBox": "block"
   },
   "139": {
     "id": 139,
+    "displayName": "Cobblestone Wall",
     "name": "cobbleWall",
     "hardness": 0,
     "stackSize": 64,
     "diggable": true,
-    "boundingBox": "block"
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   },
   "140": {
     "id": 140,
+    "displayName": "Flower Pot",
     "name": "flowerPot",
     "hardness": 0,
     "stackSize": 64,
@@ -1275,8 +1657,8 @@
   },
   "143": {
     "id": 143,
-    "displayName": "Button",
-    "name": "button",
+    "displayName": "Wooden Button",
+    "name": "buttonWood",
     "hardness": 0.5,
     "stackSize": 64,
     "diggable": true,
@@ -1284,6 +1666,7 @@
   },
   "144": {
     "id": 144,
+    "displayName": "Mob Head",
     "name": "skull",
     "hardness": 1,
     "stackSize": 64,
@@ -1297,6 +1680,198 @@
     "hardness": 5,
     "stackSize": 64,
     "diggable": true,
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
+  },
+  "146": {
+    "id": 146,
+    "displayName": "Trapped Chest",
+    "name": "trappedChest",
+    "hardness": 2.5,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "147": {
+    "id": 147,
+    "displayName": "Weighted Pressure plate (Light)",
+    "name": "pressurePlateWeightedLight",
+    "hardness": 0.5,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "empty",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
+  },
+  "148": {
+    "id": 148,
+    "displayName": "Weighted Pressure plate (Heavy)",
+    "name": "pressurePlateWeightedHeavy",
+    "hardness": 0.5,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "empty",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
+  },
+  "149": {
+    "id": 149,
+    "displayName": "Redstone Comparator (Inactive)",
+    "name": "redstoneComparatorInactive",
+    "hardness": 0,
+    "stackSize": 64,
+    "diggable": true,
     "boundingBox": "block"
+  },
+  "150": {
+    "id": 150,
+    "displayName": "Redstone Comparator (Active)",
+    "name": "redstoneComparatorActive",
+    "hardness": 0,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block"
+  },
+  "151": {
+    "id": 151,
+    "displayName": "Daylight Sensor",
+    "name": "daylightSensor",
+    "hardness": 0.2,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "152": {
+    "id": 152,
+    "displayName": "Block of Redstone",
+    "name": "redstoneBlock",
+    "hardness": 5,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
+  },
+  "153": {
+    "id": 153,
+    "displayName": "Nether Quartz Ore",
+    "name": "netherQuartzOre",
+    "hardness": 3,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
+  },
+  "154": {
+    "id": 154,
+    "displayName": "Hopper",
+    "name": "hopper",
+    "hardness": 3,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
+  },
+  "155": {
+    "id": 155,
+    "displayName": "Block of Quartz",
+    "name": "quartzBlock",
+    "hardness": 0.8,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
+  },
+  "156": {
+    "id": 156,
+    "displayName": "Quartz Stairs",
+    "name": "quartzStairs",
+    "hardness": 0.8,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
+  },
+  "157": {
+    "id": 157,
+    "displayName": "Activator Rail",
+    "name": "activatorRail",
+    "hardness": 0.7,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "empty",
+    "material": "rock"
+  },
+  "158": {
+    "id": 158,
+    "displayName": "Dropper",
+    "name": "dropper",
+    "hardness": 3.5,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
   }
 }
