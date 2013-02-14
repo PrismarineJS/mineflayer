@@ -1,3 +1,9 @@
+## 0.0.28
+
+ * add missing recipe for wooden planks
+ * fix various crafting and inventory bugs
+ * unequip works with hand as a destination
+
 ## 0.0.27
 
  * add `mineflayer.Location` which can help you locate chunk boundaries
