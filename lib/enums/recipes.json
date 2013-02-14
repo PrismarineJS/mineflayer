@@ -1,4 +1,12 @@
 {
+  "5": [
+    {
+      "type": 5,
+      "count": 4,
+      "metadata": null,
+      "inShape": [[ 17 ]]
+    }
+  ],
   "23": [
     {
       "type": 23,

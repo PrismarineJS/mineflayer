@@ -116,14 +116,14 @@ bot.on('chat', function(username, message) {
 
 
 function listInventory() {
-  var output = "";
-  bot.inventory.items().forEach(function(item) {
-    output += item.name + ": " + item.count + ", ";
-  });
-  if (output) {
-    bot.chat(output);
+  bot.chat(bot.inventory.items().map(itemStr).join(", "));
+}
+
+function itemStr(item) {
+  if (item) {
+    return item.name + " x " + item.count;
   } else {
-    bot.chat("empty inventory");
+    return "(nothing)";
   }
 }
 
