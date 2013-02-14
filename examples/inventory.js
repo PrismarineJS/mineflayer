@@ -89,7 +89,7 @@ bot.on('chat', function(username, message) {
             bot.chat("error making " + item.name);
             console.error(err.stack);
           } else {
-            bot.chat("made " + amount + " " + item.name);
+            bot.chat("did the recipe for " + item.name + " " + amount + "times");
           }
         });
       } else {
