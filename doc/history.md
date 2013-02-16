@@ -1,3 +1,7 @@
+## 0.0.32
+
+ * digging: fix crash when not holding a tool
+
 ## 0.0.31
 
  * only stationary water has a negative effect on digging
