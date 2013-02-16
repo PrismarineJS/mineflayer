@@ -1,3 +1,7 @@
+## 0.0.30
+
+ * expose the materials enum as `mineflayer.materials`
+
 ## 0.0.29
 
  * digging is faster and has less bugs
