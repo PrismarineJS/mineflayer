@@ -572,6 +572,7 @@
   "351": {
     "id": 351,
     "stackSize": 64,
+    "displayName": "Dye",
     "name": "dyePowder"
   },
   "352": {
@@ -847,6 +848,7 @@
   "397": {
     "id": 397,
     "stackSize": 64,
+    "displayName": "Mob Head",
     "name": "skull"
   },
   "398": {
@@ -887,74 +889,74 @@
   },
   "2256": {
     "id": 2256,
-    "displayName": "Music Disc",
+    "displayName": "13 Disc",
     "stackSize": 1,
-    "name": "record"
+    "name": "record13"
   },
   "2257": {
     "id": 2257,
-    "displayName": "Music Disc",
+    "displayName": "Cat Disc",
     "stackSize": 1,
-    "name": "record"
+    "name": "recordCat"
   },
   "2258": {
     "id": 2258,
-    "displayName": "Music Disc",
+    "displayName": "Blocks Disc",
     "stackSize": 1,
-    "name": "record"
+    "name": "recordBlocks"
   },
   "2259": {
     "id": 2259,
-    "displayName": "Music Disc",
+    "displayName": "Chirp Disc",
     "stackSize": 1,
-    "name": "record"
+    "name": "recordChirp"
   },
   "2260": {
     "id": 2260,
-    "displayName": "Music Disc",
+    "displayName": "Far Disc",
     "stackSize": 1,
-    "name": "record"
+    "name": "recordFar"
   },
   "2261": {
     "id": 2261,
-    "displayName": "Music Disc",
+    "displayName": "Mall Disc",
     "stackSize": 1,
-    "name": "record"
+    "name": "recordMall"
   },
   "2262": {
     "id": 2262,
-    "displayName": "Music Disc",
+    "displayName": "Mellohi Disc",
     "stackSize": 1,
-    "name": "record"
+    "name": "recordMellohi"
   },
   "2263": {
     "id": 2263,
-    "displayName": "Music Disc",
+    "displayName": "Stal Disc",
     "stackSize": 1,
-    "name": "record"
+    "name": "recordStal"
   },
   "2264": {
     "id": 2264,
-    "displayName": "Music Disc",
+    "displayName": "Strad Disc",
     "stackSize": 1,
-    "name": "record"
+    "name": "recordStrad"
   },
   "2265": {
     "id": 2265,
-    "displayName": "Music Disc",
+    "displayName": "Ward Disc",
     "stackSize": 1,
-    "name": "record"
+    "name": "recordWard"
   },
   "2266": {
     "id": 2266,
-    "displayName": "Music Disc",
+    "displayName": "11 Disc",
     "stackSize": 1,
-    "name": "record"
+    "name": "record11"
   },
   "2267": {
     "id": 2267,
-    "displayName": "Music Disc",
+    "displayName": "Wait Disc",
     "stackSize": 1,
-    "name": "record"
+    "name": "recordWait"
   }
 }

@@ -35,6 +35,8 @@
 			- [block.painting](#blockpainting)
 			- [block.diggable](#blockdiggable)
 			- [block.boundingBox](#blockboundingbox)
+			- [block.material](#blockmaterial)
+			- [block.harvestTools](#blockharvesttools)
 		- [mineflayer.Biome](#mineflayerbiome)
 			- [biome.id](#biomeid)
 			- [biome.color](#biomecolor)
@@ -227,7 +229,9 @@
 			- [bot.unequip(destination, [callback])](#botunequipdestination-callback)
 			- [bot.tossStack(item, [callback])](#bottossstackitem-callback)
 			- [bot.toss(itemType, metadata, count, [callback])](#bottossitemtype-metadata-count-callback)
-			- [bot.dig(block, [timeout], [callback])](#botdigblock-timeout-callback)
+			- [bot.dig(block, [callback])](#botdigblock-callback)
+			- [bot.stopDigging()](#botstopdigging)
+			- [bot.digTime(block)](#botdigtimeblock)
 			- [bot.placeBlock(referenceBlock, faceVector)](#botplaceblockreferenceblock-facevector)
 			- [bot.activateBlock(block)](#botactivateblockblock)
 			- [bot.activateItem()](#botactivateitem)
@@ -379,6 +383,18 @@ The shape of the block according to the physics engine's collision decection. Cu
 
  * `block` - currently, partially solid blocks, such as half-slabs and ladders, are considered entirely solid.
  * `empty` - such as flowers and lava.
+
+#### block.material
+
+This tells what types of tools will be effective against the block. Possible
+values are: `null`, `rock`, `wood`, `plant`, `melon`, `leaves`, `dirt`, `web`, and `wool`.
+
+See http://www.minecraftwiki.net/wiki/Digging and the `toolMultipliers`
+variable at the top of lib/plugins/digging.js for more info.
+
+#### block.harvestTools
+
+The set of tools that will allow you to harvest the block.
 
 ### mineflayer.Biome
 
