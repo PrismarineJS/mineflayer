@@ -1193,22 +1193,24 @@ Remove an article of equipment.
  * `count` - how many you want to toss. `null` is an alias for `1`.
  * `callback(err)` - (optional) called once tossing is complete
 
-#### bot.dig(block, [timeout], [callback])
+#### bot.dig(block, [callback])
 
 Begin digging into `block` with the currently equipped item.
 See also "diggingCompleted" and "diggingAborted" events.
 
 Note that once you begin digging into a block, you may not
-dig any other blocks until the block has been broken.
-
-This API is subject to change when a more sophisticated digging
-is implemented which gives you the ability to abort digging.
+dig any other blocks until the block has been broken, or you call
+`bot.stopDigging()`.
 
  * `block` - the block to start digging into
- * `timeout` - (optional) number of milliseconds to wait before giving up
-   digging. Defaults to `5000`.
  * `callback(err)` - (optional) called when the block is broken or you
    are interrupted.
+
+#### bot.stopDigging()
+
+#### bot.digTime(block)
+
+Tells you how long it will take to dig the block, in milliseconds.
 
 #### bot.placeBlock(referenceBlock, faceVector)
 

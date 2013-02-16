@@ -46,13 +46,8 @@ function dig() {
     }
   }
 
-  function onDiggingCompleted(err) {
-    if (err) {
-      bot.chat("unable to dig the " + target.name + "!");
-      bot.chat("check that the bot isn't in the protected spawn zone or give it /op")
-    } else {
-      bot.chat("finished digging " + target.name);
-    }
+  function onDiggingCompleted() {
+    bot.chat("finished digging " + target.name);
   }
 }
 
