@@ -1,3 +1,15 @@
+## 0.0.29
+
+ * digging is faster and has less bugs
+ * you can stop digging with `bot.stopDigging()`.
+ * `bot.dig(block, [timeout], [callback])` changed to `bot.dig(block, [callback])`.
+ * add `bot.digTime(block)`
+ * add `block.material`
+ * add `block.harvestTools`
+ * add `window.emptySlotCount()`
+ * block and item enums are cleaned up. Every block and item has an
+   unambiguous `name` and `displayName`.
+
 ## 0.0.28
 
  * add missing recipe for wooden planks
