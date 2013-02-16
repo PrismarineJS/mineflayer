@@ -1,3 +1,11 @@
+## 0.0.31
+
+ * only stationary water has a negative effect on digging
+ * digging: if you dig while already digging, instead of crashing,
+   mineflayer will cancel the in progress dig and start the new one.
+ * digging: in creative mode dig time is 0
+ * digging interruption error has a code so you can check for it
+
 ## 0.0.30
 
  * expose the materials enum as `mineflayer.materials`
