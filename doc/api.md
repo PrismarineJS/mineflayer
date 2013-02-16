@@ -1,6 +1,13 @@
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
 - [API](#api)
+	- [Enums](#enums)
+		- [mineflayer.blocks](#mineflayerblocks)
+		- [mineflayer.items](#mineflayeritems)
+		- [mineflayer.materials](#mineflayermaterials)
+		- [mineflayer.recipes](#mineflayerrecipes)
+		- [mineflayer.instruments](#mineflayerinstruments)
+		- [mineflayer.biomes](#mineflayerbiomes)
 	- [Classes](#classes)
 		- [mineflayer.vec3](#mineflayervec3)
 		- [mineflayer.Location](#mineflayerlocation)
@@ -248,6 +255,23 @@
 			- [bot.openEnchantmentTable(enchantmentTableBlock)](#botopenenchantmenttableenchantmenttableblock)
 
 # API
+
+## Enums
+
+### mineflayer.blocks
+
+### mineflayer.items
+
+### mineflayer.materials
+
+The key is the material. The value is an object with the key as the item id
+of the tool and the value as the efficiency multiplier.
+
+### mineflayer.recipes
+
+### mineflayer.instruments
+
+### mineflayer.biomes
 
 ## Classes
 
