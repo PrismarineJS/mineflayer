@@ -56,8 +56,6 @@ higher level API on top of Mineflayer.
  * [scaffold](https://github.com/superjoe30/mineflayer-scaffold) - get to
    a target destination even if you have to build or break blocks to do so.
    [YouTube Demo](http://youtu.be/jkg6psMUSE0)
- * [voxel](https://github.com/vogonistic/mineflayer-voxel) - visualize what
-   the bot is up to using voxel.js
 
 ## Projects Using Mineflayer
 
@@ -65,6 +63,8 @@ higher level API on top of Mineflayer.
    - [YouTube - building a spiral staircase](http://www.youtube.com/watch?v=UM1ZV5200S0)
    - [YouTube - replicating a building](http://www.youtube.com/watch?v=0cQxg9uDnzA)
  * [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot)
+ * [vogonistic/voxel](https://github.com/vogonistic/mineflayer-voxel) - visualize what
+   the bot is up to using voxel.js
 
 ## Installation
 
