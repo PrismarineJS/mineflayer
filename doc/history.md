@@ -1,3 +1,10 @@
+## 0.0.33
+
+ * crafting: fix shapeless recipe support
+ * inventory: fix several instances which could cause transaction rejected
+ * add missing recipes (thanks rom1504)
+ * `recipe.delta` data structure changed.
+
 ## 0.0.32
 
  * digging: fix crash when not holding a tool
