@@ -3,8 +3,46 @@
     {
       "type": 5,
       "count": 4,
-      "metadata": null,
-      "inShape": [[ 17 ]]
+      "metadata": 0,
+      "ingredients": [
+        {
+          "id": 17,
+          "metadata": 0
+        }
+      ]
+    },
+    {
+      "type": 5,
+      "count": 4,
+      "metadata": 1,
+      "ingredients": [
+        {
+          "id": 17,
+          "metadata": 1
+        }
+      ]
+    },
+    {
+      "type": 5,
+      "count": 4,
+      "metadata": 2,
+      "ingredients": [
+        {
+          "id": 17,
+          "metadata": 2
+        }
+      ]
+    },
+    {
+      "type": 5,
+      "count": 4,
+      "metadata": 3,
+      "ingredients": [
+        {
+          "id": 17,
+          "metadata": 3
+        }
+      ]
     }
   ],
   "23": [
@@ -1545,16 +1583,6 @@
     }
   ],
   "351": [
-    {
-      "count": 1,
-      "metadata": 0,
-      "ingredients": [
-        {
-          "id": 288
-        }
-      ],
-      "type": 351
-    },
     {
       "count": 3,
       "metadata": 15,

@@ -570,10 +570,18 @@ the recipe.
 This is what it looks like for the chest recipe:
 
 ```js
-{
-  5: -8,
-  54: 1,
-}
+[
+  {
+    type: 5,
+    metadata: null,
+    count: -8
+  },
+  {
+    type: 54,
+    metadata: 0,
+    count: -8
+  },
+]
 ```
 
 ### mineflayer.Chest
