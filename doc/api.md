@@ -176,6 +176,7 @@
 			- ["rain"](#rain)
 			- ["time"](#time)
 			- ["kicked" (reason)](#kicked-reason)
+			- ["end"](#end)
 			- ["spawnReset"](#spawnreset)
 			- ["death"](#death)
 			- ["health"](#health)
@@ -986,6 +987,10 @@ Emitted when the server sends a time update. See `bot.time`.
 
 Emitted when the bot is kicked from the server. `reason`
 is a string explaining why you were kicked.
+
+#### "end"
+
+Emitted when you are no longer connected to the server.
 
 #### "spawnReset"
 
