@@ -1,3 +1,9 @@
+## 0.0.34
+
+ * inventory: equipping makes the quick bar a basic LRU cache.
+   This can alleviate some race conditions when trying to equip a
+   different tool immediately after digging.
+
 ## 0.0.33
 
  * crafting: fix shapeless recipe support
