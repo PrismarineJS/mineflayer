@@ -1,3 +1,8 @@
+## 0.0.35
+
+ * inventory: window clicking waits a bit if you have just dug
+   fixes a rejected transaction race condition.
+
 ## 0.0.34
 
  * inventory: equipping makes the quick bar a basic LRU cache.
