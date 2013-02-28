@@ -4,6 +4,7 @@ var mc = require('minecraft-protocol')
   , path = require('path')
   , requireIndex = require('requireindex')
   , plugins = requireIndex(path.join(__dirname, 'lib', 'plugins'))
+  , args = process.argv.splice(2)
 
 module.exports = {
   vec3: require('vec3'),
@@ -29,7 +30,13 @@ module.exports = {
 };
 
 function createBot(options) {
-  options = options || {};
+  options = options || {
+    host:     args[0],
+    port:     parseInt(args[1]),
+    username: args[2],
+    email:    args[3],
+    password: args[4],
+  };
   options.username = options.username || 'Player';
   var bot = new Bot();
   bot.connect(options);
