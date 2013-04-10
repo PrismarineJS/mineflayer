@@ -1,3 +1,12 @@
+## 0.1.0
+
+Huge thanks to [zuazo](https://github.com/zuazo) for debugging and
+eliminating the problems with 1.5.1 protocol update and node 0.10 update!
+
+ * update minecraft-protocol to 0.9.0 - includes many fixes
+ * blocks: fix buffer length assertion error (thanks zuazo)
+ * physics: fix assertion error (thanks zuazo)
+
 ## 0.0.35
 
  * inventory: window clicking waits a bit if you have just dug
