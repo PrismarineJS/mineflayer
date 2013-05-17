@@ -1,3 +1,7 @@
+## 0.1.1
+
+ * updated minecraft protocol to 0.10 (Minecraft 1.5.2 support).
+
 ## 0.1.0
 
 Huge thanks to [zuazo](https://github.com/zuazo) for debugging and
