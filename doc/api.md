@@ -166,9 +166,9 @@
 			- [bot.targetDigBlock](#bottargetdigblock)
 			- [bot.isSleeping](#botissleeping)
 		- [Events](#events)
-			- ["chat" (username, message, rawMessage)](#chat-username-message-rawmessage)
-			- ["whisper" (username, message, rawMessage)](#whisper-username-message-rawmessage)
-			- ["message" (message, rawMessage)](#message-message-rawmessage)
+			- ["chat" (username, message, translate, jsonMsg)](#chat-username-message-translate-jsonMsg)
+			- ["whisper" (username, message, translate, jsonMsg)](#whisper-username-message-translate-jsonMsg)
+			- ["message" (message, jsonMsg)](#message-message-jsonMsg)
 			- ["login"](#login)
 			- ["spawn"](#spawn)
 			- ["respawn"](#respawn)
@@ -935,28 +935,30 @@ Boolean, whether or not you are in bed.
 
 ### Events
 
-#### "chat" (username, message, rawMessage)
+#### "chat" (username, message, translate, jsonMsg)
 
 Only emitted when a player chats publicly.
 
  * `username` - who said the message (compare with `bot.username` to ignore your own chat)
  * `message` - stripped of all color and control characters
- * `rawMessage` - unmodified message from the server
+ * `translate` - chat message type
+ * `jsonMsg` - unmodified JSON message from the server
 
-#### "whisper" (username, message, rawMessage)
+#### "whisper" (username, message, translate, jsonMsg)
 
 Only emitted when a player chats to you privately.
 
  * `username` - who said the message
  * `message` - stripped of all color and control characters
- * `rawMessage` - unmodified message from the server
+ * `translate` - chat message type
+ * `jsonMsg` - unmodified JSON message from the server
 
-#### "message" (message, rawMessage)
+#### "message" (message, jsonMsg)
 
 Emitted for every server message, including chats.
 
  * `message` - stripped of all color and control characters
- * `rawMessage` - unmodified message from the server
+ * `jsonMsg` - unmodified JSON message from the server
 
 #### "login"
 
