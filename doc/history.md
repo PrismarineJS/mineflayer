@@ -1,3 +1,8 @@
+## 1.0.0
+
+ * updated minecraft protocol to 0.11 (Minecraft 1.6.2 support).
+ * small changes in the arguments of some events: `chat`, `whisper` and `message`. See [doc/api.md](https://github.com/superjoe30/mineflayer/blob/master/doc/api.md).
+
 ## 0.1.1
 
  * updated minecraft protocol to 0.10 (Minecraft 1.5.2 support).
