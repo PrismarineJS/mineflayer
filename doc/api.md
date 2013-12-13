@@ -822,6 +822,7 @@ Use this to select the chat plugin to use. Possible values:
 * `vanilla_old`: for minecraft <= 1.6.1
 * `bukkit`: for CraftBukkit (without chat plugins)
 * `essentials`: for [Essentials](http://dev.bukkit.org/bukkit-plugins/essentials/) Bukkit plugin
+* `herochat`: for [HeroChat](http://dev.bukkit.org/bukkit-plugins/herochat/) Bukkit plugin
 * `base`: a dummy chat plugin. Prints all messages to the console
 * An object that inherits from `ChatBase` prototype
 

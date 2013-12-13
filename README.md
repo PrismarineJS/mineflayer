@@ -45,6 +45,7 @@ The following chat plugins are included:
 * `vanilla` (default)
 * `bukkit`
 * `essentials`
+* `herochat`
 * `vanilla_old` (for minecraft <= 1.6.1)
 
 You can choose the plugin used in the bot constructor:
