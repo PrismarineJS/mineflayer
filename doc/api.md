@@ -170,7 +170,9 @@
 			- ["chat" (username, message, translate, jsonMsg)](#chat-username-message-translate-jsonMsg)
 			- ["whisper" (username, message, translate, jsonMsg)](#whisper-username-message-translate-jsonMsg)
 			- ["server" (username, message, translate, jsonMsg)](#server-username-message-translate-jsonMsg)
-			- ["message" (message, jsonMsg)](#message-message-jsonMsg)
+			- ["message" (message)](#message-message)
+			- ["message.plain" (message)](#messageplain-message)
+			- ["message.json" (jsonMsg)](#messagejson-jsonMsg)
 			- ["login"](#login)
 			- ["spawn"](#spawn)
 			- ["respawn"](#respawn)
@@ -978,11 +980,23 @@ Only emitted when the server sends a chat message:
  * `translate` - chat message type
  * `jsonMsg` - unmodified JSON message from the server
 
-#### "message" (message, jsonMsg)
+#### "message" (message)
 
-Emitted for every server message, including chats.
+Emitted for every server message, including chats. This
+event is emitted for both plain and JSON chat servers.
 
- * `message` - stripped of all color and control characters
+ * `message` - raw message from the packet
+
+#### "message.plain" (message)
+
+Emitted for every server plain message, including chats.
+
+ * `message` - unmodified message
+
+#### "message.json" (jsonMsg)
+
+Emitted for every server JSON message, including chats.
+
  * `jsonMsg` - unmodified JSON message from the server
 
 #### "login"
