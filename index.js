@@ -46,6 +46,7 @@ Bot.prototype.connect = function(options) {
   var self = this;
   self.client = mc.createClient(options);
   self.username = self.client.username;
+  self.chat_plugin = options.chat_plugin || 'vanilla';
   self.client.on('session', function() {
     self.username = self.client.username;
   });

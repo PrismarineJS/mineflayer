@@ -137,6 +137,7 @@
 			- [bot.entity](#botentity)
 			- [bot.entities](#botentities)
 			- [bot.username](#botusername)
+			- [bot.chat_plugin](#botchat_plugin)
 			- [bot.spawnPoint](#botspawnpoint)
 			- [bot.game.levelType](#botgameleveltype)
 			- [bot.game.dimension](#botgamedimension)
@@ -168,6 +169,7 @@
 		- [Events](#events)
 			- ["chat" (username, message, translate, jsonMsg)](#chat-username-message-translate-jsonMsg)
 			- ["whisper" (username, message, translate, jsonMsg)](#whisper-username-message-translate-jsonMsg)
+			- ["server" (username, message, translate, jsonMsg)](#server-username-message-translate-jsonMsg)
 			- ["message" (message, jsonMsg)](#message-message-jsonMsg)
 			- ["login"](#login)
 			- ["spawn"](#spawn)
@@ -812,6 +814,16 @@ All nearby entities. This object is a map of entityId to entity.
 
 Use this to find out your own name.
 
+#### bot.chat_plugin
+
+Use this to select the chat plugin to use. Possible values:
+
+* `vanilla`: for minecraft >= 1.6.2
+* `vanilla_old`: for minecraft <= 1.6.1
+* `bukkit`: for CraftBukkit (without chat plugins)
+* `base`: a dummy chat plugin. Prints all messages to the console
+* An object that inherits from `ChatBase` prototype
+
 #### bot.spawnPoint
 
 Coordinates to the main spawn point, where all compasses point to.
@@ -947,6 +959,15 @@ Only emitted when a player chats publicly.
 #### "whisper" (username, message, translate, jsonMsg)
 
 Only emitted when a player chats to you privately.
+
+ * `username` - who said the message
+ * `message` - stripped of all color and control characters
+ * `translate` - chat message type
+ * `jsonMsg` - unmodified JSON message from the server
+
+#### "server" (username, message, translate, jsonMsg)
+
+Only emitted when the server sends a chat message:
 
  * `username` - who said the message
  * `message` - stripped of all color and control characters

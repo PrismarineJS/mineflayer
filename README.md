@@ -38,6 +38,28 @@ bot.on('chat', function(username, message) {
 });
 ```
 
+### Chat Plugins
+
+The following chat plugins are included:
+
+* `vanilla` (default)
+* `bukkit`
+* `vanilla_old` (for minecraft <= 1.6.1)
+
+You can choose the plugin used in the bot constructor:
+
+```js
+var mineflayer = require('mineflayer');
+var bot = mineflayer.createBot({
+  host: "localhost", // optional
+  port: 25565,       // optional
+  chat_plugin: "bukkit",
+});
+bot.on("chat", function(username, message) {
+  // ...
+});
+```
+
 #### More Examples
 
  * In the [examples](https://github.com/superjoe30/mineflayer/tree/master/examples) folder.
