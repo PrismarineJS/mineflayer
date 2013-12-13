@@ -62,6 +62,8 @@ bot.on("chat", function(username, message) {
 });
 ```
 
+See [bot.chat_plugin API documentation](https://github.com/superjoe30/mineflayer/blob/master/doc/api.md#botchat_plugin).
+
 #### More Examples
 
  * In the [examples](https://github.com/superjoe30/mineflayer/tree/master/examples) folder.

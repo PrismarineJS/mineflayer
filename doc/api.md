@@ -826,6 +826,8 @@ Use this to select the chat plugin to use. Possible values:
 * `base`: a dummy chat plugin. Prints all messages to the console
 * An object that inherits from `ChatBase` prototype
 
+See the [HeroChat example](https://github.com/superjoe30/mineflayer/tree/master/examples/herochat.js) and the [plugins included by default](https://github.com/superjoe30/mineflayer/tree/master/lib/plugins/chat/) for more information about implementing your own chat plugin.
+
 #### bot.spawnPoint
 
 Coordinates to the main spawn point, where all compasses point to.
