@@ -65,6 +65,7 @@ higher level API on top of Mineflayer.
  * [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot)
  * [vogonistic/voxel](https://github.com/vogonistic/mineflayer-voxel) - visualize what
    the bot is up to using voxel.js
+ * [JonnyD/Skynet] (https://github.com/JonnyD/Skynet) -  log player activity onto an online API
 
 ## Installation
 
