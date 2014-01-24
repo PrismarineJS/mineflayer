@@ -40,7 +40,7 @@ bot.on('chat', function(username, message) {
 
 #### More Examples
 
- * In the [examples](https://github.com/superjoe30/mineflayer/tree/master/examples) folder.
+ * In the [examples](https://github.com/andrewrk/mineflayer/tree/master/examples) folder.
  * [vogonistic's REPL bot](https://gist.github.com/4631678)
 
 ## Third Party Plugins
@@ -48,12 +48,12 @@ bot.on('chat', function(username, message) {
 Mineflayer is pluggable; anyone can create a plugin that adds an even
 higher level API on top of Mineflayer.
 
- * [navigate](https://github.com/superjoe30/mineflayer-navigate/) - get around
+ * [navigate](https://github.com/andrewrk/mineflayer-navigate/) - get around
    easily using A* pathfinding. [YouTube Demo](http://www.youtube.com/watch?v=O6lQdmRz8eE)
- * [radar](https://github.com/superjoe30/mineflayer-radar/) - web based radar
+ * [radar](https://github.com/andrewrk/mineflayer-radar/) - web based radar
    interface using canvas and socket.io. [YouTube Demo](http://www.youtube.com/watch?v=FjDmAfcVulQ)
  * [blockfinder](https://github.com/Darthfett/mineflayer-blockFinder) - find blocks in the 3D world
- * [scaffold](https://github.com/superjoe30/mineflayer-scaffold) - get to
+ * [scaffold](https://github.com/andrewrk/mineflayer-scaffold) - get to
    a target destination even if you have to build or break blocks to do so.
    [YouTube Demo](http://youtu.be/jkg6psMUSE0)
 
@@ -76,14 +76,14 @@ higher level API on top of Mineflayer.
 ### Windows
 
 1. Follow the Windows instructions from
-   [node-minecraft-protocol](https://github.com/superjoe30/node-minecraft-protocol#windows)
+   [node-minecraft-protocol](https://github.com/andrewrk/node-minecraft-protocol#windows)
 2. `npm install mineflayer`
 
 ## Documentation
 
- * See [doc/api.md](https://github.com/superjoe30/mineflayer/blob/master/doc/api.md).
- * See [doc/history.md](https://github.com/superjoe30/mineflayer/blob/master/doc/history.md).
- * See [examples/](https://github.com/superjoe30/mineflayer/tree/master/examples).
+ * See [doc/api.md](https://github.com/andrewrk/mineflayer/blob/master/doc/api.md).
+ * See [doc/history.md](https://github.com/andrewrk/mineflayer/blob/master/doc/history.md).
+ * See [examples/](https://github.com/andrewrk/mineflayer/tree/master/examples).
 
 ## Testing
 
@@ -92,7 +92,7 @@ higher level API on top of Mineflayer.
 ## Updating to a newer protocol version
 
 1. Wait for a new version of
-   [node-minecraft-protocol](https://github.com/superjoe30/node-minecraft-protocol)
+   [node-minecraft-protocol](https://github.com/andrewrk/node-minecraft-protocol)
    to be released which supports the new Minecraft version.
 2. `npm install --save minecraft-protocol@latest`
 3. Apply the [protocol changes](http://wiki.vg/Protocol_History) where necessary.

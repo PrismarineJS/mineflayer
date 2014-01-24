@@ -1,7 +1,7 @@
 ## 1.0.0
 
  * updated minecraft protocol to 0.11 (Minecraft 1.6.2 support).
- * small changes in the arguments of some events: `chat`, `whisper` and `message`. See [doc/api.md](https://github.com/superjoe30/mineflayer/blob/master/doc/api.md).
+ * small changes in the arguments of some events: `chat`, `whisper` and `message`. See [doc/api.md](https://github.com/andrewrk/mineflayer/blob/master/doc/api.md).
 
 ## 0.1.1
 
@@ -102,7 +102,7 @@ eliminating the problems with 1.5.1 protocol update and node 0.10 update!
 ## 0.0.21
 
 This release is feature-complete with the old
-[C++/Qt based version of mineflayer](https://github.com/superjoe30/mineflayer/blob/cpp-qt-end).
+[C++/Qt based version of mineflayer](https://github.com/andrewrk/mineflayer/blob/cpp-qt-end).
 
  * add `bot.activateItem()`
  * add `bot.deactivateItem()`

@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/superjoe30/mineflayer.git"
+    "url": "git://github.com/andrewrk/mineflayer.git"
   },
   "license": "MIT",
   "dependencies": {

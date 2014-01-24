@@ -278,7 +278,7 @@ of the tool and the value as the efficiency multiplier.
 
 ### mineflayer.vec3
 
-See [superjoe30/node-vec3](https://github.com/superjoe30/node-vec3)
+See [andrewrk/node-vec3](https://github.com/andrewrk/node-vec3)
 
 All points in mineflayer are supplied as instances of this class.
 
