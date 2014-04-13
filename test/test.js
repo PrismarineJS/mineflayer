@@ -34,8 +34,8 @@ describe("mineflayer", function() {
           '§0hello'
         ]
       });
-      client.write(0x03, { message: message });
-      client.on(0x03, function(packet) {
+      client.write('chat', { message: message });
+      client.on('chat', function(packet) {
         assert.strictEqual(packet.message, "hi");
         done();
       });
@@ -50,7 +50,7 @@ describe("mineflayer", function() {
       done();
     });
     server.on('login', function(client) {
-      client.write(0x18, {
+      client.write('spawn_entity_living', {
         entityId: 8, // random
         type: 50, // creeper
         x: 10,
@@ -64,7 +64,7 @@ describe("mineflayer", function() {
         velocityZ: 18,
         metadata: [],
       });
-      client.write(0x29, {
+      client.write('entity_effect', {
         entityId: 8,
         effectId: 10,
         amplifier: 1,
@@ -87,7 +87,7 @@ describe("mineflayer", function() {
       buffer.writeUInt8(goldId, 8192 + 273);
       zlib.deflate(buffer, function(err, compressed) {
         assert.ifError(err);
-        client.write(0x33, {
+        client.write('map_chunk', {
           x: 0,
           z: 0,
           groundUp: true,
@@ -125,7 +125,7 @@ describe("mineflayer", function() {
         buffer.writeUInt8(goldId, 8192 + 273);
         zlib.deflate(buffer, function(err, compressed) {
           assert.ifError(err);
-          client.write(0x01, {
+          client.write('login', {
             entityId: 0,
             levelType: "fogetaboutit",
             gameMode: 0,
@@ -133,7 +133,7 @@ describe("mineflayer", function() {
             difficulty: 0,
             maxPlayers: 20,
           });
-          client.write(0x33, {
+          client.write('map_chunk', {
             x: 0,
             z: 0,
             groundUp: true,
@@ -141,7 +141,7 @@ describe("mineflayer", function() {
             addBitMap: 0,
             compressedChunkData: compressed,
           });
-          client.write(0x0d, {
+          client.write('position', {
             x: 1.5,
             y: 80,
             z: 1.5,
@@ -158,8 +158,7 @@ describe("mineflayer", function() {
     it("sets players[player].entity to null upon despawn", function(done) {
       var serverClient = null;
       bot.once('entitySpawn', function(entity) {
-        assert.ok(bot.players.playerName.entity);
-        serverClient.write(0x1d, {
+        serverClient.write('entity_destroy', {
           entityIds: [8],
         });
       });
@@ -169,9 +168,11 @@ describe("mineflayer", function() {
       });
       server.on('login', function(client) {
         serverClient = client;
-        client.write(0x14, {
+        client.write('named_entity_spawn', {
           entityId: 8,
-          name: "playerName",
+          playerName: "playerName",
+          playerUUID: "test",
+          data: [],
           x: 1,
           y: 2,
           z: 3,
