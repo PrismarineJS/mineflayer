@@ -137,6 +137,7 @@
 			- [bot.entity](#botentity)
 			- [bot.entities](#botentities)
 			- [bot.username](#botusername)
+			- [bot.chat_plugin](#botchat_plugin)
 			- [bot.spawnPoint](#botspawnpoint)
 			- [bot.game.levelType](#botgameleveltype)
 			- [bot.game.dimension](#botgamedimension)
@@ -168,7 +169,10 @@
 		- [Events](#events)
 			- ["chat" (username, message, translate, jsonMsg)](#chat-username-message-translate-jsonMsg)
 			- ["whisper" (username, message, translate, jsonMsg)](#whisper-username-message-translate-jsonMsg)
-			- ["message" (message, jsonMsg)](#message-message-jsonMsg)
+			- ["server" (username, message, translate, jsonMsg)](#server-username-message-translate-jsonMsg)
+			- ["message" (message)](#message-message)
+			- ["message.plain" (message)](#messageplain-message)
+			- ["message.json" (jsonMsg)](#messagejson-jsonMsg)
 			- ["login"](#login)
 			- ["spawn"](#spawn)
 			- ["respawn"](#respawn)
@@ -812,6 +816,20 @@ All nearby entities. This object is a map of entityId to entity.
 
 Use this to find out your own name.
 
+#### bot.chat_plugin
+
+Use this to select the chat plugin to use. Possible values:
+
+* `vanilla`: for minecraft >= 1.6.2
+* `vanilla_old`: for minecraft <= 1.6.1
+* `bukkit`: for CraftBukkit (without chat plugins)
+* `essentials`: for [Essentials](http://dev.bukkit.org/bukkit-plugins/essentials/) Bukkit plugin
+* `herochat`: for [HeroChat](http://dev.bukkit.org/bukkit-plugins/herochat/) Bukkit plugin
+* `base`: a dummy chat plugin. Prints all messages to the console
+* An object that inherits from `ChatBase` prototype
+
+See the [HeroChat example](https://github.com/superjoe30/mineflayer/tree/master/examples/herochat.js) and the [plugins included by default](https://github.com/superjoe30/mineflayer/tree/master/lib/plugins/chat/) for more information about implementing your own chat plugin.
+
 #### bot.spawnPoint
 
 Coordinates to the main spawn point, where all compasses point to.
@@ -953,11 +971,32 @@ Only emitted when a player chats to you privately.
  * `translate` - chat message type
  * `jsonMsg` - unmodified JSON message from the server
 
-#### "message" (message, jsonMsg)
+#### "server" (username, message, translate, jsonMsg)
 
-Emitted for every server message, including chats.
+Only emitted when the server sends a chat message:
 
+ * `username` - who said the message
  * `message` - stripped of all color and control characters
+ * `translate` - chat message type
+ * `jsonMsg` - unmodified JSON message from the server
+
+#### "message" (message)
+
+Emitted for every server message, including chats. This
+event is emitted for both plain and JSON chat servers.
+
+ * `message` - raw message from the packet
+
+#### "message.plain" (message)
+
+Emitted for every server plain message, including chats.
+
+ * `message` - unmodified message
+
+#### "message.json" (jsonMsg)
+
+Emitted for every server JSON message, including chats.
+
  * `jsonMsg` - unmodified JSON message from the server
 
 #### "login"
