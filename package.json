@@ -13,9 +13,10 @@
   "license": "MIT",
   "dependencies": {
     "requireindex": "~1.0.0",
-    "minecraft-protocol": "~0.11.0",
+    "minecraft-protocol": "git+https://github.com/andrewrk/node-minecraft-protocol.git#master",
     "quotemeta": "0.0.0",
-    "vec3": "~0.1.3"
+    "vec3": "~0.1.3",
+    "lodash": "^2.4.1"
   },
   "devDependencies": {
     "mocha": "~1.7.4",
