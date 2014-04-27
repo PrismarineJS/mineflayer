@@ -54,14 +54,11 @@ function dig() {
 
 function build() {
   bot.setControlState('jump', true);
-  var targetBlock = bot.blockAt(bot.entity.position);
-  console.log('Reference block', targetBlock);
-  console.log('JumpY position:', bot.entity.position.y+1);
+  var targetBlock = bot.blockAt(bot.entity.position.offset(0,-1,0));
   var jumpY = bot.entity.position.y + 1;
   bot.on('move', placeIfHighEnough);
   
   function placeIfHighEnough() {
-    console.log('Jumping: ', bot.entity.position.y-2);
     if (bot.entity.position.y > jumpY) {
       bot.placeBlock(targetBlock, vec3(0, 1, 0));
       bot.setControlState('jump', false);
@@ -71,12 +68,18 @@ function build() {
 }
 
 function listInventory() {
-  var id, count, item;
+  var id, count, item, idx, slot;
   var output = "";
-  for (id in bot.inventory.count) {
-    count = bot.inventory.count[id];
+  for (idx in bot.inventory.slots) {
+    slot = bot.inventory.slots[idx];
+    if(slot == null) continue;
+    count = slot.count;
+    id = slot.type;
     item = mineflayer.items[id] || mineflayer.blocks[id];
     if (count) output += item.name + ": " + count + ", ";
   }
-  bot.chat(output);
+  if(!output)
+    bot.chat('I have no items');
+  else
+    bot.chat(output);
 }
