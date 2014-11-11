@@ -1,6 +1,8 @@
-# Mineflayer [![NPM version](https://badge.fury.io/js/mineflayer.png)](http://badge.fury.io/js/mineflayer)
+# Mineflayer
 
 Create Minecraft bots with a powerful, stable, and high level JavaScript API.
+
+Note: This project is no longer maintained.
 
 ## Features
 
