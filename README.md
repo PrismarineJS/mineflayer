@@ -6,7 +6,7 @@ Note: This project is no longer maintained.
 
 ## Features
 
- * Supports Minecraft 1.6.2.
+ * Supports Minecraft 1.8.3.
  * Entity knowledge and tracking.
  * Block knowledge. You can query the world around you.
  * Basic physics and movement - currently blocks are either "solid" or "empty".
