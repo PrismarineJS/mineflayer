@@ -44,6 +44,9 @@ util.inherits(Bot, EventEmitter);
 
 Bot.prototype.connect = function(options) {
   var self = this;
+  if(options.version !== undefined){
+     mc.protocol.version = options.version;
+  }
   self.client = mc.createClient(options);
   self.username = self.client.username;
   self.client.on('session', function() {
