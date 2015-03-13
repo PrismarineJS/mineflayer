@@ -95,7 +95,7 @@ function biomes(burger, cb) {
     biomeEnum[biome.id] = {
       id: biome.id,
       color: biome.color,
-      height: biome.height,
+      //height: biome.height,
       name: biome.name,
       rainfall: biome.rainfall,
       temperature: biome.temperature,
