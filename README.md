@@ -1,8 +1,10 @@
 # Mineflayer
 
+[![Join the chat at https://gitter.im/PrismarineJS/node-minecraft-protocol](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/PrismarineJS/node-minecraft-protocol?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Create Minecraft bots with a powerful, stable, and high level JavaScript API.
 
-Note: This project is no longer maintained.
+Note: This project is in the process of being updated. Bear with us :)
 
 ## Features
 
