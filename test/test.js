@@ -27,14 +27,11 @@ describe("mineflayer", function() {
     });
     server.on('login', function(client) {
       var message = JSON.stringify({
-        color: 'black',
         translate: 'chat.type.text',
-        using: [
-          'gary',
-          '§0hello'
-        ]
+        with: [{text: 'gary'
+      },'hello']
       });
-      client.write('chat', { message: message });
+      client.write('chat', { message: message, position:0 });
       client.on('chat', function(packet) {
         assert.strictEqual(packet.message, "hi");
         done();
