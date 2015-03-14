@@ -1,5 +1,16 @@
 var mineflayer = require('../');
-var bot = mineflayer.createBot();
+if(process.argv.length<3 || process.argv.length>5)
+{
+    console.log("Usage : node sleeper.js <host> <port> [<name>] [<password>]");
+    process.exit(1);
+}
+var bot = mineflayer.createBot({
+    username: process.argv[4] ? process.argv[4] : "sleeper",
+    verbose: true,
+    port:parseInt(process.argv[3]),
+    host:process.argv[2],
+    password:process.argv[5]
+});
 bot.on('chat', function(username, message) {
   if (message === 'sleep') {
     var bedBlock = findBed();

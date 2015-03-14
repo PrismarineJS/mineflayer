@@ -1,8 +1,17 @@
 var mineflayer = require('../');
 var vec3 = mineflayer.vec3;
+if(process.argv.length<3 || process.argv.length>5)
+{
+    console.log("Usage : node chatterbot.js <host> <port> [<name>] [<password>]");
+    process.exit(1);
+}
 var bot = mineflayer.createBot({
-  username: "chatterbox",
-  viewDistance: "tiny",
+    username: process.argv[4] ? process.argv[4] : "chatterbox",
+    viewDistance: "tiny",
+    verbose: true,
+    port:parseInt(process.argv[3]),
+    host:process.argv[2],
+    password:process.argv[5]
 });
 bot.on('health', function() {
   bot.chat("I have " + bot.health + " health and " + bot.food + " food");
