@@ -64,12 +64,12 @@ function dig() {
 
 function build() {
   bot.setControlState('jump', true);
-  var targetBlock = bot.blockAt(bot.entity.position.offset(0,-1,0));
-  var jumpY = bot.entity.position.y + 1;
+  var targetBlock = bot.blockAt(bot.entity.position.offset(0,0,0));
+  var jumpY = bot.entity.position.y + 1.0;
   bot.on('move', placeIfHighEnough);
   
   function placeIfHighEnough() {
-    if (bot.entity.position.y > jumpY) {
+    if (bot.entity.position.y > jumpY+0.1) {
       bot.placeBlock(targetBlock, vec3(0, 1, 0));
       bot.setControlState('jump', false);
       bot.removeListener('move', placeIfHighEnough);
