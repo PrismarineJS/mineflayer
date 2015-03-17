@@ -167,6 +167,6 @@ bot.on('entityEffectEnd', function(entity, effect) {
 });
 function itemFromNotch(item) {
   return item.id === -1 ? null :
-    new mineflayer.Item(item.id, item.itemCount, item.itemDamage, item.nbtData);
+    new mineflayer.Item(item.blockId, item.itemCount, item.itemDamage, item.nbtData);
 }
 
