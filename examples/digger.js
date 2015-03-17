@@ -69,7 +69,7 @@ function build() {
   bot.on('move', placeIfHighEnough);
   
   function placeIfHighEnough() {
-    if (bot.entity.position.y > jumpY+0.1) {
+    if (bot.entity.position.y > jumpY) {
       bot.placeBlock(targetBlock, vec3(0, 1, 0));
       bot.setControlState('jump', false);
       bot.removeListener('move', placeIfHighEnough);
