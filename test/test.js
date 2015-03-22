@@ -55,17 +55,18 @@ describe("mineflayer", function() {
         z: 12,
         yaw: 13,
         pitch: 14,
-        headYaw: 15,
+        headPitch: 14,
         velocityX: 16,
         velocityY: 17,
         velocityZ: 18,
-        metadata: [],
+        metadata: []
       });
       client.write('entity_effect', {
         entityId: 8,
         effectId: 10,
         amplifier: 1,
         duration: 11,
+        hideParticles: false
       });
     });
   });
@@ -89,8 +90,7 @@ describe("mineflayer", function() {
           z: 0,
           groundUp: true,
           bitMap: parseInt('00111100', 2),
-          addBitMap: 0,
-          compressedChunkData: compressed,
+          chunkData: compressed,
         });
       });
     });
@@ -129,14 +129,14 @@ describe("mineflayer", function() {
             dimension: 0,
             difficulty: 0,
             maxPlayers: 20,
+            reducedDebugInfo:true
           });
           client.write('map_chunk', {
             x: 0,
             z: 0,
             groundUp: true,
             bitMap: parseInt('00111100', 2),
-            addBitMap: 0,
-            compressedChunkData: compressed,
+            chunkData: compressed
           });
           client.write('position', {
             x: 1.5,
@@ -144,8 +144,7 @@ describe("mineflayer", function() {
             z: 1.5,
             pitch: 0,
             yaw: 0,
-            onGround: true,
-            stance: 1,
+            flags: 0
           });
         });
       });
@@ -160,16 +159,28 @@ describe("mineflayer", function() {
         });
       });
       bot.once("entityGone", function(entity) {
-        assert.equal(bot.players.playerName.entity, null);
+        assert.equal(bot.players[entity.username], null);
         done();
       });
       server.on('login', function(client) {
         serverClient = client;
+
+        client.write('player_info',{ id: 56,
+          state: 'play',
+          action: 0,
+          length: 1,
+          data:
+            [ { UUID: [1,2,3,4],
+              name: 'bot5',
+              propertiesLength: 0,
+              properties: [],
+              gamemode: 0,
+              ping: 0,
+              hasDisplayName: false } ] });
+
         client.write('named_entity_spawn', {
-          entityId: 8,
-          playerName: "playerName",
-          playerUUID: "test",
-          data: [],
+          entityId: 56,
+          playerUUID: [1,2,3,4],
           x: 1,
           y: 2,
           z: 3,
