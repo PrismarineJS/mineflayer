@@ -1957,7 +1957,7 @@
     "hardness": null,
     "stackSize": 64,
     "diggable": false,
-    "boundingBox": "block",
+    "boundingBox": "block"
   },
   "167": {
     "id": 167,
