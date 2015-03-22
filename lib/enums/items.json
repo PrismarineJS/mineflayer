@@ -411,7 +411,7 @@
     "id": 324,
     "displayName": "Wooden Door",
     "stackSize": 1,
-    "name": "doorWood"
+    "name": "doorOak"
   },
   "325": {
     "id": 325,
@@ -886,6 +886,168 @@
     "displayName": "Enchanted Book",
     "name": "enchantedBook",
     "stackSize": 1
+  },
+  "404": {
+    "id": 404,
+    "displayName": "Redstone Comparator",
+    "name": "comparator",
+    "stackSize": 64
+  },
+  "405": {
+    "id": 405,
+    "displayName": "Nether Brick",
+    "name": "netherbrick",
+    "stackSize": 64
+  },
+  "406": {
+    "id": 406,
+    "displayName": "Nether Quartz",
+    "name": "netherquartz",
+    "stackSize": 64
+  },
+  "407": {
+    "id": 407,
+    "displayName": "Minecart with TNT",
+    "name": "minecartTnt",
+    "stackSize": 1
+  },
+  "408": {
+    "id": 408,
+    "displayName": "Minecart with Hopper",
+    "name": "minecartHopper",
+    "stackSize": 1
+  },
+  "409": {
+    "id": 409,
+    "displayName": "Prismarine Shard",
+    "name": "prismarineShard",
+    "stackSize": 64
+  },
+  "410": {
+    "id": 410,
+    "displayName": "Prismarine Crystals",
+    "name": "prismarineCrystals",
+    "stackSize": 64
+  },
+  "411": {
+    "id": 411,
+    "displayName": "Raw Rabbit",
+    "name": "rabbitRaw",
+    "stackSize": 64
+  },
+  "412": {
+    "id": 412,
+    "displayName": "Cooked Rabbit",
+    "name": "rabbitCooked",
+    "stackSize": 64
+  },
+  "413": {
+    "id": 413,
+    "displayName": "Rabbit Stew",
+    "name": "rabbitStew",
+    "stackSize": 1
+  },
+  "414": {
+    "id": 414,
+    "displayName": "Rabbit's Foot",
+    "name": "rabbitFoot",
+    "stackSize": 64
+  },
+  "415": {
+    "id": 415,
+    "displayName": "Rabbit Hide",
+    "name": "rabbitHide",
+    "stackSize": 64
+  },
+  "416": {
+    "id": 416,
+    "displayName": "Armor Stand",
+    "name": "armorStand",
+    "stackSize": 16
+  },
+  "417": {
+    "id": 417,
+    "displayName": "Iron Horse Armor",
+    "name": "horsearmormetal",
+    "stackSize": 1
+  },
+  "418": {
+    "id": 418,
+    "displayName": "Golden Horse Armor",
+    "name": "horsearmorgold",
+    "stackSize": 64
+  },
+  "419": {
+    "id": 419,
+    "displayName": "Diamond Horse Armor",
+    "name": "horsearmordiamond",
+    "stackSize": 64
+  },
+  "420": {
+    "id": 420,
+    "displayName": "Lead",
+    "name": "leash",
+    "stackSize": 64
+  },
+  "421": {
+    "id": 421,
+    "displayName": "Name Tag",
+    "name": "nameTag",
+    "stackSize": 64
+  },
+  "422": {
+    "id": 422,
+    "displayName": "Minecart with Command Block",
+    "name": "minecartCommandBlock",
+    "stackSize": 1
+  },
+  "423": {
+    "id": 423,
+    "displayName": "Raw Mutton",
+    "name": "muttonRaw",
+    "stackSize": 64
+  },
+  "424": {
+    "id": 424,
+    "displayName": "Cooked Mutton",
+    "name": "muttonCooked",
+    "stackSize": 64
+  },
+  "425": {
+    "id": 425,
+    "displayName": "Banner",
+    "name": "banner",
+    "stackSize": 16
+  },
+  "427": {
+    "id": 427,
+    "displayName": "Spruce Door",
+    "name": "doorSpruce",
+    "stackSize": 64
+  },
+  "428": {
+    "id": 428,
+    "displayName": "Birch Door",
+    "name": "doorBirch",
+    "stackSize": 64
+  },
+  "429": {
+    "id": 429,
+    "displayName": "Jungle Door",
+    "name": "doorJungle",
+    "stackSize": 64
+  },
+  "430": {
+    "id": 430,
+    "displayName": "Acacia Door",
+    "name": "doorAcacia",
+    "stackSize": 64
+  },
+  "431": {
+    "id": 431,
+    "displayName": "Dark Oak Door",
+    "name": "doorDarkOak",
+    "stackSize": 64
   },
   "2256": {
     "id": 2256,
