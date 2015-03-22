@@ -70,9 +70,9 @@ if((v=file.match(new RegExp("(<tr>\\s+<th>\\s+<p><a href=\"http://minecraft.game
 				if((a=z[1].match(new RegExp("^<a href=\".+?\"><img alt=\"(.+?)\"")))!=null)
 				{
 					result=a[1];
-					if((a=z[1].match(new RegExp("^<span class=\"number\"><a .+?>([0-9]+)</a></span>")))!=null)
+					if((a=z[1].match(new RegExp("<span class=\"number\"><a .+?>([0-9]+)</a></span>")))!=null)
 					{
-						output=a[1];
+                      output=a[1];
 					}
 					else output=1;
 				}
@@ -81,7 +81,7 @@ if((v=file.match(new RegExp("(<tr>\\s+<th>\\s+<p><a href=\"http://minecraft.game
 					result=a[1];
 				}
 				else { console.log("Error 4"); console.log(z[1]); break;}
-              if(output=="" && result=="")  { console.log("Error 10"); console.log(z[1]); break;}
+              if((output===null || output==="") && (result==="" || result===null))  { console.log("Error 10"); console.log(z[1]); break;}
 			}
 			else { console.log("Error 3"); console.log(shapeResult); break;}
 			var item={"result":result,"output":output,"recipe":recipe,"shapeless":shapeLess};
