@@ -50,7 +50,7 @@ bot.on('chat', function(username, message) {
     bot.dismount();
   } else if (message === 'attack') {
     entity = nearestEntity();
-    bot.attack(entity);
+    bot.attack(entity,true);
   } else if (message === 'tp') {
     bot.entity.position.y += 10;
   } else if (message === 'spawn') {
