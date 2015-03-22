@@ -739,8 +739,8 @@
   },
   "64": {
     "id": 64,
-    "displayName": "Wooden Door",
-    "name": "doorWood",
+    "displayName": "Oak Door",
+    "name": "doorOak",
     "hardness": 3,
     "stackSize": 1,
     "diggable": true,
@@ -1873,5 +1873,455 @@
       "278": true,
       "285": true
     }
+  },
+  "159": {
+    "id": 159,
+    "displayName": "Stained Clay",
+    "name": "clayHardenedStained",
+    "hardness": 1.25,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
+  },
+  "160": {
+    "id": 160,
+    "displayName": "Stained Glass Pane",
+    "name": "thinStainedGlass",
+    "hardness": 0.3,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block"
+  },
+  "161": {
+    "id": 161,
+    "displayName": "Leaves",
+    "name": "leaves2",
+    "hardness": 0.2,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "leaves"
+  },
+  "162": {
+    "id": 162,
+    "displayName": "Wood",
+    "name": "log2",
+    "hardness": 2,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "163": {
+    "id": 163,
+    "displayName": "Acacia Wood Stairs",
+    "name": "stairsWoodAcacia",
+    "hardness": 2,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "164": {
+    "id": 164,
+    "displayName": "Dark Oak Wood Stairs",
+    "name": "stairsWoodDarkOak",
+    "hardness": 2,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "165": {
+    "id": 165,
+    "displayName": "Slime Block",
+    "name": "slime",
+    "hardness": 0,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "clay"
+  },
+  "166": {
+    "id": 166,
+    "displayName": "Barrier",
+    "name": "barrier",
+    "hardness": null,
+    "stackSize": 64,
+    "diggable": false,
+    "boundingBox": "block"
+  },
+  "167": {
+    "id": 167,
+    "displayName": "Iron Trapdoor",
+    "name": "ironTrapdoor",
+    "hardness": 5,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "iron",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
+  },
+  "168": {
+    "id": 168,
+    "displayName": "Prismarine",
+    "name": "prismarine",
+    "hardness": 1.5,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
+  },
+  "169": {
+    "id": 169,
+    "displayName": "Sea Lantern",
+    "name": "seaLantern",
+    "hardness": 1.3,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "glass"
+  },
+  "170": {
+    "id": 170,
+    "displayName": "Hay Bale",
+    "name": "hayBlock",
+    "hardness": 0.5,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "dirt"
+  },
+  "171": {
+    "id": 171,
+    "displayName": "Carpet",
+    "name": "woolCarpet",
+    "hardness": 0.1,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "empty"
+  },
+  "172": {
+    "id": 172,
+    "displayName": "Hardened Clay",
+    "name": "clayHardened",
+    "hardness": 1.25,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
+  },
+  "173": {
+    "id": 173,
+    "displayName": "Block of Coal",
+    "name": "blockCoal",
+    "hardness": 5,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
+  },
+  "174": {
+    "id": 174,
+    "displayName": "Packed Ice",
+    "name": "icePacked",
+    "hardness": 0.5,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "rock"
+  },
+  "175": {
+    "id": 175,
+    "displayName": "Flower",
+    "name": "doublePlant",
+    "hardness": 0,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "empty",
+    "material": "plant"
+  },
+  "176": {
+    "id": 176,
+    "displayName": "Standing Banner",
+    "name": "bannerStanding",
+    "hardness": 1,
+    "stackSize": 16,
+    "diggable": true,
+    "boundingBox": "empty",
+    "material": "wood"
+  },
+  "177": {
+    "id": 177,
+    "displayName": "Wall Banner",
+    "name": "bannerWall",
+    "hardness": 1,
+    "stackSize": 16,
+    "diggable": true,
+    "boundingBox": "empty",
+    "material": "wood"
+  },
+  "178": {
+    "id": 178,
+    "displayName": "Inverted Daylight Sensor",
+    "name": "daylightDetectorInverted",
+    "hardness": 0.2,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "179": {
+    "id": 179,
+    "displayName": "Red Sandstone",
+    "name": "redSandStone",
+    "hardness": 0.8,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
+  },
+  "180": {
+    "id": 180,
+    "displayName": "Red Sandstone Stairs",
+    "name": "stairsRedSandStone",
+    "hardness": 0.8,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
+  },
+  "181": {
+    "id": 181,
+    "displayName": "Double Red Sandstone Slab",
+    "name": "stoneSlab2Double",
+    "hardness": 2,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
+  },
+  "182": {
+    "id": 182,
+    "displayName": "Red Sandstone Slab",
+    "name": "stoneSlab2",
+    "hardness": 2,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "rock",
+    "harvestTools": {
+      "270": true,
+      "274": true,
+      "257": true,
+      "278": true,
+      "285": true
+    }
+  },
+  "183": {
+    "id": 183,
+    "displayName": "Spruce Fence Gate",
+    "name": "spruceFenceGate",
+    "hardness": 2,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "184": {
+    "id": 184,
+    "displayName": "Birch Fence Gate",
+    "name": "birchFenceGate",
+    "hardness": 2,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "185": {
+    "id": 185,
+    "displayName": "Jungle Fence Gate",
+    "name": "jungleFenceGate",
+    "hardness": 2,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "186": {
+    "id": 186,
+    "displayName": "Dark Oak Fence Gate",
+    "name": "darkOakFenceGate",
+    "hardness": 2,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "187": {
+    "id": 187,
+    "displayName": "Acacia Fence Gate",
+    "name": "acaciaFenceGate",
+    "hardness": 2,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "188": {
+    "id": 188,
+    "displayName": "Spruce Fence",
+    "name": "spruceFence",
+    "hardness": 2,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "189": {
+    "id": 189,
+    "displayName": "Birch Fence",
+    "name": "birchFence",
+    "hardness": 2,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "190": {
+    "id": 190,
+    "displayName": "Jungle Fence",
+    "name": "jungleFence",
+    "hardness": 2,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "191": {
+    "id": 191,
+    "displayName": "Dark Oak Fence",
+    "name": "darkOakFence",
+    "hardness": 2,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "192": {
+    "id": 192,
+    "displayName": "Acacia Fence",
+    "name": "acaciaFence",
+    "hardness": 2,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "193": {
+    "id": 193,
+    "displayName": "Spruce Door",
+    "name": "doorSpruce",
+    "hardness": 3,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "194": {
+    "id": 194,
+    "displayName": "Birch Door",
+    "name": "doorBirch",
+    "hardness": 3,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "195": {
+    "id": 195,
+    "displayName": "Jungle Door",
+    "name": "doorJungle",
+    "hardness": 3,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "196": {
+    "id": 196,
+    "displayName": "Acacia Door",
+    "name": "doorAcacia",
+    "hardness": 3,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
+  },
+  "197": {
+    "id": 197,
+    "displayName": "Dark Oak Door",
+    "name": "doorDarkOak",
+    "hardness": 3,
+    "stackSize": 64,
+    "diggable": true,
+    "boundingBox": "block",
+    "material": "wood"
   }
 }
