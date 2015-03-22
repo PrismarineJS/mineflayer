@@ -1,18 +1,18 @@
 #!/usr/bin/env node
-if(process.argv.length!=5)
+if(process.argv.length!=6)
 {
-	console.log("Usage : ./transform2_recipes.js <recipes.json> <blocks.json> <items.json> > <recipes2.json>");
+	console.log("Usage : ./transform2_recipes.js <recipes.json> <blocks.json> <items.json> <recipes2.json>");
 	process.exit(1);
 }
 
-var recipes=require("./"+process.argv[2]);
-var blocks=require("./"+process.argv[3]);
-var items=require("./"+process.argv[4]);
 
-function print(o)
-{
-	console.log(JSON.stringify(o,null,2));
-}
+var fs=require('fs');
+
+var recipes=require(process.argv[2]);
+var blocks=require(process.argv[3]);
+var items=require(process.argv[4]);
+var output_file=process.argv[5];
+
 
 var ids={};
 for(var i in blocks) ids[blocks[i].displayName]=i;
@@ -179,4 +179,16 @@ for(var i in recipes)
 	nrecipes[i]=anrecipe;
 }
 
-print(nrecipes);
+
+function print(o,file)
+{
+  fs.writeFile(file, JSON.stringify(o,null,2), function(err) {
+    if(err) {
+      return console.log(err);
+    }
+
+    console.log("The file was saved!");
+  });
+}
+
+print(nrecipes,output_file);
