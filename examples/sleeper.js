@@ -15,13 +15,26 @@ bot.on('chat', function(username, message) {
   if (message === 'sleep') {
     var bedBlock = findBed();
     if (bedBlock) {
-      bot.chat("counting sheep");
-      bot.sleep(bedBlock);
+      bot.sleep(bedBlock,function(err){
+        if(err)
+        {
+          console.log(err);
+          bot.chat("I can't sleep");
+        }
+        else
+          bot.chat("counting sheep");
+      });
     } else {
       bot.chat("no nearby bed");
     }
   } else if (message === 'wake') {
-    bot.wake();
+    bot.wake(function(err){
+      if(err)
+      {
+        console.log(err);
+        bot.chat("I can't wake up");
+      }
+    });
   }
 });
 

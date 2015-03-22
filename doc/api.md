@@ -226,8 +226,8 @@
 			- [bot.chat(message)](#botchatmessage)
 			- [bot.whisper(username, message)](#botwhisperusername-message)
 			- [bot.setSettings(options)](#botsetsettingsoptions)
-			- [bot.sleep(bedBlock)](#botsleepbedblock)
-			- [bot.wake()](#botwake)
+			- [bot.sleep(bedBlock, [cb])](#botsleepbedblock)
+			- [bot.wake([cb])](#botwake)
 			- [bot.setControlState(control, state)](#botsetcontrolstatecontrol-state)
 			- [bot.clearControlStates()](#botclearcontrolstates)
 			- [bot.lookAt(point, [force])](#botlookatpoint-force)
@@ -1177,13 +1177,13 @@ Shortcut for "/tell <username>". All split messages will be whispered to usernam
 
 See the `bot.settings` property.
 
-#### bot.sleep(bedBlock)
+#### bot.sleep(bedBlock, [cb])
 
-Sleep in a bed. `bedBlock` should be a `Block` instance which is a bed.
+Sleep in a bed. `bedBlock` should be a `Block` instance which is a bed. `cb` can have an err parameter if the bot cannot sleep.
 
-#### bot.wake()
+#### bot.wake([cb])
 
-Get out of bed.
+Get out of bed. `cb` can have an err parameter if the bot cannot wake up.
 
 #### bot.setControlState(control, state)
 
