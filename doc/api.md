@@ -36,7 +36,6 @@
       - [block.light](#blocklight)
       - [block.skyLight](#blockskylight)
       - [block.hardness](#blockhardness)
-      - [block.add](#blockadd)
       - [block.biome](#blockbiome)
       - [block.signText](#blocksigntext)
       - [block.painting](#blockpainting)
@@ -378,8 +377,6 @@ See http://www.minecraftwiki.net/wiki/Data_values#Data
 #### block.skyLight
 
 #### block.hardness
-
-#### block.add
 
 #### block.biome
 
