@@ -4,6 +4,7 @@ var mc = require('minecraft-protocol')
   , path = require('path')
   , requireIndex = require('requireindex')
   , plugins = requireIndex(path.join(__dirname, 'lib', 'plugins'))
+  , mcData = require('minecraft-data')
 
 module.exports = {
   vec3: require('vec3'),
@@ -20,12 +21,12 @@ module.exports = {
   Furnace: require('./lib/furnace'),
   Dispenser: require('./lib/dispenser'),
   EnchantmentTable: require('./lib/enchantment_table'),
-  blocks: require('./lib/enums/blocks'),
-  biomes: require('./lib/enums/biomes'),
-  items: require('./lib/enums/items'),
-  recipes: require('./lib/enums/recipes'),
-  instruments: require('./lib/enums/instruments'),
-  materials: require('./lib/enums/materials'),
+  blocks: mcData.blocks,
+  biomes: mcData.biomes,
+  items: mcData.items,
+  recipes: mcData.recipes,
+  instruments: mcData.instruments,
+  materials: mcData.materials
 };
 
 function createBot(options) {
