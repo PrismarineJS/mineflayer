@@ -16,7 +16,7 @@
     "minecraft-protocol": "^0.13.1",
     "quotemeta": "0.0.0",
     "vec3": "~0.1.3",
-    "lodash": "^2.4.1",
+    "lodash": "^3.5.0",
     "minecraft-data": "~0.0.1"
   },
   "devDependencies": {
