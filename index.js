@@ -21,6 +21,7 @@ module.exports = {
   Furnace: require('./lib/furnace'),
   Dispenser: require('./lib/dispenser'),
   EnchantmentTable: require('./lib/enchantment_table'),
+  ItemIndex: require("./lib/item_index"),
   blocks: mcData.blocks,
   biomes: mcData.biomes,
   items: mcData.items,
