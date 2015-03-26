@@ -1,4 +1,5 @@
 var assert = require("assert");
+var Vec3 = require('vec3').Vec3;
 var mineflayer = require('../');
 
 var Item = mineflayer.Item;
@@ -44,13 +45,25 @@ function setInventorySlot(targetSlot, item, cb) {
   });
 }
 function startTesting() {
-  becomeCreative(function() {
-    console.log("starting test");
-    clearInventory(function() {
-      setInventorySlot(36, new Item(blocksByName.dirt.id, 1, 0), function() {
-        console.log("done");
-      });
-    });
+  callbackChain([
+    becomeCreative,
+    clearInventory,
+    function(cb) {
+      console.log("starting test");
+      setInventorySlot(36, new Item(blocksByName.dirt.id, 1, 0), cb);
+    },
+    function(cb) {
+      fly(new Vec3(0, 2, 0), cb);
+    },
+    function(cb) {
+      placeBlock(36, new Vec3(0, -2, 0), cb);
+    },
+    function(cb) {
+      bot.creative.stopFlying();
+      cb();
+    },
+  ], function() {
+    console.log("done");
   });
 }
 function becomeCreative(cb) {
@@ -74,7 +87,29 @@ function becomeCreative(cb) {
   });
 }
 
+function fly(delta, cb) {
+  bot.creative.flyTo(bot.entity.position.plus(delta), cb);
+}
+function placeBlock(slot, delta, cb) {
+  bot.setQuickBarSlot(slot - 36);
+  var position = bot.entity.position.plus(delta);
+  bot.placeBlock(bot.blockAt(position), delta.scaled(-1));
+  setImmediate(cb);
+}
+
 function sayEverywhere(message) {
   bot.chat(message);
   console.log(message);
+}
+
+function callbackChain(functions, cb) {
+  var i = 0;
+  callNext();
+  function callNext() {
+    if (i < functions.length) {
+      functions[i++](callNext);
+    } else {
+      cb();
+    }
+  }
 }
