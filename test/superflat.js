@@ -1,4 +1,5 @@
 var assert = require("assert");
+var Vec3 = require('vec3').Vec3;
 var mineflayer = require('../');
 
 var Item = mineflayer.Item;
@@ -48,7 +49,12 @@ function startTesting() {
     console.log("starting test");
     clearInventory(function() {
       setInventorySlot(36, new Item(blocksByName.dirt.id, 1, 0), function() {
-        console.log("done");
+        fly(new Vec3(0, 1, 0), function() {
+          placeBlock(36, new Vec3(0, -1, 0), function() {
+            bot.creative.stopFlying();
+            console.log("done");
+          });
+        });
       });
     });
   });
@@ -72,6 +78,16 @@ function becomeCreative(cb) {
     }
     console.log("I didn't expect this message:", jsonMsg);
   });
+}
+
+function fly(delta, cb) {
+  bot.creative.flyTo(bot.entity.position.plus(delta), cb);
+}
+function placeBlock(slot, delta, cb) {
+  bot.setQuickBarSlot(slot - 36);
+  var position = bot.entity.position.plus(delta);
+  bot.placeBlock(bot.blockAt(position), delta.scaled(-1));
+  setImmediate(cb);
 }
 
 function sayEverywhere(message) {
