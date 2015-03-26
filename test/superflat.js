@@ -53,10 +53,10 @@ function startTesting() {
       setInventorySlot(36, new Item(blocksByName.dirt.id, 1, 0), cb);
     },
     function(cb) {
-      fly(new Vec3(0, 1, 0), cb);
+      fly(new Vec3(0, 2, 0), cb);
     },
     function(cb) {
-      placeBlock(36, new Vec3(0, -1, 0), cb);
+      placeBlock(36, new Vec3(0, -2, 0), cb);
     },
     function(cb) {
       bot.creative.stopFlying();
