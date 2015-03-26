@@ -45,18 +45,25 @@ function setInventorySlot(targetSlot, item, cb) {
   });
 }
 function startTesting() {
-  becomeCreative(function() {
-    console.log("starting test");
-    clearInventory(function() {
-      setInventorySlot(36, new Item(blocksByName.dirt.id, 1, 0), function() {
-        fly(new Vec3(0, 1, 0), function() {
-          placeBlock(36, new Vec3(0, -1, 0), function() {
-            bot.creative.stopFlying();
-            console.log("done");
-          });
-        });
-      });
-    });
+  callbackChain([
+    becomeCreative,
+    clearInventory,
+    function(cb) {
+      console.log("starting test");
+      setInventorySlot(36, new Item(blocksByName.dirt.id, 1, 0), cb);
+    },
+    function(cb) {
+      fly(new Vec3(0, 1, 0), cb);
+    },
+    function(cb) {
+      placeBlock(36, new Vec3(0, -1, 0), cb);
+    },
+    function(cb) {
+      bot.creative.stopFlying();
+      cb();
+    },
+  ], function() {
+    console.log("done");
   });
 }
 function becomeCreative(cb) {
@@ -93,4 +100,16 @@ function placeBlock(slot, delta, cb) {
 function sayEverywhere(message) {
   bot.chat(message);
   console.log(message);
+}
+
+function callbackChain(functions, cb) {
+  var i = 0;
+  callNext();
+  function callNext() {
+    if (i < functions.length) {
+      functions[i++](callNext);
+    } else {
+      cb();
+    }
+  }
 }
