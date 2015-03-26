@@ -92,7 +92,7 @@ bot.on('chat', function(username, message) {
     if (item == null) {
       bot.chat(wbText + "unknown item: " + name);
     } else {
-      var recipes = bot.recipesFor(item.id, null, 1, craftingTable);
+      var recipes = bot.recipesFor(item.id, null, 1, craftingTable); // doesn't check if it's possible to do it amount times
       if (recipes.length) {
         bot.chat(wbText + "I can make " + item.name);
         bot.craft(recipes[0], amount, craftingTable, function(err) {
