@@ -77,9 +77,7 @@
     - [mineflayer.windows.BrewingStandWindow](#mineflayerwindowsbrewingstandwindow)
     - [mineflayer.Recipe](#mineflayerrecipe)
       - [Recipe.find(itemType, [metadata])](#recipefinditemtype-metadata)
-      - [recipe.type](#recipetype)
-      - [recipe.count](#recipecount)
-      - [recipe.metadata](#recipemetadata)
+      - [recipe.result](#reciperesult)
       - [recipe.inShape](#recipeinshape)
       - [recipe.outShape](#recipeoutshape)
       - [recipe.ingredients](#recipeingredients)
@@ -514,15 +512,16 @@ Returns a list of matching `Recipe` instances.
  * `itemType` - numerical id
  * `metadata` - metadata to match. `null` means match anything.
 
-#### recipe.type
+#### recipe.result
 
-The type of the output item.
-
-#### recipe.count
-
-How many of the output item this recipe makes.
-
-#### recipe.metadata
+The output item. It's a recipeItem :
+```js
+{
+  id:45,
+  metadata:3,
+  count:1
+}
+```
 
 #### recipe.inShape
 
@@ -530,13 +529,11 @@ Looks like this:
 
 ```js
 [
-  [{id, metadata}, {id, metadata}],
-  [{id, metadata}, {id, metadata}],
-  [{id, metadata}, {id, metadata}],
+  [recipeItem, recipeItem],
+  [recipeItem, recipeItem],
+  [recipeItem, recipeItem],
 ]
 ```
-
-Metadata may be `null`.
 
 #### recipe.outShape
 
@@ -548,12 +545,10 @@ List of shape-independent ingredients. Looks like this:
 
 ```js
 [
-  {id, metadata},
-  {id, metadata},
+  recipeItem,
+  recipeItem
 ]
 ```
-
-`metadata` may be `null`.
 
 #### recipe.requiresTable
 
@@ -568,16 +563,8 @@ This is what it looks like for the chest recipe:
 
 ```js
 [
-  {
-    type: 5,
-    metadata: null,
-    count: -8
-  },
-  {
-    type: 54,
-    metadata: 0,
-    count: -8
-  },
+  recipeItem,
+  recipeItem
 ]
 ```
 
