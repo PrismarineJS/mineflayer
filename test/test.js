@@ -1,8 +1,8 @@
-var mineflayer = require('../')
-  , vec3 = mineflayer.vec3
-  , mc = require('minecraft-protocol')
-  , assert = require('assert')
-  , zlib = require('zlib')
+var mineflayer = require('../');
+var vec3 = mineflayer.vec3;
+var mc = require('minecraft-protocol');
+var assert = require('assert');
+var zlib = require('zlib');
 
 describe("mineflayer", function() {
   var bot, server;

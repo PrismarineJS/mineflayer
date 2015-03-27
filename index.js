@@ -1,10 +1,10 @@
-var mc = require('minecraft-protocol')
-  , EventEmitter = require('events').EventEmitter
-  , util = require('util')
-  , path = require('path')
-  , requireIndex = require('requireindex')
-  , plugins = requireIndex(path.join(__dirname, 'lib', 'plugins'))
-  , mcData = require('minecraft-data')
+var mc = require('minecraft-protocol');
+var EventEmitter = require('events').EventEmitter;
+var util = require('util');
+var path = require('path');
+var requireIndex = require('requireindex');
+var plugins = requireIndex(path.join(__dirname, 'lib', 'plugins'));
+var mcData = require('minecraft-data');
 
 module.exports = {
   vec3: require('vec3'),
