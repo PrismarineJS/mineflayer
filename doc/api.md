@@ -68,6 +68,7 @@
       - [window.count(itemType, [metadata])](#windowcountitemtype-metadata)
       - [window.items()](#windowitems)
       - [window.emptySlotCount()](#windowemptyslotcount)
+      - [window "windowUpdate" (slot, oldItem, newItem)](#window-windowupdate-slot-olditem-newitem)
     - [mineflayer.windows.InventoryWindow](#mineflayerwindowsinventorywindow)
     - [mineflayer.windows.ChestWindow](#mineflayerwindowschestwindow)
     - [mineflayer.windows.CraftingTableWindow](#mineflayerwindowscraftingtablewindow)
@@ -251,6 +252,11 @@
       - [bot.openFurnace(furnaceBlock)](#botopenfurnacefurnaceblock)
       - [bot.openDispenser(dispenserBlock)](#botopendispenserdispenserblock)
       - [bot.openEnchantmentTable(enchantmentTableBlock)](#botopenenchantmenttableenchantmenttableblock)
+    - [bot.creative](#botcreative)
+      - [bot.creative.setInventorySlot(slot, item)](#botcreativesetinventoryslotslot-item)
+      - [bot.creative.flyTo(destination, [cb])](#botcreativeflytodestination-cb)
+      - [bot.creative.startFlying()](#botcreativestartflying)
+      - [bot.creative.stopFlying()](#botcreativestopflying)
 
 # API
 
@@ -494,6 +500,16 @@ Returns how many you have in the inventory section of the window.
 Returns a list of `Item` instances from the inventory section of the window.
 
 #### window.emptySlotCount()
+
+#### window "windowUpdate" (slot, oldItem, newItem)
+
+Fired whenever any slot in the window changes for any reason.
+Watching `bot.inventory.on("windowUpdate")` is the best way to watch for changes in your inventory.
+
+ * `slot` - index of changed slot.
+ * `oldItem`, `newItem` - either an [`Item`](#mineflayeritem) instance or `null`.
+
+`newItem === window.slots[slot]`.
 
 ### mineflayer.windows.InventoryWindow
 ### mineflayer.windows.ChestWindow
@@ -1319,3 +1335,47 @@ Returns a `Dispenser` instance which represents the dispenser you are opening.
 
 Returns an `EnchantmentTable` instance which represents the enchantment table
 you are opening.
+
+### bot.creative
+
+This collection of apis is ueseful in creative mode.
+Detecting and changing gamemodes is not implemented here,
+but it is assumed and often required that the bot be in creative mode for these features to work.
+
+#### bot.creative.setInventorySlot(slot, item)
+
+Gives the bot the specified item in the specified inventory slot.
+
+ * `slot` is in inventory window coordinates (where 36 is the first quickbar slot, etc.).
+ * `item` can presumably be anything, specified with arbitrary metadata, nbtdata, etc.
+    If `item` is `null`, the item at the specified slot is deleted.
+
+If this method changes anything, you can be notified via `bot.inventory.on("windowUpdate")`.
+
+#### bot.creative.flyTo(destination, [cb])
+
+Calls `startFlying()` and moves at a constant speed through 3d space in a straight line to the destination.
+`destination` is a `Vec3`, and often the `x` and `z` coordinates will end with `.5`.
+This operation will not work if there is an obstacle in the way,
+so it is advised to fly very short distances at a time.
+
+When the bot arrives at the destination, `cb` is called.
+
+This method does not attempt any path finding.
+It is expected that a path finding implementation will use this method to move < 2 blocks at a time.
+
+To resume normal physics, call `stopFlying()`.
+
+#### bot.creative.startFlying()
+
+Sets `bot.physics.gravity` to `0`.
+To resume normal physics, call `stopFlying()`.
+
+This method is useful if you want to hover while digging the ground below you.
+It is not necessary to call this function before calling `flyTo()`.
+
+Note that while flying, `bot.entity.velocity` will not be accurate.
+
+#### bot.creative.stopFlying()
+
+Restores `bot.physics.gravity` to it's original value.
