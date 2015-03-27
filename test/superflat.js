@@ -84,40 +84,54 @@ var dirtCollectTest = [
 var chestManagementTest = (function() {
   var smallChestLocation = new Vec3(0, 4, -1);
   var largeChestLocations = [new Vec3(0, 4, 1), new Vec3(1, 4, 1)];
+  var smallTrappedChestLocation = new Vec3(1, 4, 0);
+  var largeTrappedChestLocations = [new Vec3(-1, 4, 1), new Vec3(-1, 4, 0)];
+  var chestSlot = 36;
+  var trappedChestSlot = 37;
+  var boneSlot = 38;
   return [
     resetState,
     function(cb) {
       console.log("starting chest management test");
-      setInventorySlot(36, new Item(blocksByName.chest.id, 3, 0), function() {
-        setInventorySlot(37, new Item(itemsByName.bone.id, 3, 0), cb);
+      setInventorySlot(chestSlot, new Item(blocksByName.chest.id, 3, 0), function() {
+        setInventorySlot(trappedChestSlot, new Item(blocksByName.trappedChest.id, 3, 0), function() {
+          setInventorySlot(boneSlot, new Item(itemsByName.bone.id, 3, 0), cb);
+        });
       });
     },
     becomeSurvival,
     function(cb) {
       // place the chests around us
-      placeBlock(36, largeChestLocations[0], function() {
-        placeBlock(36, largeChestLocations[1], function() {
-          placeBlock(36, smallChestLocation, cb);
+      placeBlock(chestSlot, largeChestLocations[0], function() {
+        placeBlock(chestSlot, largeChestLocations[1], function() {
+          placeBlock(chestSlot, smallChestLocation, function() {
+            placeBlock(trappedChestSlot, largeTrappedChestLocations[0], function() {
+              placeBlock(trappedChestSlot, largeTrappedChestLocations[1], function() {
+                placeBlock(trappedChestSlot, smallTrappedChestLocation, function() {
+                  cb();
+                });
+              });
+            });
+          });
         });
       });
     },
+    function(cb) { depositBones(smallChestLocation, 1, cb); },
+    function(cb) { depositBones(largeChestLocations[0], 2, cb); },
     function(cb) {
-      depositBones(smallChestLocation, 1, cb);
-    },
-    function(cb) {
-      depositBones(largeChestLocations[0], 2, cb);
-    },
-    function(cb) {
-      // at this point, our inventory should be empty
       checkSlotsAreEmpty(bot.inventory);
       cb();
     },
+    function(cb) { withdrawBones(smallChestLocation, 1, cb); },
+    function(cb) { withdrawBones(largeChestLocations[0], 2, cb); },
+    function(cb) { depositBones(smallTrappedChestLocation, 1, cb); },
+    function(cb) { depositBones(largeTrappedChestLocations[0], 2, cb); },
     function(cb) {
-      withdrawBones(smallChestLocation, 1, cb);
+      checkSlotsAreEmpty(bot.inventory);
+      cb();
     },
-    function(cb) {
-      withdrawBones(largeChestLocations[0], 2, cb);
-    },
+    function(cb) { withdrawBones(smallTrappedChestLocation, 1, cb); },
+    function(cb) { withdrawBones(largeTrappedChestLocations[0], 2, cb); },
     function(cb) {
       sayEverywhere("chest management test: pass");
       cb();
