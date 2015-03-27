@@ -1253,8 +1253,10 @@ Tells you how long it will take to dig the block, in milliseconds.
 #### bot.placeBlock(referenceBlock, faceVector)
 
  * `referenceBlock` - the block you want to place a new block next to
- * `faceVector` - a direction vector pointing to the face of `referenceBlock`
-   which you want to place the new block next to.
+ * `faceVector` - one of the six cardinal directions, such as `new Vec3(0, 1, 0)` for the top face,
+   indicating which face of the `referenceBlock` to place the block against.
+
+The new block will be placed at `referenceBlock.position.plus(faceVector)`.
 
 #### bot.activateBlock(block)
 
