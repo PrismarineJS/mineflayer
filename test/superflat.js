@@ -2,6 +2,12 @@ var assert = require("assert");
 var Vec3 = require('vec3').Vec3;
 var mineflayer = require('../');
 
+if(process.argv.length<3 || process.argv.length>5)
+{
+  console.log("Usage : node superflat.js <host> <port> [<name>] [<password>]");
+  process.exit(1);
+}
+
 var Item = mineflayer.Item;
 var Block = mineflayer.Block;
 var blocksByName = mineflayer.ItemIndex.blocksByName;
