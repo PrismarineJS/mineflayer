@@ -5,6 +5,7 @@ var mineflayer = require('../');
 var Item = mineflayer.Item;
 var Block = mineflayer.Block;
 var blocksByName = mineflayer.ItemIndex.blocksByName;
+var itemsByName = mineflayer.ItemIndex.itemsByName;
 
 var bot = mineflayer.createBot({
     username: process.argv[4] ? process.argv[4] : "bot",
@@ -48,6 +49,7 @@ function setInventorySlot(targetSlot, item, cb) {
     setImmediate(cb);
   });
 }
+
 var dirtCollectTest = [
   resetState,
   function(cb) {
@@ -79,12 +81,85 @@ var dirtCollectTest = [
     }, 1000);
   },
 ];
+var chestManagementTest = (function() {
+  var smallChestLocation = new Vec3(0, 4, -1);
+  var largeChestLocations = [new Vec3(0, 4, 1), new Vec3(1, 4, 1)];
+  return [
+    resetState,
+    function(cb) {
+      console.log("starting chest management test");
+      setInventorySlot(36, new Item(blocksByName.chest.id, 3, 0), function() {
+        setInventorySlot(37, new Item(itemsByName.bone.id, 3, 0), cb);
+      });
+    },
+    becomeSurvival,
+    function(cb) {
+      // place the chests around us
+      placeBlock(36, largeChestLocations[0], function() {
+        placeBlock(36, largeChestLocations[1], function() {
+          placeBlock(36, smallChestLocation, cb);
+        });
+      });
+    },
+    function(cb) {
+      depositBones(smallChestLocation, 1, cb);
+    },
+    function(cb) {
+      depositBones(largeChestLocations[0], 2, cb);
+    },
+    function(cb) {
+      // at this point, our inventory should be empty
+      checkSlotsAreEmpty(bot.inventory);
+      cb();
+    },
+    function(cb) {
+      withdrawBones(smallChestLocation, 1, cb);
+    },
+    function(cb) {
+      withdrawBones(largeChestLocations[0], 2, cb);
+    },
+    function(cb) {
+      sayEverywhere("chest management test: pass");
+      cb();
+    },
+  ];
+
+  function depositBones(chestLocation, count, cb) {
+    var chest = bot.openChest(bot.blockAt(chestLocation));
+    chest.on("open", function() {
+      checkSlotsAreEmpty(chest.window);
+      chest.deposit(itemsByName.bone.id, 0, count, function() {
+        chest.close();
+        cb();
+      });
+    });
+  }
+  function withdrawBones(chestLocation, count, cb) {
+    var chest = bot.openChest(bot.blockAt(chestLocation));
+    chest.on("open", function() {
+      chest.withdraw(itemsByName.bone.id, 0, count, function() {
+        checkSlotsAreEmpty(chest.window);
+        chest.close();
+        cb();
+      });
+    });
+  }
+  function checkSlotsAreEmpty(window) {
+    for (var i = 0; i < window.inventorySlotStart; i++) {
+      assert(window.slots[i] == null);
+    }
+  }
+})();
+
 function startTesting() {
   callbackChain(dirtCollectTest, function() {
-    console.log("done");
+    callbackChain(chestManagementTest, function() {
+      console.log("done");
+    });
   });
 }
 
+// always leaves you in creative mode
 function resetState(cb) {
   callbackChain([
     becomeCreative,
