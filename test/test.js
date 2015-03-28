@@ -2,7 +2,6 @@ var mineflayer = require('../');
 var vec3 = mineflayer.vec3;
 var mc = require('minecraft-protocol');
 var assert = require('assert');
-var zlib = require('zlib');
 
 describe("mineflayer", function() {
   var bot, server;
@@ -83,15 +82,12 @@ describe("mineflayer", function() {
       var buffer = new Buffer((4096 + 2048 + 2048 + 2048) * 4 + 256);
       buffer.fill(0);
       buffer.writeUInt8(goldId, 8192 + 273);
-      zlib.deflate(buffer, function(err, compressed) {
-        assert.ifError(err);
-        client.write('map_chunk', {
-          x: 0,
-          z: 0,
-          groundUp: true,
-          bitMap: parseInt('00111100', 2),
-          chunkData: compressed,
-        });
+      client.write('map_chunk', {
+        x: 0,
+        z: 0,
+        groundUp: true,
+        bitMap: parseInt('00111100', 2),
+        chunkData: buffer
       });
     });
   });
@@ -120,32 +116,29 @@ describe("mineflayer", function() {
         var buffer = new Buffer((4096 + 2048 + 2048 + 2048) * 4 + 256);
         buffer.fill(0);
         buffer.writeUInt8(goldId, 8192 + 273);
-        zlib.deflate(buffer, function(err, compressed) {
-          assert.ifError(err);
-          client.write('login', {
-            entityId: 0,
-            levelType: "fogetaboutit",
-            gameMode: 0,
-            dimension: 0,
-            difficulty: 0,
-            maxPlayers: 20,
-            reducedDebugInfo:true
-          });
-          client.write('map_chunk', {
-            x: 0,
-            z: 0,
-            groundUp: true,
-            bitMap: parseInt('00111100', 2),
-            chunkData: compressed
-          });
-          client.write('position', {
-            x: 1.5,
-            y: 80,
-            z: 1.5,
-            pitch: 0,
-            yaw: 0,
-            flags: 0
-          });
+        client.write('login', {
+          entityId: 0,
+          levelType: "fogetaboutit",
+          gameMode: 0,
+          dimension: 0,
+          difficulty: 0,
+          maxPlayers: 20,
+          reducedDebugInfo:true
+        });
+        client.write('map_chunk', {
+          x: 0,
+          z: 0,
+          groundUp: true,
+          bitMap: parseInt('00111100', 2),
+          chunkData: buffer
+        });
+        client.write('position', {
+          x: 1.5,
+          y: 80,
+          z: 1.5,
+          pitch: 0,
+          yaw: 0,
+          flags: 0
         });
       });
     });
