@@ -79,7 +79,7 @@ describe("mineflayer", function() {
       done();
     });
     server.on('login', function(client) {
-      var buffer = new Buffer((4096 + 2048 + 2048 + 2048) * 4 + 256);
+      var buffer = new Buffer((4096 + 4096 + 2048 + 2048) * 4 + 256);
       buffer.fill(0);
       buffer.writeUInt8(goldId, 8192 + 273);
       client.write('map_chunk', {
@@ -113,7 +113,7 @@ describe("mineflayer", function() {
         }
       });
       server.on('login', function(client) {
-        var buffer = new Buffer((4096 + 2048 + 2048 + 2048) * 4 + 256);
+        var buffer = new Buffer((4096 + 4096 + 2048 + 2048) * 4 + 256);
         buffer.fill(0);
         buffer.writeUInt8(goldId, 8192 + 273);
         client.write('login', {
