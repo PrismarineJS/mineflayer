@@ -30,7 +30,13 @@ bot.on('chat', function(username, message) {
   target = bot.players[username].entity;
   if (username === bot.username) return;
   var entity;
-  if (message === 'jump') {
+  if (message === 'jump a lot') {
+    bot.setControlState('jump', true);
+  }
+  else if (message === 'stop jumping') {
+    bot.setControlState('jump', false);
+  }
+  else if (message === 'jump') {
     bot.setControlState('jump', true);
     bot.setControlState('jump', false);
   } else if (message === 'forward') {
