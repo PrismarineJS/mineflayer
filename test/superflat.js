@@ -2,10 +2,10 @@ var assert = require("assert");
 var Vec3 = require('vec3').Vec3;
 var mineflayer = require('../');
 var commonTest= require('./externalTests/plugins/testCommon');
-var digAndBuild = require('./externalTests/digAndBuild');
-var useChests = require("./externalTests/useChests");
 var startServer = require("./lib/start_server");
 var mc = require('minecraft-protocol');
+var fs = require("fs");
+var path= require("path");
 
 
 
@@ -64,7 +64,13 @@ describe("mineflayer_external", function() {
       done();
   });
 
-
-  it("digAndBuild",function(done){digAndBuild(bot,done)});
-  it("useChests",function(done){useChests(bot,done)});
+  fs.readdirSync("./test/externalTests")
+    .filter(function (file) {
+    return fs.statSync("./test/externalTests/"+file).isFile();
+  })
+    .forEach(function(test){
+      test=path.basename(test,".js");
+      it(test,function(done){require("./externalTests/"+test)(bot,done);
+    });
+  });
 });
