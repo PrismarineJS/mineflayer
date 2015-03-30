@@ -3,7 +3,7 @@ var vec3 = mineflayer.vec3;
 var mc = require('minecraft-protocol');
 var assert = require('assert');
 
-describe("mineflayer", function() {
+describe("mineflayer_internal", function() {
   var bot, server;
   beforeEach(function(done) {
     server = mc.createServer({ 'online-mode': false } );
@@ -69,7 +69,7 @@ describe("mineflayer", function() {
       });
     });
   });
-  it("blockAt", function(done) {
+  it.skip("blockAt", function(done) {
     var pos = vec3(1, 65, 1);
     var goldId = 41;
     bot.on('chunkColumnLoad', function(columnPoint) {

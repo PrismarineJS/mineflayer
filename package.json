@@ -4,7 +4,7 @@
   "description": "create minecraft bots with a stable, high level API",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --reporter spec test/test.js"
+    "test": "mocha --reporter spec"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,6 @@
   },
   "devDependencies": {
     "mocha": "~2.2.1",
-    "batch": "~0.2.1"
+    "batch": "~0.3.1"
   }
 }
