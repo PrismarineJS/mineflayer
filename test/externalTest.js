@@ -7,14 +7,16 @@ var mc = require('minecraft-protocol');
 var fs = require("fs");
 var path= require("path");
 
-
+// set this to false if you want to test without starting a server automatically
+var START_THE_SERVER=true;
+// if you want to have time to look what's happening increase this (milliseconds)
+var WAIT_TIME_BEFORE_STARTING=1000;
 
 describe("mineflayer_external", function() {
   var mcServer;
   var bot;
   this.timeout(10 * 60 * 1000);
   before(function(done){
-    var startTheServer=true; // set this to false if you want to test without starting a server automatically
 
     function begin()
     {
@@ -31,11 +33,11 @@ describe("mineflayer_external", function() {
         console.log("waiting a second...");
         // this wait is to get all the window updates out of the way before we start expecting exactly what we cause.
         // there are probably other updates coming in that we want to get out of the way too, like health updates.
-        setTimeout(done, 1000);
+        setTimeout(done, WAIT_TIME_BEFORE_STARTING);
       });
     }
 
-    if(startTheServer) {
+    if(START_THE_SERVER) {
       startServer.start({
         motd: 'test1234',
         'max-players': 120,
