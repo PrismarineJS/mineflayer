@@ -21,6 +21,8 @@
   },
   "devDependencies": {
     "mocha": "~2.2.1",
-    "batch": "~0.3.1"
+    "batch": "~0.3.1",
+    "mkdirp": "~0.3.4",
+    "rimraf": "~2.1.1",
   }
 }
