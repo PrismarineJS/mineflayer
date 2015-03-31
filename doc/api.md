@@ -246,6 +246,7 @@
       - [bot.attack(entity)](#botattackentity)
       - [bot.mount(entity)](#botmountentity)
       - [bot.dismount()](#botdismount)
+      - [bot.moveVehicle(left,forward)](#botmoveVehicleleft-forward)
       - [bot.setQuickBarSlot(slot)](#botsetquickbarslotslot)
       - [bot.craft(recipe, count, craftingTable, [callback])](#botcraftrecipe-count-craftingtable-callback)
       - [bot.openChest(chestBlock)](#botopenchestchestblock)
@@ -1302,6 +1303,15 @@ Mount a vehicle. To get back out, use `bot.dismount`.
 #### bot.dismount()
 
 Dismounts from the vehicle you are in.
+
+#### bot.moveVehicle(left,forward)
+
+Moves the vehicle : 
+
+ * left can take -1 or 1 : -1 means right, 1 means left
+ * forward can take -1 or 1 : -1 means backward, 1 means forward
+
+All the direction are relative to where the bot is looking at
 
 #### bot.setQuickBarSlot(slot)
 

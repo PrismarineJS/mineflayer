@@ -54,6 +54,16 @@ bot.on('chat', function(username, message) {
     bot.mount(entity);
   } else if (message === 'dismount') {
     bot.dismount();
+  } else if (message === 'move vehicle forward') {
+    bot.moveVehicle(0.0, 1.0);
+  } else if (message === 'move vehicle left') {
+    bot.moveVehicle(1.0, 0.0);
+  } else if (message === 'move vehicle right') {
+    bot.moveVehicle(-1.0, 0.0);
+  }  else if (message === 'move vehicle backward') {
+    bot.moveVehicle(0.0, -1.0);
+  }  else if (message === 'stop vehicle') {
+    bot.moveVehicle(0.0, 0.0);
   } else if (message === 'attack') {
     entity = nearestEntity();
     bot.attack(entity,true);
