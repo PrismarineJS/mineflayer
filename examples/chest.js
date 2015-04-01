@@ -98,7 +98,7 @@ function watchEnchantmentTable() {
     } else if (/^put /.test(message)) {
       words = message.split(/\s+/);
       name = words[1];
-      item = itemByName(table.window.items(), name);
+      item = itemByName(bot.inventory.items(), name);
       if (!item) {
         bot.chat("unknown item " + name);
         return;
@@ -107,7 +107,7 @@ function watchEnchantmentTable() {
         if (err) {
           bot.chat("error putting " + itemStr(item));
         } else {
-          bot.chat("put " + itemStr(item));
+          bot.chat("I put " + itemStr(item));
         }
       });
     }
