@@ -201,6 +201,7 @@
       - ["blockUpdate:(x, y, z)" (oldBlock, newBlock)](#blockupdatex-y-z-oldblock-newblock)
       - ["chunkColumnLoad" (point)](#chunkcolumnload-point)
       - ["chunkColumnUnload" (point)](#chunkcolumnunload-point)
+      - ["soundEffectHeard" (soundName, position, volume, pitch)](#soundeffectheard-soundname-position-volume-pitch)
       - ["noteHeard" (block, instrument, pitch)](#noteheard-block-instrument-pitch)
       - ["pistonMove" (block, isPulling, direction)](#pistonmove-block-ispulling-direction)
       - ["chestLidMove" (block, isOpen)](#chestlidmove-block-isopen)
@@ -1067,6 +1068,14 @@ Note that `oldBlock` may be `null`.
 Fires when a chunk has updated. `point` is the coordinates to the corner
 of the chunk with the smallest x, y, and z values.
 
+#### "soundEffectHeard" (soundName, position, volume, pitch)
+
+Fires when the client hears a sound effect.
+
+ * `soundName`: name of the sound effect
+ * `position`: a Vec3 instance where the sound originates
+ * `volume`: floating point volume, 1.0 is 100%
+ * `pitch`: integer pitch, 63 is 100%
 
 #### "noteHeard" (block, instrument, pitch)
 
