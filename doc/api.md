@@ -204,6 +204,8 @@
       - ["noteHeard" (block, instrument, pitch)](#noteheard-block-instrument-pitch)
       - ["pistonMove" (block, isPulling, direction)](#pistonmove-block-ispulling-direction)
       - ["chestLidMove" (block, isOpen)](#chestlidmove-block-isopen)
+      - ["blockBreakProgressObserved" (block, destroyStage)](#blockbreakprogressobserved-block-destroystage)
+      - ["blockBreakProgressEnd" (block)](#blockbreakprogressend-block)
       - ["diggingCompleted" (block)](#diggingcompleted-block)
       - ["diggingAborted" (block)](#diggingaborted-block)
       - ["move"](#move)
@@ -1084,6 +1086,20 @@ Fires when a note block goes off somewhere.
 #### "pistonMove" (block, isPulling, direction)
 
 #### "chestLidMove" (block, isOpen)
+
+#### "blockBreakProgressObserved" (block, destroyStage)
+
+Fires when the client observes a block in the process of being broken.
+
+ * `block`: a Block instance, the block being broken
+ * `destroyStage`: integer corresponding to the destroy progress (0-9)
+
+#### "blockBreakProgressEnd" (block)
+
+Fires when the client observes a block stops being broken.
+This occurs whether the process was completed or aborted.
+
+ * `block`: a Block instance, the block no longer being broken
 
 #### "diggingCompleted" (block)
 
