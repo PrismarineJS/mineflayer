@@ -221,6 +221,7 @@
       - [bot.blockAt(point)](#botblockatpoint)
       - [bot.canDigBlock(block)](#botcandigblockblock)
       - [bot.recipesFor(itemType, metadata, minResultCount, craftingTable)](#botrecipesforitemtype-metadata-minresultcount-craftingtable)
+      - [bot.recipesAll(itemType, metadata, craftingTable)](#botrecipesalllitemtype-metadata-craftingtable)
     - [Methods](#methods)
       - [bot.end()](#botend)
       - [bot.quit(reason)](#botquitreason)
@@ -1180,6 +1181,10 @@ with `metadata`.
  * `craftingTable` - a `Block` instance. If `null`, only recipes that can
    be performed in your inventory window will be included in the list.
 
+#### bot.recipesAll(itemType, metadata, craftingTable)
+
+The same as bot.recipesFor except that it does not check wether the bot has enough materials for the recipe.
+
 ### Methods
 
 #### bot.end()
@@ -1222,7 +1227,7 @@ Sets all controls to off.
 #### bot.lookAt(point, [force])
 
  * `point` - tilts your head so that it is directly facing this point.
- * `force` - See `force` in `bot.lookAt`
+ * `force` - See `force` in `bot.look`
 
 #### bot.look(yaw, pitch, [force])
 
