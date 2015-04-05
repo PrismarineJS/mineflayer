@@ -16,7 +16,6 @@ function inject(bot)
   bot.test.resetState=resetState;
   bot.test.setInventorySlot=setInventorySlot;
   bot.test.placeBlock=placeBlock;
-  bot.test.becomeSurvival=becomeSurvival;
 
 
   function callbackChain(functions, cb) {
@@ -151,11 +150,8 @@ function inject(bot)
       return setImmediate(cb);
     }
     bot.creative.setInventorySlot(targetSlot, item);
-    bot.inventory.once("windowUpdate", function(slot, oldItem, newItem) {
-      assert(slot === targetSlot);
-      assert(mineflayer.Item.equal(item, newItem));
-      setImmediate(cb);
-    });
+    //TODO: instead of that timeout, it would be better to have a good callback inside setInventorySlot
+    setTimeout(cb,500);
   }
 
 

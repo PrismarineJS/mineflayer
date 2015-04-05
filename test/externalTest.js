@@ -12,6 +12,8 @@ var START_THE_SERVER=true;
 // if you want to have time to look what's happening increase this (milliseconds)
 var WAIT_TIME_BEFORE_STARTING=1000;
 
+var excludedTests=["digEverything"];
+
 describe("mineflayer_external", function() {
   var mcServer;
   var bot;
@@ -72,7 +74,26 @@ describe("mineflayer_external", function() {
   })
     .forEach(function(test){
       test=path.basename(test,".js");
-      it(test,function(done){require("./externalTests/"+test)(bot,done);
-    });
+      var testFunctions=require("./externalTests/"+test)();
+      if(excludedTests.indexOf(test) === -1) {
+        if (typeof testFunctions === 'object') {
+          for (var testFunctionName in testFunctions) {
+            if (testFunctions.hasOwnProperty(testFunctionName)) {
+              it(test + " " + testFunctionName, (function (testFunctionName) {
+                return function (done) {
+                  this.timeout(30000);
+                  bot.test.sayEverywhere("starting " + test + " " + testFunctionName);
+                  testFunctions[testFunctionName](bot, done);
+                };
+              })(testFunctionName));
+            }
+          }
+        }
+        else
+          it(test, function (done) {
+            bot.test.sayEverywhere("starting " + test);
+            testFunctions(bot, done);
+          });
+      }
   });
 });
