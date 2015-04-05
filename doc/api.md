@@ -1181,7 +1181,7 @@ with `metadata`.
  * `craftingTable` - a `Block` instance. If `null`, only recipes that can
    be performed in your inventory window will be included in the list.
 
-#### bot.recipesFor(itemType, metadata, craftingTable)
+#### bot.recipesAll(itemType, metadata, craftingTable)
 
 The same as bot.recipesFor except that it does not check wether the bot has enough materials for the recipe.
 
