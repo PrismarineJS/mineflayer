@@ -90,6 +90,7 @@ higher level API on top of Mineflayer.
  * See [doc/api.md](https://github.com/andrewrk/mineflayer/blob/master/doc/api.md).
  * See [doc/history.md](https://github.com/andrewrk/mineflayer/blob/master/doc/history.md).
  * See [examples/](https://github.com/andrewrk/mineflayer/tree/master/examples).
+ * See [doc/unstable_api.md](https://github.com/andrewrk/mineflayer/blob/master/doc/unstable_api.md).
 
 ## Testing
 
