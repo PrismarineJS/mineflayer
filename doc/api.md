@@ -273,6 +273,8 @@
       - [bot.creative.flyTo(destination, [cb])](#botcreativeflytodestination-cb)
       - [bot.creative.startFlying()](#botcreativestartflying)
       - [bot.creative.stopFlying()](#botcreativestopflying)
+    - [unstable API : bot._](#unstable-api--bot_)
+      - [bot._chunkColumn(x, z)](#bot_chunkcolumnx-z)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -1477,3 +1479,18 @@ Note that while flying, `bot.entity.velocity` will not be accurate.
 #### bot.creative.stopFlying()
 
 Restores `bot.physics.gravity` to it's original value.
+
+### unstable API : bot._
+
+These methods are useful in some special cases but are not stable and can change at any moment.
+
+#### bot._chunkColumn(x, z)
+
+Return the column at `x` and `y`. A column has :
+
+ * a `blockType`
+ * a `light`
+ * a `skylight`
+ * a `biome`
+ 
+`blockType`, `light` and `skylight` are arrays of size 16.
