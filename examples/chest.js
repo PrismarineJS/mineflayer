@@ -98,12 +98,25 @@ function watchEnchantmentTable() {
     } else if (/^put /.test(message)) {
       words = message.split(/\s+/);
       name = words[1];
-      item = itemByName(bot.inventory.items(), name);
+      item = itemByName(table.window.items(), name);
       if (!item) {
         bot.chat("unknown item " + name);
         return;
       }
       table.putTargetItem(item, function(err) {
+        if (err) {
+          bot.chat("error putting " + itemStr(item));
+        } else {
+          bot.chat("I put " + itemStr(item));
+        }
+      });
+    } else if (/^add lapis$/.test(message)) {
+      item = itemByType(table.window.items(), 351);
+      if (!item) {
+        bot.chat("I don't have any lapis");
+        return;
+      }
+      table.putLapis(item, function(err) {
         if (err) {
           bot.chat("error putting " + itemStr(item));
         } else {
@@ -344,6 +357,15 @@ function findBlock(listOfIds) {
       }
     }
   }
+}
+
+function itemByType(items, type) {
+  var item, i;
+  for (i = 0; i < items.length; ++i) {
+    item = items[i];
+    if (item && item.type === type) return item;
+  }
+  return null;
 }
 
 function itemByName(items, name) {
