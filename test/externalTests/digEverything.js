@@ -59,7 +59,7 @@ function digSomething(blockId,bot,done) {
       });
     },
     function (cb) {
-      // make sure we that block is gone
+      // make sure that block is gone
 
       assert.equal(bot.blockAt(bot.entity.position.plus(new Vec3(1, 0, 0))).type, 0);
       cb();
