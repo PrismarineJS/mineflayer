@@ -1,3 +1,5 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [API](#api)
@@ -221,7 +223,7 @@
       - [bot.blockAt(point)](#botblockatpoint)
       - [bot.canDigBlock(block)](#botcandigblockblock)
       - [bot.recipesFor(itemType, metadata, minResultCount, craftingTable)](#botrecipesforitemtype-metadata-minresultcount-craftingtable)
-      - [bot.recipesAll(itemType, metadata, craftingTable)](#botrecipesalllitemtype-metadata-craftingtable)
+      - [bot.recipesAll(itemType, metadata, craftingTable)](#botrecipesallitemtype-metadata-craftingtable)
     - [Methods](#methods)
       - [bot.end()](#botend)
       - [bot.quit(reason)](#botquitreason)
@@ -250,18 +252,29 @@
       - [bot.attack(entity)](#botattackentity)
       - [bot.mount(entity)](#botmountentity)
       - [bot.dismount()](#botdismount)
-      - [bot.moveVehicle(left,forward)](#botmoveVehicleleft-forward)
+      - [bot.moveVehicle(left,forward)](#botmovevehicleleftforward)
       - [bot.setQuickBarSlot(slot)](#botsetquickbarslotslot)
       - [bot.craft(recipe, count, craftingTable, [callback])](#botcraftrecipe-count-craftingtable-callback)
       - [bot.openChest(chestBlock)](#botopenchestchestblock)
       - [bot.openFurnace(furnaceBlock)](#botopenfurnacefurnaceblock)
       - [bot.openDispenser(dispenserBlock)](#botopendispenserdispenserblock)
       - [bot.openEnchantmentTable(enchantmentTableBlock)](#botopenenchantmenttableenchantmenttableblock)
+    - [Lower level inventory methods](#lower-level-inventory-methods)
+      - [bot.clickWindow(slot, mouseButton, mode, cb)](#botclickwindowslot-mousebutton-mode-cb)
+      - [bot.putSelectedItemRange(start, end, window, slot, cb)](#botputselecteditemrangestart-end-window-slot-cb)
+      - [bot.putAway(slot, cb)](#botputawayslot-cb)
+      - [bot.closeWindow(window)](#botclosewindowwindow)
+      - [bot.transfer(options, cb)](#bottransferoptions-cb)
+      - [bot.openBlock(block, Class)](#botopenblockblock-class)
+      - [bot.moveSlotItem(sourceSlot, destSlot, cb)](#botmoveslotitemsourceslot-destslot-cb)
+      - [bot.updateHeldItem()](#botupdatehelditem)
     - [bot.creative](#botcreative)
       - [bot.creative.setInventorySlot(slot, item)](#botcreativesetinventoryslotslot-item)
       - [bot.creative.flyTo(destination, [cb])](#botcreativeflytodestination-cb)
       - [bot.creative.startFlying()](#botcreativestartflying)
       - [bot.creative.stopFlying()](#botcreativestopflying)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # API
 
@@ -1375,6 +1388,51 @@ Returns a `Dispenser` instance which represents the dispenser you are opening.
 
 Returns an `EnchantmentTable` instance which represents the enchantment table
 you are opening.
+
+### Lower level inventory methods
+
+These are lower level methods for the inventory, they can be useful sometimes but prefer the inventory methods presented above if you can.
+
+#### bot.clickWindow(slot, mouseButton, mode, cb)
+
+Click on the current window.
+
+#### bot.putSelectedItemRange(start, end, window, slot, cb)
+
+Put the item at `slot` in the specified range.
+
+#### bot.putAway(slot, cb)
+
+Put the item at `slot` in the inventory.
+
+#### bot.closeWindow(window)
+
+Close the `window`.
+
+#### bot.transfer(options, cb)
+
+Transfer some kind of item from one range to an other. `options` is an object containing :
+
+ * `window` : the window where the item will be moved
+ * `itemType` : the type of the moved items
+ * `metadata` : the metadata of the moved items
+ * `sourceStart` and `sourceEnd` : the source range
+ * `destStart` and `destEnd` : the dest Range
+ 
+#### bot.openBlock(block, Class)
+
+Open a block, for example a chest. 
+
+ * `block` is the block the bot will open
+ * `Class` is the type of window that will be opened
+ 
+#### bot.moveSlotItem(sourceSlot, destSlot, cb)
+
+Move an item from `sourceSlot` to `destSlot` in the current window.
+
+#### bot.updateHeldItem()
+
+Update `bot.heldItem`.
 
 ### bot.creative
 
