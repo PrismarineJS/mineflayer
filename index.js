@@ -40,24 +40,24 @@ function createBot(options) {
 
 function Bot() {
   EventEmitter.call(this);
-  this.client = null;
+  this._client = null;
 }
 util.inherits(Bot, EventEmitter);
 
 Bot.prototype.connect = function(options) {
   var self = this;
-  self.client = mc.createClient(options);
-  self.username = self.client.username;
-  self.client.on('session', function() {
-    self.username = self.client.username;
+  self._client = mc.createClient(options);
+  self.username = self._client.username;
+  self._client.on('session', function() {
+    self.username = self._client.username;
   });
-  self.client.on('connect', function() {
+  self._client.on('connect', function() {
     self.emit('connect');
   });
-  self.client.on('error', function(err) {
+  self._client.on('error', function(err) {
     self.emit('error', err);
   });
-  self.client.on('end', function() {
+  self._client.on('end', function() {
     self.emit('end');
   });
   for (var pluginName in plugins) {
@@ -66,5 +66,5 @@ Bot.prototype.connect = function(options) {
 };
 
 Bot.prototype.end = function() {
-  this.client.end();
+  this._client.end();
 };
