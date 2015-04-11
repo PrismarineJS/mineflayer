@@ -65,7 +65,8 @@ module.exports=function() {
         var chest = bot.openChest(bot.blockAt(chestLocation));
         chest.on("open", function() {
           checkSlotsAreEmpty(chest.window);
-          chest.deposit(mineflayer.ItemIndex.itemsByName["bone"].id, 0, count, function() {
+          chest.deposit(mineflayer.ItemIndex.itemsByName["bone"].id, 0, count, function(err) {
+            assert(!err);
             chest.close();
             cb();
           });
@@ -74,7 +75,9 @@ module.exports=function() {
       function withdrawBones(chestLocation, count, cb) {
         var chest = bot.openChest(bot.blockAt(chestLocation));
         chest.on("open", function() {
-          chest.withdraw(mineflayer.ItemIndex.itemsByName["bone"].id, 0, count, function() {
+          chest.withdraw(mineflayer.ItemIndex.itemsByName["bone"].id, 0, count, function(err) {
+
+            assert(!err);
             checkSlotsAreEmpty(chest.window);
             chest.close();
             cb();
