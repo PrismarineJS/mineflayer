@@ -61,11 +61,26 @@ module.exports=function() {
         },
       ];
 
+      function itemByName(items, name) {
+        var item, i;
+        for (i = 0; i < items.length; ++i) {
+          item = items[i];
+          if (item && item.name === name) return item;
+        }
+        return null;
+      }
+
       function depositBones(chestLocation, count, cb) {
         var chest = bot.openChest(bot.blockAt(chestLocation));
         chest.on("open", function() {
           checkSlotsAreEmpty(chest.window);
-          chest.deposit(mineflayer.ItemIndex.itemsByName["bone"].id, 0, count, function(err) {
+          var name="bone";
+          var item = itemByName(bot.inventory.items(), name);
+          if (!item) {
+            bot.test.sayEverywhere("unknown item " + name);
+            throw new Error("unknown item " + name);
+          }
+          chest.deposit(item.type, null, count, function(err) {
             assert(!err);
             chest.close();
             cb();
@@ -75,7 +90,13 @@ module.exports=function() {
       function withdrawBones(chestLocation, count, cb) {
         var chest = bot.openChest(bot.blockAt(chestLocation));
         chest.on("open", function() {
-          chest.withdraw(mineflayer.ItemIndex.itemsByName["bone"].id, 0, count, function(err) {
+          var name = "bone";
+          var item = itemByName(chest.items(), name);
+          if (!item) {
+            bot.test.sayEverywhere("unknown item " + name);
+            throw new Error("unknown item " + name);
+          }
+          chest.withdraw(item.type, null, count, function(err) {
 
             assert(!err);
             checkSlotsAreEmpty(chest.window);
