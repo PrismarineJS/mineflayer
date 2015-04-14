@@ -63,9 +63,9 @@ function dig() {
 
 
 function build() {
-  bot.setControlState('jump', true);
   var targetBlock = bot.blockAt(bot.entity.position.offset(0,0,0));
   var jumpY = bot.entity.position.y + 1.0;
+  bot.setControlState('jump', true);
   bot.on('move', placeIfHighEnough);
   
   function placeIfHighEnough() {
