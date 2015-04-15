@@ -6,8 +6,6 @@
 
 Create Minecraft bots with a powerful, stable, and high level JavaScript API.
 
-Note: This project is in the process of being updated. Bear with us :)
-
 ## Features
 
  * Supports Minecraft 1.8.3.

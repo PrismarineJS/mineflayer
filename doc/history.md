@@ -1,3 +1,18 @@
+## 1.1.0
+
+Lot of fixes and improvements in this version in order to support mineflayer 1.8.3, including :
+
+ * minecraft 1.8.3 support
+ * update minecraft protocol to 0.13.4
+ * move enums data to minecraft-data
+ * add automatic testing with a vanilla minecraft server on circle ci
+ * add argv arguments to examples
+ * refactor inventory.js
+ * use new recipe format handling metadata better
+ * fix lot of things to support 1.8.3 including :
+  * block format change
+  * position change : y is now always at the feet of the bot
+
 ## 1.0.0
 
  * updated minecraft protocol to 0.11 (Minecraft 1.6.2 support).
