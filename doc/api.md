@@ -244,6 +244,7 @@
       - [bot.dig(block, [callback])](#botdigblock-callback)
       - [bot.stopDigging()](#botstopdigging)
       - [bot.digTime(block)](#botdigtimeblock)
+      - [bot.staticDigTime(block,creative,heldItemType,inWater,onGround)](#botstaticdigtimeblockcreativehelditemtypeinwateronground)
       - [bot.placeBlock(referenceBlock, faceVector)](#botplaceblockreferenceblock-facevector)
       - [bot.activateBlock(block)](#botactivateblockblock)
       - [bot.activateItem()](#botactivateitem)
@@ -1309,6 +1310,18 @@ dig any other blocks until the block has been broken, or you call
 #### bot.digTime(block)
 
 Tells you how long it will take to dig the block, in milliseconds.
+
+#### bot.staticDigTime(block,creative,heldItemType,inWater,onGround)
+
+Tells you how long it will take to dig the block, in milliseconds.
+The difference between that function and bot.digTime is that this function is static :
+ it doesn't depend on the environment of the bot, you can call it at any time and get the same result.
+
+ * `block` block to dig
+ * `creative` game in creative
+ * `heldItemType` the id of the held item (or null if nothing is held)
+ * `inWater` the bot is in water
+ * `onGround` the bot in on the ground
 
 #### bot.placeBlock(referenceBlock, faceVector)
 
