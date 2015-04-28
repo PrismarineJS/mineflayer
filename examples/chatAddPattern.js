@@ -18,7 +18,7 @@ var bot = mineflayer.createBot({
 console.log(process.argv[4])
 
 // Adding patterns really is this simple
-// use vannilla launcher with visibility set to keep launcher open to get raw messages
+// use vanilla launcher with visibility set to keep launcher open to get raw messages
 // Copy into regexr.com or other wise write a regex statement matching the username an whatever else
 // Add pattern, chat type, and a discription (optional) with bot.ChatAddPattern( {} )
 bot.chatAddPattern( /^(?:\[[^\]]*\] )?([^ :]*) ?: (.*)$/, "chat", "Skyblock.net chat")
@@ -30,7 +30,7 @@ bot.chatAddPattern( /^\[ ?([^ ]*) -> me ?] (.*)$/, "whisper", "Skyblock.net whis
 // The chat function now returns the raw Regex matches as well as the raw message
 // rawMessage will be json object on vanilla servers
 bot.on('chat', function(username, message, rawMessage, matches) {
-  console.log("Chat recieved! Username:"+username+"	Message:"+message)
+  console.log("Chat received! Username:"+username+"	Message:"+message)
 	//console.log(rawMessage)
 	//console.log(matches)
 });
