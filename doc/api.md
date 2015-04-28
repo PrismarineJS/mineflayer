@@ -147,6 +147,7 @@
       - [bot.game.maxPlayers](#botgamemaxplayers)
       - [bot.players](#botplayers)
       - [bot.isRaining](#botisraining)
+      - [bot.chatPatterns](#botchatpatterns)
       - [bot.settings.chat](#botsettingschat)
       - [bot.settings.colorsEnabled](#botsettingscolorsenabled)
       - [bot.settings.viewDistance](#botsettingsviewdistance)
@@ -166,8 +167,8 @@
       - [bot.targetDigBlock](#bottargetdigblock)
       - [bot.isSleeping](#botissleeping)
     - [Events](#events)
-      - ["chat" (username, message, translate, jsonMsg)](#chat-username-message-translate-jsonmsg)
-      - ["whisper" (username, message, translate, jsonMsg)](#whisper-username-message-translate-jsonmsg)
+      - ["chat" (username, message, translate, jsonMsg)](#chat-username-message-translate-jsonmsg-matches)
+      - ["whisper" (username, message, translate, jsonMsg)](#whisper-username-message-translate-jsonmsg-matches)
       - ["message" (jsonMsg)](#message-jsonmsg)
       - ["login"](#login)
       - ["spawn"](#spawn)
@@ -863,6 +864,14 @@ Map of username to people playing the game. A player looks like this:
 
 #### bot.isRaining
 
+#### bot.chatPatterns
+
+This is an array of pattern objects, of the following format:
+{ /regex/, "chattype", "description")
+ * /regex/ - a regular expression pattern, that should have at least two capture groups
+ * 'chattype' - the type of chat the pattern matches, ex "chat" or "whisper", but can be anything.
+ * 'description' - description of what the pattern is for, optional.
+
 #### bot.settings.chat
 
 Choices:
@@ -879,7 +888,6 @@ Default true, whether or not you receive color codes in chats from the server.
 
 Choices:
  * `far` (default)
- * `far`
  * `normal`
  * `short`
  * `tiny`
@@ -954,23 +962,25 @@ Boolean, whether or not you are in bed.
 
 ### Events
 
-#### "chat" (username, message, translate, jsonMsg)
+#### "chat" (username, message, translate, jsonMsg, matches)
 
 Only emitted when a player chats publicly.
 
  * `username` - who said the message (compare with `bot.username` to ignore your own chat)
  * `message` - stripped of all color and control characters
- * `translate` - chat message type
+ * `translate` - chat message type. Null for most bukkit chat messages
  * `jsonMsg` - unmodified JSON message from the server
+ * `matches` - array of returned matches from regular expressions. May be null
 
-#### "whisper" (username, message, translate, jsonMsg)
+#### "whisper" (username, message, translate, jsonMsg, matches)
 
 Only emitted when a player chats to you privately.
 
  * `username` - who said the message
  * `message` - stripped of all color and control characters
- * `translate` - chat message type
+ * `translate` - chat message type. Null for most bukkit chat messages
  * `jsonMsg` - unmodified JSON message from the server
+ * `matches` - array of returned matches from regular expressions. May be null
 
 #### "message" (jsonMsg)
 
@@ -1217,6 +1227,13 @@ Sends a publicly broadcast chat message. Breaks up big messages into multiple ch
 
 Shortcut for "/tell <username>". All split messages will be whispered to username.
 
+#### bot.chatAddPattern(pattern, chatType, description  )
+
+Adds a regex pattern to the bot's chat matching. Useful for bukkit servers where the chat format changes a lot.
+ * `pattern` - regular expression to match chat
+ * `chatType` - the event the bot emits when the pattern matches. Eg: "chat" or "whisper"
+ * 'description ' - Optional, discribes what the pattern is for
+
 #### bot.setSettings(options)
 
 See the `bot.settings` property.
@@ -1362,7 +1379,7 @@ Dismounts from the vehicle you are in.
 
 #### bot.moveVehicle(left,forward)
 
-Moves the vehicle : 
+Moves the vehicle :
 
  * left can take -1 or 1 : -1 means right, 1 means left
  * forward can take -1 or 1 : -1 means backward, 1 means forward
@@ -1431,14 +1448,14 @@ Transfer some kind of item from one range to an other. `options` is an object co
  * `metadata` : the metadata of the moved items
  * `sourceStart` and `sourceEnd` : the source range
  * `destStart` and `destEnd` : the dest Range
- 
+
 #### bot.openBlock(block, Class)
 
-Open a block, for example a chest. 
+Open a block, for example a chest.
 
  * `block` is the block the bot will open
  * `Class` is the type of window that will be opened
- 
+
 #### bot.moveSlotItem(sourceSlot, destSlot, cb)
 
 Move an item from `sourceSlot` to `destSlot` in the current window.
