@@ -1,7 +1,7 @@
 var mineflayer = require('../');
 var vec3 = mineflayer.vec3;
 
-process.argv = ["","","skyblock.net","25565","username","password"]
+//Example for matching chat on skyblock.net.
 
 if(process.argv.length<3)
 {
@@ -22,7 +22,7 @@ console.log(process.argv[4])
 // Copy into regexr.com or other wise write a regex statement matching the username an whatever else
 // Add pattern, chat type, and a discription (optional) with bot.ChatAddPattern( {} )
 bot.chatAddPattern( /^(?:\[[^\]]*\] )?([^ :]*) ?: (.*)$/, "chat", "Skyblock.net chat")
-bot.chatAddPattern( /^\[([^ ]*) -> me ] (.*)$/, "whisper", "Skyblock.net whisper")
+bot.chatAddPattern( /^\[ ?([^ ]*) -> me ?] (.*)$/, "whisper", "Skyblock.net whisper")
 
 // Also note, adding patterns does NOT overwrite previous patterns, so if you use a script with multiple
 // servers it is safe to add all the patterns.
