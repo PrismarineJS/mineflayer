@@ -5,7 +5,7 @@ var vec3 = mineflayer.vec3;
 
 if(process.argv.length<3)
 {
-    console.log("Usage : node digger.js <host> <port> [<name>] [<password>]");
+    console.log("Usage : node chatAddPattern.js <host> <port> [<name>] [<password>]");
     process.exit(1);
 }
 var bot = mineflayer.createBot({
