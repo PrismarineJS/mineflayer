@@ -20,7 +20,7 @@ console.log(process.argv[4])
 // Adding patterns really is this simple
 // use vanilla launcher with visibility set to keep launcher open to get raw messages
 // Copy into regexr.com or other wise write a regex statement matching the username an whatever else
-// Add pattern, chat type, and a discription (optional) with bot.ChatAddPattern( {} )
+// Add pattern, chat type, and a description (optional) with bot.ChatAddPattern( {} )
 bot.chatAddPattern( /^(?:\[[^\]]*\] )?([^ :]*) ?: (.*)$/, "chat", "Skyblock.net chat")
 bot.chatAddPattern( /^\[ ?([^ ]*) -> me ?] (.*)$/, "whisper", "Skyblock.net whisper")
 // Also note, adding patterns does NOT overwrite previous patterns, so if you use a script with multiple

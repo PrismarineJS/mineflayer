@@ -167,8 +167,8 @@
       - [bot.targetDigBlock](#bottargetdigblock)
       - [bot.isSleeping](#botissleeping)
     - [Events](#events)
-      - ["chat" (username, message, translate, jsonMsg)](#chat-username-message-translate-jsonmsg-matches)
-      - ["whisper" (username, message, translate, jsonMsg)](#whisper-username-message-translate-jsonmsg-matches)
+      - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
+      - ["whisper" (username, message, translate, jsonMsg, matches)](#whisper-username-message-translate-jsonmsg-matches)
       - ["message" (jsonMsg)](#message-jsonmsg)
       - ["login"](#login)
       - ["spawn"](#spawn)
@@ -230,6 +230,7 @@
       - [bot.quit(reason)](#botquitreason)
       - [bot.chat(message)](#botchatmessage)
       - [bot.whisper(username, message)](#botwhisperusername-message)
+      - [bot.chatAddPattern(pattern, chatType, description)](#botchataddpatternpattern-chattype-description)
       - [bot.setSettings(options)](#botsetsettingsoptions)
       - [bot.sleep(bedBlock, [cb])](#botsleepbedblock-cb)
       - [bot.wake([cb])](#botwakecb)
@@ -1227,12 +1228,12 @@ Sends a publicly broadcast chat message. Breaks up big messages into multiple ch
 
 Shortcut for "/tell <username>". All split messages will be whispered to username.
 
-#### bot.chatAddPattern(pattern, chatType, description  )
+#### bot.chatAddPattern(pattern, chatType, description)
 
 Adds a regex pattern to the bot's chat matching. Useful for bukkit servers where the chat format changes a lot.
  * `pattern` - regular expression to match chat
  * `chatType` - the event the bot emits when the pattern matches. Eg: "chat" or "whisper"
- * 'description ' - Optional, discribes what the pattern is for
+ * 'description ' - Optional, describes what the pattern is for
 
 #### bot.setSettings(options)
 
