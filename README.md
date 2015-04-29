@@ -67,6 +67,7 @@ higher level API on top of Mineflayer.
  * [vogonistic/voxel](https://github.com/vogonistic/mineflayer-voxel) - visualize what
    the bot is up to using voxel.js
  * [JonnyD/Skynet] (https://github.com/JonnyD/Skynet) -  log player activity onto an online API
+ * [AlexKvazos/MinecraftChat] (https://github.com/Alexkvazos/MinecraftChat) -  Minecraft web based chat client <https://chat.alexkvazos.com/>
 
 ## Installation
 
