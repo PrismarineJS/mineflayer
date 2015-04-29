@@ -70,3 +70,6 @@ function myfunction(param1,callback)
 ```
 
 See an other example of that in [mineflayer code](https://github.com/andrewrk/mineflayer/blob/a8736c4ea473cf1a609c5a29046c0cdad006d429/lib/plugins/bed.js#L10)
+
+### Updating the documentation
+The table of content of doc/api.md is made with doctoc. After updating that file, you should run doctoc doc/api.md to update the table of content.
