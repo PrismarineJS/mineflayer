@@ -1,3 +1,11 @@
+## 1.1.1
+
+ * bot.transfer is faster
+ * fix arm_animation
+ * using mojangson parser for chat hoverevent
+ * add chat patterns for unidentified chat messages
+ * fix player leaving
+
 ## 1.1.0
 
 Lot of fixes and improvements in this version in order to support mineflayer 1.8.3, including :
