@@ -12,8 +12,8 @@ var bot = mineflayer.createBot({
     password:process.argv[5]
 });
 
-bot.on('end', function(reason) {
-  console.log("end", reason);
+bot.on('end', function() {
+  console.log("end");
 });
 
 bot.on('kicked', function(reason) {
