@@ -101,3 +101,7 @@ higher level API on top of Mineflayer.
 2. `npm install --save minecraft-protocol@latest`
 3. Apply the [protocol changes](http://wiki.vg/Protocol_History) where necessary.
 4. Run the test suite. See Testing above.
+
+## Licence
+
+[MIT](LICENCE)
