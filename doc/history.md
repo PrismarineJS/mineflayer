@@ -1,3 +1,8 @@
+## 1.1.2
+
+ * a small fix in chat.js
+ * add a licence file
+
 ## 1.1.1
 
  * bot.transfer is faster
