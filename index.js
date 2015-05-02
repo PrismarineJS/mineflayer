@@ -59,6 +59,7 @@ Bot.prototype.connect = function(options) {
   });
   self._client.on('end', function() {
     self.emit('end');
+    delete self._client;
   });
   for (var pluginName in plugins) {
     plugins[pluginName](self, options);
@@ -67,4 +68,5 @@ Bot.prototype.connect = function(options) {
 
 Bot.prototype.end = function() {
   this._client.end();
+  delete this._client;
 };
