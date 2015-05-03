@@ -6,17 +6,17 @@ var assert = require("assert");
 
 var excludedBlocks=[
   // broken
-  "bed","stoneSlabDouble","doorOak","doorIron","oreRedstone","oreRedstoneGlowing","notGateInactive",
-  "trapdoor","netherStalk","woodSlabDouble","stairsWoodJungle","flowerPot","carrots","potatoes","skull",
-  "redstoneComparatorInactive","redstoneComparatorActive","bannerStanding","bannerWall","daylightDetectorInverted",
-  "stoneSlab2Double","doorSpruce","doorBirch","doorJungle","doorAcacia","doorDarkOak",
+  "bed","double_stone_slab","wooden_door","iron_door","redstone_ore","lit_redstone_ore",
+  "trapdoor","double_wooden_slab","jungle_stairs","flower_pot","carrots","potatoes","skull",
+  "unpowered_comparator","standing_banner","wall_banner","daylight_detector",
+  "stone_slab2","spruce_door","birch_door","jungle_door","acacia_door","dark_oak_door",
 
   //cannot be placed
-  "pistonExtension","fire","redstoneDust","crops","signPost","signWall","reeds",
-  "redstoneRepeaterActive","pumpkinStem","melonStem","brewingStand","cauldron","redstoneLightActive","tripWire",
+  "piston_extension","fire","standing_sign","reeds",
+  "powered_repeater","pumpkin_stem","melon_stem","brewing_stand","cauldron","lit_redstone_lamp","tripwire",
 
   //cause problems
-  "mobSpawner","obsidian"];
+  "mob_spawner","obsidian"];
 
 module.exports=function() {
   var funcs={};
@@ -48,7 +48,7 @@ function digSomething(blockId,bot,done) {
     },
     bot.test.clearInventory,
     function (cb) {
-      bot.test.setInventorySlot(36, new mineflayer.Item(mineflayer.ItemIndex.itemsByName["pickaxeDiamond"].id, 1, 0), cb);
+      bot.test.setInventorySlot(36, new mineflayer.Item(mineflayer.ItemIndex.itemsByName["diamond_pickaxe"].id, 1, 0), cb);
     },
     bot.test.becomeSurvival,
     function (cb) {

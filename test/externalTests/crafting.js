@@ -65,7 +65,7 @@ module.exports=function(){
       },
       bot.test.becomeSurvival,
       function (cb) {
-        craft(1,"wood",cb);
+        craft(1,"planks",cb);
       },
     ];
 
