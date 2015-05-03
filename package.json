@@ -17,7 +17,7 @@
     "quotemeta": "0.0.0",
     "vec3": "~0.1.3",
     "lodash": "^3.5.0",
-    "minecraft-data": "~0.1.1",
+    "minecraft-data": "~0.2.0",
     "node-mojangson": "~0.1.0"
   },
   "devDependencies": {

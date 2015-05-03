@@ -45,6 +45,7 @@
       - [block.boundingBox](#blockboundingbox)
       - [block.material](#blockmaterial)
       - [block.harvestTools](#blockharvesttools)
+      - [block.drops](#blockdrops)
     - [mineflayer.Biome](#mineflayerbiome)
       - [biome.id](#biomeid)
       - [biome.color](#biomecolor)
@@ -442,6 +443,10 @@ variable at the top of lib/plugins/digging.js for more info.
 #### block.harvestTools
 
 The set of tools that will allow you to harvest the block.
+
+#### block.drops
+
+The blocks or items dropped by that block.
 
 ### mineflayer.Biome
 
