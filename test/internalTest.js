@@ -39,7 +39,7 @@ describe("mineflayer_internal", function() {
   });
   it("entity effects", function(done) {
     bot.once('entityEffect', function(entity, effect) {
-      assert.strictEqual(entity.mobType, "creeper");
+      assert.strictEqual(entity.mobType, "Creeper");
       assert.strictEqual(effect.id, 10);
       assert.strictEqual(effect.amplifier, 1);
       assert.strictEqual(effect.duration, 11);

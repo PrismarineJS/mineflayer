@@ -131,7 +131,7 @@ bot.on('entityEquipmentChange', function(entity) {
 });
 bot.on('entitySpawn', function(entity) {
   if (entity.type === 'mob' && false) {
-    bot.chat("look out - a " + entity.mobType + " spawned at " + entity.position);
+    console.log("look out - a " + entity.mobType + " spawned at " + entity.position);
   } else if (entity.type === 'player') {
     bot.chat("look who decided to show up: " + entity.username);
   } else if (entity.type === 'object') {

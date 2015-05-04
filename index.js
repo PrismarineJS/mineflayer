@@ -27,7 +27,8 @@ module.exports = {
   items: mcData.items,
   recipes: mcData.recipes,
   instruments: mcData.instruments,
-  materials: mcData.materials
+  materials: mcData.materials,
+  entities: mcData.entities
 };
 
 function createBot(options) {

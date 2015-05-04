@@ -10,6 +10,7 @@
     - [mineflayer.recipes](#mineflayerrecipes)
     - [mineflayer.instruments](#mineflayerinstruments)
     - [mineflayer.biomes](#mineflayerbiomes)
+    - [mineflayer.entities](#mineflayerentities)
   - [Classes](#classes)
     - [mineflayer.vec3](#mineflayervec3)
     - [mineflayer.Location](#mineflayerlocation)
@@ -18,6 +19,10 @@
       - [entity.type](#entitytype)
       - [entity.username](#entityusername)
       - [entity.mobType](#entitymobtype)
+      - [entity.displayName](#entitydisplayname)
+      - [entity.entityType](#entityentitytype)
+      - [entity.kind](#entitykind)
+      - [entity.name](#entityname)
       - [entity.objectType](#entityobjecttype)
       - [entity.count](#entitycount)
       - [entity.position](#entityposition)
@@ -299,6 +304,8 @@ of the tool and the value as the efficiency multiplier.
 
 ### mineflayer.biomes
 
+### mineflayer.entities
+
 ## Classes
 
 ### mineflayer.vec3
@@ -341,6 +348,22 @@ If the entity type is `player`, this field will be set.
 #### entity.mobType
 
 If the entity type is `mob`, this field will be set.
+
+#### entity.displayName
+
+Field set for mob and object. A long name in multiple words.
+
+#### entity.entityType
+
+Field set for mob and object. The numerical type of the entity (1,2,...)
+
+#### entity.kind
+
+Field set for mob and object. The kind of entity (for example Hostile mobs, Passive mobs, NPCs).
+
+#### entity.name
+
+Field set for mob and object. A short name for the entity.
 
 #### entity.objectType
 
