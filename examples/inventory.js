@@ -86,7 +86,7 @@ bot.on('chat', function(username, message) {
     words = message.split(" ");
     amount = parseInt(words[1], 10);
     name = words[2];
-    item = findItemType(name);
+    item = mineflayer.data.findItemOrBlockByName(name);
     var craftingTable = findCraftingTable();
     var wbText = craftingTable ? "with a crafting table, " : "without a crafting table, ";
     if (item == null) {
@@ -142,19 +142,6 @@ function itemByName(name) {
   return bot.inventory.items().filter(function(item) {
     return item.name === name;
   })[0];
-}
-
-function findItemType(name) {
-  var id;
-  for (id in mineflayer.items) {
-    var item = mineflayer.items[id];
-    if (item.name === name) return item;
-  }
-  for (id in mineflayer.blocks) {
-    var block = mineflayer.blocks[id];
-    if (block.name === name) return block;
-  }
-  return null;
 }
 
 function findCraftingTable() {

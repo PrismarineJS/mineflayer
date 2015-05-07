@@ -31,10 +31,10 @@ function inject(bot)
   }
 
   var superflatLayers = [
-    new mineflayer.Block(mineflayer.ItemIndex.blocksByName["bedrock"].id),
-    new mineflayer.Block(mineflayer.ItemIndex.blocksByName["dirt"].id),
-    new mineflayer.Block(mineflayer.ItemIndex.blocksByName["dirt"].id),
-    new mineflayer.Block(mineflayer.ItemIndex.blocksByName["grass"].id),
+    new mineflayer.Block(mineflayer.data.blocksByName["bedrock"].id),
+    new mineflayer.Block(mineflayer.data.blocksByName["dirt"].id),
+    new mineflayer.Block(mineflayer.data.blocksByName["dirt"].id),
+    new mineflayer.Block(mineflayer.data.blocksByName["grass"].id),
     // and then air
   ];
 

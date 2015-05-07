@@ -48,7 +48,7 @@ function digSomething(blockId,bot,done) {
     },
     bot.test.clearInventory,
     function (cb) {
-      bot.test.setInventorySlot(36, new mineflayer.Item(mineflayer.ItemIndex.itemsByName["diamond_pickaxe"].id, 1, 0), cb);
+      bot.test.setInventorySlot(36, new mineflayer.Item(mineflayer.data.itemsByName["diamond_pickaxe"].id, 1, 0), cb);
     },
     bot.test.becomeSurvival,
     function (cb) {

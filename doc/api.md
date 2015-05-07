@@ -4,6 +4,7 @@
 
 - [API](#api)
   - [Enums](#enums)
+    - [mineflayer.data](#mineflayerdata)
     - [mineflayer.blocks](#mineflayerblocks)
     - [mineflayer.items](#mineflayeritems)
     - [mineflayer.materials](#mineflayermaterials)
@@ -289,9 +290,18 @@
 
 ## Enums
 
+These enums are stored in the language independent [minecraft-data](https://github.com/PrismarineJS/minecraft-data) project,
+ and accessed through [node-minecraft-data](https://github.com/PrismarineJS/node-minecraft-data).
+ 
+### mineflayer.data
+Provide access to the full [node-minecraft-data](https://github.com/PrismarineJS/node-minecraft-data) module
+(it is possible to use this module by requiring it, but mineflayer.data is the version used by mineflayer)
+
 ### mineflayer.blocks
+blocks indexed by id
 
 ### mineflayer.items
+items indexed by id
 
 ### mineflayer.materials
 
@@ -299,12 +309,16 @@ The key is the material. The value is an object with the key as the item id
 of the tool and the value as the efficiency multiplier.
 
 ### mineflayer.recipes
+recipes indexed by id
 
 ### mineflayer.instruments
+instruments indexed by id
 
 ### mineflayer.biomes
+biomes indexed by id
 
 ### mineflayer.entities
+entities indexed by id
 
 ## Classes
 

@@ -16,9 +16,9 @@ module.exports=function() {
 
       return [
         function(cb) {
-          bot.test.setInventorySlot(chestSlot, new mineflayer.Item(mineflayer.ItemIndex.blocksByName["chest"].id, 3, 0), function() {
-            bot.test.setInventorySlot(trappedChestSlot, new mineflayer.Item(mineflayer.ItemIndex.blocksByName["trapped_chest"].id, 3, 0), function() {
-              bot.test.setInventorySlot(boneSlot, new mineflayer.Item(mineflayer.ItemIndex.itemsByName["bone"].id, 3, 0), cb);
+          bot.test.setInventorySlot(chestSlot, new mineflayer.Item(mineflayer.data.blocksByName["chest"].id, 3, 0), function() {
+            bot.test.setInventorySlot(trappedChestSlot, new mineflayer.Item(mineflayer.data.blocksByName["trapped_chest"].id, 3, 0), function() {
+              bot.test.setInventorySlot(boneSlot, new mineflayer.Item(mineflayer.data.itemsByName["bone"].id, 3, 0), cb);
             });
           });
         },

@@ -85,7 +85,7 @@ function listInventory() {
     if(slot == null) continue;
     count = slot.count;
     id = slot.type;
-    item = mineflayer.items[id] || mineflayer.blocks[id];
+    item = mineflayer.data.findItemOrBlockById(id);
     if (count) output += item.name + ": " + count + ", ";
   }
   if(!output)

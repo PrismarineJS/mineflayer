@@ -5,20 +5,6 @@ var assert = require("assert");
 
 module.exports=function(){
   return function(bot,done) {
-    function findItemType(name) {
-      var id;
-      for (id in mineflayer.items) {
-        var item = mineflayer.items[id];
-        if (item.name === name) return item;
-      }
-      for (id in mineflayer.blocks) {
-        var block = mineflayer.blocks[id];
-        if (block.name === name) return block;
-      }
-      return null;
-    }
-
-
     function findCraftingTable() {
       var cursor = mineflayer.vec3();
       for (cursor.x = bot.entity.position.x - 4; cursor.x < bot.entity.position.x + 4; cursor.x++) {
@@ -32,7 +18,7 @@ module.exports=function(){
     }
 
     function craft(amount, name,cb) {
-      item = findItemType(name);
+      item = mineflayer.data.findItemOrBlockByName(name);
       var craftingTable = findCraftingTable();
       var wbText = craftingTable ? "with a crafting table, " : "without a crafting table, ";
       if (item == null) {
@@ -61,7 +47,7 @@ module.exports=function(){
 
     var craftTest = [
       function (cb) {
-        bot.test.setInventorySlot(36, new mineflayer.Item(mineflayer.ItemIndex.blocksByName["log"].id, 1, 0), cb);
+        bot.test.setInventorySlot(36, new mineflayer.Item(mineflayer.data.blocksByName["log"].id, 1, 0), cb);
       },
       bot.test.becomeSurvival,
       function (cb) {
