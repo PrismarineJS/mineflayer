@@ -75,7 +75,19 @@ bot.on('chat', function(username, message) {
   if (username === bot.username) return;
   if (message === 'pos') {
     bot.chat("I am at " + bot.entity.position + ", you are at " + bot.players[username].entity.position);
-  } else if (message === 'spawn') {
+  }
+  else if(message === 'wearing') {
+    var eq=bot.players[username].entity.equipment;
+    var display=[];
+    if(eq[0]) display.push("holding a "+eq[0].displayName);
+    if(eq[1]) display.push("wearing a "+eq[1].displayName+" on your feet");
+    if(eq[2]) display.push("wearing a "+eq[2].displayName+" on your legs");
+    if(eq[3]) display.push("wearing a "+eq[3].displayName+" on your torso");
+    if(eq[4]) display.push("wearing a "+eq[4].displayName+" on your head");
+    // the enchantment of the chestplate is stored in eq[3].nbt
+    bot.chat("You are "+display.join(", ")+".");
+  }
+  else if (message === 'spawn') {
     bot.chat("spawn is at " + bot.spawnPoint);
   } else if (message === 'quit') {
     bot.quit(username + "told me to");

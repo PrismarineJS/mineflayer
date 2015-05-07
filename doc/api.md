@@ -403,10 +403,12 @@ get from collecting the orb.
 #### entity.equipment[5]
 
  * `0` - held item
- * `1` - head
- * `2` - torso
- * `3` - legging
- * `4` - shoes
+ * `1` - shoes
+ * `2` - legging
+ * `3` - torso
+ * `4` - head
+ 
+Each is a `mineflayer.Item`.
 
 #### entity.heldItem
 
