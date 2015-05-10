@@ -23,6 +23,10 @@ bot.on('login', function() {
 bot.on('time', function() {
   //console.log("current time", bot.time);
 });
+bot.on('forcedMove', function(){
+  console.log("I have been force moved to "+bot.entity.position);
+});
+
 bot.on('playerJoined', function(player) {
   bot.chat("hello, " + player.username + "! welcome to the server.");
 });

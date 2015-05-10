@@ -220,6 +220,7 @@
       - ["diggingCompleted" (block)](#diggingcompleted-block)
       - ["diggingAborted" (block)](#diggingaborted-block)
       - ["move"](#move)
+      - ["forcedMove"](#forcedmove)
       - ["mount"](#mount)
       - ["dismount" (vehicle)](#dismount-vehicle)
       - ["windowOpen" (window)](#windowopen-window)
@@ -1191,8 +1192,13 @@ This occurs whether the process was completed or aborted.
 #### "move"
 
 Fires when the bot moves. If you want the current position, use
-`bot.entity.position` and if you want the previous position, use
+`bot.entity.position` and for normal moves if you want the previous position, use
 `bot.entity.position.minus(bot.entity.velocity)`.
+
+#### "forcedMove"
+
+Fires when the bot is force moved by the server (teleport, spawning, ...). If you want the current position, use
+`bot.entity.position`.
 
 #### "mount"
 
