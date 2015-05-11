@@ -1,7 +1,7 @@
 var mineflayer = require('../');
 var vec3 = mineflayer.vec3;
 
-if(process.argv.length<3 || process.argv.length>5)
+if(process.argv.length<4 || process.argv.length>6)
 {
     console.log("Usage : node digger.js <host> <port> [<name>] [<password>]");
     process.exit(1);
