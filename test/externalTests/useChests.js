@@ -2,9 +2,9 @@ var mineflayer = require('../../index');
 var Vec3 = require('vec3').Vec3;
 var assert = require("assert");
 
-module.exports=function() {
+module.exports = function() {
 
-  return function(bot,done){
+  return function(bot, done) {
     var chestManagementTest = (function() {
       var smallChestLocation = new Vec3(0, 4, -1);
       var largeChestLocations = [new Vec3(0, 4, 1), new Vec3(1, 4, 1)];
@@ -39,22 +39,38 @@ module.exports=function() {
             });
           });
         },
-        function(cb) { depositBones(smallChestLocation, 1, cb); },
-        function(cb) { depositBones(largeChestLocations[0], 2, cb); },
+        function(cb) {
+          depositBones(smallChestLocation, 1, cb);
+        },
+        function(cb) {
+          depositBones(largeChestLocations[0], 2, cb);
+        },
         function(cb) {
           checkSlotsAreEmpty(bot.inventory);
           cb();
         },
-        function(cb) { withdrawBones(smallChestLocation, 1, cb); },
-        function(cb) { withdrawBones(largeChestLocations[0], 2, cb); },
-        function(cb) { depositBones(smallTrappedChestLocation, 1, cb); },
-        function(cb) { depositBones(largeTrappedChestLocations[0], 2, cb); },
+        function(cb) {
+          withdrawBones(smallChestLocation, 1, cb);
+        },
+        function(cb) {
+          withdrawBones(largeChestLocations[0], 2, cb);
+        },
+        function(cb) {
+          depositBones(smallTrappedChestLocation, 1, cb);
+        },
+        function(cb) {
+          depositBones(largeTrappedChestLocations[0], 2, cb);
+        },
         function(cb) {
           checkSlotsAreEmpty(bot.inventory);
           cb();
         },
-        function(cb) { withdrawBones(smallTrappedChestLocation, 1, cb); },
-        function(cb) { withdrawBones(largeTrappedChestLocations[0], 2, cb); },
+        function(cb) {
+          withdrawBones(smallTrappedChestLocation, 1, cb);
+        },
+        function(cb) {
+          withdrawBones(largeTrappedChestLocations[0], 2, cb);
+        },
         function(cb) {
           bot.test.sayEverywhere("chest management test: pass");
           cb();
@@ -63,9 +79,9 @@ module.exports=function() {
 
       function itemByName(items, name) {
         var item, i;
-        for (i = 0; i < items.length; ++i) {
+        for(i = 0; i < items.length; ++i) {
           item = items[i];
-          if (item && item.name === name) return item;
+          if(item && item.name === name) return item;
         }
         return null;
       }
@@ -74,9 +90,9 @@ module.exports=function() {
         var chest = bot.openChest(bot.blockAt(chestLocation));
         chest.on("open", function() {
           checkSlotsAreEmpty(chest.window);
-          var name="bone";
+          var name = "bone";
           var item = itemByName(bot.inventory.items(), name);
-          if (!item) {
+          if(!item) {
             bot.test.sayEverywhere("unknown item " + name);
             throw new Error("unknown item " + name);
           }
@@ -87,12 +103,13 @@ module.exports=function() {
           });
         });
       }
+
       function withdrawBones(chestLocation, count, cb) {
         var chest = bot.openChest(bot.blockAt(chestLocation));
         chest.on("open", function() {
           var name = "bone";
           var item = itemByName(chest.items(), name);
-          if (!item) {
+          if(!item) {
             bot.test.sayEverywhere("unknown item " + name);
             throw new Error("unknown item " + name);
           }
@@ -105,13 +122,14 @@ module.exports=function() {
           });
         });
       }
+
       function checkSlotsAreEmpty(window) {
-        for (var i = 0; i < window.inventorySlotStart; i++) {
+        for(var i = 0; i < window.inventorySlotStart; i++) {
           assert(window.slots[i] == null);
         }
       }
     })();
 
-    bot.test.callbackChain(chestManagementTest,done);
+    bot.test.callbackChain(chestManagementTest, done);
   };
 };

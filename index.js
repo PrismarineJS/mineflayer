@@ -61,7 +61,7 @@ Bot.prototype.connect = function(options) {
   self._client.on('end', function() {
     self.emit('end');
   });
-  for (var pluginName in plugins) {
+  for(var pluginName in plugins) {
     plugins[pluginName](self, options);
   }
 };

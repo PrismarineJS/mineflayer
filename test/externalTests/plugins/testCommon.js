@@ -5,24 +5,23 @@ var mineflayer = require('../../../index');
 
 module.exports = inject;
 
-function inject(bot)
-{
-  bot.test={};
-  bot.test.callbackChain=callbackChain;
-  bot.test.sayEverywhere=sayEverywhere;
-  bot.test.clearInventory=clearInventory;
-  bot.test.becomeSurvival=becomeSurvival;
-  bot.test.fly=fly;
-  bot.test.resetState=resetState;
-  bot.test.setInventorySlot=setInventorySlot;
-  bot.test.placeBlock=placeBlock;
+function inject(bot) {
+  bot.test = {};
+  bot.test.callbackChain = callbackChain;
+  bot.test.sayEverywhere = sayEverywhere;
+  bot.test.clearInventory = clearInventory;
+  bot.test.becomeSurvival = becomeSurvival;
+  bot.test.fly = fly;
+  bot.test.resetState = resetState;
+  bot.test.setInventorySlot = setInventorySlot;
+  bot.test.placeBlock = placeBlock;
 
 
   function callbackChain(functions, cb) {
     var i = 0;
     callNext();
     function callNext() {
-      if (i < functions.length) {
+      if(i < functions.length) {
         functions[i++](callNext);
       } else {
         cb();
@@ -40,20 +39,20 @@ function inject(bot)
 
   function resetBlocksToSuperflat(cb) {
     var groundY = 4;
-    for (var y = groundY + 4; y >= groundY - 1; y--) {
+    for(var y = groundY + 4; y >= groundY - 1; y--) {
       var expectedBlock = superflatLayers[y];
-      for (var i = 0; i < deltas3x3.length; i++) {
+      for(var i = 0; i < deltas3x3.length; i++) {
         var position = bot.entity.position.plus(deltas3x3[i]);
         position.y = y;
         var block = bot.blockAt(position);
-        if (expectedBlock == null) {
-          if (block.name === "air") continue;
+        if(expectedBlock == null) {
+          if(block.name === "air") continue;
           // dig it
           return digAndResume(position);
         } else {
-          if (expectedBlock.type === block.type) continue;
+          if(expectedBlock.type === block.type) continue;
           // fix it
-          if (block.type !== 0) {
+          if(block.type !== 0) {
             // dig it
             return digAndResume(position);
           }
@@ -68,17 +67,18 @@ function inject(bot)
     function digAndResume(position) {
       bot.dig(bot.blockAt(position), resume);
     }
+
     function placeAndResume(position, block) {
       setInventorySlot(36, new mineflayer.Item(block.type, 1, 0), function() {
         placeBlock(36, position);
         resume();
       });
     }
+
     function resume() {
       resetBlocksToSuperflat(cb);
     }
   }
-
 
 
   function placeBlock(slot, position, cb) {
@@ -88,7 +88,6 @@ function inject(bot)
     bot.placeBlock(referenceBlock, new Vec3(0, 1, 0));
     setImmediate(cb);
   }
-
 
 
 // always leaves you in creative mode
@@ -106,14 +105,20 @@ function inject(bot)
     ], cb);
   }
 
-  function becomeCreative(cb) { setCreativeMode(true, cb); }
-  function becomeSurvival(cb) { setCreativeMode(false, cb); }
+  function becomeCreative(cb) {
+    setCreativeMode(true, cb);
+  }
+
+  function becomeSurvival(cb) {
+    setCreativeMode(false, cb);
+  }
+
   function setCreativeMode(value, cb) {
     // this function behaves the same whether we start in creative mode or not.
     // also, creative mode is always allowed for ops, even if server.properties says force-gamemode=true in survival mode.
     bot.chat("/gamemode " + (value ? "creative" : "survival"));
     bot.on("message", function onMessage(jsonMsg) {
-      switch (jsonMsg.translate) {
+      switch(jsonMsg.translate) {
         case "gameMode.changed":
           // good.
           bot.removeListener("message", onMessage);
@@ -131,8 +136,8 @@ function inject(bot)
 
 
   function clearInventory(cb) {
-    for (var i = 0; i < bot.inventory.slots.length; i++) {
-      if (bot.inventory.slots[i] == null) continue;
+    for(var i = 0; i < bot.inventory.slots.length; i++) {
+      if(bot.inventory.slots[i] == null) continue;
       setInventorySlot(i, null, function() {
         // start over until we have nothing to do
         clearInventory(cb);
@@ -145,20 +150,20 @@ function inject(bot)
 
 // you need to be in creative mode for this to work
   function setInventorySlot(targetSlot, item, cb) {
-    if (mineflayer.Item.equal(bot.inventory.slots[targetSlot], item)) {
+    if(mineflayer.Item.equal(bot.inventory.slots[targetSlot], item)) {
       // already good to go
       return setImmediate(cb);
     }
     bot.creative.setInventorySlot(targetSlot, item);
     //TODO: instead of that timeout, it would be better to have a good callback inside setInventorySlot
-    setTimeout(cb,500);
+    setTimeout(cb, 500);
   }
 
 
   function teleport(position, cb) {
     bot.chat("/tp " + bot.username + " " + position.x + " " + position.y + " " + position.z);
     bot.on("move", function onMove() {
-      if (bot.entity.position.distanceTo(position) < 0.9) {
+      if(bot.entity.position.distanceTo(position) < 0.9) {
         // close enough
         bot.removeListener("move", onMove);
         cb();
@@ -174,21 +179,21 @@ function inject(bot)
 
   var deltas3x3 = [
     new Vec3(-1, 0, -1),
-    new Vec3( 0, 0, -1),
-    new Vec3( 1, 0, -1),
-    new Vec3(-1, 0,  0),
-    new Vec3( 0, 0,  0),
-    new Vec3( 1, 0,  0),
-    new Vec3(-1, 0,  1),
-    new Vec3( 0, 0,  1),
-    new Vec3( 1, 0,  1),
+    new Vec3(0, 0, -1),
+    new Vec3(1, 0, -1),
+    new Vec3(-1, 0, 0),
+    new Vec3(0, 0, 0),
+    new Vec3(1, 0, 0),
+    new Vec3(-1, 0, 1),
+    new Vec3(0, 0, 1),
+    new Vec3(1, 0, 1),
   ];
 
   function waitForChunksToLoad(cb) {
     var isLoaded = true;
     // check 3x3 chunks around us
-    for (var i = 0; i < deltas3x3.length; i++) {
-      if (bot.blockAt(bot.entity.position.plus(deltas3x3[i].scaled(64))) == null) {
+    for(var i = 0; i < deltas3x3.length; i++) {
+      if(bot.blockAt(bot.entity.position.plus(deltas3x3[i].scaled(64))) == null) {
         // keep wait
         return setTimeout(function() {
           waitForChunksToLoad(cb);

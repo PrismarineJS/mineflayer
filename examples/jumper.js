@@ -1,15 +1,14 @@
 var mineflayer = require('../');
-if(process.argv.length<4 || process.argv.length>6)
-{
-    console.log("Usage : node jumper.js <host> <port> [<name>] [<password>]");
-    process.exit(1);
+if(process.argv.length < 4 || process.argv.length > 6) {
+  console.log("Usage : node jumper.js <host> <port> [<name>] [<password>]");
+  process.exit(1);
 }
 var bot = mineflayer.createBot({
-    username: process.argv[4] ? process.argv[4] : "jumper",
-    verbose: true,
-    port:parseInt(process.argv[3]),
-    host:process.argv[2],
-    password:process.argv[5]
+  username: process.argv[4] ? process.argv[4] : "jumper",
+  verbose: true,
+  port: parseInt(process.argv[3]),
+  host: process.argv[2],
+  password: process.argv[5]
 });
 bot.once('spawn', function() {
   // so creepy
@@ -17,7 +16,7 @@ bot.once('spawn', function() {
 });
 var target = null;
 function watch() {
-  if (! target) return;
+  if(!target) return;
   bot.lookAt(target.position.offset(0, target.height, 0));
 }
 bot.on("mount", function() {
@@ -28,54 +27,54 @@ bot.on("dismount", function(vehicle) {
 });
 bot.on('chat', function(username, message) {
   target = bot.players[username].entity;
-  if (username === bot.username) return;
+  if(username === bot.username) return;
   var entity;
-  if (message === 'jump a lot') {
+  if(message === 'jump a lot') {
     bot.setControlState('jump', true);
   }
-  else if (message === 'stop jumping') {
+  else if(message === 'stop jumping') {
     bot.setControlState('jump', false);
   }
-  else if (message === 'jump') {
+  else if(message === 'jump') {
     bot.setControlState('jump', true);
     bot.setControlState('jump', false);
-  } else if (message === 'forward') {
+  } else if(message === 'forward') {
     bot.setControlState('forward', true);
-  } else if (message === 'back') {
+  } else if(message === 'back') {
     bot.setControlState('back', true);
-  } else if (message === 'left') {
+  } else if(message === 'left') {
     bot.setControlState('left', true);
-  } else if (message === 'right') {
+  } else if(message === 'right') {
     bot.setControlState('right', true);
-  } else if (message === 'stop') {
+  } else if(message === 'stop') {
     bot.clearControlStates();
-  } else if (message === 'mount') {
+  } else if(message === 'mount') {
     entity = nearestEntity("object");
     bot.mount(entity);
-  } else if (message === 'dismount') {
+  } else if(message === 'dismount') {
     bot.dismount();
-  } else if (message === 'move vehicle forward') {
+  } else if(message === 'move vehicle forward') {
     bot.moveVehicle(0.0, 1.0);
-  } else if (message === 'move vehicle left') {
+  } else if(message === 'move vehicle left') {
     bot.moveVehicle(1.0, 0.0);
-  } else if (message === 'move vehicle right') {
+  } else if(message === 'move vehicle right') {
     bot.moveVehicle(-1.0, 0.0);
-  }  else if (message === 'move vehicle backward') {
+  } else if(message === 'move vehicle backward') {
     bot.moveVehicle(0.0, -1.0);
-  }  else if (message === 'stop vehicle') {
+  } else if(message === 'stop vehicle') {
     bot.moveVehicle(0.0, 0.0);
-  } else if (message === 'attack') {
+  } else if(message === 'attack') {
     entity = nearestEntity();
-    bot.attack(entity,true);
-  } else if (message === 'tp') {
+    bot.attack(entity, true);
+  } else if(message === 'tp') {
     bot.entity.position.y += 10;
-  } else if (message === 'spawn') {
+  } else if(message === 'spawn') {
     bot.spawn();
-  } else if (message === 'pos') {
+  } else if(message === 'pos') {
     bot.chat(bot.entity.position.toString());
-  } else if (message === 'yp') {
+  } else if(message === 'yp') {
     bot.chat("Yaw " + bot.entity.yaw + ", pitch: " + bot.entity.pitch);
-  } else if (message === 'sprint') {
+  } else if(message === 'sprint') {
     bot.setControlState('sprint', true);
   }
 });
@@ -84,12 +83,12 @@ function nearestEntity(type) {
   var id, entity, dist;
   var best = null;
   var bestDistance = null;
-  for (id in bot.entities) {
+  for(id in bot.entities) {
     entity = bot.entities[id];
-    if (type && entity.type !== type) continue;
-    if (entity === bot.entity) continue;
+    if(type && entity.type !== type) continue;
+    if(entity === bot.entity) continue;
     dist = bot.entity.position.distanceTo(entity.position);
-    if (! best || dist < bestDistance) {
+    if(!best || dist < bestDistance) {
       best = entity;
       bestDistance = dist;
     }

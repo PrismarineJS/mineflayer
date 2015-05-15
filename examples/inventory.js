@@ -1,34 +1,33 @@
 var mineflayer = require('../');
-if(process.argv.length<4 || process.argv.length>6)
-{
-    console.log("Usage : node inventory.js <host> <port> [<name>] [<password>]");
-    process.exit(1);
+if(process.argv.length < 4 || process.argv.length > 6) {
+  console.log("Usage : node inventory.js <host> <port> [<name>] [<password>]");
+  process.exit(1);
 }
 var bot = mineflayer.createBot({
-    username: process.argv[4] ? process.argv[4] : "inventory",
-    verbose: true,
-    port:parseInt(process.argv[3]),
-    host:process.argv[2],
-    password:process.argv[5]
+  username: process.argv[4] ? process.argv[4] : "inventory",
+  verbose: true,
+  port: parseInt(process.argv[3]),
+  host: process.argv[2],
+  password: process.argv[5]
 });
 
 bot.on('chat', function(username, message) {
   var words, name, item, amount, destination;
-  if (message === 'debug') {
+  if(message === 'debug') {
     console.log(bot.inventory);
-  } else if (message === 'list') {
+  } else if(message === 'list') {
     listInventory();
-  } else if (message === 'look') {
+  } else if(message === 'look') {
     var entity = bot.players[username].entity;
     bot.lookAt(entity.position.offset(0, entity.height, 0));
-  } else if (/^toss (\d+) /.test(message)) {
+  } else if(/^toss (\d+) /.test(message)) {
     words = message.split(" ");
     amount = parseInt(words[1], 10);
     name = words[2];
     item = itemByName(name);
-    if (item) {
+    if(item) {
       bot.toss(item.type, null, amount, function(err) {
-        if (err) {
+        if(err) {
           bot.chat("unable to toss " + item.name);
           console.error(err.stack);
         } else {
@@ -38,13 +37,13 @@ bot.on('chat', function(username, message) {
     } else {
       bot.chat("I have no " + name);
     }
-  } else if (/^toss /.test(message)) {
+  } else if(/^toss /.test(message)) {
     words = message.split(" ");
     name = words[1];
     item = itemByName(name);
-    if (item) {
+    if(item) {
       bot.tossStack(item, function(err) {
-        if (err) {
+        if(err) {
           bot.chat("unable to toss " + item.name);
           console.error(err.stack);
         } else {
@@ -54,14 +53,14 @@ bot.on('chat', function(username, message) {
     } else {
       bot.chat("I have no " + name);
     }
-  } else if (/^equip /.test(message)) {
+  } else if(/^equip /.test(message)) {
     words = message.split(" ");
     destination = words[1];
     name = words[2];
     item = itemByName(name);
-    if (item) {
+    if(item) {
       bot.equip(item, destination, function(err) {
-        if (err) {
+        if(err) {
           bot.chat("unable to equip " + item.name);
           console.error(err.stack);
         } else {
@@ -71,32 +70,32 @@ bot.on('chat', function(username, message) {
     } else {
       bot.chat("I have no " + name);
     }
-  } else if (/^unequip /.test(message)) {
+  } else if(/^unequip /.test(message)) {
     words = message.split(" ");
     destination = words[1];
     bot.unequip(destination, function(err) {
-      if (err) {
+      if(err) {
         bot.chat("unable to unequip");
         console.error(err.stack);
       } else {
         bot.chat("unequipped");
       }
     });
-  } else if (/^craft (\d+)/.test(message)) {
+  } else if(/^craft (\d+)/.test(message)) {
     words = message.split(" ");
     amount = parseInt(words[1], 10);
     name = words[2];
     item = mineflayer.data.findItemOrBlockByName(name);
     var craftingTable = findCraftingTable();
     var wbText = craftingTable ? "with a crafting table, " : "without a crafting table, ";
-    if (item == null) {
+    if(item == null) {
       bot.chat(wbText + "unknown item: " + name);
     } else {
       var recipes = bot.recipesFor(item.id, null, 1, craftingTable); // doesn't check if it's possible to do it amount times
-      if (recipes.length) {
+      if(recipes.length) {
         bot.chat(wbText + "I can make " + item.name);
         bot.craft(recipes[0], amount, craftingTable, function(err) {
-          if (err) {
+          if(err) {
             bot.chat("error making " + item.name);
             console.error(err.stack);
           } else {
@@ -107,20 +106,20 @@ bot.on('chat', function(username, message) {
         bot.chat(wbText + "I can't make " + item.name);
       }
     }
-  } else if (message === "use") {
+  } else if(message === "use") {
     bot.chat("activating");
     bot.activateItem();
-  } else if (message === "stop") {
+  } else if(message === "stop") {
     bot.chat("stopping");
     bot.clearControlStates();
     bot.deactivateItem();
-  } else if (message === "food") {
+  } else if(message === "food") {
     bot.chat("food: " + bot.food);
-  } else if (message === "jump") {
+  } else if(message === "jump") {
     bot.setControlState('jump', true);
-  } else if (message === "health") {
+  } else if(message === "health") {
     bot.chat("health: " + bot.health);
-  } else if (message === "difficulty") {
+  } else if(message === "difficulty") {
     bot.chat("difficulty: " + bot.game.difficulty);
   }
 });
@@ -131,7 +130,7 @@ function listInventory() {
 }
 
 function itemStr(item) {
-  if (item) {
+  if(item) {
     return item.name + " x " + item.count;
   } else {
     return "(nothing)";
@@ -150,7 +149,7 @@ function findCraftingTable() {
     for(cursor.y = bot.entity.position.y - 4; cursor.y < bot.entity.position.y + 4; cursor.y++) {
       for(cursor.z = bot.entity.position.z - 4; cursor.z < bot.entity.position.z + 4; cursor.z++) {
         var block = bot.blockAt(cursor);
-        if (block.type === 58) return block;
+        if(block.type === 58) return block;
       }
     }
   }

@@ -1,17 +1,16 @@
 var mineflayer = require('../');
 var vec3 = mineflayer.vec3;
-if(process.argv.length<4 || process.argv.length>6)
-{
-    console.log("Usage : node chatterbot.js <host> <port> [<name>] [<password>]");
-    process.exit(1);
+if(process.argv.length < 4 || process.argv.length > 6) {
+  console.log("Usage : node chatterbot.js <host> <port> [<name>] [<password>]");
+  process.exit(1);
 }
 var bot = mineflayer.createBot({
-    username: process.argv[4] ? process.argv[4] : "chatterbox",
-    viewDistance: "tiny",
-    verbose: true,
-    port:parseInt(process.argv[3]),
-    host:process.argv[2],
-    password:process.argv[5]
+  username: process.argv[4] ? process.argv[4] : "chatterbox",
+  viewDistance: "tiny",
+  verbose: true,
+  port: parseInt(process.argv[3]),
+  host: process.argv[2],
+  password: process.argv[5]
 });
 bot.on('health', function() {
   bot.chat("I have " + bot.health + " health and " + bot.food + " food");
@@ -23,8 +22,8 @@ bot.on('login', function() {
 bot.on('time', function() {
   //console.log("current time", bot.time);
 });
-bot.on('forcedMove', function(){
-  console.log("I have been force moved to "+bot.entity.position);
+bot.on('forcedMove', function() {
+  console.log("I have been force moved to " + bot.entity.position);
 });
 
 bot.on('playerJoined', function(player) {
@@ -54,7 +53,7 @@ bot.on('playerLeft', function(player) {
   console.log("bye " + player.username);
 });
 bot.on('rain', function() {
-  if (bot.isRaining) {
+  if(bot.isRaining) {
     bot.chat("it started raining");
   } else {
     bot.chat("it stopped raining.");
@@ -76,31 +75,31 @@ bot.on('whisper', function(username, message, rawMessage) {
 });
 bot.on('chat', function(username, message) {
   var block, pos;
-  if (username === bot.username) return;
-  if (message === 'pos') {
+  if(username === bot.username) return;
+  if(message === 'pos') {
     bot.chat("I am at " + bot.entity.position + ", you are at " + bot.players[username].entity.position);
   }
   else if(message === 'wearing') {
-    var eq=bot.players[username].entity.equipment;
-    var display=[];
-    if(eq[0]) display.push("holding a "+eq[0].displayName);
-    if(eq[1]) display.push("wearing a "+eq[1].displayName+" on your feet");
-    if(eq[2]) display.push("wearing a "+eq[2].displayName+" on your legs");
-    if(eq[3]) display.push("wearing a "+eq[3].displayName+" on your torso");
-    if(eq[4]) display.push("wearing a "+eq[4].displayName+" on your head");
+    var eq = bot.players[username].entity.equipment;
+    var display = [];
+    if(eq[0]) display.push("holding a " + eq[0].displayName);
+    if(eq[1]) display.push("wearing a " + eq[1].displayName + " on your feet");
+    if(eq[2]) display.push("wearing a " + eq[2].displayName + " on your legs");
+    if(eq[3]) display.push("wearing a " + eq[3].displayName + " on your torso");
+    if(eq[4]) display.push("wearing a " + eq[4].displayName + " on your head");
     // the enchantment of the chestplate is stored in eq[3].nbt
-    bot.chat("You are "+display.join(", ")+".");
+    bot.chat("You are " + display.join(", ") + ".");
   }
-  else if (message === 'spawn') {
+  else if(message === 'spawn') {
     bot.chat("spawn is at " + bot.spawnPoint);
-  } else if (message === 'quit') {
+  } else if(message === 'quit') {
     bot.quit(username + "told me to");
-  } else if (message === 'set') {
+  } else if(message === 'set') {
     bot.setSettings({viewDistance: 'normal'});
-  } else if (message === 'block') {
+  } else if(message === 'block') {
     block = bot.blockAt(bot.players[username].entity.position.offset(0, -1, 0));
     bot.chat("block under you is " + block.displayName + " in the " + block.biome.name + " biome");
-  } else if (message === 'blocksdown') {
+  } else if(message === 'blocksdown') {
     pos = bot.players[username].entity.position.clone();
     setInterval(function() {
       var block = bot.blockAt(pos);
@@ -121,9 +120,9 @@ bot.on('entitySwingArm', function(entity) {
   //console.log(entity.username + ", you've swung your arm " + map[entity.id] + "times.");
 });
 bot.on('entityHurt', function(entity) {
-  if (entity.type === 'mob') {
+  if(entity.type === 'mob') {
     //console.log("Haha! The " + entity.mobType + " got hurt!");
-  } else if (entity.type === 'player') {
+  } else if(entity.type === 'player') {
     console.log("aww, poor " + entity.username + " got hurt. maybe you shouldn't have a ping of " + bot.players[entity.username].ping);
   }
 });
@@ -146,33 +145,33 @@ bot.on('entityEquipmentChange', function(entity) {
   console.log("entityEquipmentChange", entity)
 });
 bot.on('entitySpawn', function(entity) {
-  if (entity.type === 'mob' && false) {
+  if(entity.type === 'mob' && false) {
     console.log("look out - a " + entity.mobType + " spawned at " + entity.position);
-  } else if (entity.type === 'player') {
+  } else if(entity.type === 'player') {
     bot.chat("look who decided to show up: " + entity.username);
-  } else if (entity.type === 'object') {
+  } else if(entity.type === 'object') {
     console.log("there's a " + entity.objectType + " at " + entity.position);
-  } else if (entity.type === 'global') {
+  } else if(entity.type === 'global') {
     bot.chat("ooh lightning!");
-  } else if (entity.type === 'orb') {
+  } else if(entity.type === 'orb') {
     bot.chat("gimme dat exp orb");
   }
 });
 bot.on('playerCollect', function(collector, collected) {
-  if (collector.type === 'player' && collected.type === 'object') {
+  if(collector.type === 'player' && collected.type === 'object') {
     var rawItem = collected.metadata[10];
     var item = itemFromNotch(rawItem);
     bot.chat("I'm so jealous. " + collector.username + " collected " + item.count + " " + item.displayName);
   }
 });
 bot.on('entityDetach', function(entity, vehicle) {
-  if (entity.type === 'player' && vehicle.type === 'object') {
+  if(entity.type === 'player' && vehicle.type === 'object') {
     bot.chat("lame - " + entity.username + " stopped riding the " + vehicle.objectType);
   }
 });
 bot.on('entityAttach', function(entity, vehicle) {
-  if (entity.type === 'player' && vehicle.type === 'object') {
-    bot.chat("sweet - " + entity.username  + " is riding that " + vehicle.objectType);
+  if(entity.type === 'player' && vehicle.type === 'object') {
+    bot.chat("sweet - " + entity.username + " is riding that " + vehicle.objectType);
   }
 });
 bot.on('entityEffect', function(entity, effect) {

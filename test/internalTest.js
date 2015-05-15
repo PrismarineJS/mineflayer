@@ -6,7 +6,7 @@ var assert = require('assert');
 describe("mineflayer_internal", function() {
   var bot, server;
   beforeEach(function(done) {
-    server = mc.createServer({ 'online-mode': false } );
+    server = mc.createServer({'online-mode': false});
     server.on('listening', function() {
       bot = mineflayer.createBot({
         username: "player",
@@ -27,10 +27,11 @@ describe("mineflayer_internal", function() {
     server.on('login', function(client) {
       var message = JSON.stringify({
         translate: 'chat.type.text',
-        with: [{text: 'gary'
-      },'hello']
+        with: [{
+          text: 'gary'
+        }, 'hello']
       });
-      client.write('chat', { message: message, position:0 });
+      client.write('chat', {message: message, position: 0});
       client.on('chat', function(packet) {
         assert.strictEqual(packet.message, "hi");
         done();
@@ -102,8 +103,8 @@ describe("mineflayer_internal", function() {
         assert.ok(bot.entity.position.y <= y);
         assert.ok(bot.entity.position.y >= pos.y);
         y = bot.entity.position.y;
-        if (bot.entity.velocity.y > -terminal) hitTerminal = true;
-        if (bot.entity.velocity.y === 0) {
+        if(bot.entity.velocity.y > -terminal) hitTerminal = true;
+        if(bot.entity.velocity.y === 0) {
           assert.ok(hitTerminal);
           assert.ok(bot.entity.onGround);
           assert.ok(bot.entity.position.y, pos.y);
@@ -123,7 +124,7 @@ describe("mineflayer_internal", function() {
           dimension: 0,
           difficulty: 0,
           maxPlayers: 20,
-          reducedDebugInfo:true
+          reducedDebugInfo: true
         });
         client.write('map_chunk', {
           x: 0,
@@ -158,22 +159,25 @@ describe("mineflayer_internal", function() {
       server.on('login', function(client) {
         serverClient = client;
 
-        client.write('player_info',{ id: 56,
+        client.write('player_info', {
+          id: 56,
           state: 'play',
           action: 0,
           length: 1,
-          data:
-            [ { UUID: [1,2,3,4],
-              name: 'bot5',
-              propertiesLength: 0,
-              properties: [],
-              gamemode: 0,
-              ping: 0,
-              hasDisplayName: false } ] });
+          data: [{
+            UUID: [1, 2, 3, 4],
+            name: 'bot5',
+            propertiesLength: 0,
+            properties: [],
+            gamemode: 0,
+            ping: 0,
+            hasDisplayName: false
+          }]
+        });
 
         client.write('named_entity_spawn', {
           entityId: 56,
-          playerUUID: [1,2,3,4],
+          playerUUID: [1, 2, 3, 4],
           x: 1,
           y: 2,
           z: 3,
