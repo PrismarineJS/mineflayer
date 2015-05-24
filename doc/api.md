@@ -244,8 +244,8 @@
       - [bot.wake([cb])](#botwakecb)
       - [bot.setControlState(control, state)](#botsetcontrolstatecontrol-state)
       - [bot.clearControlStates()](#botclearcontrolstates)
-      - [bot.lookAt(point, [force])](#botlookatpoint-force)
-      - [bot.look(yaw, pitch, [force])](#botlookyaw-pitch-force)
+      - [bot.lookAt(point, [force], [callback])](#botlookatpoint-force-callback)
+      - [bot.look(yaw, pitch, [force], [callback])](#botlookyaw-pitch-force-callback)
       - [bot.updateSign(block, text)](#botupdatesignblock-text)
       - [bot.equip(item, destination, [callback])](#botequipitem-destination-callback)
       - [bot.unequip(destination, [callback])](#botunequipdestination-callback)
@@ -1306,12 +1306,13 @@ Get out of bed. `cb` can have an err parameter if the bot cannot wake up.
 
 Sets all controls to off.
 
-#### bot.lookAt(point, [force])
+#### bot.lookAt(point, [force], [callback])
 
  * `point` - tilts your head so that it is directly facing this point.
  * `force` - See `force` in `bot.look`
+ * `callback()` optional, called when you are looking at `point`
 
-#### bot.look(yaw, pitch, [force])
+#### bot.look(yaw, pitch, [force], [callback])
 
 Set the direction your head is facing.
 
@@ -1323,6 +1324,7 @@ Set the direction your head is facing.
    Specify this to true if you need the server to know exactly where you
    are looking, such as for dropping items or shooting arrows. This is not
    needed for client-side calculation such as walking direction.
+ * `callback()` optional, called when you are looking at `yaw` and `pitch`
 
 #### bot.updateSign(block, text)
 
