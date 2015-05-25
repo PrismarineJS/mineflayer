@@ -343,7 +343,7 @@ function findFurnace() {
   return findBlock([61, 62]);
 }
 function findChest() {
-  return findBlock([54, 130]);
+  return findBlock([54, 130, 146]);
 }
 
 function findBlock(listOfIds) {
