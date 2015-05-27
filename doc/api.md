@@ -143,6 +143,7 @@
       - [enchantmentTable.takeTargetItem([callback])](#enchantmenttabletaketargetitemcallback)
       - [enchantmentTable.putTargetItem(item, [callback])](#enchantmenttableputtargetitemitem-callback)
   - [Bot](#bot)
+    - [mineflayer.createBot(options)](#mineflayercreatebotoptions)
     - [Properties](#properties)
       - [bot.entity](#botentity)
       - [bot.entities](#botentities)
@@ -880,6 +881,23 @@ Looks like:
  * `callback(err)`
 
 ## Bot
+
+### mineflayer.createBot(options)
+
+Create and return an instance of the class bot.
+`options` is an object containing the optional properties :
+ * username : default to 'Player'
+ * port : default to 25565
+ * password : can be omitted (if the tokens are also omitted then it tries to connect in offline mode)
+ * host : default to localhost
+ * clientToken : generated if a password is given
+ * accessToken : generated if a password is given
+ * keepAlive : send keep alive packets : default to true
+ * [chat](bot.settings.chat)
+ * [colorsEnabled](bot.settings.colorsEnabled)
+ * [viewDistance](bot.settings.viewDistance)
+ * [difficulty](bot.settings.difficulty)
+ * [showCape](bot.settings.showCape)
 
 ### Properties
 
