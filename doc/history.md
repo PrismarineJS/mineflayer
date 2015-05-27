@@ -1,3 +1,15 @@
+## 1.2.0
+ * update minecraft-protocol to 0.14.0 : several fixes (error are now catchable, packets are in-order, packets fixes, etc.)
+ * add ContainerWindow to support non-Vanilla plugins and add /invsee example (thanks Pietro210)
+ * add a callback to bot.look and bot.lookAt
+ * when receiving a remove effect packet : if the corresponding effect doesn't exist yet, emit an event with just the id of the effect (thanks Pietro210)
+ * swing arm immediately when digging (thanks gipsy-king)
+ * now updates bot.entity.heldItem when bot.heldItem is updated 
+ * fix cli args in examples
+ * add forcedMove event
+ * fix equipment api
+ * new minecraft data version : better metadata handling
+
 ## 1.1.2
 
  * a small fix in chat.js
