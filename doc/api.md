@@ -86,6 +86,8 @@
     - [mineflayer.windows.EnchantmentTableWindow](#mineflayerwindowsenchantmenttablewindow)
     - [mineflayer.windows.BrewingStandWindow](#mineflayerwindowsbrewingstandwindow)
     - [mineflayer.windows.ContainerWindow](#mineflayerwindowscontainerwindow)
+      - [window.containerCount(itemType, [metadata])](#windowcontainercountitemtype-metadata)
+      - [window.containerItems()](#windowcontaineritems)
     - [mineflayer.Recipe](#mineflayerrecipe)
       - [Recipe.find(itemType, [metadata])](#recipefinditemtype-metadata)
       - [recipe.result](#reciperesult)
