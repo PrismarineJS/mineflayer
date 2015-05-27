@@ -85,6 +85,9 @@
     - [mineflayer.windows.DispenserWindow](#mineflayerwindowsdispenserwindow)
     - [mineflayer.windows.EnchantmentTableWindow](#mineflayerwindowsenchantmenttablewindow)
     - [mineflayer.windows.BrewingStandWindow](#mineflayerwindowsbrewingstandwindow)
+    - [mineflayer.windows.ContainerWindow](#mineflayerwindowscontainerwindow)
+      - [window.containerCount(itemType, [metadata])](#windowcontainercountitemtype-metadata)
+      - [window.containerItems()](#windowcontaineritems)
     - [mineflayer.Recipe](#mineflayerrecipe)
       - [Recipe.find(itemType, [metadata])](#recipefinditemtype-metadata)
       - [recipe.result](#reciperesult)
@@ -584,6 +587,20 @@ Watching `bot.inventory.on("windowUpdate")` is the best way to watch for changes
 ### mineflayer.windows.DispenserWindow
 ### mineflayer.windows.EnchantmentTableWindow
 ### mineflayer.windows.BrewingStandWindow
+### mineflayer.windows.ContainerWindow
+
+Generic window that can be opened by some non-Vanilla servers and Bukkit plugins like Essentials' /invsee.
+
+#### window.containerCount(itemType, [metadata])
+Returns how many items there are in the top section of the window.
+
+ * `itemType` - numerical id that you are looking for
+ * `metadata` - (optional) metadata value that you are looking for.
+   defaults to unspecified
+
+#### window.containerItems()
+
+Returns a list of `Item` instances from the top section of the window.
 
 ### mineflayer.Recipe
 
