@@ -34,6 +34,28 @@ bot.on('chat', function(username, message) {
     watchDispenser();
   } else if(message === "enchant") {
     watchEnchantmentTable();
+  } else if(/^invsee /.test(message)) {
+    // note: you must have the permission to use this command
+    var words = message.split(" ");
+    var username = words[1];
+    var showEquipment = words[2];
+    bot.once('windowOpen', function(window) {
+      var count = window.containerItems().length;
+      var what = showEquipment ? 'equipment' : 'inventory items';
+      if(count) {
+        bot.chat(username + "'s " + what + ":");
+        bot.chat(window.containerItems().map(itemStr).join(", "));
+      } else {
+        bot.chat(username + " has no " + what);
+      }
+    });
+    if(showEquipment) {
+      // any extra parameter triggers the "easter egg"
+      // and shows the other player's equipment
+      bot.chat('/invsee ' + username + ' 1');
+    } else {
+      bot.chat('/invsee ' + username);
+    }
   }
 });
 
