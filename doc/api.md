@@ -888,7 +888,7 @@ Create and return an instance of the class bot.
 `options` is an object containing the optional properties :
  * username : default to 'Player'
  * port : default to 25565
- * password
+ * password : can be omitted (if the tokens are also omitted then it tries to connect in offline mode)
  * host : default to localhost
  * clientToken : generated if a password is given
  * accessToken : generated if a password is given
