@@ -1,17 +1,18 @@
 var mineflayer = require('../');
-var vec3 = mineflayer.vec3;
+
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node chatterbot.js <host> <port> [<name>] [<password>]");
   process.exit(1);
 }
+
 var bot = mineflayer.createBot({
-  username: process.argv[4] ? process.argv[4] : "chatterbox",
-  viewDistance: "tiny",
-  verbose: true,
-  port: parseInt(process.argv[3]),
   host: process.argv[2],
-  password: process.argv[5]
+  port: parseInt(process.argv[3]),
+  username: process.argv[4] ? process.argv[4] : "chatterbox",
+  password: process.argv[5],
+  verbose: true,
 });
+
 bot.on('health', function() {
   bot.chat("I have " + bot.health + " health and " + bot.food + " food");
 });
@@ -25,7 +26,6 @@ bot.on('time', function() {
 bot.on('forcedMove', function() {
   console.log("I have been force moved to " + bot.entity.position);
 });
-
 bot.on('playerJoined', function(player) {
   bot.chat("hello, " + player.username + "! welcome to the server.");
 });
@@ -180,8 +180,8 @@ bot.on('entityEffect', function(entity, effect) {
 bot.on('entityEffectEnd', function(entity, effect) {
   console.log("entityEffectEnd", entity, effect);
 });
+
 function itemFromNotch(item) {
   return item.id === -1 ? null :
     new mineflayer.Item(item.blockId, item.itemCount, item.itemDamage, item.nbtData);
 }
-

@@ -1,30 +1,38 @@
 var mineflayer = require('../');
+
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node jumper.js <host> <port> [<name>] [<password>]");
   process.exit(1);
 }
+
 var bot = mineflayer.createBot({
-  username: process.argv[4] ? process.argv[4] : "jumper",
-  verbose: true,
-  port: parseInt(process.argv[3]),
   host: process.argv[2],
-  password: process.argv[5]
+  port: parseInt(process.argv[3]),
+  username: process.argv[4] ? process.argv[4] : "jumper",
+  password: process.argv[5],
+  verbose: true,
 });
+
+var target = null;
+
 bot.once('spawn', function() {
   // so creepy
   setInterval(watch, 50);
+
+  function watch() {
+    if(!target) return;
+    bot.lookAt(target.position.offset(0, target.height, 0));
+  }
 });
-var target = null;
-function watch() {
-  if(!target) return;
-  bot.lookAt(target.position.offset(0, target.height, 0));
-}
-bot.on("mount", function() {
+
+bot.on('mount', function() {
   bot.chat("mounted " + bot.vehicle.objectType);
 });
-bot.on("dismount", function(vehicle) {
+
+bot.on('dismount', function(vehicle) {
   bot.chat("dismounted " + vehicle.objectType);
 });
+
 bot.on('chat', function(username, message) {
   target = bot.players[username].entity;
   if(username === bot.username) return;

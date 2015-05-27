@@ -1,5 +1,4 @@
 var mineflayer = require('../');
-var vec3 = mineflayer.vec3;
 
 //Example for matching chat on skyblock.net.
 
@@ -7,14 +6,14 @@ if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node chatAddPattern.js <host> <port> [<name>] [<password>]");
   process.exit(1);
 }
+
 var bot = mineflayer.createBot({
-  username: process.argv[4] ? process.argv[4] : "digger",
-  verbose: true,
-  port: parseInt(process.argv[3]),
   host: process.argv[2],
-  password: process.argv[5]
+  port: parseInt(process.argv[3]),
+  username: process.argv[4] ? process.argv[4] : "chatAddPattern",
+  password: process.argv[5],
+  verbose: true,
 });
-console.log(process.argv[4])
 
 // Adding patterns really is this simple
 // use vanilla launcher with visibility set to keep launcher open to get raw messages
@@ -32,8 +31,4 @@ bot.on('chat', function(username, message, type, rawMessage, matches) {
   console.log("Chat received! Username:" + username + "	Message:" + message)
   //console.log(rawMessage)
   //console.log(matches)
-});
-
-bot.on('game', function() {
-  console.log("game mode is " + bot.game.gameMode);
 });

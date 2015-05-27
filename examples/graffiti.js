@@ -1,16 +1,18 @@
 var mineflayer = require('../');
-var vec3 = mineflayer.vec3;
+
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node graffiti.js <host> <port> [<name>] [<password>]");
   process.exit(1);
 }
+
 var bot = mineflayer.createBot({
-  username: process.argv[4] ? process.argv[4] : "graffiti",
-  verbose: true,
-  port: parseInt(process.argv[3]),
   host: process.argv[2],
-  password: process.argv[5]
+  port: parseInt(process.argv[3]),
+  username: process.argv[4] ? process.argv[4] : "graffiti",
+  password: process.argv[5],
+  verbose: true,
 });
+
 bot.on('chat', function(username, message) {
   if(username === bot.username) return;
   var signBlock = nearestBlock('signText');
@@ -31,7 +33,7 @@ bot.on('chat', function(username, message) {
 });
 
 function nearestBlock(prop) {
-  var cursor = vec3();
+  var cursor = mineflayer.vec3();
   for(cursor.x = bot.entity.position.x - 4; cursor.x < bot.entity.position.x + 4; cursor.x++) {
     for(cursor.y = bot.entity.position.y - 4; cursor.y < bot.entity.position.y + 4; cursor.y++) {
       for(cursor.z = bot.entity.position.z - 4; cursor.z < bot.entity.position.z + 4; cursor.z++) {

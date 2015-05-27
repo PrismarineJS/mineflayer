@@ -1,16 +1,16 @@
 var mineflayer = require('../');
-var vec3 = mineflayer.vec3;
 
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node digger.js <host> <port> [<name>] [<password>]");
   process.exit(1);
 }
+
 var bot = mineflayer.createBot({
-  username: process.argv[4] ? process.argv[4] : "digger",
-  verbose: true,
-  port: parseInt(process.argv[3]),
   host: process.argv[2],
-  password: process.argv[5]
+  port: parseInt(process.argv[3]),
+  username: process.argv[4] ? process.argv[4] : "digger",
+  password: process.argv[5],
+  verbose: true,
 });
 
 bot.on('chat', function(username, message) {
@@ -60,7 +60,6 @@ function dig() {
   }
 }
 
-
 function build() {
   var referenceBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0));
   var jumpY = bot.entity.position.y + 1.0;
@@ -69,7 +68,7 @@ function build() {
 
   function placeIfHighEnough() {
     if(bot.entity.position.y > jumpY) {
-      bot.placeBlock(referenceBlock, vec3(0, 1, 0));
+      bot.placeBlock(referenceBlock, mineflayer.vec3(0, 1, 0));
       bot.setControlState('jump', false);
       bot.removeListener('move', placeIfHighEnough);
     }
