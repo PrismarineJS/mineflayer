@@ -1,6 +1,19 @@
+/*
+ * How to add chat patterns to support your own server
+ *
+ * Adding more chat patterns is really simple.
+ *
+ * Use the Vanilla Launcher with visibility set to keep the Launcher open
+ * so you can see the raw messages.
+ *
+ * Copy the raw message into regexr.com or otherwise write a regex statement
+ * to match the username and the message.
+ *
+ * Add pattern, chat type, and an optional description with bot.chatAddPattern()
+ *
+ * Below you can see an example for the skyblock.net server
+ */
 var mineflayer = require('../');
-
-//Example for matching chat on skyblock.net.
 
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node chatAddPattern.js <host> <port> [<name>] [<password>]");
@@ -15,20 +28,24 @@ var bot = mineflayer.createBot({
   verbose: true,
 });
 
-// Adding patterns really is this simple
-// use vanilla launcher with visibility set to keep launcher open to get raw messages
-// Copy into regexr.com or other wise write a regex statement matching the username an whatever else
-// Add pattern, chat type, and a description (optional) with bot.ChatAddPattern( {} )
-bot.chatAddPattern(/^(?:\[[^\]]*\] )?([^ :]*) ?: (.*)$/, "chat", "Skyblock.net chat")
-bot.chatAddPattern(/^\[ ?([^ ]*) -> me ?] (.*)$/, "whisper", "Skyblock.net whisper")
-// Also note, adding patterns does NOT overwrite previous patterns, so if you use a script with multiple
-// servers it is safe to add all the patterns.
+/*
+ * NOTE: adding patterns does NOT overwrite previous patterns,
+ * so if you want to use your bot in multiple servers it is safe to add
+ * all the different patterns!
+ */
+bot.chatAddPattern(/^(?:\[[^\]]*\] )?([^ :]*) ?: (.*)$/, "chat", "Skyblock.net chat");
+bot.chatAddPattern(/^\[ ?([^ ]*) -> me ?] (.*)$/, "whisper", "Skyblock.net whisper");
 
-// The chat function now returns the raw Regex matches as well as the raw message
-// rawMessage will be json object on vanilla servers
-// Also note, type is only used for server event messages, like player joining, player disconnected, etc
+/*
+ * The chat event now returns the username and message that match your
+ * patterns, as well as the rawMessage that will be a json object on Vanilla
+ * servers.
+ *
+ * Also note that the type argument is only used for server event messages
+ * like player joining, player disconnected, etc.
+ */
 bot.on('chat', function(username, message, type, rawMessage, matches) {
-  console.log("Chat received! Username:" + username + "	Message:" + message)
-  //console.log(rawMessage)
-  //console.log(matches)
+  console.log("Chat received!");
+  console.log("Username: " + username);
+  console.log("Message: " + message);
 });
