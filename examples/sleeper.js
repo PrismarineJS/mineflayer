@@ -1,3 +1,11 @@
+/*
+ * Even bots need to rest sometimes.
+ *
+ * That's why we created an example that demonstrates how easy it is
+ * to find and use a bed properly.
+ *
+ * You can ask the bot to sleep or wake up by sending a chat message.
+ */
 var mineflayer = require('../');
 
 if(process.argv.length < 4 || process.argv.length > 6) {
@@ -19,20 +27,20 @@ bot.on('chat', function(username, message) {
     if(bedBlock) {
       bot.sleep(bedBlock, function(err) {
         if(err) {
-          console.log(err);
-          bot.chat("I can't sleep");
+          bot.chat("I can't sleep: " + err.message);
+        } else {
+          bot.chat("Good night!");
         }
-        else
-          bot.chat("counting sheep");
       });
     } else {
-      bot.chat("no nearby bed");
+      bot.chat("No nearby bed");
     }
   } else if(message === 'wake') {
     bot.wake(function(err) {
       if(err) {
-        console.log(err);
-        bot.chat("I can't wake up");
+        bot.chat("I can't wake up: " + err.message);
+      } else {
+        bot.chat("Good morning!");
       }
     });
   }
@@ -47,11 +55,13 @@ bot.on('wake', function() {
 });
 
 function findBed() {
+  var position = bot.entity.position;
   var cursor = mineflayer.vec3();
-  for(cursor.x = bot.entity.position.x - 4; cursor.x < bot.entity.position.x + 4; cursor.x++) {
-    for(cursor.y = bot.entity.position.y - 4; cursor.y < bot.entity.position.y + 4; cursor.y++) {
-      for(cursor.z = bot.entity.position.z - 4; cursor.z < bot.entity.position.z + 4; cursor.z++) {
-        var block = bot.blockAt(cursor);
+  var block;
+  for(cursor.x = position.x - 4; cursor.x < position.x + 4; cursor.x++) {
+    for(cursor.y = position.y - 4; cursor.y < position.y + 4; cursor.y++) {
+      for(cursor.z = position.z - 4; cursor.z < position.z + 4; cursor.z++) {
+        block = bot.blockAt(cursor);
         if(block.type === 26) return block;
       }
     }
