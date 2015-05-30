@@ -27,33 +27,33 @@ bot.on('chat', function(username, message) {
   if (username === bot.username) return;
   var command = message.split(' ');
   switch(true) {
-    case /^list/.test(message):
+    case /^list$/.test(message):
       listInventory();
       break;
-    case /^toss (\d+) /.test(message):
+    case /^toss \d+ \w+$/.test(message):
       // toss amount name
       // ex: toss 64 diamond
       tossItem(command[2], command[1]);
       break;
-    case /^toss /.test(message):
+    case /^toss \w+$/.test(message):
       // toss name
       // ex: toss diamond
       tossItem(command[1]);
       break;
-    case /^equip /.test(message):
+    case /^equip \w+ \w+$/.test(message):
       // equip destination name
       // ex: equip hand diamond
       equipItem(command[2], command[1]);
       break;
-    case /^unequip /.test(message):
+    case /^unequip \w+$/.test(message):
       // unequip testination
       // ex: unequip hand
       unequipItem(command[1]);
       break;
-    case /^use/.test(message):
+    case /^use$/.test(message):
       useEquippedItem();
       break;
-    case /^craft (\d+) /.test(message):
+    case /^craft \d+ \w+$/.test(message):
       // craft amount item
       // ex: craft 64 stick
       craftItem(command[2], command[1]);

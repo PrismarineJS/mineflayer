@@ -27,10 +27,10 @@ var bot = mineflayer.createBot({
 bot.on('chat', function(username, message) {
   if(username === bot.username) return;
   switch(true) {
-    case /^watch/.test(message):
+    case /^watch$/.test(message):
       watchPaintingOrSign();
       break;
-    case /^write /.test(message):
+    case /^write .+$/.test(message):
       // write message
       // ex: write I love diamonds
       updateSign(message);

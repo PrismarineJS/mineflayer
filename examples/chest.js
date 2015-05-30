@@ -37,22 +37,22 @@ var bot = mineflayer.createBot({
 bot.on('chat', function(username, message) {
   if (username === bot.username) return;
   switch(true) {
-    case /^list/.test(message):
+    case /^list$/.test(message):
       listInventory();
       break;
-    case /^chest/.test(message):
+    case /^chest$/.test(message):
       watchChest();
       break;
-    case /^furnace/.test(message):
+    case /^furnace$/.test(message):
       watchFurnace();
       break;
-    case /^dispenser/.test(message):
+    case /^dispenser$/.test(message):
       watchDispenser();
       break;
-    case /^enchant/.test(message):
+    case /^enchant$/.test(message):
       watchEnchantmentTable();
       break;
-    case /^invsee /.test(message):
+    case /^invsee \w+( \d)?$/.test(message):
       // invsee Herobrine [or]
       // invsee Herobrine 1
       var command = message.split(' ');
@@ -104,15 +104,15 @@ function watchChest() {
     if (username === bot.username) return;
     var command = message.split(' ');
     switch(true) {
-      case /^close/.test(message):
+      case /^close$/.test(message):
         closeChest();
         break;
-      case /^withdraw (\d+) /.test(message):
+      case /^withdraw \d+ \w+$/.test(message):
         // withdraw amount name
         // ex: withdraw 16 stick
         withdrawItem(command[2], command[1]);
         break;
-      case /^deposit (\d+) /.test(message):
+      case /^deposit \d+ \w+$/.test(message):
         // deposit amount name
         // ex: deposit 16 stick
         depositItem(command[2], command[1]);
@@ -187,15 +187,15 @@ function watchFurnace() {
     if (username === bot.username) return;
     var command = message.split(' ');
     switch (true) {
-      case /^close/.test(message):
+      case /^close$/.test(message):
         closeFurnace();
         break;
-      case /^(input|fuel) (\d+) /.test(message):
+      case /^(input|fuel) \d+ \w+$/.test(message):
         // input amount name
         // ex: input 32 coal
         putInFurnace(command[0], command[2], command[1]);
         break;
-      case /^take (input|fuel|output)/.test(message):
+      case /^take (input|fuel|output)$/.test(message):
         // take what
         // ex: take output
         takeFromFurnace(command[0]);
@@ -274,15 +274,15 @@ function watchDispenser() {
     if (username === bot.username) return;
     var command = message.split(' ');
     switch(true) {
-      case /^close/.test(message):
+      case /^close$/.test(message):
         closeDispenser();
         break;
-      case /^withdraw (\d+) /.test(message):
+      case /^withdraw \d+ \w+$/.test(message):
         // withdraw amount name
         // ex: withdraw 16 stick
         withdrawItem(command[2], command[1]);
         break;
-      case /^deposit (\d+) /.test(message):
+      case /^deposit \d+ \w+$/.test(message):
         // deposit amount name
         // ex: deposit 16 stick
         depositItem(command[2], command[1]);
@@ -354,23 +354,23 @@ function watchEnchantmentTable() {
     if (username === bot.username) return;
     var command = message.split(' ');
     switch(true) {
-      case /^close/.test(message):
+      case /^close$/.test(message):
         closeEnchantmentTable();
         break;
-      case /^put /.test(message):
+      case /^put \w+$/.test(message):
         // put name
         // ex: put diamondsword
         putItem(command[1]);
         break;
-      case /^add lapis/.test(message):
+      case /^add lapis$/.test(message):
         addLapis();
         break;
-      case /^enchant (\d+)/.test(message):
+      case /^enchant \d+$/.test(message):
         // enchant choice
         // ex: enchant 2
         enchantItem(command[1]);
         break;
-      case /^take/.test(message):
+      case /^take$/.test(message):
         takeEnchantedItem();
         break;
     }
