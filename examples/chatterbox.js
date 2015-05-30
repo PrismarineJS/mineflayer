@@ -29,11 +29,33 @@ var bot = mineflayer.createBot({
 
 
 bot.on('chat', function(username, message) {
-  var block, pos;
   if(username === bot.username) return;
-  if(message === 'pos') {
-    bot.chat("I am at " + bot.entity.position + ", you are at " + bot.players[username].entity.position);
-  } else if(message === 'wearing') {
+  switch(message) {
+    case 'pos':
+      sayPosition(username);
+      break;
+    case 'wearing':
+      sayEquipment();
+      break;
+    case 'spawn':
+      saySpawnPoint();
+      break;
+    case 'block':
+      sayBlockUnder(username);
+      break;
+    case 'quit':
+      quit(username);
+      break;
+    default:
+      bot.chat("That's nice");
+  }
+
+  function sayPosition(username) {
+    bot.chat("I am at " + bot.entity.position);
+    bot.chat("You are at " + bot.players[username].entity.position);
+  }
+
+  function sayEquipment() {
     var eq = bot.players[username].entity.equipment;
     var eqText = [];
     if(eq[0]) eqText.push("holding a " + eq[0].displayName);
@@ -46,15 +68,19 @@ bot.on('chat', function(username, message) {
     } else {
       bot.chat("You are naked!");
     }
-  } else if(message === 'spawn') {
+  }
+
+  function saySpawnPoint() {
     bot.chat("Spawn is at " + bot.spawnPoint);
-  } else if(message === 'quit') {
+  }
+
+  function sayBlockUnder() {
+    var block = bot.blockAt(bot.players[username].entity.position.offset(0, -1, 0));
+    bot.chat("Block under you is " + block.displayName + " in the " + block.biome.name + " biome"); 
+  }
+
+  function quit(username) {
     bot.quit(username + " told me to");
-  } else if(message === 'block') {
-    block = bot.blockAt(bot.players[username].entity.position.offset(0, -1, 0));
-    bot.chat("Block under you is " + block.displayName + " in the " + block.biome.name + " biome");
-  } else {
-    bot.chat("That's nice.");
   }
 });
 
