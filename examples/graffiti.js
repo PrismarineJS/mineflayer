@@ -31,6 +31,8 @@ bot.on('chat', function(username, message) {
       watchPaintingOrSign();
       break;
     case /^write /.test(message):
+      // write message
+      // ex: write I love diamonds
       updateSign(message);
       break;
   }
