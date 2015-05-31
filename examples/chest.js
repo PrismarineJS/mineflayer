@@ -35,7 +35,7 @@ var bot = mineflayer.createBot({
 });
 
 bot.on('chat', function(username, message) {
-  if (username === bot.username) return;
+  if(username === bot.username) return;
   switch(true) {
     case /^list$/.test(message):
       listInventory();
@@ -101,7 +101,7 @@ function watchChest() {
   bot.on('chat', onChat);
 
   function onChat(username, message) {
-    if (username === bot.username) return;
+    if(username === bot.username) return;
     var command = message.split(' ');
     switch(true) {
       case /^close$/.test(message):
@@ -127,7 +127,7 @@ function watchChest() {
 
   function withdrawItem(name, amount) {
     var item = itemByName(chest.items(), name);
-    if (item) {
+    if(item) {
       chest.withdraw(item.type, null, amount, function(err) {
         if(err) {
           bot.chat("unable to withdraw " + amount + " " + item.name);
@@ -142,7 +142,7 @@ function watchChest() {
 
   function depositItem(name, amount) {
     var item = itemByName(bot.inventory.items(), name);
-    if (item) {
+    if(item) {
       chest.deposit(item.type, null, amount, function(err) {
         if(err) {
           bot.chat("unable to deposit " + amount + " " + item.name);
@@ -184,7 +184,7 @@ function watchFurnace() {
   bot.on('chat', onChat);
 
   function onChat(username, message) {
-    if (username === bot.username) return;
+    if(username === bot.username) return;
     var command = message.split(' ');
     switch (true) {
       case /^close$/.test(message):
@@ -209,7 +209,7 @@ function watchFurnace() {
 
     function putInFurnace(where, name, amount) {
       var item = itemByName(bot.inventory.items(), name);
-      if (item) {
+      if(item) {
         var fn = {
           input: furnace.putInput,
           fuel: furnace.putFuel,
@@ -271,7 +271,7 @@ function watchDispenser() {
   bot.on('chat', onChat);
 
   function onChat(username, message) {
-    if (username === bot.username) return;
+    if(username === bot.username) return;
     var command = message.split(' ');
     switch(true) {
       case /^close$/.test(message):
@@ -297,7 +297,7 @@ function watchDispenser() {
 
   function withdrawItem(name, amount) {
     var item = itemByName(dispenser.items(), name);
-    if (item) {
+    if(item) {
       dispenser.withdraw(item.type, null, amount, function(err) {
         if(err) {
           bot.chat("unable to withdraw " + amount + " " + item.name);
@@ -312,7 +312,7 @@ function watchDispenser() {
 
   function depositItem(name, amount) {
     var item = itemByName(bot.inventory.items(), name);
-    if (item) {
+    if(item) {
       dispenser.deposit(item.type, null, amount, function(err) {
         if(err) {
           bot.chat("unable to deposit " + amount + " " + item.name);
@@ -351,7 +351,7 @@ function watchEnchantmentTable() {
   bot.on('chat', onChat);
 
   function onChat(username, message) {
-    if (username === bot.username) return;
+    if(username === bot.username) return;
     var command = message.split(' ');
     switch(true) {
       case /^close$/.test(message):
@@ -381,7 +381,7 @@ function watchEnchantmentTable() {
 
     function putItem(name) {
       var item = itemByName(table.window.items(), name);
-      if (item) {
+      if(item) {
         table.putTargetItem(item, function(err) {
           if(err) {
             bot.chat("error putting " + itemStr(item));
@@ -396,7 +396,7 @@ function watchEnchantmentTable() {
 
     function addLapis() {
       var item = itemByType(table.window.items(), 351);
-      if (item) {
+      if(item) {
         table.putLapis(item, function(err) {
           if(err) {
             bot.chat("error putting " + itemStr(item));

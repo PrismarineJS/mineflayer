@@ -41,9 +41,9 @@ bot.on('chat', function(username, message) {
 function watchPaintingOrSign() {
   var paintingBlock = nearestBlock('painting');
   var signBlock = nearestBlock('signText');
-  if (signBlock) {
+  if(signBlock) {
     bot.chat('The sign says: ' + signBlock.signText);
-  } else if (paintingBlock) {
+  } else if(paintingBlock) {
     bot.chat('The painting is: ' + paintingBlock.painting.name);
   } else {
     bot.chat('There are no signs or paintings near me');
@@ -52,7 +52,7 @@ function watchPaintingOrSign() {
 
 function updateSign(message) {
   var signBlock = nearestBlock('signText');
-  if (signBlock) {
+  if(signBlock) {
     bot.updateSign(signBlock, message.split(' ').slice(1).join(' '));
     bot.chat('Sign updated');
   } else {

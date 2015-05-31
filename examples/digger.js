@@ -26,7 +26,7 @@ var bot = mineflayer.createBot({
 });
 
 bot.on('chat', function(username, message) {
-  if (username === bot.username) return;
+  if(username === bot.username) return;
   switch(message) {
     case 'list':
       listInventory();

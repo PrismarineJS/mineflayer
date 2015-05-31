@@ -24,7 +24,7 @@ var bot = mineflayer.createBot({
 });
 
 bot.on('chat', function(username, message) {
-  if (username === bot.username) return;
+  if(username === bot.username) return;
   var command = message.split(' ');
   switch(true) {
     case /^list$/.test(message):
@@ -68,18 +68,18 @@ function listInventory() {
 function tossItem(name, amount) {
   amount = parseInt(amount, 10);
   var item = itemByName(name);
-  if (!item) {
+  if(!item) {
     bot.chat('I have no ' + name);
-  } else if (amount) {
+  } else if(amount) {
     bot.toss(item.type, null, amount, checkIfTossed);
   } else {
     bot.tossStack(item, checkIfTossed);
   }
 
   function checkIfTossed(err) {
-    if (err) {
+    if(err) {
       bot.chat('unable to toss: ' + err.message);
-    } else if (amount) {
+    } else if(amount) {
       bot.chat('tossed ' + amount + ' x ' + name);
     } else {
       bot.chat('tossed ' + name);
@@ -89,14 +89,14 @@ function tossItem(name, amount) {
 
 function equipItem(name, destination) {
   var item = itemByName(name);
-  if (item) {
+  if(item) {
     bot.equip(item, destination, checkIfEquipped);
   } else {
     bot.chat('I have no ' + name);
   }
 
   function checkIfEquipped(err) {
-    if (err) {
+    if(err) {
       bot.chat('cannot equip ' + name + ': ' + err.message);
     } else {
       bot.chat('equipped ' + name);
@@ -106,7 +106,7 @@ function equipItem(name, destination) {
 
 function unequipItem(destination) {
   bot.unequip(destination, function(err) {
-    if (err) {
+    if(err) {
       bot.chat('cannot unequip: ' + err.message);
     } else {
       bot.chat('unequipped');
@@ -124,12 +124,12 @@ function craftItem(name, amount) {
   var item = mineflayer.data.findItemOrBlockByName(name);
   var craftingTable = findCraftingTable();
 
-  if (item) {
+  if(item) {
     var recipe = bot.recipesFor(item.id, null, 1, craftingTable)[0];
-    if (recipe) {
+    if(recipe) {
       bot.chat('I can make ' + name);
       bot.craft(recipe, amount, craftingTable, function(err) {
-        if (err) {
+        if(err) {
           bot.chat('error making ' + name);
         } else {
           bot.chat('did the recipe for ' + name + ' ' + amount + ' times');

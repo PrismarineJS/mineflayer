@@ -63,7 +63,7 @@ bot.on('chat', function(username, message) {
     if(eq[2]) eqText.push("wearing a " + eq[2].displayName + " on your legs");
     if(eq[3]) eqText.push("wearing a " + eq[3].displayName + " on your torso");
     if(eq[4]) eqText.push("wearing a " + eq[4].displayName + " on your head");
-    if (eqText.length) {
+    if(eqText.length) {
       bot.chat("You are " + eqText.join(", ") + ".");
     } else {
       bot.chat("You are naked!");
