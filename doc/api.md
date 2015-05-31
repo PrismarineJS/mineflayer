@@ -359,6 +359,7 @@ Choices:
  * `object`
  * `global` - lightning
  * `orb` - experience orb.
+ * `other` - introduced with a recent Minecraft update and not yet recognized by Mineflayer or used by a third-party mod
 
 #### entity.username
 
