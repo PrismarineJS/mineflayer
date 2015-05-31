@@ -45,6 +45,7 @@ bot.chatAddPattern(/^\[ ?([^ ]*) -> me ?] (.*)$/, "whisper", "Skyblock.net whisp
  * like player joining, player disconnected, etc.
  */
 bot.on('chat', function(username, message, type, rawMessage, matches) {
+  if (username === bot.username) return;
   console.log("Chat received!");
   console.log("Username: " + username);
   console.log("Message: " + message);
