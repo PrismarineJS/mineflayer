@@ -28,7 +28,7 @@ bot.on('chat', function(username, message) {
   var command = message.split(' ');
   switch(true) {
     case /^list$/.test(message):
-      listInventory();
+      sayItems();
       break;
     case /^toss \d+ \w+$/.test(message):
       // toss amount name
@@ -61,8 +61,14 @@ bot.on('chat', function(username, message) {
   }
 });
 
-function listInventory() {
-  bot.chat(bot.inventory.items().map(itemStr).join(', '));
+function sayItems(items) {
+  items = items || bot.inventory.items();
+  var output = items.map(itemToString).join(', ');
+  if(output) {
+    bot.chat(output);
+  } else {
+    bot.chat("empty");
+  }
 }
 
 function tossItem(name, amount) {
@@ -143,7 +149,7 @@ function craftItem(name, amount) {
   }
 }
 
-function itemStr(item) {
+function itemToString(item) {
   if(item) {
     return item.name + ' x ' + item.count;
   } else {

@@ -29,7 +29,7 @@ bot.on('chat', function(username, message) {
   if(username === bot.username) return;
   switch(message) {
     case 'list':
-      listInventory();
+      sayItems();
       break;
     case 'dig':
       dig();
@@ -43,21 +43,14 @@ bot.on('chat', function(username, message) {
   }
 });
 
-function listInventory() {
-  var id, count, item, idx, slot;
-  var output = "";
-  for(idx in bot.inventory.slots) {
-    slot = bot.inventory.slots[idx];
-    if(slot == null) continue;
-    count = slot.count;
-    id = slot.type;
-    item = mineflayer.data.findItemOrBlockById(id);
-    if(count) output += item.name + ": " + count + ", ";
-  }
-  if(!output)
-    bot.chat('I have no items');
-  else
+function sayItems(items) {
+  items = items || bot.inventory.items();
+  var output = items.map(itemToString).join(', ');
+  if(output) {
     bot.chat(output);
+  } else {
+    bot.chat("empty");
+  }
 }
 
 function dig() {
@@ -96,10 +89,17 @@ function build() {
 function equipDirt() {
   bot.equip(0x03, 'hand', function(err) {
     if(err) {
-      console.error(err.stack);
-      bot.chat("unable to equip dirt");
+      bot.chat("unable to equip dirt: " + err.message);
     } else {
       bot.chat("equipped dirt");
     }
   });
+}
+
+function itemToString(item) {
+  if(item) {
+    return item.name + " x " + item.count;
+  } else {
+    return "(nothing)";
+  }
 }

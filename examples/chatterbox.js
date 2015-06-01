@@ -158,6 +158,7 @@ bot.on('playerCollect', function(collector, collected) {
   }
 });
 
+
 bot.on('entitySpawn', function(entity) {
   if(entity.type === 'mob') {
     bot.chat("Look out! A " + entity.mobType + " spawned at " + entity.position);

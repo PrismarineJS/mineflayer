@@ -42,7 +42,7 @@ bot.on('chat', function(username, message) {
   if(username === bot.username) return;
   switch(true) {
     case /^list$/.test(message):
-      listInventory();
+      sayItems();
       break;
     case /^chest$/.test(message):
       watchChest();
@@ -65,11 +65,9 @@ bot.on('chat', function(username, message) {
   }
 });
 
-function listInventory() {
-  var output = "";
-  bot.inventory.items().forEach(function(item) {
-    output += itemStr(item) + ", ";
-  });
+function sayItems(items) {
+  items = items || bot.inventory.items();
+  var output = items.map(itemToString).join(', ');
   if(output) {
     bot.chat(output);
   } else {
@@ -85,15 +83,7 @@ function watchChest() {
   }
   var chest = bot.openChest(chestBlock);
   chest.on('open', function() {
-    var output = "";
-    chest.items().forEach(function(item) {
-      output += itemStr(item) + ", ";
-    });
-    if(output) {
-      bot.chat(output);
-    } else {
-      bot.chat("empty");
-    }
+    sayItems(chest.items());
   });
   chest.on('updateSlot', function(oldItem, newItem) {
     bot.chat("chest update: " + itemStr(oldItem) + " -> " + itemStr(newItem));
@@ -255,15 +245,7 @@ function watchDispenser() {
   }
   var dispenser = bot.openDispenser(dispenserBlock);
   dispenser.on('open', function() {
-    var output = "";
-    dispenser.items().forEach(function(item) {
-      output += itemStr(item) + ", ";
-    });
-    if(output) {
-      bot.chat(output);
-    } else {
-      bot.chat("empty");
-    }
+    sayItems(dispenser.items());
   });
   dispenser.on('updateSlot', function(oldItem, newItem) {
     bot.chat("dispenser update: " + itemStr(oldItem) + " -> " + itemStr(newItem));
@@ -442,7 +424,7 @@ function useInvsee(username, showEquipment) {
     var what = showEquipment ? 'equipment' : 'inventory items';
     if(count) {
       bot.chat(username + "'s " + what + ":");
-      bot.chat(window.containerItems().map(itemStr).join(", "));
+      sayItems(window.containerItems());
     } else {
       bot.chat(username + " has no " + what);
     }
@@ -477,7 +459,7 @@ function findFurnace() {
   return findBlock([61, 62]);
 }
 
-function itemStr(item) {
+function itemToString(item) {
   if(item) {
     return item.name + " x " + item.count;
   } else {
