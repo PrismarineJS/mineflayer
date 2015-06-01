@@ -41,7 +41,9 @@ bot.on('wake', function() {
 });
 
 function goToSleep() {
-  var bed = findBed();
+  var bed = findBlock({
+    matching: 26
+  });
   if(bed) {
     bot.sleep(bed, function(err) {
       if(err) {
@@ -53,19 +55,6 @@ function goToSleep() {
   } else {
     bot.chat("No nearby bed");
   }
-
-  function findBed() {
-    var center = bot.entity.position;
-    var cursor = mineflayer.vec3();
-    for(cursor.x = center.x - 4; cursor.x < center.x + 4; cursor.x++) {
-      for(cursor.y = center.y - 4; cursor.y < center.y + 4; cursor.y++) {
-        for(cursor.z = center.z - 4; cursor.z < center.z + 4; cursor.z++) {
-          var block = bot.blockAt(cursor);
-          if(block.type === 26) return block;
-        }
-      }
-    }
-  }
 }
 
 function wakeUp() {
@@ -76,4 +65,29 @@ function wakeUp() {
       bot.chat("I woke up");
     }
   });
+}
+
+function findBlock(options) {
+  if(!Array.isArray(options.matching)) {
+    options.matching = [ options.matching ];
+  }
+  options.point = options.point || bot.entity.position;
+  options.maxDistance = options.maxDistance || 16;
+  options.check = options.check || isMatchingType;
+  var cursor = mineflayer.vec3();
+  var point = options.point;
+  var max = options.maxDistance;
+  var found;
+  for(cursor.x = point.x - max; cursor.x < point.x + max; cursor.x++) {
+    for(cursor.y = point.y - max; cursor.y < point.y + max; cursor.y++) {
+      for(cursor.z = point.z - max; cursor.z < point.z + max; cursor.z++) {
+        found = bot.blockAt(cursor);
+        if (options.check(found)) return found;
+      }
+    }
+  }
+
+  function isMatchingType(block) {
+    return options.matching.indexOf(block.type) >= 0;
+  }
 }

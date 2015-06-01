@@ -128,7 +128,9 @@ function useEquippedItem() {
 function craftItem(name, amount) {
   amount = parseInt(amount, 10);
   var item = mineflayer.data.findItemOrBlockByName(name);
-  var craftingTable = findCraftingTable();
+  var craftingTable = findBlock({
+    matching: 58
+  });
 
   if(item) {
     var recipe = bot.recipesFor(item.id, null, 1, craftingTable)[0];
@@ -149,6 +151,31 @@ function craftItem(name, amount) {
   }
 }
 
+function findBlock(options) {
+  if(!Array.isArray(options.matching)) {
+    options.matching = [ options.matching ];
+  }
+  options.point = options.point || bot.entity.position;
+  options.maxDistance = options.maxDistance || 16;
+  options.check = options.check || isMatchingType;
+  var cursor = mineflayer.vec3();
+  var point = options.point;
+  var max = options.maxDistance;
+  var found;
+  for(cursor.x = point.x - max; cursor.x < point.x + max; cursor.x++) {
+    for(cursor.y = point.y - max; cursor.y < point.y + max; cursor.y++) {
+      for(cursor.z = point.z - max; cursor.z < point.z + max; cursor.z++) {
+        found = bot.blockAt(cursor);
+        if (options.check(found)) return found;
+      }
+    }
+  }
+
+  function isMatchingType(block) {
+    return options.matching.indexOf(block.type) >= 0;
+  }
+}
+
 function itemToString(item) {
   if(item) {
     return item.name + ' x ' + item.count;
@@ -161,17 +188,4 @@ function itemByName(name) {
   return bot.inventory.items().filter(function(item) {
     return item.name === name;
   })[0];
-}
-
-function findCraftingTable() {
-  var center = bot.entity.position;
-  var cursor = mineflayer.vec3();
-  for(cursor.x = center.x - 4; cursor.x < center.x + 4; cursor.x++) {
-    for(cursor.y = center.y - 4; cursor.y < center.y + 4; cursor.y++) {
-      for(cursor.z = center.z - 4; cursor.z < center.z + 4; cursor.z++) {
-        var block = bot.blockAt(cursor);
-        if(block.type === 58) return block;
-      }
-    }
-  }
 }

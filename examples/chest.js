@@ -76,7 +76,9 @@ function sayItems(items) {
 }
 
 function watchChest() {
-  var chestBlock = findChest();
+  var chestBlock = findBlock({
+    matching: [54, 130, 146]
+  });
   if(!chestBlock) {
     bot.chat("no chest found");
     return;
@@ -151,7 +153,9 @@ function watchChest() {
 }
 
 function watchFurnace() {
-  var furnaceBlock = findFurnace();
+  var furnaceBlock = findBlock({
+    matching: [61, 62]
+  });
   if(!furnaceBlock) {
     bot.chat("no furnace found");
     return;
@@ -238,7 +242,9 @@ function watchFurnace() {
 }
 
 function watchDispenser() {
-  var dispenserBlock = findBlock([23]);
+  var dispenserBlock = findBlock({
+    matching: 23
+  });
   if(!dispenserBlock) {
     bot.chat("no dispenser found");
     return;
@@ -313,7 +319,9 @@ function watchDispenser() {
 }
 
 function watchEnchantmentTable() {
-  var enchantTableBlock = findBlock([116]);
+  var enchantTableBlock = findBlock({
+    matching: 116
+  });
   if(!enchantTableBlock) {
     bot.chat("no enchantment table found");
     return;
@@ -438,25 +446,29 @@ function useInvsee(username, showEquipment) {
   }
 }
 
-function findBlock(listOfIds) {
-  var center = bot.entity.position;
+function findBlock(options) {
+  if(!Array.isArray(options.matching)) {
+    options.matching = [ options.matching ];
+  }
+  options.point = options.point || bot.entity.position;
+  options.maxDistance = options.maxDistance || 16;
+  options.check = options.check || isMatchingType;
   var cursor = mineflayer.vec3();
-  for(cursor.x = center.x - 4; cursor.x < center.x + 4; cursor.x++) {
-    for(cursor.y = center.y - 4; cursor.y < center.y + 4; cursor.y++) {
-      for(cursor.z = center.z - 4; cursor.z < center.z + 4; cursor.z++) {
-        var block = bot.blockAt(cursor);
-        if(listOfIds.indexOf(block.type) >= 0) return block;
+  var point = options.point;
+  var max = options.maxDistance;
+  var found;
+  for(cursor.x = point.x - max; cursor.x < point.x + max; cursor.x++) {
+    for(cursor.y = point.y - max; cursor.y < point.y + max; cursor.y++) {
+      for(cursor.z = point.z - max; cursor.z < point.z + max; cursor.z++) {
+        found = bot.blockAt(cursor);
+        if (options.check(found)) return found;
       }
     }
   }
-}
 
-function findChest() {
-  return findBlock([54, 130, 146]);
-}
-
-function findFurnace() {
-  return findBlock([61, 62]);
+  function isMatchingType(block) {
+    return options.matching.indexOf(block.type) >= 0;
+  }
 }
 
 function itemToString(item) {
