@@ -34,6 +34,10 @@ var bot = mineflayer.createBot({
   verbose: true,
 });
 
+bot.on('experience', function() {
+  bot.chat("I am level " + bot.experience.level);
+});
+
 bot.on('chat', function(username, message) {
   if(username === bot.username) return;
   switch(true) {
