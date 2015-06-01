@@ -153,7 +153,7 @@ bot.on('playerLeft', function(player) {
 bot.on('playerCollect', function(collector, collected) {
   if(collector.type === 'player' && collector.username != bot.username && collected.type === 'object') {
     var rawItem = collected.metadata[10];
-    var item = itemFromNotch(rawItem);
+    var item = mineflayer.Item.fromNotch(rawItem);
     bot.chat("I'm so jealous. " + collector.username + " collected " + item.count + " " + item.displayName);
   }
 });
@@ -216,9 +216,3 @@ bot.on('entityEffect', function(entity, effect) {
 bot.on('entityEffectEnd', function(entity, effect) {
   console.log("entityEffectEnd", entity, effect);
 });
-
-
-function itemFromNotch(item) {
-  return item.id === -1 ? null :
-    new mineflayer.Item(item.blockId, item.itemCount, item.itemDamage, item.nbtData);
-}
