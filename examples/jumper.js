@@ -57,10 +57,18 @@ bot.on('chat', function(username, message) {
       break;
     case 'attack':
       entity = nearestEntity();
-      bot.attack(entity, true);
+      if(entity) {
+        bot.attack(entity, true);
+      } else {
+        bot.chat('no nearby entities');
+      }
     case 'mount':
       entity = nearestEntity("object");
-      bot.mount(entity);
+      if(entity) {
+        bot.mount(entity);
+      } else {
+        bot.chat('no nearby objects');
+      }
       break;
     case 'dismount':
       bot.dismount();
