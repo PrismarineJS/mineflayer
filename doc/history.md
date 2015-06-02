@@ -1,4 +1,10 @@
+## 1.2.1
+
+ * Prevent crash when an unknown entity is spawned
+ * add createBot to api.md
+
 ## 1.2.0
+
  * update minecraft-protocol to 0.14.0 : several fixes (error are now catchable, packets are in-order, packets fixes, etc.)
  * add ContainerWindow to support non-Vanilla plugins and add /invsee example (thanks Pietro210)
  * add a callback to bot.look and bot.lookAt
