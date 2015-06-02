@@ -132,7 +132,7 @@ bot.on('noteHeard', function(block, instrument, pitch) {
 });
 bot.on('chestLidMove', function(block, isOpen) {
   var action = isOpen ? "open" : "close";
-  bot.chat("Hey, did someone just " + lidStatus + " a chest?");
+  bot.chat("Hey, did someone just " + action + " a chest?");
 });
 bot.on('pistonMove', function(block, isPulling, direction) {
   var action = isPulling ? "pulling" : "pushing";
