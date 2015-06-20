@@ -1555,7 +1555,7 @@ Update `bot.heldItem`.
 
 ### bot.creative
 
-This collection of apis is ueseful in creative mode.
+This collection of apis is useful in creative mode.
 Detecting and changing gamemodes is not implemented here,
 but it is assumed and often required that the bot be in creative mode for these features to work.
 
