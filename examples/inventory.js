@@ -128,7 +128,7 @@ function useEquippedItem() {
 function craftItem(name, amount) {
   amount = parseInt(amount, 10);
   var item = mineflayer.data.findItemOrBlockByName(name);
-  var craftingTable = findBlock({
+  var craftingTable = bot.findBlock({
     matching: 58
   });
 
@@ -148,31 +148,6 @@ function craftItem(name, amount) {
     }
   } else {
     bot.chat('unknown item: ' + name);
-  }
-}
-
-function findBlock(options) {
-  if(!Array.isArray(options.matching)) {
-    options.matching = [ options.matching ];
-  }
-  options.point = options.point || bot.entity.position;
-  options.maxDistance = options.maxDistance || 16;
-  options.check = options.check || isMatchingType;
-  var cursor = mineflayer.vec3();
-  var point = options.point;
-  var max = options.maxDistance;
-  var found;
-  for(cursor.x = point.x - max; cursor.x < point.x + max; cursor.x++) {
-    for(cursor.y = point.y - max; cursor.y < point.y + max; cursor.y++) {
-      for(cursor.z = point.z - max; cursor.z < point.z + max; cursor.z++) {
-        found = bot.blockAt(cursor);
-        if (options.check(found)) return found;
-      }
-    }
-  }
-
-  function isMatchingType(block) {
-    return options.matching.indexOf(block.type) >= 0;
   }
 }
 

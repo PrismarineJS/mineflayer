@@ -234,6 +234,7 @@
       - ["experience"](#experience)
     - [Functions](#functions)
       - [bot.blockAt(point)](#botblockatpoint)
+      - [bot.findBlock(options)](#botfindblockoptions)
       - [bot.canDigBlock(block)](#botcandigblockblock)
       - [bot.recipesFor(itemType, metadata, minResultCount, craftingTable)](#botrecipesforitemtype-metadata-minresultcount-craftingtable)
       - [bot.recipesAll(itemType, metadata, craftingTable)](#botrecipesallitemtype-metadata-craftingtable)
@@ -1272,6 +1273,17 @@ Fires when `bot.experience.*` has updated.
 
 Returns the block at `point` or `null` if that point is not loaded.
 See `Block`.
+
+#### bot.findBlock(options)
+
+Finds the nearest block to the given point.
+ * `options` - Additional options for the search:
+   - `point` - The start position of the search.
+   - `matching` - A function that returns true if the given block is a match.  Also supports this value being a block id or array of block ids.
+   - `maxDistance` - The furthest distance for the search, defaults to 16.
+   
+This is a simple function, to be used for simple things, for a more complete search using more optimals algorithm,
+ use [mineflayer-blockfinder](https://github.com/Darthfett/mineflayer-blockfinder) instead which have a very similar API.
 
 #### bot.canDigBlock(block)
 

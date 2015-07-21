@@ -39,12 +39,12 @@ bot.on('chat', function(username, message) {
 });
 
 function watchPaintingOrSign() {
-  var paintingBlock = findBlock({
-    check: function(block) {
+  var paintingBlock = bot.findBlock({
+    matching: function(block) {
       return !!block.painting;
     }
   });
-  var signBlock = findBlock({
+  var signBlock = bot.findBlock({
     matching: [63, 68]
   });
   if(signBlock) {
@@ -57,7 +57,7 @@ function watchPaintingOrSign() {
 }
 
 function updateSign(message) {
-  var signBlock = findBlock({
+  var signBlock = bot.findBlock({
     matching: [63, 68]
   });
   if(signBlock) {
@@ -65,30 +65,5 @@ function updateSign(message) {
     bot.chat('Sign updated');
   } else {
     bot.chat('There are no signs near me');
-  }
-}
-
-function findBlock(options) {
-  if(!Array.isArray(options.matching)) {
-    options.matching = [ options.matching ];
-  }
-  options.point = options.point || bot.entity.position;
-  options.maxDistance = options.maxDistance || 16;
-  options.check = options.check || isMatchingType;
-  var cursor = mineflayer.vec3();
-  var point = options.point;
-  var max = options.maxDistance;
-  var found;
-  for(cursor.x = point.x - max; cursor.x < point.x + max; cursor.x++) {
-    for(cursor.y = point.y - max; cursor.y < point.y + max; cursor.y++) {
-      for(cursor.z = point.z - max; cursor.z < point.z + max; cursor.z++) {
-        found = bot.blockAt(cursor);
-        if (options.check(found)) return found;
-      }
-    }
-  }
-
-  function isMatchingType(block) {
-    return options.matching.indexOf(block.type) >= 0;
   }
 }

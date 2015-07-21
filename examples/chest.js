@@ -76,7 +76,7 @@ function sayItems(items) {
 }
 
 function watchChest() {
-  var chestBlock = findBlock({
+  var chestBlock = bot.findBlock({
     matching: [54, 130, 146]
   });
   if(!chestBlock) {
@@ -153,7 +153,7 @@ function watchChest() {
 }
 
 function watchFurnace() {
-  var furnaceBlock = findBlock({
+  var furnaceBlock = bot.findBlock({
     matching: [61, 62]
   });
   if(!furnaceBlock) {
@@ -242,7 +242,7 @@ function watchFurnace() {
 }
 
 function watchDispenser() {
-  var dispenserBlock = findBlock({
+  var dispenserBlock = bot.findBlock({
     matching: 23
   });
   if(!dispenserBlock) {
@@ -319,7 +319,7 @@ function watchDispenser() {
 }
 
 function watchEnchantmentTable() {
-  var enchantTableBlock = findBlock({
+  var enchantTableBlock = bot.findBlock({
     matching: 116
   });
   if(!enchantTableBlock) {
@@ -443,31 +443,6 @@ function useInvsee(username, showEquipment) {
     bot.chat('/invsee ' + username + ' 1');
   } else {
     bot.chat('/invsee ' + username);
-  }
-}
-
-function findBlock(options) {
-  if(!Array.isArray(options.matching)) {
-    options.matching = [ options.matching ];
-  }
-  options.point = options.point || bot.entity.position;
-  options.maxDistance = options.maxDistance || 16;
-  options.check = options.check || isMatchingType;
-  var cursor = mineflayer.vec3();
-  var point = options.point;
-  var max = options.maxDistance;
-  var found;
-  for(cursor.x = point.x - max; cursor.x < point.x + max; cursor.x++) {
-    for(cursor.y = point.y - max; cursor.y < point.y + max; cursor.y++) {
-      for(cursor.z = point.z - max; cursor.z < point.z + max; cursor.z++) {
-        found = bot.blockAt(cursor);
-        if (options.check(found)) return found;
-      }
-    }
-  }
-
-  function isMatchingType(block) {
-    return options.matching.indexOf(block.type) >= 0;
   }
 }
 
