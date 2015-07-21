@@ -1,82 +1,121 @@
+/*
+ * Jumping is fun. Riding pigs is even funnier!
+ *
+ * Learn how to make your bot interactive with this example.
+ *
+ * This bot can move, jump, ride vehicles, attack nearby entities and much more.
+ */
 var mineflayer = require('../');
+
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node jumper.js <host> <port> [<name>] [<password>]");
   process.exit(1);
 }
+
 var bot = mineflayer.createBot({
-  username: process.argv[4] ? process.argv[4] : "jumper",
-  verbose: true,
-  port: parseInt(process.argv[3]),
   host: process.argv[2],
-  password: process.argv[5]
+  port: parseInt(process.argv[3]),
+  username: process.argv[4] ? process.argv[4] : "jumper",
+  password: process.argv[5],
+  verbose: true,
 });
-bot.once('spawn', function() {
-  // so creepy
-  setInterval(watch, 50);
-});
+
 var target = null;
-function watch() {
-  if(!target) return;
-  bot.lookAt(target.position.offset(0, target.height, 0));
-}
-bot.on("mount", function() {
+
+bot.on('chat', function(username, message) {
+  if(username === bot.username) return;
+  target = bot.players[username].entity;
+  var entity;
+  switch(message) {
+    case 'forward':
+      bot.setControlState('forward', true);
+      break;
+    case 'back':
+      bot.setControlState('back', true);
+      break;
+    case 'left':
+      bot.setControlState('left', true);
+      break;
+    case 'right':
+      bot.setControlState('right', true);
+      break;
+    case 'sprint':
+      bot.setControlState('sprint', true);
+      break;
+    case 'stop':
+      bot.clearControlStates();
+      break;
+    case 'jump':
+      bot.setControlState('jump', true);
+      bot.setControlState('jump', false);
+      break;
+    case 'jump a lot':
+      bot.setControlState('jump', true);
+      break;
+    case 'stop jumping':
+      bot.setControlState('jump', false);
+      break;
+    case 'attack':
+      entity = nearestEntity();
+      if(entity) {
+        bot.attack(entity, true);
+      } else {
+        bot.chat('no nearby entities');
+      }
+    case 'mount':
+      entity = nearestEntity("object");
+      if(entity) {
+        bot.mount(entity);
+      } else {
+        bot.chat('no nearby objects');
+      }
+      break;
+    case 'dismount':
+      bot.dismount();
+      break;
+    case 'move vehicle forward':
+      bot.moveVehicle(0.0, 1.0);
+      break;
+    case 'move vehicle backward':
+      bot.moveVehicle(0.0, -1.0);
+      break;
+    case 'move vehicle left':
+      bot.moveVehicle(1.0, 0.0);
+      break;
+    case 'move vehicle right':
+      bot.moveVehicle(-1.0, 0.0);
+      break;
+    case 'tp':
+      bot.entity.position.y += 10;
+      break;
+    case 'spawn':
+      bot.spawn();
+      break;
+    case 'pos':
+      bot.chat(bot.entity.position.toString());
+      break;
+    case 'yp':
+      bot.chat("Yaw " + bot.entity.yaw + ", pitch: " + bot.entity.pitch);
+      break;
+  }
+})
+
+bot.once('spawn', function() {
+  // keep your eyes on the target, so creepy!
+  setInterval(watchTarget, 50);
+
+  function watchTarget() {
+    if(!target) return;
+    bot.lookAt(target.position.offset(0, target.height, 0));
+  }
+});
+
+bot.on('mount', function() {
   bot.chat("mounted " + bot.vehicle.objectType);
 });
-bot.on("dismount", function(vehicle) {
+
+bot.on('dismount', function(vehicle) {
   bot.chat("dismounted " + vehicle.objectType);
-});
-bot.on('chat', function(username, message) {
-  target = bot.players[username].entity;
-  if(username === bot.username) return;
-  var entity;
-  if(message === 'jump a lot') {
-    bot.setControlState('jump', true);
-  }
-  else if(message === 'stop jumping') {
-    bot.setControlState('jump', false);
-  }
-  else if(message === 'jump') {
-    bot.setControlState('jump', true);
-    bot.setControlState('jump', false);
-  } else if(message === 'forward') {
-    bot.setControlState('forward', true);
-  } else if(message === 'back') {
-    bot.setControlState('back', true);
-  } else if(message === 'left') {
-    bot.setControlState('left', true);
-  } else if(message === 'right') {
-    bot.setControlState('right', true);
-  } else if(message === 'stop') {
-    bot.clearControlStates();
-  } else if(message === 'mount') {
-    entity = nearestEntity("object");
-    bot.mount(entity);
-  } else if(message === 'dismount') {
-    bot.dismount();
-  } else if(message === 'move vehicle forward') {
-    bot.moveVehicle(0.0, 1.0);
-  } else if(message === 'move vehicle left') {
-    bot.moveVehicle(1.0, 0.0);
-  } else if(message === 'move vehicle right') {
-    bot.moveVehicle(-1.0, 0.0);
-  } else if(message === 'move vehicle backward') {
-    bot.moveVehicle(0.0, -1.0);
-  } else if(message === 'stop vehicle') {
-    bot.moveVehicle(0.0, 0.0);
-  } else if(message === 'attack') {
-    entity = nearestEntity();
-    bot.attack(entity, true);
-  } else if(message === 'tp') {
-    bot.entity.position.y += 10;
-  } else if(message === 'spawn') {
-    bot.spawn();
-  } else if(message === 'pos') {
-    bot.chat(bot.entity.position.toString());
-  } else if(message === 'yp') {
-    bot.chat("Yaw " + bot.entity.yaw + ", pitch: " + bot.entity.pitch);
-  } else if(message === 'sprint') {
-    bot.setControlState('sprint', true);
-  }
 });
 
 function nearestEntity(type) {

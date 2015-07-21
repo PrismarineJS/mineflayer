@@ -1,56 +1,68 @@
+/*
+ * Even bots need to rest sometimes.
+ *
+ * That's why we created an example that demonstrates how easy it is
+ * to find and use a bed properly.
+ *
+ * You can ask the bot to sleep or wake up by sending a chat message.
+ */
 var mineflayer = require('../');
+
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node sleeper.js <host> <port> [<name>] [<password>]");
   process.exit(1);
 }
+
 var bot = mineflayer.createBot({
-  username: process.argv[4] ? process.argv[4] : "sleeper",
-  verbose: true,
-  port: parseInt(process.argv[3]),
   host: process.argv[2],
-  password: process.argv[5]
+  port: parseInt(process.argv[3]),
+  username: process.argv[4] ? process.argv[4] : "sleeper",
+  password: process.argv[5],
+  verbose: true,
 });
+
 bot.on('chat', function(username, message) {
-  if(message === 'sleep') {
-    var bedBlock = findBed();
-    if(bedBlock) {
-      bot.sleep(bedBlock, function(err) {
-        if(err) {
-          console.log(err);
-          bot.chat("I can't sleep");
-        }
-        else
-          bot.chat("counting sheep");
-      });
-    } else {
-      bot.chat("no nearby bed");
-    }
-  } else if(message === 'wake') {
-    bot.wake(function(err) {
-      if(err) {
-        console.log(err);
-        bot.chat("I can't wake up");
-      }
-    });
+  if(username === bot.username) return;
+  switch(message) {
+    case 'sleep':
+      goToSleep();
+      break;
+    case 'wakeup':
+      wakeUp();
+      break;
   }
 });
 
 bot.on('sleep', function() {
-  bot.chat("zzzz");
+  bot.chat("Good night!");
 });
-
 bot.on('wake', function() {
-  bot.chat("I woke up");
+  bot.chat("Good morning!");
 });
 
-function findBed() {
-  var cursor = mineflayer.vec3();
-  for(cursor.x = bot.entity.position.x - 4; cursor.x < bot.entity.position.x + 4; cursor.x++) {
-    for(cursor.y = bot.entity.position.y - 4; cursor.y < bot.entity.position.y + 4; cursor.y++) {
-      for(cursor.z = bot.entity.position.z - 4; cursor.z < bot.entity.position.z + 4; cursor.z++) {
-        var block = bot.blockAt(cursor);
-        if(block.type === 26) return block;
+function goToSleep() {
+  var bed = bot.findBlock({
+    matching: 26
+  });
+  if(bed) {
+    bot.sleep(bed, function(err) {
+      if(err) {
+        bot.chat("I can't sleep: " + err.message);
+      } else {
+        bot.chat("I'm sleeping");
       }
-    }
+    });
+  } else {
+    bot.chat("No nearby bed");
   }
+}
+
+function wakeUp() {
+  bot.wake(function(err) {
+    if(err) {
+      bot.chat("I can't wake up: " + err.message);
+    } else {
+      bot.chat("I woke up");
+    }
+  });
 }

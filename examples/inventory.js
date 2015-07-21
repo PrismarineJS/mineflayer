@@ -1,139 +1,161 @@
+/*
+ * Using the inventory is one of the first things you learn in Minecraft,
+ * now it's time to teach your bot the same skill.
+ *
+ * Command your bot with chat messages and make him toss, equip, use items
+ * and even craft new items using the built-in recipe book.
+ *
+ * To learn more about the recipe system and how crafting works
+ * remember to read the API documentation!
+ */
 var mineflayer = require('../');
+
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node inventory.js <host> <port> [<name>] [<password>]");
   process.exit(1);
 }
+
 var bot = mineflayer.createBot({
-  username: process.argv[4] ? process.argv[4] : "inventory",
-  verbose: true,
-  port: parseInt(process.argv[3]),
   host: process.argv[2],
-  password: process.argv[5]
+  port: parseInt(process.argv[3]),
+  username: process.argv[4] ? process.argv[4] : "inventory",
+  password: process.argv[5],
+  verbose: true,
 });
 
 bot.on('chat', function(username, message) {
-  var words, name, item, amount, destination;
-  if(message === 'debug') {
-    console.log(bot.inventory);
-  } else if(message === 'list') {
-    listInventory();
-  } else if(message === 'look') {
-    var entity = bot.players[username].entity;
-    bot.lookAt(entity.position.offset(0, entity.height, 0));
-  } else if(/^toss (\d+) /.test(message)) {
-    words = message.split(" ");
-    amount = parseInt(words[1], 10);
-    name = words[2];
-    item = itemByName(name);
-    if(item) {
-      bot.toss(item.type, null, amount, function(err) {
-        if(err) {
-          bot.chat("unable to toss " + item.name);
-          console.error(err.stack);
-        } else {
-          bot.chat("tossed " + amount + " " + item.name);
-        }
-      });
-    } else {
-      bot.chat("I have no " + name);
-    }
-  } else if(/^toss /.test(message)) {
-    words = message.split(" ");
-    name = words[1];
-    item = itemByName(name);
-    if(item) {
-      bot.tossStack(item, function(err) {
-        if(err) {
-          bot.chat("unable to toss " + item.name);
-          console.error(err.stack);
-        } else {
-          bot.chat("tossed " + item.name);
-        }
-      });
-    } else {
-      bot.chat("I have no " + name);
-    }
-  } else if(/^equip /.test(message)) {
-    words = message.split(" ");
-    destination = words[1];
-    name = words[2];
-    item = itemByName(name);
-    if(item) {
-      bot.equip(item, destination, function(err) {
-        if(err) {
-          bot.chat("unable to equip " + item.name);
-          console.error(err.stack);
-        } else {
-          bot.chat("equipped " + item.name);
-        }
-      });
-    } else {
-      bot.chat("I have no " + name);
-    }
-  } else if(/^unequip /.test(message)) {
-    words = message.split(" ");
-    destination = words[1];
-    bot.unequip(destination, function(err) {
-      if(err) {
-        bot.chat("unable to unequip");
-        console.error(err.stack);
-      } else {
-        bot.chat("unequipped");
-      }
-    });
-  } else if(/^craft (\d+)/.test(message)) {
-    words = message.split(" ");
-    amount = parseInt(words[1], 10);
-    name = words[2];
-    item = mineflayer.data.findItemOrBlockByName(name);
-    var craftingTable = findCraftingTable();
-    var wbText = craftingTable ? "with a crafting table, " : "without a crafting table, ";
-    if(item == null) {
-      bot.chat(wbText + "unknown item: " + name);
-    } else {
-      var recipes = bot.recipesFor(item.id, null, 1, craftingTable); // doesn't check if it's possible to do it amount times
-      if(recipes.length) {
-        bot.chat(wbText + "I can make " + item.name);
-        bot.craft(recipes[0], amount, craftingTable, function(err) {
-          if(err) {
-            bot.chat("error making " + item.name);
-            console.error(err.stack);
-          } else {
-            bot.chat("did the recipe for " + item.name + " " + amount + "times");
-          }
-        });
-      } else {
-        bot.chat(wbText + "I can't make " + item.name);
-      }
-    }
-  } else if(message === "use") {
-    bot.chat("activating");
-    bot.activateItem();
-  } else if(message === "stop") {
-    bot.chat("stopping");
-    bot.clearControlStates();
-    bot.deactivateItem();
-  } else if(message === "food") {
-    bot.chat("food: " + bot.food);
-  } else if(message === "jump") {
-    bot.setControlState('jump', true);
-  } else if(message === "health") {
-    bot.chat("health: " + bot.health);
-  } else if(message === "difficulty") {
-    bot.chat("difficulty: " + bot.game.difficulty);
+  if(username === bot.username) return;
+  var command = message.split(' ');
+  switch(true) {
+    case /^list$/.test(message):
+      sayItems();
+      break;
+    case /^toss \d+ \w+$/.test(message):
+      // toss amount name
+      // ex: toss 64 diamond
+      tossItem(command[2], command[1]);
+      break;
+    case /^toss \w+$/.test(message):
+      // toss name
+      // ex: toss diamond
+      tossItem(command[1]);
+      break;
+    case /^equip \w+ \w+$/.test(message):
+      // equip destination name
+      // ex: equip hand diamond
+      equipItem(command[2], command[1]);
+      break;
+    case /^unequip \w+$/.test(message):
+      // unequip testination
+      // ex: unequip hand
+      unequipItem(command[1]);
+      break;
+    case /^use$/.test(message):
+      useEquippedItem();
+      break;
+    case /^craft \d+ \w+$/.test(message):
+      // craft amount item
+      // ex: craft 64 stick
+      craftItem(command[2], command[1]);
+      break;
   }
 });
 
-
-function listInventory() {
-  bot.chat(bot.inventory.items().map(itemStr).join(", "));
+function sayItems(items) {
+  items = items || bot.inventory.items();
+  var output = items.map(itemToString).join(', ');
+  if(output) {
+    bot.chat(output);
+  } else {
+    bot.chat("empty");
+  }
 }
 
-function itemStr(item) {
-  if(item) {
-    return item.name + " x " + item.count;
+function tossItem(name, amount) {
+  amount = parseInt(amount, 10);
+  var item = itemByName(name);
+  if(!item) {
+    bot.chat('I have no ' + name);
+  } else if(amount) {
+    bot.toss(item.type, null, amount, checkIfTossed);
   } else {
-    return "(nothing)";
+    bot.tossStack(item, checkIfTossed);
+  }
+
+  function checkIfTossed(err) {
+    if(err) {
+      bot.chat('unable to toss: ' + err.message);
+    } else if(amount) {
+      bot.chat('tossed ' + amount + ' x ' + name);
+    } else {
+      bot.chat('tossed ' + name);
+    }
+  }
+}
+
+function equipItem(name, destination) {
+  var item = itemByName(name);
+  if(item) {
+    bot.equip(item, destination, checkIfEquipped);
+  } else {
+    bot.chat('I have no ' + name);
+  }
+
+  function checkIfEquipped(err) {
+    if(err) {
+      bot.chat('cannot equip ' + name + ': ' + err.message);
+    } else {
+      bot.chat('equipped ' + name);
+    }
+  }
+}
+
+function unequipItem(destination) {
+  bot.unequip(destination, function(err) {
+    if(err) {
+      bot.chat('cannot unequip: ' + err.message);
+    } else {
+      bot.chat('unequipped');
+    }
+  });
+}
+
+function useEquippedItem() {
+  bot.chat('activating item');
+  bot.activateItem();
+}
+
+function craftItem(name, amount) {
+  amount = parseInt(amount, 10);
+  var item = mineflayer.data.findItemOrBlockByName(name);
+  var craftingTable = bot.findBlock({
+    matching: 58
+  });
+
+  if(item) {
+    var recipe = bot.recipesFor(item.id, null, 1, craftingTable)[0];
+    if(recipe) {
+      bot.chat('I can make ' + name);
+      bot.craft(recipe, amount, craftingTable, function(err) {
+        if(err) {
+          bot.chat('error making ' + name);
+        } else {
+          bot.chat('did the recipe for ' + name + ' ' + amount + ' times');
+        }
+      });
+    } else {
+      bot.chat('I cannot make ' + name);
+    }
+  } else {
+    bot.chat('unknown item: ' + name);
+  }
+}
+
+function itemToString(item) {
+  if(item) {
+    return item.name + ' x ' + item.count;
+  } else {
+    return '(nothing)';
   }
 }
 
@@ -141,16 +163,4 @@ function itemByName(name) {
   return bot.inventory.items().filter(function(item) {
     return item.name === name;
   })[0];
-}
-
-function findCraftingTable() {
-  var cursor = mineflayer.vec3();
-  for(cursor.x = bot.entity.position.x - 4; cursor.x < bot.entity.position.x + 4; cursor.x++) {
-    for(cursor.y = bot.entity.position.y - 4; cursor.y < bot.entity.position.y + 4; cursor.y++) {
-      for(cursor.z = bot.entity.position.z - 4; cursor.z < bot.entity.position.z + 4; cursor.z++) {
-        var block = bot.blockAt(cursor);
-        if(block.type === 58) return block;
-      }
-    }
-  }
 }

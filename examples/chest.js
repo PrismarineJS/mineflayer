@@ -1,22 +1,37 @@
+/*
+ * Watch out, this is a big one!
+ *
+ * This is a demonstration to show you how you can interact with:
+ * - Chests
+ * - Furnaces
+ * - Dispensers
+ * - Enchantment Tables
+ *
+ * and of course with your own inventory.
+ *
+ * Each of the main commands makes the bot interact with the block and open
+ * its window. From there you can send another set of commands to actually
+ * interact with the window and make awesome stuff.
+ *
+ * There's also a bonus example which shows you how to use the /invsee command
+ * to see what items another user has in his inventory and what items he has
+ * equipped.
+ * This last one is usually reserved to Server Ops so make sure you have the
+ * appropriate permission to do it or it won't work.
+ */
 var mineflayer = require('../');
+
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node chest.js <host> <port> [<name>] [<password>]");
   process.exit(1);
 }
+
 var bot = mineflayer.createBot({
-  username: process.argv[4] ? process.argv[4] : "chest",
-  verbose: true,
-  port: parseInt(process.argv[3]),
   host: process.argv[2],
-  password: process.argv[5]
-});
-
-bot.on('end', function() {
-  console.log("end");
-});
-
-bot.on('kicked', function(reason) {
-  console.log("kicked for", reason);
+  port: parseInt(process.argv[3]),
+  username: process.argv[4] ? process.argv[4] : "chest",
+  password: process.argv[5],
+  verbose: true,
 });
 
 bot.on('experience', function() {
@@ -24,46 +39,35 @@ bot.on('experience', function() {
 });
 
 bot.on('chat', function(username, message) {
-  if(message === "list") {
-    listInventory();
-  } else if(message === "chest") {
-    watchChest();
-  } else if(message === "furnace") {
-    watchFurnace();
-  } else if(message === "dispenser") {
-    watchDispenser();
-  } else if(message === "enchant") {
-    watchEnchantmentTable();
-  } else if(/^invsee /.test(message)) {
-    // note: you must have the permission to use this command
-    var words = message.split(" ");
-    var username = words[1];
-    var showEquipment = words[2];
-    bot.once('windowOpen', function(window) {
-      var count = window.containerItems().length;
-      var what = showEquipment ? 'equipment' : 'inventory items';
-      if(count) {
-        bot.chat(username + "'s " + what + ":");
-        bot.chat(window.containerItems().map(itemStr).join(", "));
-      } else {
-        bot.chat(username + " has no " + what);
-      }
-    });
-    if(showEquipment) {
-      // any extra parameter triggers the "easter egg"
-      // and shows the other player's equipment
-      bot.chat('/invsee ' + username + ' 1');
-    } else {
-      bot.chat('/invsee ' + username);
-    }
+  if(username === bot.username) return;
+  switch(true) {
+    case /^list$/.test(message):
+      sayItems();
+      break;
+    case /^chest$/.test(message):
+      watchChest();
+      break;
+    case /^furnace$/.test(message):
+      watchFurnace();
+      break;
+    case /^dispenser$/.test(message):
+      watchDispenser();
+      break;
+    case /^enchant$/.test(message):
+      watchEnchantmentTable();
+      break;
+    case /^invsee \w+( \d)?$/.test(message):
+      // invsee Herobrine [or]
+      // invsee Herobrine 1
+      var command = message.split(' ');
+      useInvsee(command[0], command[1]);
+      break;
   }
 });
 
-function listInventory() {
-  var output = "";
-  bot.inventory.items().forEach(function(item) {
-    output += itemStr(item) + ", ";
-  });
+function sayItems(items) {
+  items = items || bot.inventory.items();
+  var output = items.map(itemToString).join(', ');
   if(output) {
     bot.chat(output);
   } else {
@@ -71,153 +75,87 @@ function listInventory() {
   }
 }
 
-function watchEnchantmentTable() {
-  var enchantTableBlock = findBlock([116]);
-  if(!enchantTableBlock) {
-    bot.chat("no enchantment table found");
+function watchChest() {
+  var chestBlock = bot.findBlock({
+    matching: [54, 130, 146]
+  });
+  if(!chestBlock) {
+    bot.chat("no chest found");
     return;
   }
-  var table = bot.openEnchantmentTable(enchantTableBlock);
-  table.on('open', function() {
-    bot.chat(itemStr(table.targetItem()));
+  var chest = bot.openChest(chestBlock);
+  chest.on('open', function() {
+    sayItems(chest.items());
   });
-  table.on('updateSlot', function(oldItem, newItem) {
-    bot.chat("enchantment table update: " + itemStr(oldItem) + " -> " + itemStr(newItem));
+  chest.on('updateSlot', function(oldItem, newItem) {
+    bot.chat("chest update: " + itemStr(oldItem) + " -> " + itemStr(newItem));
   });
-  table.on('close', function() {
-    bot.chat("enchantment table closed");
-  });
-  table.on('ready', function() {
-    bot.chat("ready to enchant. choices are " + table.enchantments.map(function(o) {
-        return o.level;
-      }).join(', '));
-  });
-  bot.on('chat', onChat);
-
-  function onChat(username, message) {
-    var words, choice, name, item;
-    if(message === 'close') {
-      table.close();
-    } else if(message === 'take') {
-      table.takeTargetItem(function(err, item) {
-        if(err) {
-          bot.chat("error getting item");
-        } else {
-          bot.chat("got " + itemStr(item));
-        }
-      });
-    } else if(/^enchant (\d+)/.test(message)) {
-      words = message.split(/\s+/);
-      choice = parseInt(words[1], 10);
-      table.enchant(choice, function(err, item) {
-        if(err) {
-          bot.chat("error enchanting");
-        } else {
-          bot.chat("enchanted " + itemStr(item));
-        }
-      });
-    } else if(/^put /.test(message)) {
-      words = message.split(/\s+/);
-      name = words[1];
-      item = itemByName(table.window.items(), name);
-      if(!item) {
-        bot.chat("unknown item " + name);
-        return;
-      }
-      table.putTargetItem(item, function(err) {
-        if(err) {
-          bot.chat("error putting " + itemStr(item));
-        } else {
-          bot.chat("I put " + itemStr(item));
-        }
-      });
-    } else if(/^add lapis$/.test(message)) {
-      item = itemByType(table.window.items(), 351);
-      if(!item) {
-        bot.chat("I don't have any lapis");
-        return;
-      }
-      table.putLapis(item, function(err) {
-        if(err) {
-          bot.chat("error putting " + itemStr(item));
-        } else {
-          bot.chat("I put " + itemStr(item));
-        }
-      });
-    }
-  }
-}
-
-function watchDispenser() {
-  var dispenserBlock = findBlock([23]);
-  if(!dispenserBlock) {
-    bot.chat("no dispenser found");
-    return;
-  }
-  var dispenser = bot.openDispenser(dispenserBlock);
-  dispenser.on('open', function() {
-    var output = "";
-    dispenser.items().forEach(function(item) {
-      output += itemStr(item) + ", ";
-    });
-    if(output) {
-      bot.chat(output);
-    } else {
-      bot.chat("empty");
-    }
-  });
-  dispenser.on('updateSlot', function(oldItem, newItem) {
-    bot.chat("dispenser update: " + itemStr(oldItem) + " -> " + itemStr(newItem));
-  });
-  dispenser.on('close', function() {
-    bot.chat("dispenser closed");
+  chest.on('close', function() {
+    bot.chat("chest closed");
   });
 
   bot.on('chat', onChat);
 
   function onChat(username, message) {
-    var words, name, amount, item;
-    if(message === 'close') {
-      dispenser.close();
-      bot.removeListener('chat', onChat);
-    } else if(/^withdraw (\d+)/.test(message)) {
-      words = message.split(/\s+/);
-      amount = parseInt(words[1], 10);
-      name = words[2];
-      item = itemByName(dispenser.items(), name);
-      if(!item) {
-        bot.chat("unknown item " + name);
-        return;
-      }
-      dispenser.withdraw(item.type, null, amount, function(err) {
+    if(username === bot.username) return;
+    var command = message.split(' ');
+    switch(true) {
+      case /^close$/.test(message):
+        closeChest();
+        break;
+      case /^withdraw \d+ \w+$/.test(message):
+        // withdraw amount name
+        // ex: withdraw 16 stick
+        withdrawItem(command[2], command[1]);
+        break;
+      case /^deposit \d+ \w+$/.test(message):
+        // deposit amount name
+        // ex: deposit 16 stick
+        depositItem(command[2], command[1]);
+        break;
+    }
+  }
+
+  function closeChest() {
+    chest.close();
+    bot.removeListener('chat', onChat);
+  }
+
+  function withdrawItem(name, amount) {
+    var item = itemByName(chest.items(), name);
+    if(item) {
+      chest.withdraw(item.type, null, amount, function(err) {
         if(err) {
           bot.chat("unable to withdraw " + amount + " " + item.name);
         } else {
           bot.chat("withdrew " + amount + " " + item.name);
         }
       });
-    } else if(/^deposit (\d+)/.test(message)) {
-      words = message.split(/\s+/);
-      amount = parseInt(words[1], 10);
-      name = words[2];
-      item = itemByName(bot.inventory.items(), name);
-      if(!item) {
-        bot.chat("unknown item " + name);
-        return;
-      }
-      dispenser.deposit(item.type, null, amount, function(err) {
+    } else {
+      bot.chat("unknown item " + name);
+    }
+  }
+
+  function depositItem(name, amount) {
+    var item = itemByName(bot.inventory.items(), name);
+    if(item) {
+      chest.deposit(item.type, null, amount, function(err) {
         if(err) {
           bot.chat("unable to deposit " + amount + " " + item.name);
         } else {
           bot.chat("deposited " + amount + " " + item.name);
         }
       });
+    } else {
+      bot.chat("unknown item " + name);
     }
   }
 }
 
 function watchFurnace() {
-  var furnaceBlock = findFurnace();
+  var furnaceBlock = bot.findBlock({
+    matching: [61, 62]
+  });
   if(!furnaceBlock) {
     bot.chat("no furnace found");
     return;
@@ -244,36 +182,54 @@ function watchFurnace() {
   bot.on('chat', onChat);
 
   function onChat(username, message) {
-    var words, cmd, name, amount, item, fn;
-    if(message === 'close') {
+    if(username === bot.username) return;
+    var command = message.split(' ');
+    switch (true) {
+      case /^close$/.test(message):
+        closeFurnace();
+        break;
+      case /^(input|fuel) \d+ \w+$/.test(message):
+        // input amount name
+        // ex: input 32 coal
+        putInFurnace(command[0], command[2], command[1]);
+        break;
+      case /^take (input|fuel|output)$/.test(message):
+        // take what
+        // ex: take output
+        takeFromFurnace(command[0]);
+        break;
+    }
+
+    function closeFurnace() {
       furnace.close();
       bot.removeListener('chat', onChat);
-    } else if(/^(input|fuel) (\d+)/.test(message)) {
-      words = message.split(/\s+/);
-      cmd = words[0];
-      amount = parseInt(words[1], 10);
-      name = words[2];
-      item = itemByName(bot.inventory.items(), name);
-      if(!item) {
+    }
+
+    function putInFurnace(where, name, amount) {
+      var item = itemByName(bot.inventory.items(), name);
+      if(item) {
+        var fn = {
+          input: furnace.putInput,
+          fuel: furnace.putFuel,
+        }[where];
+        fn.call(furnace, item.type, null, amount, function(err) {
+          if(err) {
+            bot.chat("unable to put " + amount + " " + item.name);
+          } else {
+            bot.chat("put " + amount + " " + item.name);
+          }
+        });
+      } else {
         bot.chat("unknown item " + name);
-        return;
       }
-      fn = cmd === 'input' ? furnace.putInput : furnace.putFuel;
-      fn.call(furnace, item.type, null, amount, function(err) {
-        if(err) {
-          bot.chat("unable to put " + amount + " " + item.name);
-        } else {
-          bot.chat("put " + amount + " " + item.name);
-        }
-      });
-    } else if(/^take (input|fuel|output)$/.test(message)) {
-      words = message.split(/\s+/);
-      cmd = words[1];
-      fn = {
+    }
+
+    function takeFromFurnace(what) {
+      var fn = {
         input: furnace.takeInput,
         fuel: furnace.takeFuel,
         output: furnace.takeOutput,
-      }[cmd];
+      }[what];
       fn.call(furnace, function(err, item) {
         if(err) {
           bot.chat("unable to take " + item.name + " from " + cmd);
@@ -285,98 +241,216 @@ function watchFurnace() {
   }
 }
 
-function watchChest() {
-  var chestBlock = findChest();
-  if(!chestBlock) {
-    bot.chat("no chest found");
+function watchDispenser() {
+  var dispenserBlock = bot.findBlock({
+    matching: 23
+  });
+  if(!dispenserBlock) {
+    bot.chat("no dispenser found");
     return;
   }
-  var chest = bot.openChest(chestBlock);
-  chest.on('open', function() {
-    var output = "";
-    chest.items().forEach(function(item) {
-      output += itemStr(item) + ", ";
-    });
-    if(output) {
-      bot.chat(output);
-    } else {
-      bot.chat("empty");
-    }
+  var dispenser = bot.openDispenser(dispenserBlock);
+  dispenser.on('open', function() {
+    sayItems(dispenser.items());
   });
-  chest.on('updateSlot', function(oldItem, newItem) {
-    bot.chat("chest update: " + itemStr(oldItem) + " -> " + itemStr(newItem));
+  dispenser.on('updateSlot', function(oldItem, newItem) {
+    bot.chat("dispenser update: " + itemStr(oldItem) + " -> " + itemStr(newItem));
   });
-  chest.on('close', function() {
-    bot.chat("chest closed");
+  dispenser.on('close', function() {
+    bot.chat("dispenser closed");
   });
 
   bot.on('chat', onChat);
 
   function onChat(username, message) {
-    var words, name, amount, item;
-    if(message === 'close') {
-      chest.close();
-      bot.removeListener('chat', onChat);
-    } else if(/^withdraw (\d+)/.test(message)) {
-      words = message.split(/\s+/);
-      amount = parseInt(words[1], 10);
-      name = words[2];
-      item = itemByName(chest.items(), name);
-      if(!item) {
-        bot.chat("unknown item " + name);
-        return;
-      }
-      chest.withdraw(item.type, null, amount, function(err) {
+    if(username === bot.username) return;
+    var command = message.split(' ');
+    switch(true) {
+      case /^close$/.test(message):
+        closeDispenser();
+        break;
+      case /^withdraw \d+ \w+$/.test(message):
+        // withdraw amount name
+        // ex: withdraw 16 stick
+        withdrawItem(command[2], command[1]);
+        break;
+      case /^deposit \d+ \w+$/.test(message):
+        // deposit amount name
+        // ex: deposit 16 stick
+        depositItem(command[2], command[1]);
+        break;
+    }
+  }
+
+  function closeDispenser() {
+    dispenser.close();
+    bot.removeListener('chat', onChat);
+  }
+
+  function withdrawItem(name, amount) {
+    var item = itemByName(dispenser.items(), name);
+    if(item) {
+      dispenser.withdraw(item.type, null, amount, function(err) {
         if(err) {
           bot.chat("unable to withdraw " + amount + " " + item.name);
         } else {
           bot.chat("withdrew " + amount + " " + item.name);
         }
       });
-    } else if(/^deposit (\d+)/.test(message)) {
-      words = message.split(/\s+/);
-      amount = parseInt(words[1], 10);
-      name = words[2];
-      item = itemByName(bot.inventory.items(), name);
-      if(!item) {
-        bot.chat("unknown item " + name);
-        return;
-      }
-      chest.deposit(item.type, null, amount, function(err) {
+    } else {
+      bot.chat("unknown item " + name);
+    }
+  }
+
+  function depositItem(name, amount) {
+    var item = itemByName(bot.inventory.items(), name);
+    if(item) {
+      dispenser.deposit(item.type, null, amount, function(err) {
         if(err) {
           bot.chat("unable to deposit " + amount + " " + item.name);
         } else {
           bot.chat("deposited " + amount + " " + item.name);
         }
       });
+    } else {
+      bot.chat("unknown item " + name);
     }
   }
 }
 
-function itemStr(item) {
+function watchEnchantmentTable() {
+  var enchantTableBlock = bot.findBlock({
+    matching: 116
+  });
+  if(!enchantTableBlock) {
+    bot.chat("no enchantment table found");
+    return;
+  }
+  var table = bot.openEnchantmentTable(enchantTableBlock);
+  table.on('open', function() {
+    bot.chat(itemStr(table.targetItem()));
+  });
+  table.on('updateSlot', function(oldItem, newItem) {
+    bot.chat("enchantment table update: " + itemStr(oldItem) + " -> " + itemStr(newItem));
+  });
+  table.on('close', function() {
+    bot.chat("enchantment table closed");
+  });
+  table.on('ready', function() {
+    bot.chat("ready to enchant. choices are " + table.enchantments.map(function(o) {
+        return o.level;
+      }).join(', '));
+  });
+
+  bot.on('chat', onChat);
+
+  function onChat(username, message) {
+    if(username === bot.username) return;
+    var command = message.split(' ');
+    switch(true) {
+      case /^close$/.test(message):
+        closeEnchantmentTable();
+        break;
+      case /^put \w+$/.test(message):
+        // put name
+        // ex: put diamondsword
+        putItem(command[1]);
+        break;
+      case /^add lapis$/.test(message):
+        addLapis();
+        break;
+      case /^enchant \d+$/.test(message):
+        // enchant choice
+        // ex: enchant 2
+        enchantItem(command[1]);
+        break;
+      case /^take$/.test(message):
+        takeEnchantedItem();
+        break;
+    }
+
+    function closeEnchantmentTable() {
+      table.close();
+    }
+
+    function putItem(name) {
+      var item = itemByName(table.window.items(), name);
+      if(item) {
+        table.putTargetItem(item, function(err) {
+          if(err) {
+            bot.chat("error putting " + itemStr(item));
+          } else {
+            bot.chat("I put " + itemStr(item));
+          }
+        });
+      } else {
+        bot.chat("unknown item " + name);
+      }
+    }
+
+    function addLapis() {
+      var item = itemByType(table.window.items(), 351);
+      if(item) {
+        table.putLapis(item, function(err) {
+          if(err) {
+            bot.chat("error putting " + itemStr(item));
+          } else {
+            bot.chat("I put " + itemStr(item));
+          }
+        });
+      } else {
+        bot.chat("I don't have any lapis");
+      }
+    }
+
+    function enchantItem(choice) {
+      choice = parseInt(choice, 10);
+      table.enchant(choice, function(err, item) {
+        if(err) {
+          bot.chat("error enchanting");
+        } else {
+          bot.chat("enchanted " + itemStr(item));
+        }
+      });
+    }
+
+    function takeEnchantedItem() {
+      table.takeTargetItem(function(err, item) {
+        if(err) {
+          bot.chat("error getting item");
+        } else {
+          bot.chat("got " + itemStr(item));
+        }
+      });
+    }
+  }
+}
+
+function useInvsee(username, showEquipment) {
+  bot.once('windowOpen', function(window) {
+    var count = window.containerItems().length;
+    var what = showEquipment ? 'equipment' : 'inventory items';
+    if(count) {
+      bot.chat(username + "'s " + what + ":");
+      sayItems(window.containerItems());
+    } else {
+      bot.chat(username + " has no " + what);
+    }
+  });
+  if(showEquipment) {
+    // any extra parameter triggers the easter egg
+    // and shows the other player's equipment
+    bot.chat('/invsee ' + username + ' 1');
+  } else {
+    bot.chat('/invsee ' + username);
+  }
+}
+
+function itemToString(item) {
   if(item) {
     return item.name + " x " + item.count;
   } else {
     return "(nothing)";
-  }
-}
-
-function findFurnace() {
-  return findBlock([61, 62]);
-}
-function findChest() {
-  return findBlock([54, 130, 146]);
-}
-
-function findBlock(listOfIds) {
-  var cursor = mineflayer.vec3();
-  for(cursor.x = bot.entity.position.x - 4; cursor.x < bot.entity.position.x + 4; cursor.x++) {
-    for(cursor.y = bot.entity.position.y - 4; cursor.y < bot.entity.position.y + 4; cursor.y++) {
-      for(cursor.z = bot.entity.position.z - 4; cursor.z < bot.entity.position.z + 4; cursor.z++) {
-        var block = bot.blockAt(cursor);
-        if(listOfIds.indexOf(block.type) >= 0) return block;
-      }
-    }
   }
 }
 
@@ -397,4 +471,3 @@ function itemByName(items, name) {
   }
   return null;
 }
-
