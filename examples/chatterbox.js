@@ -76,7 +76,8 @@ bot.on('chat', function(username, message) {
 
   function sayBlockUnder() {
     var block = bot.blockAt(bot.players[username].entity.position.offset(0, -1, 0));
-    bot.chat("Block under you is " + block.displayName + " in the " + block.biome.name + " biome"); 
+    bot.chat("Block under you is " + block.displayName + " in the " + block.biome.name + " biome");
+    console.log(block);
   }
 
   function quit(username) {
@@ -161,7 +162,7 @@ bot.on('playerCollect', function(collector, collected) {
 
 bot.on('entitySpawn', function(entity) {
   if(entity.type === 'mob') {
-    bot.chat("Look out! A " + entity.mobType + " spawned at " + entity.position);
+    //bot.chat("Look out! A " + entity.mobType + " spawned at " + entity.position);
   } else if(entity.type === 'player') {
     bot.chat("Look who decided to show up: " + entity.username);
   } else if(entity.type === 'object') {
