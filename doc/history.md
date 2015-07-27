@@ -1,3 +1,10 @@
+## 1.3.0
+ * swing arm on placing a block, look at center of block when activating a block (thanks gipsy-king)
+ * refactor examples (thanks Pietro210)
+ * add clickWindow support to ContainerWindow (thanks Gnomesley)
+ * fix skylight in the nether
+ * update node-mojangson to display unparsed text in case of error
+
 ## 1.2.1
 
  * Prevent crash when an unknown entity is spawned
