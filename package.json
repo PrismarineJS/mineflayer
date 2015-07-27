@@ -18,7 +18,7 @@
     "vec3": "~0.1.3",
     "lodash": "^3.5.0",
     "node-minecraft-data": "~0.2.0",
-    "node-mojangson": "~0.1.0"
+    "node-mojangson": "~0.1.1"
   },
   "devDependencies": {
     "mocha": "~2.2.1",
