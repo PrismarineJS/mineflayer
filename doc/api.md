@@ -260,7 +260,7 @@
       - [bot.stopDigging()](#botstopdigging)
       - [bot.digTime(block)](#botdigtimeblock)
       - [bot.staticDigTime(block,creative,heldItemType,inWater,onGround)](#botstaticdigtimeblockcreativehelditemtypeinwateronground)
-      - [bot.placeBlock(referenceBlock, faceVector)](#botplaceblockreferenceblock-facevector)
+      - [bot.placeBlock(referenceBlock, faceVector, cb)](#botplaceblockreferenceblock-facevector-cb)
       - [bot.activateBlock(block)](#botactivateblockblock)
       - [bot.activateItem()](#botactivateitem)
       - [bot.deactivateItem()](#botdeactivateitem)
@@ -1441,11 +1441,12 @@ The difference between that function and bot.digTime is that this function is st
  * `inWater` the bot is in water
  * `onGround` the bot in on the ground
 
-#### bot.placeBlock(referenceBlock, faceVector)
+#### bot.placeBlock(referenceBlock, faceVector, cb)
 
  * `referenceBlock` - the block you want to place a new block next to
  * `faceVector` - one of the six cardinal directions, such as `new Vec3(0, 1, 0)` for the top face,
    indicating which face of the `referenceBlock` to place the block against.
+ * `cb` will be called when the server confirms that the block has indeed been placed
 
 The new block will be placed at `referenceBlock.position.plus(faceVector)`.
 

@@ -85,8 +85,7 @@ function inject(bot) {
     bot.setQuickBarSlot(slot - 36);
     // always place the block on the top of the block below it, i guess.
     var referenceBlock = bot.blockAt(position.plus(new Vec3(0, -1, 0)));
-    bot.placeBlock(referenceBlock, new Vec3(0, 1, 0));
-    setImmediate(cb);
+    bot.placeBlock(referenceBlock, new Vec3(0, 1, 0), cb);
   }
 
 

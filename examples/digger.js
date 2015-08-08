@@ -79,7 +79,13 @@ function build() {
 
   function placeIfHighEnough() {
     if(bot.entity.position.y > jumpY) {
-      bot.placeBlock(referenceBlock, mineflayer.vec3(0, 1, 0));
+      bot.placeBlock(referenceBlock, mineflayer.vec3(0, 1, 0),function(err){
+        if(err){
+          bot.chat(err.message);
+          return;
+        }
+        bot.chat("Placing a block was successful");
+      });
       bot.setControlState('jump', false);
       bot.removeListener('move', placeIfHighEnough);
     }
