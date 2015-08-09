@@ -62,6 +62,7 @@ bot.on('chat', function(username, message) {
       } else {
         bot.chat('no nearby entities');
       }
+      break;
     case 'mount':
       entity = nearestEntity("object");
       if(entity) {
