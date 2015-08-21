@@ -66,7 +66,12 @@ function dig() {
     }
   }
 
-  function onDiggingCompleted() {
+  function onDiggingCompleted(err) {
+    if(err)
+    {
+      console.log(err.stack);
+      return;
+    }
     bot.chat("finished digging " + target.name);
   }
 }
