@@ -1,3 +1,8 @@
+## 1.4.0
+ * improve placeBlock : now use lookAt before placing and has a callback
+ * fix soulsand speed
+ * use new multi-version version of (node-)minecraft-data
+
 ## 1.3.0
  * swing arm on placing a block, look at center of block when activating a block (thanks gipsy-king)
  * refactor examples (thanks Pietro210)
