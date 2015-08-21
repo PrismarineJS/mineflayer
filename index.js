@@ -4,7 +4,7 @@ var util = require('util');
 var path = require('path');
 var requireIndex = require('requireindex');
 var plugins = requireIndex(path.join(__dirname, 'lib', 'plugins'));
-var nmcData = require('node-minecraft-data');
+var mcData = require('./lib/minecraft-data');
 
 module.exports = {
   vec3: require('vec3'),
@@ -21,14 +21,14 @@ module.exports = {
   Furnace: require('./lib/furnace'),
   Dispenser: require('./lib/dispenser'),
   EnchantmentTable: require('./lib/enchantment_table'),
-  blocks: nmcData.blocks,
-  biomes: nmcData.biomes,
-  items: nmcData.items,
-  recipes: nmcData.recipes,
-  instruments: nmcData.instruments,
-  materials: nmcData.materials,
-  entities: nmcData.entities,
-  data: nmcData
+  blocks: mcData.blocks,
+  biomes: mcData.biomes,
+  items: mcData.items,
+  recipes: mcData.recipes,
+  instruments: mcData.instruments,
+  materials: mcData.materials,
+  entities: mcData.entities,
+  data: mcData
 };
 
 function createBot(options) {
