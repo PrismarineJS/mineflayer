@@ -9,9 +9,9 @@ var mcData = require('./lib/minecraft-data');
 module.exports = {
   vec3: require('vec3'),
   createBot: createBot,
-  Block: require('./lib/block'),
+  Block: require("prismarine-block")(mc.minecraftVersion),
   Location: require('./lib/location'),
-  Biome: require('./lib/biome'),
+  Biome: require("prismarine-biome")(mc.minecraftVersion),
   Entity: require('./lib/entity'),
   Painting: require('./lib/painting'),
   Item: require('./lib/item'),

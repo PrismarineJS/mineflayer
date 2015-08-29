@@ -36,6 +36,8 @@
       - [entity.heldItem](#entityhelditem)
       - [entity.metadata](#entitymetadata)
     - [mineflayer.Block](#mineflayerblock)
+      - [block.canHarvest(heldItemType)](#blockcanharvesthelditemtype)
+      - [block.staticDigTime(heldItemType,creative,inWater,notOnGround)](#blockstaticdigtimehelditemtypecreativeinwaternotonground)
       - [block.position](#blockposition)
       - [block.type](#blocktype)
       - [block.name](#blockname)
@@ -259,7 +261,6 @@
       - [bot.dig(block, [callback])](#botdigblock-callback)
       - [bot.stopDigging()](#botstopdigging)
       - [bot.digTime(block)](#botdigtimeblock)
-      - [bot.staticDigTime(block,creative,heldItemType,inWater,onGround)](#botstaticdigtimeblockcreativehelditemtypeinwateronground)
       - [bot.placeBlock(referenceBlock, faceVector, cb)](#botplaceblockreferenceblock-facevector-cb)
       - [bot.activateBlock(block)](#botactivateblockblock)
       - [bot.activateItem()](#botactivateitem)
@@ -427,6 +428,23 @@ See http://wiki.vg/Entities#Entity_Metadata_Format for more details.
 
 ### mineflayer.Block
 
+Uses [prismarine-block](https://github.com/PrismarineJS/prismarine-block)
+
+#### block.canHarvest(heldItemType)
+
+Tells you if `heldItemType` is one of the right tool to harvest the block.
+
+ * `heldItemType` the id of the held item (or null if nothing is held)
+
+#### block.staticDigTime(heldItemType,creative,inWater,notOnGround)
+
+Tells you how long it will take to dig the block, in milliseconds.
+
+ * `heldItemType` the id of the held item (or null if nothing is held)
+ * `creative` game in creative
+ * `inWater` the bot is in water
+ * `notOnGround` the bot is not on the ground
+
 #### block.position
 
 Vec3 instance.
@@ -495,6 +513,8 @@ The set of tools that will allow you to harvest the block.
 The blocks or items dropped by that block.
 
 ### mineflayer.Biome
+
+Uses [prismarine-biome](https://github.com/PrismarineJS/prismarine-biome)
 
 #### biome.id
 
@@ -1428,18 +1448,6 @@ dig any other blocks until the block has been broken, or you call
 #### bot.digTime(block)
 
 Tells you how long it will take to dig the block, in milliseconds.
-
-#### bot.staticDigTime(block,creative,heldItemType,inWater,onGround)
-
-Tells you how long it will take to dig the block, in milliseconds.
-The difference between that function and bot.digTime is that this function is static :
- it doesn't depend on the environment of the bot, you can call it at any time and get the same result.
-
- * `block` block to dig
- * `creative` game in creative
- * `heldItemType` the id of the held item (or null if nothing is held)
- * `inWater` the bot is in water
- * `onGround` the bot in on the ground
 
 #### bot.placeBlock(referenceBlock, faceVector, cb)
 
