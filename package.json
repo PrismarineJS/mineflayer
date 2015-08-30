@@ -20,7 +20,8 @@
     "minecraft-data": "~0.5.0",
     "node-mojangson": "~0.1.1",
     "prismarine-biome":"0.1.0",
-    "prismarine-block":"0.1.0"
+    "prismarine-block":"0.1.0",
+    "prismarine-entity":"0.1.0"
   },
   "devDependencies": {
     "mocha": "~2.2.1",

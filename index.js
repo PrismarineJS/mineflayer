@@ -12,7 +12,7 @@ module.exports = {
   Block: require("prismarine-block")(mc.minecraftVersion),
   Location: require('./lib/location'),
   Biome: require("prismarine-biome")(mc.minecraftVersion),
-  Entity: require('./lib/entity'),
+  Entity: require('prismarine-entity'),
   Painting: require('./lib/painting'),
   Item: require('./lib/item'),
   Recipe: require('./lib/recipe'),
