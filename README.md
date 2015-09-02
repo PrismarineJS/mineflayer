@@ -1,5 +1,8 @@
 # Mineflayer
-[![NPM version](https://badge.fury.io/js/mineflayer.svg)](http://badge.fury.io/js/mineflayer) [![Build Status](https://circleci.com/gh/andrewrk/mineflayer.svg?style=shield)](https://circleci.com/gh/andrewrk/mineflayer) [![Join the chat at https://gitter.im/PrismarineJS/node-minecraft-protocol](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/PrismarineJS/node-minecraft-protocol?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![NPM version](https://badge.fury.io/js/mineflayer.svg)](http://badge.fury.io/js/mineflayer) 
+[![Build Status](https://circleci.com/gh/andrewrk/mineflayer.svg?style=shield)](https://circleci.com/gh/andrewrk/mineflayer)
+[![Join the chat at https://gitter.im/andrewrk/mineflayer](https://badges.gitter.im/Join%20Chat.svg)]
+(https://gitter.im/andrewrk/mineflayer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Create Minecraft bots with a powerful, stable, and high level JavaScript API.
 
