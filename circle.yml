@@ -1,11 +1,12 @@
 machine:
   environment:
-    MC_SERVER_JAR: /home/ubuntu/mineflayer/minecraft-server/minecraft_server.1.8.3.jar
+    MC_SERVER_JAR: /home/ubuntu/mineflayer/minecraft-server/minecraft_server.jar
   node:
     version: 0.10.28
   java:
     version: openjdk7
-dependencies:
-  pre:
-    - mkdir minecraft-server
-    - wget https://s3.amazonaws.com/Minecraft.Download/versions/1.8.3/minecraft_server.1.8.3.jar -O $MC_SERVER_JAR
+test:
+  override:
+    - mkdir -p /home/ubuntu/mineflayer/minecraft-server/
+    - node_modules/.bin/downloadMinecraft `node -e 'console.log(require("./lib/version"))'` $MC_SERVER_JAR
+    - npm test

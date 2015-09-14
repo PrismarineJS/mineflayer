@@ -2,7 +2,6 @@ var assert = require("assert");
 var Vec3 = require('vec3').Vec3;
 var mineflayer = require('../');
 var commonTest = require('./externalTests/plugins/testCommon');
-var startServer = require("./lib/start_server");
 var mc = require('minecraft-protocol');
 var fs = require("fs");
 var path = require("path");
@@ -14,8 +13,23 @@ var WAIT_TIME_BEFORE_STARTING = 1000;
 
 var excludedTests = ["digEverything"];
 
+var propOverrides = {
+  'level-type': 'FLAT',
+  'spawn-npcs': 'false',
+  'spawn-animals': 'false',
+  'online-mode': 'false',
+  'gamemode': '1',
+  'spawn-monsters': 'false',
+  'generate-structures': 'false'
+};
+
+var MC_SERVER_JAR = process.env.MC_SERVER_JAR;
+var MC_SERVER_PATH = path.join(__dirname, 'server');
+
+var Wrap = require('minecraft-wrap').Wrap;
+var wrap=new Wrap(MC_SERVER_JAR,MC_SERVER_PATH);
+
 describe("mineflayer_external", function() {
-  var mcServer;
   var bot;
   this.timeout(10 * 60 * 1000);
   before(function(done) {
@@ -39,16 +53,13 @@ describe("mineflayer_external", function() {
     }
 
     if(START_THE_SERVER) {
-      startServer.start({
-        motd: 'test1234',
-        'max-players': 120,
-      }, function(mcServer_, err) {
+      wrap.startServer(propOverrides, function(err) {
         if(err) return done(err);
-        mcServer = mcServer_;
         mc.ping({}, function(err, results) {
           if(err) return done(err);
           assert.ok(results.latency >= 0);
           assert.ok(results.latency <= 1000);
+          wrap.writeServer("op flatbot\n");
           begin();
         });
       });
@@ -63,10 +74,7 @@ describe("mineflayer_external", function() {
 
   after(function(done) {
     bot.quit();
-    if(mcServer)
-      startServer.quit(mcServer, done);
-    else
-      done();
+    wrap.stopServer(done);
   });
 
   fs.readdirSync("./test/externalTests")
