@@ -165,7 +165,7 @@ describe("mineflayer_internal", function() {
           action: 0,
           length: 1,
           data: [{
-            UUID: [1, 2, 3, 4],
+            UUID: '1-2-3-4',
             name: 'bot5',
             propertiesLength: 0,
             properties: [],
@@ -177,7 +177,7 @@ describe("mineflayer_internal", function() {
 
         client.write('named_entity_spawn', {
           entityId: 56,
-          playerUUID: [1, 2, 3, 4],
+          playerUUID: '1-2-3-4',
           x: 1,
           y: 2,
           z: 3,
