@@ -152,10 +152,10 @@ bot.on('playerLeft', function(player) {
   }
 });
 bot.on('playerCollect', function(collector, collected) {
-  if(collector.type === 'player' && collector.username != bot.username && collected.type === 'object') {
+  if(collector.type === 'player' && collected.type === 'object') {
     var rawItem = collected.metadata[10];
     var item = mineflayer.Item.fromNotch(rawItem);
-    bot.chat("I'm so jealous. " + collector.username + " collected " + item.count + " " + item.displayName);
+    bot.chat((collector.username != bot.username ? ("I'm so jealous. " + collector.username) : "I ") + " collected " + item.count + " " + item.displayName);
   }
 });
 
