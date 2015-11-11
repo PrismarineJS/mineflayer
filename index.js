@@ -14,7 +14,7 @@ module.exports = {
   Biome: require("prismarine-biome")(mc.minecraftVersion),
   Entity: require('prismarine-entity'),
   Painting: require('./lib/painting'),
-  Item: require('./lib/item'),
+  Item: require("prismarine-item")(mc.minecraftVersion),
   Recipe: require('./lib/recipe'),
   windows: require('./lib/windows'),
   Chest: require('./lib/chest'),

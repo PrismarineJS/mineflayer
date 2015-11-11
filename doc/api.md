@@ -318,26 +318,7 @@ See [prismarine-biome](https://github.com/PrismarineJS/prismarine-biome)
 
 ### mineflayer.Item
 
-#### item.type
-
-Numerical id.
-
-#### item.count
-
-#### item.metadata
-
-Number which represents different things depending on the item.
-See http://www.minecraftwiki.net/wiki/Data_values#Data
-
-#### item.nbt
-
-Buffer.
-
-#### item.name
-
-#### item.displayName
-
-#### item.stackSize
+See [prismarine-item](https://github.com/PrismarineJS/prismarine-item)
 
 ### mineflayer.windows.Window (base class)
 
