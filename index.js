@@ -5,16 +5,17 @@ var path = require('path');
 var requireIndex = require('requireindex');
 var plugins = requireIndex(path.join(__dirname, 'lib', 'plugins'));
 var mcData = require('./lib/minecraft-data');
+var version = require('./lib/version');
 
 module.exports = {
   vec3: require('vec3'),
   createBot: createBot,
-  Block: require("prismarine-block")(mc.minecraftVersion),
+  Block: require("prismarine-block")(version),
   Location: require('./lib/location'),
-  Biome: require("prismarine-biome")(mc.minecraftVersion),
+  Biome: require("prismarine-biome")(version),
   Entity: require('prismarine-entity'),
   Painting: require('./lib/painting'),
-  Item: require("prismarine-item")(mc.minecraftVersion),
+  Item: require("prismarine-item")(version),
   Recipe: require('./lib/recipe'),
   windows: require('./lib/windows'),
   Chest: require('./lib/chest'),

@@ -14,7 +14,7 @@
   "dependencies": {
     "lodash": "^3.5.0",
     "minecraft-data": "~0.5.0",
-    "minecraft-protocol": "^0.15.0",
+    "minecraft-protocol": "^0.16.0",
     "node-mojangson": "~0.1.1",
     "prismarine-biome": "0.1.0",
     "prismarine-block": "0.1.0",
@@ -27,6 +27,6 @@
   "devDependencies": {
     "mocha": "~2.2.1",
     "doctoc": "0.13.0",
-    "minecraft-wrap": "0.5.3"
+    "minecraft-wrap": "0.7.0"
   }
 }

@@ -74,7 +74,15 @@ describe("mineflayer_external", function() {
 
   after(function(done) {
     bot.quit();
-    wrap.stopServer(done);
+    wrap.stopServer(function(err) {
+      if(err)
+        console.log(err);
+        wrap.deleteServerData(function(err) {
+          if(err)
+            console.log(err);
+          done(err);
+        });
+    });
   });
 
   fs.readdirSync("./test/externalTests")
