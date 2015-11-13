@@ -1,3 +1,11 @@
+## 1.5.0
+ * fix achievements parsing in toString()
+ * update to nmp 0.16
+ * use prismarine-item
+ * add example to run multiple bots
+ * uuid is now a dashed string
+ * remove digging interruption : this doesn't happen in 1.8 servers (and caused problem in some spigot servers)
+
 ## 1.4.0
  * improve placeBlock : now use lookAt before placing and has a callback
  * fix soulsand speed
