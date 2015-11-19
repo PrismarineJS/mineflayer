@@ -14,7 +14,7 @@
   "dependencies": {
     "lodash": "^3.5.0",
     "minecraft-data": "~0.5.0",
-    "minecraft-protocol": "^0.16.0",
+    "minecraft-protocol": "^0.16.1",
     "node-mojangson": "~0.1.1",
     "prismarine-biome": "0.1.0",
     "prismarine-block": "0.1.0",
