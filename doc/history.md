@@ -1,3 +1,6 @@
+## 1.5.1
+ * add checkTimeoutInterval to createBot
+
 ## 1.5.0
  * fix achievements parsing in toString()
  * update to nmp 0.16
