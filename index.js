@@ -16,7 +16,7 @@ module.exports = {
   Entity: require('prismarine-entity'),
   Painting: require('./lib/painting'),
   Item: require("prismarine-item")(version),
-  Recipe: require('./lib/recipe'),
+  Recipe: require('prismarine-recipe')(version).Recipe,
   windows: require('prismarine-windows')(version).windows,
   Chest: require('./lib/chest'),
   Furnace: require('./lib/furnace'),
