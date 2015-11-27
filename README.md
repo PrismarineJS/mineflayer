@@ -71,7 +71,7 @@ higher level API on top of Mineflayer.
    the bot is up to using voxel.js
  * [JonnyD/Skynet] (https://github.com/JonnyD/Skynet) -  log player activity onto an online API
  * [MinecraftChat] (https://github.com/rom1504/MinecraftChat) (last open source version, built by AlexKvazos) -  Minecraft web based chat client <https://minecraftchat.net/>
- * [Cheese Bot](http://bot.minecheesecraft.com/)
+ * [Cheese Bot](http://bot.minecheesecraft.com/) - Plugin based bot with a clean GUI. Made with Node-Webkit.
 
 ## Installation
 
