@@ -6,7 +6,7 @@
  *
  * You can ask the bot to sleep or wake up by sending a chat message.
  */
-var mineflayer = require('../');
+var mineflayer = require('mineflayer');
 
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node sleeper.js <host> <port> [<name>] [<password>]");

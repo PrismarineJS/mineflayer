@@ -19,7 +19,7 @@
  * This last one is usually reserved to Server Ops so make sure you have the
  * appropriate permission to do it or it won't work.
  */
-var mineflayer = require('../');
+var mineflayer = require('mineflayer');
 
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node chest.js <host> <port> [<name>] [<password>]");

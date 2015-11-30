@@ -12,7 +12,7 @@
  * This bot also replies to some specific chat messages so you can ask him
  * a few informations while you are in game.
  */
-var mineflayer = require('../');
+var mineflayer = require('mineflayer');
 
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node chatterbot.js <host> <port> [<name>] [<password>]");
