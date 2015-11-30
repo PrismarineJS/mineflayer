@@ -13,7 +13,7 @@
  *
  * Below you can see an example for the skyblock.net server
  */
-var mineflayer = require('../');
+var mineflayer = require('mineflayer');
 
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node chatAddPattern.js <host> <port> [<name>] [<password>]");

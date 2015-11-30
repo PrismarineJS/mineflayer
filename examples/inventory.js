@@ -8,7 +8,7 @@
  * To learn more about the recipe system and how crafting works
  * remember to read the API documentation!
  */
-var mineflayer = require('../');
+var mineflayer = require('mineflayer');
 
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node inventory.js <host> <port> [<name>] [<password>]");

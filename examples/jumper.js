@@ -5,7 +5,7 @@
  *
  * This bot can move, jump, ride vehicles, attack nearby entities and much more.
  */
-var mineflayer = require('../');
+var mineflayer = require('mineflayer');
 
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node jumper.js <host> <port> [<name>] [<password>]");

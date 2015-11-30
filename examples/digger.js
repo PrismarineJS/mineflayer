@@ -10,7 +10,7 @@
  * Remember that in survival mode he might not have enough dirt to get back up,
  * so be sure to teach him a few more tricks before leaving him alone at night.
  */
-var mineflayer = require('../');
+var mineflayer = require('mineflayer');
 
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node digger.js <host> <port> [<name>] [<password>]");

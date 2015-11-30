@@ -1,4 +1,4 @@
-var mineflayer = require('../');
+var mineflayer = require('mineflayer');
 
 if(process.argv.length < 3 || process.argv.length > 5) {
   console.log("Usage : node multiple.js <host> <port>");

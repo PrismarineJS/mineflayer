@@ -6,7 +6,7 @@
  * It's not very useful yet, but you can use this as a starting point
  * to create your own bot.
  */
-var mineflayer = require('../');
+var mineflayer = require('mineflayer');
 
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node echo.js <host> <port> [<name>] [<password>]");
