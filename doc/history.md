@@ -1,3 +1,8 @@
+## 1.5.2
+* use prismarine-recipe and prismarine-windows
+* use require-self to be able to do require('mineflayer') in the examples
+* fix viewDistance sending
+
 ## 1.5.1
  * add checkTimeoutInterval to createBot
 
