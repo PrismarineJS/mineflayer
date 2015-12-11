@@ -1,3 +1,6 @@
+## 1.5.3
+* fix entity_status
+
 ## 1.5.2
 * use prismarine-recipe and prismarine-windows
 * use require-self to be able to do require('mineflayer') in the examples
