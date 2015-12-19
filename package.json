@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --reporter spec",
-    "prepublish":"require-self"
+    "prepublish": "require-self"
   },
   "repository": {
     "type": "git",
@@ -31,6 +31,7 @@
     "doctoc": "0.13.0",
     "minecraft-wrap": "0.7.1",
     "mocha": "~2.2.1",
+    "prismarine-chunk": "^0.2.1",
     "require-self": "^0.1.0"
   }
 }

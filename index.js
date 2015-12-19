@@ -29,7 +29,8 @@ module.exports = {
   instruments: mcData.instruments,
   materials: mcData.materials,
   entities: mcData.entities,
-  data: mcData
+  data: mcData,
+  version:version
 };
 
 function createBot(options) {

@@ -2,6 +2,7 @@ var mineflayer = require('../');
 var vec3 = mineflayer.vec3;
 var mc = require('minecraft-protocol');
 var assert = require('assert');
+var Chunk = require('prismarine-chunk')(mineflayer.version);
 
 describe("mineflayer_internal", function() {
   var bot, server;
@@ -9,7 +10,7 @@ describe("mineflayer_internal", function() {
     server = mc.createServer({'online-mode': false});
     server.on('listening', function() {
       bot = mineflayer.createBot({
-        username: "player",
+        username: "player"
       });
       done();
     });
@@ -70,7 +71,7 @@ describe("mineflayer_internal", function() {
       });
     });
   });
-  it.skip("blockAt", function(done) {
+  it("blockAt", function(done) {
     var pos = vec3(1, 65, 1);
     var goldId = 41;
     bot.on('chunkColumnLoad', function(columnPoint) {
@@ -80,15 +81,16 @@ describe("mineflayer_internal", function() {
       done();
     });
     server.on('login', function(client) {
-      var buffer = new Buffer((4096 + 4096 + 2048 + 2048) * 4 + 256);
-      buffer.fill(0);
-      buffer.writeUInt8(goldId, 8192 + 273);
+
+      var chunk=new Chunk();
+
+      chunk.setBlockType(pos,goldId);
       client.write('map_chunk', {
         x: 0,
         z: 0,
         groundUp: true,
-        bitMap: parseInt('00111100', 2),
-        chunkData: buffer
+        bitMap: 0xffff,
+        chunkData: chunk.dump()
       });
     });
   });
@@ -114,9 +116,6 @@ describe("mineflayer_internal", function() {
         }
       });
       server.on('login', function(client) {
-        var buffer = new Buffer((4096 + 4096 + 2048 + 2048) * 4 + 256);
-        buffer.fill(0);
-        buffer.writeUInt8(goldId, 8192 + 273);
         client.write('login', {
           entityId: 0,
           levelType: "fogetaboutit",
@@ -126,12 +125,15 @@ describe("mineflayer_internal", function() {
           maxPlayers: 20,
           reducedDebugInfo: true
         });
+        var chunk=new Chunk();
+
+        chunk.setBlockType(pos,goldId);
         client.write('map_chunk', {
           x: 0,
           z: 0,
           groundUp: true,
-          bitMap: parseInt('00111100', 2),
-          chunkData: buffer
+          bitMap: 0xffff,
+          chunkData: chunk.dump()
         });
         client.write('position', {
           x: 1.5,
@@ -149,7 +151,7 @@ describe("mineflayer_internal", function() {
       var serverClient = null;
       bot.once('entitySpawn', function(entity) {
         serverClient.write('entity_destroy', {
-          entityIds: [8],
+          entityIds: [8]
         });
       });
       bot.once("entityGone", function(entity) {
@@ -184,7 +186,7 @@ describe("mineflayer_internal", function() {
           yaw: 0,
           pitch: 0,
           currentItem: -1,
-          metadata: [],
+          metadata: []
         });
       });
     });
