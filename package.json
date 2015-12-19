@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "doctoc": "0.13.0",
-    "minecraft-wrap": "0.7.0",
+    "minecraft-wrap": "0.7.1",
     "mocha": "~2.2.1",
     "require-self": "^0.1.0"
   }
