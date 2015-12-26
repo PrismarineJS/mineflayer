@@ -102,6 +102,7 @@
       - [bot.inventory](#botinventory)
       - [bot.targetDigBlock](#bottargetdigblock)
       - [bot.isSleeping](#botissleeping)
+      - [bot.scoreboard](#botscoreboard)
     - [Events](#events)
       - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
       - ["whisper" (username, message, translate, jsonMsg, matches)](#whisper-username-message-translate-jsonmsg-matches)
@@ -157,6 +158,9 @@
       - ["sleep"](#sleep)
       - ["wake"](#wake)
       - ["experience"](#experience)
+      - ["scoreboardObjective" (scoreboardName, displayText)](#scoreboardObjective)
+      - ["scoreboardScore" (scoreboardName, itemName, value)](#scoreboardScore)
+      - ["scoreboardDisplayObjective" (scoreboardName, position)](#scoreboardDisplayObjective)
     - [Functions](#functions)
       - [bot.blockAt(point)](#botblockatpoint)
       - [bot.findBlock(options)](#botfindblockoptions)
@@ -668,6 +672,16 @@ The `block` that you are currently digging, or `null`.
 
 Boolean, whether or not you are in bed.
 
+#### bot.scoreboard
+
+All scoreboards known to the bot in an Object.
+
+bot.scoreboard[ScoreboardName]['displayText'] is the title of the scoreboard (does not always equal the ScoreboardName)
+
+bot.scoreboard[ScoreboardName]['items'] is an object with all items in the scoreboard in it ( {"item1": "Value1, ...} )
+
+bot.scoreboard[ScoreboardName]['position'] is the place in witch the scoreboard is displayed.
+
 ### Events
 
 #### "chat" (username, message, translate, jsonMsg, matches)
@@ -892,6 +906,18 @@ Fires when you wake up.
 #### "experience"
 
 Fires when `bot.experience.*` has updated.
+
+#### "scoreboardObjective" (scoreboardName, displayText)
+
+Fires when a scorebard is added or updated.
+
+#### "scoreboardScore" (scoreboardName, itemName, value)
+
+Fires when the score of a item in a scoreboard is updated.
+
+#### "scoreboardDisplayObjective" (scoreboardName, position)
+
+Fires when the position of a scoreboard is updated.
 
 ### Functions
 
