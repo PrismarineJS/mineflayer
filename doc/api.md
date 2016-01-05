@@ -67,6 +67,11 @@
       - [enchantmentTable.enchant(choice, [callback])](#enchantmenttableenchantchoice-callback)
       - [enchantmentTable.takeTargetItem([callback])](#enchantmenttabletaketargetitemcallback)
       - [enchantmentTable.putTargetItem(item, [callback])](#enchantmenttableputtargetitemitem-callback)
+    - [mineflayer.ScoreBoard](#mineflayerscoreboard)
+      - [ScoreBoard.name](#scoreboardname)
+      - [ScoreBoard.displayText](#scoreboarddisplaytext)
+      - [ScoreBoard.items](#scoreboarditems)
+      - [ScoreBoard.position](#scoreboardposition)
   - [Bot](#bot)
     - [mineflayer.createBot(options)](#mineflayercreatebotoptions)
     - [Properties](#properties)
@@ -102,7 +107,7 @@
       - [bot.inventory](#botinventory)
       - [bot.targetDigBlock](#bottargetdigblock)
       - [bot.isSleeping](#botissleeping)
-      - [bot.scoreboard](#botscoreboard)
+      - [bot.scoreboards](#botscoreboards)
     - [Events](#events)
       - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
       - ["whisper" (username, message, translate, jsonMsg, matches)](#whisper-username-message-translate-jsonmsg-matches)
@@ -158,9 +163,9 @@
       - ["sleep"](#sleep)
       - ["wake"](#wake)
       - ["experience"](#experience)
-      - ["scoreboardObjective" (scoreboardName, displayText)](#scoreboardObjective)
-      - ["scoreboardScore" (scoreboardName, itemName, value)](#scoreboardScore)
-      - ["scoreboardDisplayObjective" (scoreboardName, position)](#scoreboardDisplayObjective)
+      - ["scoreboardObjective" (scoreboardName, displayText)](#scoreboardobjective-scoreboardname-displaytext)
+      - ["scoreboardScore" (scoreboardName, itemName, value)](#scoreboardscore-scoreboardname-itemname-value)
+      - ["scoreboardDisplayObjective" (scoreboardName, position)](#scoreboarddisplayobjective-scoreboardname-position)
     - [Functions](#functions)
       - [bot.blockAt(point)](#botblockatpoint)
       - [bot.findBlock(options)](#botfindblockoptions)
@@ -509,6 +514,25 @@ Looks like:
 #### enchantmentTable.putTargetItem(item, [callback])
 
  * `callback(err)`
+ 
+### mineflayer.ScoreBoard
+
+#### ScoreBoard.name
+
+Name of the scoreboard.
+
+#### ScoreBoard.displayText
+
+The title of the scoreboard (does not always equal the name)
+
+#### ScoreBoard.items
+
+An object with all items in the scoreboard in it ( {"item1": "Value1, ...} )
+
+#### ScoreBoard.position
+
+The place in which the scoreboard is displayed.
+
 
 ## Bot
 
@@ -672,15 +696,9 @@ The `block` that you are currently digging, or `null`.
 
 Boolean, whether or not you are in bed.
 
-#### bot.scoreboard
+#### bot.scoreboards
 
-All scoreboards known to the bot in an Object.
-
-bot.scoreboard[ScoreboardName]['displayText'] is the title of the scoreboard (does not always equal the ScoreboardName)
-
-bot.scoreboard[ScoreboardName]['items'] is an object with all items in the scoreboard in it ( {"item1": "Value1, ...} )
-
-bot.scoreboard[ScoreboardName]['position'] is the place in witch the scoreboard is displayed.
+All scoreboards known to the bot in an object scoreboard name -> scoreboard.
 
 ### Events
 
