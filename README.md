@@ -1,8 +1,8 @@
 # Mineflayer
 [![NPM version](https://badge.fury.io/js/mineflayer.svg)](http://badge.fury.io/js/mineflayer) 
-[![Build Status](https://circleci.com/gh/andrewrk/mineflayer.svg?style=shield)](https://circleci.com/gh/andrewrk/mineflayer)
-[![Join the chat at https://gitter.im/andrewrk/mineflayer](https://badges.gitter.im/Join%20Chat.svg)]
-(https://gitter.im/andrewrk/mineflayer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://circleci.com/gh/PrismarineJS/mineflayer.svg?style=shield)](https://circleci.com/gh/PrismarineJS/mineflayer)
+[![Join the chat at https://gitter.im/PrismarineJS/mineflayer](https://badges.gitter.im/Join%20Chat.svg)]
+(https://gitter.im/PrismarineJS/mineflayer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Create Minecraft bots with a powerful, stable, and high level JavaScript API.
 
@@ -44,7 +44,7 @@ bot.on('chat', function(username, message) {
 
 #### More Examples
 
- * In the [examples](https://github.com/andrewrk/mineflayer/tree/master/examples) folder.
+ * In the [examples](https://github.com/PrismarineJS/mineflayer/tree/master/examples) folder.
  * [vogonistic's REPL bot](https://gist.github.com/4631678)
 
 ## Third Party Plugins
@@ -82,16 +82,16 @@ higher level API on top of Mineflayer.
 ### Windows
 
 1. Follow the Windows instructions from
-   [node-minecraft-protocol](https://github.com/andrewrk/node-minecraft-protocol#windows)
+   [node-minecraft-protocol](https://github.com/PrismarineJS/node-minecraft-protocol#windows)
 2. `npm install mineflayer`
 
 ## Documentation
 
- * See [doc/api.md](https://github.com/andrewrk/mineflayer/blob/master/doc/api.md).
- * See [doc/history.md](https://github.com/andrewrk/mineflayer/blob/master/doc/history.md).
- * See [examples/](https://github.com/andrewrk/mineflayer/tree/master/examples).
- * See [doc/unstable_api.md](https://github.com/andrewrk/mineflayer/blob/master/doc/unstable_api.md).
- * See [doc/contribute.md](https://github.com/andrewrk/mineflayer/blob/master/doc/contribute.md).
+ * See [doc/api.md](https://github.com/PrismarineJS/mineflayer/blob/master/doc/api.md).
+ * See [doc/history.md](https://github.com/PrismarineJS/mineflayer/blob/master/doc/history.md).
+ * See [examples/](https://github.com/PrismarineJS/mineflayer/tree/master/examples).
+ * See [doc/unstable_api.md](https://github.com/PrismarineJS/mineflayer/blob/master/doc/unstable_api.md).
+ * See [doc/contribute.md](https://github.com/PrismarineJS/mineflayer/blob/master/doc/contribute.md).
 
 ## Testing
 
@@ -100,7 +100,7 @@ higher level API on top of Mineflayer.
 ## Updating to a newer protocol version
 
 1. Wait for a new version of
-   [node-minecraft-protocol](https://github.com/andrewrk/node-minecraft-protocol)
+   [node-minecraft-protocol](https://github.com/PrismarineJS/node-minecraft-protocol)
    to be released which supports the new Minecraft version.
 2. `npm install --save minecraft-protocol@latest`
 3. Apply the [protocol changes](http://wiki.vg/Protocol_History) where necessary.
