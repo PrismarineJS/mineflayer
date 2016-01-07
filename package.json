@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/andrewrk/mineflayer.git"
+    "url": "git://github.com/PrismarineJS/mineflayer.git"
   },
   "license": "MIT",
   "dependencies": {
