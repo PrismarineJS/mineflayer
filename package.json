@@ -16,7 +16,7 @@
     "lodash": "^3.5.0",
     "minecraft-data": "~0.16.3",
     "minecraft-protocol": "^0.16.1",
-    "node-mojangson": "~0.1.1",
+    "mojangson": "~0.2.1",
     "prismarine-biome": "0.1.0",
     "prismarine-block": "0.1.0",
     "prismarine-entity": "0.1.0",
