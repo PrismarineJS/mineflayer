@@ -2,8 +2,34 @@ var mc = require('minecraft-protocol');
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var path = require('path');
-var requireIndex = require('requireindex');
-var plugins = requireIndex(path.join(__dirname, 'lib', 'plugins'));
+var plugins = {
+  bed: require('./lib/plugins/bed'),
+  block_actions: require('./lib/plugins/block_actions'),
+  blocks: require('./lib/plugins/blocks'),
+  chat: require('./lib/plugins/chat'),
+  chest: require('./lib/plugins/chest'),
+  craft: require('./lib/plugins/craft'),
+  creative: require('./lib/plugins/creative'),
+  digging: require('./lib/plugins/digging'),
+  dispenser: require('./lib/plugins/dispenser'),
+  enchantment_table: require('./lib/plugins/enchantment_table'),
+  entities: require('./lib/plugins/entities'),
+  experience: require('./lib/plugins/experience'),
+  furnace: require('./lib/plugins/furnace'),
+  game: require('./lib/plugins/game'),
+  health: require('./lib/plugins/health'),
+  inventory: require('./lib/plugins/inventory'),
+  kick: require('./lib/plugins/kick'),
+  physics: require('./lib/plugins/physics'),
+  rain: require('./lib/plugins/rain'),
+  scoreboard: require('./lib/plugins/scoreboard'),
+  settings: require('./lib/plugins/settings'),
+  simple_inventory: require('./lib/plugins/simple_inventory'),
+  sound: require('./lib/plugins/sound'),
+  spawn_point: require('./lib/plugins/spawn_point'),
+  time: require('./lib/plugins/time')
+};
+
 var mcData = require('./lib/minecraft-data');
 var version = require('./lib/version');
 
