@@ -208,6 +208,7 @@
       - [bot.openFurnace(furnaceBlock)](#botopenfurnacefurnaceblock)
       - [bot.openDispenser(dispenserBlock)](#botopendispenserdispenserblock)
       - [bot.openEnchantmentTable(enchantmentTableBlock)](#botopenenchantmenttableenchantmenttableblock)
+      - [bot.setCommandBlock(pos, command, track_output)](#botsetcommandblockpos-command-track_output)
     - [Lower level inventory methods](#lower-level-inventory-methods)
       - [bot.clickWindow(slot, mouseButton, mode, cb)](#botclickwindowslot-mousebutton-mode-cb)
       - [bot.putSelectedItemRange(start, end, window, slot, cb)](#botputselecteditemrangestart-end-window-slot-cb)
@@ -1177,6 +1178,10 @@ Returns a `Dispenser` instance which represents the dispenser you are opening.
 
 Returns an `EnchantmentTable` instance which represents the enchantment table
 you are opening.
+
+#### bot.setCommandBlock(pos, command, track_output)
+
+Set a command block `command` at `pos`.
 
 ### Lower level inventory methods
 

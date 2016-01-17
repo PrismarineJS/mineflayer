@@ -21,8 +21,9 @@
     "prismarine-block": "0.1.0",
     "prismarine-entity": "0.1.0",
     "prismarine-item": "0.0.0",
-    "prismarine-windows": "0.0.0",
     "prismarine-recipe": "0.0.0",
+    "prismarine-windows": "0.0.0",
+    "protodef": "^0.2.5",
     "quotemeta": "0.0.0",
     "vec3": "~0.1.3"
   },

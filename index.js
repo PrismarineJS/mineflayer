@@ -8,6 +8,7 @@ var plugins = {
   blocks: require('./lib/plugins/blocks'),
   chat: require('./lib/plugins/chat'),
   chest: require('./lib/plugins/chest'),
+  command_block: require('./lib/plugins/command_block'),
   craft: require('./lib/plugins/craft'),
   creative: require('./lib/plugins/creative'),
   digging: require('./lib/plugins/digging'),
