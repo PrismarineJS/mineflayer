@@ -1,3 +1,10 @@
+## 1.6.0
+* add functionalities to use scoreboard (thanks @jakibaki)
+* update to minecraft-data 0.16.3
+* 50 -> 20 tps for physics
+* Remove requireindex, for browserify support
+* add bot.setCommandBlock
+
 ## 1.5.3
 * fix entity_status
 
