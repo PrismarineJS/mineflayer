@@ -765,7 +765,7 @@ Emitted when the server sends a time update. See `bot.time`.
 #### "kicked" (reason)
 
 Emitted when the bot is kicked from the server. `reason`
-is a string explaining why you were kicked.
+is a chat message explaining why you were kicked.
 
 #### "end"
 
