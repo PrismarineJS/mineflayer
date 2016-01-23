@@ -118,7 +118,7 @@
       - ["game"](#game)
       - ["rain"](#rain)
       - ["time"](#time)
-      - ["kicked" (reason)](#kicked-reason)
+      - ["kicked" (reason, loggedIn)](#kicked-reason-loggedIn)
       - ["end"](#end)
       - ["spawnReset"](#spawnreset)
       - ["death"](#death)
@@ -762,10 +762,12 @@ server where it is already raining, this event will fire.
 
 Emitted when the server sends a time update. See `bot.time`.
 
-#### "kicked" (reason)
+#### "kicked" (reason, loggedIn)
 
 Emitted when the bot is kicked from the server. `reason`
-is a chat message explaining why you were kicked.
+is a chat message explaining why you were kicked. `loggedIn`
+is `true` if the client was kicked after successfully logging in,
+or `false` if the kick occurred in the login phase.
 
 #### "end"
 
