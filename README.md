@@ -60,6 +60,7 @@ higher level API on top of Mineflayer.
  * [scaffold](https://github.com/andrewrk/mineflayer-scaffold) - get to
    a target destination even if you have to build or break blocks to do so.
    [YouTube Demo](http://youtu.be/jkg6psMUSE0)
+ * [auto-auth](https://github.com/G07cha/MineflayerAutoAuth) - chat-based bot authentication
 
 ## Projects Using Mineflayer
 
