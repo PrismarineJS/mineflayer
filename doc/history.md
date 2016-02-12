@@ -1,22 +1,37 @@
+## 1.7.0
+
+ * listen for disconnect in login phase (thanks @deathcap)
+ * fix multi_block_change (thanks @Corgano)
+ * remove chat filter : fix utf8 in chat
+ * add extra tolerance for malformed sign packets (thanks @G07cha)
+ * adapt to new minecraft data entities format
+ * update minecraft-protocol to 0.17.2
+ 
+
 ## 1.6.0
-* add functionalities to use scoreboard (thanks @jakibaki)
-* update to minecraft-data 0.16.3
-* 50 -> 20 tps for physics
-* Remove requireindex, for browserify support
-* add bot.setCommandBlock
+
+ * add functionalities to use scoreboard (thanks @jakibaki)
+ * update to minecraft-data 0.16.3
+ * 50 -> 20 tps for physics
+ * Remove requireindex, for browserify support
+ * add bot.setCommandBlock
 
 ## 1.5.3
-* fix entity_status
+
+ * fix entity_status
 
 ## 1.5.2
-* use prismarine-recipe and prismarine-windows
-* use require-self to be able to do require('mineflayer') in the examples
-* fix viewDistance sending
+
+ * use prismarine-recipe and prismarine-windows
+ * use require-self to be able to do require('mineflayer') in the examples
+ * fix viewDistance sending
 
 ## 1.5.1
+
  * add checkTimeoutInterval to createBot
 
 ## 1.5.0
+
  * fix achievements parsing in toString()
  * update to nmp 0.16
  * use prismarine-item
@@ -25,11 +40,13 @@
  * remove digging interruption : this doesn't happen in 1.8 servers (and caused problem in some spigot servers)
 
 ## 1.4.0
+
  * improve placeBlock : now use lookAt before placing and has a callback
  * fix soulsand speed
  * use new multi-version version of (node-)minecraft-data
 
 ## 1.3.0
+
  * swing arm on placing a block, look at center of block when activating a block (thanks gipsy-king)
  * refactor examples (thanks Pietro210)
  * add clickWindow support to ContainerWindow (thanks Gnomesley)
