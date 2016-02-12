@@ -2,7 +2,7 @@ machine:
   environment:
     MC_SERVER_JAR: /home/ubuntu/mineflayer/minecraft-server/minecraft_server.jar
   node:
-    version: 0.10.28
+    version: 4
   java:
     version: openjdk7
 test:

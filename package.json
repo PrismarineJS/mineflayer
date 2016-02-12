@@ -11,11 +11,14 @@
     "type": "git",
     "url": "git://github.com/PrismarineJS/mineflayer.git"
   },
+  "engines": {
+    "node": ">=4"
+  },
   "license": "MIT",
   "dependencies": {
     "lodash": "^4.3.0",
     "minecraft-data": "~0.19.1",
-    "minecraft-protocol": "^0.17.0",
+    "minecraft-protocol": "^0.17.1",
     "mojangson": "~0.2.1",
     "prismarine-biome": "0.1.0",
     "prismarine-block": "0.1.0",
