@@ -21,7 +21,7 @@
     "minecraft-protocol": "^0.18.0",
     "mojangson": "~0.2.1",
     "prismarine-biome": "0.1.0",
-    "prismarine-block": "0.1.0",
+    "prismarine-block": "1.0.0",
     "prismarine-entity": "0.2.0",
     "prismarine-item": "0.0.0",
     "prismarine-recipe": "0.0.0",
