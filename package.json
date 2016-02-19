@@ -17,7 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "lodash": "^4.3.0",
-    "minecraft-data": "~0.20.4",
+    "minecraft-data": "~1.0.1",
     "minecraft-protocol": "^0.18.0",
     "mojangson": "~0.2.1",
     "prismarine-biome": "0.1.0",
