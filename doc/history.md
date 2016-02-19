@@ -1,3 +1,7 @@
+## 1.7.2
+
+* update dependencies
+
 ## 1.7.1
 
  * update minecraft-protocol, minecraft-data and protodef
