@@ -1,3 +1,7 @@
+## 1.7.1
+
+ * update minecraft-protocol, minecraft-data and protodef
+
 ## 1.7.0
 
  * listen for disconnect in login phase (thanks @deathcap)
