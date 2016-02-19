@@ -17,8 +17,8 @@
   "license": "MIT",
   "dependencies": {
     "lodash": "^4.3.0",
-    "minecraft-data": "~0.19.1",
-    "minecraft-protocol": "^0.17.2",
+    "minecraft-data": "~0.20.4",
+    "minecraft-protocol": "^0.18.0",
     "mojangson": "~0.2.1",
     "prismarine-biome": "0.1.0",
     "prismarine-block": "0.1.0",
@@ -26,7 +26,7 @@
     "prismarine-item": "0.0.0",
     "prismarine-recipe": "0.0.0",
     "prismarine-windows": "0.0.0",
-    "protodef": "^0.2.5",
+    "protodef": "^0.3.0",
     "quotemeta": "0.0.0",
     "vec3": "~0.1.3"
   },
