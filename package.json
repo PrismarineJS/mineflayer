@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "doctoc": "1.0.0",
-    "minecraft-wrap": "0.7.1",
+    "minecraft-wrap": "1.0.0",
     "mocha": "~2.4.5",
     "prismarine-chunk": "^1.0.0",
     "require-self": "^0.1.0"
