@@ -67,7 +67,6 @@
       - [enchantmentTable.enchant(choice, [callback])](#enchantmenttableenchantchoice-callback)
       - [enchantmentTable.takeTargetItem([callback])](#enchantmenttabletaketargetitemcallback)
       - [enchantmentTable.putTargetItem(item, [callback])](#enchantmenttableputtargetitemitem-callback)
-    - [mineflayer.ScoreBoard](#mineflayerscoreboard)
       - [ScoreBoard.name](#scoreboardname)
       - [ScoreBoard.displayText](#scoreboarddisplaytext)
       - [ScoreBoard.items](#scoreboarditems)
@@ -118,7 +117,7 @@
       - ["game"](#game)
       - ["rain"](#rain)
       - ["time"](#time)
-      - ["kicked" (reason, loggedIn)](#kicked-reason-loggedIn)
+      - ["kicked" (reason, loggedIn)](#kicked-reason-loggedin)
       - ["end"](#end)
       - ["spawnReset"](#spawnreset)
       - ["death"](#death)
@@ -194,7 +193,7 @@
       - [bot.stopDigging()](#botstopdigging)
       - [bot.digTime(block)](#botdigtimeblock)
       - [bot.placeBlock(referenceBlock, faceVector, cb)](#botplaceblockreferenceblock-facevector-cb)
-      - [bot.activateBlock(block)](#botactivateblockblock)
+      - [bot.activateBlock(block, [callback])](#botactivateblockblock-callback)
       - [bot.activateItem()](#botactivateitem)
       - [bot.deactivateItem()](#botdeactivateitem)
       - [bot.useOn(targetEntity)](#botuseontargetentity)
@@ -1110,9 +1109,12 @@ Tells you how long it will take to dig the block, in milliseconds.
 
 The new block will be placed at `referenceBlock.position.plus(faceVector)`.
 
-#### bot.activateBlock(block)
+#### bot.activateBlock(block, [callback])
 
 Punch a note block, open a door, etc.
+
+ * `block` - the block to activate
+ * `callback(err)` - (optional) called when the block has been activated
 
 #### bot.activateItem()
 
