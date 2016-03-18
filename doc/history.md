@@ -1,3 +1,7 @@
+## 1.7.3
+
+* add callback to activateBlock
+
 ## 1.7.2
 
 * update dependencies
