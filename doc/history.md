@@ -1,3 +1,7 @@
+## 1.7.4
+
+* update minecraft-data
+
 ## 1.7.3
 
 * add callback to activateBlock
