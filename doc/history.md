@@ -1,3 +1,7 @@
+## 1.7.5
+
+* bump dependencies
+
 ## 1.7.4
 
 * update minecraft-data
