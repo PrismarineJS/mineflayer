@@ -29,7 +29,7 @@
     "vec3": "^0.1.3"
   },
   "devDependencies": {
-    "doctoc": "^1.0.0",
+    "doctoc": "^1.1.0",
     "minecraft-wrap": "^1.0.1",
     "mocha": "^2.4.5",
     "prismarine-chunk": "^1.0.0",
