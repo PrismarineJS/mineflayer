@@ -31,7 +31,7 @@
   "devDependencies": {
     "doctoc": "^1.0.0",
     "minecraft-wrap": "^1.0.1",
-    "mocha": "^2.4.5",
+    "mocha": "^2.5.0",
     "prismarine-chunk": "^1.0.0",
     "require-self": "^0.1.0"
   }
