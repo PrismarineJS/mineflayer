@@ -850,7 +850,7 @@ Fires when the client hears a sound effect.
 
 Fires when a note block goes off somewhere.
 
- * `block`: a Block instance, the block at emitted the noise
+ * `block`: a Block instance, the block that emitted the noise
  * `instrument`:
    - `id`: integer id
    - `name`: one of [`harp`, `doubleBass`, `snareDrum`, `sticks`, `bassDrum`].
