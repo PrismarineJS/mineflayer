@@ -67,6 +67,7 @@
       - [enchantmentTable.enchant(choice, [callback])](#enchantmenttableenchantchoice-callback)
       - [enchantmentTable.takeTargetItem([callback])](#enchantmenttabletaketargetitemcallback)
       - [enchantmentTable.putTargetItem(item, [callback])](#enchantmenttableputtargetitemitem-callback)
+    - [mineflayer.ScoreBoard](#mineflayerscoreboard)
       - [ScoreBoard.name](#scoreboardname)
       - [ScoreBoard.displayText](#scoreboarddisplaytext)
       - [ScoreBoard.items](#scoreboarditems)
@@ -110,6 +111,7 @@
     - [Events](#events)
       - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
       - ["whisper" (username, message, translate, jsonMsg, matches)](#whisper-username-message-translate-jsonmsg-matches)
+      - ["actionBar" (jsonMsg)](#actionbar-jsonmsg)
       - ["message" (jsonMsg)](#message-jsonmsg)
       - ["login"](#login)
       - ["spawn"](#spawn)
@@ -231,7 +233,7 @@
 
 These enums are stored in the language independent [minecraft-data](https://github.com/PrismarineJS/minecraft-data) project,
  and accessed through [node-minecraft-data](https://github.com/PrismarineJS/node-minecraft-data).
- 
+
 ### mineflayer.data
 Provide access to the full [node-minecraft-data](https://github.com/PrismarineJS/node-minecraft-data) module
 (it is possible to use this module by requiring it, but mineflayer.data is the version used by mineflayer)
@@ -514,7 +516,7 @@ Looks like:
 #### enchantmentTable.putTargetItem(item, [callback])
 
  * `callback(err)`
- 
+
 ### mineflayer.ScoreBoard
 
 #### ScoreBoard.name
@@ -721,6 +723,12 @@ Only emitted when a player chats to you privately.
  * `translate` - chat message type. Null for most bukkit chat messages
  * `jsonMsg` - unmodified JSON message from the server
  * `matches` - array of returned matches from regular expressions. May be null
+
+#### "actionBar" (jsonMsg)
+
+Emitted for every server message which appears on the Action Bar.
+
+ * `jsonMsg` - unmodified JSON message from the server
 
 #### "message" (jsonMsg)
 
