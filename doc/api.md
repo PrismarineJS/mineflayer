@@ -67,6 +67,13 @@
       - [enchantmentTable.enchant(choice, [callback])](#enchantmenttableenchantchoice-callback)
       - [enchantmentTable.takeTargetItem([callback])](#enchantmenttabletaketargetitemcallback)
       - [enchantmentTable.putTargetItem(item, [callback])](#enchantmenttableputtargetitemitem-callback)
+    - [mineflayer.Villager](#mineflayervillager)
+      - [villager "open"](#villager-open)
+      - [villager "close"](#villager-close)
+      - [villager "updateSlot" (oldItem, newItem)](#villager-updateslot-olditem-newitem)
+      - [villager "ready"](#villager-ready)
+      - [villager.close()](#villagerclose)
+      - [villager.trades](#villagertrades)
     - [mineflayer.ScoreBoard](#mineflayerscoreboard)
       - [ScoreBoard.name](#scoreboardname)
       - [ScoreBoard.displayText](#scoreboarddisplaytext)
@@ -209,6 +216,8 @@
       - [bot.openFurnace(furnaceBlock)](#botopenfurnacefurnaceblock)
       - [bot.openDispenser(dispenserBlock)](#botopendispenserdispenserblock)
       - [bot.openEnchantmentTable(enchantmentTableBlock)](#botopenenchantmenttableenchantmenttableblock)
+      - [bot.openVillager(villagerEntity)](#botopenvillagervillagerentity)
+      - [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottradevillagerinstance-tradeindex-times-cb)
       - [bot.setCommandBlock(pos, command, track_output)](#botsetcommandblockpos-command-track_output)
     - [Lower level inventory methods](#lower-level-inventory-methods)
       - [bot.clickWindow(slot, mouseButton, mode, cb)](#botclickwindowslot-mousebutton-mode-cb)
@@ -516,6 +525,66 @@ Looks like:
 #### enchantmentTable.putTargetItem(item, [callback])
 
  * `callback(err)`
+
+### mineflayer.Villager
+
+See `bot.openVillager(villagerEntity)`.
+
+#### villager "open"
+
+Fires when the trading window has successfully been opened.
+
+#### villager "close"
+
+Fires when the trading window closes.
+
+#### villager "updateSlot" (oldItem, newItem)
+
+Fires when a slot in the trading window has updated.
+
+#### villager "ready"
+
+Fires when `villager.trades` is loaded.
+
+#### villager.close()
+
+#### villager.trades
+
+Array of trades.
+
+Looks like:
+
+```js
+[
+  {
+    first_input: Item,
+    output: Item,
+    has_second_item: false,
+    secondary_input: null,
+    disabled: false,
+    tooluses: 0,
+    max_tradeuses: 7
+  },
+  {
+    first_input: Item,
+    output: Item,
+    has_second_item: false,
+    secondary_input: null,
+    disabled: false,
+    tooluses: 0,
+    max_tradeuses: 7
+  },
+  {
+    first_input: Item,
+    output: Item,
+    has_second_item: true,
+    secondary_input: Item,
+    disabled: false,
+    tooluses: 0,
+    max_tradeuses: 7
+  }
+]
+```
 
 ### mineflayer.ScoreBoard
 
@@ -1190,6 +1259,14 @@ Returns a `Dispenser` instance which represents the dispenser you are opening.
 
 Returns an `EnchantmentTable` instance which represents the enchantment table
 you are opening.
+
+#### bot.openVillager(villagerEntity)
+
+Returns an `Villager` instance which represents the trading window you are opening.
+
+#### bot.trade(villagerInstance, tradeIndex, [times], [cb])
+
+Uses the open `villagerInstance` to trade.
 
 #### bot.setCommandBlock(pos, command, track_output)
 
