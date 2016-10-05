@@ -28,7 +28,8 @@ var plugins = {
   simple_inventory: require('./lib/plugins/simple_inventory'),
   sound: require('./lib/plugins/sound'),
   spawn_point: require('./lib/plugins/spawn_point'),
-  time: require('./lib/plugins/time')
+  time: require('./lib/plugins/time'),
+  villager: require('./lib/plugins/villager')
 };
 
 var mcData = require('./lib/minecraft-data');
