@@ -111,7 +111,7 @@ function trade(id, index, count) {
       var villager = bot.openVillager(e);
       villager.once('ready', function() {
         var trade = villager.trades[index - 1];
-        count = count || trade.max_tradeuses - trade.tooluses;
+        count = count || trade.maxTradeuses - trade.tooluses;
         switch (true) {
           case !trade:
             villager.close();
@@ -121,7 +121,7 @@ function trade(id, index, count) {
             villager.close();
             bot.chat('trade is disabled');
             break;
-          case trade.max_tradeuses - trade.tooluses < count:
+          case trade.maxTradeuses - trade.tooluses < count:
             villager.close();
             bot.chat('cant trade that often');
             break;
@@ -145,8 +145,8 @@ function trade(id, index, count) {
   }
   
   function hasResources(window, trade, count) {
-    var first = enough(trade.first_input, count);
-    var second = !trade.has_second_item || enough(trade.secondary_input, count);
+    var first = enough(trade.firstInput, count);
+    var second = !trade.hasSecondItem || enough(trade.secondaryInput, count);
     return first && second;
     
     function enough(item, count) {
@@ -157,11 +157,11 @@ function trade(id, index, count) {
 
 function stringifyTrades(trades) {
   return trades.map(function (trade) {
-    var text = stringifyItem(trade.first_input);
-    if (trade.secondary_input) text += ' & ' + stringifyItem(trade.secondary_input);
+    var text = stringifyItem(trade.firstInput);
+    if (trade.secondaryInput) text += ' & ' + stringifyItem(trade.secondaryInput);
     if (trade.disabled) text += ' x ';else text += ' » ';
     text += stringifyItem(trade.output);
-    return '(' + trade.tooluses + '/' + trade.max_tradeuses + ') ' + text;
+    return '(' + trade.tooluses + '/' + trade.maxTradeuses + ') ' + text;
   });
 }
 

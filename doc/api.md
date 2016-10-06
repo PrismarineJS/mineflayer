@@ -557,31 +557,31 @@ Looks like:
 ```js
 [
   {
-    first_input: Item,
+    firstInput: Item,
     output: Item,
-    has_second_item: false,
-    secondary_input: null,
+    hasSecondItem: false,
+    secondaryInput: null,
     disabled: false,
     tooluses: 0,
-    max_tradeuses: 7
+    maxTradeuses: 7
   },
   {
-    first_input: Item,
+    firstInput: Item,
     output: Item,
-    has_second_item: false,
-    secondary_input: null,
+    hasSecondItem: false,
+    secondaryInput: null,
     disabled: false,
     tooluses: 0,
-    max_tradeuses: 7
+    maxTradeuses: 7
   },
   {
-    first_input: Item,
+    firstInput: Item,
     output: Item,
-    has_second_item: true,
-    secondary_input: Item,
+    hasSecondItem: true,
+    secondaryInput: Item,
     disabled: false,
     tooluses: 0,
-    max_tradeuses: 7
+    maxTradeuses: 7
   }
 ]
 ```
