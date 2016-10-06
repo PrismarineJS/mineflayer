@@ -88,7 +88,7 @@ function watchChest() {
     sayItems(chest.items());
   });
   chest.on('updateSlot', function(oldItem, newItem) {
-    bot.chat("chest update: " + itemStr(oldItem) + " -> " + itemStr(newItem));
+    bot.chat("chest update: " + itemToString(oldItem) + " -> " + itemToString(newItem));
   });
   chest.on('close', function() {
     bot.chat("chest closed");
@@ -163,13 +163,13 @@ function watchFurnace() {
   var furnace = bot.openFurnace(furnaceBlock);
   furnace.on('open', function() {
     var output = "";
-    output += "input: " + itemStr(furnace.inputItem()) + ", ";
-    output += "fuel: " + itemStr(furnace.fuelItem()) + ", ";
-    output += "output: " + itemStr(furnace.outputItem());
+    output += "input: " + itemToString(furnace.inputItem()) + ", ";
+    output += "fuel: " + itemToString(furnace.fuelItem()) + ", ";
+    output += "output: " + itemToString(furnace.outputItem());
     bot.chat(output);
   });
   furnace.on('updateSlot', function(oldItem, newItem) {
-    bot.chat("furnace update: " + itemStr(oldItem) + " -> " + itemStr(newItem));
+    bot.chat("furnace update: " + itemToString(oldItem) + " -> " + itemToString(newItem));
   });
   furnace.on('close', function() {
     bot.chat("furnace closed");
@@ -254,7 +254,7 @@ function watchDispenser() {
     sayItems(dispenser.items());
   });
   dispenser.on('updateSlot', function(oldItem, newItem) {
-    bot.chat("dispenser update: " + itemStr(oldItem) + " -> " + itemStr(newItem));
+    bot.chat("dispenser update: " + itemToString(oldItem) + " -> " + itemToString(newItem));
   });
   dispenser.on('close', function() {
     bot.chat("dispenser closed");
@@ -328,10 +328,10 @@ function watchEnchantmentTable() {
   }
   var table = bot.openEnchantmentTable(enchantTableBlock);
   table.on('open', function() {
-    bot.chat(itemStr(table.targetItem()));
+    bot.chat(itemToString(table.targetItem()));
   });
   table.on('updateSlot', function(oldItem, newItem) {
-    bot.chat("enchantment table update: " + itemStr(oldItem) + " -> " + itemStr(newItem));
+    bot.chat("enchantment table update: " + itemToString(oldItem) + " -> " + itemToString(newItem));
   });
   table.on('close', function() {
     bot.chat("enchantment table closed");
@@ -378,9 +378,9 @@ function watchEnchantmentTable() {
       if(item) {
         table.putTargetItem(item, function(err) {
           if(err) {
-            bot.chat("error putting " + itemStr(item));
+            bot.chat("error putting " + itemToString(item));
           } else {
-            bot.chat("I put " + itemStr(item));
+            bot.chat("I put " + itemToString(item));
           }
         });
       } else {
@@ -393,9 +393,9 @@ function watchEnchantmentTable() {
       if(item) {
         table.putLapis(item, function(err) {
           if(err) {
-            bot.chat("error putting " + itemStr(item));
+            bot.chat("error putting " + itemToString(item));
           } else {
-            bot.chat("I put " + itemStr(item));
+            bot.chat("I put " + itemToString(item));
           }
         });
       } else {
@@ -409,7 +409,7 @@ function watchEnchantmentTable() {
         if(err) {
           bot.chat("error enchanting");
         } else {
-          bot.chat("enchanted " + itemStr(item));
+          bot.chat("enchanted " + itemToString(item));
         }
       });
     }
@@ -419,7 +419,7 @@ function watchEnchantmentTable() {
         if(err) {
           bot.chat("error getting item");
         } else {
-          bot.chat("got " + itemStr(item));
+          bot.chat("got " + itemToString(item));
         }
       });
     }
