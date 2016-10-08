@@ -67,6 +67,13 @@
       - [enchantmentTable.enchant(choice, [callback])](#enchantmenttableenchantchoice-callback)
       - [enchantmentTable.takeTargetItem([callback])](#enchantmenttabletaketargetitemcallback)
       - [enchantmentTable.putTargetItem(item, [callback])](#enchantmenttableputtargetitemitem-callback)
+    - [mineflayer.Villager](#mineflayervillager)
+      - [villager "open"](#villager-open)
+      - [villager "close"](#villager-close)
+      - [villager "updateSlot" (oldItem, newItem)](#villager-updateslot-olditem-newitem)
+      - [villager "ready"](#villager-ready)
+      - [villager.close()](#villagerclose)
+      - [villager.trades](#villagertrades)
     - [mineflayer.ScoreBoard](#mineflayerscoreboard)
       - [ScoreBoard.name](#scoreboardname)
       - [ScoreBoard.displayText](#scoreboarddisplaytext)
@@ -196,6 +203,7 @@
       - [bot.digTime(block)](#botdigtimeblock)
       - [bot.placeBlock(referenceBlock, faceVector, cb)](#botplaceblockreferenceblock-facevector-cb)
       - [bot.activateBlock(block, [callback])](#botactivateblockblock-callback)
+      - [bot.activateEntity(entity, [callback])](#botactivateentityentity-callback)
       - [bot.activateItem()](#botactivateitem)
       - [bot.deactivateItem()](#botdeactivateitem)
       - [bot.useOn(targetEntity)](#botuseontargetentity)
@@ -209,6 +217,8 @@
       - [bot.openFurnace(furnaceBlock)](#botopenfurnacefurnaceblock)
       - [bot.openDispenser(dispenserBlock)](#botopendispenserdispenserblock)
       - [bot.openEnchantmentTable(enchantmentTableBlock)](#botopenenchantmenttableenchantmenttableblock)
+      - [bot.openVillager(villagerEntity)](#botopenvillagervillagerentity)
+      - [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottradevillagerinstance-tradeindex-times-cb)
       - [bot.setCommandBlock(pos, command, track_output)](#botsetcommandblockpos-command-track_output)
     - [Lower level inventory methods](#lower-level-inventory-methods)
       - [bot.clickWindow(slot, mouseButton, mode, cb)](#botclickwindowslot-mousebutton-mode-cb)
@@ -217,6 +227,7 @@
       - [bot.closeWindow(window)](#botclosewindowwindow)
       - [bot.transfer(options, cb)](#bottransferoptions-cb)
       - [bot.openBlock(block, Class)](#botopenblockblock-class)
+      - [bot.openEntity(entity, Class)](#botopenentityentity-class)
       - [bot.moveSlotItem(sourceSlot, destSlot, cb)](#botmoveslotitemsourceslot-destslot-cb)
       - [bot.updateHeldItem()](#botupdatehelditem)
     - [bot.creative](#botcreative)
@@ -516,6 +527,66 @@ Looks like:
 #### enchantmentTable.putTargetItem(item, [callback])
 
  * `callback(err)`
+
+### mineflayer.Villager
+
+See `bot.openVillager(villagerEntity)`.
+
+#### villager "open"
+
+Fires when the trading window has successfully been opened.
+
+#### villager "close"
+
+Fires when the trading window closes.
+
+#### villager "updateSlot" (oldItem, newItem)
+
+Fires when a slot in the trading window has updated.
+
+#### villager "ready"
+
+Fires when `villager.trades` is loaded.
+
+#### villager.close()
+
+#### villager.trades
+
+Array of trades.
+
+Looks like:
+
+```js
+[
+  {
+    firstInput: Item,
+    output: Item,
+    hasSecondItem: false,
+    secondaryInput: null,
+    disabled: false,
+    tooluses: 0,
+    maxTradeuses: 7
+  },
+  {
+    firstInput: Item,
+    output: Item,
+    hasSecondItem: false,
+    secondaryInput: null,
+    disabled: false,
+    tooluses: 0,
+    maxTradeuses: 7
+  },
+  {
+    firstInput: Item,
+    output: Item,
+    hasSecondItem: true,
+    secondaryInput: Item,
+    disabled: false,
+    tooluses: 0,
+    maxTradeuses: 7
+  }
+]
+```
 
 ### mineflayer.ScoreBoard
 
@@ -1124,6 +1195,13 @@ Punch a note block, open a door, etc.
  * `block` - the block to activate
  * `callback(err)` - (optional) called when the block has been activated
 
+#### bot.activateEntity(entity, [callback])
+
+Activate an entity, useful for villager for example.
+
+ * `entity` - the entity to activate
+ * `callback(err)` - (optional) called when the entity has been activated
+
 #### bot.activateItem()
 
 Activates the currently held item. This is how you eat, shoot bows, throw an egg, etc.
@@ -1191,6 +1269,14 @@ Returns a `Dispenser` instance which represents the dispenser you are opening.
 Returns an `EnchantmentTable` instance which represents the enchantment table
 you are opening.
 
+#### bot.openVillager(villagerEntity)
+
+Returns an `Villager` instance which represents the trading window you are opening.
+
+#### bot.trade(villagerInstance, tradeIndex, [times], [cb])
+
+Uses the open `villagerInstance` to trade.
+
 #### bot.setCommandBlock(pos, command, track_output)
 
 Set a command block `command` at `pos`.
@@ -1230,6 +1316,13 @@ Transfer some kind of item from one range to an other. `options` is an object co
 Open a block, for example a chest.
 
  * `block` is the block the bot will open
+ * `Class` is the type of window that will be opened
+
+#### bot.openEntity(entity, Class)
+
+Open an entity with an inventory, for example a villager.
+
+ * `entity` is the entity the bot will open
  * `Class` is the type of window that will be opened
 
 #### bot.moveSlotItem(sourceSlot, destSlot, cb)
