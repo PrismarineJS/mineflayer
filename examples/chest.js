@@ -56,6 +56,9 @@ bot.on('chat', function(username, message) {
     case /^enchant$/.test(message):
       watchEnchantmentTable();
       break;
+    case /^chestminecart$/.test(message):
+      watchChest(true);
+      break;
     case /^invsee \w+( \d)?$/.test(message):
       // invsee Herobrine [or]
       // invsee Herobrine 1
@@ -75,15 +78,31 @@ function sayItems(items) {
   }
 }
 
-function watchChest() {
-  var chestBlock = bot.findBlock({
-    matching: [54, 130, 146]
-  });
-  if(!chestBlock) {
-    bot.chat("no chest found");
-    return;
+function watchChest(minecart) {
+  var chestToOpen;
+  if (minecart) {
+    chestToOpen = Object.keys(bot.entities)
+      .map(function (id) {
+        return bot.entities[id];
+      }).find(function (e) {
+        return e.entityType === 10 &&
+          e.objectData.intField === 1 &&
+          bot.entity.position.distanceTo(e.position) < 3;
+      });
+    if(!chestToOpen) {
+      bot.chat("no chest minecart found");
+      return;
+    }
+  } else {
+    chestToOpen = bot.findBlock({
+      matching: [54, 130, 146]
+    });
+    if(!chestToOpen) {
+      bot.chat("no chest found");
+      return;
+    }
   }
-  var chest = bot.openChest(chestBlock);
+  var chest = bot.openChest(chestToOpen);
   chest.on('open', function() {
     sayItems(chest.items());
   });

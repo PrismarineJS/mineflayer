@@ -213,7 +213,7 @@
       - [bot.moveVehicle(left,forward)](#botmovevehicleleftforward)
       - [bot.setQuickBarSlot(slot)](#botsetquickbarslotslot)
       - [bot.craft(recipe, count, craftingTable, [callback])](#botcraftrecipe-count-craftingtable-callback)
-      - [bot.openChest(chestBlock)](#botopenchestchestblock)
+      - [bot.openChest(chestBlock or minecartchestEntity)](#botopenchestchestblock-or-minecartchestentity)
       - [bot.openFurnace(furnaceBlock)](#botopenfurnacefurnaceblock)
       - [bot.openDispenser(dispenserBlock)](#botopendispenserdispenserblock)
       - [bot.openEnchantmentTable(enchantmentTableBlock)](#botopenenchantmenttableenchantmenttableblock)
@@ -319,7 +319,7 @@ See [prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe)
 ### mineflayer.Chest
 
 Represents a single session of opening and closing a chest.
-See `bot.openChest(chestBlock)`.
+See `bot.openChest(chestBlock or minecartchestEntity)`.
 
 #### chest.window
 
@@ -1252,7 +1252,7 @@ All the direction are relative to where the bot is looking at
  * `callback` - (optional) Called when the crafting is complete and your
    inventory is updated.
 
-#### bot.openChest(chestBlock)
+#### bot.openChest(chestBlock or minecartchestEntity)
 
 Returns a `Chest` instance which represents the chest you are opening.
 
