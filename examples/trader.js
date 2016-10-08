@@ -12,15 +12,13 @@ var mcdata = require('minecraft-data')(mineflayer.version);
 
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node trader.js <host> <port> [<name>] [<password>]');
-  // process.exit(1);
-} else {
-  var info = 'Commands :\n' +
-    '  show villagers\n' +
-    '  show inventory\n' +
-    '  show trades <id>\n' +
-    '  trade <id> <trade> [<times>]';
-  console.log(info);
+  process.exit(1);
 }
+console.log('Commands :\n' +
+  '  show villagers\n' +
+  '  show inventory\n' +
+  '  show trades <id>\n' +
+  '  trade <id> <trade> [<times>]');
 
 var bot = mineflayer.createBot({
   host: process.argv[2],
