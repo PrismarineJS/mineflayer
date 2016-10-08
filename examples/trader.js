@@ -8,6 +8,7 @@
  * and show what trades a villager has by sending a chat message.
  */
 var mineflayer = require('mineflayer');
+var mcdata = require('minecraft-data')(mineflayer.version);
 
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node trader.js <host> <port> [<name>] [<password>]');
@@ -180,152 +181,10 @@ function stringifyItem(item) {
       text += ' enchanted with ' + (ench || StoredEnchantments).value.value.map(function (e) {
         var lvl = e.lvl.value;
         var id = e.id.value;
-        return entchantment(id).displayName + ' ' + lvl;
+        return mcdata.enchantments[id].displayName + ' ' + lvl;
       }).join(' ');
     }
   }
   return text;
-  function entchantment(id) {
-    var entchantments = [
-      {
-        'displayName': 'Protection',
-        'name': 'protection',
-        'id': 0
-      },
-      {
-        'displayName': 'Fire Protection',
-        'name': 'fire_protection',
-        'id': 1
-      },
-      {
-        'displayName': 'Feather Falling',
-        'name': 'feather_falling',
-        'id': 2
-      },
-      {
-        'displayName': 'Blast Protection',
-        'name': 'blast_protection',
-        'id': 3
-      },
-      {
-        'displayName': 'Projectile Protection',
-        'name': 'projectile_protection',
-        'id': 4
-      },
-      {
-        'displayName': 'Respiration',
-        'name': 'respiration',
-        'id': 5
-      },
-      {
-        'displayName': 'Aqua Affinity',
-        'name': 'aqua_affinity',
-        'id': 6
-      },
-      {
-        'displayName': 'Thorns',
-        'name': 'thorns',
-        'id': 7
-      },
-      {
-        'displayName': 'Depth Strider',
-        'name': 'depth_strider',
-        'id': 8
-      },
-      {
-        'displayName': 'Frost Walker',
-        'name': 'frost_walker',
-        'id': 9
-      },
-      {
-        'displayName': 'Sharpness',
-        'name': 'sharpness',
-        'id': 16
-      },
-      {
-        'displayName': 'Smite',
-        'name': 'smite',
-        'id': 17
-      },
-      {
-        'displayName': 'Bane of Arthropods',
-        'name': 'bane_of_arthropods',
-        'id': 18
-      },
-      {
-        'displayName': 'Knockback',
-        'name': 'knockback',
-        'id': 19
-      },
-      {
-        'displayName': 'Fire Aspect',
-        'name': 'fire_aspect',
-        'id': 20
-      },
-      {
-        'displayName': 'Looting',
-        'name': 'looting',
-        'id': 21
-      },
-      {
-        'displayName': 'Efficiency',
-        'name': 'efficiency',
-        'id': 32
-      },
-      {
-        'displayName': 'Silk Touch',
-        'name': 'silk_touch',
-        'id': 33
-      },
-      {
-        'displayName': 'Unbreaking',
-        'name': 'unbreaking',
-        'id': 34
-      },
-      {
-        'displayName': 'Fortune',
-        'name': 'fortune',
-        'id': 35
-      },
-      {
-        'displayName': 'Power',
-        'name': 'power',
-        'id': 48
-      },
-      {
-        'displayName': 'Punch',
-        'name': 'punch',
-        'id': 49
-      },
-      {
-        'displayName': 'Flame',
-        'name': 'flame',
-        'id': 50
-      },
-      {
-        'displayName': 'Infinity',
-        'name': 'infinity',
-        'id': 51
-      },
-      {
-        'displayName': 'Luck of the Sea',
-        'name': 'luck_of_the_sea',
-        'id': 61
-      },
-      {
-        'displayName': 'Lure',
-        'name': 'lure',
-        'id': 62
-      },
-      {
-        'displayName': 'Mending',
-        'name': 'mending',
-        'id': 70
-      }
-    ];
-    return entchantments.find(function(e) {
-      return e.id === id;
-    });
-  }
 }
 
