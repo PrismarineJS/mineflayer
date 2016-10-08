@@ -37,7 +37,7 @@ bot.on('chat', function(username, message) {
       showVillagers();
       break;
     case 'show inventory' === message:
-      showIventory();
+      showInventory();
       break;
     case /^show trades [0-9]+$/.test(message):
       showTrades(command[2]);
@@ -63,7 +63,7 @@ function showVillagers() {
   bot.chat('villager(s) you can trade with: ' + closeVillagersId.join(', '));
 }
 
-function showIventory() {
+function showInventory() {
   bot.inventory.slots
     .filter(function(item) {
       return item;

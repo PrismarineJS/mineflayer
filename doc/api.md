@@ -203,6 +203,7 @@
       - [bot.digTime(block)](#botdigtimeblock)
       - [bot.placeBlock(referenceBlock, faceVector, cb)](#botplaceblockreferenceblock-facevector-cb)
       - [bot.activateBlock(block, [callback])](#botactivateblockblock-callback)
+      - [bot.activateEntity(entity, [callback])](#botactivateentityentity-callback)
       - [bot.activateItem()](#botactivateitem)
       - [bot.deactivateItem()](#botdeactivateitem)
       - [bot.useOn(targetEntity)](#botuseontargetentity)
@@ -226,6 +227,7 @@
       - [bot.closeWindow(window)](#botclosewindowwindow)
       - [bot.transfer(options, cb)](#bottransferoptions-cb)
       - [bot.openBlock(block, Class)](#botopenblockblock-class)
+      - [bot.openEntity(entity, Class)](#botopenentityentity-class)
       - [bot.moveSlotItem(sourceSlot, destSlot, cb)](#botmoveslotitemsourceslot-destslot-cb)
       - [bot.updateHeldItem()](#botupdatehelditem)
     - [bot.creative](#botcreative)
@@ -1193,6 +1195,13 @@ Punch a note block, open a door, etc.
  * `block` - the block to activate
  * `callback(err)` - (optional) called when the block has been activated
 
+#### bot.activateEntity(entity, [callback])
+
+Activate an entity, useful for villager for example.
+
+ * `entity` - the entity to activate
+ * `callback(err)` - (optional) called when the entity has been activated
+
 #### bot.activateItem()
 
 Activates the currently held item. This is how you eat, shoot bows, throw an egg, etc.
@@ -1307,6 +1316,13 @@ Transfer some kind of item from one range to an other. `options` is an object co
 Open a block, for example a chest.
 
  * `block` is the block the bot will open
+ * `Class` is the type of window that will be opened
+
+#### bot.openEntity(entity, Class)
+
+Open an entity with an inventory, for example a villager.
+
+ * `entity` is the entity the bot will open
  * `Class` is the type of window that will be opened
 
 #### bot.moveSlotItem(sourceSlot, destSlot, cb)
