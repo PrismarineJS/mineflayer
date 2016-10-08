@@ -1,3 +1,8 @@
+## 1.8.0
+
+* add actionBar event (thanks @ArcticZeroo)
+* added support for villager trading (thanks @plexigras)
+
 ## 1.7.5
 
 * bump dependencies
