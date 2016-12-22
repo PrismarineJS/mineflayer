@@ -7,7 +7,7 @@ Create Minecraft bots with a powerful, stable, and high level JavaScript API.
 
 ## Features
 
- * Supports Minecraft 1.8.9.
+ * Supports Minecraft 1.8.x*.
  * Entity knowledge and tracking.
  * Block knowledge. You can query the world around you.
  * Basic physics and movement - currently blocks are either "solid" or "empty".
@@ -18,6 +18,8 @@ Create Minecraft bots with a powerful, stable, and high level JavaScript API.
  * Miscellaneous stuff such as knowing your health and whether it is raining.
  * Activating blocks and using items.
  * Chat.
+
+\* Supports *only* versions 1.8.*x*; definitely (seems to) work with version 1.8.8.
 
 ### Roadmap
 
