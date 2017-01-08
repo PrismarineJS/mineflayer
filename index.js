@@ -65,6 +65,7 @@ module.exports = {
 function createBot(options) {
   options = options || {};
   options.username = options.username || 'Player';
+  options.version="1.9";
   var bot = new Bot();
   bot.connect(options);
   return bot;

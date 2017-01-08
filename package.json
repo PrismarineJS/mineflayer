@@ -21,7 +21,7 @@
     "mojangson": "^0.2.1",
     "prismarine-biome": "^1.0.1",
     "prismarine-block": "^1.0.1",
-    "prismarine-chunk": "^1.3.0",
+    "prismarine-chunk": "Flynnn/prismarine-chunk#master",
     "prismarine-entity": "^0.2.0",
     "prismarine-item": "^1.0.1",
     "prismarine-recipe": "^1.0.1",
