@@ -141,7 +141,8 @@ describe("mineflayer_internal", function() {
           z: 1.5,
           pitch: 0,
           yaw: 0,
-          flags: 0
+          flags: 0,
+          teleportId:0
         });
       });
     });
