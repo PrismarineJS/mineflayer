@@ -1,10 +1,12 @@
-var mineflayer = require('../../index');
 var Vec3 = require('vec3').Vec3;
 var assert = require("assert");
 
 module.exports = function() {
 
   return function(bot, done) {
+    var mcData=require('minecraft-data')(bot.version);
+    var Item=require('prismarine-item')(bot.version);
+
     var chestManagementTest = (function() {
       var smallChestLocation = new Vec3(0, 4, -1);
       var largeChestLocations = [new Vec3(0, 4, 1), new Vec3(1, 4, 1)];
@@ -16,9 +18,9 @@ module.exports = function() {
 
       return [
         function(cb) {
-          bot.test.setInventorySlot(chestSlot, new mineflayer.Item(mineflayer.data.blocksByName["chest"].id, 3, 0), function() {
-            bot.test.setInventorySlot(trappedChestSlot, new mineflayer.Item(mineflayer.data.blocksByName["trapped_chest"].id, 3, 0), function() {
-              bot.test.setInventorySlot(boneSlot, new mineflayer.Item(mineflayer.data.itemsByName["bone"].id, 3, 0), cb);
+          bot.test.setInventorySlot(chestSlot, new Item(mcData.blocksByName["chest"].id, 3, 0), function() {
+            bot.test.setInventorySlot(trappedChestSlot, new Item(mcData.blocksByName["trapped_chest"].id, 3, 0), function() {
+              bot.test.setInventorySlot(boneSlot, new Item(mcData.itemsByName["bone"].id, 3, 0), cb);
             });
           });
         },

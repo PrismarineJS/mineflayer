@@ -1,12 +1,13 @@
-var mineflayer = require('../../index');
-var Vec3 = require('vec3').Vec3;
+var vec3=require('vec3');
 var assert = require("assert");
 
 
 module.exports = function() {
   return function(bot, done) {
+    var mcData=require('minecraft-data')(bot.version);
+    var Item=require('prismarine-item')(bot.version);
     function findCraftingTable() {
-      var cursor = mineflayer.vec3();
+      var cursor = vec3();
       for(cursor.x = bot.entity.position.x - 4; cursor.x < bot.entity.position.x + 4; cursor.x++) {
         for(cursor.y = bot.entity.position.y - 4; cursor.y < bot.entity.position.y + 4; cursor.y++) {
           for(cursor.z = bot.entity.position.z - 4; cursor.z < bot.entity.position.z + 4; cursor.z++) {
@@ -18,7 +19,7 @@ module.exports = function() {
     }
 
     function craft(amount, name, cb) {
-      item = mineflayer.data.findItemOrBlockByName(name);
+      item = mcData.findItemOrBlockByName(name);
       var craftingTable = findCraftingTable();
       var wbText = craftingTable ? "with a crafting table, " : "without a crafting table, ";
       if(item == null) {
@@ -47,7 +48,7 @@ module.exports = function() {
 
     var craftTest = [
       function(cb) {
-        bot.test.setInventorySlot(36, new mineflayer.Item(mineflayer.data.blocksByName["log"].id, 1, 0), cb);
+        bot.test.setInventorySlot(36, new Item(mcData.blocksByName["log"].id, 1, 0), cb);
       },
       bot.test.becomeSurvival,
       function(cb) {
