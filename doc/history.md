@@ -1,3 +1,9 @@
+## 2.0.0
+
+* added support for minecraft chests (thanks @plexigras)
+* cross version support : 1.8, 1.9, 1.10 and 1.11 now supported
+* [BREAKING] prismarine classes (Block, Entity, Recipe, ...) are now available only by requiring them, not in mineflayer.X. It was required to make cross version possible. minecraft-data is also to be required directly and not available as mineflayer.blocks. The code depending on this should be updated, hence the major version.
+
 ## 1.8.0
 
 * add actionBar event (thanks @ArcticZeroo)
