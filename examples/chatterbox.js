@@ -13,6 +13,7 @@
  * a few informations while you are in game.
  */
 var mineflayer = require('mineflayer');
+var Vec3=require('vec3').Vec3;
 
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node chatterbot.js <host> <port> [<name>] [<password>]");
@@ -30,6 +31,11 @@ var bot = mineflayer.createBot({
 
 bot.on('chat', function(username, message) {
   if(username === bot.username) return;
+  var result;
+  if(result=/canSee (-?[0-9]+),(-?[0-9]+),(-?[0-9]+)/.exec(message)) {
+    canSee(new Vec3(result[1],result[2],result[3]));
+    return;
+  }
   switch(message) {
     case 'pos':
       sayPosition(username);
@@ -48,6 +54,17 @@ bot.on('chat', function(username, message) {
       break;
     default:
       bot.chat("That's nice");
+  }
+
+  function canSee(pos) {
+    var block=bot.blockAt(pos);
+    var r=bot.canSeeBlock(block);
+    if(r) {
+      bot.chat("I can see the block of "+block.displayName+" at "+pos);
+    }
+    else {
+      bot.chat("I cannot see the block of "+block.displayName+" at "+pos);
+    }
   }
 
   function sayPosition(username) {

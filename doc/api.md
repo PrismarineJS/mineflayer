@@ -176,6 +176,7 @@
       - ["scoreboardDisplayObjective" (scoreboardName, position)](#scoreboarddisplayobjective-scoreboardname-position)
     - [Functions](#functions)
       - [bot.blockAt(point)](#botblockatpoint)
+      - [bot.canSeeBlock(block)](#botcanseeblockblock)
       - [bot.findBlock(options)](#botfindblockoptions)
       - [bot.canDigBlock(block)](#botcandigblockblock)
       - [bot.recipesFor(itemType, metadata, minResultCount, craftingTable)](#botrecipesforitemtype-metadata-minresultcount-craftingtable)
@@ -1025,6 +1026,10 @@ Fires when the position of a scoreboard is updated.
 
 Returns the block at `point` or `null` if that point is not loaded.
 See `Block`.
+
+#### bot.canSeeBlock(block)
+
+Returns true or false depending on whether the bot can see the specified `block`.
 
 #### bot.findBlock(options)
 
