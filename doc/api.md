@@ -4,23 +4,23 @@
 
 - [API](#api)
   - [Enums](#enums)
-    - [mineflayer.data](#mineflayerdata)
-    - [mineflayer.blocks](#mineflayerblocks)
-    - [mineflayer.items](#mineflayeritems)
-    - [mineflayer.materials](#mineflayermaterials)
-    - [mineflayer.recipes](#mineflayerrecipes)
-    - [mineflayer.instruments](#mineflayerinstruments)
-    - [mineflayer.biomes](#mineflayerbiomes)
-    - [mineflayer.entities](#mineflayerentities)
+    - [minecraft-data](#minecraft-data)
+    - [mcdata.blocks](#mcdatablocks)
+    - [mcdata.items](#mcdataitems)
+    - [mcdata.materials](#mcdatamaterials)
+    - [mcdata.recipes](#mcdatarecipes)
+    - [mcdata.instruments](#mcdatainstruments)
+    - [mcdata.biomes](#mcdatabiomes)
+    - [mcdata.entities](#mcdataentities)
   - [Classes](#classes)
-    - [mineflayer.vec3](#mineflayervec3)
+    - [vec3](#vec3)
     - [mineflayer.Location](#mineflayerlocation)
-    - [mineflayer.Entity](#mineflayerentity)
-    - [mineflayer.Block](#mineflayerblock)
-    - [mineflayer.Biome](#mineflayerbiome)
-    - [mineflayer.Item](#mineflayeritem)
-    - [mineflayer.windows.Window (base class)](#mineflayerwindowswindow-base-class)
-    - [mineflayer.Recipe](#mineflayerrecipe)
+    - [Entity](#entity)
+    - [Block](#block)
+    - [Biome](#biome)
+    - [Item](#item)
+    - [windows.Window (base class)](#windowswindow-base-class)
+    - [Recipe](#recipe)
     - [mineflayer.Chest](#mineflayerchest)
       - [chest.window](#chestwindow)
       - [chest "open"](#chest-open)
@@ -245,36 +245,37 @@
 These enums are stored in the language independent [minecraft-data](https://github.com/PrismarineJS/minecraft-data) project,
  and accessed through [node-minecraft-data](https://github.com/PrismarineJS/node-minecraft-data).
 
-### mineflayer.data
-Provide access to the full [node-minecraft-data](https://github.com/PrismarineJS/node-minecraft-data) module
-(it is possible to use this module by requiring it, but mineflayer.data is the version used by mineflayer)
+### minecraft-data
+The data is available in [node-minecraft-data](https://github.com/PrismarineJS/node-minecraft-data) module
 
-### mineflayer.blocks
+`require('minecraft-data')(bot.version)` gives you access to it.
+
+### mcdata.blocks
 blocks indexed by id
 
-### mineflayer.items
+### mcdata.items
 items indexed by id
 
-### mineflayer.materials
+### mcdata.materials
 
 The key is the material. The value is an object with the key as the item id
 of the tool and the value as the efficiency multiplier.
 
-### mineflayer.recipes
+### mcdata.recipes
 recipes indexed by id
 
-### mineflayer.instruments
+### mcdata.instruments
 instruments indexed by id
 
-### mineflayer.biomes
+### mcdata.biomes
 biomes indexed by id
 
-### mineflayer.entities
+### mcdata.entities
 entities indexed by id
 
 ## Classes
 
-### mineflayer.vec3
+### vec3
 
 See [andrewrk/node-vec3](https://github.com/andrewrk/node-vec3)
 
@@ -290,29 +291,29 @@ properties.
 
 ### mineflayer.Location
 
-### mineflayer.Entity
+### Entity
 
 Entities represent players, mobs, and objects. They are emitted
 in many events, and you can access your own entity with `bot.entity`.
 See [prismarine-entity](https://github.com/PrismarineJS/prismarine-entity)
 
-### mineflayer.Block
+### Block
 
 See [prismarine-block](https://github.com/PrismarineJS/prismarine-block)
 
-### mineflayer.Biome
+### Biome
 
 See [prismarine-biome](https://github.com/PrismarineJS/prismarine-biome)
 
-### mineflayer.Item
+### Item
 
 See [prismarine-item](https://github.com/PrismarineJS/prismarine-item)
 
-### mineflayer.windows.Window (base class)
+### windows.Window (base class)
 
 See [prismarine-windows](https://github.com/PrismarineJS/prismarine-windows)
 
-### mineflayer.Recipe
+### Recipe
 
 See [prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe)
 
