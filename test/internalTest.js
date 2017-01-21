@@ -98,7 +98,8 @@ mineflayer.supportedVersions.forEach(function(supportedVersion) {
           z: 0,
           groundUp: true,
           bitMap: 0xffff,
-          chunkData: chunk.dump()
+          chunkData: chunk.dump(),
+          blockEntities:[]
         });
       });
     });
@@ -141,7 +142,8 @@ mineflayer.supportedVersions.forEach(function(supportedVersion) {
             z: 0,
             groundUp: true,
             bitMap: 0xffff,
-            chunkData: chunk.dump()
+            chunkData: chunk.dump(),
+            blockEntities:[]
           });
           client.write('position', {
             x: 1.5,
