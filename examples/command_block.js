@@ -3,7 +3,6 @@
  */
 
 var mineflayer = require('mineflayer');
-var Vec3=mineflayer.vec3.Vec3;
 
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node command_block.js <host> <port> [<name>] [<password>]");

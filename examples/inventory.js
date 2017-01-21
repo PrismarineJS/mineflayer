@@ -127,7 +127,7 @@ function useEquippedItem() {
 
 function craftItem(name, amount) {
   amount = parseInt(amount, 10);
-  var item = mineflayer.data.findItemOrBlockByName(name);
+  var item = require('minecraft-data')(bot.version).findItemOrBlockByName(name);
   var craftingTable = bot.findBlock({
     matching: 58
   });

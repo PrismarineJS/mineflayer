@@ -1,11 +1,14 @@
 var assert = require("assert");
 var Vec3 = require('vec3').Vec3;
-var mineflayer = require('../../../index');
 
 
 module.exports = inject;
 
 function inject(bot) {
+  var mcData=require('minecraft-data')(bot.version);
+  var Block=require('prismarine-block')(bot.version);
+  var Item=require('prismarine-item')(bot.version);
+
   bot.test = {};
   bot.test.callbackChain = callbackChain;
   bot.test.sayEverywhere = sayEverywhere;
@@ -30,10 +33,10 @@ function inject(bot) {
   }
 
   var superflatLayers = [
-    new mineflayer.Block(mineflayer.data.blocksByName["bedrock"].id),
-    new mineflayer.Block(mineflayer.data.blocksByName["dirt"].id),
-    new mineflayer.Block(mineflayer.data.blocksByName["dirt"].id),
-    new mineflayer.Block(mineflayer.data.blocksByName["grass"].id),
+    new Block(mcData.blocksByName["bedrock"].id),
+    new Block(mcData.blocksByName["dirt"].id),
+    new Block(mcData.blocksByName["dirt"].id),
+    new Block(mcData.blocksByName["grass"].id),
     // and then air
   ];
 
@@ -69,7 +72,7 @@ function inject(bot) {
     }
 
     function placeAndResume(position, block) {
-      setInventorySlot(36, new mineflayer.Item(block.type, 1, 0), function() {
+      setInventorySlot(36, Item(block.type, 1, 0), function() {
         placeBlock(36, position);
         resume();
       });
@@ -149,7 +152,7 @@ function inject(bot) {
 
 // you need to be in creative mode for this to work
   function setInventorySlot(targetSlot, item, cb) {
-    if(mineflayer.Item.equal(bot.inventory.slots[targetSlot], item)) {
+    if(Item.equal(bot.inventory.slots[targetSlot], item)) {
       // already good to go
       return setImmediate(cb);
     }

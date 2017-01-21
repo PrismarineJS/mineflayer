@@ -11,6 +11,7 @@
  * so be sure to teach him a few more tricks before leaving him alone at night.
  */
 var mineflayer = require('mineflayer');
+var vec3 = require('vec3');
 
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node digger.js <host> <port> [<name>] [<password>]");
@@ -84,7 +85,7 @@ function build() {
 
   function placeIfHighEnough() {
     if(bot.entity.position.y > jumpY) {
-      bot.placeBlock(referenceBlock, mineflayer.vec3(0, 1, 0),function(err){
+      bot.placeBlock(referenceBlock, vec3(0, 1, 0),function(err){
         if(err){
           bot.chat(err.message);
           return;

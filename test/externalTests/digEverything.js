@@ -1,4 +1,3 @@
-var mineflayer = require('../../index');
 var Vec3 = require('vec3').Vec3;
 var assert = require("assert");
 
@@ -18,11 +17,13 @@ var excludedBlocks = [
   //cause problems
   "mob_spawner", "obsidian"];
 
-module.exports = function() {
+module.exports = function(version) {
+  const mcData=require('minecraft-data')(version);
+
   var funcs = {};
-  for(var id in mineflayer.blocks) {
-    if(mineflayer.blocks.hasOwnProperty(id)) {
-      var block = mineflayer.blocks[id];
+  for(var id in mcData.blocks) {
+    if(mcData.blocks.hasOwnProperty(id)) {
+      var block = mcData.blocks[id];
       if(block.diggable && excludedBlocks.indexOf(block.name) === -1)
         funcs[block.name] = (function(blockId) {
           return function(bot, done) {
@@ -37,9 +38,13 @@ module.exports = function() {
 
 
 function digSomething(blockId, bot, done) {
+  var mcData=require('minecraft-data')(bot.version);
+  var Item=require('prismarine-item')(bot.version);
+
+
   var diggingTest = [
     function(cb) {
-      bot.test.setInventorySlot(36, new mineflayer.Item(blockId, 1, 0), cb);
+      bot.test.setInventorySlot(36, new Item(blockId, 1, 0), cb);
     },
     function(cb) {
       //TODO: find a better way than this setTimeout(cb,200);
@@ -49,7 +54,7 @@ function digSomething(blockId, bot, done) {
     },
     bot.test.clearInventory,
     function(cb) {
-      bot.test.setInventorySlot(36, new mineflayer.Item(mineflayer.data.itemsByName["diamond_pickaxe"].id, 1, 0), cb);
+      bot.test.setInventorySlot(36, new Item(mcData.itemsByName["diamond_pickaxe"].id, 1, 0), cb);
     },
     bot.test.becomeSurvival,
     function(cb) {

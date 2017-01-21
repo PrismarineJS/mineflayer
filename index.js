@@ -32,40 +32,28 @@ var plugins = {
   villager: require('./lib/plugins/villager')
 };
 
-var mcData = require('./lib/minecraft-data');
-var version = require('./lib/version');
+var defaultVersion=require("./lib/version").defaultVersion;
 
 module.exports = {
-  vec3: require('vec3'),
   createBot: createBot,
-  Block: require("prismarine-block")(version),
   Location: require('./lib/location'),
-  Biome: require("prismarine-biome")(version),
-  Entity: require('prismarine-entity'),
   Painting: require('./lib/painting'),
-  Item: require("prismarine-item")(version),
-  Recipe: require('prismarine-recipe')(version).Recipe,
-  windows: require('prismarine-windows')(version).windows,
   Chest: require('./lib/chest'),
   Furnace: require('./lib/furnace'),
   Dispenser: require('./lib/dispenser'),
   EnchantmentTable: require('./lib/enchantment_table'),
   ScoreBoard: require('./lib/scoreboard'),
-  blocks: mcData.blocks,
-  biomes: mcData.biomes,
-  items: mcData.items,
-  recipes: mcData.recipes,
-  instruments: mcData.instruments,
-  materials: mcData.materials,
-  entities: mcData.entities,
-  data: mcData,
-  version:version
+  supportedVersions:require("./lib/version").supportedVersions,
+  defaultVersion:require("./lib/version").defaultVersion
 };
 
 function createBot(options) {
   options = options || {};
   options.username = options.username || 'Player';
+  options.version = options.version || defaultVersion;
   var bot = new Bot();
+  bot.majorVersion=require('minecraft-data')(options.version).version.majorVersion;
+  bot.version=options.version;
   bot.connect(options);
   return bot;
 }
