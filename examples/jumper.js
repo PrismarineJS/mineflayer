@@ -89,9 +89,6 @@ bot.on('chat', function(username, message) {
     case 'tp':
       bot.entity.position.y += 10;
       break;
-    case 'spawn':
-      bot.spawn();
-      break;
     case 'pos':
       bot.chat(bot.entity.position.toString());
       break;
