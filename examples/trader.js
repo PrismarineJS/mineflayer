@@ -8,7 +8,6 @@
  * and show what trades a villager has by sending a chat message.
  */
 var mineflayer = require('mineflayer');
-var mcdata = require('minecraft-data')(mineflayer.version);
 
 if(process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node trader.js <host> <port> [<name>] [<password>]');
@@ -27,6 +26,7 @@ var bot = mineflayer.createBot({
   password: process.argv[5],
   verbose: true,
 });
+var mcdata = require('minecraft-data')(bot.version);
 
 bot.on('chat', function(username, message) {
   if(username === bot.username) return;
