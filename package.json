@@ -18,6 +18,7 @@
   "dependencies": {
     "minecraft-data": "^2.7.0",
     "minecraft-protocol": "^1.1.0",
+    "minecraft-protocol-forge": "^1.0.0",
     "mojangson": "^0.2.1",
     "prismarine-biome": "^1.0.1",
     "prismarine-block": "^1.0.1",
