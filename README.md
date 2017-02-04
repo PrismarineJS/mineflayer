@@ -61,6 +61,7 @@ higher level API on top of Mineflayer.
    [YouTube Demo](http://youtu.be/jkg6psMUSE0)
  * [auto-auth](https://github.com/G07cha/MineflayerAutoAuth) - chat-based bot authentication
  * [Armor Manager](https://github.com/G07cha/MineflayerArmorManager) - automatic armor managment
+ * [Bloodhound](https://github.com/Nixes/mineflayer-bloodhound) - determine who and what is responsible for damage to another entity
 
 ## Projects Using Mineflayer
 
