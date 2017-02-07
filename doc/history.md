@@ -1,3 +1,10 @@
+## 2.1.0
+
+* add bot.canSeeBlock (thanks @Nixes)
+* handle unknown entities and entities sent with their internal id
+* add bloodhound to plugin list
+* fix chat hoverEvent for 1.9
+
 ## 2.0.0
 
 * added support for minecraft chests (thanks @plexigras)
