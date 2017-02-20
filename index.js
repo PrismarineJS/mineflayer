@@ -6,6 +6,7 @@ var plugins = {
   bed: require('./lib/plugins/bed'),
   block_actions: require('./lib/plugins/block_actions'),
   blocks: require('./lib/plugins/blocks'),
+  book: require('./lib/plugins/book'),
   chat: require('./lib/plugins/chat'),
   chest: require('./lib/plugins/chest'),
   command_block: require('./lib/plugins/command_block'),
