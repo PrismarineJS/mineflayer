@@ -214,6 +214,7 @@
       - [bot.moveVehicle(left,forward)](#botmovevehicleleftforward)
       - [bot.setQuickBarSlot(slot)](#botsetquickbarslotslot)
       - [bot.craft(recipe, count, craftingTable, [callback])](#botcraftrecipe-count-craftingtable-callback)
+      - [bot.writeBook(slot, pages, [callback])](#botwritebookslot-pages-callback)
       - [bot.openChest(chestBlock or minecartchestEntity)](#botopenchestchestblock-or-minecartchestentity)
       - [bot.openFurnace(furnaceBlock)](#botopenfurnacefurnaceblock)
       - [bot.openDispenser(dispenserBlock)](#botopendispenserdispenserblock)
@@ -1257,6 +1258,12 @@ All the direction are relative to where the bot is looking at
    `null` for this argument.
  * `callback` - (optional) Called when the crafting is complete and your
    inventory is updated.
+
+#### bot.writeBook(slot, pages, [callback])
+
+ * `slot` is in inventory window coordinates (where 36 is the first quickbar slot, etc.).
+ * `pages` is an array of strings represents the pages.
+ * `callback(error)` - optional. called when the writing was successfully or an error occurred.
 
 #### bot.openChest(chestBlock or minecartchestEntity)
 
