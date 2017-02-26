@@ -1,3 +1,7 @@
+## 2.1.1
+
+* use protodef aliases to properly define channels
+
 ## 2.1.0
 
 * add bot.canSeeBlock (thanks @Nixes)
