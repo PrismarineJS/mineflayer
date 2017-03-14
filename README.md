@@ -1,7 +1,9 @@
 # Mineflayer
+
 [![NPM version](https://badge.fury.io/js/mineflayer.svg)](http://badge.fury.io/js/mineflayer) 
 [![Build Status](https://circleci.com/gh/PrismarineJS/mineflayer.svg?style=shield)](https://circleci.com/gh/PrismarineJS/mineflayer)
 [![Join the chat at https://gitter.im/PrismarineJS/mineflayer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/PrismarineJS/mineflayer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Greenkeeper badge](https://badges.greenkeeper.io/PrismarineJS/mineflayer.svg)](https://greenkeeper.io/)
 
 Create Minecraft bots with a powerful, stable, and high level JavaScript API.
 
