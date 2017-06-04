@@ -1,3 +1,9 @@
+## 2.2.0
+
+* added book writing plugin (thanks @plexigras)
+* Make sure bot.time.day is between 0 and 24000 (thanks @roblabla)
+* Pass skyLightSent to Chunk.load (thanks @iRath96)
+
 ## 2.1.1
 
 * use protodef aliases to properly define channels
