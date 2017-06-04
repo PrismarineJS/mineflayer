@@ -1,4 +1,5 @@
 var mc = require('minecraft-protocol');
+var mcForge = require('minecraft-protocol-forge');
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var path = require('path');
@@ -48,14 +49,14 @@ module.exports = {
   defaultVersion:require("./lib/version").defaultVersion
 };
 
-function createBot(options) {
+function createBot(options, forgeOptions) {
   options = options || {};
   options.username = options.username || 'Player';
   options.version = options.version || defaultVersion;
   var bot = new Bot();
   bot.majorVersion=require('minecraft-data')(options.version).version.majorVersion;
   bot.version=options.version;
-  bot.connect(options);
+  bot.connect(options, forgeOptions);
   return bot;
 }
 
@@ -65,9 +66,12 @@ function Bot() {
 }
 util.inherits(Bot, EventEmitter);
 
-Bot.prototype.connect = function(options) {
+Bot.prototype.connect = function(options, forgeOptions) {
   var self = this;
   self._client = mc.createClient(options);
+  if(forgeOptions){
+    mcForge.forgeHandshake(self._client, forgeOptions);
+  }
   self.username = self._client.username;
   self._client.on('session', function() {
     self.username = self._client.username;
