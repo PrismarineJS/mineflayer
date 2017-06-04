@@ -1,8 +1,8 @@
-var mc = require('minecraft-protocol');
-var EventEmitter = require('events').EventEmitter;
-var util = require('util');
-var path = require('path');
-var plugins = {
+const mc = require('minecraft-protocol');
+const EventEmitter = require('events').EventEmitter;
+const util = require('util');
+const path = require('path');
+const plugins = {
   bed: require('./lib/plugins/bed'),
   block_actions: require('./lib/plugins/block_actions'),
   blocks: require('./lib/plugins/blocks'),
@@ -33,10 +33,10 @@ var plugins = {
   villager: require('./lib/plugins/villager')
 };
 
-var defaultVersion=require("./lib/version").defaultVersion;
+const defaultVersion=require("./lib/version").defaultVersion;
 
-module.exports = {
-  createBot: createBot,
+export default {
+  createBot,
   Location: require('./lib/location'),
   Painting: require('./lib/painting'),
   Chest: require('./lib/chest'),
@@ -48,44 +48,46 @@ module.exports = {
   defaultVersion:require("./lib/version").defaultVersion
 };
 
-function createBot(options) {
-  options = options || {};
+function createBot(options={}) {
   options.username = options.username || 'Player';
   options.version = options.version || defaultVersion;
-  var bot = new Bot();
+  const bot = new Bot();
   bot.majorVersion=require('minecraft-data')(options.version).version.majorVersion;
   bot.version=options.version;
   bot.connect(options);
   return bot;
 }
 
-function Bot() {
-  EventEmitter.call(this);
-  this._client = null;
-}
-util.inherits(Bot, EventEmitter);
-
-Bot.prototype.connect = function(options) {
-  var self = this;
-  self._client = mc.createClient(options);
-  self.username = self._client.username;
-  self._client.on('session', function() {
-    self.username = self._client.username;
-  });
-  self._client.on('connect', function() {
-    self.emit('connect');
-  });
-  self._client.on('error', function(err) {
-    self.emit('error', err);
-  });
-  self._client.on('end', function() {
-    self.emit('end');
-  });
-  for(var pluginName in plugins) {
-    plugins[pluginName](self, options);
+class Bot {
+  constructor() {
+    EventEmitter.call(this);
+    this._client = null;
   }
-};
 
-Bot.prototype.end = function() {
-  this._client.end();
-};
+  connect(options) {
+    const self = this;
+    self._client = mc.createClient(options);
+    self.username = self._client.username;
+    self._client.on('session', () => {
+      self.username = self._client.username;
+    });
+    self._client.on('connect', () => {
+      self.emit('connect');
+    });
+    self._client.on('error', err => {
+      self.emit('error', err);
+    });
+    self._client.on('end', () => {
+      self.emit('end');
+    });
+    for(const pluginName in plugins) {
+      plugins[pluginName](self, options);
+    }
+  }
+
+  end() {
+    this._client.end();
+  }
+}
+
+util.inherits(Bot, EventEmitter);

@@ -47,7 +47,7 @@ function digSomething(blockId, bot, done) {
       bot.test.setInventorySlot(36, new Item(blockId, 1, 0), cb);
     },
     function(cb) {
-      //TODO: find a better way than this setTimeout(cb,200);
+      //ToDo: find a better way than this setTimeout(cb,200);
       bot.test.placeBlock(36, bot.entity.position.plus(new Vec3(1, 0, 0)), function() {
         setTimeout(cb, 200);
       });

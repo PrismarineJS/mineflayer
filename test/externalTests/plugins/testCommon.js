@@ -157,7 +157,7 @@ function inject(bot) {
       return setImmediate(cb);
     }
     bot.creative.setInventorySlot(targetSlot, item);
-    //TODO: instead of that timeout, it would be better to have a good callback inside setInventorySlot
+    //ToDo: instead of that timeout, it would be better to have a good callback inside setInventorySlot
     setTimeout(cb, 500);
   }
 
