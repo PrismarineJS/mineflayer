@@ -1,3 +1,7 @@
+## NEXT
+
+* support version 1.12
+
 ## 2.2.0
 
 * added book writing plugin (thanks @plexigras)
