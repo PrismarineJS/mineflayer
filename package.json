@@ -27,6 +27,7 @@
     "prismarine-recipe": "^1.0.1",
     "prismarine-windows": "^1.1.0",
     "protodef": "^1.4.0",
+    "sprintf-js": "^1.1.1",
     "vec3": "^0.1.3"
   },
   "devDependencies": {
