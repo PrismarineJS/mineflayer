@@ -87,6 +87,7 @@ Bot.prototype.connect = function(options) {
     }
     self.majorVersion = version.majorVersion;
     self.version = version.minecraftVersion;
+    options.version = version.minecraftVersion;
     for(var pluginName in plugins) {
       plugins[pluginName](self, options);
     }
