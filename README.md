@@ -28,7 +28,7 @@ Create Minecraft bots with a powerful, stable, and high level JavaScript API.
 
 ## Usage
 
-If you want to use a version of minecraft that is not the last version, you need to specify it in the createBot option.
+Without version specified, the version of the server will be guessed automatically, you can set a specific one using the version option.
 For example `version:"1.8"`.
 
 ### Echo Example
