@@ -33,7 +33,7 @@ var plugins = {
   villager: require('./lib/plugins/villager')
 };
 
-var defaultVersion=require("./lib/version").defaultVersion;
+var supportedVersions = require("./lib/version").supportedVersions;
 
 module.exports = {
   createBot: createBot,
@@ -44,17 +44,14 @@ module.exports = {
   Dispenser: require('./lib/dispenser'),
   EnchantmentTable: require('./lib/enchantment_table'),
   ScoreBoard: require('./lib/scoreboard'),
-  supportedVersions:require("./lib/version").supportedVersions,
-  defaultVersion:require("./lib/version").defaultVersion
+  supportedVersions: supportedVersions
 };
 
 function createBot(options) {
   options = options || {};
   options.username = options.username || 'Player';
-  options.version = options.version || defaultVersion;
+  options.version = options.version || false
   var bot = new Bot();
-  bot.majorVersion=require('minecraft-data')(options.version).version.majorVersion;
-  bot.version=options.version;
   bot.connect(options);
   return bot;
 }
@@ -81,8 +78,19 @@ Bot.prototype.connect = function(options) {
   self._client.on('end', function() {
     self.emit('end');
   });
-  for(var pluginName in plugins) {
-    plugins[pluginName](self, options);
+  if (!self._client.wait_connect) next();
+  else self._client.once('connect_allowed', next);
+  function next() {
+    var version = require('minecraft-data')(self._client.version).version
+    if (supportedVersions.indexOf(version.majorVersion) === -1) {
+      throw new Error('Version ' + version.minecraftVersion + ' is not supported.');
+    }
+    self.majorVersion = version.majorVersion;
+    self.version = version.minecraftVersion;
+    options.version = version.minecraftVersion;
+    for(var pluginName in plugins) {
+      plugins[pluginName](self, options);
+    }
   }
 };
 
