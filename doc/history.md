@@ -1,7 +1,11 @@
+## 2.4.0
+
+* auto version detection (thanks @plexigras)
+
 ## 2.3.0
 
 * support version 1.12 (thanks @jonathanperret)
-* add example to use minecraft session file for auth (@thanks plexigras)
+* add example to use minecraft session file for auth (thanks @plexigras)
 
 ## 2.2.0
 
