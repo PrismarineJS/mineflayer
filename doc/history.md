@@ -1,3 +1,7 @@
+## 2.4.1
+
+* better 1.12 support
+
 ## 2.4.0
 
 * auto version detection (thanks @plexigras)
