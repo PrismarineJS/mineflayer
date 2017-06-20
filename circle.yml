@@ -8,3 +8,7 @@ machine:
 dependencies:
   pre:
     - mkdir minecraft-server
+test:
+  override:
+    - npm test:
+        parallel: true
