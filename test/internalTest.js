@@ -3,9 +3,10 @@ var vec3 = require('vec3');
 var mc = require('minecraft-protocol');
 var assert = require('assert');
 
-
-
-mineflayer.supportedVersions.forEach(function(supportedVersion) {
+const {firstVersion,lastVersion}=require("./common/parallel");
+mineflayer.supportedVersions.forEach(function(supportedVersion,i) {
+  if(!(i>=firstVersion && i<=lastVersion))
+    return;
   var mcData = require("minecraft-data")(supportedVersion);
   var version = mcData.version;
   var Chunk = require('prismarine-chunk')(supportedVersion);
