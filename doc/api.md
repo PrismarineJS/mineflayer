@@ -1109,7 +1109,7 @@ function somePlugin(bot, options) {
   bot.someFunction = someFunction;
 }
 
-var bot = mineflyer.createBot(...);
+var bot = mineflayer.createBot(...);
 bot.loadPlugin(somePlugin);
 bot.once('login', function() {
   bot.someFunction(); // Yay!
