@@ -1,3 +1,8 @@
+## 2.5.0
+
+* don't swing arm when activating an entity
+* new plugin loading api
+
 ## 2.4.1
 
 * better 1.12 support
