@@ -54,7 +54,7 @@ function createBot(options) {
   options.version = options.version || false;
   var bot = new Bot();
   pluginLoader(bot, options);
-  bot.loadPlugins(Object.values(plugins));
+  bot.loadPlugins(Object.keys(plugins).map(function(key){ return plugins[key] }));
   bot.connect(options);
   return bot;
 }
