@@ -188,6 +188,8 @@
       - [bot.whisper(username, message)](#botwhisperusername-message)
       - [bot.chatAddPattern(pattern, chatType, description)](#botchataddpatternpattern-chattype-description)
       - [bot.setSettings(options)](#botsetsettingsoptions)
+      - [bot.loadPlugin(plugin)](#botloadpluginplugin)
+      - [bot.loadPlugins(plugins)](#botloadpluginsplugins)
       - [bot.sleep(bedBlock, [cb])](#botsleepbedblock-cb)
       - [bot.wake([cb])](#botwakecb)
       - [bot.setControlState(control, state)](#botsetcontrolstatecontrol-state)
@@ -1093,6 +1095,31 @@ Adds a regex pattern to the bot's chat matching. Useful for bukkit servers where
 #### bot.setSettings(options)
 
 See the `bot.settings` property.
+
+#### bot.loadPlugin(plugin)
+
+Injects a Plugin.
+ * `plugin` - function
+
+```js
+function somePlugin(bot, options) {
+  function someFunction() {
+    bot.chat('Yay!');
+  }
+  bot.someFunction = someFunction;
+}
+
+var bot = mineflayer.createBot(...);
+bot.loadPlugin(somePlugin);
+bot.once('login', function() {
+  bot.someFunction(); // Yay!
+});
+```
+
+#### bot.loadPlugins(plugins)
+
+Injects plugins see `bot.loadPlugin`.
+ * `plugins` - array of functions
 
 #### bot.sleep(bedBlock, [cb])
 

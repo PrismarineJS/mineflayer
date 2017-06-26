@@ -2,6 +2,7 @@ var mc = require('minecraft-protocol');
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var path = require('path');
+var pluginLoader = require('./lib/plugin_loader');
 var plugins = {
   bed: require('./lib/plugins/bed'),
   block_actions: require('./lib/plugins/block_actions'),
@@ -50,8 +51,10 @@ module.exports = {
 function createBot(options) {
   options = options || {};
   options.username = options.username || 'Player';
-  options.version = options.version || false
+  options.version = options.version || false;
   var bot = new Bot();
+  pluginLoader(bot, options);
+  bot.loadPlugins(Object.keys(plugins).map(function(key){ return plugins[key] }));
   bot.connect(options);
   return bot;
 }
@@ -88,9 +91,7 @@ Bot.prototype.connect = function(options) {
     self.majorVersion = version.majorVersion;
     self.version = version.minecraftVersion;
     options.version = version.minecraftVersion;
-    for(var pluginName in plugins) {
-      plugins[pluginName](self, options);
-    }
+    self.emit('inject_allowed');
   }
 };
 
