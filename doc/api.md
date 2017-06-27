@@ -1124,7 +1124,7 @@ Injects plugins see `bot.loadPlugin`.
 
 #### bot.loadAssetIndex([version])
 
-Loads asset indexes that can be found in `.minecraft/aseets/indexes`. 
+Loads asset indexes that can be found in `.minecraft/assets/indexes`. 
 
 #### bot.sleep(bedBlock, [cb])
 
