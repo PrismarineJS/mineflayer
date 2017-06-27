@@ -190,6 +190,7 @@
       - [bot.setSettings(options)](#botsetsettingsoptions)
       - [bot.loadPlugin(plugin)](#botloadpluginplugin)
       - [bot.loadPlugins(plugins)](#botloadpluginsplugins)
+      - [bot.loadAssetIndex([version])](#botloadassetindexversion)
       - [bot.sleep(bedBlock, [cb])](#botsleepbedblock-cb)
       - [bot.wake([cb])](#botwakecb)
       - [bot.setControlState(control, state)](#botsetcontrolstatecontrol-state)
@@ -1120,6 +1121,10 @@ bot.once('login', function() {
 
 Injects plugins see `bot.loadPlugin`.
  * `plugins` - array of functions
+
+#### bot.loadAssetIndex([version])
+
+Loads asset indexes that can be found in `.minecraft/aseets/indexes`. 
 
 #### bot.sleep(bedBlock, [cb])
 
