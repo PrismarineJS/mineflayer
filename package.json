@@ -1,37 +1,48 @@
 {
   "name": "mineflayer",
-  "version": "1.5.3",
+  "version": "2.5.0",
   "description": "create minecraft bots with a stable, high level API",
   "main": "index.js",
   "scripts": {
     "test": "mocha --reporter spec",
+    "posttest": "npm run lint",
+    "lint": "eslint .",
     "prepublish": "require-self"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/PrismarineJS/mineflayer.git"
   },
+  "engines": {
+    "node": ">=4"
+  },
   "license": "MIT",
   "dependencies": {
-    "lodash": "^3.5.0",
-    "minecraft-data": "~0.16.3",
-    "minecraft-protocol": "^0.16.1",
-    "mojangson": "~0.2.1",
-    "prismarine-biome": "0.1.0",
-    "prismarine-block": "0.1.0",
-    "prismarine-entity": "0.1.0",
-    "prismarine-item": "0.0.0",
-    "prismarine-windows": "0.0.0",
-    "prismarine-recipe": "0.0.0",
-    "quotemeta": "0.0.0",
-    "requireindex": "~1.0.0",
-    "vec3": "~0.1.3"
+    "minecraft-data": "^2.18.0",
+    "minecraft-protocol": "^1.3.1",
+    "mojangson": "^0.2.1",
+    "prismarine-biome": "^1.0.1",
+    "prismarine-block": "^1.0.1",
+    "prismarine-chunk": "^1.7.0",
+    "prismarine-entity": "^0.2.0",
+    "prismarine-item": "^1.0.1",
+    "prismarine-recipe": "^1.0.1",
+    "prismarine-windows": "^1.1.0",
+    "protodef": "^1.4.0",
+    "sprintf-js": "^1.1.1",
+    "vec3": "^0.1.3"
   },
   "devDependencies": {
-    "doctoc": "0.13.0",
-    "minecraft-wrap": "0.7.1",
-    "mocha": "~2.2.1",
-    "prismarine-chunk": "^0.2.1",
-    "require-self": "^0.1.0"
+    "doctoc": "^1.0.0",
+    "eslint": "^4.1.1",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.6.0",
+    "eslint-plugin-node": "^5.1.0",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "minecraft-wrap": "^1.0.2",
+    "mocha": "^3.0.2",
+    "prismarine-chunk": "^1.0.0",
+    "require-self": "^0.2.1"
   }
 }

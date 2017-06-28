@@ -4,23 +4,23 @@
 
 - [API](#api)
   - [Enums](#enums)
-    - [mineflayer.data](#mineflayerdata)
-    - [mineflayer.blocks](#mineflayerblocks)
-    - [mineflayer.items](#mineflayeritems)
-    - [mineflayer.materials](#mineflayermaterials)
-    - [mineflayer.recipes](#mineflayerrecipes)
-    - [mineflayer.instruments](#mineflayerinstruments)
-    - [mineflayer.biomes](#mineflayerbiomes)
-    - [mineflayer.entities](#mineflayerentities)
+    - [minecraft-data](#minecraft-data)
+    - [mcdata.blocks](#mcdatablocks)
+    - [mcdata.items](#mcdataitems)
+    - [mcdata.materials](#mcdatamaterials)
+    - [mcdata.recipes](#mcdatarecipes)
+    - [mcdata.instruments](#mcdatainstruments)
+    - [mcdata.biomes](#mcdatabiomes)
+    - [mcdata.entities](#mcdataentities)
   - [Classes](#classes)
-    - [mineflayer.vec3](#mineflayervec3)
+    - [vec3](#vec3)
     - [mineflayer.Location](#mineflayerlocation)
-    - [mineflayer.Entity](#mineflayerentity)
-    - [mineflayer.Block](#mineflayerblock)
-    - [mineflayer.Biome](#mineflayerbiome)
-    - [mineflayer.Item](#mineflayeritem)
-    - [mineflayer.windows.Window (base class)](#mineflayerwindowswindow-base-class)
-    - [mineflayer.Recipe](#mineflayerrecipe)
+    - [Entity](#entity)
+    - [Block](#block)
+    - [Biome](#biome)
+    - [Item](#item)
+    - [windows.Window (base class)](#windowswindow-base-class)
+    - [Recipe](#recipe)
     - [mineflayer.Chest](#mineflayerchest)
       - [chest.window](#chestwindow)
       - [chest "open"](#chest-open)
@@ -67,6 +67,13 @@
       - [enchantmentTable.enchant(choice, [callback])](#enchantmenttableenchantchoice-callback)
       - [enchantmentTable.takeTargetItem([callback])](#enchantmenttabletaketargetitemcallback)
       - [enchantmentTable.putTargetItem(item, [callback])](#enchantmenttableputtargetitemitem-callback)
+    - [mineflayer.Villager](#mineflayervillager)
+      - [villager "open"](#villager-open)
+      - [villager "close"](#villager-close)
+      - [villager "updateSlot" (oldItem, newItem)](#villager-updateslot-olditem-newitem)
+      - [villager "ready"](#villager-ready)
+      - [villager.close()](#villagerclose)
+      - [villager.trades](#villagertrades)
     - [mineflayer.ScoreBoard](#mineflayerscoreboard)
       - [ScoreBoard.name](#scoreboardname)
       - [ScoreBoard.displayText](#scoreboarddisplaytext)
@@ -111,6 +118,7 @@
     - [Events](#events)
       - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
       - ["whisper" (username, message, translate, jsonMsg, matches)](#whisper-username-message-translate-jsonmsg-matches)
+      - ["actionBar" (jsonMsg)](#actionbar-jsonmsg)
       - ["message" (jsonMsg)](#message-jsonmsg)
       - ["login"](#login)
       - ["spawn"](#spawn)
@@ -118,7 +126,7 @@
       - ["game"](#game)
       - ["rain"](#rain)
       - ["time"](#time)
-      - ["kicked" (reason)](#kicked-reason)
+      - ["kicked" (reason, loggedIn)](#kicked-reason-loggedin)
       - ["end"](#end)
       - ["spawnReset"](#spawnreset)
       - ["death"](#death)
@@ -168,6 +176,7 @@
       - ["scoreboardDisplayObjective" (scoreboardName, position)](#scoreboarddisplayobjective-scoreboardname-position)
     - [Functions](#functions)
       - [bot.blockAt(point)](#botblockatpoint)
+      - [bot.canSeeBlock(block)](#botcanseeblockblock)
       - [bot.findBlock(options)](#botfindblockoptions)
       - [bot.canDigBlock(block)](#botcandigblockblock)
       - [bot.recipesFor(itemType, metadata, minResultCount, craftingTable)](#botrecipesforitemtype-metadata-minresultcount-craftingtable)
@@ -179,6 +188,8 @@
       - [bot.whisper(username, message)](#botwhisperusername-message)
       - [bot.chatAddPattern(pattern, chatType, description)](#botchataddpatternpattern-chattype-description)
       - [bot.setSettings(options)](#botsetsettingsoptions)
+      - [bot.loadPlugin(plugin)](#botloadpluginplugin)
+      - [bot.loadPlugins(plugins)](#botloadpluginsplugins)
       - [bot.sleep(bedBlock, [cb])](#botsleepbedblock-cb)
       - [bot.wake([cb])](#botwakecb)
       - [bot.setControlState(control, state)](#botsetcontrolstatecontrol-state)
@@ -194,7 +205,8 @@
       - [bot.stopDigging()](#botstopdigging)
       - [bot.digTime(block)](#botdigtimeblock)
       - [bot.placeBlock(referenceBlock, faceVector, cb)](#botplaceblockreferenceblock-facevector-cb)
-      - [bot.activateBlock(block)](#botactivateblockblock)
+      - [bot.activateBlock(block, [callback])](#botactivateblockblock-callback)
+      - [bot.activateEntity(entity, [callback])](#botactivateentityentity-callback)
       - [bot.activateItem()](#botactivateitem)
       - [bot.deactivateItem()](#botdeactivateitem)
       - [bot.useOn(targetEntity)](#botuseontargetentity)
@@ -204,10 +216,14 @@
       - [bot.moveVehicle(left,forward)](#botmovevehicleleftforward)
       - [bot.setQuickBarSlot(slot)](#botsetquickbarslotslot)
       - [bot.craft(recipe, count, craftingTable, [callback])](#botcraftrecipe-count-craftingtable-callback)
-      - [bot.openChest(chestBlock)](#botopenchestchestblock)
+      - [bot.writeBook(slot, pages, [callback])](#botwritebookslot-pages-callback)
+      - [bot.openChest(chestBlock or minecartchestEntity)](#botopenchestchestblock-or-minecartchestentity)
       - [bot.openFurnace(furnaceBlock)](#botopenfurnacefurnaceblock)
       - [bot.openDispenser(dispenserBlock)](#botopendispenserdispenserblock)
       - [bot.openEnchantmentTable(enchantmentTableBlock)](#botopenenchantmenttableenchantmenttableblock)
+      - [bot.openVillager(villagerEntity)](#botopenvillagervillagerentity)
+      - [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottradevillagerinstance-tradeindex-times-cb)
+      - [bot.setCommandBlock(pos, command, track_output)](#botsetcommandblockpos-command-track_output)
     - [Lower level inventory methods](#lower-level-inventory-methods)
       - [bot.clickWindow(slot, mouseButton, mode, cb)](#botclickwindowslot-mousebutton-mode-cb)
       - [bot.putSelectedItemRange(start, end, window, slot, cb)](#botputselecteditemrangestart-end-window-slot-cb)
@@ -215,6 +231,7 @@
       - [bot.closeWindow(window)](#botclosewindowwindow)
       - [bot.transfer(options, cb)](#bottransferoptions-cb)
       - [bot.openBlock(block, Class)](#botopenblockblock-class)
+      - [bot.openEntity(entity, Class)](#botopenentityentity-class)
       - [bot.moveSlotItem(sourceSlot, destSlot, cb)](#botmoveslotitemsourceslot-destslot-cb)
       - [bot.updateHeldItem()](#botupdatehelditem)
     - [bot.creative](#botcreative)
@@ -231,37 +248,38 @@
 
 These enums are stored in the language independent [minecraft-data](https://github.com/PrismarineJS/minecraft-data) project,
  and accessed through [node-minecraft-data](https://github.com/PrismarineJS/node-minecraft-data).
- 
-### mineflayer.data
-Provide access to the full [node-minecraft-data](https://github.com/PrismarineJS/node-minecraft-data) module
-(it is possible to use this module by requiring it, but mineflayer.data is the version used by mineflayer)
 
-### mineflayer.blocks
+### minecraft-data
+The data is available in [node-minecraft-data](https://github.com/PrismarineJS/node-minecraft-data) module
+
+`require('minecraft-data')(bot.version)` gives you access to it.
+
+### mcdata.blocks
 blocks indexed by id
 
-### mineflayer.items
+### mcdata.items
 items indexed by id
 
-### mineflayer.materials
+### mcdata.materials
 
 The key is the material. The value is an object with the key as the item id
 of the tool and the value as the efficiency multiplier.
 
-### mineflayer.recipes
+### mcdata.recipes
 recipes indexed by id
 
-### mineflayer.instruments
+### mcdata.instruments
 instruments indexed by id
 
-### mineflayer.biomes
+### mcdata.biomes
 biomes indexed by id
 
-### mineflayer.entities
+### mcdata.entities
 entities indexed by id
 
 ## Classes
 
-### mineflayer.vec3
+### vec3
 
 See [andrewrk/node-vec3](https://github.com/andrewrk/node-vec3)
 
@@ -277,36 +295,36 @@ properties.
 
 ### mineflayer.Location
 
-### mineflayer.Entity
+### Entity
 
 Entities represent players, mobs, and objects. They are emitted
 in many events, and you can access your own entity with `bot.entity`.
 See [prismarine-entity](https://github.com/PrismarineJS/prismarine-entity)
 
-### mineflayer.Block
+### Block
 
 See [prismarine-block](https://github.com/PrismarineJS/prismarine-block)
 
-### mineflayer.Biome
+### Biome
 
 See [prismarine-biome](https://github.com/PrismarineJS/prismarine-biome)
 
-### mineflayer.Item
+### Item
 
 See [prismarine-item](https://github.com/PrismarineJS/prismarine-item)
 
-### mineflayer.windows.Window (base class)
+### windows.Window (base class)
 
 See [prismarine-windows](https://github.com/PrismarineJS/prismarine-windows)
 
-### mineflayer.Recipe
+### Recipe
 
 See [prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe)
 
 ### mineflayer.Chest
 
 Represents a single session of opening and closing a chest.
-See `bot.openChest(chestBlock)`.
+See `bot.openChest(chestBlock or minecartchestEntity)`.
 
 #### chest.window
 
@@ -514,7 +532,67 @@ Looks like:
 #### enchantmentTable.putTargetItem(item, [callback])
 
  * `callback(err)`
- 
+
+### mineflayer.Villager
+
+See `bot.openVillager(villagerEntity)`.
+
+#### villager "open"
+
+Fires when the trading window has successfully been opened.
+
+#### villager "close"
+
+Fires when the trading window closes.
+
+#### villager "updateSlot" (oldItem, newItem)
+
+Fires when a slot in the trading window has updated.
+
+#### villager "ready"
+
+Fires when `villager.trades` is loaded.
+
+#### villager.close()
+
+#### villager.trades
+
+Array of trades.
+
+Looks like:
+
+```js
+[
+  {
+    firstInput: Item,
+    output: Item,
+    hasSecondItem: false,
+    secondaryInput: null,
+    disabled: false,
+    tooluses: 0,
+    maxTradeuses: 7
+  },
+  {
+    firstInput: Item,
+    output: Item,
+    hasSecondItem: false,
+    secondaryInput: null,
+    disabled: false,
+    tooluses: 0,
+    maxTradeuses: 7
+  },
+  {
+    firstInput: Item,
+    output: Item,
+    hasSecondItem: true,
+    secondaryInput: Item,
+    disabled: false,
+    tooluses: 0,
+    maxTradeuses: 7
+  }
+]
+```
+
 ### mineflayer.ScoreBoard
 
 #### ScoreBoard.name
@@ -722,6 +800,12 @@ Only emitted when a player chats to you privately.
  * `jsonMsg` - unmodified JSON message from the server
  * `matches` - array of returned matches from regular expressions. May be null
 
+#### "actionBar" (jsonMsg)
+
+Emitted for every server message which appears on the Action Bar.
+
+ * `jsonMsg` - unmodified JSON message from the server
+
 #### "message" (jsonMsg)
 
 Emitted for every server message, including chats.
@@ -761,10 +845,12 @@ server where it is already raining, this event will fire.
 
 Emitted when the server sends a time update. See `bot.time`.
 
-#### "kicked" (reason)
+#### "kicked" (reason, loggedIn)
 
 Emitted when the bot is kicked from the server. `reason`
-is a string explaining why you were kicked.
+is a chat message explaining why you were kicked. `loggedIn`
+is `true` if the client was kicked after successfully logging in,
+or `false` if the kick occurred in the login phase.
 
 #### "end"
 
@@ -848,7 +934,7 @@ Fires when the client hears a sound effect.
 
 Fires when a note block goes off somewhere.
 
- * `block`: a Block instance, the block at emitted the noise
+ * `block`: a Block instance, the block that emitted the noise
  * `instrument`:
    - `id`: integer id
    - `name`: one of [`harp`, `doubleBass`, `snareDrum`, `sticks`, `bassDrum`].
@@ -944,6 +1030,10 @@ Fires when the position of a scoreboard is updated.
 Returns the block at `point` or `null` if that point is not loaded.
 See `Block`.
 
+#### bot.canSeeBlock(block)
+
+Returns true or false depending on whether the bot can see the specified `block`.
+
 #### bot.findBlock(options)
 
 Finds the nearest block to the given point.
@@ -1005,6 +1095,31 @@ Adds a regex pattern to the bot's chat matching. Useful for bukkit servers where
 #### bot.setSettings(options)
 
 See the `bot.settings` property.
+
+#### bot.loadPlugin(plugin)
+
+Injects a Plugin.
+ * `plugin` - function
+
+```js
+function somePlugin(bot, options) {
+  function someFunction() {
+    bot.chat('Yay!');
+  }
+  bot.someFunction = someFunction;
+}
+
+var bot = mineflayer.createBot(...);
+bot.loadPlugin(somePlugin);
+bot.once('login', function() {
+  bot.someFunction(); // Yay!
+});
+```
+
+#### bot.loadPlugins(plugins)
+
+Injects plugins see `bot.loadPlugin`.
+ * `plugins` - array of functions
 
 #### bot.sleep(bedBlock, [cb])
 
@@ -1107,9 +1222,19 @@ Tells you how long it will take to dig the block, in milliseconds.
 
 The new block will be placed at `referenceBlock.position.plus(faceVector)`.
 
-#### bot.activateBlock(block)
+#### bot.activateBlock(block, [callback])
 
 Punch a note block, open a door, etc.
+
+ * `block` - the block to activate
+ * `callback(err)` - (optional) called when the block has been activated
+
+#### bot.activateEntity(entity, [callback])
+
+Activate an entity, useful for villager for example.
+
+ * `entity` - the entity to activate
+ * `callback(err)` - (optional) called when the entity has been activated
 
 #### bot.activateItem()
 
@@ -1161,7 +1286,13 @@ All the direction are relative to where the bot is looking at
  * `callback` - (optional) Called when the crafting is complete and your
    inventory is updated.
 
-#### bot.openChest(chestBlock)
+#### bot.writeBook(slot, pages, [callback])
+
+ * `slot` is in inventory window coordinates (where 36 is the first quickbar slot, etc.).
+ * `pages` is an array of strings represents the pages.
+ * `callback(error)` - optional. called when the writing was successfully or an error occurred.
+
+#### bot.openChest(chestBlock or minecartchestEntity)
 
 Returns a `Chest` instance which represents the chest you are opening.
 
@@ -1177,6 +1308,18 @@ Returns a `Dispenser` instance which represents the dispenser you are opening.
 
 Returns an `EnchantmentTable` instance which represents the enchantment table
 you are opening.
+
+#### bot.openVillager(villagerEntity)
+
+Returns an `Villager` instance which represents the trading window you are opening.
+
+#### bot.trade(villagerInstance, tradeIndex, [times], [cb])
+
+Uses the open `villagerInstance` to trade.
+
+#### bot.setCommandBlock(pos, command, track_output)
+
+Set a command block `command` at `pos`.
 
 ### Lower level inventory methods
 
@@ -1213,6 +1356,13 @@ Transfer some kind of item from one range to an other. `options` is an object co
 Open a block, for example a chest.
 
  * `block` is the block the bot will open
+ * `Class` is the type of window that will be opened
+
+#### bot.openEntity(entity, Class)
+
+Open an entity with an inventory, for example a villager.
+
+ * `entity` is the entity the bot will open
  * `Class` is the type of window that will be opened
 
 #### bot.moveSlotItem(sourceSlot, destSlot, cb)
