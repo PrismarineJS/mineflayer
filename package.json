@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --reporter spec",
+    "posttest": "npm run lint",
+    "lint": "eslint .",
     "prepublish": "require-self"
   },
   "repository": {
@@ -32,6 +34,12 @@
   },
   "devDependencies": {
     "doctoc": "^1.0.0",
+    "eslint": "^4.1.1",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.6.0",
+    "eslint-plugin-node": "^5.1.0",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
     "minecraft-wrap": "^1.0.2",
     "mocha": "^3.0.2",
     "prismarine-chunk": "^1.0.0",

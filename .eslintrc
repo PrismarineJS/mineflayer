@@ -1,0 +1,7 @@
+{
+    "extends": "standard",
+    "overrides": [{
+        "files": [ "test/**/*.js" ],
+        "env": { "mocha": true }
+    }]
+}
