@@ -1,9 +1,7 @@
-var mc = require('minecraft-protocol');
-var EventEmitter = require('events').EventEmitter;
-var util = require('util');
-var path = require('path');
-var pluginLoader = require('./lib/plugin_loader');
-var plugins = {
+const mc = require('minecraft-protocol')
+const EventEmitter = require('events').EventEmitter
+const pluginLoader = require('./lib/plugin_loader')
+const plugins = {
   bed: require('./lib/plugins/bed'),
   block_actions: require('./lib/plugins/block_actions'),
   blocks: require('./lib/plugins/blocks'),
@@ -32,12 +30,11 @@ var plugins = {
   spawn_point: require('./lib/plugins/spawn_point'),
   time: require('./lib/plugins/time'),
   villager: require('./lib/plugins/villager')
-};
-
-var supportedVersions = require("./lib/version").supportedVersions;
+}
+const supportedVersions = require('./lib/version').supportedVersions
 
 module.exports = {
-  createBot: createBot,
+  createBot,
   Location: require('./lib/location'),
   Painting: require('./lib/painting'),
   Chest: require('./lib/chest'),
@@ -45,56 +42,56 @@ module.exports = {
   Dispenser: require('./lib/dispenser'),
   EnchantmentTable: require('./lib/enchantment_table'),
   ScoreBoard: require('./lib/scoreboard'),
-  supportedVersions: supportedVersions
-};
-
-function createBot(options) {
-  options = options || {};
-  options.username = options.username || 'Player';
-  options.version = options.version || false;
-  var bot = new Bot();
-  pluginLoader(bot, options);
-  bot.loadPlugins(Object.keys(plugins).map(function(key){ return plugins[key] }));
-  bot.connect(options);
-  return bot;
+  supportedVersions
 }
 
-function Bot() {
-  EventEmitter.call(this);
-  this._client = null;
+function createBot (options = {}) {
+  options.username = options.username || 'Player'
+  options.version = options.version || false
+  const bot = new Bot()
+  pluginLoader(bot, options)
+  bot.loadPlugins(Object.keys(plugins).map(key => plugins[key]))
+  bot.connect(options)
+  return bot
 }
-util.inherits(Bot, EventEmitter);
 
-Bot.prototype.connect = function(options) {
-  var self = this;
-  self._client = mc.createClient(options);
-  self.username = self._client.username;
-  self._client.on('session', function() {
-    self.username = self._client.username;
-  });
-  self._client.on('connect', function() {
-    self.emit('connect');
-  });
-  self._client.on('error', function(err) {
-    self.emit('error', err);
-  });
-  self._client.on('end', function() {
-    self.emit('end');
-  });
-  if (!self._client.wait_connect) next();
-  else self._client.once('connect_allowed', next);
-  function next() {
-    var version = require('minecraft-data')(self._client.version).version
-    if (supportedVersions.indexOf(version.majorVersion) === -1) {
-      throw new Error('Version ' + version.minecraftVersion + ' is not supported.');
-    }
-    self.majorVersion = version.majorVersion;
-    self.version = version.minecraftVersion;
-    options.version = version.minecraftVersion;
-    self.emit('inject_allowed');
+class Bot extends EventEmitter {
+  constructor () {
+    super()
+    this._client = null
   }
-};
 
-Bot.prototype.end = function() {
-  this._client.end();
-};
+  connect (options) {
+    const self = this
+    self._client = mc.createClient(options)
+    self.username = self._client.username
+    self._client.on('session', () => {
+      self.username = self._client.username
+    })
+    self._client.on('connect', () => {
+      self.emit('connect')
+    })
+    self._client.on('error', (err) => {
+      self.emit('error', err)
+    })
+    self._client.on('end', () => {
+      self.emit('end')
+    })
+    if (!self._client.wait_connect) next()
+    else self._client.once('connect_allowed', next)
+    function next () {
+      const version = require('minecraft-data')(self._client.version).version
+      if (supportedVersions.indexOf(version.majorVersion) === -1) {
+        throw new Error(`Version ${version.minecraftVersion} is not supported.`)
+      }
+      self.majorVersion = version.majorVersion
+      self.version = version.minecraftVersion
+      options.version = version.minecraftVersion
+      self.emit('inject_allowed')
+    }
+  }
+
+  end () {
+    this._client.end()
+  }
+}
