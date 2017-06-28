@@ -6,22 +6,22 @@
  * It's not very useful yet, but you can use this as a starting point
  * to create your own bot.
  */
-var mineflayer = require('mineflayer');
+const mineflayer = require('mineflayer')
 
-if(process.argv.length < 4 || process.argv.length > 6) {
-  console.log("Usage : node echo.js <host> <port> [<name>] [<password>]");
-  process.exit(1);
+if (process.argv.length < 4 || process.argv.length > 6) {
+  console.log('Usage : node echo.js <host> <port> [<name>] [<password>]')
+  process.exit(1)
 }
 
-var bot = mineflayer.createBot({
+const bot = mineflayer.createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
-  username: process.argv[4] ? process.argv[4] : "echo",
+  username: process.argv[4] ? process.argv[4] : 'echo',
   password: process.argv[5],
-  verbose: true,
-});
+  verbose: true
+})
 
-bot.on('chat', function(username, message) {
-  if(username === bot.username) return;
-  bot.chat(message);
-});
+bot.on('chat', (username, message) => {
+  if (username === bot.username) return
+  bot.chat(message)
+})

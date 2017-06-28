@@ -10,108 +10,106 @@
  * Remember that in survival mode he might not have enough dirt to get back up,
  * so be sure to teach him a few more tricks before leaving him alone at night.
  */
-var mineflayer = require('mineflayer');
-var vec3 = require('vec3');
+const mineflayer = require('mineflayer')
+const vec3 = require('vec3')
 
-if(process.argv.length < 4 || process.argv.length > 6) {
-  console.log("Usage : node digger.js <host> <port> [<name>] [<password>]");
-  process.exit(1);
+if (process.argv.length < 4 || process.argv.length > 6) {
+  console.log('Usage : node digger.js <host> <port> [<name>] [<password>]')
+  process.exit(1)
 }
 
-var bot = mineflayer.createBot({
+const bot = mineflayer.createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
-  username: process.argv[4] ? process.argv[4] : "digger",
+  username: process.argv[4] ? process.argv[4] : 'digger',
   password: process.argv[5],
-  verbose: true,
-});
+  verbose: true
+})
 
-bot.on('chat', function(username, message) {
-  if(username === bot.username) return;
-  switch(message) {
+bot.on('chat', (username, message) => {
+  if (username === bot.username) return
+  switch (message) {
     case 'list':
-      sayItems();
-      break;
+      sayItems()
+      break
     case 'dig':
-      dig();
-      break;
+      dig()
+      break
     case 'build':
-      build();
-      break;
+      build()
+      break
     case 'equip dirt':
-      equipDirt();
-      break;
+      equipDirt()
+      break
   }
-});
+})
 
-function sayItems(items) {
-  items = items || bot.inventory.items();
-  var output = items.map(itemToString).join(', ');
-  if(output) {
-    bot.chat(output);
+function sayItems (items = bot.inventory.items()) {
+  const output = items.map(itemToString).join(', ')
+  if (output) {
+    bot.chat(output)
   } else {
-    bot.chat("empty");
+    bot.chat('empty')
   }
 }
 
-function dig() {
-  if(bot.targetDigBlock) {
-    bot.chat("already digging " + bot.targetDigBlock.name);
+function dig () {
+  if (bot.targetDigBlock) {
+    bot.chat(`already digging ${bot.targetDigBlock.name}`)
   } else {
-    var target = bot.blockAt(bot.entity.position.offset(0, -1, 0));
-    if(target && bot.canDigBlock(target)) {
-      bot.chat("starting to dig " + target.name);
-      bot.dig(target, onDiggingCompleted);
+    var target = bot.blockAt(bot.entity.position.offset(0, -1, 0))
+    if (target && bot.canDigBlock(target)) {
+      bot.chat(`starting to dig ${target.name}`)
+      bot.dig(target, onDiggingCompleted)
     } else {
-      bot.chat("cannot dig");
+      bot.chat('cannot dig')
     }
   }
 
-  function onDiggingCompleted(err) {
-    if(err)
-    {
-      console.log(err.stack);
-      return;
+  function onDiggingCompleted (err) {
+    if (err) {
+      console.log(err.stack)
+      return
     }
-    bot.chat("finished digging " + target.name);
+    bot.chat(`finished digging ${target.name}`)
   }
 }
 
-function build() {
-  var referenceBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0));
-  var jumpY = bot.entity.position.y + 1.0;
-  bot.setControlState('jump', true);
-  bot.on('move', placeIfHighEnough);
+function build () {
+  const referenceBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
+  const jumpY = bot.entity.position.y + 1.0
+  bot.setControlState('jump', true)
+  bot.on('move', placeIfHighEnough)
 
-  function placeIfHighEnough() {
-    if(bot.entity.position.y > jumpY) {
-      bot.placeBlock(referenceBlock, vec3(0, 1, 0),function(err){
-        if(err){
-          bot.chat(err.message);
-          return;
+  function placeIfHighEnough () {
+    if (bot.entity.position.y > jumpY) {
+      bot.placeBlock(referenceBlock, vec3(0, 1, 0), (err) => {
+        if (err) {
+          bot.chat(err.message)
+          return
         }
-        bot.chat("Placing a block was successful");
-      });
-      bot.setControlState('jump', false);
-      bot.removeListener('move', placeIfHighEnough);
+        bot.chat('Placing a block was successful')
+      })
+      bot.setControlState('jump', false)
+      bot.removeListener('move', placeIfHighEnough)
     }
   }
 }
 
-function equipDirt() {
-  bot.equip(0x03, 'hand', function(err) {
-    if(err) {
-      bot.chat("unable to equip dirt: " + err.message);
+function equipDirt () {
+  bot.equip(0x03, 'hand', (err) => {
+    if (err) {
+      bot.chat(`unable to equip dirt: ${err.message}`)
     } else {
-      bot.chat("equipped dirt");
+      bot.chat('equipped dirt')
     }
-  });
+  })
 }
 
-function itemToString(item) {
-  if(item) {
-    return item.name + " x " + item.count;
+function itemToString (item) {
+  if (item) {
+    return `${item.name} x ${item.count}`
   } else {
-    return "(nothing)";
+    return '(nothing)'
   }
 }
