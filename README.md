@@ -102,7 +102,25 @@ higher level API on top of Mineflayer.
 
 ## Testing
 
-`npm test`
+Some setup is required after first cloning the project but after that is done it's very easy to run them.
+
+### Setup
+
+In order to get all tests to run successfully you must first:
+
+1. create a new folder in which to store minecraft server jars
+2. set the MC_SERVER_JAR_DIR to this folder
+
+Example:
+
+1. `mkdir server_jars`
+2. `export MC_SERVER_JAR_DIR=/full/path/to/server_jars`
+
+Where the "/full/path/to/" is the fully qualified path name.
+
+### Ongoing
+
+Simply run: `npm test`
 
 ## Updating to a newer protocol version
 
