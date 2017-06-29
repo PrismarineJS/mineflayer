@@ -8,7 +8,7 @@ const path = require('path')
 // set this to false if you want to test without starting a server automatically
 const START_THE_SERVER = true
 // if you want to have time to look what's happening increase this (milliseconds)
-const WAIT_TIME_BEFORE_STARTING = 1000
+const WAIT_TIME_BEFORE_STARTING = 5000
 
 const excludedTests = ['digEverything']
 
