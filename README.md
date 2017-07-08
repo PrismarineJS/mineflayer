@@ -28,9 +28,6 @@ Create Minecraft bots with a powerful, stable, and high level JavaScript API.
 
 ## Usage
 
-Without version specified, the version of the server will be guessed automatically, you can set a specific one using the version option.
-For example `version:"1.8"`.
-
 ### Echo Example
 ```js
 var mineflayer = require('mineflayer');
