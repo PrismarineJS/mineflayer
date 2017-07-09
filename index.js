@@ -48,9 +48,23 @@ module.exports = {
 function createBot (options = {}) {
   options.username = options.username || 'Player'
   options.version = options.version || false
+  options.plugins = options.plugins || {}
+  options.loadInternalPlugins = options.loadInternalPlugins !== false
   const bot = new Bot()
+
   pluginLoader(bot, options)
-  bot.loadPlugins(Object.keys(plugins).map(key => plugins[key]))
+  const internalPlugins = Object.keys(plugins)
+    .filter(key => {
+      if (typeof options.plugins[key] === 'function') return
+      if (options.plugins[key] === false) return
+      return options.plugins[key] || options.loadInternalPlugins
+    }).map(key => plugins[key])
+  const externalPlugins = Object.keys(options.plugins)
+    .filter(key => {
+      return typeof options.plugins[key] === 'function'
+    }).map(key => options.plugins[key])
+  bot.loadPlugins([...internalPlugins, ...externalPlugins])
+
   bot.connect(options)
   return bot
 }
