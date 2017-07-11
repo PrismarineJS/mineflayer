@@ -154,12 +154,12 @@ bot.on('pistonMove', (block, isPulling, direction) => {
 
 bot.on('playerJoined', (player) => {
   if (player.username !== bot.username) {
-    bot.chat(`Hello, ${player.username}! Welcome to the server.`)
+  bot.chat(`Hello, ${player.username}! Welcome to the server.`)
   }
 })
 bot.on('playerLeft', (player) => {
   if (player.username === bot.username) return;
-    bot.chat(`Bye ${player.username}`)
+  bot.chat(`Bye ${player.username}`)
 })
 bot.on('playerCollect', (collector, collected) => {
   if (collector.type === 'player' && collected.type === 'object') {
