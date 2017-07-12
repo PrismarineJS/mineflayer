@@ -1,3 +1,10 @@
+## 2.6.0
+
+* improve ChatMessage translation functionality (thanks @plexigras)
+* added eslint
+* es6
+* fix autoversion in online mode
+
 ## 2.5.0
 
 * don't swing arm when activating an entity
