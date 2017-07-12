@@ -158,7 +158,7 @@ bot.on('playerJoined', (player) => {
   }
 })
 bot.on('playerLeft', (player) => {
-  if (player.username === bot.username) return;
+  if (player.username === bot.username) return
   bot.chat(`Bye ${player.username}`)
 })
 bot.on('playerCollect', (collector, collected) => {
