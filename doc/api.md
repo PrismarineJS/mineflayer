@@ -626,6 +626,11 @@ Create and return an instance of the class bot.
  * accessToken : generated if a password is given
  * keepAlive : send keep alive packets : default to true
  * checkTimeoutInterval : default to `10*1000` (10s), check if keepalive received at that period, disconnect otherwise.
+ * loadInternalPlugins : defaults to true
+ * plugins : object : defaults to {}
+   - pluginName : false : don't load internal plugin with given name ie. `pluginName`
+   - pluginName : true : load internal plugin with given name ie. `pluginName` even though loadInternalplugins is set to false
+   - pluginName : external plugin inject function : loads external plugin, overrides internal plugin with given name ie. `pluginName`
  * [chat](bot.settings.chat)
  * [colorsEnabled](bot.settings.colorsEnabled)
  * [viewDistance](bot.settings.viewDistance)
