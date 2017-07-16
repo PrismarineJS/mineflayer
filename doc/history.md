@@ -1,3 +1,8 @@
+## 2.6.1
+
+* fix chatmessage
+* add plugins to bot options to be able to disable an internal plugin
+
 ## 2.6.0
 
 * improve ChatMessage translation functionality (thanks @plexigras)
