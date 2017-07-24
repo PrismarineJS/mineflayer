@@ -42,7 +42,6 @@
     "eslint-plugin-standard": "^3.0.1",
     "minecraft-wrap": "^1.0.2",
     "mocha": "^3.0.2",
-    "prismarine-chunk": "^1.0.0",
     "require-self": "^0.2.1"
   }
 }
