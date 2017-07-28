@@ -26,7 +26,10 @@ const bot = mineflayer.createBot({
   password: process.argv[5],
   verbose: true
 })
-const mcdata = require('minecraft-data')(bot.version)
+let mcdata
+bot.once('inject_allowed', () => {
+  mcdata = require('minecraft-data')(bot.version)
+})
 
 bot.on('chat', (username, message) => {
   if (username === bot.username) return
