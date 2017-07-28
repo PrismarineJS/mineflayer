@@ -82,15 +82,7 @@ higher level API on top of Mineflayer.
 
 ## Installation
 
-### Linux / OSX
-
 `npm install mineflayer`
-
-### Windows
-
-1. Follow the Windows instructions from
-   [node-minecraft-protocol](https://github.com/PrismarineJS/node-minecraft-protocol#windows)
-2. `npm install mineflayer`
 
 ## Documentation
 
