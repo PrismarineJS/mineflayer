@@ -26,14 +26,12 @@ const bot = mineflayer.createBot({
 // uses on 'message' instead of on 'chat'
 // because on 'chat' does not work on all servers 
 bot.on('message', (message) => {
-  var strMessage = `${message}` // removes json
-  console.log(strMessage)
+  console.log(`${message}`) // print chat
 })
 
 // console input
 var stdin = process.openStdin()
 stdin.addListener('data', function (d) {
-  // if something was typed in
-  var input = d.toString().trim() // get input
-  bot.chat(input) // tell everyone
+  var cInput = d.toString().trim() // get input
+  bot.chat(cInput) // tell everyone
 })
