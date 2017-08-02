@@ -35,8 +35,6 @@ bot.on('message', (message) => {
 var stdin = process.openStdin();
 stdin.addListener("data", function(d) {
   // if something was typed in
-
   var input = d.toString().trim() // get input
-
   bot.chat(input) // tell everyone
 })
