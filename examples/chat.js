@@ -5,7 +5,7 @@
  *
  * Just type into the console and press enter to say something
  *
- * Be sure to stand somewhere save so you dont get killed by zombies :)
+ * Be sure to stand somewhere safe so you dont get killed by zombies :)
  */
 
 const mineflayer = require('mineflayer')
@@ -23,10 +23,10 @@ const bot = mineflayer.createBot({
   verbose: true
 })
 
-// uses on 'message' instead of on 'chat'
-// because on 'chat' does not work on all servers 
+// uses on 'message' instead of on 'chat', because on 'chat' does not work on all servers 
+// message is the unmodified JSON message from the server
 bot.on('message', (message) => {
-  console.log(`${message}`) // print chat
+  console.log(`${message}`) // removes JSON symbols/parameters and prints only the chat
 })
 
 // console input
