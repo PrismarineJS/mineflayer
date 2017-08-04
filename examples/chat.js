@@ -26,7 +26,7 @@ const bot = mineflayer.createBot({
 // uses on 'message' instead of on 'chat', because on 'chat' does not work on all servers 
 // message is the unmodified JSON message from the server
 bot.on('message', (message) => {
-  console.log(`${message}`) // removes JSON symbols/parameters and prints only the chat
+  console.log(message.toString()) // removes JSON symbols/parameters and prints only the chat
 })
 
 // console input
