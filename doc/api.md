@@ -115,6 +115,7 @@
       - [bot.targetDigBlock](#bottargetdigblock)
       - [bot.isSleeping](#botissleeping)
       - [bot.scoreboards](#botscoreboards)
+      - [bot.controlState](#botcontrolstate)
     - [Events](#events)
       - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
       - ["whisper" (username, message, translate, jsonMsg, matches)](#whisper-username-message-translate-jsonmsg-matches)
@@ -194,7 +195,6 @@
       - [bot.wake([cb])](#botwakecb)
       - [bot.setControlState(control, state)](#botsetcontrolstatecontrol-state)
       - [bot.clearControlStates()](#botclearcontrolstates)
-      - [bot.getControlStates()](#botgetcontrolstates)
       - [bot.lookAt(point, [force], [callback])](#botlookatpoint-force-callback)
       - [bot.look(yaw, pitch, [force], [callback])](#botlookyaw-pitch-force-callback)
       - [bot.updateSign(block, text)](#botupdatesignblock-text)
@@ -784,6 +784,12 @@ Boolean, whether or not you are in bed.
 
 All scoreboards known to the bot in an object scoreboard name -> scoreboard.
 
+#### bot.controlState
+
+An object whose keys are the main control states: ['forward', 'back', 'left', 'right', 'jump', 'sprint'].
+
+Setting values for this object internally calls [bot.setControlState](#botsetcontrolstatecontrol-state).
+
 ### Events
 
 #### "chat" (username, message, translate, jsonMsg, matches)
@@ -1143,14 +1149,6 @@ Get out of bed. `cb` can have an err parameter if the bot cannot wake up.
 #### bot.clearControlStates()
 
 Sets all controls to off.
-
-#### bot.getControlStates()
-
-Get an object containing the keys ['forward', 'back', 'left', 'right', 'jump', 'sprint'],
-whose values are booleans indicating whether the control state is on (true) or off (false).
-
-This object is a clone of the one used by the bot (so chanaing them does nothing), use 
-`setControlState` to change these values.
 
 #### bot.lookAt(point, [force], [callback])
 
