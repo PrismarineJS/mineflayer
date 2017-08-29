@@ -194,6 +194,7 @@
       - [bot.wake([cb])](#botwakecb)
       - [bot.setControlState(control, state)](#botsetcontrolstatecontrol-state)
       - [bot.clearControlStates()](#botclearcontrolstates)
+      - [bot.getControlStates()](#botgetcontrolstates)
       - [bot.lookAt(point, [force], [callback])](#botlookatpoint-force-callback)
       - [bot.look(yaw, pitch, [force], [callback])](#botlookyaw-pitch-force-callback)
       - [bot.updateSign(block, text)](#botupdatesignblock-text)
@@ -1142,6 +1143,14 @@ Get out of bed. `cb` can have an err parameter if the bot cannot wake up.
 #### bot.clearControlStates()
 
 Sets all controls to off.
+
+#### bot.getControlStates()
+
+Get an object containing the keys ['forward', 'back', 'left', 'right', 'jump', 'sprint'],
+whose values are booleans indicating whether the control state is on (true) or off (false).
+
+This object is a clone of the one used by the bot (so chanaing them does nothing), use 
+`setControlState` to change these values.
 
 #### bot.lookAt(point, [force], [callback])
 
