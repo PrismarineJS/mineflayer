@@ -1,3 +1,4 @@
 # shared with .npmignore
 # different than .npmignore
-/node_modules
+node_modules
+package-lock.json

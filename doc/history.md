@@ -1,3 +1,39 @@
+## 2.6.1
+
+* fix chatmessage
+* add plugins to bot options to be able to disable an internal plugin
+
+## 2.6.0
+
+* improve ChatMessage translation functionality (thanks @plexigras)
+* added eslint
+* es6
+* fix autoversion in online mode
+
+## 2.5.0
+
+* don't swing arm when activating an entity
+* new plugin loading api
+
+## 2.4.1
+
+* better 1.12 support
+
+## 2.4.0
+
+* auto version detection (thanks @plexigras)
+
+## 2.3.0
+
+* support version 1.12 (thanks @jonathanperret)
+* add example to use minecraft session file for auth (thanks @plexigras)
+
+## 2.2.0
+
+* added book writing plugin (thanks @plexigras)
+* Make sure bot.time.day is between 0 and 24000 (thanks @roblabla)
+* Pass skyLightSent to Chunk.load (thanks @iRath96)
+
 ## 2.1.1
 
 * use protodef aliases to properly define channels

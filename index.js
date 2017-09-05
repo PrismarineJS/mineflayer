@@ -1,8 +1,7 @@
-var mc = require('minecraft-protocol');
-var EventEmitter = require('events').EventEmitter;
-var util = require('util');
-var path = require('path');
-var plugins = {
+const mc = require('minecraft-protocol')
+const EventEmitter = require('events').EventEmitter
+const pluginLoader = require('./lib/plugin_loader')
+const plugins = {
   bed: require('./lib/plugins/bed'),
   block_actions: require('./lib/plugins/block_actions'),
   blocks: require('./lib/plugins/blocks'),
@@ -31,12 +30,11 @@ var plugins = {
   spawn_point: require('./lib/plugins/spawn_point'),
   time: require('./lib/plugins/time'),
   villager: require('./lib/plugins/villager')
-};
-
-var defaultVersion=require("./lib/version").defaultVersion;
+}
+const supportedVersions = require('./lib/version').supportedVersions
 
 module.exports = {
-  createBot: createBot,
+  createBot,
   Location: require('./lib/location'),
   Painting: require('./lib/painting'),
   Chest: require('./lib/chest'),
@@ -44,48 +42,70 @@ module.exports = {
   Dispenser: require('./lib/dispenser'),
   EnchantmentTable: require('./lib/enchantment_table'),
   ScoreBoard: require('./lib/scoreboard'),
-  supportedVersions:require("./lib/version").supportedVersions,
-  defaultVersion:require("./lib/version").defaultVersion
-};
-
-function createBot(options) {
-  options = options || {};
-  options.username = options.username || 'Player';
-  options.version = options.version || defaultVersion;
-  var bot = new Bot();
-  bot.majorVersion=require('minecraft-data')(options.version).version.majorVersion;
-  bot.version=options.version;
-  bot.connect(options);
-  return bot;
+  supportedVersions
 }
 
-function Bot() {
-  EventEmitter.call(this);
-  this._client = null;
-}
-util.inherits(Bot, EventEmitter);
+function createBot (options = {}) {
+  options.username = options.username || 'Player'
+  options.version = options.version || false
+  options.plugins = options.plugins || {}
+  options.loadInternalPlugins = options.loadInternalPlugins !== false
+  const bot = new Bot()
 
-Bot.prototype.connect = function(options) {
-  var self = this;
-  self._client = mc.createClient(options);
-  self.username = self._client.username;
-  self._client.on('session', function() {
-    self.username = self._client.username;
-  });
-  self._client.on('connect', function() {
-    self.emit('connect');
-  });
-  self._client.on('error', function(err) {
-    self.emit('error', err);
-  });
-  self._client.on('end', function() {
-    self.emit('end');
-  });
-  for(var pluginName in plugins) {
-    plugins[pluginName](self, options);
+  pluginLoader(bot, options)
+  const internalPlugins = Object.keys(plugins)
+    .filter(key => {
+      if (typeof options.plugins[key] === 'function') return
+      if (options.plugins[key] === false) return
+      return options.plugins[key] || options.loadInternalPlugins
+    }).map(key => plugins[key])
+  const externalPlugins = Object.keys(options.plugins)
+    .filter(key => {
+      return typeof options.plugins[key] === 'function'
+    }).map(key => options.plugins[key])
+  bot.loadPlugins([...internalPlugins, ...externalPlugins])
+
+  bot.connect(options)
+  return bot
+}
+
+class Bot extends EventEmitter {
+  constructor () {
+    super()
+    this._client = null
   }
-};
 
-Bot.prototype.end = function() {
-  this._client.end();
-};
+  connect (options) {
+    const self = this
+    self._client = mc.createClient(options)
+    self.username = self._client.username
+    self._client.on('session', () => {
+      self.username = self._client.username
+    })
+    self._client.on('connect', () => {
+      self.emit('connect')
+    })
+    self._client.on('error', (err) => {
+      self.emit('error', err)
+    })
+    self._client.on('end', () => {
+      self.emit('end')
+    })
+    if (!self._client.wait_connect) next()
+    else self._client.once('connect_allowed', next)
+    function next () {
+      const version = require('minecraft-data')(self._client.version).version
+      if (supportedVersions.indexOf(version.majorVersion) === -1) {
+        throw new Error(`Version ${version.minecraftVersion} is not supported.`)
+      }
+      self.majorVersion = version.majorVersion
+      self.version = version.minecraftVersion
+      options.version = version.minecraftVersion
+      self.emit('inject_allowed')
+    }
+  }
+
+  end () {
+    this._client.end()
+  }
+}

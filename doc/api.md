@@ -115,6 +115,7 @@
       - [bot.targetDigBlock](#bottargetdigblock)
       - [bot.isSleeping](#botissleeping)
       - [bot.scoreboards](#botscoreboards)
+      - [bot.controlState](#botcontrolstate)
     - [Events](#events)
       - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
       - ["whisper" (username, message, translate, jsonMsg, matches)](#whisper-username-message-translate-jsonmsg-matches)
@@ -188,6 +189,8 @@
       - [bot.whisper(username, message)](#botwhisperusername-message)
       - [bot.chatAddPattern(pattern, chatType, description)](#botchataddpatternpattern-chattype-description)
       - [bot.setSettings(options)](#botsetsettingsoptions)
+      - [bot.loadPlugin(plugin)](#botloadpluginplugin)
+      - [bot.loadPlugins(plugins)](#botloadpluginsplugins)
       - [bot.sleep(bedBlock, [cb])](#botsleepbedblock-cb)
       - [bot.wake([cb])](#botwakecb)
       - [bot.setControlState(control, state)](#botsetcontrolstatecontrol-state)
@@ -624,6 +627,11 @@ Create and return an instance of the class bot.
  * accessToken : generated if a password is given
  * keepAlive : send keep alive packets : default to true
  * checkTimeoutInterval : default to `10*1000` (10s), check if keepalive received at that period, disconnect otherwise.
+ * loadInternalPlugins : defaults to true
+ * plugins : object : defaults to {}
+   - pluginName : false : don't load internal plugin with given name ie. `pluginName`
+   - pluginName : true : load internal plugin with given name ie. `pluginName` even though loadInternalplugins is set to false
+   - pluginName : external plugin inject function : loads external plugin, overrides internal plugin with given name ie. `pluginName`
  * [chat](bot.settings.chat)
  * [colorsEnabled](bot.settings.colorsEnabled)
  * [viewDistance](bot.settings.viewDistance)
@@ -775,6 +783,12 @@ Boolean, whether or not you are in bed.
 #### bot.scoreboards
 
 All scoreboards known to the bot in an object scoreboard name -> scoreboard.
+
+#### bot.controlState
+
+An object whose keys are the main control states: ['forward', 'back', 'left', 'right', 'jump', 'sprint'].
+
+Setting values for this object internally calls [bot.setControlState](#botsetcontrolstatecontrol-state).
 
 ### Events
 
@@ -1093,6 +1107,31 @@ Adds a regex pattern to the bot's chat matching. Useful for bukkit servers where
 #### bot.setSettings(options)
 
 See the `bot.settings` property.
+
+#### bot.loadPlugin(plugin)
+
+Injects a Plugin.
+ * `plugin` - function
+
+```js
+function somePlugin(bot, options) {
+  function someFunction() {
+    bot.chat('Yay!');
+  }
+  bot.someFunction = someFunction;
+}
+
+var bot = mineflayer.createBot(...);
+bot.loadPlugin(somePlugin);
+bot.once('login', function() {
+  bot.someFunction(); // Yay!
+});
+```
+
+#### bot.loadPlugins(plugins)
+
+Injects plugins see `bot.loadPlugin`.
+ * `plugins` - array of functions
 
 #### bot.sleep(bedBlock, [cb])
 

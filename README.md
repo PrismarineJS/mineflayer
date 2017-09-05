@@ -9,7 +9,7 @@ Create Minecraft bots with a powerful, stable, and high level JavaScript API.
 
 ## Features
 
- * Supports Minecraft 1.8, 1.9, 1.10 and 1.11.
+ * Supports Minecraft 1.8, 1.9, 1.10, 1.11 and 1.12.
  * Entity knowledge and tracking.
  * Block knowledge. You can query the world around you.
  * Basic physics and movement - currently blocks are either "solid" or "empty".
@@ -27,6 +27,9 @@ Create Minecraft bots with a powerful, stable, and high level JavaScript API.
  * Better physics (support doors, ladders, water, etc).
 
 ## Usage
+
+Without version specified, the version of the server will be guessed automatically, you can set a specific one using the version option.
+For example `version:"1.8"`.
 
 ### Echo Example
 ```js
@@ -73,21 +76,13 @@ higher level API on top of Mineflayer.
  * [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot)
  * [vogonistic/voxel](https://github.com/vogonistic/mineflayer-voxel) - visualize what
    the bot is up to using voxel.js
- * [JonnyD/Skynet] (https://github.com/JonnyD/Skynet) -  log player activity onto an online API
- * [MinecraftChat] (https://github.com/rom1504/MinecraftChat) (last open source version, built by AlexKvazos) -  Minecraft web based chat client <https://minecraftchat.net/>
- * [Cheese Bot] (https://github.com/Minecheesecraft/Cheese-Bot) - Plugin based bot with a clean GUI. Made with Node-Webkit. http://bot.ezcha.net/
+ * [JonnyD/Skynet](https://github.com/JonnyD/Skynet) -  log player activity onto an online API
+ * [MinecraftChat](https://github.com/rom1504/MinecraftChat) (last open source version, built by AlexKvazos) -  Minecraft web based chat client <https://minecraftchat.net/>
+ * [Cheese Bot](https://github.com/Minecheesecraft/Cheese-Bot) - Plugin based bot with a clean GUI. Made with Node-Webkit. http://bot.ezcha.net/
 
 ## Installation
 
-### Linux / OSX
-
 `npm install mineflayer`
-
-### Windows
-
-1. Follow the Windows instructions from
-   [node-minecraft-protocol](https://github.com/PrismarineJS/node-minecraft-protocol#windows)
-2. `npm install mineflayer`
 
 ## Documentation
 
@@ -99,7 +94,25 @@ higher level API on top of Mineflayer.
 
 ## Testing
 
-`npm test`
+Some setup is required after first cloning the project but after that is done it's very easy to run them.
+
+### Setup
+
+In order to get all tests to run successfully you must first:
+
+1. create a new folder in which to store minecraft server jars
+2. set the MC_SERVER_JAR_DIR to this folder
+
+Example:
+
+1. `mkdir server_jars`
+2. `export MC_SERVER_JAR_DIR=/full/path/to/server_jars`
+
+Where the "/full/path/to/" is the fully qualified path name.
+
+### Ongoing
+
+Simply run: `npm test`
 
 ## Updating to a newer protocol version
 
