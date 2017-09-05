@@ -98,14 +98,14 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
       })
       server.on('login', (client) => {
         client.write('login', {
-            entityId: 0,
-            levelType: 'fogetaboutit',
-            gameMode: 0,
-            dimension: 0,
-            difficulty: 0,
-            maxPlayers: 20,
-            reducedDebugInfo: true
-          })
+          entityId: 0,
+          levelType: 'fogetaboutit',
+          gameMode: 0,
+          dimension: 0,
+          difficulty: 0,
+          maxPlayers: 20,
+          reducedDebugInfo: true
+        })
         const chunk = new Chunk()
 
         chunk.setBlockType(pos, goldId)
