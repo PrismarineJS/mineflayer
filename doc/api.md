@@ -637,6 +637,7 @@ Create and return an instance of the class bot.
  * [viewDistance](bot.settings.viewDistance)
  * [difficulty](bot.settings.difficulty)
  * [showCape](bot.settings.showCape)
+ * chatLengthLimit : the maximum amount of characters that can be sent in a single message. If this is not set, it will be 100 in < 1.11 and 256 in >= 1.11.
 
 ### Properties
 

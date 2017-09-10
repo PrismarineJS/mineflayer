@@ -98,6 +98,7 @@ class Bot extends EventEmitter {
       if (supportedVersions.indexOf(version.majorVersion) === -1) {
         throw new Error(`Version ${version.minecraftVersion} is not supported.`)
       }
+      self.protocolVersion = version.version
       self.majorVersion = version.majorVersion
       self.version = version.minecraftVersion
       options.version = version.minecraftVersion
