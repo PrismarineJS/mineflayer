@@ -787,7 +787,7 @@ All scoreboards known to the bot in an object scoreboard name -> scoreboard.
 
 #### bot.controlState
 
-An object whose keys are the main control states: ['forward', 'back', 'left', 'right', 'jump', 'sprint'].
+An object whose keys are the main control states: ['forward', 'back', 'left', 'right', 'jump', 'sprint', 'sneak'].
 
 Setting values for this object internally calls [bot.setControlState](#botsetcontrolstatecontrol-state).
 
@@ -1144,7 +1144,7 @@ Get out of bed. `cb` can have an err parameter if the bot cannot wake up.
 
 #### bot.setControlState(control, state)
 
- * `control` - one of ['forward', 'back', 'left', 'right', 'jump', 'sprint']
+ * `control` - one of ['forward', 'back', 'left', 'right', 'jump', 'sprint', 'sneak']
  * `state` - `true` or `false`
 
 #### bot.clearControlStates()
