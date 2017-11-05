@@ -3,6 +3,7 @@ const EventEmitter = require('events').EventEmitter
 const pluginLoader = require('./lib/plugin_loader')
 const plugins = {
   bed: require('./lib/plugins/bed'),
+  title: require('./lib/plugins/title'),
   block_actions: require('./lib/plugins/block_actions'),
   blocks: require('./lib/plugins/blocks'),
   book: require('./lib/plugins/book'),
