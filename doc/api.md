@@ -125,6 +125,7 @@
       - ["spawn"](#spawn)
       - ["respawn"](#respawn)
       - ["game"](#game)
+      - ["title" (text)](#game)
       - ["rain"](#rain)
       - ["time"](#time)
       - ["kicked" (reason, loggedIn)](#kicked-reason-loggedin)
@@ -848,6 +849,12 @@ event instead.
 #### "game"
 
 Emitted when the server changes any of the game properties.
+
+#### "title"
+
+Emitted when the server sends a title
+
+ * `text` - title's text
 
 #### "rain"
 
