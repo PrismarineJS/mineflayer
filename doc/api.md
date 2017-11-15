@@ -125,7 +125,7 @@
       - ["spawn"](#spawn)
       - ["respawn"](#respawn)
       - ["game"](#game)
-      - ["title" (text)](#game)
+      - ["title"](#title)
       - ["rain"](#rain)
       - ["time"](#time)
       - ["kicked" (reason, loggedIn)](#kicked-reason-loggedin)
@@ -157,6 +157,7 @@
       - ["chunkColumnLoad" (point)](#chunkcolumnload-point)
       - ["chunkColumnUnload" (point)](#chunkcolumnunload-point)
       - ["soundEffectHeard" (soundName, position, volume, pitch)](#soundeffectheard-soundname-position-volume-pitch)
+      - ["hardcodedSoundEffectHeard" (soundId, soundCategory, position, volume, pitch)](#hardcodedsoundeffectheard-soundid-soundcategory-position-volume-pitch)
       - ["noteHeard" (block, instrument, pitch)](#noteheard-block-instrument-pitch)
       - ["pistonMove" (block, isPulling, direction)](#pistonmove-block-ispulling-direction)
       - ["chestLidMove" (block, isOpen)](#chestlidmove-block-isopen)
@@ -943,12 +944,22 @@ of the chunk with the smallest x, y, and z values.
 
 #### "soundEffectHeard" (soundName, position, volume, pitch)
 
-Fires when the client hears a sound effect.
+Fires when the client hears a named sound effect.
 
  * `soundName`: name of the sound effect
  * `position`: a Vec3 instance where the sound originates
  * `volume`: floating point volume, 1.0 is 100%
  * `pitch`: integer pitch, 63 is 100%
+
+#### "hardcodedSoundEffectHeard" (soundId, soundCategory, position, volume, pitch)
+
+  Fires when the client hears a hardcoded sound effect.
+
+   * `soundId`: id of the sound effect
+   * `soundCategory`: category of the sound effect
+   * `position`: a Vec3 instance where the sound originates
+   * `volume`: floating point volume, 1.0 is 100%
+   * `pitch`: integer pitch, 63 is 100%
 
 #### "noteHeard" (block, instrument, pitch)
 
@@ -1061,7 +1072,7 @@ Finds the nearest block to the given point.
    - `point` - The start position of the search.
    - `matching` - A function that returns true if the given block is a match.  Also supports this value being a block id or array of block ids.
    - `maxDistance` - The furthest distance for the search, defaults to 16.
-   
+
 This is a simple function, to be used for simple things, for a more complete search using more optimals algorithm,
  use [mineflayer-blockfinder](https://github.com/Darthfett/mineflayer-blockfinder) instead which have a very similar API.
 
