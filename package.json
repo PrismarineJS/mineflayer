@@ -41,7 +41,7 @@
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
     "minecraft-wrap": "^1.0.2",
-    "mocha": "^4.0.0",
+    "mocha": "^5.0.5",
     "require-self": "^0.2.1"
   }
 }
