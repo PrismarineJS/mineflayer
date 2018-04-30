@@ -7,14 +7,15 @@ if (process.argv.length !== 5) {
 }
 
 const profile = require(path.resolve(process.argv[4], 'launcher_profiles.json'))
-const auth = profile.authenticationDatabase[profile.selectedUser]
+const auth = profile.authenticationDatabase[profile.selectedUser.account]
+const profileID = profile.selectedUser.profile
 
 const session = {
   accessToken: auth.accessToken,
   clientToken: profile.clientToken,
   selectedProfile: {
-    id: profile.selectedUser,
-    name: auth.displayName
+    id: profileID,
+    name: auth.profiles[profileID].displayName
   }
 }
 
