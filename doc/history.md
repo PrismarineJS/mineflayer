@@ -1,3 +1,15 @@
+## 2.7.0
+
+* fix cannot jump repeatedly
+* fix spaces in chatmessage (thanks @Gjum)
+* add bot.getControlStates (thanks @ArcticZeroo)
+* Support end dimension (thanks @iRath96)
+* Added sneaking option to controll states (thanks @Meldiron)
+* add title event (thanks @yario-o)
+* Update sound.js to include hardcoded sound effects (thanks @jeresuikkila)
+* Support for the new launcher_profiles.json format  (thanks @Amezylst)
+* update api about checkTimeoutInterval
+
 ## 2.6.1
 
 * fix chatmessage
