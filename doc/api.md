@@ -628,7 +628,7 @@ Create and return an instance of the class bot.
  * clientToken : generated if a password is given
  * accessToken : generated if a password is given
  * keepAlive : send keep alive packets : default to true
- * checkTimeoutInterval : default to `10*1000` (10s), check if keepalive received at that period, disconnect otherwise.
+ * checkTimeoutInterval : default to `30*1000` (30s), check if keepalive received at that period, disconnect otherwise.
  * loadInternalPlugins : defaults to true
  * plugins : object : defaults to {}
    - pluginName : false : don't load internal plugin with given name ie. `pluginName`
