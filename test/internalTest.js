@@ -1,3 +1,5 @@
+/* eslint-env mocha */
+
 const mineflayer = require('../')
 const vec3 = require('vec3')
 const mc = require('minecraft-protocol')
@@ -12,8 +14,8 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
   const version = mcData.version
   const Chunk = require('prismarine-chunk')(supportedVersion)
 
-  describe(`mineflayer_internal ${version.minecraftVersion}`, () => {
-    this.timeout(10 * 1000);
+  describe(`mineflayer_internal ${version.minecraftVersion}`, function () {
+    this.timeout(10 * 1000)
     let bot
     let server
     beforeEach((done) => {
