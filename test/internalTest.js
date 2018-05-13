@@ -13,6 +13,7 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
   const Chunk = require('prismarine-chunk')(supportedVersion)
 
   describe(`mineflayer_internal ${version.minecraftVersion}`, () => {
+    this.timeout(10 * 1000);
     let bot
     let server
     beforeEach((done) => {
