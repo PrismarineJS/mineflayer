@@ -1,3 +1,7 @@
+## 2.7.1
+
+* include fixes from pchunk, protodef and mcdata
+
 ## 2.7.0
 
 * fix cannot jump repeatedly
