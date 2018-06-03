@@ -87,11 +87,11 @@ higher level API on top of Mineflayer.
 
 ## Documentation
 
- * See [doc/api.md](https://github.com/PrismarineJS/mineflayer/blob/master/doc/api.md).
- * See [doc/history.md](https://github.com/PrismarineJS/mineflayer/blob/master/doc/history.md).
+ * See [docs/api.md](https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md).
+ * See [docs/history.md](https://github.com/PrismarineJS/mineflayer/blob/master/docs/history.md).
  * See [examples/](https://github.com/PrismarineJS/mineflayer/tree/master/examples).
- * See [doc/unstable_api.md](https://github.com/PrismarineJS/mineflayer/blob/master/doc/unstable_api.md).
- * See [doc/contribute.md](https://github.com/PrismarineJS/mineflayer/blob/master/doc/contribute.md).
+ * See [docs/unstable_api.md](https://github.com/PrismarineJS/mineflayer/blob/master/docs/unstable_api.md).
+ * See [docs/contribute.md](https://github.com/PrismarineJS/mineflayer/blob/master/docs/contribute.md).
 
 ## Testing
 
