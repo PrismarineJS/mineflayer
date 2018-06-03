@@ -1,6 +1,7 @@
 - Getting Started
   - [Introduction](/)
   - [API](api.md)
+  - [Demos](demos.md)
   - [Unstable API](unstable_api.md)
   - [Contribute](contribute.md)
   - [History](history.md)
