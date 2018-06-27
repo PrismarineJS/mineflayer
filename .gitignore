@@ -2,3 +2,4 @@
 # different than .npmignore
 node_modules
 package-lock.json
+README.md
