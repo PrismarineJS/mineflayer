@@ -1,3 +1,7 @@
+## 2.7.3
+
+* use docsify for docs
+
 ## 2.7.2
 
 * don't do anything if transaction.action < 0 (fix for some non-vanilla plugins)
