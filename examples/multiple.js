@@ -7,7 +7,7 @@ if (process.argv.length < 3 || process.argv.length > 5) {
 
 let bots = []
 
-newClient('Bot', null, 5)
+newClient('Client', null, 5)
 
 function newClient(username, password, quantity) {
 	if (typeof quantity != 'number') throw 'Quantity must be a number!'
