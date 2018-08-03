@@ -14,15 +14,15 @@ function newClient(username, password, quantity) {
 	for (let i = 0 i < quantity i++) {
 		if (password === null) {
 			bots[bots.length] = mineflayer.createBot({
-				host: process.argv[0],
-				port: process.argv[1],
+				host: process.argv[2],
+				port: process.argv[3],
 				username: username + i,
 				checkTimeoutInterval: 60 * 10000
 			})
 		} else {
 			bots[bots.length] = mineflayer.createBot({
-				host: process.argv[0],
-				port: process.argv[1],
+				host: process.argv[2],
+				port: process.argv[3],
 				username: username + i,
 				password: password,
 				checkTimeoutInterval: 60 * 10000
