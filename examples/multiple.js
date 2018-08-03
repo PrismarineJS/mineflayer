@@ -11,7 +11,7 @@ newClient('Client', null, 5)
 
 function newClient(username, password, quantity) {
 	if (typeof quantity != 'number') throw 'Quantity must be a number!'
-	for (let i = 0 i < quantity i++) {
+	for (let i = 0; i < quantity; i++) {
 		if (password === null) {
 			bots[bots.length] = mineflayer.createBot({
 				host: process.argv[2],
