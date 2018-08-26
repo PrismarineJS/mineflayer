@@ -93,6 +93,10 @@ higher level API on top of Mineflayer.
  * See [docs/unstable_api.md](https://github.com/PrismarineJS/mineflayer/blob/master/docs/unstable_api.md).
  * See [docs/contribute.md](https://github.com/PrismarineJS/mineflayer/blob/master/docs/contribute.md).
 
+## Contribute
+
+Please read https://github.com/PrismarineJS/prismarine-contribute
+
 ## Testing
 
 Some setup is required after first cloning the project but after that is done it's very easy to run them.
