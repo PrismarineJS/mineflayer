@@ -1,0 +1,22 @@
+version: 2
+
+jobs:
+  build:
+    environment:
+      MC_SERVER_JAR_DIR: /home/circleci/PrismarineJS/mineflayer/minecraft-server/
+    parallelism: 4
+    docker:
+      - image: circleci/openjdk:8-node
+    steps:
+      - run: node --version
+      - run: java -version
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run: npm i
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run: mkdir -p /home/circleci/PrismarineJS/mineflayer/minecraft-server/
+      - run: npm test
