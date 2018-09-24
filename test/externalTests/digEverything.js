@@ -94,7 +94,7 @@ function digSomething (blockId, bot, done) {
     (cb) => {
       // make sure that block is gone
 
-      assert.equal(bot.blockAt(bot.entity.position.plus(new Vec3(1, 0, 0))).type, 0)
+      assert.strictEqual(bot.blockAt(bot.entity.position.plus(new Vec3(1, 0, 0))).type, 0)
       cb()
     }
   ]
