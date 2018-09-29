@@ -62,6 +62,7 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
 
         console.log('starting bot')
         bot.once('login', () => {
+          wrap.writeServer('op flatbot\n')
           console.log('waiting a second...')
           // this wait is to get all the window updates out of the way before we start expecting exactly what we cause.
           // there are probably other updates coming in that we want to get out of the way too, like health updates.
@@ -89,7 +90,6 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
               console.log('pong')
               assert.ok(results.latency >= 0)
               assert.ok(results.latency <= 1000)
-              wrap.writeServer('op flatbot\n')
               begin()
             })
           })
