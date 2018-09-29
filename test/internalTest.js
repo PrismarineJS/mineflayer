@@ -185,7 +185,7 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
           })
         })
         bot.once('entityGone', (entity) => {
-          assert.strictEqual(bot.players[entity.username], null)
+          assert.strictEqual(bot.players[entity.username], undefined)
           done()
         })
         server.on('login', (client) => {
