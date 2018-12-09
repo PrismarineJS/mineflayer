@@ -98,6 +98,7 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
     })
 
     beforeEach((done) => {
+      console.log('reset state')
       bot.test.resetState(done)
     })
 
