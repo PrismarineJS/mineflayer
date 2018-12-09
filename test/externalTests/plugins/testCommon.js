@@ -38,6 +38,7 @@ function inject (bot) {
   ]
 
   function resetBlocksToSuperflat (cb) {
+    console.log('reset blocks to superflat')
     const groundY = 4
     for (let y = groundY + 4; y >= groundY - 1; y--) {
       const expectedBlock = superflatLayers[y]
@@ -93,6 +94,7 @@ function inject (bot) {
       becomeCreative,
       clearInventory,
       (cb) => {
+        console.log('start flying')
         bot.creative.startFlying()
         teleport(new Vec3(0, 4, 0), cb)
       },
@@ -103,6 +105,7 @@ function inject (bot) {
   }
 
   function becomeCreative (cb) {
+    console.log('become creative')
     setCreativeMode(true, cb)
   }
 
@@ -113,25 +116,36 @@ function inject (bot) {
   function setCreativeMode (value, cb) {
     // this function behaves the same whether we start in creative mode or not.
     // also, creative mode is always allowed for ops, even if server.properties says force-gamemode=true in survival mode.
-    bot.chat(`/gamemode ${value ? 'creative' : 'survival'}`)
-    bot.on('message', function onMessage (jsonMsg) {
+    let timeOut
+    function onMessage (jsonMsg) {
+      console.log(jsonMsg)
       switch (jsonMsg.translate) {
+        case 'commands.gamemode.success.self':
         case 'gameMode.changed':
           // good.
           bot.removeListener('message', onMessage)
+          clearTimeout(timeOut)
           return cb()
         case 'commands.generic.permission':
           sayEverywhere('ERROR: I need to be an op (allow cheats).')
           bot.removeListener('message', onMessage)
-          // at this point we just wait forever.
-          // the intention is that someone ops us while we're sitting here, then you kill and restart the test.
+        // at this point we just wait forever.
+        // the intention is that someone ops us while we're sitting here, then you kill and restart the test.
       }
       // console.log("I didn't expect this message:", jsonMsg);
-    })
+    }
+    bot.on('message', onMessage)
+    bot.chat(`/gamemode ${value ? 'creative' : 'survival'}`)
+    timeOut = setTimeout(() => {
+      bot.removeListener('message', onMessage)
+      cb()
+    }, 10000)
   }
 
   function clearInventory (cb) {
+    console.log('clear inventory')
     for (let i = 0; i < bot.inventory.slots.length; i++) {
+      console.log(bot.inventory.slots[i])
       if (bot.inventory.slots[i] == null) continue
       setInventorySlot(i, null, () => {
         // start over until we have nothing to do
@@ -183,6 +197,7 @@ function inject (bot) {
   ]
 
   function waitForChunksToLoad (cb) {
+    console.log('wait for chunks')
     // check 3x3 chunks around us
     for (let i = 0; i < deltas3x3.length; i++) {
       if (bot.blockAt(bot.entity.position.plus(deltas3x3[i].scaled(64))) == null) {
