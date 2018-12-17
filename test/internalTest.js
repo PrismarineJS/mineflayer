@@ -62,7 +62,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
     })
     it('entity effects', (done) => {
       bot.once('entityEffect', (entity, effect) => {
-        assert.strictEqual(entity.mobType, 'Creeper')
+        assert.strictEqual(entity.id, 8)
         assert.strictEqual(effect.id, 10)
         assert.strictEqual(effect.amplifier, 1)
         assert.strictEqual(effect.duration, 11)
