@@ -30,7 +30,7 @@ const download = require('minecraft-wrap').download
 const MC_SERVER_PATH = path.join(__dirname, 'server')
 
 const { firstVersion, lastVersion } = require('./common/parallel')
-mineflayer.supportedVersions.forEach((supportedVersion, i) => {
+mineflayer.testedVersions.forEach((supportedVersion, i) => {
   if (!(i >= firstVersion && i <= lastVersion)) {
     return
   }
