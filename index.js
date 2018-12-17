@@ -47,7 +47,8 @@ module.exports = {
   EnchantmentTable: require('./lib/enchantment_table'),
   ScoreBoard: require('./lib/scoreboard'),
   BossBar: require('./lib/bossbar'),
-  supportedVersions
+  supportedVersions,
+  testedVersions
 }
 
 function createBot (options = {}) {

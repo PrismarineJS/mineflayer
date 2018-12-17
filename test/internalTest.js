@@ -6,7 +6,7 @@ const mc = require('minecraft-protocol')
 const assert = require('assert')
 
 const { firstVersion, lastVersion } = require('./common/parallel')
-mineflayer.supportedVersions.forEach((supportedVersion, i) => {
+mineflayer.testedVersions.forEach((supportedVersion, i) => {
   if (!(i >= firstVersion && i <= lastVersion)) {
     return
   }
