@@ -33,6 +33,7 @@ const plugins = {
   villager: require('./lib/plugins/villager')
 }
 const supportedVersions = require('./lib/version').supportedVersions
+const testedVersions = require('./lib/version').testedVersions
 
 module.exports = {
   createBot,
@@ -43,7 +44,8 @@ module.exports = {
   Dispenser: require('./lib/dispenser'),
   EnchantmentTable: require('./lib/enchantment_table'),
   ScoreBoard: require('./lib/scoreboard'),
-  supportedVersions
+  supportedVersions,
+  testedVersions
 }
 
 function createBot (options = {}) {
