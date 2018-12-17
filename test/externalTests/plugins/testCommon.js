@@ -58,7 +58,7 @@ function inject (bot) {
             return digAndResume(position)
           }
           // place it
-          return placeAndResume(position, mcData.itemsByName[mcData.blocks[expectedBlock].name].id)
+          return placeAndResume(position, mcData.itemsByName[expectedBlock.name].id)
         }
       }
     }
@@ -71,7 +71,8 @@ function inject (bot) {
 
     function placeAndResume (position, item) {
       setInventorySlot(36, Item(item.type, 1, 0), () => {
-        placeBlock(36, position, resume)
+        placeBlock(36, position)
+        resume()
       })
     }
 
