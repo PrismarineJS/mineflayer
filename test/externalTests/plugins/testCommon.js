@@ -159,6 +159,7 @@ function inject (bot) {
 
   // you need to be in creative mode for this to work
   function setInventorySlot (targetSlot, item, cb) {
+    // TODO FIX
     if (Item.equal(bot.inventory.slots[targetSlot], item)) {
       // already good to go
       return setImmediate(cb)
