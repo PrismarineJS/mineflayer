@@ -197,10 +197,10 @@ function inject (bot) {
   ]
 
   function waitForChunksToLoad (cb) {
-    console.log('wait for chunks')
+    console.log('wait for chunks around ' + bot.entity.position)
     // check 3x3 chunks around us
     for (let i = 0; i < deltas3x3.length; i++) {
-      if (bot.blockAt(bot.entity.position.plus(deltas3x3[i].scaled(64))) == null) {
+      if (bot.blockAt(bot.entity.position.plus(deltas3x3[i].scaled(32))) == null) {
         // keep wait
         return setTimeout(() => {
           waitForChunksToLoad(cb)
