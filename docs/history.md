@@ -1,3 +1,9 @@
+## 2.7.4
+
+* start the bot alive in all cases
+* correct run speed and use it to limit the speed properly (thanks @CheezBarger)
+* emit error instead of throwing when loading a chunk (thanks @ArcticZeroo)
+
 ## 2.7.3
 
 * use docsify for docs
