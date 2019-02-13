@@ -1,3 +1,7 @@
+## 2.7.5
+
+* improve basic find block a bit
+
 ## 2.7.4
 
 * start the bot alive in all cases
