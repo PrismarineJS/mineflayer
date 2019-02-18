@@ -36,7 +36,7 @@
   "devDependencies": {
     "doctoc": "^1.0.0",
     "minecraft-wrap": "^1.2.1",
-    "mocha": "^5.0.5",
+    "mocha": "^6.0.0",
     "require-self": "^0.2.1",
     "standard": "^12.0.0"
   }
