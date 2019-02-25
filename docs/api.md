@@ -830,16 +830,11 @@ Emitted for every server message, including chats.
 #### "login"
 
 Fires after you successfully login to the server.
-You probably want to wait for the `spawn` event
-before doing anything though.
+You probably want to wait for the chunks to be loaded to do anything though.
 
 #### "spawn"
 
-Emitted once after you log in and spawn for the first time
-and then emitted when you respawn after death.
-
-This is usually the event that you want to listen to
-before doing anything on the server.
+Emitted when you respawn after death.
 
 #### "respawn"
 
