@@ -625,6 +625,7 @@ Create and return an instance of the class bot.
  * port : default to 25565
  * password : can be omitted (if the tokens are also omitted then it tries to connect in offline mode)
  * host : default to localhost
+ * version : default to automatically guessing the version of the server. Example of value : "1.12.2"
  * clientToken : generated if a password is given
  * accessToken : generated if a password is given
  * keepAlive : send keep alive packets : default to true
