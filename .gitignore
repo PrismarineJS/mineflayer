@@ -2,5 +2,6 @@
 # different than .npmignore
 node_modules
 package-lock.json
+yarn.lock
 /README.md
 versions/
