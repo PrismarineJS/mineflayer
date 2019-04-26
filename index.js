@@ -31,7 +31,8 @@ const plugins = {
   spawn_point: require('./lib/plugins/spawn_point'),
   time: require('./lib/plugins/time'),
   villager: require('./lib/plugins/villager'),
-  boss_bar: require('./lib/plugins/boss_bar')
+  boss_bar: require('./lib/plugins/boss_bar'),
+  ray_trace: require('./lib/plugins/ray_trace')
 }
 const supportedVersions = require('./lib/version').supportedVersions
 
