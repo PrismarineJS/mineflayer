@@ -121,6 +121,7 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
       .forEach((test) => {
         test = path.basename(test, '.js')
         const testFunctions = require(`./externalTests/${test}`)(supportedVersion)
+        if (test !== 'sign') return
         if (excludedTests.indexOf(test) === -1) {
           if (typeof testFunctions === 'object') {
             for (const testFunctionName in testFunctions) {
