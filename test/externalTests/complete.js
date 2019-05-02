@@ -8,6 +8,9 @@ module.exports = () => (bot, done) => {
       'thunder'
     ])
 
-    done()
+    bot.tabComplete('/weather', (matches) => {
+      assert.deepStrictEqual(matches, [ '/weather' ])
+      done()
+    })
   })
 }
