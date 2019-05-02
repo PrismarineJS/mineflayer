@@ -9,7 +9,7 @@ module.exports = () => (bot, done) => {
     bot.lookAt(position.offset(0, -3, 0), true, () => {
       const block = bot.blockInSight()
       const relBlock = bot.blockAt(position.offset(0, -1, 0))
-      
+
       assert.deepStrictEqual(block, relBlock)
       done()
     })
