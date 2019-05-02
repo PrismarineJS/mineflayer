@@ -22,6 +22,12 @@ module.exports = () => (bot, done) => {
         assert.strictEqual(sign.blockEntity.Text4.toString(), '4')
       }
 
+      if (sign.blockEntity) {
+        // Check block update
+        bot.activateBlock(sign)
+        assert.notStrictEqual(sign.blockEntity, undefined)
+      }
+
       done()
     }, 500)
   })
