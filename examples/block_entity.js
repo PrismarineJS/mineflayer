@@ -26,7 +26,7 @@ bot.on('message', (cm) => {
 function spawner () {
   const block = bot.findBlock({
     matching: 52,
-    point: bot.entity.position,
+    point: bot.entity.position
   })
 
   if (!block) {
