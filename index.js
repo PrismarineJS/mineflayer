@@ -32,6 +32,7 @@ const plugins = {
   time: require('./lib/plugins/time'),
   villager: require('./lib/plugins/villager'),
   boss_bar: require('./lib/plugins/boss_bar'),
+  tablist: require('./lib/plugins/tablist'),
   ray_trace: require('./lib/plugins/ray_trace')
 }
 const supportedVersions = require('./lib/version').supportedVersions
