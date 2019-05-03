@@ -647,6 +647,39 @@ An array with all sorted items in the scoreboard in it
 ]
 ```
 
+### mineflayer.BossBar
+
+#### BossBar.title
+
+Title of boss bar, instance of ChatMessage
+
+#### BossBar.health
+
+Percent of boss health, from `0` to `1`
+
+#### BossBar.dividers
+
+Number of boss bar dividers, one of `0`, `6`, `10`, `12`, `20`
+
+#### BossBar.entityUUID
+
+Boss bar entity uuid
+
+#### BossBar.shouldDarkenSky
+
+Determines whether or not to darken the sky
+
+#### BossBar.isDragonBar
+
+Determines whether or not boss bar is dragon bar
+
+#### BossBar.createFog
+
+Determines whether or not boss bar creates fog
+
+#### BossBar.color
+
+Determines what color the boss bar color is, one of `pink`, `blue`, `red`, `green`, `yellow`, `purple`, `white`
 
 ## Bot
 
@@ -1090,17 +1123,41 @@ Fires when you wake up.
 
 Fires when `bot.experience.*` has updated.
 
-#### "scoreboardObjective" (scoreboardName, displayText)
+#### "scoreboardCreated" (scoreboard)
 
-Fires when a scorebard is added or updated.
+Fires when a scorebard is added.
 
-#### "scoreboardScore" (scoreboardName, itemName, value)
+#### "scoreboardDeleted" (scoreboard)
+
+Fires when a scorebard is deleted.
+
+#### "scoreboardTitleChanged" (scoreboard)
+
+Fires when a scorebard's title is updated.
+
+#### "scoreUpdated" (scoreboard, item)
 
 Fires when the score of a item in a scoreboard is updated.
 
-#### "scoreboardDisplayObjective" (scoreboardName, position)
+#### "scoreRemoved" (scoreboard, item)
+
+Fires when the score of a item in a scoreboard is removed.
+
+#### "scoreboardPosition" (position, scoreboard)
 
 Fires when the position of a scoreboard is updated.
+
+#### "bossBarCreated" (bossBar)
+
+Fires when new boss bar is created.
+
+#### "bossBarDeleted" (bossBar)
+
+Fires when new boss bar is deleted.
+
+#### "bossBarUpdated" (bossBar)
+
+Fires when new boss bar is updated.
 
 ### Functions
 
