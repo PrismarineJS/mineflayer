@@ -62,12 +62,12 @@ function loop () {
         })
       })
     }
-
-    setImmediate(loop)
   } catch (e) {
     console.log(e)
-    setImmediate(loop)
   }
+
+  // None blocks to harvest or sow. Postpone next loop a bit
+  setTimeout(loop, 1000)
 }
 
-bot.on('login', loop)
+bot.once('login', loop)
