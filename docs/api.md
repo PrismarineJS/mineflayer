@@ -93,6 +93,7 @@
       - [bot.game.hardcore](#botgamehardcore)
       - [bot.game.worldHeight](#botgameworldheight)
       - [bot.game.maxPlayers](#botgamemaxplayers)
+    - [bot.player](#botplayer)
       - [bot.players](#botplayers)
       - [bot.isRaining](#botisraining)
       - [bot.chatPatterns](#botchatpatterns)
@@ -180,6 +181,7 @@
       - ["scoreboardDisplayObjective" (scoreboardName, position)](#scoreboarddisplayobjective-scoreboardname-position)
     - [Functions](#functions)
       - [bot.blockAt(point)](#botblockatpoint)
+      - [bot.blockInSight(maxSteps, vectorLength)](#botblockinsightmaxsteps-vectorlength)
       - [bot.canSeeBlock(block)](#botcanseeblockblock)
       - [bot.findBlock(options)](#botfindblockoptions)
       - [bot.canDigBlock(block)](#botcandigblockblock)
@@ -188,6 +190,7 @@
     - [Methods](#methods)
       - [bot.end()](#botend)
       - [bot.quit(reason)](#botquitreason)
+      - [bot.tabComplete(str, cb, [assumeCommand], [sendBlockInSight])](#bottabcompletestr-cb-assumecommand-sendblockinsight)
       - [bot.chat(message)](#botchatmessage)
       - [bot.whisper(username, message)](#botwhisperusername-message)
       - [bot.chatAddPattern(pattern, chatType, description)](#botchataddpatternpattern-chattype-description)
@@ -211,6 +214,8 @@
       - [bot.placeBlock(referenceBlock, faceVector, cb)](#botplaceblockreferenceblock-facevector-cb)
       - [bot.activateBlock(block, [callback])](#botactivateblockblock-callback)
       - [bot.activateEntity(entity, [callback])](#botactivateentityentity-callback)
+      - [bot.consume(callback)](#botconsumecallback)
+      - [bot.fish(callback)](#botfishcallback)
       - [bot.activateItem()](#botactivateitem)
       - [bot.deactivateItem()](#botdeactivateitem)
       - [bot.useOn(targetEntity)](#botuseontargetentity)
@@ -1324,6 +1329,18 @@ Activate an entity, useful for villager for example.
 
  * `entity` - the entity to activate
  * `callback(err)` - (optional) called when the entity has been activated
+
+#### bot.consume(callback)
+
+Eat / drink currently held item
+
+ * `callback(error)` - called when consume ends
+
+#### bot.fish(callback)
+
+Use fishing rod
+
+ * `callback(error)` - called when fishing ends
 
 #### bot.activateItem()
 
