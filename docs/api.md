@@ -1140,15 +1140,15 @@ Fires when `bot.experience.*` has updated.
 
 #### "scoreboardCreated" (scoreboard)
 
-Fires when a scorebard is added.
+Fires when a scoreboard is added.
 
 #### "scoreboardDeleted" (scoreboard)
 
-Fires when a scorebard is deleted.
+Fires when a scoreboard is deleted.
 
 #### "scoreboardTitleChanged" (scoreboard)
 
-Fires when a scorebard's title is updated.
+Fires when a scoreboard's title is updated.
 
 #### "scoreUpdated" (scoreboard, item)
 
