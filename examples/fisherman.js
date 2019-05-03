@@ -61,7 +61,6 @@ function startFishing () {
       }
     })
   })
-
 }
 
 function stopFishing () {
