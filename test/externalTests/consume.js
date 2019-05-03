@@ -35,7 +35,12 @@ module.exports = () => (bot, done) => {
   }
 
   bot.test.setInventorySlot(36, new Item(297, 5, 0), () => {
-    bot.chat('/gamemode survival')
-    bot.on('message', handler)
+    // Cannot consume if bot.food === 20
+    bot.consume((err) => {
+      assert.notStrictEqual(err, undefined)
+
+      bot.chat('/gamemode survival')
+      bot.on('message', handler)
+    })
   })
 }
