@@ -309,6 +309,21 @@ See [prismarine-entity](https://github.com/PrismarineJS/prismarine-entity)
 
 See [prismarine-block](https://github.com/PrismarineJS/prismarine-block)
 
+Also `block.blockEntity` is additional field with block entity data as `Object`
+```js
+// sign.blockEntity
+{
+  x: -53,
+  y: 88,
+  z: 66,
+  id: 'minecraft:sign', // 'Sign' in 1.10
+  Text1: { toString: Function }, // ChatMessage object
+  Text2: { toString: Function }, // ChatMessage object
+  Text3: { toString: Function }, // ChatMessage object
+  Text4: { toString: Function }, // ChatMessage object
+}
+```
+
 ### Biome
 
 See [prismarine-biome](https://github.com/PrismarineJS/prismarine-biome)
