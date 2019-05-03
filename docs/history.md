@@ -1,6 +1,3 @@
-## 2.8.0
- * add a couple of new features defined in #797
-
 ## 2.7.5
 
 * improve basic find block a bit
@@ -121,7 +118,7 @@
  * add extra tolerance for malformed sign packets (thanks @G07cha)
  * adapt to new minecraft data entities format
  * update minecraft-protocol to 0.17.2
-
+ 
 
 ## 1.6.0
 
@@ -180,7 +177,7 @@
  * add a callback to bot.look and bot.lookAt
  * when receiving a remove effect packet : if the corresponding effect doesn't exist yet, emit an event with just the id of the effect (thanks Pietro210)
  * swing arm immediately when digging (thanks gipsy-king)
- * now updates bot.entity.heldItem when bot.heldItem is updated
+ * now updates bot.entity.heldItem when bot.heldItem is updated 
  * fix cli args in examples
  * add forcedMove event
  * fix equipment api
@@ -491,7 +488,7 @@ recalled
 ## 0.0.3
 
  * add `bot.blockAt(point)` which returns a `Block`
- * add `mineflayer.blocks`, `mineflayer.biomes`, and `mineflayer.items`
+ * add `mineflayer.blocks`, `mineflayer.biomes`, and `mineflayer.items` 
  * add bot `chunk` event
  * fix `spawn` event and `settings.showCape`
  * added chatterbox example
