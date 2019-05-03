@@ -1157,6 +1157,15 @@ End the connection with the server.
 
 Gracefully disconnect from the server with the given reason (defaults to 'disconnect.quitting').
 
+#### bot.tabComplete(str, cb, [assumeCommand], [sendBlockInSight])
+
+Requests chat completion from the server.
+ * `str` - String to complete.
+ * `callback(matches)`
+   - `matches` - Array of matching strings.
+ * `assumeCommand` - Field sent to server, defaults to false.
+ * `sendBlockInSight` - Field sent to server, defaults to true. Set this option to false if you want more performance.
+
 #### bot.chat(message)
 
 Sends a publicly broadcast chat message. Breaks up big messages into multiple chat messages as necessary.
