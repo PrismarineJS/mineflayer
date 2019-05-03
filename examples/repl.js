@@ -2,7 +2,7 @@ const mineflayer = require('mineflayer')
 const repl = require('repl')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node scoreboard.js <host> <port> [<name>] [<password>]')
+  console.log('Usage : node repl.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 

@@ -1,7 +1,7 @@
 const mineflayer = require('mineflayer')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node scoreboard.js <host> <port> [<name>] [<password>]')
+  console.log('Usage : node bee.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 

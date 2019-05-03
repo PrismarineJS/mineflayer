@@ -1,7 +1,7 @@
 const mineflayer = require('mineflayer')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node scoreboard.js <host> <port> [<name>] [<password>]')
+  console.log('Usage : node fisherman.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 
@@ -11,6 +11,11 @@ const bot = mineflayer.createBot({
   username: process.argv[4] ? process.argv[4] : 'fisherman',
   password: process.argv[5],
   verbose: true
+})
+
+let mcData
+bot.on('inject_allowed', () => {
+  mcData = require('minecraft-data')(bot.version)
 })
 
 // To fish we have to give bot the fishing rod and teleport bot to the water
@@ -45,7 +50,7 @@ function onCollect (player, entity) {
 
 function startFishing () {
   bot.chat('Fishing')
-  bot.equip(346, 'hand', (err) => {
+  bot.equip(mcData.itemsByName['fishing_rod'].id, 'hand', (err) => {
     if (err) {
       return bot.chat(err.message)
     }
@@ -74,7 +79,7 @@ function stopFishing () {
 function eat () {
   stopFishing()
 
-  bot.equip(349, 'hand', (err) => {
+  bot.equip(mcData.itemsByName['fish'].id, 'hand', (err) => {
     if (err) {
       return bot.chat(err.message)
     }

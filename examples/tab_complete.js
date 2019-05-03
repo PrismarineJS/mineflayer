@@ -1,7 +1,7 @@
 const mineflayer = require('mineflayer')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node scoreboard.js <host> <port> [<name>] [<password>]')
+  console.log('Usage : node tab_complete.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 
@@ -22,7 +22,11 @@ bot.on('message', (cm) => {
 })
 
 function complete (str) {
-  bot.tabComplete(str, (matches) => {
+  bot.tabComplete(str, (err, matches) => {
+    if (err) {
+      return bot.chat(err.message)
+    }
+
     console.log(str, matches)
     bot.chat(`Matches for "${str}": ${matches.join(', ')}`)
   })
