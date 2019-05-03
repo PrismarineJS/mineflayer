@@ -76,9 +76,9 @@
       - [villager.trades](#villagertrades)
     - [mineflayer.ScoreBoard](#mineflayerscoreboard)
       - [ScoreBoard.name](#scoreboardname)
-      - [ScoreBoard.displayText](#scoreboarddisplaytext)
+      - [ScoreBoard.title](#scoreboardtitle)
+      - [ScoreBoard.itemsMap](#scoreboarditemsmap)
       - [ScoreBoard.items](#scoreboarditems)
-      - [ScoreBoard.position](#scoreboardposition)
   - [Bot](#bot)
     - [mineflayer.createBot(options)](#mineflayercreatebotoptions)
     - [Properties](#properties)
@@ -603,17 +603,29 @@ Looks like:
 
 Name of the scoreboard.
 
-#### ScoreBoard.displayText
+#### ScoreBoard.title
 
 The title of the scoreboard (does not always equal the name)
 
+#### ScoreBoard.itemsMap
+
+An object with all items in the scoreboard in it
+```js
+{
+  wvffle: { name: 'wvffle', value: 3 },
+  dzikoysk: { name: 'dzikoysk', value: 6 }
+}
+```
+
 #### ScoreBoard.items
 
-An object with all items in the scoreboard in it ( {"item1": "Value1, ...} )
-
-#### ScoreBoard.position
-
-The place in which the scoreboard is displayed.
+An array with all sorted items in the scoreboard in it
+```js
+[
+  { name: 'dzikoysk', value: 6 },
+  { name: 'wvffle', value: 3 }
+]
+```
 
 
 ## Bot
@@ -675,17 +687,22 @@ Coordinates to the main spawn point, where all compasses point to.
 
 #### bot.game.maxPlayers
 
-#### bot.players
+### bot.player
 
-Map of username to people playing the game. A player looks like this:
-
+Bot's player object
 ```js
 {
   username: 'player',
+  displayName: { toString: Function }, // ChatMessage object.
+  gamemode: 0,
   ping: 28,
   entity: entity, // null if you are too far away
 }
 ```
+
+#### bot.players
+
+Map of username to people playing the game.
 
 #### bot.isRaining
 
