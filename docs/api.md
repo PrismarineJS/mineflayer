@@ -1104,6 +1104,12 @@ Fires when the position of a scoreboard is updated.
 Returns the block at `point` or `null` if that point is not loaded.
 See `Block`.
 
+#### bot.blockInSight(maxSteps, vectorLength)
+
+Returns the block at which bot is looking at or `null`
+ * `maxSteps` - Number of steps to raytrace, defaults to 256.
+ * `vectorLength` - Length of raytracing vector, defaults to `5/16`.
+
 #### bot.canSeeBlock(block)
 
 Returns true or false depending on whether the bot can see the specified `block`.
