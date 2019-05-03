@@ -7,6 +7,7 @@ const plugins = {
   block_actions: require('./lib/plugins/block_actions'),
   blocks: require('./lib/plugins/blocks'),
   book: require('./lib/plugins/book'),
+  boss_bar: require('./lib/plugins/boss_bar'),
   chat: require('./lib/plugins/chat'),
   chest: require('./lib/plugins/chest'),
   command_block: require('./lib/plugins/command_block'),
@@ -24,16 +25,15 @@ const plugins = {
   kick: require('./lib/plugins/kick'),
   physics: require('./lib/plugins/physics'),
   rain: require('./lib/plugins/rain'),
+  ray_trace: require('./lib/plugins/ray_trace'),
   scoreboard: require('./lib/plugins/scoreboard'),
   settings: require('./lib/plugins/settings'),
   simple_inventory: require('./lib/plugins/simple_inventory'),
   sound: require('./lib/plugins/sound'),
   spawn_point: require('./lib/plugins/spawn_point'),
-  time: require('./lib/plugins/time'),
-  villager: require('./lib/plugins/villager'),
-  boss_bar: require('./lib/plugins/boss_bar'),
   tablist: require('./lib/plugins/tablist'),
-  ray_trace: require('./lib/plugins/ray_trace')
+  time: require('./lib/plugins/time'),
+  villager: require('./lib/plugins/villager')
 }
 const supportedVersions = require('./lib/version').supportedVersions
 

@@ -115,6 +115,7 @@
       - [bot.targetDigBlock](#bottargetdigblock)
       - [bot.isSleeping](#botissleeping)
       - [bot.scoreboards](#botscoreboards)
+      - [bot.scoreboard](#botscoreboard)
       - [bot.controlState](#botcontrolstate)
     - [Events](#events)
       - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
@@ -787,6 +788,15 @@ Boolean, whether or not you are in bed.
 #### bot.scoreboards
 
 All scoreboards known to the bot in an object scoreboard name -> scoreboard.
+
+#### bot.scoreboard
+
+All scoreboards known to the bot in an object scoreboard displaySlot -> scoreboard.
+
+ * `belowName` - scoreboard placed in belowName
+ * `sidebar` - scoreboard placed in sidebar
+ * `list` - scoreboard placed in list
+ * `0-18` - slots defined in [protocol](https://wiki.vg/Protocol#Display_Scoreboard)
 
 #### bot.controlState
 
