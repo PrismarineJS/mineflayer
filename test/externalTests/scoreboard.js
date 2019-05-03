@@ -26,7 +26,7 @@ module.exports = () => (bot, done) => {
     assert.strictEqual(test2.name, test2.title)
     assert.strictEqual(test1, bot.scoreboard.sidebar)
 
-    bot.once('scoreboardScoreUpdated', (scoreboard, updated) => {
+    bot.once('scoreUpdated', (scoreboard, updated) => {
       assert.strictEqual(scoreboard.itemsMap[bot.username], updated)
       done()
     })
