@@ -5,3 +5,5 @@ package-lock.json
 yarn.lock
 /README.md
 versions/
+server_jars/
+test/server_*

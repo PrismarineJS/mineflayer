@@ -21,12 +21,15 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
     beforeEach((done) => {
       server = mc.createServer({
         'online-mode': false,
-        version: supportedVersion
+        version: supportedVersion,
+        // 25565 - local server, 25566 - proxy server
+        port: 25567
       })
       server.on('listening', () => {
         bot = mineflayer.createBot({
           username: 'player',
-          version: supportedVersion
+          version: supportedVersion,
+          port: 25567
         })
         done()
       })
@@ -177,6 +180,82 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
       })
     })
     describe('entities', () => {
+      it('player displayName', (done) => {
+        server.on('login', (client) => {
+          bot.on('entitySpawn', (entity) => {
+            const player = bot.players[entity.username]
+            assert.strictEqual(entity.username, player.displayName.toString())
+            client.write('player_info', {
+              id: 56,
+              state: 'play',
+              action: 3,
+              length: 1,
+              data: [{
+                UUID: '1-2-3-4',
+                name: 'bot5',
+                propertiesLength: 0,
+                properties: [],
+                gamemode: 0,
+                ping: 0,
+                hasDisplayName: true,
+                displayName: '{"text":"wvffle"}'
+              }]
+            })
+          })
+
+          bot.once('playerUpdated', (player) => {
+            assert.strictEqual('wvffle', player.displayName.toString())
+            client.write('player_info', {
+              id: 56,
+              state: 'play',
+              action: 3,
+              length: 1,
+              data: [{
+                UUID: '1-2-3-4',
+                name: 'bot5',
+                propertiesLength: 0,
+                properties: [],
+                gamemode: 0,
+                ping: 0,
+                hasDisplayName: false
+              }]
+            })
+
+            bot.once('playerUpdated', (player) => {
+              assert.strictEqual(player.entity.username, player.displayName.toString())
+              done()
+            })
+          })
+
+          client.write('player_info', {
+            id: 56,
+            state: 'play',
+            action: 0,
+            length: 1,
+            data: [{
+              UUID: '1-2-3-4',
+              name: 'bot5',
+              propertiesLength: 0,
+              properties: [],
+              gamemode: 0,
+              ping: 0,
+              hasDisplayName: false
+            }]
+          })
+
+          client.write('named_entity_spawn', {
+            entityId: 56,
+            playerUUID: '1-2-3-4',
+            x: 1,
+            y: 2,
+            z: 3,
+            yaw: 0,
+            pitch: 0,
+            currentItem: -1,
+            metadata: []
+          })
+        })
+      })
       it('sets players[player].entity to null upon despawn', (done) => {
         let serverClient = null
         bot.once('entitySpawn', (entity) => {

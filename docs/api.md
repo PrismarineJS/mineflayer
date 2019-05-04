@@ -76,9 +76,18 @@
       - [villager.trades](#villagertrades)
     - [mineflayer.ScoreBoard](#mineflayerscoreboard)
       - [ScoreBoard.name](#scoreboardname)
-      - [ScoreBoard.displayText](#scoreboarddisplaytext)
+      - [ScoreBoard.title](#scoreboardtitle)
+      - [ScoreBoard.itemsMap](#scoreboarditemsmap)
       - [ScoreBoard.items](#scoreboarditems)
-      - [ScoreBoard.position](#scoreboardposition)
+    - [mineflayer.BossBar](#mineflayerbossbar)
+      - [BossBar.title](#bossbartitle)
+      - [BossBar.health](#bossbarhealth)
+      - [BossBar.dividers](#bossbardividers)
+      - [BossBar.entityUUID](#bossbarentityuuid)
+      - [BossBar.shouldDarkenSky](#bossbarshoulddarkensky)
+      - [BossBar.isDragonBar](#bossbarisdragonbar)
+      - [BossBar.createFog](#bossbarcreatefog)
+      - [BossBar.color](#bossbarcolor)
   - [Bot](#bot)
     - [mineflayer.createBot(options)](#mineflayercreatebotoptions)
     - [Properties](#properties)
@@ -93,6 +102,7 @@
       - [bot.game.hardcore](#botgamehardcore)
       - [bot.game.worldHeight](#botgameworldheight)
       - [bot.game.maxPlayers](#botgamemaxplayers)
+    - [bot.player](#botplayer)
       - [bot.players](#botplayers)
       - [bot.isRaining](#botisraining)
       - [bot.chatPatterns](#botchatpatterns)
@@ -115,6 +125,7 @@
       - [bot.targetDigBlock](#bottargetdigblock)
       - [bot.isSleeping](#botissleeping)
       - [bot.scoreboards](#botscoreboards)
+      - [bot.scoreboard](#botscoreboard)
       - [bot.controlState](#botcontrolstate)
     - [Events](#events)
       - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
@@ -174,11 +185,18 @@
       - ["sleep"](#sleep)
       - ["wake"](#wake)
       - ["experience"](#experience)
-      - ["scoreboardObjective" (scoreboardName, displayText)](#scoreboardobjective-scoreboardname-displaytext)
-      - ["scoreboardScore" (scoreboardName, itemName, value)](#scoreboardscore-scoreboardname-itemname-value)
-      - ["scoreboardDisplayObjective" (scoreboardName, position)](#scoreboarddisplayobjective-scoreboardname-position)
+      - ["scoreboardCreated" (scoreboard)](#scoreboardcreated-scoreboard)
+      - ["scoreboardDeleted" (scoreboard)](#scoreboarddeleted-scoreboard)
+      - ["scoreboardTitleChanged" (scoreboard)](#scoreboardtitlechanged-scoreboard)
+      - ["scoreUpdated" (scoreboard, item)](#scoreupdated-scoreboard-item)
+      - ["scoreRemoved" (scoreboard, item)](#scoreremoved-scoreboard-item)
+      - ["scoreboardPosition" (position, scoreboard)](#scoreboardposition-position-scoreboard)
+      - ["bossBarCreated" (bossBar)](#bossbarcreated-bossbar)
+      - ["bossBarDeleted" (bossBar)](#bossbardeleted-bossbar)
+      - ["bossBarUpdated" (bossBar)](#bossbarupdated-bossbar)
     - [Functions](#functions)
       - [bot.blockAt(point)](#botblockatpoint)
+      - [bot.blockInSight(maxSteps, vectorLength)](#botblockinsightmaxsteps-vectorlength)
       - [bot.canSeeBlock(block)](#botcanseeblockblock)
       - [bot.findBlock(options)](#botfindblockoptions)
       - [bot.canDigBlock(block)](#botcandigblockblock)
@@ -187,6 +205,7 @@
     - [Methods](#methods)
       - [bot.end()](#botend)
       - [bot.quit(reason)](#botquitreason)
+      - [bot.tabComplete(str, cb, [assumeCommand], [sendBlockInSight])](#bottabcompletestr-cb-assumecommand-sendblockinsight)
       - [bot.chat(message)](#botchatmessage)
       - [bot.whisper(username, message)](#botwhisperusername-message)
       - [bot.chatAddPattern(pattern, chatType, description)](#botchataddpatternpattern-chattype-description)
@@ -210,6 +229,8 @@
       - [bot.placeBlock(referenceBlock, faceVector, cb)](#botplaceblockreferenceblock-facevector-cb)
       - [bot.activateBlock(block, [callback])](#botactivateblockblock-callback)
       - [bot.activateEntity(entity, [callback])](#botactivateentityentity-callback)
+      - [bot.consume(callback)](#botconsumecallback)
+      - [bot.fish(callback)](#botfishcallback)
       - [bot.activateItem()](#botactivateitem)
       - [bot.deactivateItem()](#botdeactivateitem)
       - [bot.useOn(targetEntity)](#botuseontargetentity)
@@ -307,6 +328,21 @@ See [prismarine-entity](https://github.com/PrismarineJS/prismarine-entity)
 ### Block
 
 See [prismarine-block](https://github.com/PrismarineJS/prismarine-block)
+
+Also `block.blockEntity` is additional field with block entity data as `Object`
+```js
+// sign.blockEntity
+{
+  x: -53,
+  y: 88,
+  z: 66,
+  id: 'minecraft:sign', // 'Sign' in 1.10
+  Text1: { toString: Function }, // ChatMessage object
+  Text2: { toString: Function }, // ChatMessage object
+  Text3: { toString: Function }, // ChatMessage object
+  Text4: { toString: Function }, // ChatMessage object
+}
+```
 
 ### Biome
 
@@ -602,18 +638,63 @@ Looks like:
 
 Name of the scoreboard.
 
-#### ScoreBoard.displayText
+#### ScoreBoard.title
 
 The title of the scoreboard (does not always equal the name)
 
+#### ScoreBoard.itemsMap
+
+An object with all items in the scoreboard in it
+```js
+{
+  wvffle: { name: 'wvffle', value: 3 },
+  dzikoysk: { name: 'dzikoysk', value: 6 }
+}
+```
+
 #### ScoreBoard.items
 
-An object with all items in the scoreboard in it ( {"item1": "Value1, ...} )
+An array with all sorted items in the scoreboard in it
+```js
+[
+  { name: 'dzikoysk', value: 6 },
+  { name: 'wvffle', value: 3 }
+]
+```
 
-#### ScoreBoard.position
+### mineflayer.BossBar
 
-The place in which the scoreboard is displayed.
+#### BossBar.title
 
+Title of boss bar, instance of ChatMessage
+
+#### BossBar.health
+
+Percent of boss health, from `0` to `1`
+
+#### BossBar.dividers
+
+Number of boss bar dividers, one of `0`, `6`, `10`, `12`, `20`
+
+#### BossBar.entityUUID
+
+Boss bar entity uuid
+
+#### BossBar.shouldDarkenSky
+
+Determines whether or not to darken the sky
+
+#### BossBar.isDragonBar
+
+Determines whether or not boss bar is dragon bar
+
+#### BossBar.createFog
+
+Determines whether or not boss bar creates fog
+
+#### BossBar.color
+
+Determines what color the boss bar color is, one of `pink`, `blue`, `red`, `green`, `yellow`, `purple`, `white`
 
 ## Bot
 
@@ -674,17 +755,22 @@ Coordinates to the main spawn point, where all compasses point to.
 
 #### bot.game.maxPlayers
 
-#### bot.players
+### bot.player
 
-Map of username to people playing the game. A player looks like this:
-
+Bot's player object
 ```js
 {
   username: 'player',
+  displayName: { toString: Function }, // ChatMessage object.
+  gamemode: 0,
   ping: 28,
   entity: entity, // null if you are too far away
 }
 ```
+
+#### bot.players
+
+Map of username to people playing the game.
 
 #### bot.isRaining
 
@@ -787,6 +873,15 @@ Boolean, whether or not you are in bed.
 #### bot.scoreboards
 
 All scoreboards known to the bot in an object scoreboard name -> scoreboard.
+
+#### bot.scoreboard
+
+All scoreboards known to the bot in an object scoreboard displaySlot -> scoreboard.
+
+ * `belowName` - scoreboard placed in belowName
+ * `sidebar` - scoreboard placed in sidebar
+ * `list` - scoreboard placed in list
+ * `0-18` - slots defined in [protocol](https://wiki.vg/Protocol#Display_Scoreboard)
 
 #### bot.controlState
 
@@ -1043,17 +1138,41 @@ Fires when you wake up.
 
 Fires when `bot.experience.*` has updated.
 
-#### "scoreboardObjective" (scoreboardName, displayText)
+#### "scoreboardCreated" (scoreboard)
 
-Fires when a scorebard is added or updated.
+Fires when a scoreboard is added.
 
-#### "scoreboardScore" (scoreboardName, itemName, value)
+#### "scoreboardDeleted" (scoreboard)
+
+Fires when a scoreboard is deleted.
+
+#### "scoreboardTitleChanged" (scoreboard)
+
+Fires when a scoreboard's title is updated.
+
+#### "scoreUpdated" (scoreboard, item)
 
 Fires when the score of a item in a scoreboard is updated.
 
-#### "scoreboardDisplayObjective" (scoreboardName, position)
+#### "scoreRemoved" (scoreboard, item)
+
+Fires when the score of a item in a scoreboard is removed.
+
+#### "scoreboardPosition" (position, scoreboard)
 
 Fires when the position of a scoreboard is updated.
+
+#### "bossBarCreated" (bossBar)
+
+Fires when new boss bar is created.
+
+#### "bossBarDeleted" (bossBar)
+
+Fires when new boss bar is deleted.
+
+#### "bossBarUpdated" (bossBar)
+
+Fires when new boss bar is updated.
 
 ### Functions
 
@@ -1061,6 +1180,12 @@ Fires when the position of a scoreboard is updated.
 
 Returns the block at `point` or `null` if that point is not loaded.
 See `Block`.
+
+#### bot.blockInSight(maxSteps, vectorLength)
+
+Returns the block at which bot is looking at or `null`
+ * `maxSteps` - Number of steps to raytrace, defaults to 256.
+ * `vectorLength` - Length of raytracing vector, defaults to `5/16`.
 
 #### bot.canSeeBlock(block)
 
@@ -1108,6 +1233,15 @@ End the connection with the server.
 #### bot.quit(reason)
 
 Gracefully disconnect from the server with the given reason (defaults to 'disconnect.quitting').
+
+#### bot.tabComplete(str, cb, [assumeCommand], [sendBlockInSight])
+
+Requests chat completion from the server.
+ * `str` - String to complete.
+ * `callback(matches)`
+   - `matches` - Array of matching strings.
+ * `assumeCommand` - Field sent to server, defaults to false.
+ * `sendBlockInSight` - Field sent to server, defaults to true. Set this option to false if you want more performance.
 
 #### bot.chat(message)
 
@@ -1267,6 +1401,18 @@ Activate an entity, useful for villager for example.
 
  * `entity` - the entity to activate
  * `callback(err)` - (optional) called when the entity has been activated
+
+#### bot.consume(callback)
+
+Eat / drink currently held item
+
+ * `callback(error)` - called when consume ends
+
+#### bot.fish(callback)
+
+Use fishing rod
+
+ * `callback(error)` - called when fishing ends
 
 #### bot.activateItem()
 

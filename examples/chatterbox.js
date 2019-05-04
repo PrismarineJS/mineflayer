@@ -42,6 +42,9 @@ bot.on('chat', (username, message) => {
     case 'wearing':
       sayEquipment()
       break
+    case 'nick':
+      sayNick()
+      break
     case 'spawn':
       saySpawnPoint()
       break
@@ -97,6 +100,10 @@ bot.on('chat', (username, message) => {
 
   function quit (username) {
     bot.quit(`${username} told me to`)
+  }
+
+  function sayNick () {
+    bot.chat(`My name is ${bot.player.displayName}`)
   }
 })
 
