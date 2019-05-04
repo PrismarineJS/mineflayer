@@ -21,12 +21,15 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
     beforeEach((done) => {
       server = mc.createServer({
         'online-mode': false,
-        version: supportedVersion
+        version: supportedVersion,
+        // 25565 - local server, 25566 - proxy server
+        port: 25567
       })
       server.on('listening', () => {
         bot = mineflayer.createBot({
           username: 'player',
-          version: supportedVersion
+          version: supportedVersion,
+          port: 25567
         })
         done()
       })
