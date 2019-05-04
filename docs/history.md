@@ -1,3 +1,17 @@
+## 2.8.0
+
+lot of new features from @wvffle :
+
+* support for block entities
+* improved block bars support
+* add block in sight
+* fix scoreboard support
+* add eating support
+* add tab complete support
+* add fishing support
+* better sign text support
+* repl example
+
 ## 2.7.5
 
 * improve basic find block a bit
