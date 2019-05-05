@@ -3,9 +3,12 @@ const assert = require('assert')
 module.exports = () => (bot, done) => {
   bot.test.sayEverywhere('/scoreboard objectives add test1 health')
   bot.test.sayEverywhere('/scoreboard objectives add test2 deathCount')
+  bot.test.sayEverywhere('/scoreboard objectives add test3 dummy')
   bot.test.sayEverywhere('/scoreboard objectives setdisplay sidebar test1')
   bot.test.sayEverywhere('/scoreboard objectives setdisplay belowName test1')
   bot.test.sayEverywhere('/scoreboard objectives setdisplay list test2')
+  bot.test.sayEverywhere(`/scoreboard players add ${bot.username} test3 1`)
+  bot.test.sayEverywhere(`/scoreboard players reset ${bot.username}`)
 
   let scoreboards = Object.keys(bot.scoreboards).length
   if (scoreboards === 2) {
