@@ -1328,11 +1328,11 @@ Set the direction your head is facing.
 
 Changes the text on the sign.
 
-#### bot.equip(item, destination, [callback])
+#### bot.equip(ID, destination, [callback])
 
-Equips an item from your inventory.
+Equips an item by ID from your inventory.
 
- * `item` - `Item` instance. See `window.items()`.
+ * `item` - `Item.type` number. See `window.items()`.
  * `destination`
    - `"hand"` - `null` aliases to this
    - `"head"`
