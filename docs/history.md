@@ -1,3 +1,7 @@
+## 2.8.1
+
+fix error on scoreboard removal
+
 ## 2.8.0
 
 lot of new features from @wvffle :
