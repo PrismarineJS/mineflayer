@@ -1,6 +1,10 @@
+## 2.9.0
+
+* add universal chat patterns to support more chat plugins
+
 ## 2.8.1
 
-fix error on scoreboard removal
+* fix error on scoreboard removal
 
 ## 2.8.0
 
