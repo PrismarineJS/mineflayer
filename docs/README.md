@@ -46,6 +46,7 @@ bot.on('chat', function(username, message) {
   if (username === bot.username) return;
   bot.chat(message);
 });
+bot.on('error', err => console.log(err))
 ```
 
 ### Debug
