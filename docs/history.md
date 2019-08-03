@@ -1,3 +1,7 @@
+## 2.9.1
+* improve boss bar
+* add checks in scoreboard implementation
+
 ## 2.9.0
 
 * add universal chat patterns to support more chat plugins
@@ -140,7 +144,7 @@ lot of new features from @wvffle :
  * add extra tolerance for malformed sign packets (thanks @G07cha)
  * adapt to new minecraft data entities format
  * update minecraft-protocol to 0.17.2
- 
+
 
 ## 1.6.0
 
@@ -199,7 +203,7 @@ lot of new features from @wvffle :
  * add a callback to bot.look and bot.lookAt
  * when receiving a remove effect packet : if the corresponding effect doesn't exist yet, emit an event with just the id of the effect (thanks Pietro210)
  * swing arm immediately when digging (thanks gipsy-king)
- * now updates bot.entity.heldItem when bot.heldItem is updated 
+ * now updates bot.entity.heldItem when bot.heldItem is updated
  * fix cli args in examples
  * add forcedMove event
  * fix equipment api
@@ -510,7 +514,7 @@ recalled
 ## 0.0.3
 
  * add `bot.blockAt(point)` which returns a `Block`
- * add `mineflayer.blocks`, `mineflayer.biomes`, and `mineflayer.items` 
+ * add `mineflayer.blocks`, `mineflayer.biomes`, and `mineflayer.items`
  * add bot `chunk` event
  * fix `spawn` event and `settings.showCape`
  * added chatterbox example
