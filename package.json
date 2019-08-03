@@ -7,6 +7,7 @@
     "test": "mocha --reporter spec",
     "pretest": "npm run lint",
     "lint": "standard",
+    "fix": "standard --fix",
     "prepare": "npm install require-self && require-self",
     "prepublishOnly": "cp docs/README.md README.md"
   },

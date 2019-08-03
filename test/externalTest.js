@@ -19,7 +19,7 @@ const propOverrides = {
   'spawn-npcs': 'false',
   'spawn-animals': 'false',
   'online-mode': 'false',
-  'gamemode': '1',
+  gamemode: '1',
   'spawn-monsters': 'false',
   'generate-structures': 'false'
 }
@@ -124,7 +124,7 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
         if (excludedTests.indexOf(test) === -1) {
           if (typeof testFunctions === 'object') {
             for (const testFunctionName in testFunctions) {
-              if (testFunctions.hasOwnProperty(testFunctionName)) {
+              if (testFunctions[testFunctionName] !== undefined) {
                 it(`${test} ${testFunctionName}`, ((testFunctionName => function (done) {
                   this.timeout(30000)
                   bot.test.sayEverywhere(`starting ${test} ${testFunctionName}`)

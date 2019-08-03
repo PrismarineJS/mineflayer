@@ -52,7 +52,7 @@ module.exports = (version) => {
 
   const funcs = {}
   for (const id in mcData.blocks) {
-    if (mcData.blocks.hasOwnProperty(id)) {
+    if (mcData.blocks[id] !== undefined) {
       const block = mcData.blocks[id]
       if (block.diggable && excludedBlocks.indexOf(block.name) === -1) {
         funcs[block.name] = ((blockId => (bot, done) => {

@@ -11,7 +11,7 @@ module.exports = () => (bot, done) => {
 
     bot.tabComplete('/weather', (err, matches) => {
       assert.strictEqual(err, undefined)
-      assert.deepStrictEqual(matches, [ '/weather' ])
+      assert.deepStrictEqual(matches, ['/weather'])
       done()
     }, false, false)
   }, false, false)
