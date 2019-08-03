@@ -1,0 +1,2 @@
+tasks:
+- command: npm install
