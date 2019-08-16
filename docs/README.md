@@ -9,6 +9,8 @@
 
 Create Minecraft bots with a powerful, stable, and high level JavaScript API.
 
+**1.13 and 1.14 support are not available, if you're interested to contribute on that, read https://github.com/PrismarineJS/prismarine-chunk/issues/57**
+
 ## Features
 
  * Supports Minecraft 1.8, 1.9, 1.10, 1.11 and 1.12.
