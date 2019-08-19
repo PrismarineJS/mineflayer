@@ -39,6 +39,6 @@
     "minecraft-wrap": "^1.2.1",
     "mocha": "^6.1.2",
     "require-self": "^0.2.1",
-    "standard": "^13.1.0"
+    "standard": "^14.0.0"
   }
 }
