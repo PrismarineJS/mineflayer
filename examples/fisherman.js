@@ -50,7 +50,7 @@ function onCollect (player, entity) {
 
 function startFishing () {
   bot.chat('Fishing')
-  bot.equip(mcData.itemsByName['fishing_rod'].id, 'hand', (err) => {
+  bot.equip(mcData.itemsByName.fishing_rod.id, 'hand', (err) => {
     if (err) {
       return bot.chat(err.message)
     }
@@ -79,7 +79,7 @@ function stopFishing () {
 function eat () {
   stopFishing()
 
-  bot.equip(mcData.itemsByName['fish'].id, 'hand', (err) => {
+  bot.equip(mcData.itemsByName.fish.id, 'hand', (err) => {
     if (err) {
       return bot.chat(err.message)
     }

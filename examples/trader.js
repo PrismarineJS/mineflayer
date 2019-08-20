@@ -76,7 +76,7 @@ function showTrades (id) {
     case bot.entity.position.distanceTo(e.position) > 3:
       bot.chat('villager out of reach')
       break
-    default:
+    default: {
       const villager = bot.openVillager(e)
       villager.once('ready', () => {
         villager.close()
@@ -84,6 +84,7 @@ function showTrades (id) {
           bot.chat(`${i + 1}: ${trade}`)
         })
       })
+    }
   }
 }
 
@@ -99,7 +100,7 @@ function trade (id, index, count) {
     case bot.entity.position.distanceTo(e.position) > 3:
       bot.chat('villager out of reach')
       break
-    default:
+    default: {
       const villager = bot.openVillager(e)
       villager.once('ready', () => {
         const trade = villager.trades[index - 1]
@@ -134,6 +135,7 @@ function trade (id, index, count) {
             })
         }
       })
+    }
   }
 
   function hasResources (window, trade, count) {

@@ -21,11 +21,12 @@ bot.on('chat', (username, message) => {
   if (username === bot.username) return
   const command = message.split(' ')
   switch (true) {
-    case /^setCommandBlock (.+)$/.test(message):
+    case /^setCommandBlock (.+)$/.test(message): {
       const commandBlock = bot.findBlock({
         matching: 137
       })
       bot.setCommandBlock(commandBlock.position, command[1], false)
       break
+    }
   }
 })

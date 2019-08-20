@@ -59,12 +59,13 @@ bot.on('chat', (username, message) => {
     case /^chestminecart$/.test(message):
       watchChest(true)
       break
-    case /^invsee \w+( \d)?$/.test(message):
+    case /^invsee \w+( \d)?$/.test(message): {
       // invsee Herobrine [or]
       // invsee Herobrine 1
       const command = message.split(' ')
       useInvsee(command[0], command[1])
       break
+    }
   }
 })
 
