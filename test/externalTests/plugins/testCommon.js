@@ -30,10 +30,10 @@ function inject (bot) {
   }
 
   const superflatLayers = [
-    new Block(mcData.blocksByName['bedrock'].id),
-    new Block(mcData.blocksByName['dirt'].id),
-    new Block(mcData.blocksByName['dirt'].id),
-    new Block(mcData.blocksByName['grass'].id)
+    new Block(mcData.blocksByName.bedrock.id),
+    new Block(mcData.blocksByName.dirt.id),
+    new Block(mcData.blocksByName.dirt.id),
+    new Block(mcData.blocksByName.grass.id)
     // and then air
   ]
 

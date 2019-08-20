@@ -7,7 +7,7 @@ module.exports = () => (bot, done) => {
 
   const dirtCollectTest = [
     (cb) => {
-      bot.test.setInventorySlot(36, new Item(mcData.blocksByName['dirt'].id, 1, 0), cb)
+      bot.test.setInventorySlot(36, new Item(mcData.blocksByName.dirt.id, 1, 0), cb)
     },
     (cb) => {
       bot.test.fly(new Vec3(0, 2, 0), cb)
@@ -31,7 +31,7 @@ module.exports = () => (bot, done) => {
     (cb) => {
       // make sure we collected das dirt
       setTimeout(() => {
-        assert(Item.equal(bot.inventory.slots[36], new Item(mcData.blocksByName['dirt'].id, 1, 0)))
+        assert(Item.equal(bot.inventory.slots[36], new Item(mcData.blocksByName.dirt.id, 1, 0)))
         bot.test.sayEverywhere('dirt collect test: pass')
         cb()
       }, 1000)

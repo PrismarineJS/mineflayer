@@ -30,7 +30,7 @@ bot.on('message', (cm) => {
 
 function spawner () {
   const block = bot.findBlock({
-    matching: mcData.blocksByName['mob_spawner'].id,
+    matching: mcData.blocksByName.mob_spawner.id,
     point: bot.entity.position
   })
 
