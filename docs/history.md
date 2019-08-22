@@ -1,3 +1,8 @@
+## 2.9.2
+* improve pushback (thanks @Vap0r1ze)
+* more robust handling of tablist (thanks @wvffle)
+* ignore (with a warning) transaction without previous click
+
 ## 2.9.1
 * improve boss bar
 * add checks in scoreboard implementation
