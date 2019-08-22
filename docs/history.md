@@ -1,3 +1,6 @@
+## 2.9.3
+* fix typo in variable name actionId
+
 ## 2.9.2
 * improve pushback (thanks @Vap0r1ze)
 * more robust handling of tablist (thanks @wvffle)
