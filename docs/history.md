@@ -1,3 +1,6 @@
+## 2.9.4
+* enable catching and logging of errors by default
+
 ## 2.9.3
 * fix typo in variable name actionId
 
