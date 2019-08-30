@@ -1,3 +1,6 @@
+## 2.9.5
+* fix logErrors
+
 ## 2.9.4
 * enable catching and logging of errors by default
 
