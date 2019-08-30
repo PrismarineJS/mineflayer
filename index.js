@@ -54,8 +54,12 @@ function createBot (options = {}) {
   options.username = options.username || 'Player'
   options.version = options.version || false
   options.plugins = options.plugins || {}
+  options.logErrors = options.logErrors || true
   options.loadInternalPlugins = options.loadInternalPlugins !== false
   const bot = new Bot()
+  if(logErrors) {
+    bot.on('error', err => console.log(err))
+  }
 
   pluginLoader(bot, options)
   const internalPlugins = Object.keys(plugins)
