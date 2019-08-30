@@ -57,7 +57,7 @@ function createBot (options = {}) {
   options.logErrors = options.logErrors || true
   options.loadInternalPlugins = options.loadInternalPlugins !== false
   const bot = new Bot()
-  if(options.logErrors) {
+  if (options.logErrors) {
     bot.on('error', err => console.log(err))
   }
 
