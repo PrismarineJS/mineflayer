@@ -1,3 +1,6 @@
+## 2.9.6
+* fix logErrors option
+
 ## 2.9.5
 * fix logErrors
 
