@@ -54,7 +54,7 @@ function createBot (options = {}) {
   options.username = options.username || 'Player'
   options.version = options.version || false
   options.plugins = options.plugins || {}
-  options.logErrors = options.logErrors || true
+  options.logErrors = options.logErrors === undefined ? true : options.logErrors
   options.loadInternalPlugins = options.loadInternalPlugins !== false
   const bot = new Bot()
   if (options.logErrors) {
