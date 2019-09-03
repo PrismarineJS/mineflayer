@@ -3,6 +3,10 @@
   "version": "2.9.6",
   "description": "create minecraft bots with a stable, high level API",
   "main": "index.js",
+  "files": [
+    "lib",
+    "index.js"
+  ],
   "scripts": {
     "test": "mocha --reporter spec",
     "pretest": "npm run lint",
