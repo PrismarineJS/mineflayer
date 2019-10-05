@@ -114,6 +114,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
         })
         const chunk = new Chunk()
 
+        console.log(pos)
         chunk.setBlockType(pos, goldId)
         client.write('map_chunk', {
           x: 0,
