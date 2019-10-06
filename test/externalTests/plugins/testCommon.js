@@ -5,6 +5,7 @@ module.exports = inject
 function inject (bot) {
   const mcData = require('minecraft-data')(bot.version)
   const Block = require('prismarine-block')(bot.version)
+  console.log(bot.version)
   const Item = require('prismarine-item')(bot.version)
 
   bot.test = {}
@@ -71,7 +72,8 @@ function inject (bot) {
     }
 
     function placeAndResume (position, item) {
-      setInventorySlot(36, Item(item.type, 1, 0), () => {
+      console.log('place and resume with', item)
+      setInventorySlot(36, new Item(item.type, 1, 0), () => {
         placeBlock(36, position)
         resume()
       })
