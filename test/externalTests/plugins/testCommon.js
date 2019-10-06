@@ -41,12 +41,12 @@ function inject (bot) {
     console.log('reset blocks to superflat')
     const groundY = 4
     for (let y = groundY + 4; y >= groundY - 1; y--) {
-      const expectedBlock = superflatLayers[y].block
+      const expectedBlock = superflatLayers[y] === undefined ? null : superflatLayers[y].block
       for (let i = 0; i < deltas3x3.length; i++) {
         const position = bot.entity.position.plus(deltas3x3[i])
         position.y = y
         const block = bot.blockAt(position)
-        if (expectedBlock == null) {
+        if (expectedBlock === null) {
           if (block.name === 'air') continue
           // dig it
           return digAndResume(position)
@@ -145,7 +145,6 @@ function inject (bot) {
   function clearInventory (cb) {
     console.log('clear inventory')
     for (let i = 0; i < bot.inventory.slots.length; i++) {
-      console.log(bot.inventory.slots[i])
       if (bot.inventory.slots[i] == null) continue
       setInventorySlot(i, null, () => {
         // start over until we have nothing to do
