@@ -116,7 +116,7 @@ function inject (bot) {
   function setCreativeMode (value, cb) {
     // this function behaves the same whether we start in creative mode or not.
     // also, creative mode is always allowed for ops, even if server.properties says force-gamemode=true in survival mode.
-    let timeOut
+    let timeOut = null
     function onMessage (jsonMsg) {
       console.log(jsonMsg)
       switch (jsonMsg.translate) {
