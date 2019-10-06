@@ -57,6 +57,7 @@ function inject (bot) {
             // dig it
             return digAndResume(position)
           }
+          console.log('going to place layer ', y, 'with item ', superflatLayers[y].item)
           // place it
           return placeAndResume(position, superflatLayers[y].item)
         }
