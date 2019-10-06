@@ -59,7 +59,7 @@ function inject (bot) {
             return digAndResume(position)
           }
           console.log(expectedBlock.type, '!==', block.type)
-          console.log('going to place layer ', y, 'with item ', superflatLayers[y].item)
+          console.log('going to place layer ', y, 'with item ', superflatLayers[y].item.type)
           // place it
           return placeAndResume(position, superflatLayers[y].item)
         }
@@ -102,7 +102,7 @@ function inject (bot) {
         teleport(new Vec3(0, 4, 0), cb)
       },
       waitForChunksToLoad,
-      resetBlocksToSuperflat,
+      // resetBlocksToSuperflat,
       clearInventory
     ], cb)
   }
