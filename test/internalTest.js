@@ -120,7 +120,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
           x: 0,
           z: 0,
           groundUp: true,
-          bitMap: 0xffff,
+          bitMap: chunk.getMask(),
           chunkData: chunk.dump(),
           blockEntities: []
         })
@@ -164,7 +164,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
             x: 0,
             z: 0,
             groundUp: true,
-            bitMap: 0xffff,
+            bitMap: chunk.getMask(),
             chunkData: chunk.dump(),
             blockEntities: []
           })
