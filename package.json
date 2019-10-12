@@ -24,7 +24,7 @@
     "minecraft-protocol": "^1.8.1",
     "mojangson": "^0.2.1",
     "prismarine-biome": "^1.0.1",
-    "prismarine-block": "^1.1.1",
+    "prismarine-block": "PrismarineJS/prismarine-block",
     "prismarine-chunk": "hornta/prismarine-chunk#1_13",
     "prismarine-entity": "^0.2.0",
     "prismarine-item": "^1.1.0",
