@@ -2,22 +2,34 @@ const assert = require('assert')
 const vec3 = require('vec3')
 
 module.exports = () => (bot, done) => {
-  const mcData = require('minecraft-data')(bot.version)
+  const { blocksByName, findItemOrBlockByName } = require('minecraft-data')(bot.version)
   const Item = require('prismarine-item')(bot.version)
+
+  let populateBlockInventory = blocksByName.log
+  if (['1.13', '1.13.1', '1.13.2'].includes(bot.version)) {
+    populateBlockInventory = blocksByName.oak_log
+  }
+
+  let craftItem = 'planks'
+  if (['1.13', '1.13.1', '1.13.2'].includes(bot.version)) {
+    // should really fix this in minecraft-data...
+    craftItem = 'birch_planks'
+  }
+
   function findCraftingTable () {
     const cursor = vec3()
     for (cursor.x = bot.entity.position.x - 4; cursor.x < bot.entity.position.x + 4; cursor.x++) {
       for (cursor.y = bot.entity.position.y - 4; cursor.y < bot.entity.position.y + 4; cursor.y++) {
         for (cursor.z = bot.entity.position.z - 4; cursor.z < bot.entity.position.z + 4; cursor.z++) {
           const block = bot.blockAt(cursor)
-          if (block.type === 58) return block
+          if (block.type === blocksByName.crafting_table.id) return block
         }
       }
     }
   }
 
   function craft (amount, name, cb) {
-    const item = mcData.findItemOrBlockByName(name)
+    const item = findItemOrBlockByName(name)
     const craftingTable = findCraftingTable()
     const wbText = craftingTable ? 'with a crafting table, ' : 'without a crafting table, '
     if (item == null) {
@@ -53,7 +65,7 @@ module.exports = () => (bot, done) => {
     },
     bot.test.becomeSurvival,
     (cb) => {
-      craft(1, 'planks', cb)
+      craft(1, craftItem, cb)
     }
   ]
 
