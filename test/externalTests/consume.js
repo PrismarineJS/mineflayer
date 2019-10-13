@@ -3,6 +3,7 @@ const assert = require('assert')
 module.exports = () => (bot, done) => {
   done()
   return // skiped
+  // eslint-disable-next-line no-unreachable
   const Item = require('prismarine-item')(bot.version)
 
   const handler = (m) => {
