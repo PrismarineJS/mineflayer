@@ -7,7 +7,7 @@ module.exports = () => (bot, done) => {
 
   bot._client.on('open_sign_entity', (packet) => {
     const sign = bot.blockAt(new Vec3(packet.location))
-    bot.updateSign(sign, '1\n2\n3\n4')
+    bot.updateSign(sign, '1\n2\n3\n')
 
     setTimeout(() => {
       // Get updated sign
