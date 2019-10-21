@@ -235,6 +235,7 @@
       - [bot.deactivateItem()](#botdeactivateitem)
       - [bot.useOn(targetEntity)](#botuseontargetentity)
       - [bot.attack(entity)](#botattackentity)
+      - [bot.swingArm([hand])](#botswingarmhand)
       - [bot.mount(entity)](#botmountentity)
       - [bot.dismount()](#botdismount)
       - [bot.moveVehicle(left,forward)](#botmovevehicleleftforward)
@@ -1431,6 +1432,12 @@ use shears.
 #### bot.attack(entity)
 
 Attack a player or a mob.
+
+#### bot.swingArm([hand])
+
+Play an arm swing animation.
+
+ * `hand` can take `left` or `right` which is arm that is animated. Default: `right`
 
 #### bot.mount(entity)
 
