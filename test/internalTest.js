@@ -305,29 +305,19 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
           bot.on('entitySpawn', (entity) => {
             assert.strictEqual(entity.mobType, 'Creeper')
 
-            client.write('entity_metadata', {
-              entityId: 8,
-              metadata: {
-                data1: 'test',
-                data2: 'test'
-              }
-            })
-          })
-
-          bot.once('entityUpdate', (entity) => {
             const lastMeta = entity.metadata
-            bot.once('entityUpdate', (entity) => {
-              assert.ok('data2' in entity.metadata)
-              assert.strictEqual(entity.metadata.data1, 'test1')
-              assert.strictEqual(entity.metadata.data2, lastMeta.data2)
+            bot.on('entityUpdate', (entity) => {
+              assert.ok('1' in entity.metadata)
+              assert.strictEqual(entity.metadata[0], 1)
+              assert.strictEqual(entity.metadata[1], lastMeta[1])
               done()
             })
 
             client.write('entity_metadata', {
               entityId: 8,
-              metadata: {
-                data1: 'test1'
-              }
+              metadata: [
+                { type: 0, key: 0, value: 1 }
+              ]
             })
           })
 
@@ -344,7 +334,10 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
             velocityX: 16,
             velocityY: 17,
             velocityZ: 18,
-            metadata: []
+            metadata: [
+              { type: 0, key: 0, value: 0 },
+              { type: 0, key: 1, value: 1 }
+            ]
           })
         })
       })
