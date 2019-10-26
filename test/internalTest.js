@@ -326,7 +326,7 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
             client.write('entity_metadata', {
               entityId: 8,
               metadata: {
-                data1: 'test1',
+                data1: 'test1'
               }
             })
           })
