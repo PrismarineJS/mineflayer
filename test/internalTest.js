@@ -30,6 +30,7 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
           username: 'player',
           version: supportedVersion,
           port: 25567
+          // logErrors: false
         })
         done()
       })
@@ -338,6 +339,29 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
               { type: 0, key: 0, value: 0 },
               { type: 0, key: 1, value: 1 }
             ]
+          })
+        })
+      })
+    })
+
+    describe('tablist', () => {
+      it('handles newlines in header and footer', (done) => {
+        const HEADER = 'asd\ndsa'
+        const FOOTER = '\nas\nas\nas\n'
+
+        bot._client.on('playerlist_header', (packet) => {
+          console.log(packet)
+          setImmediate(() => {
+            assert.strictEqual(bot.tablist.header.toString(), HEADER)
+            assert.strictEqual(bot.tablist.footer.toString(), FOOTER)
+            done()
+          })
+        })
+
+        server.on('login', (client) => {
+          client.write('playerlist_header', {
+            header: { text: '', extra: [{ text: HEADER, color: 'yellow' }] },
+            footer: { text: '', extra: [{ text: FOOTER, color: 'yellow' }] }
           })
         })
       })
