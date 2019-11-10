@@ -1,3 +1,14 @@
+## 2.10.0
+Lot of fixes from @wvffle in this release :
+* more checks when digging
+* expose a bot.swingArgm() function
+* better toString to chat message
+* fix handling of empty signs
+* correct handling of entity metadata change
+And some others :
+* new tps plugin by @SiebeDW
+* correct handling of chunk unloading by @IdanHo
+
 ## 2.9.6
 * fix logErrors option
 
