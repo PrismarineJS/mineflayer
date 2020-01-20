@@ -53,7 +53,6 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
         bot = mineflayer.createBot({
           username: 'flatbot',
           viewDistance: 'tiny',
-          verbose: true,
           port: PORT,
           host: 'localhost',
           version: supportedVersion

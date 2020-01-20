@@ -1,13 +1,16 @@
 # Mineflayer
 
-[![NPM version](https://badge.fury.io/js/mineflayer.svg)](http://badge.fury.io/js/mineflayer) 
+[![NPM version](https://badge.fury.io/js/mineflayer.svg)](http://badge.fury.io/js/mineflayer)
 [![Build Status](https://circleci.com/gh/PrismarineJS/mineflayer.svg?style=shield)](https://circleci.com/gh/PrismarineJS/mineflayer)
 [![Discord](https://img.shields.io/badge/chat-on%20discord-brightgreen.svg)](https://discord.gg/GsEFRM8)
 [![Gitter](https://img.shields.io/badge/chat-on%20gitter-brightgreen.svg)](https://gitter.im/PrismarineJS/general)
 [![Irc](https://img.shields.io/badge/chat-on%20irc-brightgreen.svg)](https://irc.gitter.im/)
 [![Greenkeeper badge](https://badges.greenkeeper.io/PrismarineJS/mineflayer.svg)](https://greenkeeper.io/)
+[![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 
 Create Minecraft bots with a powerful, stable, and high level JavaScript API.
+
+**1.13 and 1.14 support are not available, if you're interested to contribute on that, read https://github.com/PrismarineJS/prismarine-chunk/issues/57**
 
 ## Features
 
@@ -85,6 +88,7 @@ higher level API on top of Mineflayer.
  * [auto-auth](https://github.com/G07cha/MineflayerAutoAuth) - chat-based bot authentication
  * [Armor Manager](https://github.com/G07cha/MineflayerArmorManager) - automatic armor managment
  * [Bloodhound](https://github.com/Nixes/mineflayer-bloodhound) - determine who and what is responsible for damage to another entity
+ * [tps](https://github.com/SiebeDW/mineflayer-tps) - get the current tps (processed tps)
 
 ## Projects Using Mineflayer
 

@@ -235,6 +235,7 @@
       - [bot.deactivateItem()](#botdeactivateitem)
       - [bot.useOn(targetEntity)](#botuseontargetentity)
       - [bot.attack(entity)](#botattackentity)
+      - [bot.swingArm([hand])](#botswingarmhand)
       - [bot.mount(entity)](#botmountentity)
       - [bot.dismount()](#botdismount)
       - [bot.moveVehicle(left,forward)](#botmovevehicleleftforward)
@@ -709,6 +710,7 @@ Create and return an instance of the class bot.
  * version : default to automatically guessing the version of the server. Example of value : "1.12.2"
  * clientToken : generated if a password is given
  * accessToken : generated if a password is given
+ * logErrors : true by default, catch errors and log them
  * keepAlive : send keep alive packets : default to true
  * checkTimeoutInterval : default to `30*1000` (30s), check if keepalive received at that period, disconnect otherwise.
  * loadInternalPlugins : defaults to true
@@ -1430,6 +1432,12 @@ use shears.
 #### bot.attack(entity)
 
 Attack a player or a mob.
+
+#### bot.swingArm([hand])
+
+Play an arm swing animation.
+
+ * `hand` can take `left` or `right` which is arm that is animated. Default: `right`
 
 #### bot.mount(entity)
 

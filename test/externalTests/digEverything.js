@@ -81,7 +81,7 @@ function digSomething (blockId, bot, done) {
     },
     bot.test.clearInventory,
     (cb) => {
-      bot.test.setInventorySlot(36, new Item(mcData.itemsByName['diamond_pickaxe'].id, 1, 0), cb)
+      bot.test.setInventorySlot(36, new Item(mcData.itemsByName.diamond_pickaxe.id, 1, 0), cb)
     },
     bot.test.becomeSurvival,
     (cb) => {

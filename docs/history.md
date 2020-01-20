@@ -1,3 +1,31 @@
+## 2.10.0
+Lot of fixes from @wvffle in this release :
+* more checks when digging
+* expose a bot.swingArgm() function
+* better toString to chat message
+* fix handling of empty signs
+* correct handling of entity metadata change
+And some others :
+* new tps plugin by @SiebeDW
+* correct handling of chunk unloading by @IdanHo
+
+## 2.9.6
+* fix logErrors option
+
+## 2.9.5
+* fix logErrors
+
+## 2.9.4
+* enable catching and logging of errors by default
+
+## 2.9.3
+* fix typo in variable name actionId
+
+## 2.9.2
+* improve pushback (thanks @Vap0r1ze)
+* more robust handling of tablist (thanks @wvffle)
+* ignore (with a warning) transaction without previous click
+
 ## 2.9.1
 * improve boss bar
 * add checks in scoreboard implementation

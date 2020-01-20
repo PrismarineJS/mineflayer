@@ -9,8 +9,7 @@ const bot = mineflayer.createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
   username: process.argv[4] ? process.argv[4] : 'fisherman',
-  password: process.argv[5],
-  verbose: true
+  password: process.argv[5]
 })
 
 let mcData
@@ -50,7 +49,7 @@ function onCollect (player, entity) {
 
 function startFishing () {
   bot.chat('Fishing')
-  bot.equip(mcData.itemsByName['fishing_rod'].id, 'hand', (err) => {
+  bot.equip(mcData.itemsByName.fishing_rod.id, 'hand', (err) => {
     if (err) {
       return bot.chat(err.message)
     }
@@ -79,7 +78,7 @@ function stopFishing () {
 function eat () {
   stopFishing()
 
-  bot.equip(mcData.itemsByName['fish'].id, 'hand', (err) => {
+  bot.equip(mcData.itemsByName.fish.id, 'hand', (err) => {
     if (err) {
       return bot.chat(err.message)
     }

@@ -30,8 +30,7 @@ const bot = mineflayer.createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
   username: process.argv[4] ? process.argv[4] : 'chest',
-  password: process.argv[5],
-  verbose: true
+  password: process.argv[5]
 })
 
 bot.on('experience', () => {
@@ -59,12 +58,13 @@ bot.on('chat', (username, message) => {
     case /^chestminecart$/.test(message):
       watchChest(true)
       break
-    case /^invsee \w+( \d)?$/.test(message):
+    case /^invsee \w+( \d)?$/.test(message): {
       // invsee Herobrine [or]
       // invsee Herobrine 1
       const command = message.split(' ')
       useInvsee(command[0], command[1])
       break
+    }
   }
 })
 

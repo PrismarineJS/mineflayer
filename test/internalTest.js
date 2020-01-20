@@ -299,6 +299,48 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
           })
         })
       })
+
+      it('metadata', (done) => {
+        server.on('login', (client) => {
+          bot.on('entitySpawn', (entity) => {
+            assert.strictEqual(entity.mobType, 'Creeper')
+
+            const lastMeta = entity.metadata
+            bot.on('entityUpdate', (entity) => {
+              assert.ok('1' in entity.metadata)
+              assert.strictEqual(entity.metadata[0], 1)
+              assert.strictEqual(entity.metadata[1], lastMeta[1])
+              done()
+            })
+
+            client.write('entity_metadata', {
+              entityId: 8,
+              metadata: [
+                { type: 0, key: 0, value: 1 }
+              ]
+            })
+          })
+
+          client.write('spawn_entity_living', {
+            entityId: 8, // random
+            entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
+            type: 50, // creeper
+            x: 10,
+            y: 11,
+            z: 12,
+            yaw: 13,
+            pitch: 14,
+            headPitch: 14,
+            velocityX: 16,
+            velocityY: 17,
+            velocityZ: 18,
+            metadata: [
+              { type: 0, key: 0, value: 0 },
+              { type: 0, key: 1, value: 1 }
+            ]
+          })
+        })
+      })
     })
   })
 })

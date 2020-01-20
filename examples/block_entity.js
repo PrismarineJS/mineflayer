@@ -13,8 +13,7 @@ const bot = mineflayer.createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
   username: process.argv[4] ? process.argv[4] : 'block_entity',
-  password: process.argv[5],
-  verbose: true
+  password: process.argv[5]
 })
 
 let mcData
@@ -30,7 +29,7 @@ bot.on('message', (cm) => {
 
 function spawner () {
   const block = bot.findBlock({
-    matching: mcData.blocksByName['mob_spawner'].id,
+    matching: mcData.blocksByName.mob_spawner.id,
     point: bot.entity.position
   })
 
