@@ -30,7 +30,6 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
           username: 'player',
           version: supportedVersion,
           port: 25567
-          // logErrors: false
         })
         done()
       })
