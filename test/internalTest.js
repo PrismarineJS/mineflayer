@@ -350,7 +350,6 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
         const FOOTER = '\nas\nas\nas\n'
 
         bot._client.on('playerlist_header', (packet) => {
-          console.log(packet)
           setImmediate(() => {
             assert.strictEqual(bot.tablist.header.toString(), HEADER)
             assert.strictEqual(bot.tablist.footer.toString(), FOOTER)
@@ -360,8 +359,8 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
 
         server.on('login', (client) => {
           client.write('playerlist_header', {
-            header: { text: '', extra: [{ text: HEADER, color: 'yellow' }] },
-            footer: { text: '', extra: [{ text: FOOTER, color: 'yellow' }] }
+            header: JSON.stringify({ text: '', extra: [{ text: HEADER, color: 'yellow' }] }),
+            footer: JSON.stringify({ text: '', extra: [{ text: FOOTER, color: 'yellow' }] })
           })
         })
       })
