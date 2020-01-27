@@ -342,5 +342,27 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
         })
       })
     })
+
+    describe('tablist', () => {
+      it('handles newlines in header and footer', (done) => {
+        const HEADER = 'asd\ndsa'
+        const FOOTER = '\nas\nas\nas\n'
+
+        bot._client.on('playerlist_header', (packet) => {
+          setImmediate(() => {
+            assert.strictEqual(bot.tablist.header.toString(), HEADER)
+            assert.strictEqual(bot.tablist.footer.toString(), FOOTER)
+            done()
+          })
+        })
+
+        server.on('login', (client) => {
+          client.write('playerlist_header', {
+            header: JSON.stringify({ text: '', extra: [{ text: HEADER, color: 'yellow' }] }),
+            footer: JSON.stringify({ text: '', extra: [{ text: FOOTER, color: 'yellow' }] })
+          })
+        })
+      })
+    })
   })
 })
