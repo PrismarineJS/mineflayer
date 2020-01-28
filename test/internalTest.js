@@ -60,24 +60,6 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
         })
       })
     })
-    it('spawn event', (done) => {
-      server.on('login', (client) => {
-        const timeout = setTimeout(() => {
-          bot.removeListener('spawn', handler)
-          done(new Error('The spawn event wasn\'t triggered on connnection, when the bot was alive'))
-        }, 150)
-        const handler = () => {
-          clearTimeout(timeout)
-          done()
-        }
-        bot.once('spawn', handler)
-        client.write('update_health', {
-          health: 20,
-          food: 20,
-          foodSaturation: 0
-        })
-      })
-    })
     it('entity effects', (done) => {
       bot.once('entityEffect', (entity, effect) => {
         assert.strictEqual(entity.mobType, 'Creeper')
