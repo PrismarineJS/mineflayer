@@ -260,7 +260,7 @@
       - [bot.moveSlotItem(sourceSlot, destSlot, cb)](#botmoveslotitemsourceslot-destslot-cb)
       - [bot.updateHeldItem()](#botupdatehelditem)
     - [bot.creative](#botcreative)
-      - [bot.creative.setInventorySlot(slot, item)](#botcreativesetinventoryslotslot-item)
+      - [bot.creative.setInventorySlot(slot, item, [callback])](#botcreativesetinventoryslotslot-item-callback)
       - [bot.creative.flyTo(destination, [cb])](#botcreativeflytodestination-cb)
       - [bot.creative.startFlying()](#botcreativestartflying)
       - [bot.creative.stopFlying()](#botcreativestopflying)
@@ -1565,13 +1565,14 @@ This collection of apis is useful in creative mode.
 Detecting and changing gamemodes is not implemented here,
 but it is assumed and often required that the bot be in creative mode for these features to work.
 
-#### bot.creative.setInventorySlot(slot, item)
+#### bot.creative.setInventorySlot(slot, item, [callback])
 
 Gives the bot the specified item in the specified inventory slot.
 
  * `slot` is in inventory window coordinates (where 36 is the first quickbar slot, etc.).
  * `item` can presumably be anything, specified with arbitrary metadata, nbtdata, etc.
     If `item` is `null`, the item at the specified slot is deleted.
+ * `callback(error)` (optional) is a callback which gets fired when the servers sets the slot
 
 If this method changes anything, you can be notified via `bot.inventory.on("windowUpdate")`.
 
