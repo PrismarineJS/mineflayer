@@ -58,6 +58,7 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
           version: supportedVersion
         })
         commonTest(bot)
+        bot.test.port = PORT
 
         console.log('starting bot')
         bot.once('login', () => {
