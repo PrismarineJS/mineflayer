@@ -7,6 +7,7 @@ module.exports = () => (bot, done) => {
     if (client) client.end()
     cb()
   }
+
   const spawnEventTest = [
     cb => {
       // Test spawn event on login
@@ -17,31 +18,29 @@ module.exports = () => (bot, done) => {
         host: 'localhost',
         version: bot.version
       })
-      spawnBot.once('login', () => {
-        const timeout = setTimeout(() => {
-          spawnBot.removeListener('spawn', spawnHandler)
-          spawnBot.end()
-          assert.fail("spawn event wasn't triggered on connection")
-          cb()
-        }, 2500)
-        spawnBot.once('spawn', () => {
-          spawnHandler(timeout, spawnBot, cb)
-        })
+
+      const timeout = setTimeout(() => {
+        spawnBot.removeListener('spawn', spawnHandler)
+        spawnBot.end()
+        assert.fail("spawn event wasn't triggered on connection")
+        cb()
+      }, 4000)
+
+      spawnBot.once('spawn', () => {
+        spawnHandler(timeout, spawnBot, cb)
       })
     },
     cb => {
       // Test spawn event on death
       bot.chat('/kill')
-      bot.once('death', () => {
-        const timeout = setTimeout(() => {
-          bot.removeListener('spawn', spawnHandler)
-          bot.end()
-          assert.fail("spawn event wasn't triggered on death")
-          cb()
-        }, 2500)
-        bot.once('spawn', () => {
-          spawnHandler(timeout, null, cb)
-        })
+      const timeout = setTimeout(() => {
+        bot.removeListener('spawn', spawnHandler)
+        assert.fail("spawn event wasn't triggered on death")
+        cb()
+      }, 4000)
+
+      bot.once('spawn', () => {
+        spawnHandler(timeout, null, cb)
       })
     }
   ]
