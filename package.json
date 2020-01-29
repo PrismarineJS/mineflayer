@@ -9,6 +9,7 @@
     "lint": "standard",
     "fix": "standard --fix",
     "prepare": "npm install require-self && require-self",
+    "version": "auto-changelog -p && git add CHANGELOG.md",
     "prepublishOnly": "cp docs/README.md README.md"
   },
   "repository": {
@@ -35,6 +36,7 @@
     "vec3": "^0.1.3"
   },
   "devDependencies": {
+    "auto-changelog": "^1.16.2",
     "doctoc": "^1.0.0",
     "minecraft-wrap": "^1.2.1",
     "mocha": "^6.1.2",
