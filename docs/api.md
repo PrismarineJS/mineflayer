@@ -1568,11 +1568,12 @@ but it is assumed and often required that the bot be in creative mode for these 
 #### bot.creative.setInventorySlot(slot, item, [callback])
 
 Gives the bot the specified item in the specified inventory slot.
+If called twice on the same slot before first callback exceeds, first callback will have an error parameter
 
  * `slot` is in inventory window coordinates (where 36 is the first quickbar slot, etc.).
  * `item` can presumably be anything, specified with arbitrary metadata, nbtdata, etc.
     If `item` is `null`, the item at the specified slot is deleted.
- * `callback(error)` (optional) is a callback which gets fired when the servers sets the slot
+ * `callback(err)` (optional) is a callback which gets fired when the servers sets the slot
 
 If this method changes anything, you can be notified via `bot.inventory.on("windowUpdate")`.
 

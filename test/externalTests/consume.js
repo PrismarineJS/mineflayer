@@ -34,7 +34,9 @@ module.exports = () => (bot, done) => {
     }
   }
 
-  bot.test.setInventorySlot(36, new Item(297, 5, 0), () => {
+  bot.test.setInventorySlot(36, new Item(297, 5, 0), (err) => {
+    assert.ifError(err)
+
     // Cannot consume if bot.food === 20
     bot.consume((err) => {
       assert.notStrictEqual(err, undefined)

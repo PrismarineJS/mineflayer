@@ -5,7 +5,9 @@ module.exports = () => (bot, done) => {
 
   bot.test.sayEverywhere('/weather thunder')
   bot.test.sayEverywhere('/fill ~-5 ~-1 ~-5 ~5 ~-1 ~5 water')
-  bot.test.setInventorySlot(36, new Item(346, 1, 0), () => {
+  bot.test.setInventorySlot(36, new Item(346, 1, 0), (err) => {
+    assert.ifError(err)
+
     bot.lookAt(bot.entity.position, true, () => {
       bot.fish((err) => {
         setTimeout(() => {
