@@ -33,7 +33,8 @@ module.exports = () => (bot, done) => {
   })
 
   bot.lookAt(lowerBlock.position, true, () => {
-    bot.test.setInventorySlot(36, new Item(323, 1, 0), () => {
+    bot.test.setInventorySlot(36, new Item(323, 1, 0), (err) => {
+      assert.ifError(err)
       bot.placeBlock(lowerBlock, new Vec3(0, 1, 0), () => {})
     })
   })

@@ -1,3 +1,4 @@
+const assert = require('assert')
 const vec3 = require('vec3')
 
 module.exports = () => (bot, done) => {
@@ -45,7 +46,10 @@ module.exports = () => (bot, done) => {
 
   const craftTest = [
     (cb) => {
-      bot.test.setInventorySlot(36, new Item(mcData.blocksByName.log.id, 1, 0), cb)
+      bot.test.setInventorySlot(36, new Item(mcData.blocksByName.log.id, 1, 0), (err) => {
+        assert.ifError(err)
+        cb()
+      })
     },
     bot.test.becomeSurvival,
     (cb) => {

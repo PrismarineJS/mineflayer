@@ -71,7 +71,10 @@ function digSomething (blockId, bot, done) {
 
   const diggingTest = [
     (cb) => {
-      bot.test.setInventorySlot(36, new Item(blockId, 1, 0), cb)
+      bot.test.setInventorySlot(36, new Item(blockId, 1, 0), (err) => {
+        assert.ifError(err)
+        cb()
+      })
     },
     (cb) => {
       // TODO: find a better way than this setTimeout(cb,200);
@@ -81,7 +84,10 @@ function digSomething (blockId, bot, done) {
     },
     bot.test.clearInventory,
     (cb) => {
-      bot.test.setInventorySlot(36, new Item(mcData.itemsByName.diamond_pickaxe.id, 1, 0), cb)
+      bot.test.setInventorySlot(36, new Item(mcData.itemsByName.diamond_pickaxe.id, 1, 0), (err) => {
+        assert.ifError(err)
+        cb()
+      })
     },
     bot.test.becomeSurvival,
     (cb) => {

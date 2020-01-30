@@ -149,9 +149,8 @@ function inject (bot) {
       // already good to go
       return setImmediate(cb)
     }
-    bot.creative.setInventorySlot(targetSlot, item)
-    // TODO: instead of that timeout, it would be better to have a good callback inside setInventorySlot
-    setTimeout(cb, 500)
+
+    bot.creative.setInventorySlot(targetSlot, item, cb)
   }
 
   function teleport (position, cb) {
