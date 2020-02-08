@@ -1,3 +1,10 @@
+## 2.11.0
+* Expose columns & blockEntities (thanks @SiebeDW)
+* Create discord.js (thanks @SiebeDW)
+* change amount of slots based on version (thanks @IdanHo)
+* Fix 'respawn' event (thanks @ImHarvol)
+* Add callback to creative set block (thanks @wvffle)
+
 ## 2.10.0
 Lot of fixes from @wvffle in this release :
 * more checks when digging
