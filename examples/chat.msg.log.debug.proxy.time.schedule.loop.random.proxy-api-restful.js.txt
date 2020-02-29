@@ -1,3 +1,17 @@
+/**
+
+/npm install mineflayer
+/npm install socks
+/npm install proxy-agent
+/npm install https
+
+/node chat.msg.log.debug.proxy.time.schedule.loop.random.proxy-api-restful.js.txt
+
+SERVER ESTABLISH, 10 YEARS ONLINE, SIMPLE-API-RESTFUL-PROXY-RANDOM 20 IP PER IP PER DAY
+28/02/2020 - 22:08: TESTED AND RUNNING FOR 1.5.2--><--1.12.2 SERVERS, ONLY TYPE WINDOWS CMD AND RUN
+
+*/
+
 const mc = require('mineflayer')
 const socks = require('socks').SocksClient
 const ProxyAgent = require('proxy-agent')
