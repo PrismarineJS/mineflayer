@@ -1,0 +1,216 @@
+const mc = require('mineflayer')
+const socks = require('socks').SocksClient
+const ProxyAgent = require('proxy-agent')
+const https = require('https');
+
+
+var cco = 0;
+const tta = process.argv[2]
+
+function trystart(botname, target) {
+setInterval(function(){
+console.log(tta)
+try{
+
+start(botname, target)
+
+//throw "thrown message";
+}
+catch (e) 
+{
+  console.log("#############ERRO#####################");
+  console.log(e);
+  console.log("#############ERRO#####################");
+setTimeout(trystart(botname, target), 9000);
+}
+finally {
+  console.log("entering and leaving the finally block");
+}
+},9000);
+}
+
+function tryloop(i) {
+console.log(tta)
+try{
+
+start("Ttal" + i, tta)
+
+//throw "thrown message";
+}
+catch (e) 
+{
+  console.log("#############ERRO#####################");
+  console.log(e);
+  console.log("#############ERRO#####################");
+setTimeout(tryloop(i), 9000);
+}
+finally {
+  console.log("entering and leaving the finally block");
+}
+}
+
+
+for(var i = 1; i <= 5; i++) {
+tryloop(i);
+}
+
+
+
+
+
+
+
+
+function start(botname, target) {
+
+console.log(botname);
+
+https.get('https://api.getproxylist.com/proxy?protocol[]=socks5', (resp) => {
+let data = '';
+  resp.on('data', (chunk) => {
+    data += chunk;
+  });
+
+  // The whole response has been received. Print out the result.
+  resp.on('end', () => {
+    console.log(JSON.parse(data).explanation);
+console.log(data);
+console.log(JSON.parse(data).ip);
+
+
+//-------->START
+const proxyHost = JSON.parse(data).ip;
+const proxyPort = JSON.parse(data).port;
+
+const bot = mc.createBot({
+  connect: client => {
+    socks.createConnection({
+      proxy: {
+        host: proxyHost,
+        port: proxyPort,
+        type: 5
+      },
+      command: 'connect',
+      destination: {
+        host: "legacy.craftlandia.com.br",
+        port: 25565
+      }
+    }, (err, info) => {
+      if (err) {
+        console.log("########################err###############")
+        trystart(botname, target);
+        console.log(err)
+        console.log(err)
+        console.log(err)
+        console.log(err)
+        console.log(err)
+        console.log(err)
+        console.log("########################err###############")
+        return
+      }
+
+      client.setSocket(info.socket)
+      client.emit('connect')
+    })
+  },
+  agent: new ProxyAgent({ protocol: 'socks5', host: proxyHost, port: proxyPort }),
+  username: botname,
+  version: "1.12.2"
+})
+
+bot.on('connect', function () {
+  console.info('connected')
+})
+bot.on('login', function () {
+  console.info('login')
+})
+var count = 0;
+//var namet = random(16, "0123456789");
+bot.on('time', () => {
+ 
+  console.log(botname + " time: " + count++)
+  if(count == 9) {
+             //start(namet);
+             bot.chat("/register 123456");
+    }
+  if(count == 18) {
+             bot.chat("/login 123456");
+             
+    }
+  if(count == 30) {
+             console.log("30 final 19");
+             console.log(target);
+             bot.chat("/tell " + "zthiagor" + " oi, meu ip proxy e " + JSON.parse(data).ip.replace(/[.*]/g,","));
+             //count = 19;
+    }
+
+  if(count == 39) {
+             bot.chat("/tell gokuroth_b oi, meu ip proxy e " + JSON.parse(data).ip.replace(/[.*]/g,","));
+    }
+  if(count == 48) {
+             bot.chat("/tell " + "cetronado" + " oi, meu ip proxy e " + JSON.parse(data).ip.replace(/[.*]/g,","));
+             count = 0;
+    }
+
+
+  if(count == 56) {
+             bot.end();
+    }
+})
+
+bot.on('message', (message) => {
+  console.log(message.toAnsi())
+})
+
+bot.on('chat', (packet) => {
+  //console.log(packet)
+})
+
+bot.on('kick_disconnect', function (packet) {
+//start(botname)
+  console.info(color('Kicked for ' + packet.reason, 'blink+red'))
+  //process.exit(1)
+})
+
+bot.on('disconnect', function (packet) {
+  console.log('disconnected: ' + packet.reason)
+//start(botname, target)
+})
+
+var countt = 0;
+bot.on('packet', () => {
+  console.log("tick " + countt++)
+})
+
+bot.on('kicked', (m1,m2) => {
+  console.log(m1)
+console.log(m1)
+console.log(m1)
+console.log(m1)
+console.log(m1)
+console.log(m1)
+console.log(m1)
+console.log(m1)
+  trystart(botname, target);
+//start(botname, target)
+})
+//------------>END
+
+
+
+
+  });
+console.log(data);
+}).on("error", (err) => {
+  //start(botname, target)
+  trystart(botname, target);
+  console.log("Error: " + err.message);
+});
+}
+
+
+
+
+
+//const proxyHost = "24.249.199.14"
+//const proxyPort = 57335
