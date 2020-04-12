@@ -32,7 +32,7 @@ function inject (bot) {
 
   let grassName = 'grass'
   let itemsByName = 'blocksByName'
-  if (['1.13', '1.13.1', '1.13.2'].includes(bot.version)) {
+  if (bot.majorVersion === '1.13') {
     grassName = 'grass_block'
     itemsByName = 'itemsByName'
   }

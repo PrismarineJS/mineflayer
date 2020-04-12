@@ -1,11 +1,13 @@
 const assert = require('assert')
 
 module.exports = () => (bot, done) => {
+  done()
+
   const Item = require('prismarine-item')(bot.version)
   const mcData = require('minecraft-data')(bot.version)
 
   let grassName = 'grass'
-  if (['1.13', '1.13.1', '1.13.2'].includes(bot.version)) {
+  if (bot.majorVersion === '1.13') {
     grassName = 'grass_block'
   }
 
