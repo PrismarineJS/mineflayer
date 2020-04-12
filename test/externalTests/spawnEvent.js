@@ -32,7 +32,7 @@ module.exports = () => (bot, done) => {
     },
     cb => {
       // Test spawn event on death
-      bot.chat('/kill')
+      bot.test.sayEverywhere(`/kill ${bot.username}`)
       const timeout = setTimeout(() => {
         bot.removeListener('spawn', spawnHandler)
         assert.fail("spawn event wasn't triggered on death")

@@ -68,11 +68,14 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
         assert.strictEqual(effect.duration, 11)
         done()
       })
+      // Versions prior to 1.11 have capital first letter
+      const entities = mcData.entitiesByName
+      const creeperId = entities.creeper ? entities.creeper.id : entities.Creeper.id
       server.on('login', (client) => {
         client.write('spawn_entity_living', {
           entityId: 8, // random
           entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
-          type: 50, // creeper
+          type: creeperId,
           x: 10,
           y: 11,
           z: 12,
@@ -322,10 +325,13 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
             })
           })
 
+          // Versions prior to 1.11 have capital first letter
+          const entities = mcData.entitiesByName
+          const creeperId = entities.creeper ? entities.creeper.id : entities.Creeper.id
           client.write('spawn_entity_living', {
             entityId: 8, // random
             entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
-            type: 50, // creeper
+            type: creeperId,
             x: 10,
             y: 11,
             z: 12,
