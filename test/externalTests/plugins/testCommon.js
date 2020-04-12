@@ -66,7 +66,6 @@ function inject (bot) {
             // dig it
             return digAndResume(position)
           }
-          console.log(expectedBlock.type, '!==', block.type)
           console.log('going to place layer ', y, 'with item ', superflatLayers[y].item.type, position)
           // place it
           return placeAndResume(position, superflatLayers[y].item)
@@ -154,7 +153,6 @@ function inject (bot) {
   }
 
   function clearInventory (cb) {
-    console.log('clear inventory')
     for (let i = 0; i < bot.inventory.slots.length; i++) {
       if (bot.inventory.slots[i] == null) continue
       setInventorySlot(i, null, () => {
@@ -209,7 +207,6 @@ function inject (bot) {
   ]
 
   function waitForChunksToLoad (cb) {
-    console.log('wait for chunks around ' + bot.entity.position)
     // check 3x3 chunks around us
     for (let i = 0; i < deltas3x3.length; i++) {
       if (bot.blockAt(bot.entity.position.plus(deltas3x3[i].scaled(32))) == null) {
