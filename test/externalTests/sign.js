@@ -2,6 +2,7 @@ const assert = require('assert')
 const Vec3 = require('vec3')
 
 module.exports = () => (bot, done) => {
+  const mcData = require('minecraft-data')(bot.version)
   const Item = require('prismarine-item')(bot.version)
   const lowerBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
 
@@ -33,7 +34,7 @@ module.exports = () => (bot, done) => {
   })
 
   bot.lookAt(lowerBlock.position, true, () => {
-    bot.test.setInventorySlot(36, new Item(323, 1, 0), (err) => {
+    bot.test.setInventorySlot(36, new Item(mcData.itemsByName.sign.id, 1, 0), (err) => {
       assert.ifError(err)
       bot.placeBlock(lowerBlock, new Vec3(0, 1, 0), () => {})
     })

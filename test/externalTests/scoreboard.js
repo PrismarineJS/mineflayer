@@ -21,7 +21,6 @@ module.exports = () => (bot, done) => {
   }
 
   function test () {
-    bot.test.sayEverywhere('/kill')
     assert.notStrictEqual(bot.scoreboards.test1, undefined)
     assert.notStrictEqual(bot.scoreboards.test2, undefined)
 
@@ -33,5 +32,6 @@ module.exports = () => (bot, done) => {
       assert.strictEqual(scoreboard.itemsMap[bot.username], updated)
       done()
     })
+    bot.test.sayEverywhere(`/kill ${bot.username}`)
   }
 }

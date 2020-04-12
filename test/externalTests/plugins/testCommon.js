@@ -30,11 +30,18 @@ function inject (bot) {
     }
   }
 
+  let grassName = 'grass'
+  let itemsByName = 'blocksByName'
+  if (bot.majorVersion === '1.13') {
+    grassName = 'grass_block'
+    itemsByName = 'itemsByName'
+  }
+
   const superflatLayers = [
-    { block: new Block(mcData.blocksByName.bedrock.id), item: new Item(mcData.itemsByName.bedrock.id) },
-    { block: new Block(mcData.blocksByName.dirt.id), item: new Item(mcData.itemsByName.dirt.id) },
-    { block: new Block(mcData.blocksByName.dirt.id), item: new Item(mcData.itemsByName.dirt.id) },
-    { block: new Block(mcData.blocksByName.grass.id), item: new Item(mcData.itemsByName.grass.id) }
+    { block: new Block(mcData.blocksByName.bedrock.id), item: new Item(mcData[itemsByName].bedrock.id) },
+    { block: new Block(mcData.blocksByName.dirt.id), item: new Item(mcData[itemsByName].dirt.id) },
+    { block: new Block(mcData.blocksByName.dirt.id), item: new Item(mcData[itemsByName].dirt.id) },
+    { block: new Block(mcData.blocksByName[grassName].id), item: new Item(mcData[itemsByName][grassName].id) }
     // and then air
   ]
 
@@ -60,7 +67,7 @@ function inject (bot) {
             return digAndResume(position)
           }
           console.log(expectedBlock.type, '!==', block.type)
-          console.log('going to place layer ', y, 'with item ', superflatLayers[y].item.type)
+          console.log('going to place layer ', y, 'with item ', superflatLayers[y].item.type, position)
           // place it
           return placeAndResume(position, superflatLayers[y].item)
         }
@@ -74,7 +81,7 @@ function inject (bot) {
     }
 
     function placeAndResume (position, item) {
-      console.log('place and resume with', item)
+      // console.log('place and resume with', item)
       setInventorySlot(36, new Item(item.type, 1, 0), () => {
         placeBlock(36, position, resume)
       })
@@ -103,7 +110,7 @@ function inject (bot) {
         teleport(new Vec3(0, 4, 0), cb)
       },
       waitForChunksToLoad,
-      // resetBlocksToSuperflat,
+      resetBlocksToSuperflat,
       clearInventory
     ], cb)
   }
@@ -186,7 +193,7 @@ function inject (bot) {
 
   function sayEverywhere (message) {
     bot.chat(message)
-    // console.log(message)
+    console.log(message)
   }
 
   var deltas3x3 = [
