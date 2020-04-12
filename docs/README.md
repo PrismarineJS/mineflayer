@@ -10,7 +10,7 @@
 
 Create Minecraft bots with a powerful, stable, and high level JavaScript API.
 
-**1.13 and 1.14 support are not available, if you're interested to contribute on that, read https://github.com/PrismarineJS/prismarine-chunk/issues/57**
+**1.13 and 1.14 support are not available, if you're interested to contribute on that, read https://github.com/PrismarineJS/mineflayer/pull/712#issuecomment-538798767**
 
 ## Features
 
