@@ -193,7 +193,7 @@ function inject (bot) {
 
   function sayEverywhere (message) {
     bot.chat(message)
-    // console.log(message)
+    console.log(message)
   }
 
   var deltas3x3 = [
