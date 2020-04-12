@@ -26,7 +26,7 @@ module.exports = () => (bot, done) => {
 
           bot.test.setInventorySlot(trappedChestSlot, new Item(mcData[blockItemsByName].trapped_chest.id, 3, 0), (err) => {
             assert.ifError(err)
-            
+
             bot.test.setInventorySlot(boneSlot, new Item(mcData.itemsByName.bone.id, 3, 0), (err) => {
               assert.ifError(err)
               cb()
