@@ -2,12 +2,12 @@ const assert = require('assert')
 const vec3 = require('vec3')
 
 module.exports = () => (bot, done) => {
-  const { blocksByName, findItemOrBlockByName } = require('minecraft-data')(bot.version)
+  const { blocksByName, itemsByName, findItemOrBlockByName } = require('minecraft-data')(bot.version)
   const Item = require('prismarine-item')(bot.version)
 
   let populateBlockInventory = blocksByName.log
   if (['1.13', '1.13.1', '1.13.2'].includes(bot.version)) {
-    populateBlockInventory = blocksByName.oak_log
+    populateBlockInventory = itemsByName.birch_log
   }
 
   let craftItem = 'planks'
@@ -58,7 +58,7 @@ module.exports = () => (bot, done) => {
 
   const craftTest = [
     (cb) => {
-      bot.test.setInventorySlot(36, new Item(mcData.blocksByName.log.id, 1, 0), (err) => {
+      bot.test.setInventorySlot(36, new Item(populateBlockInventory.id, 1, 0), (err) => {
         assert.ifError(err)
         cb()
       })
