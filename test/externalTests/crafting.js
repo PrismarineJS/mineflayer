@@ -6,13 +6,10 @@ module.exports = () => (bot, done) => {
   const Item = require('prismarine-item')(bot.version)
 
   let populateBlockInventory = blocksByName.log
-  if (['1.13', '1.13.1', '1.13.2'].includes(bot.version)) {
-    populateBlockInventory = itemsByName.birch_log
-  }
-
   let craftItem = 'planks'
-  if (['1.13', '1.13.1', '1.13.2'].includes(bot.version)) {
+  if (bot.majorVersion === '1.13') {
     // should really fix this in minecraft-data...
+    populateBlockInventory = itemsByName.birch_log
     craftItem = 'birch_planks'
   }
 
