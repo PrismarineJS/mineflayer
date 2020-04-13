@@ -16,18 +16,27 @@ const bot = mineflayer.createBot({
 // /gamemode creative bee
 
 let i = 0
-function loop () {
+function loop (n) {
+  if (i > n) {
+    bot.chat('My flight was amazing !')
+    return
+  }
   i += 1
 
   const { position } = bot.entity
 
   // Draw a spiral
   bot.creative.flyTo(position.offset(Math.sin(i) * 2, 0.5, Math.cos(i) * 2), () => {
-    loop()
+    loop(n)
   })
 }
 
-bot.on('login', () => {
-  bot.creative.startFlying()
-  loop()
+bot.on('chat', (username, message) => {
+  if (username === bot.username) return
+  switch (message) {
+    case 'fly':
+      bot.creative.startFlying()
+      loop(10)
+      break
+  }
 })
