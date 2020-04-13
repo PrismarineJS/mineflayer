@@ -21,15 +21,15 @@ module.exports = () => (bot, done) => {
           }
           return true // stop listening
         }, cb)
-      }
-      /* cb => {
-        bot.test.tellAndListen(name, 'toss 1 dirt', (message) => {
+      },
+      cb => {
+        bot.test.tellAndListen(name, 'toss 64 dirt', (message) => {
           if (!message.startsWith('tossed 64 x dirt')) {
             assert.fail(`Unexpected message: ${message}`) // error
           }
           return true // stop listening
         }, cb)
-      } */
+      }
     ]
     setTimeout(() => {
       bot.test.callbackChain(inventoryTest, cb)
