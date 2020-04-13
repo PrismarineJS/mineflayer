@@ -28,13 +28,14 @@ bot.on('message', (cm) => {
 })
 
 function spawner () {
+  let block;
   if (bot.majorVersion === '1.13') {
-    const block = bot.findBlock({
+    block = bot.findBlock({
       matching: mcData.blocksByName.spawner.id,
       point: bot.entity.position
     })
   } else {
-    const block = bot.findBlock({
+    block = bot.findBlock({
       matching: mcData.blocksByName.mob_spawner.id,
       point: bot.entity.position
     })
