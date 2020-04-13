@@ -33,6 +33,11 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
+let mcData
+bot.once('inject_allowed', () => {
+  mcData = require('minecraft-data')(bot.version)
+})
+
 bot.on('experience', () => {
   bot.chat(`I am level ${bot.experience.level}`)
 })
@@ -81,7 +86,7 @@ function watchChest (minecart) {
   let chestToOpen
   if (minecart) {
     chestToOpen = Object.keys(bot.entities)
-      .map(id => bot.entities[id]).find(e => e.entityType === 10 &&
+      .map(id => bot.entities[id]).find(e => e.entityType === mcData.entitiesByName.chest_minecart &&
       e.objectData.intField === 1 &&
       bot.entity.position.distanceTo(e.position) < 3)
     if (!chestToOpen) {
@@ -90,7 +95,7 @@ function watchChest (minecart) {
     }
   } else {
     chestToOpen = bot.findBlock({
-      matching: [54, 130, 146]
+      matching: ['chest', 'ender_chest', 'trapped_chest'].map(name => mcData.blocksByName[name].id)
     })
     if (!chestToOpen) {
       bot.chat('no chest found')
@@ -168,7 +173,7 @@ function watchChest (minecart) {
 
 function watchFurnace () {
   const furnaceBlock = bot.findBlock({
-    matching: [61, 62]
+    matching: ['furnace', 'lit_furnace'].filter(name => mcData.blocksByName[name] !== undefined).map(name => mcData.blocksByName[name].id)
   })
   if (!furnaceBlock) {
     bot.chat('no furnace found')
@@ -256,7 +261,7 @@ function watchFurnace () {
 
 function watchDispenser () {
   const dispenserBlock = bot.findBlock({
-    matching: 23
+    matching: ['dispenser'].map(name => mcData.blocksByName[name].id)
   })
   if (!dispenserBlock) {
     bot.chat('no dispenser found')
@@ -333,7 +338,7 @@ function watchDispenser () {
 
 function watchEnchantmentTable () {
   const enchantTableBlock = bot.findBlock({
-    matching: 116
+    matching: ['enchanting_table'].map(name => mcData.blocksByName[name].id)
   })
   if (!enchantTableBlock) {
     bot.chat('no enchantment table found')
@@ -400,7 +405,8 @@ function watchEnchantmentTable () {
     }
 
     function addLapis () {
-      const item = itemByType(table.window.items(), 351)
+      const item = itemByType(table.window.items(), ['dye', 'purple_dye'].filter(name => mcData.itemByName[name] !== undefined)
+        .map(name => mcData.itemByName[name].id))
       if (item) {
         table.putLapis(item, (err) => {
           if (err) {
