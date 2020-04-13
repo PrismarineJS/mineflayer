@@ -28,14 +28,14 @@ bot.on('message', (cm) => {
 })
 
 function spawner () {
-  if (bot.majorVersion === '1.8' || bot.majorVersion === '1.9' || bot.majorVersion === '1.10' || bot.majorVersion === '1.11' || bot.majorVersion === '1.12') {
+  if (bot.majorVersion === '1.13') {
     const block = bot.findBlock({
-      matching: mcData.blocksByName.mob_spawner.id,
+      matching: mcData.blocksByName.spawner.id,
       point: bot.entity.position
     })
   } else {
     const block = bot.findBlock({
-      matching: mcData.blocksByName.spawner.id,
+      matching: mcData.blocksByName.mob_spawner.id,
       point: bot.entity.position
     })
   }
