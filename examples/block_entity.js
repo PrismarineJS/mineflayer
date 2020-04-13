@@ -28,19 +28,11 @@ bot.on('message', (cm) => {
 })
 
 function spawner () {
-  let block;
-  if (bot.majorVersion === '1.13') {
-    block = bot.findBlock({
-      matching: mcData.blocksByName.spawner.id,
-      point: bot.entity.position
-    })
-  } else {
-    block = bot.findBlock({
-      matching: mcData.blocksByName.mob_spawner.id,
-      point: bot.entity.position
-    })
-  }
-  
+  const blockName = (bot.majorVersion === '1.13') ? mcData.blocksByName.spawner.id : mcData.blocksByName.mob_spawner.id
+  const block = bot.findBlock({
+    matching: blockName,
+    point: bot.entity.position
+  })
 
   if (!block) {
     return bot.chat('Monster spawner not found')
