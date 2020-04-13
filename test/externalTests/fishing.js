@@ -1,11 +1,6 @@
 const assert = require('assert')
 
 module.exports = () => (bot, done) => {
-  if (bot.majorVersion === '1.13') {
-    done()
-    return
-  }
-
   const Item = require('prismarine-item')(bot.version)
   const mcData = require('minecraft-data')(bot.version)
 
@@ -29,7 +24,8 @@ module.exports = () => (bot, done) => {
   })
 
   bot.on('playerCollect', (collector, collected) => {
-    if (collected.kind === 'Drops') {
+    if (collected.type === 'object') {
+      bot.test.sayEverywhere('I caught: ' + collected.displayName)
       done()
     }
   })
