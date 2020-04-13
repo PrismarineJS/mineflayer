@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --reporter spec",
-    "pretest": "npm run lint",
+    "pretest": "npm run lint && require-self",
     "lint": "standard",
     "fix": "standard --fix",
     "prepare": "npm install require-self && require-self",
@@ -38,7 +38,7 @@
     "doctoc": "^1.0.0",
     "minecraft-wrap": "^1.2.1",
     "mocha": "^7.0.1",
-    "require-self": "^0.2.1",
+    "require-self": "^0.2.3",
     "standard": "^14.0.1"
   }
 }

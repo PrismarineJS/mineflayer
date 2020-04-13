@@ -1,5 +1,8 @@
 const Vec3 = require('vec3').Vec3
 
+const { spawn } = require('child_process')
+const process = require('process')
+
 module.exports = inject
 
 function inject (bot) {
@@ -17,6 +20,8 @@ function inject (bot) {
   bot.test.resetState = resetState
   bot.test.setInventorySlot = setInventorySlot
   bot.test.placeBlock = placeBlock
+  bot.test.runExample = runExample
+  bot.test.tellAndListen = tellAndListen
 
   function callbackChain (functions, cb) {
     let i = 0
@@ -222,5 +227,48 @@ function inject (bot) {
 
   function fly (delta, cb) {
     bot.creative.flyTo(bot.entity.position.plus(delta), cb)
+  }
+
+  function tellAndListen (to, what, listen, done) {
+    function chatHandler (username, message) {
+      if (username === to && listen(message)) {
+        bot.removeListener('chat', chatHandler)
+        done()
+      }
+    }
+    bot.on('chat', chatHandler)
+    bot.chat(what)
+  }
+
+  function runExample (file, run, cb) {
+    function joinHandler (message) {
+      if (message.json.translate === 'multiplayer.player.joined') {
+        bot.removeListener('message', joinHandler)
+        const childBotName = message.json.with[0].insertion
+        run(childBotName, closeExample)
+      }
+    }
+    bot.on('message', joinHandler)
+
+    const child = spawn('node', [file, 'localhost', `${bot.test.port}`])
+    child.on('close', (code) => {
+      console.log('close requested ' + code)
+      cb()
+    })
+
+    // Useful to debug child processes:
+    child.stdout.on('data', (data) => { console.log(`${data}`) })
+    child.stderr.on('data', (data) => { console.error(`${data}`) })
+
+    const timeout = setTimeout(() => {
+      console.log('Timeout, test took too long')
+      closeExample()
+    }, 10000)
+
+    function closeExample () {
+      if (timeout) clearTimeout(timeout)
+      console.log('kill process ' + child.pid)
+      process.kill(child.pid, 'SIGTERM')
+    }
   }
 }
