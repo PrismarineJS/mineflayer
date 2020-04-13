@@ -251,10 +251,6 @@ function inject (bot) {
     bot.on('message', joinHandler)
 
     const child = spawn('node', [file, 'localhost', `${bot.test.port}`])
-    child.on('close', (code) => {
-      console.log('close requested ' + code)
-      cb()
-    })
 
     // Useful to debug child processes:
     child.stdout.on('data', (data) => { console.log(`${data}`) })
@@ -262,12 +258,17 @@ function inject (bot) {
 
     const timeout = setTimeout(() => {
       console.log('Timeout, test took too long')
-      closeExample()
+      closeExample(new Error('Timeout, test took too long'))
     }, 10000)
 
-    function closeExample () {
+    function closeExample (err) {
       if (timeout) clearTimeout(timeout)
       console.log('kill process ' + child.pid)
+
+      child.once('close', (code) => {
+        console.log('close requested ' + code)
+        cb(err)
+      })
       process.kill(child.pid, 'SIGTERM')
     }
   }
