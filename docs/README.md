@@ -10,11 +10,9 @@
 
 Create Minecraft bots with a powerful, stable, and high level JavaScript API.
 
-**1.13 and 1.14 support are not available, if you're interested to contribute on that, read https://github.com/PrismarineJS/mineflayer/pull/712#issuecomment-538798767**
-
 ## Features
 
- * Supports Minecraft 1.8, 1.9, 1.10, 1.11 and 1.12.
+ * Supports Minecraft 1.8, 1.9, 1.10, 1.11, 1.12 and 1.13.
  * Entity knowledge and tracking.
  * Block knowledge. You can query the world around you.
  * Basic physics and movement - currently blocks are either "solid" or "empty".
