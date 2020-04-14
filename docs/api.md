@@ -213,6 +213,7 @@
       - [bot.loadPlugin(plugin)](#botloadpluginplugin)
       - [bot.loadPlugins(plugins)](#botloadpluginsplugins)
       - [bot.sleep(bedBlock, [cb])](#botsleepbedblock-cb)
+      - [bot.isABed(bedBlock)](#botisabedbedblock)
       - [bot.wake([cb])](#botwakecb)
       - [bot.setControlState(control, state)](#botsetcontrolstatecontrol-state)
       - [bot.clearControlStates()](#botclearcontrolstates)
@@ -1292,6 +1293,10 @@ Injects plugins see `bot.loadPlugin`.
 #### bot.sleep(bedBlock, [cb])
 
 Sleep in a bed. `bedBlock` should be a `Block` instance which is a bed. `cb` can have an err parameter if the bot cannot sleep.
+
+#### bot.isABed(bedBlock)
+
+Return true if `bedBlock` is a bed
 
 #### bot.wake([cb])
 
