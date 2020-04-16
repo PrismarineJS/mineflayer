@@ -41,7 +41,7 @@ bot.on('wake', () => {
 
 function goToSleep () {
   const bed = bot.findBlock({
-    matching: 26
+    matching: block => bot.isABed(block)
   })
   if (bed) {
     bot.sleep(bed, (err) => {

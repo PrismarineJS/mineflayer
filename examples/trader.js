@@ -25,9 +25,9 @@ const bot = mineflayer.createBot({
   username: process.argv[4] ? process.argv[4] : 'trader',
   password: process.argv[5]
 })
-let mcdata
+let mcData
 bot.once('inject_allowed', () => {
-  mcdata = require('minecraft-data')(bot.version)
+  mcData = require('minecraft-data')(bot.version)
 })
 
 bot.on('chat', (username, message) => {
@@ -50,7 +50,7 @@ bot.on('chat', (username, message) => {
 })
 
 function showVillagers () {
-  const villagers = Object.keys(bot.entities).map(id => bot.entities[id]).filter(e => e.entityType === 120)
+  const villagers = Object.keys(bot.entities).map(id => bot.entities[id]).filter(e => e.entityType === mcData.entitiesByName.villager)
   const closeVillagersId = villagers.filter(e => bot.entity.position.distanceTo(e.position) < 3).map(e => e.id)
   bot.chat(`found ${villagers.length} villagers`)
   bot.chat(`villager(s) you can trade with: ${closeVillagersId.join(', ')}`)
@@ -69,7 +69,7 @@ function showTrades (id) {
     case !e:
       bot.chat(`cant find entity with id ${id}`)
       break
-    case e.entityType !== 120:
+    case e.entityType !== mcData.entitiesByName.villager:
       bot.chat('entity is not a villager')
       break
     case bot.entity.position.distanceTo(e.position) > 3:
@@ -93,7 +93,7 @@ function trade (id, index, count) {
     case !e:
       bot.chat(`cant find entity with id ${id}`)
       break
-    case e.entityType !== 120:
+    case e.entityType !== mcData.entitiesByName.villager:
       bot.chat('entity is not a villager')
       break
     case bot.entity.position.distanceTo(e.position) > 3:
@@ -173,7 +173,7 @@ function stringifyItem (item) {
       text += ` enchanted with ${(ench || StoredEnchantments).value.value.map((e) => {
         const lvl = e.lvl.value
         const id = e.id.value
-        return mcdata.enchantments[id].displayName + ' ' + lvl
+        return mcData.enchantments[id].displayName + ' ' + lvl
       }).join(' ')}`
     }
   }

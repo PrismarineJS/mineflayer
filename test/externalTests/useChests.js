@@ -17,12 +17,14 @@ module.exports = () => (bot, done) => {
     const trappedChestSlot = 37
     const boneSlot = 38
 
+    const blockItemsByName = (bot.majorVersion === '1.13') ? 'itemsByName' : 'blocksByName'
+
     return [
       (cb) => {
-        bot.test.setInventorySlot(chestSlot, new Item(mcData.blocksByName.chest.id, 3, 0), (err) => {
+        bot.test.setInventorySlot(chestSlot, new Item(mcData[blockItemsByName].chest.id, 3, 0), (err) => {
           assert.ifError(err)
 
-          bot.test.setInventorySlot(trappedChestSlot, new Item(mcData.blocksByName.trapped_chest.id, 3, 0), (err) => {
+          bot.test.setInventorySlot(trappedChestSlot, new Item(mcData[blockItemsByName].trapped_chest.id, 3, 0), (err) => {
             assert.ifError(err)
 
             bot.test.setInventorySlot(boneSlot, new Item(mcData.itemsByName.bone.id, 3, 0), (err) => {

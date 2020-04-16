@@ -2,22 +2,31 @@ const assert = require('assert')
 const vec3 = require('vec3')
 
 module.exports = () => (bot, done) => {
-  const mcData = require('minecraft-data')(bot.version)
+  const { blocksByName, itemsByName, findItemOrBlockByName } = require('minecraft-data')(bot.version)
   const Item = require('prismarine-item')(bot.version)
+
+  let populateBlockInventory = blocksByName.log
+  let craftItem = 'planks'
+  if (bot.majorVersion === '1.13') {
+    // should really fix this in minecraft-data...
+    populateBlockInventory = itemsByName.birch_log
+    craftItem = 'birch_planks'
+  }
+
   function findCraftingTable () {
     const cursor = vec3()
     for (cursor.x = bot.entity.position.x - 4; cursor.x < bot.entity.position.x + 4; cursor.x++) {
       for (cursor.y = bot.entity.position.y - 4; cursor.y < bot.entity.position.y + 4; cursor.y++) {
         for (cursor.z = bot.entity.position.z - 4; cursor.z < bot.entity.position.z + 4; cursor.z++) {
           const block = bot.blockAt(cursor)
-          if (block.type === 58) return block
+          if (block.type === blocksByName.crafting_table.id) return block
         }
       }
     }
   }
 
   function craft (amount, name, cb) {
-    const item = mcData.findItemOrBlockByName(name)
+    const item = findItemOrBlockByName(name)
     const craftingTable = findCraftingTable()
     const wbText = craftingTable ? 'with a crafting table, ' : 'without a crafting table, '
     if (item == null) {
@@ -46,14 +55,14 @@ module.exports = () => (bot, done) => {
 
   const craftTest = [
     (cb) => {
-      bot.test.setInventorySlot(36, new Item(mcData.blocksByName.log.id, 1, 0), (err) => {
+      bot.test.setInventorySlot(36, new Item(populateBlockInventory.id, 1, 0), (err) => {
         assert.ifError(err)
         cb()
       })
     },
     bot.test.becomeSurvival,
     (cb) => {
-      craft(1, 'planks', cb)
+      craft(1, craftItem, cb)
     }
   ]
 

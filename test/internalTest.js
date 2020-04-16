@@ -6,7 +6,7 @@ const mc = require('minecraft-protocol')
 const assert = require('assert')
 
 const { firstVersion, lastVersion } = require('./common/parallel')
-mineflayer.supportedVersions.forEach((supportedVersion, i) => {
+mineflayer.testedVersions.forEach((supportedVersion, i) => {
   if (!(i >= firstVersion && i <= lastVersion)) {
     return
   }
@@ -62,17 +62,20 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
     })
     it('entity effects', (done) => {
       bot.once('entityEffect', (entity, effect) => {
-        assert.strictEqual(entity.mobType, 'Creeper')
+        assert.strictEqual(entity.id, 8)
         assert.strictEqual(effect.id, 10)
         assert.strictEqual(effect.amplifier, 1)
         assert.strictEqual(effect.duration, 11)
         done()
       })
+      // Versions prior to 1.11 have capital first letter
+      const entities = mcData.entitiesByName
+      const creeperId = entities.creeper ? entities.creeper.id : entities.Creeper.id
       server.on('login', (client) => {
         client.write('spawn_entity_living', {
           entityId: 8, // random
           entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
-          type: 50, // creeper
+          type: creeperId,
           x: 10,
           y: 11,
           z: 12,
@@ -114,12 +117,13 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
         })
         const chunk = new Chunk()
 
+        console.log(pos)
         chunk.setBlockType(pos, goldId)
         client.write('map_chunk', {
           x: 0,
           z: 0,
           groundUp: true,
-          bitMap: 0xffff,
+          bitMap: chunk.getMask(),
           chunkData: chunk.dump(),
           blockEntities: []
         })
@@ -163,7 +167,7 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
             x: 0,
             z: 0,
             groundUp: true,
-            bitMap: 0xffff,
+            bitMap: chunk.getMask(),
             chunkData: chunk.dump(),
             blockEntities: []
           })
@@ -321,10 +325,13 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
             })
           })
 
+          // Versions prior to 1.11 have capital first letter
+          const entities = mcData.entitiesByName
+          const creeperId = entities.creeper ? entities.creeper.id : entities.Creeper.id
           client.write('spawn_entity_living', {
             entityId: 8, // random
             entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
-            type: 50, // creeper
+            type: creeperId,
             x: 10,
             y: 11,
             z: 12,

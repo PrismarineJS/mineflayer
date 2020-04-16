@@ -76,7 +76,7 @@ function dig () {
 
 function build () {
   const referenceBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
-  const jumpY = bot.entity.position.y + 1.0
+  const jumpY = Math.floor(bot.entity.position.y) + 1.0
   bot.setControlState('jump', true)
   bot.on('move', placeIfHighEnough)
 
@@ -96,7 +96,9 @@ function build () {
 }
 
 function equipDirt () {
-  bot.equip(0x03, 'hand', (err) => {
+  const mcData = require('minecraft-data')(bot.version)
+  const itemsByName = (bot.majorVersion === '1.13') ? 'itemsByName' : 'blocksByName'
+  bot.equip(mcData[itemsByName].dirt.id, 'hand', (err) => {
     if (err) {
       bot.chat(`unable to equip dirt: ${err.message}`)
     } else {

@@ -1,3 +1,7 @@
+## 2.12.0
+* 1.13 support (thanks @Karang, @hornta, @SiebeDW)
+* better fishing support (thanks @hutu13879513663)
+
 ## 2.11.0
 * Expose columns & blockEntities (thanks @SiebeDW)
 * Create discord.js (thanks @SiebeDW)
