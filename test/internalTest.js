@@ -351,24 +351,30 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
     })
 
     it('bed', (done) => {
-      const bedId = 26
+      const blocks = mcData.blocksByName
+      const entities = mcData.entitiesByName
+
       const bed1Pos = vec3(0, 0, 1) // Foot part
       const bed2Pos = vec3(0, 0, 4)
       const bed3Pos = vec3(3, 0, 0)
       const zombiePos = vec3(10, 0, 0)
+
+      const zombieId = entities.zombie ? entities.zombie.id : entities.Zombie.id
+      const bedBlock = version.majorVersion === '1.13' ? blocks.red_bed : blocks.bed
+      const bedId = bedBlock.id
 
       bot.once('chunkColumnLoad', (columnPoint) => {
         assert.doesNotThrow(() => { // Should sleep
           bot.sleep(bot.blockAt(bed1Pos))
         })
 
-        assert.throws(() => { // The bed is too far
+        assert.throws(() => {
           bot.sleep(bot.blockAt(bed2Pos))
-        })
+        }, Error('the bed is too far'))
 
-        assert.throws(() => { // There are monsters nearby
+        assert.throws(() => {
           bot.sleep(bot.blockAt(bed3Pos))
-        })
+        }, Error('there are monsters nearby'))
 
         done()
       })
@@ -377,7 +383,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
         bot.time.day = 18000
         client.write('login', {
           entityId: 0,
-          levelType: 'fogetaboutit',
+          levelType: 'forgetaboutit',
           gameMode: 0,
           dimension: 0,
           difficulty: 0,
@@ -387,24 +393,38 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
 
         const chunk = new Chunk()
         chunk.setBlockType(bed1Pos, bedId)
-        chunk.setBlockData(bed1Pos, 0) // { facing:south, occupied:false, part:foot }
         chunk.setBlockType(bed1Pos.offset(0, 0, 1), bedId)
-        chunk.setBlockData(bed1Pos.offset(0, 0, 1), 8) // { facing:south, occupied:false, part:head }
 
         chunk.setBlockType(bed2Pos, bedId)
-        chunk.setBlockData(bed2Pos, 0)
         chunk.setBlockType(bed2Pos.offset(0, 0, 1), bedId)
-        chunk.setBlockData(bed2Pos.offset(0, 0, 1), 8)
 
         chunk.setBlockType(bed3Pos, bedId)
-        chunk.setBlockData(bed3Pos, 0)
         chunk.setBlockType(bed3Pos.offset(0, 0, 1), bedId)
-        chunk.setBlockData(bed3Pos.offset(0, 0, 1), 8)
+
+        if (version.majorVersion === '1.13') {
+          chunk.setBlockStateId(bed1Pos, 7 + bedBlock.minStateId) // { facing:south, occupied:false, part:foot }
+          chunk.setBlockStateId(bed1Pos.offset(0, 0, 1), 6 + bedBlock.minStateId) // { facing:south, occupied:false, part:head }
+
+          chunk.setBlockStateId(bed2Pos, 7 + bedBlock.minStateId)
+          chunk.setBlockStateId(bed2Pos.offset(0, 0, 1), 6 + bedBlock.minStateId)
+
+          chunk.setBlockStateId(bed3Pos, 7 + bedBlock.minStateId)
+          chunk.setBlockStateId(bed3Pos.offset(0, 0, 1), 6 + bedBlock.minStateId)
+        } else {
+          chunk.setBlockData(bed1Pos, 0) // { facing:south, occupied:false, part:foot }
+          chunk.setBlockData(bed1Pos.offset(0, 0, 1), 8) // { facing:south, occupied:false, part:head }
+
+          chunk.setBlockData(bed2Pos, 0)
+          chunk.setBlockData(bed2Pos.offset(0, 0, 1), 8)
+
+          chunk.setBlockData(bed3Pos, 0)
+          chunk.setBlockData(bed3Pos.offset(0, 0, 1), 8)
+        }
 
         client.write('spawn_entity_living', {
           entityId: 8,
           entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
-          type: 54, // zombie
+          type: zombieId,
           x: zombiePos.x,
           y: zombiePos.y,
           z: zombiePos.z,
@@ -421,7 +441,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
           x: 0,
           z: 0,
           groundUp: true,
-          bitMap: 0xffff,
+          bitMap: chunk.getMask(),
           chunkData: chunk.dump(),
           blockEntities: []
         })
