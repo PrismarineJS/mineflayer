@@ -343,6 +343,84 @@ mineflayer.supportedVersions.forEach((supportedVersion, i) => {
       })
     })
 
+    it('bed', (done) => {
+      const bedId = 26
+      const bed1Pos = vec3(0, 0, 1) // Foot part
+      const bed2Pos = vec3(0, 0, 4)
+      const bed3Pos = vec3(3, 0, 0)
+      const zombiePos = vec3(10, 0, 0)
+
+      bot.once('chunkColumnLoad', (columnPoint) => {
+        assert.doesNotThrow(() => { // Should sleep
+          bot.sleep(bot.blockAt(bed1Pos))
+        })
+
+        assert.throws(() => { // The bed is too far
+          bot.sleep(bot.blockAt(bed2Pos))
+        })
+
+        assert.throws(() => { // There are monsters nearby
+          bot.sleep(bot.blockAt(bed3Pos))
+        })
+
+        done()
+      })
+
+      server.once('login', (client) => {
+        bot.time.day = 18000
+        client.write('login', {
+          entityId: 0,
+          levelType: 'fogetaboutit',
+          gameMode: 0,
+          dimension: 0,
+          difficulty: 0,
+          maxPlayers: 20,
+          reducedDebugInfo: true
+        })
+
+        const chunk = new Chunk()
+        chunk.setBlockType(bed1Pos, bedId)
+        chunk.setBlockData(bed1Pos, 0) // { facing:south, occupied:false, part:foot }
+        chunk.setBlockType(bed1Pos.offset(0, 0, 1), bedId)
+        chunk.setBlockData(bed1Pos.offset(0, 0, 1), 8) // { facing:south, occupied:false, part:head }
+
+        chunk.setBlockType(bed2Pos, bedId)
+        chunk.setBlockData(bed2Pos, 0)
+        chunk.setBlockType(bed2Pos.offset(0, 0, 1), bedId)
+        chunk.setBlockData(bed2Pos.offset(0, 0, 1), 8)
+
+        chunk.setBlockType(bed3Pos, bedId)
+        chunk.setBlockData(bed3Pos, 0)
+        chunk.setBlockType(bed3Pos.offset(0, 0, 1), bedId)
+        chunk.setBlockData(bed3Pos.offset(0, 0, 1), 8)
+
+        client.write('spawn_entity_living', {
+          entityId: 8,
+          entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
+          type: 54, // zombie
+          x: zombiePos.x,
+          y: zombiePos.y,
+          z: zombiePos.z,
+          yaw: 0,
+          pitch: 0,
+          headPitch: 0,
+          velocityX: 0,
+          velocityY: 0,
+          velocityZ: 0,
+          metadata: []
+        })
+
+        client.write('map_chunk', {
+          x: 0,
+          z: 0,
+          groundUp: true,
+          bitMap: 0xffff,
+          chunkData: chunk.dump(),
+          blockEntities: []
+        })
+      })
+    })
+
     describe('tablist', () => {
       it('handles newlines in header and footer', (done) => {
         const HEADER = 'asd\ndsa'
