@@ -354,10 +354,11 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
       const blocks = mcData.blocksByName
       const entities = mcData.entitiesByName
 
-      const bed1Pos = vec3(0, 0, 1) // Foot part
-      const bed2Pos = vec3(0, 0, 4)
-      const bed3Pos = vec3(3, 0, 0)
-      const zombiePos = vec3(10, 0, 0)
+      const playerPos = vec3(10, 0, 0)
+      const zombiePos = vec3(0, 0, 0)
+      const bed1Pos = vec3(10, 0, 1) // Foot part
+      const bed2Pos = vec3(10, 0, 4)
+      const bed3Pos = vec3(8, 0, 0)
 
       const zombieId = entities.zombie ? entities.zombie.id : entities.Zombie.id
       const bedBlock = version.majorVersion === '1.13' ? blocks.red_bed : blocks.bed
@@ -420,6 +421,16 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
           chunk.setBlockData(bed3Pos, 0)
           chunk.setBlockData(bed3Pos.offset(0, 0, 1), 8)
         }
+
+        client.write('position', {
+          x: playerPos.x,
+          y: playerPos.y,
+          z: playerPos.z,
+          yaw: 0,
+          pitch: 0,
+          flags: 0,
+          teleportId: 1
+        })
 
         client.write('spawn_entity_living', {
           entityId: 8,
