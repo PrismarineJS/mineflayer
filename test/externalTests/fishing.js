@@ -23,7 +23,7 @@ module.exports = () => (bot, done) => {
     })
   })
 
-  bot.on('playerCollect', (collector, collected) => {
+  bot.once('playerCollect', (collector, collected) => {
     if (collected.type === 'object') {
       bot.test.sayEverywhere('I caught: ' + collected.displayName)
       done()
