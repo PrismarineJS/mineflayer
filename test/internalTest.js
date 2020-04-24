@@ -356,26 +356,34 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
 
       const playerPos = vec3(10, 0, 0)
       const zombiePos = vec3(0, 0, 0)
-      const bed1Pos = vec3(10, 0, 1) // Foot part
-      const bed2Pos = vec3(10, 0, 4)
-      const bed3Pos = vec3(8, 0, 0)
+      const beds = [
+        { head: vec3(10, 0, 3), foot: vec3(10, 0, 2), facing: 2, throws: false },
+        { head: vec3(9, 0, 4), foot: vec3(10, 0, 4), facing: 3, throws: true, error: new Error('the bed is too far') },
+        { head: vec3(8, 0, 0), foot: vec3(8, 0, 1), facing: 0, throws: true, error: new Error('there are monsters nearby') },
+        { head: vec3(12, 0, 0), foot: vec3(11, 0, 0), facing: 1, throws: false }
+      ]
 
       const zombieId = entities.zombie ? entities.zombie.id : entities.Zombie.id
       const bedBlock = version.majorVersion === '1.13' ? blocks.red_bed : blocks.bed
       const bedId = bedBlock.id
 
       bot.once('chunkColumnLoad', (columnPoint) => {
-        assert.doesNotThrow(() => { // Should sleep
-          bot.sleep(bot.blockAt(bed1Pos))
-        })
+        for (const bed in beds) {
+          const bedBock = bot.blockAt(beds[bed].foot)
+          const bedBockMetadata = bot.parseBedMetadata(bedBock)
+          assert.strictEqual(bedBockMetadata.facing, beds[bed].facing, 'The facing property seems to be wrong')
+          assert.strictEqual(bedBockMetadata.part, false, 'The part property seems to be wrong') // Is the foot
 
-        assert.throws(() => {
-          bot.sleep(bot.blockAt(bed2Pos))
-        }, Error('the bed is too far'))
-
-        assert.throws(() => {
-          bot.sleep(bot.blockAt(bed3Pos))
-        }, Error('there are monsters nearby'))
+          if (beds[bed].throws) {
+            assert.throws(() => {
+              bot.sleep(bedBock)
+            }, beds[bed].error)
+          } else {
+            assert.doesNotThrow(() => {
+              bot.sleep(bedBock)
+            })
+          }
+        }
 
         done()
       })
@@ -393,33 +401,36 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
         })
 
         const chunk = new Chunk()
-        chunk.setBlockType(bed1Pos, bedId)
-        chunk.setBlockType(bed1Pos.offset(0, 0, 1), bedId)
 
-        chunk.setBlockType(bed2Pos, bedId)
-        chunk.setBlockType(bed2Pos.offset(0, 0, 1), bedId)
-
-        chunk.setBlockType(bed3Pos, bedId)
-        chunk.setBlockType(bed3Pos.offset(0, 0, 1), bedId)
+        for (const bed in beds) {
+          chunk.setBlockType(beds[bed].head, bedId)
+          chunk.setBlockType(beds[bed].foot, bedId)
+        }
 
         if (version.majorVersion === '1.13') {
-          chunk.setBlockStateId(bed1Pos, 7 + bedBlock.minStateId) // { facing:south, occupied:false, part:foot }
-          chunk.setBlockStateId(bed1Pos.offset(0, 0, 1), 6 + bedBlock.minStateId) // { facing:south, occupied:false, part:head }
+          chunk.setBlockStateId(beds[0].foot, 3 + bedBlock.minStateId) // { facing: north, occupied: false, part: foot }
+          chunk.setBlockStateId(beds[0].head, 2 + bedBlock.minStateId) // { facing:north, occupied: false, part: head }
 
-          chunk.setBlockStateId(bed2Pos, 7 + bedBlock.minStateId)
-          chunk.setBlockStateId(bed2Pos.offset(0, 0, 1), 6 + bedBlock.minStateId)
+          chunk.setBlockStateId(beds[1].foot, 15 + bedBlock.minStateId) // { facing: east, occupied:false, part:foot }
+          chunk.setBlockStateId(beds[1].head, 14 + bedBlock.minStateId) // { facing: east, occupied: false, part: head }
 
-          chunk.setBlockStateId(bed3Pos, 7 + bedBlock.minStateId)
-          chunk.setBlockStateId(bed3Pos.offset(0, 0, 1), 6 + bedBlock.minStateId)
+          chunk.setBlockStateId(beds[2].foot, 7 + bedBlock.minStateId) // { facing: south, occupied: false, part: foot }
+          chunk.setBlockStateId(beds[2].head, 6 + bedBlock.minStateId) // { facing: south, occupied: false, part: head }
+
+          chunk.setBlockStateId(beds[3].foot, 11 + bedBlock.minStateId) // { facing: west, occupied: false, part: foot }
+          chunk.setBlockStateId(beds[3].head, 10 + bedBlock.minStateId) // { facing: west, occupied: false, part: head }
         } else {
-          chunk.setBlockData(bed1Pos, 0) // { facing:south, occupied:false, part:foot }
-          chunk.setBlockData(bed1Pos.offset(0, 0, 1), 8) // { facing:south, occupied:false, part:head }
+          chunk.setBlockData(beds[0].foot, 2) // { facing: north, occupied: false, part: foot }
+          chunk.setBlockData(beds[0].head, 10) // { facing:north, occupied: false, part: head }
 
-          chunk.setBlockData(bed2Pos, 0)
-          chunk.setBlockData(bed2Pos.offset(0, 0, 1), 8)
+          chunk.setBlockData(beds[1].foot, 3) // { facing: east, occupied:false, part:foot }
+          chunk.setBlockData(beds[1].head, 11) // { facing: east, occupied: false, part: head }
 
-          chunk.setBlockData(bed3Pos, 0)
-          chunk.setBlockData(bed3Pos.offset(0, 0, 1), 8)
+          chunk.setBlockData(beds[2].foot, 0) // { facing: south, occupied: false, part: foot }
+          chunk.setBlockData(beds[2].head, 8) // { facing: south, occupied: false, part: head }
+
+          chunk.setBlockData(beds[3].foot, 1) // { facing: west, occupied: false, part: foot }
+          chunk.setBlockData(beds[3].head, 9) // { facing: west, occupied: false, part: head }
         }
 
         client.write('position', {
