@@ -350,6 +350,126 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
       })
     })
 
+    it('bed', (done) => {
+      const blocks = mcData.blocksByName
+      const entities = mcData.entitiesByName
+
+      const playerPos = vec3(10, 0, 0)
+      const zombiePos = vec3(0, 0, 0)
+      const beds = [
+        { head: vec3(10, 0, 3), foot: vec3(10, 0, 2), facing: 2, throws: false },
+        { head: vec3(9, 0, 4), foot: vec3(10, 0, 4), facing: 3, throws: true, error: new Error('the bed is too far') },
+        { head: vec3(8, 0, 0), foot: vec3(8, 0, 1), facing: 0, throws: true, error: new Error('there are monsters nearby') },
+        { head: vec3(12, 0, 0), foot: vec3(11, 0, 0), facing: 1, throws: false }
+      ]
+
+      const zombieId = entities.zombie ? entities.zombie.id : entities.Zombie.id
+      const bedBlock = version.majorVersion === '1.13' ? blocks.red_bed : blocks.bed
+      const bedId = bedBlock.id
+
+      bot.once('chunkColumnLoad', (columnPoint) => {
+        for (const bed in beds) {
+          const bedBock = bot.blockAt(beds[bed].foot)
+          const bedBockMetadata = bot.parseBedMetadata(bedBock)
+          assert.strictEqual(bedBockMetadata.facing, beds[bed].facing, 'The facing property seems to be wrong')
+          assert.strictEqual(bedBockMetadata.part, false, 'The part property seems to be wrong') // Is the foot
+
+          if (beds[bed].throws) {
+            assert.throws(() => {
+              bot.sleep(bedBock)
+            }, beds[bed].error)
+          } else {
+            assert.doesNotThrow(() => {
+              bot.sleep(bedBock)
+            })
+          }
+        }
+
+        done()
+      })
+
+      server.once('login', (client) => {
+        bot.time.day = 18000
+        client.write('login', {
+          entityId: 0,
+          levelType: 'forgetaboutit',
+          gameMode: 0,
+          dimension: 0,
+          difficulty: 0,
+          maxPlayers: 20,
+          reducedDebugInfo: true
+        })
+
+        const chunk = new Chunk()
+
+        for (const bed in beds) {
+          chunk.setBlockType(beds[bed].head, bedId)
+          chunk.setBlockType(beds[bed].foot, bedId)
+        }
+
+        if (version.majorVersion === '1.13') {
+          chunk.setBlockStateId(beds[0].foot, 3 + bedBlock.minStateId) // { facing: north, occupied: false, part: foot }
+          chunk.setBlockStateId(beds[0].head, 2 + bedBlock.minStateId) // { facing:north, occupied: false, part: head }
+
+          chunk.setBlockStateId(beds[1].foot, 15 + bedBlock.minStateId) // { facing: east, occupied:false, part:foot }
+          chunk.setBlockStateId(beds[1].head, 14 + bedBlock.minStateId) // { facing: east, occupied: false, part: head }
+
+          chunk.setBlockStateId(beds[2].foot, 7 + bedBlock.minStateId) // { facing: south, occupied: false, part: foot }
+          chunk.setBlockStateId(beds[2].head, 6 + bedBlock.minStateId) // { facing: south, occupied: false, part: head }
+
+          chunk.setBlockStateId(beds[3].foot, 11 + bedBlock.minStateId) // { facing: west, occupied: false, part: foot }
+          chunk.setBlockStateId(beds[3].head, 10 + bedBlock.minStateId) // { facing: west, occupied: false, part: head }
+        } else {
+          chunk.setBlockData(beds[0].foot, 2) // { facing: north, occupied: false, part: foot }
+          chunk.setBlockData(beds[0].head, 10) // { facing:north, occupied: false, part: head }
+
+          chunk.setBlockData(beds[1].foot, 3) // { facing: east, occupied:false, part:foot }
+          chunk.setBlockData(beds[1].head, 11) // { facing: east, occupied: false, part: head }
+
+          chunk.setBlockData(beds[2].foot, 0) // { facing: south, occupied: false, part: foot }
+          chunk.setBlockData(beds[2].head, 8) // { facing: south, occupied: false, part: head }
+
+          chunk.setBlockData(beds[3].foot, 1) // { facing: west, occupied: false, part: foot }
+          chunk.setBlockData(beds[3].head, 9) // { facing: west, occupied: false, part: head }
+        }
+
+        client.write('position', {
+          x: playerPos.x,
+          y: playerPos.y,
+          z: playerPos.z,
+          yaw: 0,
+          pitch: 0,
+          flags: 0,
+          teleportId: 1
+        })
+
+        client.write('spawn_entity_living', {
+          entityId: 8,
+          entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
+          type: zombieId,
+          x: zombiePos.x,
+          y: zombiePos.y,
+          z: zombiePos.z,
+          yaw: 0,
+          pitch: 0,
+          headPitch: 0,
+          velocityX: 0,
+          velocityY: 0,
+          velocityZ: 0,
+          metadata: []
+        })
+
+        client.write('map_chunk', {
+          x: 0,
+          z: 0,
+          groundUp: true,
+          bitMap: chunk.getMask(),
+          chunkData: chunk.dump(),
+          blockEntities: []
+        })
+      })
+    })
+
     describe('tablist', () => {
       it('handles newlines in header and footer', (done) => {
         const HEADER = 'asd\ndsa'
