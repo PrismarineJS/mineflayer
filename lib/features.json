@@ -77,7 +77,12 @@
     {
       "name": "blockPlaceHasHandAndFloatCursor",
       "description": "block_place packet has hand and float cursor",
-      "versions": ["1.11", "1.12", "1.13", "1.14"]
+      "versions": ["1.11", "1.12", "1.13"]
+    },
+    {
+      "name": "blockPlaceHasInsideBlock",
+      "description": "block_place packet has inside block",
+      "versions": ["1.14"]
     },
     {
       "name": "teleportUsesPositionPacket",
