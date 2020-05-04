@@ -1,6 +1,7 @@
 const mc = require('minecraft-protocol')
 const EventEmitter = require('events').EventEmitter
 const pluginLoader = require('./lib/plugin_loader')
+const supportFeature = require('./lib/supportFeature')
 const plugins = {
   bed: require('./lib/plugins/bed'),
   title: require('./lib/plugins/title'),
@@ -49,7 +50,8 @@ module.exports = {
   ScoreBoard: require('./lib/scoreboard'),
   BossBar: require('./lib/bossbar'),
   supportedVersions,
-  testedVersions
+  testedVersions,
+  supportFeature
 }
 
 function createBot (options = {}) {
@@ -113,6 +115,7 @@ class Bot extends EventEmitter {
       self.majorVersion = version.majorVersion
       self.version = version.minecraftVersion
       options.version = version.minecraftVersion
+      self.supportFeature = feature => supportFeature(feature, version.majorVersion)
       self.emit('inject_allowed')
     }
   }

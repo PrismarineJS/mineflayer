@@ -4,8 +4,11 @@ module.exports = () => (bot, done) => {
   const Item = require('prismarine-item')(bot.version)
   const mcData = require('minecraft-data')(bot.version)
 
-  let grassName = 'grass'
-  if (bot.majorVersion === '1.13') {
+  let grassName
+
+  if (bot.supportFeature('oneBlockForSeveralVariations')) {
+    grassName = 'grass'
+  } else if (bot.supportFeature('blockSchemeIsFlat')) {
     grassName = 'grass_block'
   }
 

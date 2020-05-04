@@ -364,7 +364,12 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
       ]
 
       const zombieId = entities.zombie ? entities.zombie.id : entities.Zombie.id
-      const bedBlock = version.majorVersion === '1.13' ? blocks.red_bed : blocks.bed
+      let bedBlock
+      if (mineflayer.supportFeature('oneBlockForSeveralVariations', version.majorVersion)) {
+        bedBlock = blocks.bed
+      } else if (mineflayer.supportFeature('blockSchemeIsFlat', version.majorVersion)) {
+        bedBlock = blocks.red_bed
+      }
       const bedId = bedBlock.id
 
       bot.once('chunkColumnLoad', (columnPoint) => {
@@ -407,7 +412,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
           chunk.setBlockType(beds[bed].foot, bedId)
         }
 
-        if (version.majorVersion === '1.13') {
+        if (mineflayer.supportFeature('blockStateId', version.majorVersion)) {
           chunk.setBlockStateId(beds[0].foot, 3 + bedBlock.minStateId) // { facing: north, occupied: false, part: foot }
           chunk.setBlockStateId(beds[0].head, 2 + bedBlock.minStateId) // { facing:north, occupied: false, part: head }
 
@@ -419,7 +424,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
 
           chunk.setBlockStateId(beds[3].foot, 11 + bedBlock.minStateId) // { facing: west, occupied: false, part: foot }
           chunk.setBlockStateId(beds[3].head, 10 + bedBlock.minStateId) // { facing: west, occupied: false, part: head }
-        } else {
+        } else if (mineflayer.supportFeature('blockMetadata', version.majorVersion)) {
           chunk.setBlockData(beds[0].foot, 2) // { facing: north, occupied: false, part: foot }
           chunk.setBlockData(beds[0].head, 10) // { facing:north, occupied: false, part: head }
 

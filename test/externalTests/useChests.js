@@ -17,7 +17,12 @@ module.exports = () => (bot, done) => {
     const trappedChestSlot = 37
     const boneSlot = 38
 
-    const blockItemsByName = (bot.majorVersion === '1.13') ? 'itemsByName' : 'blocksByName'
+    let blockItemsByName
+    if (bot.supportFeature('itemsAreNotBlocks')) {
+      blockItemsByName = 'itemsByName'
+    } else if (bot.supportFeature('itemsAreAlsoBlocks')) {
+      blockItemsByName = 'blocksByName'
+    }
 
     return [
       (cb) => {
