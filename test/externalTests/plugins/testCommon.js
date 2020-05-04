@@ -2,6 +2,7 @@ const Vec3 = require('vec3').Vec3
 
 const { spawn } = require('child_process')
 const process = require('process')
+const assert = require('assert')
 
 module.exports = inject
 
@@ -176,6 +177,7 @@ function inject (bot) {
 
   // you need to be in creative mode for this to work
   function setInventorySlot (targetSlot, item, cb) {
+    assert(item === null || item.name !== 'unknown', `item should not be unknown ${JSON.stringify(item)}`)
     // TODO FIX
     if (Item.equal(bot.inventory.slots[targetSlot], item)) {
       // console.log('placing')
