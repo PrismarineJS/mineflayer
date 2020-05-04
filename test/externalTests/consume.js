@@ -13,8 +13,8 @@ module.exports = () => (bot, done) => {
 
       bot.test.becomeSurvival(() => {
         const hungerLoop = () => {
-          if (bot.majorVersion === '1.13') bot.test.sayEverywhere('/effect give @s hunger 1 255')
-          else bot.test.sayEverywhere(`/effect ${bot.username} minecraft:hunger 1 255`)
+          if (bot.supportFeature('effectAreNotPrefixed')) bot.test.sayEverywhere('/effect give @s hunger 1 255')
+          else if (bot.supportFeature('effectAreMinecraftPrefixed')) bot.test.sayEverywhere(`/effect ${bot.username} minecraft:hunger 1 255`)
           setTimeout(() => {
             if (bot.food > 0) {
               return hungerLoop()

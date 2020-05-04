@@ -35,11 +35,15 @@ function inject (bot) {
     }
   }
 
-  let grassName = 'grass'
-  let itemsByName = 'blocksByName'
-  if (bot.majorVersion === '1.13') {
+  let grassName
+  let itemsByName
+
+  if (bot.supportFeature('itemsAreNotBlocks')) {
     grassName = 'grass_block'
     itemsByName = 'itemsByName'
+  } else if (bot.supportFeature('itemsAreAlsoBlocks')) {
+    grassName = 'grass'
+    itemsByName = 'blocksByName'
   }
 
   const superflatLayers = [

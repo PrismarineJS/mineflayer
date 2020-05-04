@@ -5,10 +5,12 @@ module.exports = () => (bot, done) => {
   const { blocksByName, itemsByName, findItemOrBlockByName } = require('minecraft-data')(bot.version)
   const Item = require('prismarine-item')(bot.version)
 
-  let populateBlockInventory = blocksByName.log
-  let craftItem = 'planks'
-  if (bot.majorVersion === '1.13') {
-    // should really fix this in minecraft-data...
+  let populateBlockInventory
+  let craftItem
+  if (bot.supportFeature('oneBlockForSeveralVariations')) {
+    populateBlockInventory = blocksByName.log
+    craftItem = 'planks'
+  } else if (bot.supportFeature('blockSchemeIsFlat')) {
     populateBlockInventory = itemsByName.birch_log
     craftItem = 'birch_planks'
   }

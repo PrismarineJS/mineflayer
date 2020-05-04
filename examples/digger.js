@@ -97,7 +97,12 @@ function build () {
 
 function equipDirt () {
   const mcData = require('minecraft-data')(bot.version)
-  const itemsByName = (bot.majorVersion === '1.13') ? 'itemsByName' : 'blocksByName'
+  let itemsByName
+  if (bot.supportFeature('itemsAreNotBlocks')) {
+    itemsByName = 'itemsByName'
+  } else if (bot.supportFeature('itemsAreAlsoBlocks')) {
+    itemsByName = 'blocksByName'
+  }
   bot.equip(mcData[itemsByName].dirt.id, 'hand', (err) => {
     if (err) {
       bot.chat(`unable to equip dirt: ${err.message}`)
