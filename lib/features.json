@@ -7,7 +7,7 @@
     {
       "name": "spawner",
       "description": "spawner is called spawner",
-      "versions": ["1.13"]
+      "versions": ["1.13", "1.14"]
     },
     {
       "name": "blockMetadata",
@@ -17,12 +17,12 @@
     {
       "name": "blockStateId",
       "description": "block metadata is encoded as state id",
-      "versions": ["1.13"]
+      "versions": ["1.13", "1.14"]
     },
     {
       "name": "creativeSleepNearMobs",
       "description": "can sleep near mobs in creative",
-      "versions": ["1.13"]
+      "versions": ["1.13", "1.14"]
     },
     {
       "name": "fixedPointPosition",
@@ -32,7 +32,7 @@
     {
       "name": "doublePosition",
       "description": "Entity positions are represented with double",
-      "versions": ["1.9", "1.10", "1.11", "1.12", "1.13"]
+      "versions": ["1.9", "1.10", "1.11", "1.12", "1.13", "1.14"]
     },
     {
       "name": "fixedPointDelta",
@@ -42,7 +42,7 @@
     {
       "name": "fixedPointDelta128",
       "description": "Delta of position are represented with fixed point numbers times 128",
-      "versions": ["1.9", "1.10", "1.11", "1.12", "1.13"]
+      "versions": ["1.9", "1.10", "1.11", "1.12", "1.13", "1.14"]
     },
     {
       "name": "customChannelMCPrefixed",
@@ -52,7 +52,7 @@
     {
       "name": "customChannelNotPrefixed",
       "description": "custom channel don't have a prefix",
-      "versions": ["1.13"]
+      "versions": ["1.13", "1.14"]
     },
     {
       "name": "useItemWithBlockPlace",
@@ -62,7 +62,7 @@
     {
       "name": "useItemWithOwnPacket",
       "description": "use item is done with its own packet",
-      "versions": ["1.9", "1.10", "1.11", "1.12", "1.13"]
+      "versions": ["1.9", "1.10", "1.11", "1.12", "1.13", "1.14"]
     },
     {
       "name": "blockPlaceHasHeldItem",
@@ -77,7 +77,7 @@
     {
       "name": "blockPlaceHasHandAndFloatCursor",
       "description": "block_place packet has hand and float cursor",
-      "versions": ["1.11", "1.12", "1.13"]
+      "versions": ["1.11", "1.12", "1.13", "1.14"]
     },
     {
       "name": "teleportUsesPositionPacket",
@@ -87,7 +87,7 @@
     {
       "name": "teleportUsesOwnPacket",
       "description": "teleport is done using its own packet",
-      "versions": ["1.9", "1.10", "1.11", "1.12", "1.13"]
+      "versions": ["1.9", "1.10", "1.11", "1.12", "1.13", "1.14"]
     },
     {
       "name": "oneBlockForSeveralVariations",
@@ -97,7 +97,7 @@
     {
       "name": "blockSchemeIsFlat",
       "description": "all variations of a packet have their own id",
-      "versions": ["1.13"]
+      "versions": ["1.13", "1.14"]
     },
     {
       "name": "tabCompleteHasNoToolTip",
@@ -107,7 +107,7 @@
     {
       "name": "tabCompleteHasAToolTip",
       "description": "tab complete has a tool tip",
-      "versions": ["1.13"]
+      "versions": ["1.13", "1.14"]
     },
     {
       "name": "effectAreMinecraftPrefixed",
@@ -117,7 +117,7 @@
     {
       "name": "effectAreNotPrefixed",
       "description": "effect are prefixed by minecraft:",
-      "versions": ["1.13"]
+      "versions": ["1.13", "1.14"]
     },
     {
       "name": "itemsAreAlsoBlocks",
@@ -127,6 +127,6 @@
     {
       "name": "itemsAreNotBlocks",
       "description": "items are not block",
-      "versions": ["1.13"]
+      "versions": ["1.13", "1.14"]
     }
   ]
