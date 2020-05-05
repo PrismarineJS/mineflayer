@@ -133,5 +133,10 @@
       "name": "itemsAreNotBlocks",
       "description": "items are not block",
       "versions": ["1.13", "1.14"]
+    },
+    {
+      "name": "fishingBobberCorrectlyNamed",
+      "description": "the fishing hook entity is named fishing_bobber",
+      "versions": ["1.14"]
     }
   ]
