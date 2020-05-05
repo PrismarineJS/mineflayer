@@ -8,11 +8,6 @@ module.exports = () => (bot, done) => {
   const item2 = new Item(2, 1, 0)
 
   let firstCallbackFired = false
-  bot.creative.setInventorySlot(SLOT, item1, (err) => {
-    assert.ok(err instanceof Error, 'The error has not been passed')
-    assert.ok(bot.inventory.slots[SLOT] == null)
-    firstCallbackFired = true
-  })
 
   bot.creative.setInventorySlot(SLOT, item2, (err) => {
     assert.ifError(err)
@@ -21,5 +16,11 @@ module.exports = () => (bot, done) => {
     assert.ok(firstCallbackFired)
 
     done()
+  })
+
+  bot.creative.setInventorySlot(SLOT, item1, (err) => {
+    assert.ok(err instanceof Error, 'The error has not been passed')
+    assert.ok(bot.inventory.slots[SLOT] == null)
+    firstCallbackFired = true
   })
 }
