@@ -29,7 +29,7 @@
     "prismarine-entity": "^0.2.0",
     "prismarine-item": "^1.2.0",
     "prismarine-recipe": "^1.0.1",
-    "prismarine-windows": "^1.1.1",
+    "prismarine-windows": "Karang/prismarine-windows#1.14",
     "protodef": "^1.6.7",
     "sprintf-js": "^1.1.1",
     "vec3": "^0.1.3"
