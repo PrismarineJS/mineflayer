@@ -80,17 +80,25 @@ function build () {
   bot.setControlState('jump', true)
   bot.on('move', placeIfHighEnough)
 
+  let tryCount = 0
+
   function placeIfHighEnough () {
     if (bot.entity.position.y > jumpY) {
       bot.placeBlock(referenceBlock, vec3(0, 1, 0), (err) => {
         if (err) {
-          bot.chat(err.message)
+          tryCount++
+          if (tryCount > 10) {
+            bot.chat(err.message)
+            bot.setControlState('jump', false)
+            bot.removeListener('move', placeIfHighEnough)
+            return
+          }
           return
         }
+        bot.setControlState('jump', false)
+        bot.removeListener('move', placeIfHighEnough)
         bot.chat('Placing a block was successful')
       })
-      bot.setControlState('jump', false)
-      bot.removeListener('move', placeIfHighEnough)
     }
   }
 }
