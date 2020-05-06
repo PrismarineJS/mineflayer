@@ -45,6 +45,21 @@
       "versions": ["1.9", "1.10", "1.11", "1.12", "1.13", "1.14"]
     },
     {
+      "name": "fixedPointDeltaTeleport",
+      "description": "Delta of entity teleport position are represented with fixed point numbers",
+      "versions": ["1.8"]
+    },
+    {
+      "name": "fixedPointDelta128Teleport",
+      "description": "Delta of entity teleport position are represented with fixed point numbers times 128",
+      "versions": ["1.9", "1.10", "1.11", "1.12", "1.13"]
+    },
+    {
+      "name": "doublePositionTeleport",
+      "description": "Entity teleport positions are represented with double",
+      "versions": ["1.14"]
+    },
+    {
       "name": "customChannelMCPrefixed",
       "description": "custom channel are prefixed by MC|",
       "versions": ["1.8", "1.9", "1.10", "1.11", "1.12"]
