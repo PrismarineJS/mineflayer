@@ -26,10 +26,12 @@ module.exports = () => (bot, done) => {
     })
   })
 
-  bot.on('playerCollect', (collector, collected) => {
+  function onPlayerCollect (collector, collected) {
     if (collected.type === 'object') {
       bot.test.sayEverywhere('I caught: ' + collected.displayName)
+      bot.removeListener('playerCollect', onPlayerCollect)
       done()
     }
-  })
+  }
+  bot.on('playerCollect', onPlayerCollect)
 }
