@@ -138,5 +138,20 @@
       "name": "fishingBobberCorrectlyNamed",
       "description": "the fishing hook entity is named fishing_bobber",
       "versions": ["1.14"]
+    },
+    {
+      "name": "editBookIsPluginChannel",
+      "description": "book editing is handled through plugin channels",
+      "versions": ["1.8", "1.9", "1.10", "1.11", "1.12"]
+    },
+    {
+      "name": "hasEditBookPacket",
+      "description": "book editing is handled through a packet",
+      "versions": ["1.13", "1.14"]
+    },
+    {
+      "name": "clientUpdateBookIdWhenSign",
+      "description": "when sending MC|BSign, item type should be written_book",
+      "versions": ["1.8"]
     }
   ]
