@@ -153,5 +153,20 @@
       "name": "clientUpdateBookIdWhenSign",
       "description": "when sending MC|BSign, item type should be written_book",
       "versions": ["1.8"]
+    },
+    {
+      "name": "useMCTrSel",
+      "description": "select trade through plugin channel MC|TrSel",
+      "versions": ["1.8", "1.9", "1.10", "1.11", "1.12"]
+    },
+    {
+      "name": "useMCTrList",
+      "description": "receive trade list through plugin channel MC|TrList",
+      "versions": ["1.8", "1.9", "1.10", "1.11", "1.12"]
+    },
+    {
+      "name": "usetraderlist",
+      "description": "receive trade list through plugin channel usetrader_list",
+      "versions": ["1.13"]
     }
   ]

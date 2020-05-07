@@ -16,7 +16,7 @@ const excludedTests = ['digEverything']
 
 const propOverrides = {
   'level-type': 'FLAT',
-  'spawn-npcs': 'false',
+  'spawn-npcs': 'true',
   'spawn-animals': 'false',
   'online-mode': 'false',
   gamemode: '1',
