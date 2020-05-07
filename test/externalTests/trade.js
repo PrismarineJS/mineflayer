@@ -19,8 +19,10 @@ module.exports = () => (bot, done) => {
         assert.ifError(err)
         assert.strictEqual(bot.currentWindow.count(mcData.itemsByName.emerald.id, 0), 0)
         assert.strictEqual(bot.currentWindow.count(mcData.itemsByName.bread.id, 0), 1)
-        bot.test.sayEverywhere(`/kill @e[type=${villagerType}]`)
-        done()
+        villager.close(() => {
+          bot.test.sayEverywhere(`/kill @e[type=${villagerType}]`)
+          done()
+        })
       })
     })
   }
