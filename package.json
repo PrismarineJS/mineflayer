@@ -4,7 +4,7 @@
   "description": "create minecraft bots with a stable, high level API",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --reporter spec",
+    "test": "mocha --reporter spec --exit",
     "pretest": "npm run lint && require-self",
     "lint": "standard",
     "fix": "standard --fix",

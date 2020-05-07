@@ -120,6 +120,7 @@ function inject (bot) {
       },
       waitForChunksToLoad,
       resetBlocksToSuperflat,
+      (cb) => { setTimeout(cb, 1000) },
       clearInventory
     ], cb)
   }
