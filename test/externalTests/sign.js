@@ -6,6 +6,12 @@ module.exports = () => (bot, done) => {
   const Item = require('prismarine-item')(bot.version)
   const lowerBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
 
+  let signItem = null
+  for (const name in mcData.itemsByName) {
+    if (name.includes('sign')) signItem = mcData.itemsByName[name]
+  }
+  assert.notStrictEqual(signItem, null)
+
   bot._client.on('open_sign_entity', (packet) => {
     const sign = bot.blockAt(new Vec3(packet.location))
     bot.updateSign(sign, '1\n2\n3\n')
@@ -34,7 +40,7 @@ module.exports = () => (bot, done) => {
   })
 
   bot.lookAt(lowerBlock.position, true, () => {
-    bot.test.setInventorySlot(36, new Item(mcData.itemsByName.sign.id, 1, 0), (err) => {
+    bot.test.setInventorySlot(36, new Item(signItem.id, 1, 0), (err) => {
       assert.ifError(err)
       bot.placeBlock(lowerBlock, new Vec3(0, 1, 0), () => {})
     })

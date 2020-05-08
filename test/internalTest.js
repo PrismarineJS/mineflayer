@@ -117,12 +117,18 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
         })
         const chunk = new Chunk()
 
-        console.log(pos)
         chunk.setBlockType(pos, goldId)
         client.write('map_chunk', {
           x: 0,
           z: 0,
           groundUp: true,
+          heightmaps: {
+            type: 'compound',
+            name: '',
+            value: {
+              MOTION_BLOCKING: { type: 'longArray', value: new Array(36).fill([0, 0]) }
+            }
+          }, // send fake heightmap
           bitMap: chunk.getMask(),
           chunkData: chunk.dump(),
           blockEntities: []
@@ -167,6 +173,13 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
             x: 0,
             z: 0,
             groundUp: true,
+            heightmaps: {
+              type: 'compound',
+              name: '',
+              value: {
+                MOTION_BLOCKING: { type: 'longArray', value: new Array(36).fill([0, 0]) }
+              }
+            }, // send fake heightmap
             bitMap: chunk.getMask(),
             chunkData: chunk.dump(),
             blockEntities: []
@@ -468,6 +481,13 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
           x: 0,
           z: 0,
           groundUp: true,
+          heightmaps: {
+            type: 'compound',
+            name: '',
+            value: {
+              MOTION_BLOCKING: { type: 'longArray', value: new Array(36).fill([0, 0]) }
+            }
+          }, // send fake heightmap
           bitMap: chunk.getMask(),
           chunkData: chunk.dump(),
           blockEntities: []
