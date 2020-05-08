@@ -16,7 +16,7 @@
     "url": "git://github.com/PrismarineJS/mineflayer.git"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=10"
   },
   "license": "MIT",
   "dependencies": {
