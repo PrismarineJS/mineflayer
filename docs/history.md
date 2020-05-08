@@ -1,3 +1,8 @@
+## 2.13.0
+* 1.14 support : more tests, refactored pwindows, feature flags (thanks @Karang)
+* Look at the center of the face when placing block
+* improve bot.sleep : don't sleep if mob are present (thanks @ImHarvol)
+
 ## 2.12.0
 * 1.13 support (thanks @Karang, @hornta, @SiebeDW)
 * better fishing support (thanks @hutu13879513663)
