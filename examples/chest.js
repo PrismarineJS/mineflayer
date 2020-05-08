@@ -95,7 +95,8 @@ function watchChest (minecart) {
     }
   } else {
     chestToOpen = bot.findBlock({
-      matching: ['chest', 'ender_chest', 'trapped_chest'].map(name => mcData.blocksByName[name].id)
+      matching: ['chest', 'ender_chest', 'trapped_chest'].map(name => mcData.blocksByName[name].id),
+      maxDistance: 6
     })
     if (!chestToOpen) {
       bot.chat('no chest found')
@@ -173,7 +174,8 @@ function watchChest (minecart) {
 
 function watchFurnace () {
   const furnaceBlock = bot.findBlock({
-    matching: ['furnace', 'lit_furnace'].filter(name => mcData.blocksByName[name] !== undefined).map(name => mcData.blocksByName[name].id)
+    matching: ['furnace', 'lit_furnace'].filter(name => mcData.blocksByName[name] !== undefined).map(name => mcData.blocksByName[name].id),
+    maxDistance: 6
   })
   if (!furnaceBlock) {
     bot.chat('no furnace found')
@@ -261,7 +263,8 @@ function watchFurnace () {
 
 function watchDispenser () {
   const dispenserBlock = bot.findBlock({
-    matching: ['dispenser'].map(name => mcData.blocksByName[name].id)
+    matching: ['dispenser'].map(name => mcData.blocksByName[name].id),
+    maxDistance: 6
   })
   if (!dispenserBlock) {
     bot.chat('no dispenser found')
@@ -338,7 +341,8 @@ function watchDispenser () {
 
 function watchEnchantmentTable () {
   const enchantTableBlock = bot.findBlock({
-    matching: ['enchanting_table'].map(name => mcData.blocksByName[name].id)
+    matching: ['enchanting_table'].map(name => mcData.blocksByName[name].id),
+    maxDistance: 6
   })
   if (!enchantTableBlock) {
     bot.chat('no enchantment table found')
