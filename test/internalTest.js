@@ -109,11 +109,13 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
         client.write('login', {
           entityId: 0,
           levelType: 'fogetaboutit',
+          hashedSeed: [0, 0],
           gameMode: 0,
           dimension: 0,
           difficulty: 0,
           maxPlayers: 20,
-          reducedDebugInfo: true
+          reducedDebugInfo: true,
+          enableRespawnScreen: true
         })
         const chunk = new Chunk()
 
@@ -122,6 +124,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
           x: 0,
           z: 0,
           groundUp: true,
+          biomes: chunk.dumpBiomes !== undefined ? chunk.dumpBiomes() : undefined,
           heightmaps: {
             type: 'compound',
             name: '',
@@ -160,11 +163,13 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
           client.write('login', {
             entityId: 0,
             levelType: 'fogetaboutit',
+            hashedSeed: [0, 0],
             gameMode: 0,
             dimension: 0,
             difficulty: 0,
             maxPlayers: 20,
-            reducedDebugInfo: true
+            reducedDebugInfo: true,
+            enableRespawnScreen: true
           })
           const chunk = new Chunk()
 
@@ -173,6 +178,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
             x: 0,
             z: 0,
             groundUp: true,
+            biomes: chunk.dumpBiomes !== undefined ? chunk.dumpBiomes() : undefined,
             heightmaps: {
               type: 'compound',
               name: '',
@@ -324,7 +330,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
 
             const lastMeta = entity.metadata
             bot.on('entityUpdate', (entity) => {
-              assert.ok('1' in entity.metadata)
+              assert.ok('0' in entity.metadata)
               assert.strictEqual(entity.metadata[0], 1)
               assert.strictEqual(entity.metadata[1], lastMeta[1])
               done()
@@ -410,12 +416,14 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
         bot.time.day = 18000
         client.write('login', {
           entityId: 0,
+          hashedSeed: [0, 0],
           levelType: 'forgetaboutit',
           gameMode: 0,
           dimension: 0,
           difficulty: 0,
           maxPlayers: 20,
-          reducedDebugInfo: true
+          reducedDebugInfo: true,
+          enableRespawnScreen: true
         })
 
         const chunk = new Chunk()
@@ -481,6 +489,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
           x: 0,
           z: 0,
           groundUp: true,
+          biomes: chunk.dumpBiomes !== undefined ? chunk.dumpBiomes() : undefined,
           heightmaps: {
             type: 'compound',
             name: '',
