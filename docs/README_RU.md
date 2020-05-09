@@ -8,6 +8,9 @@
 
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 
+| US [English](docs/README.md) | RU [Russian](docs/README_RU.md/) |
+|---------------------------|---------------------------|
+
 Создавайте ботов Minecraft с помощью мощного, стабильного и высокоуровневого JavaScript API.
 
 ## Особенности:
@@ -104,7 +107,7 @@ Mineflayer имеет возможность установки плагинов
 
 ## Документации
 
- * Смотрите [docs/api.md](https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md).
+ * Смотрите [docs/api.md](https://github.com/PrismarineJS/mineflayer/blob/master/docs/api_ru.md).
  * Смотрите [docs/history.md](https://github.com/PrismarineJS/mineflayer/blob/master/docs/history.md).
  * Смотрите [examples/](https://github.com/PrismarineJS/mineflayer/tree/master/examples).
  * Смотрите [docs/unstable_api.md](https://github.com/PrismarineJS/mineflayer/blob/master/docs/unstable_api.md).
