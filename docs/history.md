@@ -1,3 +1,6 @@
+## 2.14.1
+* fix openVillager
+
 ## 2.14.0
 * 1.15 support
 * russian translation (thanks @shketov)
