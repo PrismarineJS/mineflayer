@@ -12,7 +12,7 @@ module.exports = () => (bot, done) => {
   function onEntitySpawn (entity) {
     if (entity.name !== villagerType) return
     bot.removeListener('entitySpawn', onEntitySpawn)
-    bot.openVillager(entity, (villager) => {
+    bot.openVillager(entity, (err, villager) => {
       const sell = villager.trades[0].inputItem1
       const buy = villager.trades[0].outputItem
       assert.notStrictEqual(sell, null)
