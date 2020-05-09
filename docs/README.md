@@ -8,6 +8,9 @@
 
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 
+| US [English](docs/README.md) | RU [Russian](docs/README_RU.md/) |
+|---------------------------|---------------------------|
+
 Create Minecraft bots with a powerful, stable, and high level JavaScript API.
 
 ## Features
