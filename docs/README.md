@@ -8,7 +8,7 @@
 
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 
-| US [English](docs/README.md) | RU [Russian](docs/README_RU.md/) |
+| US [English](README.md) | RU [Russian](README_RU.md) |
 |---------------------------|---------------------------|
 
 Create Minecraft bots with a powerful, stable, and high level JavaScript API.
@@ -110,11 +110,11 @@ higher level API on top of Mineflayer.
 
 ## Documentation
 
- * See [docs/api.md](https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md).
- * See [docs/history.md](https://github.com/PrismarineJS/mineflayer/blob/master/docs/history.md).
+ * See [docs/api.md](api.md).
+ * See [docs/history.md](history.md).
  * See [examples/](https://github.com/PrismarineJS/mineflayer/tree/master/examples).
- * See [docs/unstable_api.md](https://github.com/PrismarineJS/mineflayer/blob/master/docs/unstable_api.md).
- * See [docs/contribute.md](https://github.com/PrismarineJS/mineflayer/blob/master/docs/contribute.md).
+ * See [docs/unstable_api.md](unstable_api.md).
+ * See [docs/contribute.md](contribute.md).
 
 ## Contribute
 
