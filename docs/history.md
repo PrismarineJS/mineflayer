@@ -1,3 +1,7 @@
+## 2.14.0
+* 1.15 support
+* russian translation (thanks @shketov)
+
 ## 2.13.0
 * 1.14 support : more tests, refactored pwindows, feature flags (thanks @Karang)
 * Look at the center of the face when placing block
