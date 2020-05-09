@@ -31,7 +31,7 @@ Create Minecraft bots with a powerful, stable, and high level JavaScript API.
 
  * Brewing stands, and anvils.
  * Better physics (support doors, ladders, water, etc).
- * Want to contribute on something important for PrismarineJS ? go to https://github.com/orgs/PrismarineJS/projects/9
+ * Want to contribute on something important for PrismarineJS ? go to https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects
 
 ## Usage
 
