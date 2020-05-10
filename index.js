@@ -92,6 +92,7 @@ class Bot extends EventEmitter {
     const self = this
     self._client = mc.createClient(options)
     self.username = self._client.username
+    self.plugins = options.plugins
     self._client.on('session', () => {
       self.username = self._client.username
     })
