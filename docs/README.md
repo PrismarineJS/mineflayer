@@ -139,9 +139,15 @@ Example:
 
 Where the "/full/path/to/" is the fully qualified path name.
 
-### Ongoing
+### Testing everything
 
 Simply run: `npm test`
+
+### Testing specific version
+Run `npm test -g <version>`, where `<version>` is a minecraft version like `1.12`, `1.15.2`...
+
+### Testing specific test
+Run `npm test -g <test_name>`, where `<test_name>` is a name of the test like `bed`, `useChests`, `rayTrace`...
 
 ## Updating to a newer protocol version
 
