@@ -1,15 +1,15 @@
 # Mineflayer
 
-[![NPM version](https://badge.fury.io/js/mineflayer.svg)](http://badge.fury.io/js/mineflayer)
-[![Build Status](https://circleci.com/gh/PrismarineJS/mineflayer.svg?style=shield)](https://circleci.com/gh/PrismarineJS/mineflayer)
+[![Версия NPM](https://badge.fury.io/js/mineflayer.svg)](http://badge.fury.io/js/mineflayer)
+[![Статус сборки](https://circleci.com/gh/PrismarineJS/mineflayer.svg?style=shield)](https://circleci.com/gh/PrismarineJS/mineflayer)
 [![Discord](https://img.shields.io/badge/chat-on%20discord-brightgreen.svg)](https://discord.gg/GsEFRM8)
 [![Gitter](https://img.shields.io/badge/chat-on%20gitter-brightgreen.svg)](https://gitter.im/PrismarineJS/general)
 [![Irc](https://img.shields.io/badge/chat-on%20irc-brightgreen.svg)](https://irc.gitter.im/)
 
-[![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
+[![Попробуйте на gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 
 | US [English](README.md) | RU [Russian](README_RU.md) |
-|---------------------------|---------------------------|
+|-------------------------|----------------------------|
 
 Создавайте ботов Minecraft с помощью мощного, стабильного и высокоуровневого JavaScript API.
 
@@ -18,20 +18,20 @@
  * Поддержка версий 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14 и 1.15.
  * Поддержка сущностей и их отслеживание.
  * Поддержка блоков. Вы можете запросить все, что находится вокруг Вас.
- * Базовая физика и движение  - на данный момент блок может быть полным, или пустым.
+ * Базовая физика и движение - на данный момент блок может быть полным, или пустым.
  * Атака существ и использование транспортных средств.
  * Взаимодействие с инвентарем.
  * Использование крафта, сундуков, раздатчиков и т.д.
- * Копание и строительство
- * Опциональные возможности, такие как просмотр вашего здоровья, проверка на погоду.
+ * Копание и строительство.
+ * Дополнительные возможности, такие как просмотр вашего здоровья, проверка на погоду.
  * Активация блоков и использование предметов.
  * Чат.
 
 ### Планируется:
 
- * Взаимодействия со стендами, наковальнями
+ * Взаимодействия со стойками для брони, наковальнями.
  * Улучшенная физика (поддержка дверей, лестниц, воды и т.д).
- * Хочешь внести свой вклад в развитие PrismarineJS ? Прочитай https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects
+ * Хочешь внести свой вклад в развитие PrismarineJS? Прочитай https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects
 
 ## Как использовать:
 
@@ -46,7 +46,7 @@ var bot = mineflayer.createBot({
   port: 25565,       // optional
   username: "email@example.com", // почта и пароль требуются только для
   password: "12345678",          // online-mode=true серверов
-  version: false                 // если установлен false, версия выберется автоматически. Вы также можете установить желаемую версию, например `version:"1.8"`.
+  version: false                 // если значение false, версия выбирается автоматически. Вы также можете установить нужную версию, например `version:"1.8"`.
 });
 bot.on('chat', function(username, message) {
   if (username === bot.username) return;
@@ -80,13 +80,13 @@ Mineflayer имеет возможность установки плагинов
 более высокоуровневое API для Mineflayer.
 
  * [navigate](https://github.com/andrewrk/mineflayer-navigate/) - навигация при помощи поиска пути [YouTube Demo](https://www.youtube.com/watch?v=O6lQdmRz8eE)
- * [radar](https://github.com/andrewrk/mineflayer-radar/) - web радар, который использует canvas и socket.io. [YouTube Demo](https://www.youtube.com/watch?v=FjDmAfcVulQ)
+ * [radar](https://github.com/andrewrk/mineflayer-radar/) - веб-радар, который использует canvas и socket.io. [YouTube Demo](https://www.youtube.com/watch?v=FjDmAfcVulQ)
  * [blockfinder](https://github.com/Darthfett/mineflayer-blockFinder) - поиск блоков в мире
  * [scaffold](https://github.com/andrewrk/mineflayer-scaffold) - добратся до заданной точке, даже
  если требуется ломать или разрушать блоки [YouTube Demo](http://youtu.be/jkg6psMUSE0)
  * [auto-auth](https://github.com/G07cha/MineflayerAutoAuth) - аутентификация  бота, используя чат
  * [Armor Manager](https://github.com/G07cha/MineflayerArmorManager) - автоматическое взаимодействие с броней
- * [Bloodhound](https://github.com/Nixes/mineflayer-bloodhound) - отслеживание нанесенного урона сущностям
+ * [Bloodhound](https://github.com/Nixes/mineflayer-bloodhound) - отслеживание нанесенного урона существам
  * [tps](https://github.com/SiebeDW/mineflayer-tps) - получить текущий TPS
 
 ## Проекты, которые используют Mineflayer
@@ -106,7 +106,7 @@ Mineflayer имеет возможность установки плагинов
 
 `npm install mineflayer`
 
-## Документации
+## Документация
 
  * Смотрите [docs/api.md](api_ru.md).
  * Смотрите [docs/history.md](history.md).
@@ -118,15 +118,15 @@ Mineflayer имеет возможность установки плагинов
 
 Пожалуйста, прочитайте https://github.com/PrismarineJS/prismarine-contribute
 
-## Тест
+## Тесты
 
-После клонирования проекта требуется дополнительная настройка, но после этого запустить всё очень легко
+После клонирования проекта требуется дополнительная настройка, но после этого его запуск не создаст проблем
 
 ### Установка
 
 Для успешного запуска вы должны:
 
-1. Создать новую директорию, в которой будут хранится jar-сервера
+1. Создать новую директорию, в которой будет находится jar-файл Minecraft сервера
 2. Установите путь MC_SERVER_JAR_DIR к этой папке
 
 Пример:
@@ -134,19 +134,19 @@ Mineflayer имеет возможность установки плагинов
 1. `mkdir server_jars`
 2. `export MC_SERVER_JAR_DIR=/full/path/to/server_jars`
 
-Где "/full/path/to/" - это полное имя пути
+Где "/full/path/to/" - это полное название пути
 
-### Наконец
+### В конце
 
 Запустите: `npm test`
 
 ## Обновление протокола до новой версии
 
-1. Ждать новых обновлений
+1. Ждите обновлений
    [node-minecraft-protocol](https://github.com/PrismarineJS/node-minecraft-protocol),
    которые будут поддерживать новые версии 
 2. `npm install --save minecraft-protocol@latest`
-3. Принять [protocol changes](http://wiki.vg/Protocol_History), где это необходимо
+3. Реализовать [изменение протокола](http://wiki.vg/Protocol_History), где это необходимо
 4. Запустите, используя примеры выше
 
 ## Лицензия
