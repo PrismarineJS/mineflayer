@@ -52,7 +52,7 @@ For full methods list see the [documentation](http://mineflayer.prismarine.js.or
 
 ### Listening for an event
 
-Bot object has many useful built in [`events`](http://mineflayer.prismarine.js.org/#/api?id=events).
+Bot object has many useful built in [events](http://mineflayer.prismarine.js.org/#/api?id=events).
 You can listen for an event by using either `bot.on()` method or `bot.once()` method of the Bot object, wich takes the name of event and a function.
 To remove specific listener you can use `bot.removeListener()` method.
 
