@@ -59,61 +59,56 @@ To remove specific listener you can use `bot.removeListener()` method.
 - `bot.on(eventName, listener)`
   Execute the `listener` function for each time the event named `eventName` triggered.
 - `bot.once(eventName, listener)`
-  Execute the `listener` function for the first time the event named `eventName` triggered.
+  Execute the `listener` function, the first time the event named `eventName` triggered.
 - `bot.removeListener(eventName, listener)`
   Removes the specified `listener` for the event named `eventName`.
 
-Not only bot object, [`Chest`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerchest), [`Furnace`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerfurnace), [`Dispenser`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerdispenser), [`EnchantmentTable`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerenchantmenttable), [`Villager`](http://mineflayer.prismarine.js.org/#/api?id=mineflayervillager) object also has its own events!
+Not only bot object, [`Chest`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerchest), [`Furnace`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerfurnace), [`Dispenser`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerdispenser), [`EnchantmentTable`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerenchantmenttable), [`Villager`](http://mineflayer.prismarine.js.org/#/api?id=mineflayervillager) object also have its own events!
 
 Examples :
 
 #### Echo Bot
 
-In here we're listening [`chat`](http://mineflayer.prismarine.js.org/#/api?id=quotchatquot-username-message-translate-jsonmsg-matches) event, and resend the message.
-[`chat`](http://mineflayer.prismarine.js.org/#/api?id=quotchatquot-username-message-translate-jsonmsg-matches) event only emitted when a player chats publicly.
+Here we're listening for [`chat`](http://mineflayer.prismarine.js.org/#/api?id=quotchatquot-username-message-translate-jsonmsg-matches) event, and resend the message.
+[`chat`](http://mineflayer.prismarine.js.org/#/api?id=quotchatquot-username-message-translate-jsonmsg-matches) event is only emitted when a player chats publicly.
 
 ```js
-const mineflayer = require('mineflayer');
-const options = {...}
-const bot = mineflayer.createBot(options);
-
 function echo(username, message) {
   if (username === bot.username) return;
   bot.chat(message);
 }
 
-bot.on('chat', echo); // Only emitted when a player chats publicly.
+bot.on("chat", echo); // Only emitted when a player chats publicly.
 ```
 
-`bot.on('chat', echo);` will listend for [`chat`](http://mineflayer.prismarine.js.org/#/api?id=quotchatquot-username-message-translate-jsonmsg-matches) event, and execute `echo` function with argument of (username, message, translate, jsonMsg, matches) when [`chat`](http://mineflayer.prismarine.js.org/#/api?id=quotchatquot-username-message-translate-jsonmsg-matches) event triggered.
+`bot.on('chat', echo)` will listen for [`chat`](http://mineflayer.prismarine.js.org/#/api?id=quotchatquot-username-message-translate-jsonmsg-matches) event, and execute `echo` function with arguments `username`, `message`, `translate`, `jsonMsg`, and `matches` when the event emitted.
 
 #### Welcome Bot
 
-In here we're listening [`playerJoined`](http://mineflayer.prismarine.js.org/#/api?id=quotplayerjoinedquot-player) event.
+Here we're listening for [`playerJoined`](http://mineflayer.prismarine.js.org/#/api?id=quotplayerjoinedquot-player) event.
+And sending welcome message to chat.
 
 ```js
-const mineflayer = require('mineflayer');
-const options = {...}
-const bot = mineflayer.createBot(options);
-
 function joined(player) {
-  bot.chat(`Welcome ${player}! :D`)
+  bot.chat(`Welcome ${player}! :D`);
 }
 
-bot.on('playerJoined', joined)
+bot.on("playerJoined", joined);
 ```
 
 ### Callbacks
 
 Callback is a function as argument to the main function, when the main function finish or got an error then the callback executed.
 In [the API page](http://mineflayer.prismarine.js.org/#/api) callback abbreviated as `cb` or `callback`.
-Callback usually takes parameter called `err` and the second (if specified in) is a value that is passed to the callback, if `err` populated then error must be happened in the main function.
+Callback usually takes parameter called `err` as the first and the second (if specified) is a value that is passed to the callback,
+if `err` is not `null` then error must be happened in the main function.
 
 Examples :
 
 #### Craft Stick Bot
 
-You don't wanna craft sticks, before the logs crafted into planks.
+Here we're crafting oak logs into sticks.
+Craft oak logs into oak wood planks, wait for crafting finish. Then craft the oak wood planks into sticks.
 
 Incorect aproach ❌ :
 
@@ -122,25 +117,25 @@ const plankRecipe = bot.recipesFor(5); // 5 ID for Oak Wood Planks
 bot.craft(plankRecipe, 1); // ❌
 const stickRecipe = bot.recipesFor(280); // 280 ID for Stick
 bot.craft(plankRecipe, 1); // ❌
+// You don't wanna start crafting sticks, before crafting logs into planks finished.
 ```
 
-Correct approach with callback ✔️ :
+Correct approach with callbacks ✔️ :
 
 ```js
 const plankRecipe = bot.recipesFor(5)[0]; // 5 ID for Oak Wood Planks
 
 bot.craft(plankRecipe, 1, null, function (err) {
-  // ✔️
+  // if bot.craft(plankRecipe, ...) then the code bellow get executed ✔️
   if (err) return bot.chat(err.message);
   // if error happened when crafting `plankRecipe` then send to chat the `err.message`
 
   const stickRecipe = bot.recipesFor(280); // 280 ID for Stick
   bot.craft(stickRecipe, 1, null, function (err) {
-    // ✔️
     if (err) return bot.chat(err.message);
     // if error happened when crafting `stickRecipe` then send to chat the `err.message`
 
-    bot.chat("Crafting Stick finished");
+    bot.chat("Crafting Sticks finished");
   });
 });
 ```
@@ -225,7 +220,7 @@ To start the bot, change `mybot.js` to your script name:
 node mybot.js
 ```
 
-❗️ Each time opening Termux you must change the cwd into `/sdcard/my_scripts`, before starting the bot:
+❗️ For each time opening Termux you must change the cwd into `/sdcard/my_scripts`, before starting the bot:
 
 ```bash
 cd /sdcard/my_scripts
