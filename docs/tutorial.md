@@ -26,13 +26,13 @@ To get a feeling for the Mineflayer and how to use it, please open a text editor
 First, create an instance of the Bot.
 
 ```js
-const mineflayer = require("mineflayer");
+const mineflayer = require('mineflayer');
 const options = {
-  host: "localhost", // optional / minecraft server address
+  host: 'localhost', // optional / minecraft server address
   port: 25565, // optional
-  username: "email@example.com", // email and password are required only for
-  password: "12345678", // online-mode=true servers
-  version: false, // false corresponds to auto version detection (that's the default), put for example "1.8.8" if you need a specific version
+  username: 'email@example.com', // email and password are required only for
+  password: '12345678', // online-mode=true servers
+  version: false, // false corresponds to auto version detection (that's the default), put for example '1.8.8' if you need a specific version
 };
 const bot = mineflayer.createBot(options);
 ```
@@ -42,8 +42,8 @@ Say hi to the chat after you spawn in, using [`spawn`](http://mineflayer.prismar
 ```js
 // ...
 
-bot.once("spawn", function () {
-  bot.chat("hi!");
+bot.once('spawn', function () {
+  bot.chat('hi!');
   // `bot.chat()` method for sending message or commad to the chat.
 });
 ```
@@ -73,7 +73,7 @@ In here we're listening [`chat`](http://mineflayer.prismarine.js.org/#/api?id=qu
 [`chat`](http://mineflayer.prismarine.js.org/#/api?id=quotchatquot-username-message-translate-jsonmsg-matches) event only emitted when a player chats publicly.
 
 ```js
-const mineflayer = require("mineflayer");
+const mineflayer = require('mineflayer');
 const options = {...}
 const bot = mineflayer.createBot(options);
 
@@ -82,17 +82,17 @@ function echo(username, message) {
   bot.chat(message);
 }
 
-bot.on("chat", echo); // Only emitted when a player chats publicly.
+bot.on('chat', echo); // Only emitted when a player chats publicly.
 ```
 
-`bot.on("chat", echo);` will listend for [`chat`](http://mineflayer.prismarine.js.org/#/api?id=quotchatquot-username-message-translate-jsonmsg-matches) event, and execute `echo` function with argument of (username, message, translate, jsonMsg, matches) when [`chat`](http://mineflayer.prismarine.js.org/#/api?id=quotchatquot-username-message-translate-jsonmsg-matches) event triggered.
+`bot.on('chat', echo);` will listend for [`chat`](http://mineflayer.prismarine.js.org/#/api?id=quotchatquot-username-message-translate-jsonmsg-matches) event, and execute `echo` function with argument of (username, message, translate, jsonMsg, matches) when [`chat`](http://mineflayer.prismarine.js.org/#/api?id=quotchatquot-username-message-translate-jsonmsg-matches) event triggered.
 
 #### Welcome Bot
 
 In here we're listening [`playerJoined`](http://mineflayer.prismarine.js.org/#/api?id=quotplayerjoinedquot-player) event.
 
 ```js
-const mineflayer = require("mineflayer");
+const mineflayer = require('mineflayer');
 const options = {...}
 const bot = mineflayer.createBot(options);
 
@@ -100,7 +100,7 @@ function joined(player) {
   bot.chat(`Welcome ${player}! :D`)
 }
 
-bot.on("playerJoined", joined)
+bot.on('playerJoined', joined)
 ```
 
 ### Callbacks
@@ -137,7 +137,7 @@ bot.craft(plankRecipe, 1, null, function (err) {
     if (err) return bot.chat(err.message);
     // if error happened when crafting `stickRecipe` then send to chat the `err.message`
 
-    bot.chat("Crafting Stick finished");
+    bot.chat('Crafting Stick finished');
   });
 });
 ```
@@ -154,13 +154,13 @@ Using
 `bot.heldItem` property to get the name of the item held by the bot. `bot.heldItem` is an instance of [`Item`](https://github.com/PrismarineJS/prismarine-item/blob/master/README.md) or `null` if no item held.
 
 ```js
-const mineflayer = require("mineflayer");
+const mineflayer = require('mineflayer');
 const options = {...}
 const bot = mineflayer.createBot(options);
 
 const minFoodPoints = 18;
 
-bot.on("health", function () {
+bot.on('health', function () {
   // listen on any changes in health or food points.
   if (bot.food < minFoodPoints) {
     // if the food points lower than 18, then
@@ -235,7 +235,7 @@ node myscript.js
 You can enable some protocol debugging output using `DEBUG` environment variable:
 
 ```bash
-DEBUG="minecraft-protocol" node myscript.js
+DEBUG='minecraft-protocol' node myscript.js
 ```
 
 - Beware of flashing text on DEBUG mode.
