@@ -183,10 +183,6 @@ Can be found in [fishing.js](https://github.com/PrismarineJS/mineflayer/blob/mas
 
 ## FAQ
 
-### How to create discord bot with mineflayer
-
-Answer in [discord.js](https://github.com/PrismarineJS/mineflayer/blob/master/examples/discord.js)
-
 ### How to run bot on android
 
 Here quick setup for running bot on android device using [Termux](https://termux.com/).
