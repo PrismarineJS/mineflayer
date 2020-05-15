@@ -198,28 +198,19 @@ Install [Termux](https://termux.com/) and start it.
 
 #### Setup
 
-First, update the Termux packages
+Install `node.js` & `mineflayer` :
 
 ```bash
 pkg update -y
-```
-
-Now install `nodejs`, `npm` should be automaticaly installed as well:
-
-```bash
 pkg install nodejs -y
-```
-
-Finally, install `mineflayer` library:
-
-```bash
 npm install mineflayer@latest
 ```
 
 #### Editing script
 
 - Skip this step if you already familiar with scripting on CLI.
-  Install nano for editing script:
+
+Install nano for editing script:
 
 ```bash
 pkg install nano -y
@@ -248,17 +239,3 @@ DEBUG="minecraft-protocol" node myscript.js
 ```
 
 - Beware of flashing text on DEBUG mode.
-
-#### Updating library
-
-First, update `nodejs` and `npm`:
-
-```bash
-pkg install nodejs -y
-```
-
-Then update `mineflayer`:
-
-```bash
-npm install mineflayer@latest
-```
