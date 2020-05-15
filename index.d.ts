@@ -34,9 +34,9 @@ declare module mineflayer {
 		protocolVersion: string;
 		majorVersion: string;
 		version: string;
-		entity: object; // prismarine-entity Entity
-		entities: object; // map of prismarine-entity Entities
-		spawnPoint: object; // vec3 Vec3
+		entity: object; /*prismarine-entity Entity*/
+		entities: { [id: string]: object /*prismarine-entity Entity*/ };
+		spawnPoint: object; /*vec3 Vec3*/
 		game: GameState;
 		player: Player;
 		players: { [username: string]: Player };
@@ -50,8 +50,8 @@ declare module mineflayer {
 		physics: PhysicsOptions;
 		time: Time;
 		quickBarSlot: number;
-		inventory: object; // prismarine-windows Window
-		targetDigBlock: object; // prismarine-block Block
+		inventory: object; /*prismarine-windows Window*/
+		targetDigBlock: object; /*prismarine-block Block*/
 		isSleeping: boolean;
 		scoreboards: { [name: string]: ScoreBoard };
 		scoreboard: { [slot in DisplaySlot]: ScoreBoard };
@@ -344,7 +344,7 @@ declare module mineflayer {
 		displayName: ChatMessage;
 		gamemode: number;
 		ping: number;
-		entity: object; //prismarine-entity
+		entity: object; /*prismarine-entity Entity*/
 	}
 
 	export class ChatMessage {
@@ -443,7 +443,8 @@ declare module mineflayer {
 	}
 
 	export interface FindBlockOptions {
-		point: object; // vec3 Vec3
+		point: object /*vec3 Vec3*/
+		;
 		matching: (block: object /*prismarine-block Block*/) => boolean | number | Array<number>;
 		maxDistance?: number;
 	}
