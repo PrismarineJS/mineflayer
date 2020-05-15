@@ -26,12 +26,12 @@ To get a feeling for the Mineflayer and how to use it, please open a text editor
 First, create an instance of the Bot.
 
 ```js
-const mineflayer = require('mineflayer');
+const mineflayer = require("mineflayer");
 const options = {
-  host: 'localhost', // optional / minecraft server address
+  host: "localhost", // optional / minecraft server address
   port: 25565, // optional
-  username: 'email@example.com', // email and password are required only for
-  password: '12345678', // online-mode=true servers
+  username: "email@example.com", // email and password are required only for
+  password: "12345678", // online-mode=true servers
   version: false, // false corresponds to auto version detection (that's the default), put for example '1.8.8' if you need a specific version
 };
 const bot = mineflayer.createBot(options);
@@ -42,8 +42,8 @@ Say hi to the chat after you spawn in, using [`spawn`](http://mineflayer.prismar
 ```js
 // ...
 
-bot.once('spawn', function () {
-  bot.chat('hi!');
+bot.once("spawn", function () {
+  bot.chat("hi!");
   // `bot.chat()` method for sending message or commad to the chat.
 });
 ```
@@ -52,16 +52,16 @@ For full methods list see the [documentation](http://mineflayer.prismarine.js.or
 
 ### Listening for an event
 
-Bot object has many useful built in [events](http://mineflayer.prismarine.js.org/#/api?id=events).
+Bot object has many useful [events](http://mineflayer.prismarine.js.org/#/api?id=events).
 You can listen for an event by using either `bot.on()` method or `bot.once()` method of the Bot object, wich takes the name of event and a function.
 To remove specific listener you can use `bot.removeListener()` method.
 
-- `bot.on(eventName,listener)`
-  Adds the `listener` function to the end of the listeners array for the event named `eventName`. No checks are made to see if the listener has already been added. Multiple calls passing the same combination of `eventName` and `listener` will result in the `listener` being added, and called, multiple times.
-- `bot.once(eventName,listener)`
-  Adds a one-time listener function for the event named `eventName`. The next time `eventName` is triggered, this listener is removed and then invoked. Basically it'll run one time for the first event.
-- `bot.removeListener(eventName,listener)`
-  Removes the specified listener from the listener array for the event named eventName.
+- `bot.on(eventName, listener)`
+  Execute the `listener` function for each time the event named `eventName` triggered.
+- `bot.once(eventName, listener)`
+  Execute the `listener` function for the first time the event named `eventName` triggered.
+- `bot.removeListener(eventName, listener)`
+  Removes the specified `listener` for the event named `eventName`.
 
 Not only bot object, [`Chest`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerchest), [`Furnace`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerfurnace), [`Dispenser`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerdispenser), [`EnchantmentTable`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerenchantmenttable), [`Villager`](http://mineflayer.prismarine.js.org/#/api?id=mineflayervillager) object also has its own events!
 
@@ -114,30 +114,33 @@ Examples :
 #### Craft Stick Bot
 
 You don't wanna craft sticks, before the logs crafted into planks.
-Incorect aproach :
+
+Incorect aproach ❌ :
 
 ```js
 const plankRecipe = bot.recipesFor(5); // 5 ID for Oak Wood Planks
-bot.craft(plankRecipe, 1);
+bot.craft(plankRecipe, 1); // ❌
 const stickRecipe = bot.recipesFor(280); // 280 ID for Stick
-bot.craft(plankRecipe, 1);
+bot.craft(plankRecipe, 1); // ❌
 ```
 
-Correct approach with callback:
+Correct approach with callback ✔️ :
 
 ```js
 const plankRecipe = bot.recipesFor(5)[0]; // 5 ID for Oak Wood Planks
 
 bot.craft(plankRecipe, 1, null, function (err) {
+  // ✔️
   if (err) return bot.chat(err.message);
   // if error happened when crafting `plankRecipe` then send to chat the `err.message`
 
   const stickRecipe = bot.recipesFor(280); // 280 ID for Stick
   bot.craft(stickRecipe, 1, null, function (err) {
+    // ✔️
     if (err) return bot.chat(err.message);
     // if error happened when crafting `stickRecipe` then send to chat the `err.message`
 
-    bot.chat('Crafting Stick finished');
+    bot.chat("Crafting Stick finished");
   });
 });
 ```
@@ -154,19 +157,15 @@ Using
 `bot.heldItem` property to get the name of the item held by the bot. `bot.heldItem` is an instance of [`Item`](https://github.com/PrismarineJS/prismarine-item/blob/master/README.md) or `null` if no item held.
 
 ```js
-const mineflayer = require('mineflayer');
-const options = {...}
-const bot = mineflayer.createBot(options);
-
 const minFoodPoints = 18;
 
-bot.on('health', function () {
+bot.on("health", function () {
   // listen on any changes in health or food points.
   if (bot.food < minFoodPoints) {
     // if the food points lower than 18, then
     const heldItemName = bot.heldItem.name;
 
-    function onFinishEating(err){
+    function onFinishEating(err) {
       if (err) return bot.chat(err.message);
       bot.chat(`I'm finish eating ${heldItemName}`);
     }
@@ -175,7 +174,7 @@ bot.on('health', function () {
     bot.consume(onFinishEating);
     // `bot.consume()` method takes `onFinishEating` as callback, and execute `onFinishEating` when its finish or stumble an error.
   }
-})
+});
 ```
 
 #### Fisherman Bot
