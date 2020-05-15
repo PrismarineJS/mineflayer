@@ -197,44 +197,40 @@ Install [Termux](https://termux.com/) and start it.
 
 #### Setup
 
-Install `node.js` & `mineflayer` :
+Install `node.js`:
 
 ```bash
 pkg update -y
 pkg install nodejs -y
-npm install mineflayer@latest
 ```
 
-#### Editing script
-
-- Skip this step if you already familiar with scripting on CLI.
-
-Install nano for editing script:
+❗️ Allow Storage permission for Termux on app settings.
+Create new folder on internal storage :
 
 ```bash
-pkg install nano -y
+cd /sdcard
+mkdir my_scripts
+cd my_scripts
 ```
 
-Now you can use nano to creare / edit your script. Example:
+Install `mineflayer`:
 
 ```bash
-nano myscript.js
+npm install mineflayer
 ```
 
-Didn't know how to use it? Here [nano's official docs](https://nano-editor.org/dist/latest/nano.pdf), or search `How to use nano text editor`.
+Now you can copy / store all of your scripts into `my_scripts` folder inside Internal Storage.
 
 #### Start your bot
 
-Start the bot (normal mode):
+To start the bot, change `mybot.js` to your script name:
 
 ```bash
-node myscript.js
+node mybot.js
 ```
 
-You can enable some protocol debugging output using `DEBUG` environment variable:
+❗️ Each time opening Termux you must change the cwd into `/sdcard/my_scripts`, before starting the bot:
 
 ```bash
-DEBUG='minecraft-protocol' node myscript.js
+cd /sdcard/my_scripts
 ```
-
-- Beware of flashing text on DEBUG mode.
