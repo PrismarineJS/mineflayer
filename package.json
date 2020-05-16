@@ -8,8 +8,9 @@
     "pretest": "npm run lint && require-self",
     "lint": "standard",
     "fix": "standard --fix",
-    "prepare": "npm install require-self && require-self",
-    "prepublishOnly": "cp docs/README.md README.md"
+    "prepare": "npm run snyk-protect && npm install require-self && require-self",
+    "prepublishOnly": "cp docs/README.md README.md",
+    "snyk-protect": "snyk protect"
   },
   "repository": {
     "type": "git",
@@ -32,7 +33,8 @@
     "prismarine-windows": "^1.3.0",
     "protodef": "^1.6.7",
     "sprintf-js": "^1.1.1",
-    "vec3": "^0.1.3"
+    "vec3": "^0.1.3",
+    "snyk": "^1.321.0"
   },
   "devDependencies": {
     "doctoc": "^1.0.0",
@@ -40,5 +42,6 @@
     "mocha": "^7.0.1",
     "require-self": "^0.2.3",
     "standard": "^14.0.1"
-  }
+  },
+  "snyk": true
 }
