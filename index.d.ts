@@ -1,671 +1,681 @@
 /// <reference types="minecraft-protocol" />
 /// <reference types="node" />
+/// <reference types="vec3" />
+/// <reference types="prismarine-item" />
+/// <reference types="prismarine-windows" />
+/// <reference types="prismarine-recipe" />
+/// <reference types="prismarine-block" />
+/// <reference types="prismarine-entity" />
 
 import {EventEmitter} from 'events';
 import {Client, ClientOptions} from 'minecraft-protocol';
+import {Vec3} from 'vec3';
+import {Item} from 'prismarine-item';
+import {Window} from 'prismarine-windows';
+import {Recipe} from 'prismarine-recipe';
+import {Block} from 'prismarine-block';
+import {Entity} from 'prismarine-entity';
 
 declare module mineflayer {
 
-	export function createBot(options: BotOptions): Bot;
+    export function createBot(options: BotOptions): Bot;
 
-	export interface BotOptions extends ClientOptions {
-		logErrors?: boolean;
-		loadInternalPlugins?: boolean;
-		plugins?: PluginOptions;
-		chat?: ChatLevel;
-		colorsEnabled?: boolean;
-		viewDistance?: ViewDistance;
-		difficulty?: number;
-		showCape?: boolean;
-		chatLengthLimit?: number;
-	}
+    export interface BotOptions extends ClientOptions {
+        logErrors?: boolean;
+        loadInternalPlugins?: boolean;
+        plugins?: PluginOptions;
+        chat?: ChatLevel;
+        colorsEnabled?: boolean;
+        viewDistance?: ViewDistance;
+        difficulty?: number;
+        showCape?: boolean;
+        chatLengthLimit?: number;
+    }
 
-	export type ChatLevel = 'enabled' | 'commandsOnly' | 'disabled';
-	export type ViewDistance = 'far' | 'normal' | 'short' | 'tiny';
+    export type ChatLevel = 'enabled' | 'commandsOnly' | 'disabled';
+    export type ViewDistance = 'far' | 'normal' | 'short' | 'tiny';
 
-	export interface PluginOptions {
-		[plugin: string]: boolean | Plugin;
-	}
+    export interface PluginOptions {
+        [plugin: string]: boolean | Plugin;
+    }
 
-	export type Plugin = (bot: Bot, options: BotOptions) => void;
+    export type Plugin = (bot: Bot, options: BotOptions) => void;
 
-	export class Bot extends EventEmitter {
-		username: string;
-		protocolVersion: string;
-		majorVersion: string;
-		version: string;
-		entity: object; /*prismarine-entity Entity*/
-		entities: { [id: string]: object /*prismarine-entity Entity*/ };
-		spawnPoint: object; /*vec3 Vec3*/
-		game: GameState;
-		player: Player;
-		players: { [username: string]: Player };
-		isRaining: boolean;
-		chatPatterns: Array<ChatPattern>;
-		settings: GameSettings;
-		experience: Experience;
-		health: number;
-		food: number;
-		foodSaturation: number;
-		physics: PhysicsOptions;
-		time: Time;
-		quickBarSlot: number;
-		inventory: object; /*prismarine-windows Window*/
-		targetDigBlock: object; /*prismarine-block Block*/
-		isSleeping: boolean;
-		scoreboards: { [name: string]: ScoreBoard };
-		scoreboard: { [slot in DisplaySlot]: ScoreBoard };
-		controlState: ControlStateStatus;
-		void;
-		creative: creativeMethods;
-		_client: Client;
+    export class Bot extends EventEmitter {
+        username: string;
+        protocolVersion: string;
+        majorVersion: string;
+        version: string;
+        entity: Entity;
+        entities: { [id: string]: Entity };
+        spawnPoint: Vec3;
+        game: GameState;
+        player: Player;
+        players: { [username: string]: Player };
+        isRaining: boolean;
+        chatPatterns: Array<ChatPattern>;
+        settings: GameSettings;
+        experience: Experience;
+        health: number;
+        food: number;
+        foodSaturation: number;
+        physics: PhysicsOptions;
+        time: Time;
+        quickBarSlot: number;
+        inventory: Window;
+        targetDigBlock: Block;
+        isSleeping: boolean;
+        scoreboards: { [name: string]: ScoreBoard };
+        scoreboard: { [slot in DisplaySlot]: ScoreBoard };
+        controlState: ControlStateStatus;
+        void;
+        creative: creativeMethods;
+        _client: Client;
 
-		constructor();
+        constructor();
 
-		connect(options: BotOptions): void;
+        connect(options: BotOptions): void;
 
-		supportFeature(feature: string): boolean;
+        supportFeature(feature: string): boolean;
 
-		end(): void;
+        end(): void;
 
-		blockAt(point: object /*vec3 Vec3*/): object /*prismarine-block Block*/ | null;
+        blockAt(point: Vec3): Block | null;
 
-		blockInSight(maxSteps: number, vectorLength: number): object /*prismarine-block Block*/ | null;
+        blockInSight(maxSteps: number, vectorLength: number): Block | null;
 
-		canSeeBlock(block: object /*prismarine-block Block*/): boolean;
+        canSeeBlock(block: Block): boolean;
 
-		findBlock(options: FindBlockOptions): object /*prismarine-block Block*/;
+        findBlock(options: FindBlockOptions): Block;
 
-		canDigBlock(block: object /*prismarine-block Block*/): boolean;
+        canDigBlock(block: Block): boolean;
 
-		recipesFor(itemType: number, metadata: number | null, minResultCount: number | null, craftingTable: object /*prismarine-block Block*/ | null): Array<object /*prismarine-recipe Recipe*/>;
+        recipesFor(itemType: number, metadata: number | null, minResultCount: number | null, craftingTable: Block | null): Array<Recipe>;
 
-		recipesAll(itemType: number, metadata: number | null, craftingTable: object /*prismarine-block Block*/ | null): Array<object /*prismarine-recipe Recipe*/>;
+        recipesAll(itemType: number, metadata: number | null, craftingTable: Block | null): Array<Recipe>;
 
-		quit(reason?: string): void;
+        quit(reason?: string): void;
 
-		tabComplete(str: string, cb: (matches: Array<string>) => void, assumeCommand?: boolean, sendBlockInSight?: boolean): void;
+        tabComplete(str: string, cb: (matches: Array<string>) => void, assumeCommand?: boolean, sendBlockInSight?: boolean): void;
 
-		chat(message: string): void;
+        chat(message: string): void;
 
-		whisper(username: string, message: string): void;
+        whisper(username: string, message: string): void;
 
-		chatAddPattern(pattern: RegExp, chatType: string, description?: string): void;
+        chatAddPattern(pattern: RegExp, chatType: string, description?: string): void;
 
-		setSettings(options: Partial<GameSettings>): void;
+        setSettings(options: Partial<GameSettings>): void;
 
-		loadPlugin(plugin: Plugin): void;
+        loadPlugin(plugin: Plugin): void;
 
-		loadPlugins(plugins: Array<Plugin>): void;
+        loadPlugins(plugins: Array<Plugin>): void;
 
-		sleep(bedBlock: object /*prismarine-block Block*/, cb?: (err?: Error) => void): void;
+        sleep(bedBlock: Block, cb?: (err?: Error) => void): void;
 
-		isABd(bedBlock: object /*prismarine-block Block*/): void;
+        isABd(bedBlock: Block): void;
 
-		wake(cb?: (err?: Error) => void): void;
+        wake(cb?: (err?: Error) => void): void;
 
-		setControlState(control: ControlState, state: boolean): void;
+        setControlState(control: ControlState, state: boolean): void;
 
-		clearControlStates(): void;
+        clearControlStates(): void;
 
-		lookAt(point: object /*vec3 Vec3*/, force?: boolean, callback?: () => void): void;
+        lookAt(point: Vec3, force?: boolean, callback?: () => void): void;
 
-		look(yaw: number, pitch: number, force?: boolean, callback?: () => void): void;
+        look(yaw: number, pitch: number, force?: boolean, callback?: () => void): void;
 
-		updateSign(block: object /*prismarine-block Block*/, text: string): void;
+        updateSign(block: Block, text: string): void;
 
-		equip(item: object /*prismarine-item Item*/, destination: EquipmentDestination | null, callback?: (error?: Error) => void): void;
+        equip(item: Item, destination: EquipmentDestination | null, callback?: (error?: Error) => void): void;
 
-		unequip(destination: EquipmentDestination | null, callback?: () => void): void;
+        unequip(destination: EquipmentDestination | null, callback?: () => void): void;
 
-		tossStack(item: object /*prismarine-item Item*/, callback?: (error?: Error) => void): void;
+        tossStack(item: Item, callback?: (error?: Error) => void): void;
 
-		toss(itemType: number, metadata: number | null, count: number | null, callback?: (err?: Error) => void): void;
+        toss(itemType: number, metadata: number | null, count: number | null, callback?: (err?: Error) => void): void;
 
-		dig(block: object /*prismarine-block Block*/, callback?: (err?: Error) => void): void;
+        dig(block: Block, callback?: (err?: Error) => void): void;
 
-		stopDigging(): void;
+        stopDigging(): void;
 
-		digTime(block: object /*prismarine-block Block*/): number;
+        digTime(block: Block): number;
 
-		placeBlock(referenceBlock: object /*prismarine-block Block*/, faceVector: object /*vec3 Vec3*/, cb: () => void): void;
+        placeBlock(referenceBlock: Block, faceVector: Vec3, cb: () => void): void;
 
-		activateBlock(block: object /*prismarine-block Block*/, callback?: (err?: Error) => void): void;
+        activateBlock(block: Block, callback?: (err?: Error) => void): void;
 
-		activateEntity(block: object /*prismarine-entity Entity*/, callback?: (err?: Error) => void): void;
+        activateEntity(block: Entity, callback?: (err?: Error) => void): void;
 
-		consume(callback: (err?: Error) => void): void;
+        consume(callback: (err?: Error) => void): void;
 
-		fish(callback: (err?: Error) => void): void;
+        fish(callback: (err?: Error) => void): void;
 
-		activateItem(): void;
+        activateItem(): void;
 
-		deactivateItem(): void;
+        deactivateItem(): void;
 
-		useOn(targetEntity: object /*prismarine-entity Entity*/): void;
+        useOn(targetEntity: Entity): void;
 
-		attack(entity: object /*prismarine-entity Entity*/): void;
+        attack(entity: Entity): void;
 
-		swingArm(hand?: 'left' | 'right'): void;
+        swingArm(hand?: 'left' | 'right'): void;
 
-		mount(entity: object /*prismarine-entity Entity*/): void;
+        mount(entity: Entity): void;
 
-		dismount(): void;
+        dismount(): void;
 
-		moveVehicle(left: number, forward: number): void;
+        moveVehicle(left: number, forward: number): void;
 
-		setQuickBarSlot(slot: number): void;
+        setQuickBarSlot(slot: number): void;
 
-		craft(recipe: object /*prismarine-recipe Recipe*/, count: number | null, craftingTable: object /*prismarine-block Block*/, callback?: () => void): void;
+        craft(recipe: Recipe, count: number | null, craftingTable: Block, callback?: () => void): void;
 
-		writeBook(slot: number, pages: Array<String>, callback?: (err?: Error) => void): void;
+        writeBook(slot: number, pages: Array<String>, callback?: (err?: Error) => void): void;
 
-		openChest(chest: object /*prismarine-block Block*/ | object /*prismarine-entity Entity*/): Chest;
+        openChest(chest: Block | Entity): Chest;
 
-		openFurnace(furnace: object /*prismarine-block Block*/): Furnace;
+        openFurnace(furnace: Block): Furnace;
 
-		openDispenser(dispenser: object /*prismarine-block Block*/): Dispenser;
+        openDispenser(dispenser: Block): Dispenser;
 
-		openEnchantmentTable(enchantmentTable: object /*prismarine-block Block*/): EnchantmentTable;
+        openEnchantmentTable(enchantmentTable: Block): EnchantmentTable;
 
-		openVillager(villager: object /*prismarine-entity Entity*/, cb?: (err: null, villager: Villager) => void): Villager;
+        openVillager(villager: Entity, cb?: (err: null, villager: Villager) => void): Villager;
 
-		trade(villagerInstance: Villager, tradeIndex: string | number, times?: number, cb?: (err?: Error) => void): void;
+        trade(villagerInstance: Villager, tradeIndex: string | number, times?: number, cb?: (err?: Error) => void): void;
 
-		setCommandBlock(pos: object /*vec3 Vec3*/, command: string, trackOutput: boolean): void;
+        setCommandBlock(pos: Vec3, command: string, trackOutput: boolean): void;
 
-		clickWindow(slot: number, mouseButton: number, mode: number, cb?: (err?: Error) => void): void;
+        clickWindow(slot: number, mouseButton: number, mode: number, cb?: (err?: Error) => void): void;
 
-		putSelectedItemRange(start: number, end: number, window: object /*prismarine-windows Window*/, slot: any, cb?: (err?: Error) => void): void;
+        putSelectedItemRange(start: number, end: number, window: Window, slot: any, cb?: (err?: Error) => void): void;
 
-		putAway(slot: number, cb?: (err?: Error) => void): void;
+        putAway(slot: number, cb?: (err?: Error) => void): void;
 
-		closeWindow(window: object /*prismarine-windows Window*/): void;
+        closeWindow(window: Window): void;
 
-		transfer(options: TransferOptions, cb?: (err?: Error) => void): void;
+        transfer(options: TransferOptions, cb?: (err?: Error) => void): void;
 
-		openBlock(block: object /*prismarine-block Block*/, Class: new() => EventEmitter): void;
+        openBlock(block: Block, Class: new() => EventEmitter): void;
 
-		openEntity(block: object /*prismarine-entity Entity*/, Class: new() => EventEmitter): void;
+        openEntity(block: Entity, Class: new() => EventEmitter): void;
 
-		moveSlotItem(sourceSlot: number, destSlot: number, cb?: (err?: Error) => void): void;
+        moveSlotItem(sourceSlot: number, destSlot: number, cb?: (err?: Error) => void): void;
 
-		updateHeldItem();
+        updateHeldItem();
 
-		on(event: 'chat', listener: (username: string, message: string, translate: string | null, jsonMsg: string, matches: Array<String> | null) => void): this;
+        on(event: 'chat', listener: (username: string, message: string, translate: string | null, jsonMsg: string, matches: Array<String> | null) => void): this;
 
-		on(event: 'whisper', listener: (username: string, message: string, translate: string | null, jsonMsg: string, matches: Array<String> | null) => void): this;
+        on(event: 'whisper', listener: (username: string, message: string, translate: string | null, jsonMsg: string, matches: Array<String> | null) => void): this;
 
-		on(event: 'actionBar', listener: (jsonMsg: string) => void): this;
+        on(event: 'actionBar', listener: (jsonMsg: string) => void): this;
 
-		on(event: 'message', listener: (jsonMsg: string) => void): this;
+        on(event: 'message', listener: (jsonMsg: string) => void): this;
 
-		on(event: 'login', listener: () => void): this;
+        on(event: 'login', listener: () => void): this;
 
-		on(event: 'spawn', listener: () => void): this;
+        on(event: 'spawn', listener: () => void): this;
 
-		on(event: 'respawn', listener: () => void): this;
+        on(event: 'respawn', listener: () => void): this;
 
-		on(event: 'game', listener: () => void): this;
+        on(event: 'game', listener: () => void): this;
 
-		on(event: 'title', listener: (text: string) => void): this;
+        on(event: 'title', listener: (text: string) => void): this;
 
-		on(event: 'rain', listener: () => void): this;
+        on(event: 'rain', listener: () => void): this;
 
-		on(event: 'time', listener: () => void): this;
+        on(event: 'time', listener: () => void): this;
 
-		on(event: 'kicked', listener: (reason: string, loggedIn: boolean) => void): this;
+        on(event: 'kicked', listener: (reason: string, loggedIn: boolean) => void): this;
 
-		on(event: 'end', listener: () => void): this;
+        on(event: 'end', listener: () => void): this;
 
-		on(event: 'spawnReset', listener: () => void): this;
+        on(event: 'spawnReset', listener: () => void): this;
 
-		on(event: 'death', listener: () => void): this;
+        on(event: 'death', listener: () => void): this;
 
-		on(event: 'health', listener: () => void): this;
+        on(event: 'health', listener: () => void): this;
 
-		on(event: 'entitySwingArm', listener: (entity: object /*prismarine-entity Entity*/) => void): this;
+        on(event: 'entitySwingArm', listener: (entity: Entity) => void): this;
 
-		on(event: 'entityHurt', listener: (entity: object /*prismarine-entity Entity*/) => void): this;
+        on(event: 'entityHurt', listener: (entity: Entity) => void): this;
 
-		on(event: 'entityWake', listener: (entity: object /*prismarine-entity Entity*/) => void): this;
+        on(event: 'entityWake', listener: (entity: Entity) => void): this;
 
-		on(event: 'entityEat', listener: (entity: object /*prismarine-entity Entity*/) => void): this;
+        on(event: 'entityEat', listener: (entity: Entity) => void): this;
 
-		on(event: 'entityCrouch', listener: (entity: object /*prismarine-entity Entity*/) => void): this;
+        on(event: 'entityCrouch', listener: (entity: Entity) => void): this;
 
-		on(event: 'entityUncrouch', listener: (entity: object /*prismarine-entity Entity*/) => void): this;
+        on(event: 'entityUncrouch', listener: (entity: Entity) => void): this;
 
-		on(event: 'entityEquipmentChange', listener: (entity: object /*prismarine-entity Entity*/) => void): this;
+        on(event: 'entityEquipmentChange', listener: (entity: Entity) => void): this;
 
-		on(event: 'entitySleep', listener: (entity: object /*prismarine-entity Entity*/) => void): this;
+        on(event: 'entitySleep', listener: (entity: Entity) => void): this;
 
-		on(event: 'entitySpawn', listener: (entity: object /*prismarine-entity Entity*/) => void): this;
+        on(event: 'entitySpawn', listener: (entity: Entity) => void): this;
 
-		on(event: 'playerCollect', listener: (collector: object /*prismarine-entity Entity*/, collected: object /*prismarine-entity Entity*/) => void): this;
+        on(event: 'playerCollect', listener: (collector: Entity, collected: Entity) => void): this;
 
-		on(event: 'entityGone', listener: (entity: object /*prismarine-entity Entity*/) => void): this;
+        on(event: 'entityGone', listener: (entity: Entity) => void): this;
 
-		on(event: 'entityMoved', listener: (entity: object /*prismarine-entity Entity*/) => void): this;
+        on(event: 'entityMoved', listener: (entity: Entity) => void): this;
 
-		on(event: 'entityDetach', listener: (entity: object /*prismarine-entity Entity*/, vehicle: object /*prismarine-entity Entity*/) => void): this;
+        on(event: 'entityDetach', listener: (entity: Entity, vehicle: Entity) => void): this;
 
-		on(event: 'entityAttach', listener: (entity: object /*prismarine-entity Entity*/, vehicle: object /*prismarine-entity Entity*/) => void): this;
+        on(event: 'entityAttach', listener: (entity: Entity, vehicle: Entity) => void): this;
 
-		on(event: 'entityUpdate', listener: (entity: object /*prismarine-entity Entity*/) => void): this;
+        on(event: 'entityUpdate', listener: (entity: Entity) => void): this;
 
-		on(event: 'entityEffect', listener: (entity: object /*prismarine-entity Entity*/, effect: Effect) => void): this;
+        on(event: 'entityEffect', listener: (entity: Entity, effect: Effect) => void): this;
 
-		on(event: 'entityEffectEnd', listener: (entity: object /*prismarine-entity Entity*/, effect: Effect) => void): this;
+        on(event: 'entityEffectEnd', listener: (entity: Entity, effect: Effect) => void): this;
 
-		on(event: 'playerJoined', listener: (player: Player) => void): this;
+        on(event: 'playerJoined', listener: (player: Player) => void): this;
 
-		on(event: 'playerLeft', listener: (entity: Player) => void): this;
+        on(event: 'playerLeft', listener: (entity: Player) => void): this;
 
-		on(event: 'blockUpdate', listener: (oldBlock: object /*prismarine-block Block*/ | null, newBlock: object /*prismarine-block Block*/) => void): this;
+        on(event: 'blockUpdate', listener: (oldBlock: Block | null, newBlock: Block) => void): this;
 
-		on(event: 'blockUpdate:(x, y, z)', listener: (oldBlock: object /*prismarine-block Block*/ | null, newBlock: object /*prismarine-block Block*/) => void): this;
+        on(event: 'blockUpdate:(x, y, z)', listener: (oldBlock: Block | null, newBlock: Block) => void): this;
 
-		on(event: 'chunkColumnLoad', listener: (entity: object /*vec3 Vec3*/) => void): this;
+        on(event: 'chunkColumnLoad', listener: (entity: Vec3) => void): this;
 
-		on(event: 'chunkColumnUnload', listener: (entity: object /*vec3 Vec3*/) => void): this;
+        on(event: 'chunkColumnUnload', listener: (entity: Vec3) => void): this;
 
-		on(event: 'soundEffectHeard', listener: (soundName: string, position: object /*vec3 Vec3*/, volume: number, pitch: number) => void): this;
+        on(event: 'soundEffectHeard', listener: (soundName: string, position: Vec3, volume: number, pitch: number) => void): this;
 
-		on(event: 'hardcodedSoundEffectHeard', listener: (soundId: number, soundCategory: number, position: object /*vec3 Vec3*/, volume: number, pitch: number) => void): this;
+        on(event: 'hardcodedSoundEffectHeard', listener: (soundId: number, soundCategory: number, position: Vec3, volume: number, pitch: number) => void): this;
 
-		on(event: 'noteHeard', listener: (block: object /*prismarine-block Block*/, instrument: Instrument, pitch: number) => void): this;
+        on(event: 'noteHeard', listener: (block: Block, instrument: Instrument, pitch: number) => void): this;
 
-		on(event: 'pistonMove', listener: (block: object /*prismarine-block Block*/, isPulling: number, direction: number) => void): this;
+        on(event: 'pistonMove', listener: (block: Block, isPulling: number, direction: number) => void): this;
 
-		on(event: 'chestLidMove', listener: (block: object /*prismarine-block Block*/, isOpen: number) => void): this;
+        on(event: 'chestLidMove', listener: (block: Block, isOpen: number) => void): this;
 
-		on(event: 'blockBreakProgressObserved', listener: (block: object /*prismarine-block Block*/, destroyStage: number) => void): this;
+        on(event: 'blockBreakProgressObserved', listener: (block: Block, destroyStage: number) => void): this;
 
-		on(event: 'blockBreakProgressEnd', listener: (block: object /*prismarine-block Block*/) => void): this;
+        on(event: 'blockBreakProgressEnd', listener: (block: Block) => void): this;
 
-		on(event: 'diggingCompleted', listener: (block: object /*prismarine-block Block*/) => void): this;
+        on(event: 'diggingCompleted', listener: (block: Block) => void): this;
 
-		on(event: 'diggingAborted', listener: (block: object /*prismarine-block Block*/) => void): this;
+        on(event: 'diggingAborted', listener: (block: Block) => void): this;
 
-		on(event: 'move', listener: () => void): this;
+        on(event: 'move', listener: () => void): this;
 
-		on(event: 'forcedMove', listener: () => void): this;
+        on(event: 'forcedMove', listener: () => void): this;
 
-		on(event: 'mount', listener: () => void): this;
+        on(event: 'mount', listener: () => void): this;
 
-		on(event: 'dismount', listener: (vehicle: object /*prismarine-entity Entity*/) => void): this;
+        on(event: 'dismount', listener: (vehicle: Entity) => void): this;
 
-		on(event: 'windowOpen', listener: (vehicle: object /*prismarine-windows Window*/) => void): this;
+        on(event: 'windowOpen', listener: (vehicle: Window) => void): this;
 
-		on(event: 'windowClose', listener: (vehicle: object /*prismarine-windows Window*/) => void): this;
+        on(event: 'windowClose', listener: (vehicle: Window) => void): this;
 
-		on(event: 'sleep', listener: () => void): this;
+        on(event: 'sleep', listener: () => void): this;
 
-		on(event: 'wake', listener: () => void): this;
+        on(event: 'wake', listener: () => void): this;
 
-		on(event: 'experience', listener: () => void): this;
+        on(event: 'experience', listener: () => void): this;
 
-		on(event: 'scoreboardCreated', listener: (scoreboard: ScoreBoard) => void): this;
+        on(event: 'scoreboardCreated', listener: (scoreboard: ScoreBoard) => void): this;
 
-		on(event: 'scoreboardDeleted', listener: (scoreboard: ScoreBoard) => void): this;
+        on(event: 'scoreboardDeleted', listener: (scoreboard: ScoreBoard) => void): this;
 
-		on(event: 'scoreboardTitleChanged', listener: (scoreboard: ScoreBoard) => void): this;
+        on(event: 'scoreboardTitleChanged', listener: (scoreboard: ScoreBoard) => void): this;
 
-		on(event: 'scoreUpdated', listener: (scoreboard: ScoreBoard, item: number) => void): this;
+        on(event: 'scoreUpdated', listener: (scoreboard: ScoreBoard, item: number) => void): this;
 
-		on(event: 'scoreRemoved', listener: (scoreboard: ScoreBoard, item: number) => void): this;
+        on(event: 'scoreRemoved', listener: (scoreboard: ScoreBoard, item: number) => void): this;
 
-		on(event: 'scoreboardPosition', listener: (position: DisplaySlot, scoreboard: ScoreBoard) => void): this;
+        on(event: 'scoreboardPosition', listener: (position: DisplaySlot, scoreboard: ScoreBoard) => void): this;
 
-		on(event: 'bossBarCreated', listener: (bossBar: BossBar) => void): this;
+        on(event: 'bossBarCreated', listener: (bossBar: BossBar) => void): this;
 
-		on(event: 'bossBarDeleted', listener: (bossBar: BossBar) => void): this;
+        on(event: 'bossBarDeleted', listener: (bossBar: BossBar) => void): this;
 
-		on(event: 'bossBarUpdated', listener: (bossBar: BossBar) => void): this;
-	}
+        on(event: 'bossBarUpdated', listener: (bossBar: BossBar) => void): this;
+    }
 
-	export interface GameState {
-		levelType: LevelType;
-		gameMode: GameMode;
-		hardcore: boolean;
-		dimension: Dimension;
-		difficulty: Difficulty;
-		maxPlayers: number;
-	}
+    export interface GameState {
+        levelType: LevelType;
+        gameMode: GameMode;
+        hardcore: boolean;
+        dimension: Dimension;
+        difficulty: Difficulty;
+        maxPlayers: number;
+    }
 
-	export type LevelType = 'default' | 'flat' | 'largeBiomes' | 'amplified' | 'customized' | 'buffet' | 'default_1_1';
-	export type GameMode = 'survival' | 'creative' | 'adventure';
-	export type Dimension = 'nether' | 'overworld' | 'end';
-	export type Difficulty = 'peaceful' | 'easy' | 'normal' | 'hard';
+    export type LevelType = 'default' | 'flat' | 'largeBiomes' | 'amplified' | 'customized' | 'buffet' | 'default_1_1';
+    export type GameMode = 'survival' | 'creative' | 'adventure';
+    export type Dimension = 'nether' | 'overworld' | 'end';
+    export type Difficulty = 'peaceful' | 'easy' | 'normal' | 'hard';
 
-	export interface Player {
-		username: string;
-		displayName: ChatMessage;
-		gamemode: number;
-		ping: number;
-		entity: object; /*prismarine-entity Entity*/
-	}
+    export interface Player {
+        username: string;
+        displayName: ChatMessage;
+        gamemode: number;
+        ping: number;
+        entity: Entity;
+    }
 
-	export class ChatMessage {
-		json: object;
-		text?: string;
-		translate?: string;
-		with?: Array<ChatMessage>;
-		extra?: Array<ChatMessage>;
-		bold: boolean;
-		italic: boolean;
-		underlined: boolean;
-		strikethrough: boolean;
-		obfuscated: boolean;
-		color: string;
-		clickEvent: object;
-		hoverEvent: object;
+    export class ChatMessage {
+        json: object;
+        text?: string;
+        translate?: string;
+        with?: Array<ChatMessage>;
+        extra?: Array<ChatMessage>;
+        bold: boolean;
+        italic: boolean;
+        underlined: boolean;
+        strikethrough: boolean;
+        obfuscated: boolean;
+        color: string;
+        clickEvent: object;
+        hoverEvent: object;
 
-		constructor(message);
+        constructor(message);
 
-		parse(): void;
+        parse(): void;
 
-		length(): number;
+        length(): number;
 
-		getText(idx: number, lang?: { [key: string]: string }): string;
+        getText(idx: number, lang?: { [key: string]: string }): string;
 
-		toString(lang?: { [key: string]: string }): string;
+        toString(lang?: { [key: string]: string }): string;
 
-		valueOf(): string;
+        valueOf(): string;
 
-		toMotd(lang?: { [key: string]: string }): string;
+        toMotd(lang?: { [key: string]: string }): string;
 
-		toAnsi(lang: { [key: string]: string }): string;
-	}
+        toAnsi(lang: { [key: string]: string }): string;
+    }
 
-	export interface ChatPattern {
-		pattern: RegExp;
-		type: string;
-		description: string;
-	}
+    export interface ChatPattern {
+        pattern: RegExp;
+        type: string;
+        description: string;
+    }
 
-	export interface GameSettings {
-		chat: ChatLevel;
-		colorsEnabled: boolean;
-		viewDistance: ViewDistance;
-		difficulty: number;
-		showCape: boolean;
-	}
+    export interface GameSettings {
+        chat: ChatLevel;
+        colorsEnabled: boolean;
+        viewDistance: ViewDistance;
+        difficulty: number;
+        showCape: boolean;
+    }
 
-	export interface Experience {
-		level: number;
-		points: number;
-		progress: number;
-	}
+    export interface Experience {
+        level: number;
+        points: number;
+        progress: number;
+    }
 
-	export interface PhysicsOptions {
-		maxGroundSpeed: number;
-		terminalVelocity: number;
-		walkingAcceleration: number;
-		gravity: number;
-		groundFriction: number;
-		playerApothem: number;
-		playerHeight: number;
-		jumpSpeed: number;
-		yawSpeed: number;
-		sprintSpeed: number;
-		maxGroundSpeedSoulSand: number;
-		maxGroundSpeedWater: number;
-	}
+    export interface PhysicsOptions {
+        maxGroundSpeed: number;
+        terminalVelocity: number;
+        walkingAcceleration: number;
+        gravity: number;
+        groundFriction: number;
+        playerApothem: number;
+        playerHeight: number;
+        jumpSpeed: number;
+        yawSpeed: number;
+        sprintSpeed: number;
+        maxGroundSpeedSoulSand: number;
+        maxGroundSpeedWater: number;
+    }
 
-	export interface Time {
-		day: number;
-		age: number;
-	}
+    export interface Time {
+        day: number;
+        age: number;
+    }
 
-	export interface ControlStateStatus {
-		forward: boolean;
-		back: boolean;
-		left: boolean;
-		right: boolean;
-		jump: boolean;
-		sprint: boolean;
-		sneak: boolean;
-	}
+    export interface ControlStateStatus {
+        forward: boolean;
+        back: boolean;
+        left: boolean;
+        right: boolean;
+        jump: boolean;
+        sprint: boolean;
+        sneak: boolean;
+    }
 
-	export type ControlState = 'forward' | 'back' | 'left' | 'right' | 'jump' | 'sprint' | 'sneak';
+    export type ControlState = 'forward' | 'back' | 'left' | 'right' | 'jump' | 'sprint' | 'sneak';
 
-	export interface Effect {
-		id: number;
-		amplifier: number;
-		duration: number;
-	}
+    export interface Effect {
+        id: number;
+        amplifier: number;
+        duration: number;
+    }
 
-	export interface Instrument {
-		id: number;
-		name: 'harp' | 'doubleBass' | 'snareDrum' | 'sticks' | 'bassDrum';
-	}
+    export interface Instrument {
+        id: number;
+        name: 'harp' | 'doubleBass' | 'snareDrum' | 'sticks' | 'bassDrum';
+    }
 
-	export interface FindBlockOptions {
-		point: object /*vec3 Vec3*/
-		;
-		matching: (block: object /*prismarine-block Block*/) => boolean | number | Array<number>;
-		maxDistance?: number;
-	}
+    export interface FindBlockOptions {
+        point: Vec3;
+        matching: (block: Block) => boolean | number | Array<number>;
+        maxDistance?: number;
+    }
 
-	export type EquipmentDestination = 'hand' | 'head' | 'torso' | 'legs' | 'feet';
+    export type EquipmentDestination = 'hand' | 'head' | 'torso' | 'legs' | 'feet';
 
-	export interface TransferOptions {
-		window: object /*prismarine-windows Window*/
-		;
-		itemType: number;
-		metadata: number | null;
-		sourceStart: number;
-		sourceEnd: number;
-		destStart: number;
-		destEnd: number;
-	}
+    export interface TransferOptions {
+        window: Window;
+        itemType: number;
+        metadata: number | null;
+        sourceStart: number;
+        sourceEnd: number;
+        destStart: number;
+        destEnd: number;
+    }
 
-	export interface creativeMethods {
-		setInventorySlot(slot: number, item: object /*prismarine-item Item*/ | null, callback?: (error?: Error) => void): void;
+    export interface creativeMethods {
+        setInventorySlot(slot: number, item: Item | null, callback?: (error?: Error) => void): void;
 
-		flyTo(destination: object /*vec3 Vec3*/, cb?: () => void): void;
+        flyTo(destination: Vec3, cb?: () => void): void;
 
-		startFlying(): void;
+        startFlying(): void;
 
-		stopFlying(): void;
-	}
+        stopFlying(): void;
+    }
 
-	export class Location {
-		floored: object /*vec3 Vec3*/;
-		blockPoint: object /*vec3 Vec3*/;
-		chunkCorner: object /*vec3 Vec3*/;
-		blockIndex: number;
-		biomeBlockIndex: number;
-		chunkYIndex: number;
+    export class Location {
+        floored: Vec3;
+        blockPoint: Vec3;
+        chunkCorner: Vec3;
+        blockIndex: number;
+        biomeBlockIndex: number;
+        chunkYIndex: number;
 
-		constructor(absoluteVector: object /*vec3 Vec3*/);
-	}
+        constructor(absoluteVector: Vec3);
+    }
 
-	export class Painting {
-		id: number;
-		position: object /*vec3 Vec3*/;
-		name: string;
-		direction: object /*vec3 Vec3*/;
+    export class Painting {
+        id: number;
+        position: Vec3;
+        name: string;
+        direction: Vec3;
 
-		constructor(id: number, position: object /*vec3 Vec3*/, name: String, direction: object /*vec3 Vec3*/);
-	}
+        constructor(id: number, position: Vec3, name: String, direction: Vec3);
+    }
 
-	export class Chest extends EventEmitter {
-		window: object /*prismarine-windows ChestWindow*/ | null;
+    export class Chest extends EventEmitter {
+        window: object /*prismarine-windows ChestWindow*/ | null;
 
-		constructor();
+        constructor();
 
-		close(): void;
+        close(): void;
 
-		deposit(itemType: number, metadata: number | null, count: number | null): void;
+        deposit(itemType: number, metadata: number | null, count: number | null): void;
 
-		withdraw(itemType: number, metadata: number | null, count: number | null): void;
+        withdraw(itemType: number, metadata: number | null, count: number | null): void;
 
-		count(itemType: number, metadata: number | null): number;
+        count(itemType: number, metadata: number | null): number;
 
-		items(): Array<object /*prismarine-item Item*/>;
+        items(): Array<Item>;
 
-		on(event: 'open', listener: () => void): this;
-		on(event: 'close', listener: () => void): this;
-		on(event: 'updateSlot', listener: (oldItem: object /*prismarine-item Item*/ | null, newItem: object /*prismarine-item Item*/) => void): this;
-	}
+        on(event: 'open', listener: () => void): this;
+        on(event: 'close', listener: () => void): this;
+        on(event: 'updateSlot', listener: (oldItem: Item | null, newItem: Item) => void): this;
+    }
 
-	export class Furnace extends EventEmitter {
-		fuel: number;
-		progress: number;
+    export class Furnace extends EventEmitter {
+        fuel: number;
+        progress: number;
 
-		constructor();
+        constructor();
 
-		close(): void;
+        close(): void;
 
-		takeInput(cb: (err: Error | null, item: object /*prismarine-item Item*/) => void): void;
+        takeInput(cb: (err: Error | null, item: Item) => void): void;
 
-		takeFuel(cb: (err: Error | null, item: object /*prismarine-item Item*/) => void): void;
+        takeFuel(cb: (err: Error | null, item: Item) => void): void;
 
-		takeOutput(cb: (err: Error | null, item: object /*prismarine-item Item*/) => void): void;
+        takeOutput(cb: (err: Error | null, item: Item) => void): void;
 
-		putInput(itemType: number, metadata: number | null, cb?: (err?: Error) => void): void;
+        putInput(itemType: number, metadata: number | null, cb?: (err?: Error) => void): void;
 
-		putFuel(itemType: number, metadata: number | null, cb?: (err?: Error) => void): void;
+        putFuel(itemType: number, metadata: number | null, cb?: (err?: Error) => void): void;
 
-		inputItem(): object /*prismarine-item Item*/;
+        inputItem(): Item;
 
-		fuelItem(): object /*prismarine-item Item*/;
+        fuelItem(): Item;
 
-		outputItem(): object /*prismarine-item Item*/;
+        outputItem(): Item;
 
-		on(event: 'open', listener: () => void): this;
-		on(event: 'close', listener: () => void): this;
-		on(event: 'update', listener: () => void): this;
-		on(event: 'updateSlot', listener: (oldItem: object /*prismarine-item Item*/ | null, newItem: object /*prismarine-item Item*/) => void): this;
-	}
+        on(event: 'open', listener: () => void): this;
+        on(event: 'close', listener: () => void): this;
+        on(event: 'update', listener: () => void): this;
+        on(event: 'updateSlot', listener: (oldItem: Item | null, newItem: Item) => void): this;
+    }
 
-	export class Dispenser extends EventEmitter {
-		onstructor();
+    export class Dispenser extends EventEmitter {
+        onstructor();
 
-		close(): void;
+        close(): void;
 
-		deposit(itemType: number, metadata: number | null, count: number | null): void;
+        deposit(itemType: number, metadata: number | null, count: number | null): void;
 
-		withdraw(itemType: number, metadata: number | null, count: number | null): void;
+        withdraw(itemType: number, metadata: number | null, count: number | null): void;
 
-		count(itemType: number, metadata: number | null): number;
+        count(itemType: number, metadata: number | null): number;
 
-		items(): Array<object /*prismarine-item Item*/>;
+        items(): Array<Item>;
 
-		on(event: 'open', listener: () => void): this;
-		on(event: 'close', listener: () => void): this;
-		on(event: 'updateSlot', listener: (oldItem: object /*prismarine-item Item*/ | null, newItem: object /*prismarine-item Item*/) => void): this;
-	}
+        on(event: 'open', listener: () => void): this;
+        on(event: 'close', listener: () => void): this;
+        on(event: 'updateSlot', listener: (oldItem: Item | null, newItem: Item) => void): this;
+    }
 
-	export class EnchantmentTable extends EventEmitter {
-		enchantments: Array<Enchantment>;
+    export class EnchantmentTable extends EventEmitter {
+        enchantments: Array<Enchantment>;
 
-		constructor();
+        constructor();
 
-		close(): void;
+        close(): void;
 
-		targetItem(): object /*prismarine-item Item*/;
+        targetItem(): Item;
 
-		enchant(choice: string | number, cb?: (err: Error | null, item: object /*prismarine-item Item*/) => void): void;
+        enchant(choice: string | number, cb?: (err: Error | null, item: Item) => void): void;
 
-		takeTargetItem(cb?: (err: Error | null, item: object /*prismarine-item Item*/) => void): void;
+        takeTargetItem(cb?: (err: Error | null, item: Item) => void): void;
 
-		putTargetItem(item: object /*prismarine-item Item*/, cb?: (err: Error | null, item: object /*prismarine-item Item*/) => void): void;
+        putTargetItem(item: Item, cb?: (err: Error | null, item: Item) => void): void;
 
-		putLapis(item: object /*prismarine-item Item*/, cb?: (err: Error | null, item: object /*prismarine-item Item*/) => void): void;
+        putLapis(item: Item, cb?: (err: Error | null, item: Item) => void): void;
 
-		on(event: 'open', listener: () => void): this;
-		on(event: 'close', listener: () => void): this;
-		on(event: 'ready', listener: () => void): this;
-		on(event: 'updateSlot', listener: (oldItem: object /*prismarine-item Item*/ | null, newItem: object /*prismarine-item Item*/) => void): this;
-	}
+        on(event: 'open', listener: () => void): this;
+        on(event: 'close', listener: () => void): this;
+        on(event: 'ready', listener: () => void): this;
+        on(event: 'updateSlot', listener: (oldItem: Item | null, newItem: Item) => void): this;
+    }
 
-	export type Enchantment = {
-		level: number;
-	};
+    export type Enchantment = {
+        level: number;
+    };
 
-	export class Villager extends EventEmitter {
-		trades: Array<VillagerTrade>;
+    export class Villager extends EventEmitter {
+        trades: Array<VillagerTrade>;
 
-		constructor();
+        constructor();
 
-		close(): void;
+        close(): void;
 
-		on(event: 'open', listener: () => void): this;
-		on(event: 'close', listener: () => void): this;
-		on(event: 'ready', listener: () => void): this;
-		on(event: 'updateSlot', listener: (oldItem: object /*prismarine-item Item*/ | null, newItem: object /*prismarine-item Item*/) => void): this;
-	}
+        on(event: 'open', listener: () => void): this;
+        on(event: 'close', listener: () => void): this;
+        on(event: 'ready', listener: () => void): this;
+        on(event: 'updateSlot', listener: (oldItem: Item | null, newItem: Item) => void): this;
+    }
 
-	export type VillagerTrade = {
-		firstInput: object /*prismarine-item Item*/;
-		output: object /*prismarine-item Item*/;
-		hasSecondItem: boolean;
-		secondaryInput: object /*prismarine-item Item*/ | null;
-		disabled: boolean;
-		tooluses: number;
-		maxTradeuses: number;
-	};
+    export type VillagerTrade = {
+        firstInput: Item;
+        output: Item;
+        hasSecondItem: boolean;
+        secondaryInput: Item | null;
+        disabled: boolean;
+        tooluses: number;
+        maxTradeuses: number;
+    };
 
-	export class ScoreBoard {
-		name: string;
-		title: string;
-		itemsMap: { [name: string]: ScoreBoardItem };
-		items: Array<ScoreBoardItem>;
+    export class ScoreBoard {
+        name: string;
+        title: string;
+        itemsMap: { [name: string]: ScoreBoardItem };
+        items: Array<ScoreBoardItem>;
 
-		constructor(packet: object);
+        constructor(packet: object);
 
-		setTitle(title: string);
+        setTitle(title: string);
 
-		add(name: string, value: number): ScoreBoardItem;
+        add(name: string, value: number): ScoreBoardItem;
 
-		remove(name: string): ScoreBoardItem;
-	}
+        remove(name: string): ScoreBoardItem;
+    }
 
-	export type ScoreBoardItem = {
-		name: string;
-		value: number;
-	}
+    export type ScoreBoardItem = {
+        name: string;
+        value: number;
+    }
 
-	export type DisplaySlot =
-		'list'
-		| 'sidebar'
-		| 'belowName'
-		| 3
-		| 4
-		| 5
-		| 6
-		| 7
-		| 8
-		| 9
-		| 10
-		| 11
-		| 12
-		| 13
-		| 14
-		| 15
-		| 16
-		| 17
-		| 18;
+    export type DisplaySlot =
+        'list'
+        | 'sidebar'
+        | 'belowName'
+        | 3
+        | 4
+        | 5
+        | 6
+        | 7
+        | 8
+        | 9
+        | 10
+        | 11
+        | 12
+        | 13
+        | 14
+        | 15
+        | 16
+        | 17
+        | 18;
 
-	export class BossBar {
-		entityUUID: string;
-		title: ChatMessage;
-		health: number;
-		dividers: number;
-		color: 'pink' | 'blue' | 'red' | 'green' | 'yellow' | 'purple' | 'white';
-		shouldDarkenSky: boolean;
-		isDragonBar: boolean;
-		shouldCreateFog: boolean;
+    export class BossBar {
+        entityUUID: string;
+        title: ChatMessage;
+        health: number;
+        dividers: number;
+        color: 'pink' | 'blue' | 'red' | 'green' | 'yellow' | 'purple' | 'white';
+        shouldDarkenSky: boolean;
+        isDragonBar: boolean;
+        shouldCreateFog: boolean;
 
-		constructor(uuid: string, title: string, health: number, dividers: number, color: number, flags: number);
-	}
+        constructor(uuid: string, title: string, health: number, dividers: number, color: number, flags: number);
+    }
 
-	export var supportedVersions: Array<string>;
-	export var testedVersions: Array<string>;
+    export var supportedVersions: Array<string>;
+    export var testedVersions: Array<string>;
 
-	export function supportFeature(feature: string, version: string): boolean;
+    export function supportFeature(feature: string, version: string): boolean;
 }
