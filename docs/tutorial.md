@@ -11,6 +11,10 @@
     - [Craft Stick Bot](#craft-stick-bot)
     - [Consuming Bot](#consuming-bot)
     - [Fisherman Bot](#fisherman-bot)
+- [Advanced](#advanced)
+  - [Creating an event from chat](#creating-an-event-from-chat)
+    - [Answer Hello Bot](#answer-hello-bot)
+    - [Custom chat](#custom-chat)
 - [FAQ](#faq)
   - [How to create discord bot with mineflayer](#how-to-create-discord-bot-with-mineflayer)
   - [How to run bot on android](#how-to-run-bot-on-android)
@@ -80,7 +84,7 @@ function echo (username, message) {
 bot.on('chat', echo) // Only emitted when a player chats publicly.
 ```
 
-`bot.on('chat', echo)` will listen for [`chat`](http://mineflayer.prismarine.js.org/#/api?id=quotchatquot-username-message-translate-jsonmsg-matches) event, and execute `echo` function with arguments `username`, `message`, `translate`, `jsonMsg`, and `matches` when the event emitted.
+`bot.on('chat', echo)` - will listen for [`chat`](http://mineflayer.prismarine.js.org/#/api?id=quotchatquot-username-message-translate-jsonmsg-matches) event, and execute `echo` function with arguments `username`, `message`, `translate`, `jsonMsg`, and `matches` when the event emitted.
 
 #### Welcome Bot
 
@@ -156,10 +160,10 @@ More on [`bot.craft()`](http://mineflayer.prismarine.js.org/#/api?id=botcraftrec
 
 In this example we create bot that eat / consume held item if hungry.
 Using
-[`health`](http://mineflayer.prismarine.js.org/#/api?id=health) event that listens for changes in health or food points.
-[`bot.consume()`](http://mineflayer.prismarine.js.org/#/api?id=botconsumecallback) method that makes bot eat currently held item.
-[`bot.food`](http://mineflayer.prismarine.js.org/#/api?id=botfood) property to check food points.
-`bot.heldItem` property that returns [`Item`](https://github.com/PrismarineJS/prismarine-item/blob/master/README.md) held by the bot or `null`.
+[`health`](http://mineflayer.prismarine.js.org/#/api?id=health) - event that listens for changes in health or food points.
+[`bot.consume()`](http://mineflayer.prismarine.js.org/#/api?id=botconsumecallback) - method that makes bot eat currently held item.
+[`bot.food`](http://mineflayer.prismarine.js.org/#/api?id=botfood) - property to check food points.
+`bot.heldItem` property that returns [`Item`](https://github.com/PrismarineJS/prismarine-item/blob/master/README.md) - held by the bot or `null`.
 
 ```js
 const minFoodPoints = 18
@@ -182,6 +186,71 @@ bot.on('health', function () {
   }
 })
 ```
+
+## Advanced
+
+For the following, we assume you have understood the [Basics](#basics) tutorial.
+
+### Creating an event from chat
+
+You can create your own event from chat using [`bot.chatAddPattern()`](http://mineflayer.prismarine.js.org/#/api?id=botchataddpatternpattern-chattype-description) method. Useful for bukkit servers where the chat format changes a lot.
+[`bot.chatAddPattern()`](http://mineflayer.prismarine.js.org/#/api?id=botchataddpatternpattern-chattype-description) method takes three argumens :
+
+- `pattern` - regular expression (regex) to match chat
+- `chatType` - the event the bot emits when the pattern matches. Eg: "chat" or "whisper"
+- `description` - Optional, describes what the pattern is for
+
+You can add [Groups and Range](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Groups_and_Ranges) into the `pattern`, then the listener will spread the captured groups into arguments of your callback sequentially.
+
+Read more about [regular expression](https://en.wikipedia.org/wiki/Regular_expression).
+
+Examples :
+
+#### Answer Hello Bot
+
+Here we're creating a bot that answer 'hello' from the other player.
+
+```js
+bot.chatAddPattern(
+  /(helo|hello|Hello)/,
+  'hello',
+  'Someone says hello'
+)
+
+function hi () {
+  bot.chat('Hi!')
+}
+
+bot.on('hello', hi)
+```
+
+#### Custom chat
+
+Creating an event based on custom chat format.
+Custom chat example
+
+```txt
+[Player] Player1 > Hello
+[Admin] Alex > Hi
+[Player] Player2 > Help me, im stuck
+[Mod] Jim > On my way
+```
+
+```js
+bot.chatAddPattern(
+  /^\[(.+)\] (\S+) > (.+)$/,
+  'my_chat_event',
+  'Custom chat event'
+)
+
+function logger (rank, username, message) {
+  console.log(`${username} said ${message}`)
+}
+
+bot.on('my_chat_event', logger)
+```
+
+Explanation on the regex `^\[(.+)\] (\S+) > (.+)$` can be found [here](https://regex101.com/r/VDUrDC/2).
 
 ## FAQ
 
