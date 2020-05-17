@@ -63,7 +63,7 @@ To remove specific listener you can use `bot.removeListener()` method.
 - `bot.removeListener(eventName, listener)`
   Removes the specified `listener` for the event named `eventName`.
 
-Not only bot object, [`Chest`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerchest), [`Furnace`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerfurnace), [`Dispenser`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerdispenser), [`EnchantmentTable`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerenchantmenttable), [`Villager`](http://mineflayer.prismarine.js.org/#/api?id=mineflayervillager) object also have its own events!
+Not only bot object, [`Chest`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerchest), [`Furnace`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerfurnace), [`Dispenser`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerdispenser), [`EnchantmentTable`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerenchantmenttable), [`Villager`](http://mineflayer.prismarine.js.org/#/api?id=mineflayervillager) object also have their own events!
 
 Examples :
 
@@ -98,10 +98,13 @@ bot.on("playerJoined", joined);
 
 ### Callbacks
 
-Callback is a function as argument to the main function, when the main function finish or got an error then the callback executed.
+Callback (known as a "call-after" function) is a function that is passed as an argument to the other code / function.
+If that other code / function finish the execution, then the callback is called.
+
+Callback takes parameter called `err` or `error` as first, and second parameter (if specified) is a value that is passed to the callback,
+if `err === null` then there is no error happened in the other code / function.
+
 In [the API page](http://mineflayer.prismarine.js.org/#/api) callback abbreviated as `cb` or `callback`.
-Callback usually takes parameter called `err` as the first and the second (if specified) is a value that is passed to the callback,
-if `err` is not `null` then error must be happened in the main function.
 
 Examples :
 
@@ -113,9 +116,12 @@ Craft oak logs into oak wood planks, wait for crafting finish. Then craft the oa
 Incorect aproach ❌ :
 
 ```js
-const plankRecipe = bot.recipesFor(5); // 5 ID for Oak Wood Planks
+const plankRecipe = bot.recipesFor(5);
+// 5 Item ID for Oak Wood Planks
 bot.craft(plankRecipe, 1); // ❌
-const stickRecipe = bot.recipesFor(280); // 280 ID for Stick
+
+const stickRecipe = bot.recipesFor(280);
+// 280 Item ID for Stick
 bot.craft(plankRecipe, 1); // ❌
 // You don't wanna start crafting sticks, before crafting logs into planks finished.
 ```
@@ -123,20 +129,25 @@ bot.craft(plankRecipe, 1); // ❌
 Correct approach with callbacks ✔️ :
 
 ```js
-const plankRecipe = bot.recipesFor(5)[0]; // 5 ID for Oak Wood Planks
+const plankRecipe = bot.recipesFor(5)[0];
 
-bot.craft(plankRecipe, 1, null, function (err) {
-  // if bot.craft(plankRecipe, ...) then the code bellow get executed ✔️
-  if (err) return bot.chat(err.message);
-  // if error happened when crafting `plankRecipe` then send to chat the `err.message`
+bot.craft(plankRecipe, 1, null, function (err) { ✔️
+  // if bot.craft(plankRecipe, ...) finish then the code bellow get executed
+  if (err !== null) {
+    bot.chat(err.message);
+    // if error happened when crafting `plankRecipe` then send to chat the `err.message`
+    return;
+  } else {
+    const stickRecipe = bot.recipesFor(280);
 
-  const stickRecipe = bot.recipesFor(280); // 280 ID for Stick
-  bot.craft(stickRecipe, 1, null, function (err) {
-    if (err) return bot.chat(err.message);
-    // if error happened when crafting `stickRecipe` then send to chat the `err.message`
-
-    bot.chat("Crafting Sticks finished");
-  });
+    bot.craft(stickRecipe, 1, null, function (err) { ✔️
+      if (err !== null) {
+        bot.chat(err.message);
+        return;
+      }
+      bot.chat("Crafting Sticks finished");
+    });
+  }
 });
 ```
 
@@ -146,10 +157,10 @@ More on [`bot.craft()`](http://mineflayer.prismarine.js.org/#/api?id=botcraftrec
 
 In this example we create bot that eat / consume held item if hungry.
 Using
-[`health`](http://mineflayer.prismarine.js.org/#/api?id=health) event of the bot to listen on any changes in health or food points.
-[`bot.consume()`](http://mineflayer.prismarine.js.org/#/api?id=botconsumecallback) method to eat.
+[`health`](http://mineflayer.prismarine.js.org/#/api?id=health) event that listens for changes in health or food points.
+[`bot.consume()`](http://mineflayer.prismarine.js.org/#/api?id=botconsumecallback) method that makes bot eat currently held item.
 [`bot.food`](http://mineflayer.prismarine.js.org/#/api?id=botfood) property to check food points.
-`bot.heldItem` property to get the name of the item held by the bot. `bot.heldItem` is an instance of [`Item`](https://github.com/PrismarineJS/prismarine-item/blob/master/README.md) or `null` if no item held.
+`bot.heldItem` property that returns [`Item`](https://github.com/PrismarineJS/prismarine-item/blob/master/README.md) held by the bot or `null`.
 
 ```js
 const minFoodPoints = 18;
@@ -159,22 +170,19 @@ bot.on("health", function () {
   if (bot.food < minFoodPoints) {
     // if the food points lower than 18, then
     const heldItemName = bot.heldItem.name;
-
-    function onFinishEating(err) {
-      if (err) return bot.chat(err.message);
-      bot.chat(`I'm finish eating ${heldItemName}`);
-    }
-
     bot.chat(`Eating ${heldItemName}`);
     bot.consume(onFinishEating);
+    function onFinishEating(err) {
+      if (err !== null) {
+        bot.chat(err.message);
+        return;
+      }
+      bot.chat(`I'm finish eating ${heldItemName}`);
+    }
     // `bot.consume()` method takes `onFinishEating` as callback, and execute `onFinishEating` when its finish or stumble an error.
   }
 });
 ```
-
-#### Fisherman Bot
-
-Can be found in [fishing.js](https://github.com/PrismarineJS/mineflayer/blob/master/examples/fisherman.js#L52).
 
 ## FAQ
 
