@@ -1,3 +1,7 @@
+## 2.15.0
+* fix transfer bugs (thanks @Karang)
+* add typescript definitions (thanks @IdanHo)
+
 ## 2.14.1
 * fix openVillager
 
