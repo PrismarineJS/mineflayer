@@ -119,14 +119,13 @@ Craft oak logs into oak wood planks, wait for crafting finish. Then craft the oa
 Incorect aproach ❌ :
 
 ```js
-const plankRecipe = bot.recipesFor(5)
-// 5 Item ID for Oak Wood Planks
+const plankRecipe = bot.recipesFor(5) // 5 Item ID for Oak Wood Planks
 bot.craft(plankRecipe, 1) // ❌
-
-const stickRecipe = bot.recipesFor(280)
-// 280 Item ID for Stick
+// starting crafting planks and while running the code bellow
+const stickRecipe = bot.recipesFor(280) // 280 Item ID for Stick
 bot.craft(stickRecipe, 1) // ❌
-// You don't wanna start crafting sticks, before crafting logs into planks finished.
+// if the plank not in the inventory, because of bot.craft(plankRecipe, 1) hasn't finish yet,
+// then 'missing ingredient' error will happened.
 ```
 
 Correct approach with callbacks ✔️ :
@@ -135,7 +134,7 @@ Correct approach with callbacks ✔️ :
 const plankRecipe = bot.recipesFor(5)[0]
 
 bot.craft(plankRecipe, 1, null, function (err) {
-  // if bot.craft(plankRecipe, ...) finish then the code bellow get executed ✔️
+  // after bot.craft(plankRecipe, ...) finish then the code bellow get executed ✔️
   if (err !== null) {
     bot.chat(err.message)
     // if error happened when crafting `plankRecipe` then send to chat the `err.message`
@@ -143,7 +142,7 @@ bot.craft(plankRecipe, 1, null, function (err) {
     const stickRecipe = bot.recipesFor(280)
 
     bot.craft(stickRecipe, 1, null, function (err) {
-      // if bot.craft(stickRecipe, ...) finish then the code bellow get executed ✔️
+      // after bot.craft(stickRecipe, ...) finish then the code bellow get executed ✔️
       if (err !== null) {
         bot.chat(err.message)
         return
