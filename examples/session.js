@@ -26,6 +26,6 @@ const bot = mineflayer.createBot({
 })
 
 bot.once('login', () => {
-  console.log('loged in')
+  console.log('logged in')
   bot.quit()
 })
