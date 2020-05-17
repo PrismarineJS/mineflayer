@@ -26,26 +26,24 @@ To get a feeling for the Mineflayer and how to use it, please open a text editor
 First, create an instance of the Bot.
 
 ```js
-const mineflayer = require("mineflayer");
+const mineflayer = require('mineflayer')
 const options = {
-  host: "localhost", // optional / minecraft server address
+  host: 'localhost', // optional / minecraft server address
   port: 25565, // optional
-  username: "email@example.com", // email and password are required only for
-  password: "12345678", // online-mode=true servers
-  version: false, // false corresponds to auto version detection (that's the default), put for example '1.8.8' if you need a specific version
-};
-const bot = mineflayer.createBot(options);
+  username: 'email@example.com', // email and password are required only for
+  password: '12345678', // online-mode=true servers
+  version: false // false corresponds to auto version detection (that's the default), put for example '1.8.8' if you need a specific version
+}
+const bot = mineflayer.createBot(options)
 ```
 
 Say hi to the chat after you spawn in, using [`spawn`](http://mineflayer.prismarine.js.org/#/api?id=quotspawnquot) event and [`bot.chat()`](http://mineflayer.prismarine.js.org/#/api?id=botchatmessage) method.
 
 ```js
-// ...
-
-bot.once("spawn", function () {
-  bot.chat("hi!");
+bot.once('spawn', function () {
+  bot.chat('hi!')
   // `bot.chat()` method for sending message or commad to the chat.
-});
+})
 ```
 
 For full methods list see the [documentation](http://mineflayer.prismarine.js.org/#/api?id=methods)
@@ -73,12 +71,13 @@ Here we're listening for [`chat`](http://mineflayer.prismarine.js.org/#/api?id=q
 [`chat`](http://mineflayer.prismarine.js.org/#/api?id=quotchatquot-username-message-translate-jsonmsg-matches) event is only emitted when a player chats publicly.
 
 ```js
-function echo(username, message) {
-  if (username === bot.username) return;
-  bot.chat(message);
+function echo (username, message) {
+  if (username !== bot.username) {
+    bot.chat(message)
+  }
 }
 
-bot.on("chat", echo); // Only emitted when a player chats publicly.
+bot.on('chat', echo) // Only emitted when a player chats publicly.
 ```
 
 `bot.on('chat', echo)` will listen for [`chat`](http://mineflayer.prismarine.js.org/#/api?id=quotchatquot-username-message-translate-jsonmsg-matches) event, and execute `echo` function with arguments `username`, `message`, `translate`, `jsonMsg`, and `matches` when the event emitted.
@@ -89,11 +88,11 @@ Here we're listening for [`playerJoined`](http://mineflayer.prismarine.js.org/#/
 And sending welcome message to chat.
 
 ```js
-function joined(player) {
-  bot.chat(`Welcome ${player}! :D`);
+function joined (player) {
+  bot.chat(`Welcome ${player}! :D`)
 }
 
-bot.on("playerJoined", joined);
+bot.on('playerJoined', joined)
 ```
 
 ### Callbacks
@@ -116,39 +115,39 @@ Craft oak logs into oak wood planks, wait for crafting finish. Then craft the oa
 Incorect aproach ❌ :
 
 ```js
-const plankRecipe = bot.recipesFor(5);
+const plankRecipe = bot.recipesFor(5)
 // 5 Item ID for Oak Wood Planks
-bot.craft(plankRecipe, 1); // ❌
+bot.craft(plankRecipe, 1) // ❌
 
-const stickRecipe = bot.recipesFor(280);
+const stickRecipe = bot.recipesFor(280)
 // 280 Item ID for Stick
-bot.craft(plankRecipe, 1); // ❌
+bot.craft(stickRecipe, 1) // ❌
 // You don't wanna start crafting sticks, before crafting logs into planks finished.
 ```
 
 Correct approach with callbacks ✔️ :
 
 ```js
-const plankRecipe = bot.recipesFor(5)[0];
+const plankRecipe = bot.recipesFor(5)[0]
 
-bot.craft(plankRecipe, 1, null, function (err) { ✔️
-  // if bot.craft(plankRecipe, ...) finish then the code bellow get executed
+bot.craft(plankRecipe, 1, null, function (err) {
+  // if bot.craft(plankRecipe, ...) finish then the code bellow get executed ✔️
   if (err !== null) {
-    bot.chat(err.message);
+    bot.chat(err.message)
     // if error happened when crafting `plankRecipe` then send to chat the `err.message`
-    return;
   } else {
-    const stickRecipe = bot.recipesFor(280);
+    const stickRecipe = bot.recipesFor(280)
 
-    bot.craft(stickRecipe, 1, null, function (err) { ✔️
+    bot.craft(stickRecipe, 1, null, function (err) {
+      // if bot.craft(stickRecipe, ...) finish then the code bellow get executed ✔️
       if (err !== null) {
-        bot.chat(err.message);
-        return;
+        bot.chat(err.message)
+        return
       }
-      bot.chat("Crafting Sticks finished");
-    });
+      bot.chat('Crafting Sticks finished')
+    })
   }
-});
+})
 ```
 
 More on [`bot.craft()`](http://mineflayer.prismarine.js.org/#/api?id=botcraftrecipe-count-craftingtable-callback) method.
@@ -163,25 +162,25 @@ Using
 `bot.heldItem` property that returns [`Item`](https://github.com/PrismarineJS/prismarine-item/blob/master/README.md) held by the bot or `null`.
 
 ```js
-const minFoodPoints = 18;
+const minFoodPoints = 18
 
-bot.on("health", function () {
+bot.on('health', function () {
   // listen on any changes in health or food points.
+  const heldItemName = bot.heldItem.name
   if (bot.food < minFoodPoints) {
     // if the food points lower than 18, then
-    const heldItemName = bot.heldItem.name;
-    bot.chat(`Eating ${heldItemName}`);
-    bot.consume(onFinishEating);
-    function onFinishEating(err) {
-      if (err !== null) {
-        bot.chat(err.message);
-        return;
-      }
-      bot.chat(`I'm finish eating ${heldItemName}`);
-    }
+    bot.chat(`Eating ${heldItemName}`)
+    bot.consume(onFinishEating)
     // `bot.consume()` method takes `onFinishEating` as callback, and execute `onFinishEating` when its finish or stumble an error.
   }
-});
+  function onFinishEating (err) {
+    if (err !== null) {
+      bot.chat(err.message)
+      return
+    }
+    bot.chat(`I'm finish eating ${heldItemName}`)
+  }
+})
 ```
 
 ## FAQ
