@@ -31,7 +31,7 @@
     "prismarine-item": "^1.4.0",
     "prismarine-recipe": "^1.1.0",
     "prismarine-windows": "^1.4.0",
-    "protodef": "^1.7.0",
+    "protodef": "^1.7.1",
     "sprintf-js": "^1.1.1",
     "vec3": "^0.1.4"
   },
