@@ -2,6 +2,7 @@
   - [Introduction](/)
   - [API](api.md)
   - [Demos](demos.md)
+  - [Tutorial](tutorial.md)
   - [Unstable API](unstable_api.md)
-  - [Contribute](contribute.md)
+  - [Contribute](CONTRIBUTING.md)
   - [History](history.md)
