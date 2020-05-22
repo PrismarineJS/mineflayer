@@ -168,5 +168,10 @@
       "name": "usetraderlist",
       "description": "receive trade list through plugin channel usetrader_list",
       "versions": ["1.13"]
+    },
+    {
+      "name": "doesntHaveOffHandSlot",
+      "description": "doesn't have an off-hand slot",
+      "versions": ["1.8"]
     }
   ]

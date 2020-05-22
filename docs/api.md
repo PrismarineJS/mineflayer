@@ -1346,6 +1346,7 @@ Equips an item from your inventory.
    - `"torso"`
    - `"legs"`
    - `"feet"`
+   - `"off-hand"` - when available
  * `callback(error)` - optional. called when you have successfully equipped
    the item or when you learn that you have failed to equip the item.
 
