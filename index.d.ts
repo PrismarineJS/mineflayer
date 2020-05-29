@@ -743,7 +743,7 @@ export class Furnace extends EventEmitter {
 }
 
 export class Dispenser extends EventEmitter {
-  onstructor();
+  constructor();
 
   close(): void;
 
