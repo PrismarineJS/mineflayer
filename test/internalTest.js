@@ -143,17 +143,13 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
       const goldId = 41
       it('gravity + land on solid block + jump', (done) => {
         let y = 80
-        const terminal = 10
-        let hitTerminal = false
         bot.on('move', () => {
           assert.ok(bot.entity.position.y <= y)
           assert.ok(bot.entity.position.y >= pos.y)
           y = bot.entity.position.y
-          if (bot.entity.velocity.y > -terminal) hitTerminal = true
-          if (bot.entity.velocity.y === 0) {
-            assert.ok(hitTerminal)
-            assert.ok(bot.entity.onGround)
-            assert.ok(bot.entity.position.y, pos.y)
+          if (bot.entity.position.y <= pos.y + 1) {
+            assert.strictEqual(bot.entity.position.y, pos.y + 1)
+            assert.strictEqual(bot.entity.onGround, true)
             done()
           } else {
             assert.strictEqual(bot.entity.onGround, false)
