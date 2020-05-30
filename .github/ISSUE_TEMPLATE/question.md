@@ -7,13 +7,6 @@ assignees: ''
 
 ---
 
-<!--
-IF YOU ARE POSTING A QUESTION HOW TO USE MINEFLAYER,
-PLEASE ASK ON OUR DISCORD SERVER.
-
-https://discord.gg/eybmzRR
--->
-
 ## Versions
  - mineflayer: #.#.#
  - server: vanilla/spigot/paper #.#.#
