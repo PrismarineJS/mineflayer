@@ -7,6 +7,7 @@
  * You can ask the bot to sleep or wake up by sending a chat message.
  */
 const mineflayer = require('mineflayer')
+const navigatePlugin = require('mineflayer-navigate')(mineflayer)
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node sleeper.js <host> <port> [<name>] [<password>]')
@@ -19,6 +20,7 @@ const bot = mineflayer.createBot({
   username: process.argv[4] ? process.argv[4] : 'sleeper',
   password: process.argv[5]
 })
+navigatePlugin(bot)
 
 bot.on('chat', (username, message) => {
   if (username === bot.username) return
