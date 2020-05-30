@@ -13,4 +13,3 @@ assignees: ''
  - node: #.#.#
 
 ## Detailed description of a question
-I want to ask a question about mineflayer but I don't know the discord server.
