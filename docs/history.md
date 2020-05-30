@@ -1,3 +1,8 @@
+## 2.16.0
+* use protodef compiler (thanks @Karang)
+* off-hand support (thanks @Karang)
+* fix type definitions (thanks @dada513)
+
 ## 2.15.0
 * fix transfer bugs (thanks @Karang)
 * add typescript definitions (thanks @IdanHo)
