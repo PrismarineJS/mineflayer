@@ -33,7 +33,7 @@
     "prismarine-windows": "^1.4.0",
     "protodef": "^1.7.1",
     "sprintf-js": "^1.1.1",
-    "vec3": "Karang/node-vec3#karang_vec3"
+    "vec3": "^0.1.5"
   },
   "devDependencies": {
     "@types/node": "^14.0.1",
