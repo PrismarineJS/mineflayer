@@ -81,6 +81,7 @@ higher level API on top of Mineflayer.
 
  * [navigate](https://github.com/andrewrk/mineflayer-navigate/) - get around
    easily using A* pathfinding. [YouTube Demo](https://www.youtube.com/watch?v=O6lQdmRz8eE)
+ * [pathfinder](https://github.com/Karang/mineflayer-pathfinder) - advanced A* pathfinding with a lot of configurable features
  * [radar](https://github.com/andrewrk/mineflayer-radar/) - web based radar
    interface using canvas and socket.io. [YouTube Demo](https://www.youtube.com/watch?v=FjDmAfcVulQ)
  * [blockfinder](https://github.com/Darthfett/mineflayer-blockFinder) - find blocks in the 3D world

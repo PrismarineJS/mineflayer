@@ -21,11 +21,11 @@
   },
   "license": "MIT",
   "dependencies": {
-    "minecraft-data": "^2.51.0",
+    "minecraft-data": "^2.52.0",
     "minecraft-protocol": "^1.12.0",
     "mojangson": "^0.2.1",
     "prismarine-biome": "^1.0.1",
-    "prismarine-block": "^1.3.0",
+    "prismarine-block": "^1.5.0",
     "prismarine-chunk": "^1.16.0",
     "prismarine-entity": "^1.0.0",
     "prismarine-item": "^1.4.0",
@@ -33,7 +33,7 @@
     "prismarine-windows": "^1.4.0",
     "protodef": "^1.7.1",
     "sprintf-js": "^1.1.1",
-    "vec3": "^0.1.4"
+    "vec3": "^0.1.5"
   },
   "devDependencies": {
     "@types/node": "^14.0.1",
