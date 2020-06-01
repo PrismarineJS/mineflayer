@@ -1,3 +1,7 @@
+## 2.17.0
+* physics engine refactor (thanks @Karang)
+* mcdata update for better 1.14 and 1.15 support
+
 ## 2.16.0
 * use protodef compiler (thanks @Karang)
 * off-hand support (thanks @Karang)
