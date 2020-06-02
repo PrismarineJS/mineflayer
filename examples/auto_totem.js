@@ -16,9 +16,9 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
-setInterval(() => {  
-  var totem = bot.inventory.findInventoryItem(449, null);
+setInterval(() => { 
+  var totem = bot.inventory.findInventoryItem(449, null)
   if (totem && totem.type === 449) {
-    bot.equip(totem, "off-hand");
+    bot.equip(totem, 'off-hand')
   }
 }, 1000)
