@@ -195,7 +195,7 @@
       - ["bossBarDeleted" (bossBar)](#bossbardeleted-bossbar)
       - ["bossBarUpdated" (bossBar)](#bossbarupdated-bossbar)
     - [Functions](#functions)
-      - [bot.blockAt(point)](#botblockatpoint)
+      - [bot.blockAt(point, extraInfos=true)](#botblockatpoint-extrainfostrue)
       - [bot.blockInSight(maxSteps, vectorLength)](#botblockinsightmaxsteps-vectorlength)
       - [bot.canSeeBlock(block)](#botcanseeblockblock)
       - [bot.findBlock(options)](#botfindblockoptions)
@@ -1179,9 +1179,9 @@ Fires when new boss bar is updated.
 
 ### Functions
 
-#### bot.blockAt(point)
+#### bot.blockAt(point, extraInfos=true)
 
-Returns the block at `point` or `null` if that point is not loaded.
+Returns the block at `point` or `null` if that point is not loaded. If `extraInfos` set to true, also returns informations about signs, paintings and block entities (slower).
 See `Block`.
 
 #### bot.blockInSight(maxSteps, vectorLength)
