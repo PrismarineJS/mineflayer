@@ -20,7 +20,7 @@ bot.on('spawn', () => {
   const mcData = require('minecraft-data')(bot.version) // You know the version when the bot has spawned
   const totemId = mcData.itemsByName.totem_of_undying.id // Get the correct id
   
-  if (mcData.itemsByName.totem_of_undying) { // Some versions don't have the totem
+  if (mcData.itemsByName.totem_of_undying) {
     setInterval(() => {
       var totem = bot.inventory.findInventoryItem(totemId, null)
       if (totem) {
