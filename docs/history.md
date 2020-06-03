@@ -1,3 +1,8 @@
+## 2.18.0
+* fix bugs in lookAt and setQuickBarSlot
+* add auto_totem example (thanks @AlexProgrammerDE)
+* improve blockAt speed
+
 ## 2.17.0
 * physics engine refactor (thanks @Karang)
 * mcdata update for better 1.14 and 1.15 support
