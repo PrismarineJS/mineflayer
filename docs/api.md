@@ -1197,14 +1197,14 @@ Returns true or false depending on whether the bot can see the specified `block`
 
 #### bot.findBlocks(options)
 
-Finds blocks arround the given point.
+Finds the closest blocks from the given point.
  * `options` - Options for the search:
    - `point` - The start position of the search (center). Default is the bot position.
    - `matching` - A function that returns true if the given block is a match. Also supports this value being a block id or array of block ids.
    - `maxDistance` - The furthest distance for the search, defaults to 16.
    - `minCount` - Minimum blocks to find before returning the search. Default to 1. Can return less if not enough blocks are found exploring the whole area. Can return more due to some optimisations.
 
-Returns an array (possibly empty) with the found block coordinates (not the blocks)
+Returns an array (possibly empty) with the found block coordinates (not the blocks). The array is sorted (closest first)
 
 #### bot.findBlock(options)
 
