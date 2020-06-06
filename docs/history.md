@@ -1,3 +1,6 @@
+## 2.19.0
+* much faster findBlock (thanks @Karang)
+
 ## 2.18.0
 * fix bugs in lookAt and setQuickBarSlot
 * add auto_totem example (thanks @AlexProgrammerDE)
