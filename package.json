@@ -1,6 +1,6 @@
 {
   "name": "mineflayer",
-  "version": "2.19.0",
+  "version": "2.19.1",
   "description": "create minecraft bots with a stable, high level API",
   "main": "index.js",
   "types": "index.d.ts",

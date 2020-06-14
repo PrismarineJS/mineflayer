@@ -1,3 +1,7 @@
+## 2.19.1
+* fix find block (thanks @Karang)
+* improve sign parsing (thanks @cookiedragon234)
+
 ## 2.19.0
 * much faster findBlock (thanks @Karang)
 
