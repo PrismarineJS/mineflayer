@@ -1,3 +1,6 @@
+## 2.19.2
+* fix ground up for 1.13->1.15
+
 ## 2.19.1
 * fix find block (thanks @Karang)
 * improve sign parsing (thanks @cookiedragon234)
