@@ -450,6 +450,8 @@ export class Bot extends EventEmitter {
 
   on(event: "experience", listener: () => void): this;
 
+  on(event: "physicTick", listener: () => void): this;
+
   on(
     event: "scoreboardCreated",
     listener: (scoreboard: ScoreBoard) => void
