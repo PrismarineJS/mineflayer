@@ -93,6 +93,7 @@ higher level API on top of Mineflayer.
  * [Bloodhound](https://github.com/Nixes/mineflayer-bloodhound) - determine who and what is responsible for damage to another entity
  * [tps](https://github.com/SiebeDW/mineflayer-tps) - get the current tps (processed tps)
  * [web-inventory](https://github.com/ImHarvol/mineflayer-web-inventory) - web based inventory viewer
+ * [statemachine](https://github.com/TheDudeFromCI/mineflayer-statemachine) - A state machine API for more complex bot behavors
 
 ## Projects Using Mineflayer
 
