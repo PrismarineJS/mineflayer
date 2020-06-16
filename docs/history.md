@@ -1,3 +1,6 @@
+## 2.20.0
+* add extra infos option in find block
+
 ## 2.19.2
 * fix ground up for 1.13->1.15
 
