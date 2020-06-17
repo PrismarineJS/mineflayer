@@ -21,13 +21,18 @@ const mineflayer = require('mineflayer')
 const bot = mineflayer.createBot({
   host: process.argv[4],
   port: parseInt(process.argv[5]),
-  username: process.argv[6] ? process.argv[5] : 'discord',
+  username: process.argv[6] ? process.argv[6] : 'discord',
   password: process.argv[7]
 })
 
 client.on('ready', () => {
   console.log(`The discord bot logged in! Username: ${client.user.username}!`)
-  channel = client.channels.find(x => x.id === channel)
+  
+  if (client.channels.find) // Support Discord 11.
+    channel = client.channels.find(x => x.id === channel)
+  else // Discord.js 12
+    channel = client.channels.cache.find(x => x.id === channel)
+  
   if (!channel) {
     console.log(`I could not find the channel (${process.argv[3]})!\nUsage : node discord.js <discord bot token> <channel id> <host> <port> [<name>] [<password>]`)
     process.exit(1)
