@@ -178,5 +178,10 @@
       "name": "doesntHaveOffHandSlot",
       "description": "doesn't have an off-hand slot",
       "versions": ["1.8"]
+    },
+    {
+      "name": "doesntHaveChestType",
+      "description": "chests don't have a type property",
+      "versions": ["1.8", "1.9", "1.10", "1.11", "1.12"]
     }
   ]
