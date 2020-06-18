@@ -626,7 +626,7 @@ export interface FindBlockOptions {
   maxDistance?: number;
 }
 
-export type EquipmentDestination = "hand" | "head" | "torso" | "legs" | "feet";
+export type EquipmentDestination = "hand" | "head" | "torso" | "legs" | "feet" | "off-hand";
 
 export interface TransferOptions {
   window: Window;
