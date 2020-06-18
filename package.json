@@ -6,7 +6,7 @@
   "types": "index.d.ts",
   "scripts": {
     "test": "mocha --reporter spec --exit",
-    "pretest": "npm run lint && require-self",
+    "pretest": "require-self",
     "lint": "standard",
     "fix": "standard --fix",
     "prepare": "npm install require-self && require-self",
