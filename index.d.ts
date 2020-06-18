@@ -70,6 +70,8 @@ export class Bot extends EventEmitter {
   creative: creativeMethods;
   _client: Client;
 
+  QUICK_BAR_START: number;
+
   constructor();
 
   connect(options: BotOptions): void;
