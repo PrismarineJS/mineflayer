@@ -6,10 +6,10 @@
   "types": "index.d.ts",
   "scripts": {
     "test": "mocha --reporter spec --exit",
-    "pretest": "require-self",
+    "pretest": "npm run lint && require-self",
     "lint": "standard",
     "fix": "standard --fix",
-    "prepare": "npm install require-self && require-self",
+    "prepare": "require-self",
     "prepublishOnly": "cp docs/README.md README.md"
   },
   "repository": {
