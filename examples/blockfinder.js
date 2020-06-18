@@ -24,6 +24,10 @@ bot.on('chat', (username, message) => {
 
   if (message.startsWith('find')) {
     const name = message.split(' ')[1]
+    if (mcData.blocksByName[name] === undefined) {
+      bot.chat(`${name} is not a block name`)
+      return
+    }
     const ids = [mcData.blocksByName[name].id]
 
     const startTime = performance.now()

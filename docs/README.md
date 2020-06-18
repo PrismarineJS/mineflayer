@@ -79,9 +79,17 @@ node your_script.js
 Mineflayer is pluggable; anyone can create a plugin that adds an even
 higher level API on top of Mineflayer.
 
+The most updated and useful are :
+
+ * [pathfinder](https://github.com/Karang/mineflayer-pathfinder) - advanced A* pathfinding with a lot of configurable features
+ * [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer) - simple web chunk viewer
+ * [web-inventory](https://github.com/ImHarvol/mineflayer-web-inventory) - web based inventory viewer
+ * [statemachine](https://github.com/TheDudeFromCI/mineflayer-statemachine) - A state machine API for more complex bot behavors
+
+ But also check out :
+
  * [navigate](https://github.com/andrewrk/mineflayer-navigate/) - get around
    easily using A* pathfinding. [YouTube Demo](https://www.youtube.com/watch?v=O6lQdmRz8eE)
- * [pathfinder](https://github.com/Karang/mineflayer-pathfinder) - advanced A* pathfinding with a lot of configurable features
  * [radar](https://github.com/andrewrk/mineflayer-radar/) - web based radar
    interface using canvas and socket.io. [YouTube Demo](https://www.youtube.com/watch?v=FjDmAfcVulQ)
  * [blockfinder](https://github.com/Darthfett/mineflayer-blockFinder) - find blocks in the 3D world
@@ -92,8 +100,6 @@ higher level API on top of Mineflayer.
  * [Armor Manager](https://github.com/G07cha/MineflayerArmorManager) - automatic armor managment
  * [Bloodhound](https://github.com/Nixes/mineflayer-bloodhound) - determine who and what is responsible for damage to another entity
  * [tps](https://github.com/SiebeDW/mineflayer-tps) - get the current tps (processed tps)
- * [web-inventory](https://github.com/ImHarvol/mineflayer-web-inventory) - web based inventory viewer
- * [statemachine](https://github.com/TheDudeFromCI/mineflayer-statemachine) - A state machine API for more complex bot behavors
 
 ## Projects Using Mineflayer
 

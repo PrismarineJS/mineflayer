@@ -1201,6 +1201,7 @@ Finds the closest blocks from the given point.
  * `options` - Options for the search:
    - `point` - The start position of the search (center). Default is the bot position.
    - `matching` - A function that returns true if the given block is a match. Also supports this value being a block id or array of block ids.
+   - `useExtraInfo` - Use extra info when matching (block entities, signs, painting), 2x slower
    - `maxDistance` - The furthest distance for the search, defaults to 16.
    - `minCount` - Minimum blocks to find before returning the search. Default to 1. Can return less if not enough blocks are found exploring the whole area. Can return more due to some optimisations.
 
