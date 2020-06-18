@@ -154,6 +154,10 @@ export class Bot extends EventEmitter {
     callback?: () => void
   ): void;
 
+  getEquippedItem(
+    destination: EquipmentDestination | null
+  );
+
   tossStack(item: Item, callback?: (error?: Error) => void): void;
 
   toss(
