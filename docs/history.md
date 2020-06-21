@@ -1,3 +1,6 @@
+## 2.21.0
+* don't log errors if hideErrors is true
+
 ## 2.20.0
 * add extra infos option in find block
 
