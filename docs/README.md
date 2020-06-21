@@ -122,6 +122,7 @@ The most updated and useful are :
 ## Documentation
 
  * See [docs/api.md](api.md).
+ * See [docs/FAQ.md](FAQ.md).
  * See [docs/history.md](history.md).
  * See [examples/](https://github.com/PrismarineJS/mineflayer/tree/master/examples).
  * See [docs/unstable_api.md](unstable_api.md).

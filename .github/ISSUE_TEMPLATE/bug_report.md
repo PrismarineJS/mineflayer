@@ -7,6 +7,8 @@ assignees: ''
 
 ---
 
+[ ] The [FAQ](https://github.com/PrismarineJS/mineflayer/blob/master/docs/FAQ.md) doesn't contain a resolution to my issue 
+
 ## Versions
  - mineflayer: #.#.#
  - server: vanilla/spigot/paper #.#.#
