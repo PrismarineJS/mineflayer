@@ -4,7 +4,7 @@ This Frequently Asked Question document is meant to help people for the most com
 
 ### How to hide errors ?
 
-Use `hideErrors: True` in createBot options
+Use `hideErrors: true` in createBot options
 You may also choose to add these listeners :
 ```js
 client.on('error', () => {})
