@@ -1526,7 +1526,7 @@ These are lower level methods for the inventory, they can be useful sometimes bu
 
 #### bot.clickWindow(slot, mouseButton, mode, cb)
 
-Click on the current window.
+Click on the current window. See details at https://wiki.vg/Protocol#Click_Window
 
 #### bot.putSelectedItemRange(start, end, window, slot, cb)
 
