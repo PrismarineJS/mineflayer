@@ -20,6 +20,7 @@ export function createBot(options: BotOptions): Bot;
 
 export interface BotOptions extends ClientOptions {
   logErrors?: boolean;
+  hideErrors?: boolean;
   loadInternalPlugins?: boolean;
   plugins?: PluginOptions;
   chat?: ChatLevel;

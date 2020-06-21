@@ -62,7 +62,11 @@ function createBot (options = {}) {
   options.loadInternalPlugins = options.loadInternalPlugins !== false
   const bot = new Bot()
   if (options.logErrors) {
-    bot.on('error', err => console.log(err))
+    bot.on('error', err => {
+      if (!options.hideErrors) {
+        console.log(err)
+      }
+    })
   }
 
   pluginLoader(bot, options)

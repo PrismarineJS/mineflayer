@@ -713,6 +713,7 @@ Create and return an instance of the class bot.
  * clientToken : generated if a password is given
  * accessToken : generated if a password is given
  * logErrors : true by default, catch errors and log them
+ * hideErrors : false by default, do not log errors (even if logErrors is true)
  * keepAlive : send keep alive packets : default to true
  * checkTimeoutInterval : default to `30*1000` (30s), check if keepalive received at that period, disconnect otherwise.
  * loadInternalPlugins : defaults to true
