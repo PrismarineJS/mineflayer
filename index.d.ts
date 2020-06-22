@@ -86,6 +86,8 @@ export class Bot extends EventEmitter {
   canSeeBlock(block: Block): boolean;
 
   findBlock(options: FindBlockOptions): Block;
+  
+  findBlocks(options: FindBlockOptions): Block[];
 
   canDigBlock(block: Block): boolean;
 
@@ -289,6 +291,8 @@ export class Bot extends EventEmitter {
   ): this;
 
   on(event: "actionBar", listener: (jsonMsg: string) => void): this;
+
+  on(event: "error", listener: (err: Error) => void): this;
 
   on(event: "message", listener: (jsonMsg: string) => void): this;
 
