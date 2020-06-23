@@ -225,7 +225,7 @@
       - [bot.unequip(destination, [callback])](#botunequipdestination-callback)
       - [bot.tossStack(item, [callback])](#bottossstackitem-callback)
       - [bot.toss(itemType, metadata, count, [callback])](#bottossitemtype-metadata-count-callback)
-      - [bot.dig(block, [callback])](#botdigblock-callback)
+      - [bot.dig(block, callback = noop, forceLook = false)](#botdigblock-callback--noop-forcelook--false)
       - [bot.stopDigging()](#botstopdigging)
       - [bot.digTime(block)](#botdigtimeblock)
       - [bot.placeBlock(referenceBlock, faceVector, cb)](#botplaceblockreferenceblock-facevector-cb)
@@ -1375,7 +1375,7 @@ Remove an article of equipment.
  * `count` - how many you want to toss. `null` is an alias for `1`.
  * `callback(err)` - (optional) called once tossing is complete
 
-#### bot.dig(block, [callback])
+#### bot.dig(block, callback = noop, forceLook = false)
 
 Begin digging into `block` with the currently equipped item.
 See also "diggingCompleted" and "diggingAborted" events.
@@ -1387,6 +1387,7 @@ dig any other blocks until the block has been broken, or you call
  * `block` - the block to start digging into
  * `callback(err)` - (optional) called when the block is broken or you
    are interrupted.
+ * `forceLook` - (optional) if true, look at the block and start mining instantly
 
 #### bot.stopDigging()
 
