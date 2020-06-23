@@ -1,3 +1,8 @@
+## 2.22.0
+* Improve digTime computation (thanks @Karang)
+* expose blockEntity.raw (thanks @SiebeDW)
+* improve typedef for find block options (thanks @TheDudeFromCI)
+
 ## 2.21.0
 * don't log errors if hideErrors is true
 
