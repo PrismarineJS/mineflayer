@@ -1320,7 +1320,7 @@ Sets all controls to off.
 
 #### bot.lookAt(point, [force], [callback])
 
- * `point` - tilts your head so that it is directly facing this point.
+ * `point` [Vec3](https://github.com/andrewrk/node-vec3) instance - tilts your head so that it is directly facing this point.
  * `force` - See `force` in `bot.look`
  * `callback()` optional, called when you are looking at `point`
 
