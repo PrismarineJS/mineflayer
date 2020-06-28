@@ -1,5 +1,6 @@
 /// <reference types="minecraft-protocol" />
 /// <reference types="node" />
+/// <reference types="typed-emitter" />
 /// <reference types="vec3" />
 /// <reference types="prismarine-item" />
 /// <reference types="prismarine-windows" />
@@ -8,6 +9,7 @@
 /// <reference types="prismarine-entity" />
 
 import { EventEmitter } from "events";
+import TypedEmitter from "typed-emitter";
 import { Client, ClientOptions } from "minecraft-protocol";
 import { Vec3 } from "vec3";
 import { Item } from "prismarine-item";
@@ -40,7 +42,101 @@ export interface PluginOptions {
 
 export type Plugin = (bot: Bot, options: BotOptions) => void;
 
-export class Bot extends EventEmitter {
+interface BotEvents {
+  chat: (
+      username: string,
+      message: string,
+      translate: string | null,
+      jsonMsg: string,
+      matches: Array<String> | null
+    ) => void;
+  whisper: (
+      username: string,
+      message: string,
+      translate: string | null,
+      jsonMsg: string,
+      matches: Array<String> | null
+    ) => void;
+  actionBar: (jsonMsg: string) => void;
+  error: (err: Error) => void;
+  message: (jsonMsg: string) => void;
+  login: () => void;
+  spawn: () => void;
+  respawn: () => void;
+  game: () => void;
+  title: (text: string) => void;
+  rain: () => void;
+  time: () => void;
+  kicked: (reason: string, loggedIn: boolean) => void;
+  end: () => void;
+  spawnReset: () => void;
+  death: () => void;
+  health: () => void;
+  entitySwingArm: (entity: Entity) => void;
+  entityHurt: (entity: Entity) => void;
+  entityWake: (entity: Entity) => void;
+  entityEat: (entity: Entity) => void;
+  entityCrouch: (entity: Entity) => void;
+  entityUncrouch: (entity: Entity) => void;
+  entityEquipmentChange: (entity: Entity) => void;
+  entitySleep: (entity: Entity) => void;
+  entitySpawn: (entity: Entity) => void;
+  playerCollect: (collector: Entity, collected: Entity) => void;
+  entityGone: (entity: Entity) => void;
+  entityMoved: (entity: Entity) => void;
+  entityDetach: (entity: Entity, vehicle: Entity) => void;
+  entityAttach: (entity: Entity, vehicle: Entity) => void;
+  entityUpdate: (entity: Entity) => void;
+  entityEffect: (entity: Entity, effect: Effect) => void;
+  entityEffectEnd: (entity: Entity, effect: Effect) => void;
+  playerJoined: (player: Player) => void;
+  playerLeft: (entity: Player) => void;
+  blockUpdate: (oldBlock: Block | null, newBlock: Block) => void;
+  'blockUpdate:(x, y, z)': (oldBlock: Block | null, newBlock: Block) => void;
+  chunkColumnLoad: (entity: Vec3) => void;
+  chunkColumnUnload: (entity: Vec3) => void;
+  soundEffectHeard: (
+    soundName: string,
+    position: Vec3,
+    volume: number,
+    pitch: number
+  ) => void
+  hardcodedSoundEffectHeard: (
+    soundId: number,
+    soundCategory: number,
+    position: Vec3,
+    volume: number,
+    pitch: number
+  ) => void
+  noteHeard: (block: Block, instrument: Instrument, pitch: number) => void
+  pistonMove: (block: Block, isPulling: number, direction: number) => void
+  chestLidMove: (block: Block, isOpen: number) => void
+  blockBreakProgressObserved: (block: Block, destroyStage: number) => void
+  blockBreakProgressEnd: (block: Block) => void;
+  diggingCompleted: (block: Block) => void;
+  diggingAborted: (block: Block) => void;
+  move: () => void;
+  forcedMove: () => void;
+  mount: () => void;
+  dismount: (vehicle: Entity) => void;
+  windowOpen: (vehicle: Window) => void;
+  windowClose: (vehicle: Window) => void;
+  sleep: () => void;
+  wake: () => void;
+  experience: () => void;
+  physicTick: () => void;
+  scoreboardCreated: (scoreboard: ScoreBoard) => void
+  scoreboardDeleted: (scoreboard: ScoreBoard) => void
+  scoreboardTitleChanged: (scoreboard: ScoreBoard) => void
+  scoreUpdated: (scoreboard: ScoreBoard, item: number) => void
+  scoreRemoved: (scoreboard: ScoreBoard, item: number) => void
+  scoreboardPosition: (position: DisplaySlot, scoreboard: ScoreBoard) => void
+  bossBarCreated: (bossBar: BossBar) => void;
+  bossBarDeleted: (bossBar: BossBar) => void;
+  bossBarUpdated: (bossBar: BossBar) => void;
+}
+
+export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
   username: string;
   protocolVersion: string;
   majorVersion: string;
@@ -268,230 +364,6 @@ export class Bot extends EventEmitter {
 
   updateHeldItem();
 
-  on(
-    event: "chat",
-    listener: (
-      username: string,
-      message: string,
-      translate: string | null,
-      jsonMsg: string,
-      matches: Array<String> | null
-    ) => void
-  ): this;
-
-  on(
-    event: "whisper",
-    listener: (
-      username: string,
-      message: string,
-      translate: string | null,
-      jsonMsg: string,
-      matches: Array<String> | null
-    ) => void
-  ): this;
-
-  on(event: "actionBar", listener: (jsonMsg: string) => void): this;
-
-  on(event: "error", listener: (err: Error) => void): this;
-
-  on(event: "message", listener: (jsonMsg: string) => void): this;
-
-  on(event: "login", listener: () => void): this;
-
-  on(event: "spawn", listener: () => void): this;
-
-  on(event: "respawn", listener: () => void): this;
-
-  on(event: "game", listener: () => void): this;
-
-  on(event: "title", listener: (text: string) => void): this;
-
-  on(event: "rain", listener: () => void): this;
-
-  on(event: "time", listener: () => void): this;
-
-  on(
-    event: "kicked",
-    listener: (reason: string, loggedIn: boolean) => void
-  ): this;
-
-  on(event: "end", listener: () => void): this;
-
-  on(event: "spawnReset", listener: () => void): this;
-
-  on(event: "death", listener: () => void): this;
-
-  on(event: "health", listener: () => void): this;
-
-  on(event: "entitySwingArm", listener: (entity: Entity) => void): this;
-
-  on(event: "entityHurt", listener: (entity: Entity) => void): this;
-
-  on(event: "entityWake", listener: (entity: Entity) => void): this;
-
-  on(event: "entityEat", listener: (entity: Entity) => void): this;
-
-  on(event: "entityCrouch", listener: (entity: Entity) => void): this;
-
-  on(event: "entityUncrouch", listener: (entity: Entity) => void): this;
-
-  on(event: "entityEquipmentChange", listener: (entity: Entity) => void): this;
-
-  on(event: "entitySleep", listener: (entity: Entity) => void): this;
-
-  on(event: "entitySpawn", listener: (entity: Entity) => void): this;
-
-  on(
-    event: "playerCollect",
-    listener: (collector: Entity, collected: Entity) => void
-  ): this;
-
-  on(event: "entityGone", listener: (entity: Entity) => void): this;
-
-  on(event: "entityMoved", listener: (entity: Entity) => void): this;
-
-  on(
-    event: "entityDetach",
-    listener: (entity: Entity, vehicle: Entity) => void
-  ): this;
-
-  on(
-    event: "entityAttach",
-    listener: (entity: Entity, vehicle: Entity) => void
-  ): this;
-
-  on(event: "entityUpdate", listener: (entity: Entity) => void): this;
-
-  on(
-    event: "entityEffect",
-    listener: (entity: Entity, effect: Effect) => void
-  ): this;
-
-  on(
-    event: "entityEffectEnd",
-    listener: (entity: Entity, effect: Effect) => void
-  ): this;
-
-  on(event: "playerJoined", listener: (player: Player) => void): this;
-
-  on(event: "playerLeft", listener: (entity: Player) => void): this;
-
-  on(
-    event: "blockUpdate",
-    listener: (oldBlock: Block | null, newBlock: Block) => void
-  ): this;
-
-  on(
-    event: "blockUpdate:(x, y, z)",
-    listener: (oldBlock: Block | null, newBlock: Block) => void
-  ): this;
-
-  on(event: "chunkColumnLoad", listener: (entity: Vec3) => void): this;
-
-  on(event: "chunkColumnUnload", listener: (entity: Vec3) => void): this;
-
-  on(
-    event: "soundEffectHeard",
-    listener: (
-      soundName: string,
-      position: Vec3,
-      volume: number,
-      pitch: number
-    ) => void
-  ): this;
-
-  on(
-    event: "hardcodedSoundEffectHeard",
-    listener: (
-      soundId: number,
-      soundCategory: number,
-      position: Vec3,
-      volume: number,
-      pitch: number
-    ) => void
-  ): this;
-
-  on(
-    event: "noteHeard",
-    listener: (block: Block, instrument: Instrument, pitch: number) => void
-  ): this;
-
-  on(
-    event: "pistonMove",
-    listener: (block: Block, isPulling: number, direction: number) => void
-  ): this;
-
-  on(
-    event: "chestLidMove",
-    listener: (block: Block, isOpen: number) => void
-  ): this;
-
-  on(
-    event: "blockBreakProgressObserved",
-    listener: (block: Block, destroyStage: number) => void
-  ): this;
-
-  on(event: "blockBreakProgressEnd", listener: (block: Block) => void): this;
-
-  on(event: "diggingCompleted", listener: (block: Block) => void): this;
-
-  on(event: "diggingAborted", listener: (block: Block) => void): this;
-
-  on(event: "move", listener: () => void): this;
-
-  on(event: "forcedMove", listener: () => void): this;
-
-  on(event: "mount", listener: () => void): this;
-
-  on(event: "dismount", listener: (vehicle: Entity) => void): this;
-
-  on(event: "windowOpen", listener: (vehicle: Window) => void): this;
-
-  on(event: "windowClose", listener: (vehicle: Window) => void): this;
-
-  on(event: "sleep", listener: () => void): this;
-
-  on(event: "wake", listener: () => void): this;
-
-  on(event: "experience", listener: () => void): this;
-
-  on(event: "physicTick", listener: () => void): this;
-
-  on(
-    event: "scoreboardCreated",
-    listener: (scoreboard: ScoreBoard) => void
-  ): this;
-
-  on(
-    event: "scoreboardDeleted",
-    listener: (scoreboard: ScoreBoard) => void
-  ): this;
-
-  on(
-    event: "scoreboardTitleChanged",
-    listener: (scoreboard: ScoreBoard) => void
-  ): this;
-
-  on(
-    event: "scoreUpdated",
-    listener: (scoreboard: ScoreBoard, item: number) => void
-  ): this;
-
-  on(
-    event: "scoreRemoved",
-    listener: (scoreboard: ScoreBoard, item: number) => void
-  ): this;
-
-  on(
-    event: "scoreboardPosition",
-    listener: (position: DisplaySlot, scoreboard: ScoreBoard) => void
-  ): this;
-
-  on(event: "bossBarCreated", listener: (bossBar: BossBar) => void): this;
-
-  on(event: "bossBarDeleted", listener: (bossBar: BossBar) => void): this;
-
-  on(event: "bossBarUpdated", listener: (bossBar: BossBar) => void): this;
 }
 
 export interface GameState {
@@ -677,7 +549,21 @@ export class Painting {
   constructor(id: number, position: Vec3, name: String, direction: Vec3);
 }
 
-export class Chest extends EventEmitter {
+interface StorageEvents {
+  open: () => void;
+  close: () => void;
+  updateSlot: (oldItem: Item | null, newItem: Item) => void;
+}
+
+interface FurnaceEvents extends StorageEvents {
+  update: () => void;
+}
+
+interface ConditionalStorageEvents extends StorageEvents {
+  ready: () => void;
+}
+
+export class Chest extends (EventEmitter as new () => TypedEmitter<StorageEvents>) {
   window: object | /*prismarine-windows ChestWindow*/ null;
 
   constructor();
@@ -699,16 +585,9 @@ export class Chest extends EventEmitter {
   count(itemType: number, metadata: number | null): number;
 
   items(): Array<Item>;
-
-  on(event: "open", listener: () => void): this;
-  on(event: "close", listener: () => void): this;
-  on(
-    event: "updateSlot",
-    listener: (oldItem: Item | null, newItem: Item) => void
-  ): this;
 }
 
-export class Furnace extends EventEmitter {
+export class Furnace extends (EventEmitter as new () => TypedEmitter<FurnaceEvents>) {
   fuel: number;
   progress: number;
 
@@ -739,17 +618,9 @@ export class Furnace extends EventEmitter {
   fuelItem(): Item;
 
   outputItem(): Item;
-
-  on(event: "open", listener: () => void): this;
-  on(event: "close", listener: () => void): this;
-  on(event: "update", listener: () => void): this;
-  on(
-    event: "updateSlot",
-    listener: (oldItem: Item | null, newItem: Item) => void
-  ): this;
 }
 
-export class Dispenser extends EventEmitter {
+export class Dispenser extends (EventEmitter as new () => TypedEmitter<StorageEvents>) {
   constructor();
 
   close(): void;
@@ -769,16 +640,9 @@ export class Dispenser extends EventEmitter {
   count(itemType: number, metadata: number | null): number;
 
   items(): Array<Item>;
-
-  on(event: "open", listener: () => void): this;
-  on(event: "close", listener: () => void): this;
-  on(
-    event: "updateSlot",
-    listener: (oldItem: Item | null, newItem: Item) => void
-  ): this;
 }
 
-export class EnchantmentTable extends EventEmitter {
+export class EnchantmentTable extends (EventEmitter as new () => TypedEmitter<ConditionalStorageEvents>) {
   enchantments: Array<Enchantment>;
 
   constructor();
@@ -797,34 +661,18 @@ export class EnchantmentTable extends EventEmitter {
   putTargetItem(item: Item, cb?: (err: Error | null, item: Item) => void): void;
 
   putLapis(item: Item, cb?: (err: Error | null, item: Item) => void): void;
-
-  on(event: "open", listener: () => void): this;
-  on(event: "close", listener: () => void): this;
-  on(event: "ready", listener: () => void): this;
-  on(
-    event: "updateSlot",
-    listener: (oldItem: Item | null, newItem: Item) => void
-  ): this;
 }
 
 export type Enchantment = {
   level: number;
 };
 
-export class Villager extends EventEmitter {
+export class Villager extends (EventEmitter as new () => TypedEmitter<ConditionalStorageEvents>) {
   trades: Array<VillagerTrade>;
 
   constructor();
 
   close(): void;
-
-  on(event: "open", listener: () => void): this;
-  on(event: "close", listener: () => void): this;
-  on(event: "ready", listener: () => void): this;
-  on(
-    event: "updateSlot",
-    listener: (oldItem: Item | null, newItem: Item) => void
-  ): this;
 }
 
 export type VillagerTrade = {
