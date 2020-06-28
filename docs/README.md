@@ -85,6 +85,8 @@ The most updated and useful are :
  * [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer) - simple web chunk viewer
  * [web-inventory](https://github.com/ImHarvol/mineflayer-web-inventory) - web based inventory viewer
  * [statemachine](https://github.com/TheDudeFromCI/mineflayer-statemachine) - A state machine API for more complex bot behavors
+ * [Armor Manager](https://github.com/G07cha/MineflayerArmorManager) - automatic armor managment
+
 
  But also check out :
 
@@ -97,7 +99,6 @@ The most updated and useful are :
    a target destination even if you have to build or break blocks to do so.
    [YouTube Demo](http://youtu.be/jkg6psMUSE0)
  * [auto-auth](https://github.com/G07cha/MineflayerAutoAuth) - chat-based bot authentication
- * [Armor Manager](https://github.com/G07cha/MineflayerArmorManager) - automatic armor managment
  * [Bloodhound](https://github.com/Nixes/mineflayer-bloodhound) - determine who and what is responsible for damage to another entity
  * [tps](https://github.com/SiebeDW/mineflayer-tps) - get the current tps (processed tps)
 
