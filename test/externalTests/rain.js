@@ -2,12 +2,17 @@ const assert = require('assert')
 
 module.exports = () => (bot, done) => {
   bot.test.sayEverywhere('/weather rain')
+
+  let raining = true
   bot.on('rain', () => {
-    assert.strictEqual(bot.test.isRaining, true)
+    if (raining) {
+      assert.strictEqual(bot.isRaining, true)
+      bot.test.sayEverywhere('/weather clear')
+      raining = false
+      return
+    }
 
-    bot.test.sayEverywhere('/weather clear')
-    assert.strictEqual(bot.test.isRaining, false)
-
+    assert.strictEqual(bot.isRaining, false)
     done()
   })
 }
