@@ -178,5 +178,10 @@
       "name": "doesntHaveOffHandSlot",
       "description": "doesn't have an off-hand slot",
       "versions": ["1.8"]
+    },
+    {
+      "name": "rainingStateBeginsWithOne",
+      "description": "",
+      "versions": ["1.14"]
     }
   ]
