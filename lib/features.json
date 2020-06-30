@@ -178,5 +178,15 @@
       "name": "doesntHaveOffHandSlot",
       "description": "doesn't have an off-hand slot",
       "versions": ["1.8"]
+    },
+    {
+      "name": "dimensionIsAnInt",
+      "description": "description is an int (an enum)",
+      "versions": ["1.8", "1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15"]
+    },
+    {
+      "name": "dimensionIsAString",
+      "description": "description is a string",
+      "versions": ["1.16"]
     }
   ]
