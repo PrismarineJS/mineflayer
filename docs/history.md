@@ -1,3 +1,10 @@
+## 2.22.1
+* better typedef (thanks @Konstantin)
+* fix off by 1 error in findBlocks (thanks @Karang)
+* physics.js look fix (thanks @thesourceoferror)
+* fix chat message bracketing (thanks @Nurutomo)
+* use prismarine-physics
+
 ## 2.22.0
 * Improve digTime computation (thanks @Karang)
 * expose blockEntity.raw (thanks @SiebeDW)
