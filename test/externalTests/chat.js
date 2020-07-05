@@ -4,7 +4,7 @@ module.exports = (supportedVersion) => (bot, done) => {
   const version = parseFloat(supportedVersion.match(/\d+\.\d+/)[0])
   setTimeout(() => {
     console.log(version)
-    if (1.12 <= version) {
+    if (version >= 1.12) {
       console.log('/advancement grant @p only minecraft:story/mine_stone')
       bot.chat('/advancement grant @p only minecraft:story/mine_stone')
       bot.once('message', (json) => {
