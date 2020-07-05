@@ -12,7 +12,7 @@ module.exports = () => (bot, done) => {
         done()
       })
     } else {
-      bot.chat('/achievement give mminecraft:achievement.openInventory @p')
+      bot.chat('/achievement give achievement.openInventory @p')
       bot.once('message', (json) => {
         const str = json.toString()
         console.log(str)
