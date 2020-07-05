@@ -1,7 +1,7 @@
 const assert = require('assert')
 
 module.exports = () => (bot, done) => {
-  if (1.11 < bot.majorVersion) {
+  if (1.12 <= parseFloat(bot.majorVersion)) {
     bot.chat('/advancement grant @p only minecraft:story/mine_stone')
     bot.on('message', (json) => {
       const str = json.toString()
