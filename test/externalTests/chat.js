@@ -2,11 +2,11 @@ const assert = require('assert')
 
 module.exports = (supportedVersion) => (bot, done) => {
   setTimeout(() => {
-    bot.chat('/tellraw flatbot {"translate":"commands.fill.failed"}')
+    bot.chat('/tellraw @p {"translate":"language.name"}')
     bot.once('message', (json) => {
       const str = json.toString()
       console.log(str)
-      assert.strictEqual(str, 'No blocks filled')
+      assert.strictEqual(str, 'English')
       done()
     })
   }, 500)
