@@ -5,5 +5,5 @@ module.exports = () => (bot, done) => {
     assert.strictEqual(json.toString(), bot.username + ' has made advancement [Stone Age]')
     done()
   })
-	bot.chat('/advancement grant @p only minecraft:story/mine_stone')
+  bot.chat('/advancement grant @p only minecraft:story/mine_stone')
 })
