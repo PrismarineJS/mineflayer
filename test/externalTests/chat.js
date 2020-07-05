@@ -7,7 +7,6 @@ module.exports = (supportedVersion) => (bot, done) => {
     bot.once('message', (json) => {
       const str = json.toString()
       console.log(str)
-      
       if (/\/help/.test(str)) {
         // Before 1.12
         console.log('/achievement give achievement.openInventory @p')
@@ -15,7 +14,6 @@ module.exports = (supportedVersion) => (bot, done) => {
         bot.once('message', (json) => {
           const str = json.toString()
           console.log(str)
-          
           assert.ok(str.test(/has (just earned|made) the (achievement|advancement) \[(Taking Inventoy|Stone Age)\]/))
           done()
         })
