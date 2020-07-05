@@ -16,11 +16,11 @@ module.exports = (supportedVersion) => (bot, done) => {
           const str = json.toString()
           console.log(str)
           
-          assert.ok(str.test(/has (just earned|made) the (achievement|advancement) \[(Taking Inventoy|Stone Age)\]'))
+          assert.ok(str.test(/has (just earned|made) the (achievement|advancement) \[(Taking Inventoy|Stone Age)\]/))
           done()
         })
       } else {
-        assert.ok(str.test(/has (just earned|made) the (achievement|advancement) \[(Taking Inventoy|Stone Age)\]'))
+        assert.ok(str.test(/has (just earned|made) the (achievement|advancement) \[(Taking Inventoy|Stone Age)\]/))
         done()
       }
     })
