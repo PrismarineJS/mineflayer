@@ -1,6 +1,7 @@
 const assert = require('assert')
 
-module.exports = (version) => (bot, done) => {
+module.exports = (supportedVersion) => (bot, done) => {
+  const version = supportedVersion.match(/\d+\.\d+/)[0]
   setTimeout(() => {
     console.log(version)
     if (version >= 1.12) {
