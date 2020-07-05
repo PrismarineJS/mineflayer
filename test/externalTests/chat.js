@@ -17,7 +17,7 @@ module.exports = () => (bot, done) => {
       bot.once('message', (json) => {
         const str = json.toString()
         console.log(str)
-        assert.strictEqual(str, bot.username + ' has just earned achieviement [Taking Inventoy]')
+        assert.strictEqual(str, bot.username + ' has just earned achievement [Taking Inventoy]')
         done()
       })
     }
