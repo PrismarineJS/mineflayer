@@ -6,4 +6,4 @@ module.exports = () => (bot, done) => {
     done()
   })
   bot.chat('/advancement grant @p only minecraft:story/mine_stone')
-})
+}
