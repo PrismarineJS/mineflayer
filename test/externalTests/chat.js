@@ -1,8 +1,7 @@
 const assert = require('assert')
 
-module.exports = () => (bot, done) => {
+module.exports = (version) => (bot, done) => {
   setTimeout(() => {
-    const version = parseFloat(bot.majorVersion)
     console.log(version)
     if (version >= 1.12) {
       bot.chat('/advancement grant @p only minecraft:story/mine_stone')
