@@ -5,6 +5,7 @@ module.exports = (supportedVersion) => (bot, done) => {
   setTimeout(() => {
     console.log(version)
     if (1.12 <= version) {
+      console.log('/advancement grant @p only minecraft:story/mine_stone')
       bot.chat('/advancement grant @p only minecraft:story/mine_stone')
       bot.once('message', (json) => {
         const str = json.toString()
@@ -13,6 +14,7 @@ module.exports = (supportedVersion) => (bot, done) => {
         done()
       })
     } else {
+      console.log('/achievement give achievement.openInventory @p')
       bot.chat('/achievement give achievement.openInventory @p')
       bot.once('message', (json) => {
         const str = json.toString()
