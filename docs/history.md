@@ -1,3 +1,7 @@
+## 2.23.0
+* 1.16 support
+* fix noteheard (thanks @Naomi-alt)
+
 ## 2.22.1
 * better typedef (thanks @Konstantin)
 * fix off by 1 error in findBlocks (thanks @Karang)
