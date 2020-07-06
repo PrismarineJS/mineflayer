@@ -181,7 +181,7 @@ bot.on('entitySpawn', (entity) => {
   } else if (entity.type === 'player') {
     bot.chat(`Look who decided to show up: ${entity.username}`)
   } else if (entity.type === 'object') {
-    bot.chat(`There's a ${entity.objectType} at ${entity.position}`)
+    console.log(`There's a ${entity.objectType} at ${entity.position}`)
   } else if (entity.type === 'global') {
     bot.chat('Ooh lightning!')
   } else if (entity.type === 'orb') {
