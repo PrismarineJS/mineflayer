@@ -384,7 +384,7 @@ export type LevelType =
   | "buffet"
   | "default_1_1";
 export type GameMode = "survival" | "creative" | "adventure";
-export type Dimension = "nether" | "overworld" | "end";
+export type Dimension = "minecraft:nether" | "minecraft:overworld" | "minecraft:end";
 export type Difficulty = "peaceful" | "easy" | "normal" | "hard";
 
 export interface Player {

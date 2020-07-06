@@ -15,6 +15,61 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
   const Chunk = require('prismarine-chunk')(supportedVersion)
 
   describe(`mineflayer_internal ${version.minecraftVersion}`, function () {
+    const w = {
+      piglin_safe: {
+        type: 'byte',
+        value: 0
+      },
+      natural: {
+        type: 'byte',
+        value: 1
+      },
+      ambient_light: {
+        type: 'float',
+        value: 0
+      },
+      infiniburn: {
+        type: 'string',
+        value: 'minecraft:infiniburn_overworld'
+      },
+      respawn_anchor_works: {
+        type: 'byte',
+        value: 0
+      },
+      has_skylight: {
+        type: 'byte',
+        value: 1
+      },
+      bed_works: {
+        type: 'byte',
+        value: 1
+      },
+      has_raids: {
+        type: 'byte',
+        value: 1
+      },
+      name: {
+        type: 'string',
+        value: 'minecraft:overworld'
+      },
+      logical_height: {
+        type: 'int',
+        value: 256
+      },
+      shrunk: {
+        type: 'byte',
+        value: 0
+      },
+      ultrawarm: {
+        type: 'byte',
+        value: 0
+      },
+      has_ceiling: {
+        type: 'byte',
+        value: 0
+      }
+    }
+
     this.timeout(10 * 1000)
     let bot
     let server
@@ -53,7 +108,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
           'hello'
           ]
         })
-        client.write('chat', { message, position: 0 })
+        client.write('chat', { message, position: 0, sender: '0' })
         client.on('chat', (packet) => {
           assert.strictEqual(packet.message, 'hi')
           done()
@@ -111,7 +166,11 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
           levelType: 'fogetaboutit',
           hashedSeed: [0, 0],
           gameMode: 0,
-          dimension: 0,
+          previousGameMode: 255,
+          worldNames: ['minecraft:overworld'],
+          dimensionCodec: { name: '', type: 'compound', value: { dimension: { type: 'list', value: { type: 'compound', value: [w] } } } },
+          dimension: bot.supportFeature('dimensionIsAnInt') ? 0 : 'minecraft:overworld',
+          worldName: 'minecraft:overworld',
           difficulty: 0,
           maxPlayers: 20,
           reducedDebugInfo: true,
@@ -164,7 +223,11 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
             levelType: 'fogetaboutit',
             hashedSeed: [0, 0],
             gameMode: 0,
-            dimension: 0,
+            previousGameMode: 255,
+            worldNames: ['minecraft:overworld'],
+            dimensionCodec: { name: '', type: 'compound', value: { dimension: { type: 'list', value: { type: 'compound', value: [w] } } } },
+            dimension: bot.supportFeature('dimensionIsAnInt') ? 0 : 'minecraft:overworld',
+            worldName: 'minecraft:overworld',
             difficulty: 0,
             maxPlayers: 20,
             reducedDebugInfo: true,
@@ -418,7 +481,11 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
           hashedSeed: [0, 0],
           levelType: 'forgetaboutit',
           gameMode: 0,
-          dimension: 0,
+          previousGameMode: 255,
+          worldNames: ['minecraft:overworld'],
+          dimensionCodec: { name: '', type: 'compound', value: { dimension: { type: 'list', value: { type: 'compound', value: [w] } } } },
+          dimension: bot.supportFeature('dimensionIsAnInt') ? 0 : 'minecraft:overworld',
+          worldName: 'minecraft:overworld',
           difficulty: 0,
           maxPlayers: 20,
           reducedDebugInfo: true,
