@@ -731,13 +731,13 @@ Create and return an instance of the class bot.
  * [colorsEnabled](bot.settings.colorsEnabled)
  * [viewDistance](bot.settings.viewDistance)
  * [difficulty](bot.settings.difficulty)
- * [showCape](bot.settings.showCape)
- * [showJacket](bot.settings.showJacket)
- * [showLeftSleeve](bot.settings.showLeftSleeve)
- * [showRightSleeve](bot.settings.showRightSleeve)
- * [showLeftPants](bot.settings.showLeftPants)
- * [showRigthtPants](bot.settings.showRightPants)
- * [showHat](bot.settings.showHat)
+ * [showCape](bot.settings.skinParts.showCape)
+ * [showJacket](bot.settings.skinParts.showJacket)
+ * [showLeftSleeve](bot.settings.skinParts.showLeftSleeve)
+ * [showRightSleeve](bot.settings.skinParts.showRightSleeve)
+ * [showLeftPants](bot.settings.skinParts.showLeftPants)
+ * [showRigthtPants](bot.settings.skinParts.showRightPants)
+ * [showHat](bot.settings.skinParts.showHat)
  * chatLengthLimit : the maximum amount of characters that can be sent in a single message. If this is not set, it will be 100 in < 1.11 and 256 in >= 1.11.
 
 ### Properties
@@ -823,31 +823,31 @@ Choices:
 
 Same as from server.properties.
 
-#### bot.settings.showCape
+#### bot.settings.skinParts.showCape
 
 If you have a cape you can turn it off by setting this to false.
 
-#### bot.settings.showJacket
+#### bot.settings.skinParts.showJacket
 
 Set the jacket layer of the skin.
 
-#### bot.settings.showLeftSleeve
+#### bot.settings.skinParts.showLeftSleeve
 
 Set the left sleeve layer of the skin.
 
-#### bot.settings.showRightSleeve
+#### bot.settings.skinParts.showRightSleeve
 
 Set the right sleeve layer of the skin.
 
-#### bot.settings.showLeftPants
+#### bot.settings.skinParts.showLeftPants
 
 Set the left pants layer of the skin.
 
-#### bot.settings.showRightPants
+#### bot.settings.skinParts.showRightPants
 
 Set the right pants layer of the skin.
 
-#### bot.settings.showHat
+#### bot.settings.skinParts.showHat
 
 Set the hat layer of the skin.
 

@@ -730,13 +730,13 @@ Create and return an instance of the class bot.
  * [colorsEnabled](bot.settings.colorsEnabled)
  * [viewDistance](bot.settings.viewDistance)
  * [difficulty](bot.settings.difficulty)
- * [showCape](bot.settings.showCape)
- * [showJacket](bot.settings.showJacket)
- * [showLeftSleeve](bot.settings.showLeftSleeve)
- * [showRightSleeve](bot.settings.showRightSleeve)
- * [showLeftPants](bot.settings.showLeftPants)
- * [showRigthtPants](bot.settings.showRightPants)
- * [showHat](bot.settings.showHat)
+ * [showCape](bot.settings.skinParts.showCape)
+ * [showJacket](bot.settings.skinParts.showJacket)
+ * [showLeftSleeve](bot.settings.skinParts.showLeftSleeve)
+ * [showRightSleeve](bot.settings.skinParts.showRightSleeve)
+ * [showLeftPants](bot.settings.skinParts.showLeftPants)
+ * [showRigthtPants](bot.settings.skinParts.showRightPants)
+ * [showHat](bot.settings.skinParts.showHat)
  * chatLengthLimit : максимальное количество символов, отправляемое в чат. Если не установлено, будет установлено следующее: 100 в < 1.11 и 256 в >= 1.11.
 
 ### Properties
@@ -822,21 +822,21 @@ Create and return an instance of the class bot.
 
 Вернет то же, что и в server.properties.
 
-#### bot.settings.showCape
+#### bot.settings.skinParts.showCape
 
 Если у вас есть плащ, вы можете отключить его, установив для него значение false.
 
-#### bot.settings.showJacket
+#### bot.settings.skinParts.showJacket
 
-#### bot.settings.showLeftSleeve
+#### bot.settings.skinParts.showLeftSleeve
 
-#### bot.settings.showRightSleeve
+#### bot.settings.skinParts.showRightSleeve
 
-#### bot.settings.showLeftPants
+#### bot.settings.skinParts.showLeftPants
 
-#### bot.settings.showRightPants
+#### bot.settings.skinParts.showRightPants
 
-#### bot.settings.showHat
+#### bot.settings.skinParts.showHat
 
 #### bot.experience.level
 
