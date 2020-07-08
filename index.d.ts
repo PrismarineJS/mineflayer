@@ -30,6 +30,12 @@ export interface BotOptions extends ClientOptions {
   viewDistance?: ViewDistance;
   difficulty?: number;
   showCape?: boolean;
+  showJacket?: boolean;
+  showLeftSleeve?: boolean;
+  showRightSleeve?: boolean;
+  showLeftPants?: boolean;
+  showRightPants?: boolean;
+  showHat?: boolean;
   chatLengthLimit?: number;
 }
 
@@ -439,6 +445,12 @@ export interface GameSettings {
   viewDistance: ViewDistance;
   difficulty: number;
   showCape: boolean;
+  showJacket: boolean;
+  showLeftSleeve: boolean;
+  showRightSleeve: boolean;
+  showLeftPants: boolean;
+  showRightPants: boolean;
+  showHat: boolean;
 }
 
 export interface Experience {

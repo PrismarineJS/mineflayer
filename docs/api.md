@@ -111,6 +111,12 @@
       - [bot.settings.viewDistance](#botsettingsviewdistance)
       - [bot.settings.difficulty](#botsettingsdifficulty)
       - [bot.settings.showCape](#botsettingsshowcape)
+      - [bot.settings.showJacket](#botsettingsshowjacket)
+      - [bot.settings.showLeftSleeve](#botsettingsleftsleeve)
+      - [bot.settings.showRightSleeve](#botsettingsshowrightsleeve)
+      - [bot.settings.showLeftPants](#botsettingsshowleftpants)
+      - [bot.settings.showRightPants](#botsettingsshowrightpants)
+      - [bot.settings.showHat](#botsettingsshowhat)
       - [bot.experience.level](#botexperiencelevel)
       - [bot.experience.points](#botexperiencepoints)
       - [bot.experience.progress](#botexperienceprogress)
@@ -726,6 +732,12 @@ Create and return an instance of the class bot.
  * [viewDistance](bot.settings.viewDistance)
  * [difficulty](bot.settings.difficulty)
  * [showCape](bot.settings.showCape)
+ * [showJacket](bot.settings.showJacket)
+ * [showLeftSleeve](bot.settings.showLeftSleeve)
+ * [showRightSleeve](bot.settings.showRightSleeve)
+ * [showLeftPants](bot.settings.showLeftPants)
+ * [showRigthtPants](bot.settings.showRightPants)
+ * [showHat](bot.settings.showHat)
  * chatLengthLimit : the maximum amount of characters that can be sent in a single message. If this is not set, it will be 100 in < 1.11 and 256 in >= 1.11.
 
 ### Properties
@@ -814,6 +826,30 @@ Same as from server.properties.
 #### bot.settings.showCape
 
 If you have a cape you can turn it off by setting this to false.
+
+#### bot.settings.showJacket
+
+Set the jacket layer of the skin.
+
+#### bot.settings.showLeftSleeve
+
+Set the left sleeve layer of the skin.
+
+#### bot.settings.showRightSleeve
+
+Set the right sleeve layer of the skin.
+
+#### bot.settings.showLeftPants
+
+Set the left pants layer of the skin.
+
+#### bot.settings.showRightPants
+
+Set the right pants layer of the skin.
+
+#### bot.settings.showHat
+
+Set the hat layer of the skin.
 
 #### bot.experience.level
 
