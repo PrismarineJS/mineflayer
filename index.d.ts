@@ -29,7 +29,6 @@ export interface BotOptions extends ClientOptions {
   colorsEnabled?: boolean;
   viewDistance?: ViewDistance;
   difficulty?: number;
-  showCape?: boolean;
   chatLengthLimit?: number;
 }
 
@@ -433,12 +432,22 @@ export interface ChatPattern {
   description: string;
 }
 
+export interface SkinParts {
+    showCape: boolean;
+    showJacket: boolean;
+    showLeftSleeve: boolean;
+    showRightSleeve: boolean;
+    showLeftPants: boolean;
+    showRightPants: boolean;
+    showHat: boolean;
+}
+
 export interface GameSettings {
   chat: ChatLevel;
   colorsEnabled: boolean;
   viewDistance: ViewDistance;
   difficulty: number;
-  showCape: boolean;
+  skinParts: SkinParts;
 }
 
 export interface Experience {
