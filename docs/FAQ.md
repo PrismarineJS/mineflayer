@@ -28,3 +28,8 @@ Create different bot instances by calling createBot then do different things for
 ### How would I make the bot drop it's entire inventory?
 
 bot.inventory.items() returns an array of the bot's items. You can use a recursive function to loop through them and drop every item using bot.toss(). Click [here](https://gist.github.com/dada513/3d88f772be4224b40f9e5d1787bd63e9) to see an example
+
+### How do I check packets that are sent/received ?
+
+Enabled debug mode https://github.com/PrismarineJS/mineflayer#debug
+
