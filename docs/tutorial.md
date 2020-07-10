@@ -101,6 +101,8 @@ You can call a function by using the name of a function followed by round bracke
 However, the `addition` function requires 2 parameters. These can be passed along by putting them inside the round brackets, comma separated: `addition(1, 2)`  
 When the function is done, you can imagine that the function call is replaced by whatever the function has returned. So in this case `let test1 = addition(5, 10)` will become `let test1 = result` (You will not actually see this, but this can help you understand the concept)
 
+Sometimes you will come across the following: `function addition() {}` This means the same thing, although `() => {}` is preferred. (If you really want to know why, look up 'javascript function vs arrow function')
+
 #### Show output
 
 Now when you save and run the code, you will still see nothing (If you did everything correctly)  
@@ -228,6 +230,25 @@ These parts are separated by a semi-column.
 The first parts `let countDown = 5` is only executed once, at the start of the loop.  
 The second part `countDown > 0` is the condition, this is the same as the while loop.  
 The third part `countDown = countDown - 1` is executed after each loop.:
+
+If you want to do something for every item in an array, a `for in` or `for of` loop can be useful.  
+
+```js
+const array = [1, 2, 3]
+
+for (const index in array) {
+  console.log(array[index])
+}
+
+for (const item of array) {
+  console.log(item)
+}
+```
+
+A `for in/of` loop needs to have a variable before the in/of, this is the variable that can be used to access the current item.  
+The variable after the in/of needs to be something that contains other variable. These are mostly arrays, but also some objects.  
+A `for in` loop uses the index of each item, while the `for of` loop uses the items directly.  
+Which one is useful depends on what you're going to do with it.
 
 #### General tips
 
