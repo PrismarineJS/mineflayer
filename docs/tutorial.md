@@ -3,200 +3,457 @@
 **Table of Contents**
 
 - [Basics](#basics)
+  - [Javascript basics](#javascript-basics)
+    - [Installing Node](#installing-node)
+    - [Javascript variables](#javascript-variables)
+    - [Javascript functions](#javascript-functions)
+    - [Show output](#show-output)
+    - [Javascript types](#javascript-types)
+    - [If-statements](#if-statements)
+    - [Loops](#loops)
+    - [General tips](#general-tips)
+    - [Node Package manager](#node-package-manager)
   - [Creating a bot](#creating-a-bot)
+    - [Javascript objects](#javascript-objects)
+    - [Logging in](#logging-in)
+  - [Passing along functions](#passing-along-functions)
   - [Listening for an event](#listening-for-an-event)
-    - [Echo bot](#echo-bot)
-    - [Welcome Bot](#welcome-bot)
   - [Callbacks](#callbacks)
-    - [Craft Stick Bot](#craft-stick-bot)
-    - [Consuming Bot](#consuming-bot)
-    - [Fisherman Bot](#fisherman-bot)
 - [Advanced](#advanced)
+  - [Asynchronousy](#asynchronousy)
   - [Creating an event from chat](#creating-an-event-from-chat)
     - [Answer Hello Bot](#answer-hello-bot)
-    - [Custom chat](#custom-chat)
+    - [Custom Chat](#custom-chat)
 - [FAQ](#faq)
-  - [How to create discord bot with mineflayer](#how-to-create-discord-bot-with-mineflayer)
-  - [How to run bot on android](#how-to-run-bot-on-android)
+  - [How to run a bot on android](#how-to-run-a-bot-on-android)
+    - [Install Termux](#install-termux)
+    - [Setup](#setup)
+    - [Start your bot](#start-your-bot)
+
+## Introduction
+
+This tutorial will help you get started with Mineflayer, even if you know nothing about coding.  
+If you already know some things about Node and NPM, you can go to the [Create a bot](#creating-a-bot) section, otherwise start here.
 
 ## Basics
 
-For the following, we assume Mineflayer is installed and you have a text editor.
+The following sections are about basics concepts you need to know to get started using Mineflayer.
 
-### Creating a Bot
+### Javascript basics
 
-To get a feeling for the Mineflayer and how to use it, please open a text editor and follow the next few steps.
+#### Installing Node
 
-First, create an instance of the Bot.
+In this section you will learn the basics about Javascript, Node and NPM.
+
+Javascript, often abbreviated to JS, is a programming language designed for the web. It is what makes most interactivity on the web possible.  
+Node.js, often just Node, makes it possible to use Javascript outside of web browsers.
+
+So the first thing you have to do to get started is to install Node. You can get it [here](https://nodejs.org/en/download/).  
+After it is installed, open a command prompt (also known as a terminal) and then type `node -v`  
+If you have installed Node correctly, it should return a version number. If it says it can't find the command, try installing it again.
+
+Now you have Node, you could start writing code, but we need to do 1 more thing.  
+Javascript can be written in any basic text editor, but it is much easier if you use what is called an [Integrated development environment](https://en.wikipedia.org/wiki/Integrated_development_environment)(IDE)  
+An IDE will help you write code because it can give you suggestions, or tell you if your code has potential problems. A good IDE to start with is [Visual Studio Code](https://code.visualstudio.com/)(VSCode)  
+Once you have installed and set-up VSCode, create a new file and then save it somewhere with a name ending with `.js`, e.g. `bot.js`  
+This will let VSCode know we are working with Javascript, and give you the correct suggestions.
+
+#### Javascript variables
+
+Start by typing the following:
 
 ```js
-const mineflayer = require('mineflayer')
-const options = {
-  host: 'localhost', // optional / minecraft server address
-  port: 25565, // optional
-  username: 'email@example.com', // email and password are required only for
-  password: '12345678', // online-mode=true servers
-  version: false // false corresponds to auto version detection (that's the default), put for example '1.8.8' if you need a specific version
+var test = 5
+```
+
+This will create a new variable named `test` and assign it the value `5`  
+Variable are used to save data and use it later in the code.
+
+Now save the file so we can run the code. Open a terminal again (or a new terminal in VSCode) and navigate to the same folder the file is saved in. This can be done using the `cd` command, for example: `cd Documents\javascript`  
+Once your terminal is in the same folder as your Javascript file, you can run `node filename.js`  
+If you have done everything correctly, you should see nothing.
+
+#### Javascript functions
+
+Next you will learn about functions. Functions are a piece of code that can be used multiple times throughout your code.  
+These can be useful because you don't have to type something multiple times.
+
+```js
+function addition(a, b) {
+  var result = a + b
+  return result
 }
+
+var test1 = addition(5, 10)
+var test2 = addition(1, 0)
+```
+
+The `function` keyword is used to define a function.  
+After that you have the name of the function, in this case `addition`  
+After that comes the parameter list, everything between the round brackets `()` are parameters, separated by a comma.  
+Parameters are variables you can give to your function so that your function can work with them.  
+Then at last comes the function body, this is everything between the curly brackets `{}`  
+This is where you put the code of the function.
+
+As you can see, this code takes the parameters `a` and `b` and adds them together in the `result` variable.  
+Then the function will return the result.  
+When a function is defined, the code in the function body is not yet executed. To run a function you have to call it.  
+You can call a function by using the name of a function followed by round brackets. In this case `addition()`  
+However, the `addition` function requires 2 parameters. These can be passed along by putting them inside the round brackets, comma separated: `addition(1, 2)`  
+When the function is done, you can imagine that the function call is replaced by whatever the function has returned. So in this case `var test1 = addition(5, 10)` will become `var test1 = result` (You will not actually see this, but this can help you understand the concept)
+
+#### Show output
+
+Now when you save and run the code, you will still see nothing (If you did everything correctly)  
+To see something, for example if you want to see whether your addition function actually returns the correct value, we you to 'print' something to the terminal.  
+In Javascript, we can do this using the `console.log()` function.  
+
+```js
+function addition(a, b) {
+  var result = a + b
+  return result
+}
+
+var test1 = addition(5, 10)
+var test2 = addition(1, 0)
+
+console.log(test1)
+console.log(test2)
+```
+
+Now when you save and run this code, you should finally see something:
+
+```
+15
+1
+```
+
+#### Javascript types
+
+So far we have only worked with numbers, but Javascript can work with more variable types:
+
+- A string is a piece of text that can contain multiple characters. Strings are defined by using the quotes `''`
+- An array is a type that can hold multiple variables inside itself. Arrays are defined by using the square brackets `[]`
+- Object are basically advanced arrays, you will learn more about it later in this tutorial. Their defined by curly brackets `{}` 
+- Functions are also their own type.
+- A boolean is a type that can only be `true` or `false`
+- When something is not (yet) defined, its type is `undefined`
+
+```js
+var number = 1                  // Number type
+var string = 'This is a string' // String type
+var array = [1, 2, 3]           // Array type
+var object = {}                 // Object type
+var function = Function() {}    // Function type
+var boolean = true              // Boolean type
+var nothing                     // Undefined type
+```
+
+#### If-statements
+
+Sometimes you want to do different things based on a certain condition.  
+This can be achieved using if-statements.
+
+```js
+var name = 'Bob'
+
+if (name == 'Bob') {
+  console.log('Your name is Bob')
+}
+else if (name == 'Alice') {
+  console.log('Your name is Alice')
+}
+else {
+  console.log('Your name is not Bob or Alice')
+}
+```
+
+An if-statement is created using the `if` keyword. After that you have a condition between the round brackets `()` followed by the body between the curly brackets `{}`
+A condition has to be something that computes to a boolean.  
+In this case it uses an equal operator `==` which will be `true` if the value in front is the same as the value after. Otherwise it will be `false`
+If the condition is `true` the code in the body will be executed.  
+You can chain an if-statement with an if-else-statement or an else-statement.  
+You can have multiple if-else-statements, but there can't be any code between the statements.  
+If you have an else-statement, it will be called only if all the chained statements before it are `false`
+
+```js
+if (true) {
+  ...
+}
+console.log(5); // This is invalid.
+else {
+  ...
+}
+```
+
+#### Loops
+
+Loops are used to repeat certain code until a certain conditional is met.
+
+```js
+var countDown = 5
+
+while (countDown > 0) {
+  console.log(countDown);
+  countDown = countDown - 1
+}
+
+console.log('Finished!')
+```
+
+The above code will print the following
+
+```txt
+5
+4
+3
+2
+1
+Finished!
+```
+
+The `while` loop has a condition `()` and a body `{}`  
+It will execute the code in the body, as long as the condition is still `true`  
+Each loop, the code prints the current `countDown` number, and then decrements it by 1.  
+After the 5th loop, the condition `0 > 0` will be `false`, and thus the code will move on.
+
+#### General tips
+
+If you want to help yourself and other people understand your code better, you can use comments.  
+Comments can be created using `//` and everything after that is completely ignored by Javascript.
+
+In general, it is good practice to use the `const` keyword instead of the `var` keyword when defining a variable. A variable defined with `const` can't be modified later and is thus constant.  
+Javascript is then able to make your code run more efficiently because it knows it doesn't have to account for variable changes for that variable.  
+If you want a modifiable variable, you will still have to use `var` of course.
+
+```js
+const test = 5
+test = 10 // This line is not valid, as test is constant.
+```
+
+#### Node Package manager
+
+The last thing you need to know is how to use the [Node Package Manager](https://www.npmjs.com/).  
+NPM is automatically installed when you install Node.  
+NPM is used to get useful packages that other people created that can do useful things for you.  
+You can search for packages on [their website](https://www.npmjs.com/), and then install them using the `npm install` command in your terminal.  
+To install Mineflayer for example, run `npm install mineflayer`  
+
+Then, Node can access installed modules by using the `require()` function.
+
+```js
+const mineflayer = require('mineflayer');
+```
+
+After this, the `mineflayer` variable can be used to access all the features of Mineflayer.
+
+### Creating a bot
+
+Now that you know the basis of Javascript, Node and NPM, you're ready to start creating your first bot!  
+If you don't know any of the terms above, you should go back to the [previous section](#javascript-basics)
+
+Below is the absolute minimum necessary to create a Mineflayer bot.
+
+```js
+const mineflayer = require('mineflayer');
+
+const bot = mineflayer.createBot()
+```
+
+However, this bot isn't quite useful, as by default this will connect to a Minecraft server running on your machine with the port 25565.  
+If you want to choose which server you want your bot to connect to, you have to pass along a few options.
+
+
+```js
+const mineflayer = require('mineflayer');
+
+const options = {host: 'localhost', port: 25565} // Change this to the ip and port you want
+
 const bot = mineflayer.createBot(options)
 ```
 
-Say hi to the chat after you spawn in, using [`spawn`](http://mineflayer.prismarine.js.org/#/api?id=quotspawnquot) event and [`bot.chat()`](http://mineflayer.prismarine.js.org/#/api?id=botchatmessage) method.
+#### Javascript objects
+
+The curly brackets `{}` are used to create an object.  
+Objects contain what is called a key-value pair.  
+A key-value pair consist of a colon `:` and a key before the colon, and the value of that key after the colon.  
+The keys can then be used to retrieve their value.  
+You can have multiple key-value pairs by separating them by commas.
 
 ```js
-bot.once('spawn', function () {
-  bot.chat('hi!')
-  // `bot.chat()` method for sending message or commad to the chat.
+const object = {number: 10, another: 5}
+
+console.log(object.number) // This will print the value 10
+```
+
+This concept is often used to create what is named 'named parameters'  
+The advantage of this is that you don't have to use all the options available, and their position does not matter.  
+The value can be anything, even other object. If the value is a function, that function is often called a method for that object.  
+You can also create the object in-line.
+
+```js
+const bot = mineflayer.createBot({host: 'localhost', port: 25565})
+```
+
+#### Logging in
+
+Without any parameters, the bot will have the name `Player` and can only log into offline servers. (Cracked & open-to-lan)  
+If you supply the `createBot` with an `username` option, it will log in with that username. (Still only in offline server)  
+To log into a specific account, you have to supply both the `username` and the `password`
+
+```js
+const bot = mineflayer.createBot({
+  host: 'localhost',
+  port: 25565,
+  username: `Player`,
+  password: `password`
 })
 ```
 
-For full methods list see the [documentation](http://mineflayer.prismarine.js.org/#/api?id=methods)
+#### Command line arguments
+
+What if somebody else likes your bot and wants to use it, but uses it on a different server and with a different account?  
+This means that everyone has to change the server address and login settings to their preference. (And it's of course also a bad idea to share your password)  
+To counter this, a lot of people use command line arguments.
+
+```js
+const bot = mineflayer.createBot({
+  host: process.argv[2],
+  port: parseInt(process.argv[3]),
+  username: process.argv[4],
+  password: process.argv[5]
+})
+```
+
+As you can see, no more sensitive data in your code! But now, how do you run it?  
+Now, instead of starting your program with just `node filename.js` you start it with `node filename.js host port username password`  
+Node will automatically split the whole command line into an array, separated by spaces.  
+This array is `process.argv`  
+The data in an array can be accessed using the index of each item. The index always start at 0, so the first item can be accessed with `[0]` and in this case will be `node` etc.
+
+| | First item | Second item | Third Item | Fourth item | Fifth item | Sixth item |
+| --- | :---: | :---: | :---: | :---: | :---: | :---: |
+| Value | `node` | `filename.js` | `host` | `port` | `username` | `password` |
+| Index | `[0]` | `[1]` | `[2]` | `[3]` | `[4]` | `[5]`
+
+### Passing along functions
+
+Not only basics variables like numbers and strings can be given as an argument.  
+Functions can also be passed as a variable.
+
+```js
+function welcome() {
+  bot.chat('hi!')
+}
+
+bot.once('spawn', welcome)
+```
+
+As you can see, the `bot.once()` method takes 2 parameters.  
+The first parameter is an event name, the second parameter is the function to call when that event happens.  
+Remember, when passing along a function, only use the name and not the round brackets `()`
+
+`bot.chat()` is the method for sending message to the chat.
+
+You can also simplify this code by using a anonymous function.  
+An anonymous function doesn't have a name, and is created at the position where the function name used to go.  
+They still have to have a parameter list `()` and a function body `{}`, even if it isn't used.
+
+```js
+bot.once('spawn', () => {
+  bot.chat('hi!')
+})
+```
 
 ### Listening for an event
 
-Bot object has many useful [events](http://mineflayer.prismarine.js.org/#/api?id=events).
-You can listen for an event by using either `bot.on()` method or `bot.once()` method of the Bot object, wich takes the name of event and a function.
+The bot object has many useful [events](http://mineflayer.prismarine.js.org/#/api?id=events).
+You can listen for an event by using either `bot.on()` method or `bot.once()` method of the bot object, which takes the name of an event and a function.
 To remove specific listener you can use `bot.removeListener()` method.
 
 - `bot.on(eventName, listener)`
   Execute the `listener` function for each time the event named `eventName` triggered.
 - `bot.once(eventName, listener)`
-  Execute the `listener` function, the first time the event named `eventName` triggered.
+  Execute the `listener` function, only once, the first time the event named `eventName` triggered.
 - `bot.removeListener(eventName, listener)`
   Removes the specified `listener` for the event named `eventName`.
 
 Not only bot object, [`Chest`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerchest), [`Furnace`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerfurnace), [`Dispenser`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerdispenser), [`EnchantmentTable`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerenchantmenttable), [`Villager`](http://mineflayer.prismarine.js.org/#/api?id=mineflayervillager) object also have their own events!
 
-Examples :
-
-#### Echo Bot
-
-Here we're listening for [`chat`](http://mineflayer.prismarine.js.org/#/api?id=quotchatquot-username-message-translate-jsonmsg-matches) event, and resend the message.
-[`chat`](http://mineflayer.prismarine.js.org/#/api?id=quotchatquot-username-message-translate-jsonmsg-matches) event is only emitted when a player chats publicly.
-
-```js
-function echo (username, message) {
-  if (username !== bot.username) {
-    bot.chat(message)
-  }
-}
-
-bot.on('chat', echo) // Only emitted when a player chats publicly.
-```
-
-`bot.on('chat', echo)` - will listen for [`chat`](http://mineflayer.prismarine.js.org/#/api?id=quotchatquot-username-message-translate-jsonmsg-matches) event, and execute `echo` function with arguments `username`, `message`, `translate`, `jsonMsg`, and `matches` when the event emitted.
-
-#### Welcome Bot
-
-Here we're listening for [`playerJoined`](http://mineflayer.prismarine.js.org/#/api?id=quotplayerjoinedquot-player) event.
-And sending welcome message to chat.
-
-```js
-function joined (player) {
-  bot.chat(`Welcome ${player}! :D`)
-}
-
-bot.on('playerJoined', joined)
-```
-
 ### Callbacks
-
-Callback (known as a "call-after" function) is a function that is passed as an argument to the other code / function.
-If that other code / function finish the execution, then the callback is called.
-
-Callback takes parameter called `err` or `error` as first, and second parameter (if specified) is a value that is passed to the callback,
-if `err === null` then there is no error happened in the other code / function.
-
-In [the API page](http://mineflayer.prismarine.js.org/#/api) callback abbreviated as `cb` or `callback`.
-
-Examples :
-
-#### Craft Stick Bot
-
-Here we're crafting oak logs into sticks.
-Craft oak logs into oak wood planks, wait for crafting finish. Then craft the oak wood planks into sticks.
-
-Incorect aproach ❌ :
+A [callback](https://en.wikipedia.org/wiki/Callback_(computer_programming)) is a function that you can give to another function, that is expected to be *called back*, generally when that function ends.  
+In Mineflayer, callbacks are often used to handle errors.
 
 ```js
-const plankRecipe = bot.recipesFor(5) // 5 Item ID for Oak Wood Planks
-bot.craft(plankRecipe, 1) // ❌
-// starting crafting planks and while running the code bellow
-const stickRecipe = bot.recipesFor(280) // 280 Item ID for Stick
-bot.craft(stickRecipe, 1) // ❌
-// if the plank not in the inventory, because of bot.craft(plankRecipe, 1) hasn't finish yet,
-// then 'missing ingredient' error will happened.
-```
-
-Correct approach with callbacks ✔️ :
-
-```js
-const plankRecipe = bot.recipesFor(5)[0]
-
-bot.craft(plankRecipe, 1, null, function (err) {
-  // after bot.craft(plankRecipe, ...) finish then the code bellow get executed ✔️
-  if (err !== null) {
-    bot.chat(err.message)
-    // if error happened when crafting `plankRecipe` then send to chat the `err.message`
+bot.consume((error) => {
+  if (error) {
+    console.log(error)
   } else {
-    const stickRecipe = bot.recipesFor(280)
-
-    bot.craft(stickRecipe, 1, null, function (err) {
-      // after bot.craft(stickRecipe, ...) finish then the code bellow get executed ✔️
-      if (err !== null) {
-        bot.chat(err.message)
-        return
-      }
-      bot.chat('Crafting Sticks finished')
-    })
+    console.log('Finished consuming')
   }
 })
 ```
 
-More on [`bot.craft()`](http://mineflayer.prismarine.js.org/#/api?id=botcraftrecipe-count-craftingtable-callback) method.
-
-#### Consuming Bot
-
-In this example we create bot that eat / consume held item if hungry.
-Using
-[`health`](http://mineflayer.prismarine.js.org/#/api?id=health) - event that listens for changes in health or food points.
-[`bot.consume()`](http://mineflayer.prismarine.js.org/#/api?id=botconsumecallback) - method that makes bot eat currently held item.
-[`bot.food`](http://mineflayer.prismarine.js.org/#/api?id=botfood) - property to check food points.
-`bot.heldItem` property that returns [`Item`](https://github.com/PrismarineJS/prismarine-item/blob/master/README.md) - held by the bot or `null`.
-
-```js
-const minFoodPoints = 18
-
-bot.on('health', function () {
-  // listen on any changes in health or food points.
-  const heldItemName = bot.heldItem.name
-  if (bot.food < minFoodPoints) {
-    // if the food points lower than 18, then
-    bot.chat(`Eating ${heldItemName}`)
-    bot.consume(onFinishEating)
-    // `bot.consume()` method takes `onFinishEating` as callback, and execute `onFinishEating` when its finish or stumble an error.
-  }
-  function onFinishEating (err) {
-    if (err !== null) {
-      bot.chat(err.message)
-      return
-    }
-    bot.chat(`I'm finish eating ${heldItemName}`)
-  }
-})
-```
+The above code will try to consume what the bot is currently holding.  
+When the consuming ends, the function that is passed along is called.  
+We can then do other things that we want to do after.  
+The function could also be called when an error occurs.
 
 ## Advanced
 
-For the following, we assume you have understood the [Basics](#basics) tutorial.
+The following concepts aren't necessary to create a Mineflayer bot, but they can be useful to understand and create more advanced bots.  
+We assume you have understood the [Basics](#basics) tutorial.
+
+### Asynchronousy
+In Javascript, asynchronousy is an important concept.  
+By default, Javascript will run everything line by line, and only go to the next line if the current line is done. This is called blocking.  
+However, sometimes you have to do something that takes a relatively long time, and you don't want your whole program to block and wait for it to finish.  
+
+Interacting with the filesystem is often done using asynchronousy, because reading and writing large files can take a long time.  
+
+```js
+const myPromise = new Promise((resolve, reject) => {
+  setTimeout( () => {
+    resolve("Success!")  // Yay! Everything went well!
+  }, 1000) 
+}) 
+
+myPromise.then((successMessage) => {
+  console.log(successMessage) 
+})
+
+myPromise.catch((failureMessage) => {
+  console.log(failureMessage)
+})
+```
+
+The above codes uses what is called a Promise. A promise promises it will eventually complete.  
+The function given you a promise always has 2 parameters, a `resolve` function and a `reject` function.  
+If the promise is successful, it will call the `resolve` function, otherwise it will call the `reject` function.  
+The above code uses a `setTimeout`, which calls the given function after the set amount of milliseconds, 1000 in this case.  
+You can then tell the promise what it should do when it succeeds with `.then(function)` or when it fails with `.catch(function)`
+
+The `.then` and `.catch` function can also be chained together with the promise to simplify the code.
+
+```js
+const myPromise = new Promise((resolve, reject) => {
+  setTimeout( () => {
+    resolve("Success!")  // Yay! Everything went well!
+  }, 1000) 
+}).then((successMessage) => {
+  console.log(successMessage) 
+}).catch((failureMessage) => {
+  console.log(failureMessage)
+})
+```
 
 ### Creating an event from chat
 
-You can create your own event from chat using [`bot.chatAddPattern()`](http://mineflayer.prismarine.js.org/#/api?id=botchataddpatternpattern-chattype-description) method. Useful for bukkit servers where the chat format changes a lot.
-[`bot.chatAddPattern()`](http://mineflayer.prismarine.js.org/#/api?id=botchataddpatternpattern-chattype-description) method takes three argumens :
+You can create your own event from chat using [`bot.chatAddPattern()`](http://mineflayer.prismarine.js.org/#/api?id=botchataddpatternpattern-chattype-description) method. Useful for Bukkit servers where the chat format changes a lot.
+[`bot.chatAddPattern()`](http://mineflayer.prismarine.js.org/#/api?id=botchataddpatternpattern-chattype-description) method takes three arguments :
 
 - `pattern` - regular expression (regex) to match chat
-- `chatType` - the event the bot emits when the pattern matches. Eg: "chat" or "whisper"
+- `chatType` - the event the bot emits when the pattern matches. e.g. "chat" or "whisper"
 - `description` - Optional, describes what the pattern is for
 
 You can add [Groups and Range](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions/Groups_and_Ranges) into the `pattern`, then the listener will spread the captured groups into arguments of your callback sequentially.
@@ -225,8 +482,8 @@ bot.on('hello', hi)
 
 #### Custom chat
 
-Creating an event based on custom chat format.
-Custom chat example
+Creating an event based on custom chat format.  
+Custom chat example:
 
 ```txt
 [Player] Player1 > Hello
@@ -253,9 +510,9 @@ Explanation on the regex `^\[(.+)\] (\S+) > (.+)$` can be found [here](https://r
 
 ## FAQ
 
-### How to run bot on android
+### How to run a bot on android
 
-Here quick setup for running bot on android device using [Termux](https://termux.com/).
+Here is a quick setup for running a bot on an android device using [Termux](https://termux.com/).
 
 #### Install Termux
 
@@ -263,7 +520,7 @@ Install [Termux](https://termux.com/) and start it.
 
 #### Setup
 
-Install `node.js`:
+Install `Node.js`:
 
 ```bash
 pkg update -y
@@ -289,10 +546,10 @@ Now you can copy / store all of your scripts into `my_scripts` folder inside Int
 
 #### Start your bot
 
-To start the bot, change `mybot.js` to your script name:
+To start the bot, run Node with the name of your script.
 
 ```bash
-node mybot.js
+node script_name.js
 ```
 
 ❗️ For each time opening Termux you must change the cwd into `/sdcard/my_scripts`, before starting the bot:
