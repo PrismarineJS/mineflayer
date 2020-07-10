@@ -63,7 +63,7 @@ This will let VSCode know we are working with Javascript, and give you the corre
 Start by typing the following:
 
 ```js
-var test = 5
+let test = 5
 ```
 
 This will create a new variable named `test` and assign it the value `5`  
@@ -79,28 +79,27 @@ Next you will learn about functions. Functions are a piece of code that can be u
 These can be useful because you don't have to type something multiple times.
 
 ```js
-function addition(a, b) {
-  var result = a + b
-  return result
+let addition = (a, b) => {
+  return a + b
 }
 
-var test1 = addition(5, 10)
-var test2 = addition(1, 0)
+let test1 = addition(5, 10)
+let test2 = addition(1, 0)
 ```
 
-The `function` keyword is used to define a function.  
-After that you have the name of the function, in this case `addition`  
-After that comes the parameter list, everything between the round brackets `()` are parameters, separated by a comma.  
+The `=>` is used to define a function, called the arrow operator.  
+Before the arrow operator is the parameter list, everything between the round brackets `()` are parameters, separated by a comma.  
 Parameters are variables you can give to your function so that your function can work with them.  
-Then at last comes the function body, this is everything between the curly brackets `{}`  
-This is where you put the code of the function.
+Then after the arrow operator comes the function body, this is everything between the curly brackets `{}`  
+This is where you put the code of the function.  
+Now that the function is complete, we assign it to a variable to give it a name, in this case `addition`  
 
-As you can see, this code takes the parameters `a` and `b` and adds them together in the `result` variable.  
+As you can see, this code takes the parameters `a` and `b` and adds them together.  
 Then the function will return the result.  
 When a function is defined, the code in the function body is not yet executed. To run a function you have to call it.  
 You can call a function by using the name of a function followed by round brackets. In this case `addition()`  
 However, the `addition` function requires 2 parameters. These can be passed along by putting them inside the round brackets, comma separated: `addition(1, 2)`  
-When the function is done, you can imagine that the function call is replaced by whatever the function has returned. So in this case `var test1 = addition(5, 10)` will become `var test1 = result` (You will not actually see this, but this can help you understand the concept)
+When the function is done, you can imagine that the function call is replaced by whatever the function has returned. So in this case `let test1 = addition(5, 10)` will become `let test1 = result` (You will not actually see this, but this can help you understand the concept)
 
 #### Show output
 
@@ -109,13 +108,12 @@ To see something, for example if you want to see whether your addition function 
 In Javascript, we can do this using the `console.log()` function.  
 
 ```js
-function addition(a, b) {
-  var result = a + b
-  return result
+let addition = (a, b) => {
+  return a + b
 }
 
-var test1 = addition(5, 10)
-var test2 = addition(1, 0)
+let test1 = addition(5, 10)
+let test2 = addition(1, 0)
 
 console.log(test1)
 console.log(test2)
@@ -123,7 +121,7 @@ console.log(test2)
 
 Now when you save and run this code, you should finally see something:
 
-```
+```txt
 15
 1
 ```
@@ -140,13 +138,13 @@ So far we have only worked with numbers, but Javascript can work with more varia
 - When something is not (yet) defined, its type is `undefined`
 
 ```js
-var number = 1                  // Number type
-var string = 'This is a string' // String type
-var array = [1, 2, 3]           // Array type
-var object = {}                 // Object type
-var function = Function() {}    // Function type
-var boolean = true              // Boolean type
-var nothing                     // Undefined type
+let number = 1                  // Number type
+let string = 'This is a string' // String type
+let array = [1, 2, 3]           // Array type
+let object = {}                 // Object type
+let function = () => {}         // Function type
+let boolean = true              // Boolean type
+let nothing                     // Undefined type
 ```
 
 #### If-statements
@@ -155,7 +153,7 @@ Sometimes you want to do different things based on a certain condition.
 This can be achieved using if-statements.
 
 ```js
-var name = 'Bob'
+let name = 'Bob'
 
 if (name == 'Bob') {
   console.log('Your name is Bob')
@@ -180,7 +178,7 @@ If you have an else-statement, it will be called only if all the chained stateme
 if (true) {
   ...
 }
-console.log(5); // This is invalid.
+console.log(5) // This is invalid.
 else {
   ...
 }
@@ -191,10 +189,10 @@ else {
 Loops are used to repeat certain code until a certain conditional is met.
 
 ```js
-var countDown = 5
+let countDown = 5
 
 while (countDown > 0) {
-  console.log(countDown);
+  console.log(countDown)
   countDown = countDown - 1
 }
 
@@ -217,14 +215,28 @@ It will execute the code in the body, as long as the condition is still `true`
 Each loop, the code prints the current `countDown` number, and then decrements it by 1.  
 After the 5th loop, the condition `0 > 0` will be `false`, and thus the code will move on.
 
+A `for` loop is also often used, and differs slightly from a `while` loop.  
+
+```js
+for (let countDown = 5; countDown > 0; countDown = countDown - 1) {
+  console.log(countDown)
+}
+```
+
+Instead of only a condition, the for loops has 3 different parts  
+These parts are separated by a semi-column.  
+The first parts `let countDown = 5` is only executed once, at the start of the loop.  
+The second part `countDown > 0` is the condition, this is the same as the while loop.  
+The third part `countDown = countDown - 1` is executed after each loop.:
+
 #### General tips
 
 If you want to help yourself and other people understand your code better, you can use comments.  
 Comments can be created using `//` and everything after that is completely ignored by Javascript.
 
-In general, it is good practice to use the `const` keyword instead of the `var` keyword when defining a variable. A variable defined with `const` can't be modified later and is thus constant.  
+In general, it is good practice to use the `const` keyword instead of the `let` keyword when defining a variable. A variable defined with `const` can't be modified later and is thus constant.  
 Javascript is then able to make your code run more efficiently because it knows it doesn't have to account for variable changes for that variable.  
-If you want a modifiable variable, you will still have to use `var` of course.
+If you want a modifiable variable, you will still have to use `let` of course.
 
 ```js
 const test = 5
@@ -242,7 +254,7 @@ To install Mineflayer for example, run `npm install mineflayer`
 Then, Node can access installed modules by using the `require()` function.
 
 ```js
-const mineflayer = require('mineflayer');
+const mineflayer = require('mineflayer')
 ```
 
 After this, the `mineflayer` variable can be used to access all the features of Mineflayer.
@@ -255,7 +267,7 @@ If you don't know any of the terms above, you should go back to the [previous se
 Below is the absolute minimum necessary to create a Mineflayer bot.
 
 ```js
-const mineflayer = require('mineflayer');
+const mineflayer = require('mineflayer')
 
 const bot = mineflayer.createBot()
 ```
@@ -265,7 +277,7 @@ If you want to choose which server you want your bot to connect to, you have to 
 
 
 ```js
-const mineflayer = require('mineflayer');
+const mineflayer = require('mineflayer')
 
 const options = {host: 'localhost', port: 25565} // Change this to the ip and port you want
 
