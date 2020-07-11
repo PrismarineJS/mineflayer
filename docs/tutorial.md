@@ -6,8 +6,8 @@
   - [Javascript basics](#javascript-basics)
     - [Installing Node](#installing-node)
     - [Javascript variables](#javascript-variables)
-    - [Javascript functions](#javascript-functions)
     - [Show output](#show-output)
+    - [Javascript functions](#javascript-functions)
     - [Javascript types](#javascript-types)
     - [If-statements](#if-statements)
     - [Loops](#loops)
@@ -71,7 +71,37 @@ Variable are used to save data and use it later in the code.
 
 Now save the file so we can run the code. Open a terminal again (or a new terminal in VSCode) and navigate to the same folder the file is saved in. This can be done using the `cd` command, for example: `cd Documents\javascript`  
 Once your terminal is in the same folder as your Javascript file, you can run `node filename.js`  
-If you have done everything correctly, you should see nothing.
+If you have done everything correctly, you should see nothing.  
+In the next chapter we will show you how you can 'print' things to the terminal.
+
+In general, it is good practice to use the `const` keyword instead of the `let` keyword when defining a variable. A variable defined with `const` can't be modified later and is thus constant.  
+Javascript is then able to make your code run more efficiently because it knows it doesn't have to account for variable changes for that variable.  
+If you want a modifiable variable, you will still have to use `let` of course.
+
+```js
+const test = 5
+test = 10
+```
+
+The second line is invallid because you can't reasign the `test` variable.
+
+#### Show output
+
+A lot of times you want to see the current value of a variable, to make sure your program is running correctly.  
+You do this by printing the variables to the terminal.  
+In Javascript, we can do this using the `console.log()` function.  
+
+```js
+const test = 5
+
+console.log(test)
+```
+
+Now when you save and run this code, you should finally see something:
+
+```txt
+5
+```
 
 #### Javascript functions
 
@@ -79,12 +109,12 @@ Next you will learn about functions. Functions are a piece of code that can be u
 These can be useful because you don't have to type something multiple times.
 
 ```js
-let addition = (a, b) => {
+const addition = (a, b) => {
   return a + b
 }
 
-let test1 = addition(5, 10)
-let test2 = addition(1, 0)
+const test1 = addition(5, 10)
+const test2 = addition(1, 0)
 ```
 
 The `=>` is used to define a function, called the arrow operator.  
@@ -103,25 +133,7 @@ When the function is done, you can imagine that the function call is replaced by
 
 Sometimes you will come across the following: `function addition() {}` This means the same thing, although `() => {}` is preferred. (If you really want to know why, look up 'javascript function vs arrow function')
 
-#### Show output
-
-Now when you save and run the code, you will still see nothing (If you did everything correctly)  
-To see something, for example if you want to see whether your addition function actually returns the correct value, we you to 'print' something to the terminal.  
-In Javascript, we can do this using the `console.log()` function.  
-
-```js
-let addition = (a, b) => {
-  return a + b
-}
-
-let test1 = addition(5, 10)
-let test2 = addition(1, 0)
-
-console.log(test1)
-console.log(test2)
-```
-
-Now when you save and run this code, you should finally see something:
+The above should output the following:
 
 ```txt
 15
@@ -133,20 +145,38 @@ Now when you save and run this code, you should finally see something:
 So far we have only worked with numbers, but Javascript can work with more variable types:
 
 - A string is a piece of text that can contain multiple characters. Strings are defined by using the quotes `''`
+
+```js
+const string = 'This is a string'
+```
+
 - An array is a type that can hold multiple variables inside itself. Arrays are defined by using the square brackets `[]`
-- Object are basically advanced arrays, you will learn more about it later in this tutorial. Their defined by curly brackets `{}` 
+
+```js
+const array = [1, 2, 3]
+```
+- Object are basically advanced arrays, you will learn more about it later in this tutorial. Their defined by curly brackets `{}`
+
+```js
+const object = {}
+```
+
 - Functions are also their own type.
+
+```js
+const function = (a, b) => {return a+b}
+```
+
 - A boolean is a type that can only be `true` or `false`
+
+```js
+const boolean = true
+```
+
 - When something is not (yet) defined, its type is `undefined`
 
 ```js
-let number = 1                  // Number type
-let string = 'This is a string' // String type
-let array = [1, 2, 3]           // Array type
-let object = {}                 // Object type
-let function = () => {}         // Function type
-let boolean = true              // Boolean type
-let nothing                     // Undefined type
+const nothing
 ```
 
 #### If-statements
@@ -155,15 +185,13 @@ Sometimes you want to do different things based on a certain condition.
 This can be achieved using if-statements.
 
 ```js
-let name = 'Bob'
+const name = 'Bob'
 
 if (name == 'Bob') {
   console.log('Your name is Bob')
-}
-else if (name == 'Alice') {
+} else if (name == 'Alice') {
   console.log('Your name is Alice')
-}
-else {
+} else {
   console.log('Your name is not Bob or Alice')
 }
 ```
@@ -172,26 +200,16 @@ An if-statement is created using the `if` keyword. After that you have a conditi
 A condition has to be something that computes to a boolean.  
 In this case it uses an equal operator `==` which will be `true` if the value in front is the same as the value after. Otherwise it will be `false`
 If the condition is `true` the code in the body will be executed.  
-You can chain an if-statement with an if-else-statement or an else-statement.  
-You can have multiple if-else-statements, but there can't be any code between the statements.  
+You can chain an if-statement with an else-if-statement or an else-statement.  
+You can have as many else-if-statements as you want, but only 1 if and else statement.  
 If you have an else-statement, it will be called only if all the chained statements before it are `false`
-
-```js
-if (true) {
-  ...
-}
-console.log(5) // This is invalid.
-else {
-  ...
-}
-```
 
 #### Loops
 
 Loops are used to repeat certain code until a certain conditional is met.
 
 ```js
-let countDown = 5
+const countDown = 5
 
 while (countDown > 0) {
   console.log(countDown)
@@ -213,14 +231,16 @@ Finished!
 ```
 
 The `while` loop has a condition `()` and a body `{}`  
-It will execute the code in the body, as long as the condition is still `true`  
-Each loop, the code prints the current `countDown` number, and then decrements it by 1.  
+When the code reaches the loop, it will check the condition. If the condition is `true`, the code in the body will be executed.  
+After the end of the body is reached, the condition is checked again, and if `true`, the body executed again.  
+This will happen for as long as the condition check is still `true`  
+Each loop, this code prints the current `countDown` number, and then decrements it by 1.  
 After the 5th loop, the condition `0 > 0` will be `false`, and thus the code will move on.
 
 A `for` loop is also often used, and differs slightly from a `while` loop.  
 
 ```js
-for (let countDown = 5; countDown > 0; countDown = countDown - 1) {
+for (let	 countDown = 5; countDown > 0; countDown = countDown - 1) {
   console.log(countDown)
 }
 ```
@@ -231,38 +251,24 @@ The first parts `let countDown = 5` is only executed once, at the start of the l
 The second part `countDown > 0` is the condition, this is the same as the while loop.  
 The third part `countDown = countDown - 1` is executed after each loop.:
 
-If you want to do something for every item in an array, a `for in` or `for of` loop can be useful.  
+If you want to do something for every item in an array, a `for of` loop can be useful.  
 
 ```js
 const array = [1, 2, 3]
-
-for (const index in array) {
-  console.log(array[index])
-}
 
 for (const item of array) {
   console.log(item)
 }
 ```
 
-A `for in/of` loop needs to have a variable before the in/of, this is the variable that can be used to access the current item.  
-The variable after the in/of needs to be something that contains other variable. These are mostly arrays, but also some objects.  
-A `for in` loop uses the index of each item, while the `for of` loop uses the items directly.  
-Which one is useful depends on what you're going to do with it.
+A `for of` loop needs to have a variable before the `of`, this is the variable that can be used to access the current item.  
+The variable after the `of` needs to be something that contains other variable. These are mostly arrays, but also some objects.  
+The loop will execute the body for each item in the `array` and each loop the `item` variable will be the current item of the `array`
 
 #### General tips
 
 If you want to help yourself and other people understand your code better, you can use comments.  
 Comments can be created using `//` and everything after that is completely ignored by Javascript.
-
-In general, it is good practice to use the `const` keyword instead of the `let` keyword when defining a variable. A variable defined with `const` can't be modified later and is thus constant.  
-Javascript is then able to make your code run more efficiently because it knows it doesn't have to account for variable changes for that variable.  
-If you want a modifiable variable, you will still have to use `let` of course.
-
-```js
-const test = 5
-test = 10 // This line is not valid, as test is constant.
-```
 
 #### Node Package manager
 
@@ -282,7 +288,7 @@ After this, the `mineflayer` variable can be used to access all the features of 
 
 ### Creating a bot
 
-Now that you know the basis of Javascript, Node and NPM, you're ready to start creating your first bot!  
+Now that you know the basics of Javascript, Node and NPM, you're ready to start creating your first bot!  
 If you don't know any of the terms above, you should go back to the [previous section](#javascript-basics)
 
 Below is the absolute minimum necessary to create a Mineflayer bot.
@@ -300,7 +306,10 @@ If you want to choose which server you want your bot to connect to, you have to 
 ```js
 const mineflayer = require('mineflayer')
 
-const options = {host: 'localhost', port: 25565} // Change this to the ip and port you want
+const options = {
+  host: 'localhost',  // Change this to the ip you want.
+  port: 25565 // Change this to the port you want.
+}
 
 const bot = mineflayer.createBot(options)
 ```
@@ -314,7 +323,10 @@ The keys can then be used to retrieve their value.
 You can have multiple key-value pairs by separating them by commas.
 
 ```js
-const object = {number: 10, another: 5}
+const object = {
+  number: 10,
+  another: 5
+}
 
 console.log(object.number) // This will print the value 10
 ```
@@ -375,7 +387,7 @@ Not only basics variables like numbers and strings can be given as an argument.
 Functions can also be passed as a variable.
 
 ```js
-function welcome() {
+const welcome = () => {
   bot.chat('hi!')
 }
 
@@ -432,6 +444,51 @@ When the consuming ends, the function that is passed along is called.
 We can then do other things that we want to do after.  
 The function could also be called when an error occurs.
 
+#### Correct and incorrect aproach
+
+Below is an example of a bot that will craft oak logs into oak planks and then into sticks.
+
+Incorect aproach ❌:
+
+```js
+const plankRecipe = bot.recipesFor(5)[0] // Get the first recipe for item id 5, which is oak planks.
+bot.craft(plankRecipe, 1) // ❌ start crafting oak planks.
+
+const stickRecipe = bot.recipesFor(280)[0] // Get the first recipe for item id 5, which is sticks.
+bot.craft(stickRecipe, 1) // ❌ start crafting sticks.
+```
+
+Correct approach with callbacks ✔️:
+
+```js
+const plankRecipe = bot.recipesFor(5)[0]
+
+bot.craft(plankRecipe, 1, null, function (err) {
+  // After bot.craft(plankRecipe, ...) is finished, this callback is called and we continue. ✔️
+  if (err !== null) { // Check if an error happened.
+    bot.chat(err.message)
+    return
+  } else {
+    const stickRecipe = bot.recipesFor(280)[0]
+
+    bot.craft(stickRecipe, 1, null, function (err) {
+      // After bot.craft(stickRecipe, ...) is finished, this callback is called and we continue. ✔️
+      if (err !== null) { // Check if an error happened.
+        bot.chat(err.message)
+        return
+      }
+      bot.chat('Crafting Sticks finished')
+    })
+  }
+})
+```
+
+The reason the incorrect approach is wrong is because when `bot.craft()` is called, the code will continue below while the bot is crafting.  
+By the time the code reaches the second `bot.craft()`, the first probably hasn't finished yet, which means the wanted resource is not available yet.  
+Using callbacks can fix this because they will only be called after the `bot.craft()` is finished.
+
+More on the [bot.craft()](https://mineflayer.prismarine.js.org/#/api?id=botcraftrecipe-count-craftingtable-callback) method.
+
 ## Advanced
 
 The following concepts aren't necessary to create a Mineflayer bot, but they can be useful to understand and create more advanced bots.  
@@ -455,9 +512,9 @@ myPromise.then((successMessage) => {
   console.log(successMessage) 
 })
 
-myPromise.catch((failureMessage) => {
-  console.log(failureMessage)
-})
+myPromise.catch((error) => {
+  console.log(error)
+}
 ```
 
 The above codes uses what is called a Promise. A promise promises it will eventually complete.  
@@ -475,8 +532,8 @@ const myPromise = new Promise((resolve, reject) => {
   }, 1000) 
 }).then((successMessage) => {
   console.log(successMessage) 
-}).catch((failureMessage) => {
-  console.log(failureMessage)
+}).catch((error) => {
+  console.log(error)
 })
 ```
 
@@ -506,7 +563,7 @@ bot.chatAddPattern(
   'Someone says hello'
 )
 
-function hi () {
+const hi =  () => {
   bot.chat('Hi!')
 }
 
@@ -532,7 +589,7 @@ bot.chatAddPattern(
   'Custom chat event'
 )
 
-function logger (rank, username, message) {
+const logger = (rank, username, message) => {
   console.log(`${username} said ${message}`)
 }
 
