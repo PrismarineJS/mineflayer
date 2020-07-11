@@ -47,14 +47,14 @@ interface BotEvents {
       message: string,
       translate: string | null,
       jsonMsg: string,
-      matches: Array<String> | null
+      matches: Array<string> | null
     ) => void;
   whisper: (
       username: string,
       message: string,
       translate: string | null,
       jsonMsg: string,
-      matches: Array<String> | null
+      matches: Array<string> | null
     ) => void;
   actionBar: (jsonMsg: string) => void;
   error: (err: Error) => void;
@@ -304,7 +304,7 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
 
   writeBook(
     slot: number,
-    pages: Array<String>,
+    pages: Array<string>,
     callback?: (err?: Error) => void
   ): void;
 
@@ -555,7 +555,7 @@ export class Painting {
   name: string;
   direction: Vec3;
 
-  constructor(id: number, position: Vec3, name: String, direction: Vec3);
+  constructor(id: number, position: Vec3, name: string, direction: Vec3);
 }
 
 interface StorageEvents {
