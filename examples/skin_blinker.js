@@ -18,7 +18,7 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
-var show = true
+let show = true
 
 function toggleSkin () {
   show = !show
@@ -35,7 +35,5 @@ function toggleSkin () {
 }
 
 bot.on('spawn', () => {
-  setInterval(() => {
-    toggleSkin()
-  }, 500)
+  setInterval(toggleSkin, 500)
 })
