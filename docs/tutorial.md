@@ -19,8 +19,10 @@
   - [Passing along functions](#passing-along-functions)
   - [Listening for an event](#listening-for-an-event)
   - [Callbacks](#callbacks)
+    - [Correct and incorrect aproach](#correct-and-incorrect-aproach)
 - [Advanced](#advanced)
   - [Asynchronousy](#asynchronousy)
+  - [Loop over an object](#loop-over-an-object)
   - [Creating an event from chat](#creating-an-event-from-chat)
     - [Answer Hello Bot](#answer-hello-bot)
     - [Custom Chat](#custom-chat)
@@ -74,8 +76,8 @@ Once your terminal is in the same folder as your Javascript file, you can run `n
 If you have done everything correctly, you should see nothing.  
 In the next chapter we will show you how you can 'print' things to the terminal.
 
-In general, it is good practice to use the `const` keyword instead of the `let` keyword when defining a variable. A variable defined with `const` can't be modified later and is thus constant.  
-Javascript is then able to make your code run more efficiently because it knows it doesn't have to account for variable changes for that variable.  
+In general, it is good practice to use the `const` keyword instead of the `let` keyword when defining a variable. A variable defined with `const` can't be modified later and thus is a constant.  
+Javascript is then able to make your code run more efficiently because it knows it doesn't have to account for value changes for that variable.  
 If you want a modifiable variable, you will still have to use `let` of course.
 
 ```js
@@ -83,7 +85,7 @@ const test = 5
 test = 10
 ```
 
-The second line is invallid because you can't reasign the `test` variable.
+The second line is invallid because you can't reassign the `test` variable.
 
 #### Show output
 
@@ -115,6 +117,9 @@ const addition = (a, b) => {
 
 const test1 = addition(5, 10)
 const test2 = addition(1, 0)
+
+console.log(test1)
+console.log(test2)
 ```
 
 The `=>` is used to define a function, called the arrow operator.  
@@ -164,7 +169,7 @@ const object = {}
 - Functions are also their own type.
 
 ```js
-const function = (a, b) => {return a+b}
+const function = (a, b) => { return a+b }
 ```
 
 - A boolean is a type that can only be `true` or `false`
@@ -177,6 +182,7 @@ const boolean = true
 
 ```js
 const nothing
+const notDefined = undefined
 ```
 
 #### If-statements
@@ -240,7 +246,7 @@ After the 5th loop, the condition `0 > 0` will be `false`, and thus the code wil
 A `for` loop is also often used, and differs slightly from a `while` loop.  
 
 ```js
-for (let	 countDown = 5; countDown > 0; countDown = countDown - 1) {
+for (let countDown = 5; countDown > 0; countDown = countDown - 1) {
   console.log(countDown)
 }
 ```
@@ -337,7 +343,7 @@ The value can be anything, even other object. If the value is a function, that f
 You can also create the object in-line.
 
 ```js
-const bot = mineflayer.createBot({host: 'localhost', port: 25565})
+const bot = mineflayer.createBot({ host: 'localhost', port: 25565 })
 ```
 
 #### Logging in
@@ -536,6 +542,66 @@ const myPromise = new Promise((resolve, reject) => {
   console.log(error)
 })
 ```
+
+### Loop over an object
+
+The `for of` loop described in the [loops](#loops) chapter can also be used to loop over an object.
+
+If we have the following object:
+
+```js
+const obj = {
+  a: 1,
+  b: 2,
+  c: 3
+}
+```
+
+The following will loop over all the values of the object.
+
+```js
+for (const value of Object.values(obj)) {
+  console.log(value)
+}
+```
+
+```txt
+1
+2
+3
+```
+
+This will loop over all the keys of the object.
+
+```js
+for (const key of Object.keys(obj)) {
+  console.log(key)
+}
+```
+
+```txt
+a
+b
+c
+```
+
+You can also loop over the keys and values at the same time. You will have to destructure the variables first, explained [here.](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment)
+
+```js
+for (const [key, value] of Object.entries(obj)) {
+  console.log(key + ', ' + value);
+}
+```
+
+```txt
+a, 1
+b, 2
+c, 3
+```
+
+These loops are possible because `Object.values(obj)` and `Object.keys(obj)` both return an array of the objects values and keys respectively.  
+`Object.entries(obj)` returns an array where each item is an array with 2 items: a key and its corresponding value.  
+It's important to know that, unlike the `Object.values()` and `Object.keys()` functions, the `Object.entries()` function does not guarantee that the order is the same as the order when the object was defined.
 
 ### Creating an event from chat
 
