@@ -11,7 +11,6 @@
     - [Javascript types](#javascript-types)
     - [If-statements](#if-statements)
     - [Loops](#loops)
-    - [General tips](#general-tips)
     - [Node Package manager](#node-package-manager)
   - [Creating a bot](#creating-a-bot)
     - [Javascript objects](#javascript-objects)
@@ -82,10 +81,13 @@ If you want a modifiable variable, you will still have to use `let` of course.
 
 ```js
 const test = 5
-test = 10
+test = 10 // This line is invalid.
 ```
 
 The second line is invallid because you can't reassign the `test` variable.
+
+If you want to help yourself and other people understand your code better, you can use comments.  
+Comments can be created using `//` and everything after that is completely ignored by Javascript.
 
 #### Show output
 
@@ -152,37 +154,37 @@ So far we have only worked with numbers, but Javascript can work with more varia
 - A string is a piece of text that can contain multiple characters. Strings are defined by using the quotes `''`
 
 ```js
-const string = 'This is a string'
+const string = 'This is a string' // string type
 ```
 
 - An array is a type that can hold multiple variables inside itself. Arrays are defined by using the square brackets `[]`
 
 ```js
-const array = [1, 2, 3]
+const array = [1, 2, 3] // array type
 ```
 - Object are basically advanced arrays, you will learn more about it later in this tutorial. Their defined by curly brackets `{}`
 
 ```js
-const object = {}
+const object = {} // object type
 ```
 
 - Functions are also their own type.
 
 ```js
-const function = (a, b) => { return a+b }
+const function = (a, b) => { return a+b } // function type
 ```
 
 - A boolean is a type that can only be `true` or `false`
 
 ```js
-const boolean = true
+const boolean = true // boolean type
 ```
 
 - When something is not (yet) defined, its type is `undefined`
 
 ```js
-const nothing
-const notDefined = undefined
+const nothing                // undefined type
+const notDefined = undefined // undefined type
 ```
 
 #### If-statements
@@ -219,7 +221,7 @@ const countDown = 5
 
 while (countDown > 0) {
   console.log(countDown)
-  countDown = countDown - 1
+  countDown = countDown - 1 // Decrement countDown by 1
 }
 
 console.log('Finished!')
@@ -271,11 +273,6 @@ A `for of` loop needs to have a variable before the `of`, this is the variable t
 The variable after the `of` needs to be something that contains other variable. These are mostly arrays, but also some objects.  
 The loop will execute the body for each item in the `array` and each loop the `item` variable will be the current item of the `array`
 
-#### General tips
-
-If you want to help yourself and other people understand your code better, you can use comments.  
-Comments can be created using `//` and everything after that is completely ignored by Javascript.
-
 #### Node Package manager
 
 The last thing you need to know is how to use the [Node Package Manager](https://www.npmjs.com/).  
@@ -290,7 +287,9 @@ Then, Node can access installed modules by using the `require()` function.
 const mineflayer = require('mineflayer')
 ```
 
-After this, the `mineflayer` variable can be used to access all the features of Mineflayer.
+After this, the `mineflayer` variable can be used to access all the features of Minef#### General tips
+
+layer.
 
 ### Creating a bot
 
@@ -602,6 +601,11 @@ c, 3
 These loops are possible because `Object.values(obj)` and `Object.keys(obj)` both return an array of the objects values and keys respectively.  
 `Object.entries(obj)` returns an array where each item is an array with 2 items: a key and its corresponding value.  
 It's important to know that, unlike the `Object.values()` and `Object.keys()` functions, the `Object.entries()` function does not guarantee that the order is the same as the order when the object was defined.
+
+There is also a `for in` loop. However, you will most often want to use `for of` instead of `for in` because there are key differences.  
+The `for in` loop loops over the keys of an object instead of the values. (The index incase it is an array)
+However, it doesn't loop only over its own keys, but also keys from other object it 'inherits' from, which can be confusing or unwanted. More on this [here.](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...in)
+In general, you'll want to use `for of` instead of `for in` so make sure you don't confuse the two.
 
 ### Creating an event from chat
 
