@@ -1621,7 +1621,7 @@ Gives the bot the specified item in the specified inventory slot.
 If called twice on the same slot before first callback exceeds, first callback will have an error parameter
 
  * `slot` is in inventory window coordinates (where 36 is the first quickbar slot, etc.).
- * `item` can presumably be anything, specified with arbitrary metadata, nbtdata, etc.
+ * `item` is a [prismarine-item](https://github.com/PrismarineJS/prismarine-item) instance specified with arbitrary metadata, nbtdata, etc.
     If `item` is `null`, the item at the specified slot is deleted.
  * `callback(err)` (optional) is a callback which gets fired when the servers sets the slot
 
