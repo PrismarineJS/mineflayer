@@ -3,7 +3,6 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [unstable API : bot._](#unstable-api--bot_)
-  - [bot._chunkColumn(x, z)](#bot_chunkcolumnx-z)
   - [bot._client](#bot_client)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->

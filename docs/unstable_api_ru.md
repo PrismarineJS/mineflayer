@@ -7,7 +7,6 @@
 Чтобы посмотреть актуальную информацию, Вы можете посмотреть оригинальную документацию [нестабильного API](unstable_api.md).
 
 - [нестабильное API : bot._](#unstable-api--bot_)
-  - [bot._chunkColumn(x, z)](#bot_chunkcolumnx-z)
   - [bot._client](#bot_client)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
