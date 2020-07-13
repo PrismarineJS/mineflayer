@@ -31,8 +31,8 @@ bot.once('spawn', function () {
 
 function nearestEntity (type) {
   let id, entity, dist
-  const best = null
-  const bestDistance = null
+  let best = null
+  let bestDistance = null
 
   for (id in bot.entities) {
     entity = bot.entities[id]
