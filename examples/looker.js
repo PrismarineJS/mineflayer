@@ -12,7 +12,7 @@ if (process.argv.length < 4 || process.argv.length > 6) {
 const bot = mineflayer.createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
-  username: process.argv[4] ? process.argv[4] : 'totem',
+  username: process.argv[4] ? process.argv[4] : 'looker',
   password: process.argv[5]
 })
 
@@ -21,7 +21,7 @@ bot.once('spawn', function () {
     var entity = nearestEntity()
     if (entity) {
       if (entity.type === 'player') {
-        bot.lookAt(entity.position.offset(0, 1, 0))
+        bot.lookAt(entity.position.offset(0, 1.6, 0))
       } else if (entity.type === 'mob') {
         bot.lookAt(entity.position)
       }
@@ -30,18 +30,24 @@ bot.once('spawn', function () {
 })
 
 function nearestEntity (type) {
-  var id, entity, dist
-  var best = null
-  var bestDistance = null
+  const id, entity, dist
+  const best = null
+  const bestDistance = null
+  
   for (id in bot.entities) {
     entity = bot.entities[id]
+    
     if (type && entity.type !== type) continue
+    
     if (entity === bot.entity) continue
+    
     dist = bot.entity.position.distanceTo(entity.position)
+    
     if (!best || dist < bestDistance) {
       best = entity
       bestDistance = dist
     }
   }
+  
   return best
 }
