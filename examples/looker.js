@@ -18,8 +18,8 @@ const bot = mineflayer.createBot({
 
 bot.once('spawn', function () {
   setInterval(() => {
-    var entity = nearestEntity()
-    if (entity) {
+    const entity = nearestEntity()
+    if (entity !== null) {
       if (entity.type === 'player') {
         bot.lookAt(entity.position.offset(0, 1.6, 0))
       } else if (entity.type === 'mob') {
@@ -29,19 +29,14 @@ bot.once('spawn', function () {
   }, 50)
 })
 
-function nearestEntity (type) {
-  let id, entity, dist
+function nearestEntity () {
   let best = null
   let bestDistance = null
 
-  for (id in bot.entities) {
-    entity = bot.entities[id]
-
-    if (type && entity.type !== type) continue
-
+  for (const entity in Object.values(bot.entities)) {
     if (entity === bot.entity) continue
 
-    dist = bot.entity.position.distanceTo(entity.position)
+    const dist = bot.entity.position.distanceTo(entity.position)
 
     if (!best || dist < bestDistance) {
       best = entity
