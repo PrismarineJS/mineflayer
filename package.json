@@ -23,7 +23,6 @@
   "dependencies": {
     "minecraft-data": "^2.62.1",
     "minecraft-protocol": "^1.13.0",
-    "mojangson": "^0.2.4",
     "prismarine-biome": "^1.1.0",
     "prismarine-block": "^1.6.0",
     "prismarine-chat": "^1.0.0",
@@ -34,7 +33,6 @@
     "prismarine-recipe": "^1.1.0",
     "prismarine-windows": "^1.5.0",
     "protodef": "^1.8.0",
-    "sprintf-js": "^1.1.1",
     "vec3": "^0.1.5"
   },
   "devDependencies": {
