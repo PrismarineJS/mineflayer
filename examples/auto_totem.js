@@ -1,6 +1,6 @@
 /*
  * This script will automaticly set if a totem is in the inventory the totem in the off-hand.
- * It checks for a totem every secound.
+ * It checks for a totem every tick.
  */
 const mineflayer = require('mineflayer')
 
