@@ -425,7 +425,7 @@ To remove specific listener you can use `bot.removeListener()` method.
 - `bot.once(eventName, listener)`
   Execute the `listener` function, only once, the first time the event named `eventName` triggered.
 - `bot.removeListener(eventName, listener)`
-  Removes the specified `listener` for the event named `eventName`. This will not work with annonymous functions, as they don't have a name.
+  Removes the specified `listener` for the event named `eventName`. This will only work with named functions `function myNamedFunc() {}`
 
 Not only bot object, [`Chest`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerchest), [`Furnace`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerfurnace), [`Dispenser`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerdispenser), [`EnchantmentTable`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerenchantmenttable), [`Villager`](http://mineflayer.prismarine.js.org/#/api?id=mineflayervillager) object also have their own events!
 
@@ -435,7 +435,7 @@ In Mineflayer, callbacks are often used to handle errors.
 
 ```js
 bot.consume((error) => {
-  if (error != undefined) { // If no error occored, 'error' will be undefined. If it is, an error occured.
+  if (error) { // This checks if an error occurred.
     console.log(error)
   } else {
     console.log('Finished consuming')
@@ -469,14 +469,14 @@ const plankRecipe = bot.recipesFor(5)[0]
 
 bot.craft(plankRecipe, 1, null, (error) => {
   // After bot.craft(plankRecipe, ...) is finished, this callback is called and we continue. ✔️
-  if (error != undefined) { // Check if an error happened.
+  if (error) { // Check if an error happened.
     console.log(error)
   } else {
     const stickRecipe = bot.recipesFor(280)[0]
 
     bot.craft(stickRecipe, 1, null, (error) => {
       // After bot.craft(stickRecipe, ...) is finished, this callback is called and we continue. ✔️
-      if (error != undefined) { // Check if an error happened.
+      if (error) { // Check if an error happened.
         console.log(error)
       } else {
         bot.chat('Crafting Sticks finished')
