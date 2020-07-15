@@ -1,3 +1,8 @@
+## 2.24.0
+* Fix getBlockAt when outside bounds
+* Improve documentation and examples
+* Add ability to change the skin parts of a bot (thanks @Naomi-alt)
+
 ## 2.23.0
 * 1.16 support
 * fix noteheard (thanks @Naomi-alt)
