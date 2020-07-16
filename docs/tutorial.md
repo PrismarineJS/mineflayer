@@ -217,7 +217,7 @@ If you have an else-statement, it will be called only if all the chained stateme
 Loops are used to repeat certain code until a certain conditional is met.
 
 ```js
-const countDown = 5
+let countDown = 5
 
 while (countDown > 0) {
   console.log(countDown)
@@ -287,9 +287,7 @@ Then, Node can access installed modules by using the `require()` function.
 const mineflayer = require('mineflayer')
 ```
 
-After this, the `mineflayer` variable can be used to access all the features of Minef#### General tips
-
-layer.
+After this, the `mineflayer` variable can be used to access all the features of Mineflayer.
 
 ### Creating a bot
 
@@ -304,6 +302,7 @@ const mineflayer = require('mineflayer')
 const bot = mineflayer.createBot()
 ```
 
+If you run this example, you'll notice that your program will not stop. If you want to stop your currently running program, press `Ctrl` + `c`  
 However, this bot isn't quite useful, as by default this will connect to a Minecraft server running on your machine with the port 25565.  
 If you want to choose which server you want your bot to connect to, you have to pass along a few options.
 
@@ -426,7 +425,7 @@ To remove specific listener you can use `bot.removeListener()` method.
 - `bot.once(eventName, listener)`
   Execute the `listener` function, only once, the first time the event named `eventName` triggered.
 - `bot.removeListener(eventName, listener)`
-  Removes the specified `listener` for the event named `eventName`.
+  Removes the specified `listener` for the event named `eventName`. In order to use this you either need to define your function with `function myNamedFunc() {}` or put your function in a variable with `const myNamedFunc = () => {}`. You can then use `myNamedFunc` in the listener argument.
 
 Not only bot object, [`Chest`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerchest), [`Furnace`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerfurnace), [`Dispenser`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerdispenser), [`EnchantmentTable`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerenchantmenttable), [`Villager`](http://mineflayer.prismarine.js.org/#/api?id=mineflayervillager) object also have their own events!
 
@@ -436,7 +435,7 @@ In Mineflayer, callbacks are often used to handle errors.
 
 ```js
 bot.consume((error) => {
-  if (error) {
+  if (error) { // This checks if an error occurred.
     console.log(error)
   } else {
     console.log('Finished consuming')
@@ -468,21 +467,20 @@ Correct approach with callbacks ✔️:
 ```js
 const plankRecipe = bot.recipesFor(5)[0]
 
-bot.craft(plankRecipe, 1, null, function (err) {
+bot.craft(plankRecipe, 1, null, (error) => {
   // After bot.craft(plankRecipe, ...) is finished, this callback is called and we continue. ✔️
-  if (err !== null) { // Check if an error happened.
-    bot.chat(err.message)
-    return
+  if (error) { // Check if an error happened.
+    console.log(error)
   } else {
     const stickRecipe = bot.recipesFor(280)[0]
 
-    bot.craft(stickRecipe, 1, null, function (err) {
+    bot.craft(stickRecipe, 1, null, (error) => {
       // After bot.craft(stickRecipe, ...) is finished, this callback is called and we continue. ✔️
-      if (err !== null) { // Check if an error happened.
-        bot.chat(err.message)
-        return
+      if (error) { // Check if an error happened.
+        console.log(error)
+      } else {
+        bot.chat('Crafting Sticks finished')
       }
-      bot.chat('Crafting Sticks finished')
     })
   }
 })
@@ -603,7 +601,7 @@ These loops are possible because `Object.values(obj)` and `Object.keys(obj)` bot
 It's important to know that, unlike the `Object.values()` and `Object.keys()` functions, the `Object.entries()` function does not guarantee that the order is the same as the order when the object was defined.
 
 There is also a `for in` loop. However, you will most often want to use `for of` instead of `for in` because there are key differences.  
-The `for in` loop loops over the keys of an object instead of the values. (The index incase it is an array)
+The `for in` loop loops over the keys of an object instead of the values. (The index in case it is an array)
 However, it doesn't loop only over its own keys, but also keys from other object it 'inherits' from, which can be confusing or unwanted. More on this [here.](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...in)
 In general, you'll want to use `for of` instead of `for in` so make sure you don't confuse the two.
 
