@@ -33,3 +33,6 @@ bot.inventory.items() returns an array of the bot's items. You can use a recursi
 
 Enabled debug mode https://github.com/PrismarineJS/mineflayer#debug
 
+### I want to avoid disconnection even in case of server lag, how can I achieve this ?
+
+One way is to increase the [checkTimeoutInterval](https://github.com/PrismarineJS/node-minecraft-protocol/blob/master/docs/API.md#mccreateclientoptions) option (to set in createBot) to an higher value (for example `300*1000` which is 5min instead of the default 30s). If you still get disconnected, you can auto reconnect using something like this example https://github.com/PrismarineJS/mineflayer/blob/master/examples/reconnector.js
