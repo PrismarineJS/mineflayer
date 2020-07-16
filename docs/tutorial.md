@@ -425,7 +425,7 @@ To remove specific listener you can use `bot.removeListener()` method.
 - `bot.once(eventName, listener)`
   Execute the `listener` function, only once, the first time the event named `eventName` triggered.
 - `bot.removeListener(eventName, listener)`
-  Removes the specified `listener` for the event named `eventName`. This will only work with named functions `function myNamedFunc() {}`
+  Removes the specified `listener` for the event named `eventName`. In order to use this you either need to define your function with `function myNamedFunc() {}` or put your function in a variable with `const myNamedFunc = () => {}`. You can then use `myNamedFunc` in the listener argument.
 
 Not only bot object, [`Chest`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerchest), [`Furnace`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerfurnace), [`Dispenser`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerdispenser), [`EnchantmentTable`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerenchantmenttable), [`Villager`](http://mineflayer.prismarine.js.org/#/api?id=mineflayervillager) object also have their own events!
 
