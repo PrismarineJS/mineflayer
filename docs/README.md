@@ -57,6 +57,37 @@ bot.on('chat', function(username, message) {
 bot.on('error', err => console.log(err))
 ```
 
+### Modules
+
+A lot of the active development is happening inside of small npm packages which are used by mineflayer.
+
+#### The Node Way&trade;
+
+> "When applications are done well, they are just the really application-specific, brackish residue that can't be so easily abstracted away. All the nice, reusable components sublimate away onto github and npm where everybody can collaborate to advance the commons." — substack from ["how I write modules"](https://gist.github.com/substack/5075355)
+
+#### Modules
+
+These are the main modules that make up mineflayer:
+
+| module | description |
+|---|---|
+| [minecraft-protocol](https://github.com/PrismarineJS/node-minecraft-protocol) | Parse and serialize minecraft packets, plus authentication and encryption.
+| [minecraft-data](https://github.com/PrismarineJS/minecraft-data) | Language independent module providing minecraft data for minecraft clients, servers and libraries.
+| [prismarine-physics](https://github.com/PrismarineJS/prismarine-physics) | Provide the physics engine for minecraft entities
+| [prismarine-chunk](https://github.com/PrismarineJS/prismarine-chunk) | A class to hold chunk data for Minecraft
+| [node-vec3](https://github.com/PrismarineJS/node-vec3) | 3d vector math with robust unit tests
+| [prismarine-block](https://github.com/PrismarineJS/prismarine-block) | Represent a minecraft block with its associated data
+| [prismarine-chat](https://github.com/PrismarineJS/prismarine-chat) | A parser for a minecraft chat message (extracted from mineflayer)
+| [node-yggdrasil](https://github.com/PrismarineJS/node-yggdrasil) | Node.js library to interact with Mojang's authentication system, known as Yggdrasil
+| [prismarine-world](https://github.com/PrismarineJS/prismarine-world) | The core implementation of worlds for prismarine
+| [prismarine-windows](https://github.com/PrismarineJS/prismarine-windows) | Represent minecraft windows
+| [prismarine-item](https://github.com/PrismarineJS/prismarine-item) | Represent a minecraft item with its associated data
+| [prismarine-nbt](https://github.com/PrismarineJS/prismarine-nbt) | An NBT parser for node-minecraft-protocol
+| [prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe) | Represent minecraft recipes
+| [prismarine-biome](https://github.com/PrismarineJS/prismarine-biome) | Represent a minecraft biome with its associated data
+| [prismarine-entity](https://github.com/PrismarineJS/prismarine-entity) | Represent a minecraft entity
+
+
 ### Debug
 
 You can enable some protocol debugging output using `DEBUG` environment variable:
