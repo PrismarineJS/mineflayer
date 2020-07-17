@@ -19,8 +19,8 @@ First time using node.js ? You may want to start with the [tutorial](tutorial.md
 
  * Supports Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15 and 1.16.
  * Entity knowledge and tracking.
- * Block knowledge. You can query the world around you.
- * Basic physics and movement - currently blocks are either "solid" or "empty".
+ * Block knowledge. You can query the world around you. Milliseconds to find any block.
+ * Physics and movement - handle all bounding boxes
  * Attacking entities and using vehicles.
  * Inventory management.
  * Crafting, chests, dispensers, enchantment tables.
@@ -31,9 +31,26 @@ First time using node.js ? You may want to start with the [tutorial](tutorial.md
 
 ### Roadmap
 
- * Brewing stands, and anvils.
- * Better physics (support doors, ladders, water, etc).
- * Want to contribute on something important for PrismarineJS ? go to https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects
+ Checkout this page to see what are your current [projects](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects). 
+ 
+## Installation
+
+`npm install mineflayer`
+
+## Documentation
+
+| link | description |
+|---|---|
+|[tutorial](tutorial.md) | Begin with node.js and mineflayer |
+| [FAQ.md](FAQ.md) | Got a question ? go there first |
+| [api.md](api.md) [unstable_api.md](unstable_api.md) | The full API reference |
+| [history.md](history.md) | The changelog for mineflayer |
+| [examples/](https://github.com/PrismarineJS/mineflayer/tree/master/examples) | Checkout all the mineflayer examples |
+
+
+## Contribute
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) and [prismarine-contribute](https://github.com/PrismarineJS/prismarine-contribute)
 
 ## Usage
 
@@ -56,6 +73,18 @@ bot.on('chat', function(username, message) {
 });
 bot.on('error', err => console.log(err))
 ```
+
+#### More Examples
+
+| example | description |
+|---|---|
+|[viewer](https://github.com/PrismarineJS/mineflayer/tree/master/examples/viewer) | display your bot world view in the browser |
+|[chest](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chest.js) | Use chests, furnaces, dispensers, enchantment tables |
+|[digger](https://github.com/PrismarineJS/mineflayer/blob/master/examples/digger.js) | Learn how to create a simple bot that is capable of digging the block |
+|[discord](https://github.com/PrismarineJS/mineflayer/blob/master/examples/discord.js) | connect a discord bot with a mineflayer bot |
+|[jumper](https://github.com/PrismarineJS/mineflayer/blob/master/examples/jumper.js) | Learn how to move, jump, ride vehicles, attack nearby entities |
+
+And many mores in the [examples](https://github.com/PrismarineJS/mineflayer/tree/master/examples) folder
 
 ### Modules
 
@@ -102,11 +131,6 @@ set DEBUG=minecraft-protocol
 node your_script.js
 ```
 
-#### More Examples
-
- * In the [examples](https://github.com/PrismarineJS/mineflayer/tree/master/examples) folder.
- * [vogonistic's REPL bot](https://gist.github.com/vogonistic/4631678)
-
 ## Third Party Plugins
 
 Mineflayer is pluggable; anyone can create a plugin that adds an even
@@ -150,22 +174,6 @@ The most updated and useful are :
  * [hexatester/minetelegram](https://github.com/hexatester/minetelegram) -  Minecraft - Telegram bridge, build on top of mineflayer & telegraf.
  * [and hundreds more](https://github.com/PrismarineJS/mineflayer/network/dependents) - All the projects that github detected are using mineflayer
 
-## Installation
-
-`npm install mineflayer`
-
-## Documentation
-
- * See [docs/api.md](api.md).
- * See [docs/FAQ.md](FAQ.md).
- * See [docs/history.md](history.md).
- * See [examples/](https://github.com/PrismarineJS/mineflayer/tree/master/examples).
- * See [docs/unstable_api.md](unstable_api.md).
- * See [docs/CONTRIBUTING.md](CONTRIBUTING.md).
-
-## Contribute
-
-Please read https://github.com/PrismarineJS/prismarine-contribute
 
 ## Testing
 
@@ -194,15 +202,6 @@ Run `npm test -g <version>`, where `<version>` is a minecraft version like `1.12
 
 ### Testing specific test
 Run `npm test -g <test_name>`, where `<test_name>` is a name of the test like `bed`, `useChests`, `rayTrace`...
-
-## Updating to a newer protocol version
-
-1. Wait for a new version of
-   [node-minecraft-protocol](https://github.com/PrismarineJS/node-minecraft-protocol)
-   to be released which supports the new Minecraft version.
-2. `npm install --save minecraft-protocol@latest`
-3. Apply the [protocol changes](http://wiki.vg/Protocol_History) where necessary.
-4. Run the test suite. See Testing above.
 
 ## Licence
 
