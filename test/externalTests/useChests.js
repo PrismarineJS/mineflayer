@@ -60,7 +60,7 @@ module.exports = () => (bot, done) => {
         // Test that "chestLidMove" is emitted only once when opening a double chest
         let emitted = false
         const chest = bot.openChest(bot.blockAt(largeChestLocations[0]))
-        
+
         function handler (block, isOpen) {
           if (emitted) {
             assert.fail(new Error('chestLidMove emitted twice'))
