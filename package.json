@@ -33,6 +33,7 @@
     "prismarine-recipe": "^1.1.0",
     "prismarine-windows": "^1.5.0",
     "protodef": "^1.8.0",
+    "typed-emitter": "^1.2.0",
     "vec3": "^0.1.5"
   },
   "devDependencies": {
@@ -41,7 +42,6 @@
     "minecraft-wrap": "^1.2.1",
     "mocha": "^8.0.1",
     "require-self": "^0.2.3",
-    "standard": "^14.0.1",
-    "typed-emitter": "^1.2.0"
+    "standard": "^14.0.1"
   }
 }
