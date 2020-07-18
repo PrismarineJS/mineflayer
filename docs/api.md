@@ -1114,6 +1114,8 @@ Fires when a note block goes off somewhere.
 #### "pistonMove" (block, isPulling, direction)
 
 #### "chestLidMove" (block, isOpen)
+* `block`: a Block instance, the block whose lid opened
+* `isOpen`: number of players that have the chest open. 0 if it's closed
 
 #### "blockBreakProgressObserved" (block, destroyStage)
 

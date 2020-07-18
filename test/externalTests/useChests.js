@@ -57,6 +57,25 @@ module.exports = () => (bot, done) => {
         })
       },
       (cb) => {
+        // Test that "chestLidMove" is emitted only once when opening a double chest
+        let emitted = false
+        const chest = bot.openChest(bot.blockAt(largeChestLocations[0]))
+        
+        function handler (block, isOpen) {
+          if (emitted) {
+            assert.fail(new Error('chestLidMove emitted twice'))
+          } else {
+            emitted = true
+            setTimeout(() => {
+              bot.removeListener('chestLidMove', handler)
+              chest.close()
+              cb()
+            }, 500)
+          }
+        }
+        bot.on('chestLidMove', handler)
+      },
+      (cb) => {
         depositBones(smallChestLocation, 1, cb)
       },
       (cb) => {
