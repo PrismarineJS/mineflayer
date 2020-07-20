@@ -77,7 +77,7 @@ interface BotEvents {
   entityEat: (entity: Entity) => void;
   entityCrouch: (entity: Entity) => void;
   entityUncrouch: (entity: Entity) => void;
-  entityEquipmentChange: (entity: Entity) => void;
+  entityEquip: (entity: Entity) => void;
   entitySleep: (entity: Entity) => void;
   entitySpawn: (entity: Entity) => void;
   playerCollect: (collector: Entity, collected: Entity) => void;
@@ -89,6 +89,7 @@ interface BotEvents {
   entityEffect: (entity: Entity, effect: Effect) => void;
   entityEffectEnd: (entity: Entity, effect: Effect) => void;
   playerJoined: (player: Player) => void;
+  playerUpdated: (player: Player) => void;
   playerLeft: (entity: Player) => void;
   blockUpdate: (oldBlock: Block | null, newBlock: Block) => void;
   'blockUpdate:(x, y, z)': (oldBlock: Block | null, newBlock: Block) => void;
