@@ -28,12 +28,14 @@ export interface BotOptions extends ClientOptions {
   chat?: ChatLevel;
   colorsEnabled?: boolean;
   viewDistance?: ViewDistance;
+  mainHand?: MainHands;
   difficulty?: number;
   chatLengthLimit?: number;
 }
 
 export type ChatLevel = "enabled" | "commandsOnly" | "disabled";
 export type ViewDistance = "far" | "normal" | "short" | "tiny";
+export type MainHands = "left" | "right";
 
 export interface PluginOptions {
   [plugin: string]: boolean | Plugin;
@@ -449,6 +451,7 @@ export interface GameSettings {
   viewDistance: ViewDistance;
   difficulty: number;
   skinParts: SkinParts;
+  mainHand: MainHands;
 }
 
 export interface Experience {
