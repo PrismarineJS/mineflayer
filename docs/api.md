@@ -159,6 +159,7 @@
       - ["entityEquipmentChange" (entity)](#entityequipmentchange-entity)
       - ["entitySleep" (entity)](#entitysleep-entity)
       - ["entitySpawn" (entity)](#entityspawn-entity)
+      - ["itemDrop" (entity)](#itemDrop-entity)
       - ["playerCollect" (collector, collected)](#playercollect-collector-collected)
       - ["entityGone" (entity)](#entitygone-entity)
       - ["entityMoved" (entity)](#entitymoved-entity)
@@ -1035,6 +1036,7 @@ Fires when your hp or food change.
 #### "entityEquipmentChange" (entity)
 #### "entitySleep" (entity)
 #### "entitySpawn" (entity)
+#### "itemDrop" (entity)
 #### "playerCollect" (collector, collected)
 
 An entity picked up an item.
