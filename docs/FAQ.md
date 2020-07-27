@@ -40,3 +40,5 @@ One way is to increase the [checkTimeoutInterval](https://github.com/PrismarineJ
 ### How to get the lore / text of an item ?
 You can use the .nbt property of an item. prismarine-nbt nbt.simplify method may be useful
 
+### How can I send message from the console to the server?
+You can use a library like `readline` ([here](https://nodejs.org/en/knowledge/command-line/how-to-prompt-for-command-line-input/)) to read console input. Use `bot.chat` to send it.
