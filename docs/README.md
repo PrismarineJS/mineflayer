@@ -82,6 +82,7 @@ bot.on('error', err => console.log(err))
 | example | description |
 |---|---|
 |[viewer](https://github.com/PrismarineJS/mineflayer/tree/master/examples/viewer) | display your bot world view in the browser |
+|[pathfinder](https://github.com/Karang/mineflayer-pathfinder/blob/master/examples/test.js) | make your bot go to any location automatically |
 |[chest](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chest.js) | Use chests, furnaces, dispensers, enchantment tables |
 |[digger](https://github.com/PrismarineJS/mineflayer/blob/master/examples/digger.js) | Learn how to create a simple bot that is capable of digging the block |
 |[discord](https://github.com/PrismarineJS/mineflayer/blob/master/examples/discord.js) | connect a discord bot with a mineflayer bot |
