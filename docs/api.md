@@ -1243,7 +1243,7 @@ Finds the closest blocks from the given point.
    - `matching` - A function that returns true if the given block is a match. Also supports this value being a block id or array of block ids.
    - `useExtraInfo` - Use extra info when matching (block entities, signs, painting), 2x slower
    - `maxDistance` - The furthest distance for the search, defaults to 16.
-   - `minCount` - Minimum blocks to find before returning the search. Default to 1. Can return less if not enough blocks are found exploring the whole area. Can return more due to some optimisations.
+   - `count` - Number of blocks to find before returning the search. Default to 1. Can return less if not enough blocks are found exploring the whole area.
 
 Returns an array (possibly empty) with the found block coordinates (not the blocks). The array is sorted (closest first)
 
