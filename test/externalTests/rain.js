@@ -6,7 +6,7 @@ module.exports = () => (bot, done) => {
     bot.test.sayEverywhere('/weather rain')
 
     let raining = true
-    bot.on('rain', () => {
+    function rainListener () {
       if (raining) {
         assert.strictEqual(bot.isRaining, true)
         bot.test.sayEverywhere('/weather clear')
@@ -15,7 +15,10 @@ module.exports = () => (bot, done) => {
       }
 
       assert.strictEqual(bot.isRaining, false)
+      bot.removeListener('rain', rainListener)
       done()
-    })
+    }
+
+    bot.on('rain', rainListener)
   }, 1000)
 }
