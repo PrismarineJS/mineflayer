@@ -12,7 +12,6 @@ module.exports = () => (bot, done) => {
     grassName = 'grass_block'
   }
 
-  bot.test.sayEverywhere('/weather thunder')
   bot.test.sayEverywhere('/fill ~-5 ~-1 ~-5 ~5 ~-1 ~5 water')
   bot.test.setInventorySlot(36, new Item(mcData.itemsByName.fishing_rod.id, 1, 0), (err) => {
     assert.ifError(err)
