@@ -475,7 +475,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
       })
 
       server.once('login', (client) => {
-        bot.time.day = 18000
+        bot.time.timeOfDay = 18000
         client.write('login', {
           entityId: 0,
           hashedSeed: [0, 0],
