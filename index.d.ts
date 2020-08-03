@@ -476,7 +476,11 @@ export interface PhysicsOptions {
 }
 
 export interface Time {
+  time: number;
+  timeOfDay: number;
   day: number;
+  isDay: boolean;
+  moonPhase: number;
   age: number;
 }
 

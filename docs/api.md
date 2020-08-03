@@ -124,7 +124,11 @@
       - [bot.food](#botfood)
       - [bot.foodSaturation](#botfoodsaturation)
       - [bot.physics](#botphysics)
+      - [bot.time.time](#bottimetime)
+      - [bot.time.timeOfDay](#bottimetimeofday)
       - [bot.time.day](#bottimeday)
+      - [bot.time.isDay](#bottimeisday)
+      - [bot.time.moonPhase](#bottimemoonphase)
       - [bot.time.age](#bottimeage)
       - [bot.quickBarSlot](#botquickbarslot)
       - [bot.inventory](#botinventory)
@@ -881,7 +885,11 @@ saturation of 5.0. Eating food increases the saturation as well as the food bar.
 Edit these numbers to tweak gravity, jump speed, terminal velocity, etc.
 Do this at your own risk.
 
-#### bot.time.day
+#### bot.time.time
+
+Total time of the world since day 0.
+
+#### bot.time.timeOfDay
 
 Time of the day, in ticks.
 
@@ -890,6 +898,22 @@ ticks in a day, making Minecraft days exactly 20 minutes long.
 
 The time of day is based on the timestamp modulo 24000. 0 is sunrise, 6000
 is noon, 12000 is sunset, and 18000 is midnight.
+
+#### bot.time.day
+
+Day of the world.
+
+#### bot.time.isDay
+
+Whether it is day or not.
+
+Based on whether the current time of day isn't between 13000 and 23000 ticks.
+
+#### bot.time.moonPhase
+
+Phase of the moon.
+
+0-7 where 0 is full moon.
 
 #### bot.time.age
 

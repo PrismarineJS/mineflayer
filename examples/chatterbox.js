@@ -137,7 +137,7 @@ bot.on('kicked', (reason) => {
 })
 
 bot.on('time', () => {
-  // bot.chat("Current time: " + bot.time.day % 24000);
+  bot.chat('Current time: ' + bot.time.timeOfDay)
 })
 bot.on('rain', () => {
   if (bot.isRaining) {
