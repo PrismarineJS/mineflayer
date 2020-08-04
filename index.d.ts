@@ -390,6 +390,7 @@ export type Dimension = "minecraft:nether" | "minecraft:overworld" | "minecraft:
 export type Difficulty = "peaceful" | "easy" | "normal" | "hard";
 
 export interface Player {
+  uuid: string;
   username: string;
   displayName: ChatMessage;
   gamemode: number;
