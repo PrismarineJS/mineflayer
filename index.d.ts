@@ -768,3 +768,10 @@ export var supportedVersions: Array<string>;
 export var testedVersions: Array<string>;
 
 export function supportFeature(feature: string, version: string): boolean;
+
+export class TaskQueue {
+  stopOnError: boolean;
+  add(cb: (cb: () => void) => void): void;
+  addSync(cb: () => void): void;
+  runAll(cb: (err?: Error) => void): void;
+}
