@@ -29,7 +29,7 @@ bot.on('spawn', () => {
   queue.addSync(() => bot.chat('Going to mine down 10 blocks')) // Support for sync functions, too.
 
   for (let i = 1; i <= 10; i++) {
-    queue.add(cb => setTimeout(cb, 1000)) // Works on any async function
+    queue.add(cb => setTimeout(cb, 1000))
     queue.add(cb => bot.dig(bot.blockAt(entity.position.offset(0, -1, 0)), cb)) // Make sure to pass the cb into the callback!
     queue.add(cb => setTimeout(cb, 50))
     queue.addSync(() => bot.chat(`Mined block ${i}`))
