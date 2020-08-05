@@ -48,6 +48,7 @@ module.exports = {
   Dispenser: require('./lib/dispenser'),
   EnchantmentTable: require('./lib/enchantment_table'),
   ScoreBoard: require('./lib/scoreboard'),
+  TaskQueue: require('./lib/taskqueue'),
   BossBar: require('./lib/bossbar'),
   supportedVersions,
   testedVersions,
