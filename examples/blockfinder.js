@@ -22,6 +22,13 @@ bot.on('chat', (username, message) => {
 
   const mcData = require('minecraft-data')(bot.version)
 
+  if (message === 'loaded') {
+    console.log(bot.entity.position)
+    bot.waitForChunksToLoad(() => {
+      bot.chat('Ready!')
+    })
+  }
+
   if (message.startsWith('find')) {
     const name = message.split(' ')[1]
     if (mcData.blocksByName[name] === undefined) {

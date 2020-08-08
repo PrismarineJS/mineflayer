@@ -1249,6 +1249,10 @@ Fires when new boss bar is updated.
 Returns the block at `point` or `null` if that point is not loaded. If `extraInfos` set to true, also returns informations about signs, paintings and block entities (slower).
 See `Block`.
 
+#### bot.waitForChunksToLoad(cb)
+
+The cb gets called when many chunks have loaded.
+
 #### bot.blockInSight(maxSteps, vectorLength)
 
 Returns the block at which bot is looking at or `null`

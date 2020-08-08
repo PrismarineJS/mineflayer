@@ -55,6 +55,18 @@ function inject (bot) {
     // and then air
   ]
 
+  const deltas3x3 = [
+    new Vec3(-1, 0, -1),
+    new Vec3(0, 0, -1),
+    new Vec3(1, 0, -1),
+    new Vec3(-1, 0, 0),
+    new Vec3(0, 0, 0),
+    new Vec3(1, 0, 0),
+    new Vec3(-1, 0, 1),
+    new Vec3(0, 0, 1),
+    new Vec3(1, 0, 1)
+  ]
+
   // eslint-disable-next-line no-unused-vars
   function resetBlocksToSuperflat (cb) {
     // console.log('reset blocks to superflat')
@@ -118,7 +130,7 @@ function inject (bot) {
         bot.creative.startFlying()
         teleport(new Vec3(0, 4, 0), cb)
       },
-      waitForChunksToLoad,
+      cb => bot.waitForChunksToLoad(cb),
       resetBlocksToSuperflat,
       (cb) => { setTimeout(cb, 1000) },
       clearInventory
@@ -206,32 +218,6 @@ function inject (bot) {
     console.log(message)
   }
 
-  var deltas3x3 = [
-    new Vec3(-1, 0, -1),
-    new Vec3(0, 0, -1),
-    new Vec3(1, 0, -1),
-    new Vec3(-1, 0, 0),
-    new Vec3(0, 0, 0),
-    new Vec3(1, 0, 0),
-    new Vec3(-1, 0, 1),
-    new Vec3(0, 0, 1),
-    new Vec3(1, 0, 1)
-  ]
-
-  function waitForChunksToLoad (cb) {
-    // check 3x3 chunks around us
-    for (let i = 0; i < deltas3x3.length; i++) {
-      if (bot.blockAt(bot.entity.position.plus(deltas3x3[i].scaled(16))) == null) {
-        // console.log(deltas3x3[i] + 'absent')
-        // keep wait
-        return setTimeout(() => {
-          waitForChunksToLoad(cb)
-        }, 100)
-      }
-    }
-    cb()
-  }
-
   function fly (delta, cb) {
     bot.creative.flyTo(bot.entity.position.plus(delta), cb)
   }
@@ -248,13 +234,21 @@ function inject (bot) {
   }
 
   function runExample (file, run, cb) {
+    let childBotName
     function joinHandler (message) {
       if (message.json.translate === 'multiplayer.player.joined') {
         bot.removeListener('message', joinHandler)
-        const childBotName = message.json.with[0].insertion
-        run(childBotName, closeExample)
+        childBotName = message.json.with[0].insertion
+        setTimeout(() => {
+          bot.chat('loaded')
+        }, 2000)
       }
     }
+    bot.on('chat', (username, message) => {
+      if (message === 'Ready!') {
+        run(childBotName, closeExample)
+      }
+    })
     bot.on('message', joinHandler)
 
     const child = spawn('node', [file, 'localhost', `${bot.test.port}`])
@@ -266,7 +260,7 @@ function inject (bot) {
     const timeout = setTimeout(() => {
       console.log('Timeout, test took too long')
       closeExample(new Error('Timeout, test took too long'))
-    }, 10000)
+    }, 20000)
 
     function closeExample (err) {
       if (timeout) clearTimeout(timeout)
