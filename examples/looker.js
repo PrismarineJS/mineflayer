@@ -33,7 +33,7 @@ function nearestEntity () {
   let best = null
   let bestDistance = null
 
-  for (const entity in Object.values(bot.entities)) {
+  for (const entity of Object.values(bot.entities)) {
     if (entity === bot.entity) continue
 
     const dist = bot.entity.position.distanceTo(entity.position)
