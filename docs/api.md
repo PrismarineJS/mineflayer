@@ -91,6 +91,7 @@
   - [Bot](#bot)
     - [mineflayer.createBot(options)](#mineflayercreatebotoptions)
     - [Properties](#properties)
+      - [bot.world](#botworld)
       - [bot.entity](#botentity)
       - [bot.entities](#botentities)
       - [bot.username](#botusername)
@@ -110,13 +111,13 @@
       - [bot.settings.colorsEnabled](#botsettingscolorsenabled)
       - [bot.settings.viewDistance](#botsettingsviewdistance)
       - [bot.settings.difficulty](#botsettingsdifficulty)
-      - [bot.settings.showCape](#botsettingsshowcape)
-      - [bot.settings.showJacket](#botsettingsshowjacket)
-      - [bot.settings.showLeftSleeve](#botsettingsleftsleeve)
-      - [bot.settings.showRightSleeve](#botsettingsshowrightsleeve)
-      - [bot.settings.showLeftPants](#botsettingsshowleftpants)
-      - [bot.settings.showRightPants](#botsettingsshowrightpants)
-      - [bot.settings.showHat](#botsettingsshowhat)
+      - [bot.settings.skinParts.showCape](#botsettingsskinpartsshowcape)
+      - [bot.settings.skinParts.showJacket](#botsettingsskinpartsshowjacket)
+      - [bot.settings.skinParts.showLeftSleeve](#botsettingsskinpartsshowleftsleeve)
+      - [bot.settings.skinParts.showRightSleeve](#botsettingsskinpartsshowrightsleeve)
+      - [bot.settings.skinParts.showLeftPants](#botsettingsskinpartsshowleftpants)
+      - [bot.settings.skinParts.showRightPants](#botsettingsskinpartsshowrightpants)
+      - [bot.settings.skinParts.showHat](#botsettingsskinpartsshowhat)
       - [bot.experience.level](#botexperiencelevel)
       - [bot.experience.points](#botexperiencepoints)
       - [bot.experience.progress](#botexperienceprogress)
@@ -181,7 +182,7 @@
       - ["hardcodedSoundEffectHeard" (soundId, soundCategory, position, volume, pitch)](#hardcodedsoundeffectheard-soundid-soundcategory-position-volume-pitch)
       - ["noteHeard" (block, instrument, pitch)](#noteheard-block-instrument-pitch)
       - ["pistonMove" (block, isPulling, direction)](#pistonmove-block-ispulling-direction)
-      - ["chestLidMove" (block, isOpen)](#chestlidmove-block-isopen)
+      - ["chestLidMove" (block, isOpen, block2)](#chestlidmove-block-isopen-block2)
       - ["blockBreakProgressObserved" (block, destroyStage)](#blockbreakprogressobserved-block-destroystage)
       - ["blockBreakProgressEnd" (block)](#blockbreakprogressend-block)
       - ["diggingCompleted" (block)](#diggingcompleted-block)
@@ -206,6 +207,7 @@
       - ["bossBarUpdated" (bossBar)](#bossbarupdated-bossbar)
     - [Functions](#functions)
       - [bot.blockAt(point, extraInfos=true)](#botblockatpoint-extrainfostrue)
+      - [bot.waitForChunksToLoad(cb)](#botwaitforchunkstoloadcb)
       - [bot.blockInSight(maxSteps, vectorLength)](#botblockinsightmaxsteps-vectorlength)
       - [bot.canSeeBlock(block)](#botcanseeblockblock)
       - [bot.findBlocks(options)](#botfindblocksoptions)
@@ -746,6 +748,10 @@ Create and return an instance of the class bot.
 
 ### Properties
 
+#### bot.world
+
+A sync representation of the world. Check the doc at http://github.com/PrismarineJS/prismarine-world
+
 #### bot.entity
 
 Your own entity. See `Entity`.
@@ -1248,6 +1254,10 @@ Fires when new boss bar is updated.
 
 Returns the block at `point` or `null` if that point is not loaded. If `extraInfos` set to true, also returns informations about signs, paintings and block entities (slower).
 See `Block`.
+
+#### bot.waitForChunksToLoad(cb)
+
+The cb gets called when many chunks have loaded.
 
 #### bot.blockInSight(maxSteps, vectorLength)
 
