@@ -1,0 +1,9 @@
+{
+  "name": "mineflayer-example",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "prismarine-provider-anvil": "^2.3.0"
+  },
+  "description": "A mineflayer example"
+}
