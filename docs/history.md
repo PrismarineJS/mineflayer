@@ -1,3 +1,8 @@
+## 2.25.0
+* emit chestLidMove (thanks @imharvol)
+* add options for main hand selection (thanks @Colten-Covington)
+* fix respawning columns issues (thanks @Karang)
+
 ## 2.24.0
 * Fix getBlockAt when outside bounds
 * Improve documentation and examples

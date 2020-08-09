@@ -28,6 +28,11 @@ const bot = mineflayer.createBot({
 bot.on('chat', (username, message) => {
   if (username === bot.username) return
   switch (message) {
+    case 'loaded':
+      bot.waitForChunksToLoad(() => {
+        bot.chat('Ready!')
+      })
+      break
     case 'list':
       sayItems()
       break

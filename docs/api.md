@@ -91,6 +91,7 @@
   - [Bot](#bot)
     - [mineflayer.createBot(options)](#mineflayercreatebotoptions)
     - [Properties](#properties)
+      - [bot.world](#botworld)
       - [bot.entity](#botentity)
       - [bot.entities](#botentities)
       - [bot.username](#botusername)
@@ -110,13 +111,13 @@
       - [bot.settings.colorsEnabled](#botsettingscolorsenabled)
       - [bot.settings.viewDistance](#botsettingsviewdistance)
       - [bot.settings.difficulty](#botsettingsdifficulty)
-      - [bot.settings.showCape](#botsettingsshowcape)
-      - [bot.settings.showJacket](#botsettingsshowjacket)
-      - [bot.settings.showLeftSleeve](#botsettingsleftsleeve)
-      - [bot.settings.showRightSleeve](#botsettingsshowrightsleeve)
-      - [bot.settings.showLeftPants](#botsettingsshowleftpants)
-      - [bot.settings.showRightPants](#botsettingsshowrightpants)
-      - [bot.settings.showHat](#botsettingsshowhat)
+      - [bot.settings.skinParts.showCape](#botsettingsskinpartsshowcape)
+      - [bot.settings.skinParts.showJacket](#botsettingsskinpartsshowjacket)
+      - [bot.settings.skinParts.showLeftSleeve](#botsettingsskinpartsshowleftsleeve)
+      - [bot.settings.skinParts.showRightSleeve](#botsettingsskinpartsshowrightsleeve)
+      - [bot.settings.skinParts.showLeftPants](#botsettingsskinpartsshowleftpants)
+      - [bot.settings.skinParts.showRightPants](#botsettingsskinpartsshowrightpants)
+      - [bot.settings.skinParts.showHat](#botsettingsskinpartsshowhat)
       - [bot.experience.level](#botexperiencelevel)
       - [bot.experience.points](#botexperiencepoints)
       - [bot.experience.progress](#botexperienceprogress)
@@ -124,7 +125,11 @@
       - [bot.food](#botfood)
       - [bot.foodSaturation](#botfoodsaturation)
       - [bot.physics](#botphysics)
+      - [bot.time.time](#bottimetime)
+      - [bot.time.timeOfDay](#bottimetimeofday)
       - [bot.time.day](#bottimeday)
+      - [bot.time.isDay](#bottimeisday)
+      - [bot.time.moonPhase](#bottimemoonphase)
       - [bot.time.age](#bottimeage)
       - [bot.quickBarSlot](#botquickbarslot)
       - [bot.inventory](#botinventory)
@@ -156,7 +161,7 @@
       - ["entityEat" (entity)](#entityeat-entity)
       - ["entityCrouch" (entity)](#entitycrouch-entity)
       - ["entityUncrouch" (entity)](#entityuncrouch-entity)
-      - ["entityEquipmentChange" (entity)](#entityequipmentchange-entity)
+      - ["entityEquip" (entity)](#entityequip-entity)
       - ["entitySleep" (entity)](#entitysleep-entity)
       - ["entitySpawn" (entity)](#entityspawn-entity)
       - ["itemDrop" (entity)](#itemDrop-entity)
@@ -178,7 +183,7 @@
       - ["hardcodedSoundEffectHeard" (soundId, soundCategory, position, volume, pitch)](#hardcodedsoundeffectheard-soundid-soundcategory-position-volume-pitch)
       - ["noteHeard" (block, instrument, pitch)](#noteheard-block-instrument-pitch)
       - ["pistonMove" (block, isPulling, direction)](#pistonmove-block-ispulling-direction)
-      - ["chestLidMove" (block, isOpen)](#chestlidmove-block-isopen)
+      - ["chestLidMove" (block, isOpen, block2)](#chestlidmove-block-isopen-block2)
       - ["blockBreakProgressObserved" (block, destroyStage)](#blockbreakprogressobserved-block-destroystage)
       - ["blockBreakProgressEnd" (block)](#blockbreakprogressend-block)
       - ["diggingCompleted" (block)](#diggingcompleted-block)
@@ -203,6 +208,7 @@
       - ["bossBarUpdated" (bossBar)](#bossbarupdated-bossbar)
     - [Functions](#functions)
       - [bot.blockAt(point, extraInfos=true)](#botblockatpoint-extrainfostrue)
+      - [bot.waitForChunksToLoad(cb)](#botwaitforchunkstoloadcb)
       - [bot.blockInSight(maxSteps, vectorLength)](#botblockinsightmaxsteps-vectorlength)
       - [bot.canSeeBlock(block)](#botcanseeblockblock)
       - [bot.findBlocks(options)](#botfindblocksoptions)
@@ -724,6 +730,7 @@ Create and return an instance of the class bot.
  * keepAlive : send keep alive packets : default to true
  * checkTimeoutInterval : default to `30*1000` (30s), check if keepalive received at that period, disconnect otherwise.
  * loadInternalPlugins : defaults to true
+ * storageBuilder : an optional function, takes as argument version and worldName and return an instance of something with the same API as prismarine-provider-anvil. Will be used to save the world.
  * plugins : object : defaults to {}
    - pluginName : false : don't load internal plugin with given name ie. `pluginName`
    - pluginName : true : load internal plugin with given name ie. `pluginName` even though loadInternalplugins is set to false
@@ -742,6 +749,10 @@ Create and return an instance of the class bot.
  * chatLengthLimit : the maximum amount of characters that can be sent in a single message. If this is not set, it will be 100 in < 1.11 and 256 in >= 1.11.
 
 ### Properties
+
+#### bot.world
+
+A sync representation of the world. Check the doc at http://github.com/PrismarineJS/prismarine-world
 
 #### bot.entity
 
@@ -882,7 +893,11 @@ saturation of 5.0. Eating food increases the saturation as well as the food bar.
 Edit these numbers to tweak gravity, jump speed, terminal velocity, etc.
 Do this at your own risk.
 
-#### bot.time.day
+#### bot.time.time
+
+Total time of the world since day 0.
+
+#### bot.time.timeOfDay
 
 Time of the day, in ticks.
 
@@ -891,6 +906,22 @@ ticks in a day, making Minecraft days exactly 20 minutes long.
 
 The time of day is based on the timestamp modulo 24000. 0 is sunrise, 6000
 is noon, 12000 is sunset, and 18000 is midnight.
+
+#### bot.time.day
+
+Day of the world.
+
+#### bot.time.isDay
+
+Whether it is day or not.
+
+Based on whether the current time of day isn't between 13000 and 23000 ticks.
+
+#### bot.time.moonPhase
+
+Phase of the moon.
+
+0-7 where 0 is full moon.
 
 #### bot.time.age
 
@@ -1033,7 +1064,7 @@ Fires when your hp or food change.
 #### "entityEat" (entity)
 #### "entityCrouch" (entity)
 #### "entityUncrouch" (entity)
-#### "entityEquipmentChange" (entity)
+#### "entityEquip" (entity)
 #### "entitySleep" (entity)
 #### "entitySpawn" (entity)
 #### "itemDrop" (entity)
@@ -1115,7 +1146,10 @@ Fires when a note block goes off somewhere.
 
 #### "pistonMove" (block, isPulling, direction)
 
-#### "chestLidMove" (block, isOpen)
+#### "chestLidMove" (block, isOpen, block2)
+* `block`: a Block instance, the block whose lid opened. The right block if it's a double chest
+* `isOpen`: number of players that have the chest open. 0 if it's closed
+* `block2`: a Block instance, the other half of the block whose lid opened. null if it's not a double chest
 
 #### "blockBreakProgressObserved" (block, destroyStage)
 
@@ -1224,6 +1258,10 @@ Fires when new boss bar is updated.
 Returns the block at `point` or `null` if that point is not loaded. If `extraInfos` set to true, also returns informations about signs, paintings and block entities (slower).
 See `Block`.
 
+#### bot.waitForChunksToLoad(cb)
+
+The cb gets called when many chunks have loaded.
+
 #### bot.blockInSight(maxSteps, vectorLength)
 
 Returns the block at which bot is looking at or `null`
@@ -1242,7 +1280,7 @@ Finds the closest blocks from the given point.
    - `matching` - A function that returns true if the given block is a match. Also supports this value being a block id or array of block ids.
    - `useExtraInfo` - Use extra info when matching (block entities, signs, painting), 2x slower
    - `maxDistance` - The furthest distance for the search, defaults to 16.
-   - `minCount` - Minimum blocks to find before returning the search. Default to 1. Can return less if not enough blocks are found exploring the whole area. Can return more due to some optimisations.
+   - `count` - Number of blocks to find before returning the search. Default to 1. Can return less if not enough blocks are found exploring the whole area.
 
 Returns an array (possibly empty) with the found block coordinates (not the blocks). The array is sorted (closest first)
 

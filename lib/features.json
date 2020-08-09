@@ -188,5 +188,10 @@
       "name": "dimensionIsAString",
       "description": "description is a string",
       "versions": ["1.16"]
+    },
+    {
+      "name": "doesntHaveChestType",
+      "description": "chests don't have a type property",
+      "versions": ["1.8", "1.9", "1.10", "1.11", "1.12"]
     }
   ]
