@@ -1,3 +1,6 @@
+## 2.27.0
+* add heldItemChanged
+
 ## 2.26.0
 * use and expose prismarine-world as bot.world
 * add itemDrop event (thanks @ImHarvol)
