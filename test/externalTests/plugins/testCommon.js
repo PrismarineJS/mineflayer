@@ -239,9 +239,10 @@ function inject (bot) {
       if (message.json.translate === 'multiplayer.player.joined') {
         bot.removeListener('message', joinHandler)
         childBotName = message.json.with[0].insertion
+        bot.chat(`/tp ${childBotName} 50 4 0`)
         setTimeout(() => {
           bot.chat('loaded')
-        }, 2000)
+        }, 5000)
       }
     }
     bot.on('chat', (username, message) => {
