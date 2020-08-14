@@ -1,3 +1,6 @@
+## 2.28.0
+* add nearestEntity function (thanks @Karang)
+
 ## 2.27.0
 * add heldItemChanged
 
