@@ -164,7 +164,7 @@
       - ["entityEquip" (entity)](#entityequip-entity)
       - ["entitySleep" (entity)](#entitysleep-entity)
       - ["entitySpawn" (entity)](#entityspawn-entity)
-      - ["itemDrop" (entity)](#itemDrop-entity)
+      - ["itemDrop" (entity)](#itemdrop-entity)
       - ["playerCollect" (collector, collected)](#playercollect-collector-collected)
       - ["entityGone" (entity)](#entitygone-entity)
       - ["entityMoved" (entity)](#entitymoved-entity)
@@ -206,6 +206,7 @@
       - ["bossBarCreated" (bossBar)](#bossbarcreated-bossbar)
       - ["bossBarDeleted" (bossBar)](#bossbardeleted-bossbar)
       - ["bossBarUpdated" (bossBar)](#bossbarupdated-bossbar)
+      - ["heldItemChanged" (heldItem)](#helditemchanged-helditem)
     - [Functions](#functions)
       - [bot.blockAt(point, extraInfos=true)](#botblockatpoint-extrainfostrue)
       - [bot.waitForChunksToLoad(cb)](#botwaitforchunkstoloadcb)
@@ -216,6 +217,7 @@
       - [bot.canDigBlock(block)](#botcandigblockblock)
       - [bot.recipesFor(itemType, metadata, minResultCount, craftingTable)](#botrecipesforitemtype-metadata-minresultcount-craftingtable)
       - [bot.recipesAll(itemType, metadata, craftingTable)](#botrecipesallitemtype-metadata-craftingtable)
+      - [bot.nearestEntity(match = (entity) => { return true })](#botnearestentitymatch--entity---return-true-)
     - [Methods](#methods)
       - [bot.end()](#botend)
       - [bot.quit(reason)](#botquitreason)
@@ -1313,6 +1315,10 @@ with `metadata`.
 #### bot.recipesAll(itemType, metadata, craftingTable)
 
 The same as bot.recipesFor except that it does not check wether the bot has enough materials for the recipe.
+
+#### bot.nearestEntity(match = (entity) => { return true })
+
+Return the nearest entity to the bot, matching the function (default to all entities). Return null if no entity is found.
 
 ### Methods
 
