@@ -1,3 +1,14 @@
+## 2.27.0
+* add heldItemChanged
+
+## 2.26.0
+* use and expose prismarine-world as bot.world
+* add itemDrop event (thanks @ImHarvol)
+* fix bot.fish callback (thanks @GroobleDierne)
+* parse entity metadata for crouching (thanks @IdanHo)
+* fix bot.time.day (thanks @Naomi-alt)
+* improve find blocks options (thanks @Karang)
+
 ## 2.25.0
 * emit chestLidMove (thanks @imharvol)
 * add options for main hand selection (thanks @Colten-Covington)

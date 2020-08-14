@@ -27,26 +27,43 @@
  * Активация блоков и использование предметов.
  * Чат.
 
-### Планируется:
+### Цели
 
- * Взаимодействия со стойками для брони, наковальнями.
- * Улучшенная физика (поддержка дверей, лестниц, воды и т.д).
- * Хочешь внести свой вклад в развитие PrismarineJS? Прочитай https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects
+ Посмотрите на наши большие [проекты](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects). 
+ 
+## Установка
 
-## Как использовать:
+`npm install mineflayer`
 
-Если версия не указана, она будет выбрана автоматически. Вы также можете установить свою версию,
-например `version:"1.8"`.
+## Документация
+
+| Ссылка | Описание |
+|---|---|
+|[Туториал](tutorial.md) | Знакомство с node.js и mineflayer |
+|[FAQ](FAQ.md) | Есть вопрос? Сначало посмотрите это |
+|[API](api.md) [Нестабильный API](unstable_api.md) | API |
+|[История](history.md) | История изменений mineflayer |
+|[Примеры](https://github.com/PrismarineJS/mineflayer/tree/master/examples) | Посмотреть на все примеры |
+
+## Сделать вклад в развитие Mineflayer
+
+Пожалуйста, прочитайте https://github.com/PrismarineJS/prismarine-contribute
+
+## Использование
+
+Если не выбрать версию, то она будет выбрана автоматически. (Может привести к ошибкам)
+Пример: `version:"1.8"`.
 
 ### Пример
+
 ```js
 var mineflayer = require('mineflayer');
 var bot = mineflayer.createBot({
-  host: "localhost", // optional
-  port: 25565,       // optional
+  host: "localhost", 
+  port: 25565,
   username: "email@example.com", // почта и пароль требуются только для
-  password: "12345678",          // online-mode=true серверов
-  version: false                 // если значение false, версия выбирается автоматически. Вы также можете установить нужную версию, например `version:"1.8"`.
+  password: "12345678",          // "взломанных" серверов
+  version: false                 // если значение false, версия выбирается автоматически. (Не рекомендуется) Вы также можете установить нужную версию, например "1.8".
 });
 bot.on('chat', function(username, message) {
   if (username === bot.username) return;
@@ -55,10 +72,44 @@ bot.on('chat', function(username, message) {
 bot.on('error', err => console.log(err))
 ```
 
+#### Больше примеров
+
+| Пример | Описание |
+|---|---|
+|[Смотрящий](https://github.com/PrismarineJS/mineflayer/tree/master/examples/viewer) | показывает мир сервера от лица бота |
+|[Поиск пути](https://github.com/Karang/mineflayer-pathfinder/blob/master/examples/test.js) | Заставляет бота идти в нужную локацию |
+|[Сундуки](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chest.js) | Использование сундуков, печей, раздатчиков и т.д. |
+|[Шахтер](https://github.com/PrismarineJS/mineflayer/blob/master/examples/digger.js) | Как заставить бота копать |
+|[Дискорд](https://github.com/PrismarineJS/mineflayer/blob/master/examples/discord.js) | Соединить дискорд бота с mineflayer ботом |
+|[Прыгун](https://github.com/PrismarineJS/mineflayer/blob/master/examples/jumper.js) | Как заставить бота ходить, прыгать, атаковать ближайших сущностей, и много чего ещё. |
+
+Больше примеров можно найти тут: [(GitHub)](https://github.com/PrismarineJS/mineflayer/tree/master/examples)
+
+#### Модули
+
+Модули, которые использует MineFlayer:
+
+| Модуль | Описание |
+|---|---|
+| [Minecraft-protocol](https://github.com/PrismarineJS/node-minecraft-protocol) | Управление Майнкрафт пакетами
+| [Minecraft-data](https://github.com/PrismarineJS/minecraft-data) | Информация о майнкрафте для серверов, модулей, и так далее 
+| [Prismarine-physics](https://github.com/PrismarineJS/prismarine-physics) | Физика
+| [Prismarine-chunk](https://github.com/PrismarineJS/prismarine-chunk) | Чанки
+| [Node-vec3](https://github.com/PrismarineJS/node-vec3) | Vec3
+| [Prismarine-block](https://github.com/PrismarineJS/prismarine-block) | Информация о майнкрафт блоках
+| [Prismarine-chat](https://github.com/PrismarineJS/prismarine-chat) | Получить сообщения из чата
+| [Node-yggdrasil](https://github.com/PrismarineJS/node-yggdrasil) | Библиотека для обращения к серверам аунтификации Mojang.
+| [Prismarine-world](https://github.com/PrismarineJS/prismarine-world) | Майнкрафт миры
+| [Prismarine-windows](https://github.com/PrismarineJS/prismarine-windows) | Окна майнкрафта
+| [Prismarine-item](https://github.com/PrismarineJS/prismarine-item) | Информация о предметах в майнкрафте
+| [Prismarine-nbt](https://github.com/PrismarineJS/prismarine-nbt) | Получить NBT данные
+| [Prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe) | Рецепты крафта майнкрафт
+| [Prismarine-biome](https://github.com/PrismarineJS/prismarine-biome) | Информация о майнкрафт биомах
+| [Prismarine-entity](https://github.com/PrismarineJS/prismarine-entity) | Сущности майнкрафта
+
 ### Откладка
 
-Вы можете включить откладку, используя `DEBUG`:
-
+Вы можете включить откладку пакетоа, используя переменную `DEBUG`:
 ```bash
 DEBUG="minecraft-protocol" node [...]
 ```
@@ -69,54 +120,43 @@ set DEBUG=minecraft-protocol
 node your_script.js
 ```
 
-#### Больше примеров:
-
- * В папке [examples](https://github.com/PrismarineJS/mineflayer/tree/master/examples).
- * [vogonistic's REPL bot](https://gist.github.com/vogonistic/4631678)
-
 ## Сторонние плагины:
 
 Mineflayer имеет возможность установки плагинов; каждый может создать плагин, который добавляет
 более высокоуровневое API для Mineflayer.
 
- * [navigate](https://github.com/andrewrk/mineflayer-navigate/) - навигация при помощи поиска пути [YouTube Demo](https://www.youtube.com/watch?v=O6lQdmRz8eE)
- * [radar](https://github.com/andrewrk/mineflayer-radar/) - веб-радар, который использует canvas и socket.io. [YouTube Demo](https://www.youtube.com/watch?v=FjDmAfcVulQ)
- * [blockfinder](https://github.com/Darthfett/mineflayer-blockFinder) - поиск блоков в мире
- * [scaffold](https://github.com/andrewrk/mineflayer-scaffold) - добратся до заданной точке, даже
- если требуется ломать или разрушать блоки [YouTube Demo](http://youtu.be/jkg6psMUSE0)
- * [auto-auth](https://github.com/G07cha/MineflayerAutoAuth) - аутентификация  бота, используя чат
+Самые полезные а также часто обновляемые плагины:
+
+ * [pathfinder](https://github.com/Karang/mineflayer-pathfinder) - поиск пути
+ * [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer) - показывает мир сервера от лица бота
+ * [web-inventory](https://github.com/ImHarvol/mineflayer-web-inventory) - веб инвентарь бота
+ * [statemachine](https://github.com/TheDudeFromCI/mineflayer-statemachine) - API для создание ИИ
  * [Armor Manager](https://github.com/G07cha/MineflayerArmorManager) - автоматическое взаимодействие с броней
+ 
+ Но посмотрите и эти плагины:
+ 
+ * [Naviagte](https://github.com/andrewrk/mineflayer-navigate/) - навигация при помощи поиска пути [(Демонстрация)](https://www.youtube.com/watch?v=O6lQdmRz8eE)
+ * [Radar](https://github.com/andrewrk/mineflayer-radar/) - веб-радар, который использует canvas и socket.io. [(Демонстрация)](https://www.youtube.com/watch?v=FjDmAfcVulQ)
+ * [BlockFinder](https://github.com/Darthfett/mineflayer-blockFinder) - поиск блоков в мире
+ * [Scaffold](https://github.com/andrewrk/mineflayer-scaffold) - добратся до заданной точке, даже
+   если требуется ломать или разрушать блоки [(Демонстрация)](http://youtu.be/jkg6psMUSE0)
+ * [Auto-Auth](https://github.com/G07cha/MineflayerAutoAuth) - аутентификация  бота, используя чат
  * [Bloodhound](https://github.com/Nixes/mineflayer-bloodhound) - отслеживание нанесенного урона существам
- * [tps](https://github.com/SiebeDW/mineflayer-tps) - получить текущий TPS
+ * [TPS](https://github.com/SiebeDW/mineflayer-tps) - получить текущий TPS
 
 ## Проекты, которые используют Mineflayer
 
- * [rom1504/rbot](https://github.com/rom1504/rbot)
-   - [YouTube - building a spiral staircase](https://www.youtube.com/watch?v=UM1ZV5200S0)
-   - [YouTube - replicating a building](https://www.youtube.com/watch?v=0cQxg9uDnzA)
- * [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot)
- * [vogonistic/voxel](https://github.com/vogonistic/mineflayer-voxel) - визуализация, по которой
- определяется, что видит бот
- * [JonnyD/Skynet](https://github.com/JonnyD/Skynet) -  логгирование активности игрока при помощи API
- * [MinecraftChat](https://github.com/rom1504/MinecraftChat) (последняя версия с открытым исходным кодом, сделанная AlexKvazos) -  Веб чат-клиент <https://minecraftchat.net/>
- * [Cheese Bot](https://github.com/Minecheesecraft/Cheese-Bot) - Плагин на основе бота с удобным GUI. Сделано при помощи Node-Webkit. http://bot.ezcha.net/
- * [Chaoscraft](https://github.com/schematical/chaoscraft) - Minecraft бот, использующий генетические алгоритмы, смотрите [its youtube videos](https://www.youtube.com/playlist?list=PLLkpLgU9B5xJ7Qy4kOyBJl5J6zsDIMceH)
-
-## Установка
-
-`npm install mineflayer`
-
-## Документация
-
- * Смотрите [docs/api.md](api_ru.md).
- * Смотрите [docs/history.md](history.md).
- * Смотрите [examples/](https://github.com/PrismarineJS/mineflayer/tree/master/examples).
- * Смотрите [docs/unstable_api.md](unstable_api.md).
- * Смотрите [docs/contribute.md](contribute.md).
-
-## Сделать вклад в развитие Mineflayer
-
-Пожалуйста, прочитайте https://github.com/PrismarineJS/prismarine-contribute
+ * [RBot от Rom1504](https://github.com/rom1504/rbot)
+   - [YouTube - строительство лестницы](https://www.youtube.com/watch?v=UM1ZV5200S0)
+   - [YouTube - создание постройки](https://www.youtube.com/watch?v=0cQxg9uDnzA)
+ * [HelperBot от Darthfett](https://github.com/Darthfett/Helperbot)
+ * [Voxel от Vogonistic](https://github.com/vogonistic/mineflayer-voxel) - визуализация мира от лица бота
+ * [Skynet от JonnyD](https://github.com/JonnyD/Skynet) -  логгирование активности игрока при помощи API
+ * [MinecraftChat от AlexKvakoz](https://github.com/rom1504/MinecraftChat) - Веб чат-клиент
+ * [CheeseBot от Ezcha](https://github.com/Minecheesecraft/Cheese-Bot) - Плагин на основе бота с удобным пользовательским интерфейсом. Сделано при помощи Node-Webkit.
+ * [ChaosCraft от Schematical](https://github.com/schematical/chaoscraft) - Minecraft бот, использующий генетические алгоритмы, смотрите [его видео] (https://www.youtube.com/playlist?list=PLLkpLgU9B5xJ7Qy4kOyBJl5J6zsDIMceH)
+ * [MineTelegram от HexaTester](https://github.com/hexatester/minetelegram) -  Бот, управляемый через телеграм
+ * [И еще много других](https://github.com/PrismarineJS/mineflayer/network/dependents) - All the projects that github detected are using mineflayer
 
 ## Тесты
 
@@ -136,18 +176,15 @@ Mineflayer имеет возможность установки плагинов
 
 Где "/full/path/to/" - это полное название пути
 
-### В конце
+### Протестировать все
 
-Запустите: `npm test`
+Напишите `npm test`
 
-## Обновление протокола до новой версии
+### Тестирование определенной версии
+Напишите `npm test -g <version>`, где `<version>` это версия майкрафта, типа `1.12`, `1.15.2`...
 
-1. Ждите обновлений
-   [node-minecraft-protocol](https://github.com/PrismarineJS/node-minecraft-protocol),
-   которые будут поддерживать новые версии 
-2. `npm install --save minecraft-protocol@latest`
-3. Реализовать [изменение протокола](http://wiki.vg/Protocol_History), где это необходимо
-4. Запустите, используя примеры выше
+### Проверить определенный текст
+Напишите `npm test -g <test_name>`, где `<test_name>` это названия тестов, типа `bed`, `useChests`, `rayTrace`...
 
 ## Лицензия
 

@@ -194,13 +194,13 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
     itemType: number,
     metadata: number | null,
     minResultCount: number | null,
-    craftingTable: Block | null
+    craftingTable: Block | boolean | null
   ): Array<Recipe>;
 
   recipesAll(
     itemType: number,
     metadata: number | null,
-    craftingTable: Block | null
+    craftingTable: Block | boolean | null
   ): Array<Recipe>;
 
   quit(reason?: string): void;

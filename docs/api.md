@@ -1251,6 +1251,10 @@ Fires when new boss bar is deleted.
 
 Fires when new boss bar is updated.
 
+#### "heldItemChanged" (heldItem)
+
+Fires when the held item is changed.
+
 ### Functions
 
 #### bot.blockAt(point, extraInfos=true)
