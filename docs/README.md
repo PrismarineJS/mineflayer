@@ -59,18 +59,21 @@ For example `version:"1.8"`.
 
 ### Echo Example
 ```js
-var mineflayer = require('mineflayer');
+var mineflayer = require('mineflayer')
+
 var bot = mineflayer.createBot({
-  host: "localhost", // optional
+  host: 'localhost', // optional
   port: 25565,       // optional
-  username: "email@example.com", // email and password are required only for
-  password: "12345678",          // online-mode=true servers
+  username: 'email@example.com', // email and password are required only for
+  password: '12345678',          // online-mode=true servers
   version: false                 // false corresponds to auto version detection (that's the default), put for example "1.8.8" if you need a specific version
-});
-bot.on('chat', function(username, message) {
-  if (username === bot.username) return;
-  bot.chat(message);
-});
+})
+
+bot.on('chat', function (username, message) {
+  if (username === bot.username) return
+  bot.chat(message)
+})
+
 bot.on('error', err => console.log(err))
 ```
 
@@ -79,6 +82,7 @@ bot.on('error', err => console.log(err))
 | example | description |
 |---|---|
 |[viewer](https://github.com/PrismarineJS/mineflayer/tree/master/examples/viewer) | display your bot world view in the browser |
+|[pathfinder](https://github.com/Karang/mineflayer-pathfinder/blob/master/examples/test.js) | make your bot go to any location automatically |
 |[chest](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chest.js) | Use chests, furnaces, dispensers, enchantment tables |
 |[digger](https://github.com/PrismarineJS/mineflayer/blob/master/examples/digger.js) | Learn how to create a simple bot that is capable of digging the block |
 |[discord](https://github.com/PrismarineJS/mineflayer/blob/master/examples/discord.js) | connect a discord bot with a mineflayer bot |

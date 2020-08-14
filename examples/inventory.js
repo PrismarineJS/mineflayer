@@ -26,6 +26,11 @@ bot.on('chat', (username, message) => {
   if (username === bot.username) return
   const command = message.split(' ')
   switch (true) {
+    case message === 'loaded':
+      bot.waitForChunksToLoad(() => {
+        bot.chat('Ready!')
+      })
+      break
     case /^list$/.test(message):
       sayItems()
       break
