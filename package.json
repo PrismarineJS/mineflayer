@@ -35,7 +35,7 @@
     "prismarine-world": "^3.1.0",
     "protodef": "^1.8.0",
     "typed-emitter": "^1.2.0",
-    "vec3": "^0.1.5"
+    "vec3": "^0.1.6"
   },
   "devDependencies": {
     "@types/node": "^14.0.1",
