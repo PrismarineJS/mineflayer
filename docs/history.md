@@ -1,3 +1,6 @@
+## 2.28.1
+* fix findBlocks (thanks @Karang)
+
 ## 2.28.0
 * add nearestEntity function (thanks @Karang)
 
