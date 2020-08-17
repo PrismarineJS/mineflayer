@@ -54,6 +54,12 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) and [prismarine-contribute](https
 
 ## Usage
 
+**Video**
+
+A tutorial video explaining the basic set up process for a bot can be found [here.](https://www.youtube.com/watch?v=ltWosy4Z0Kw)
+
+**Getting Started**
+
 Without version specified, the version of the server will be guessed automatically, you can set a specific one using the version option.
 For example `version:"1.8"`.
 
