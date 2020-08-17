@@ -433,15 +433,17 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
 
       it('\'itemDrop\' event', function (done) {
         const itemData = {
-          blockId: 344,
-          itemCount: 1,
-          itemDamage: 0,
-          nbtData: undefined
+          itemId: 149,
+          itemCount: 5
         }
 
         server.on('login', (client) => {
           bot.on('itemDrop', (entity) => {
-            assert.strictEqual(entity.metadata[6].blockId, itemData.blockId)
+            if (bot.supportFeature('itemsAreAlsoBlocks')) {
+              assert.strictEqual(entity.metadata[6].blockId, itemData.itemId)
+            } else {
+              assert.strictEqual(entity.metadata[6].itemId, itemData.itemId)
+            }
             assert.strictEqual(entity.metadata[6].itemCount, itemData.itemCount)
             done()
           })
@@ -461,12 +463,23 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
             velocityZ: 0
           })
 
-          client.write('entity_metadata', {
+          const metadataPacket = {
             entityId: 16,
             metadata: [
-              { key: 6, type: 5, value: itemData }
+              { key: 6, type: 6, value: { itemCount: itemData.itemCount } }
             ]
-          })
+          }
+          // Versions prior to 1.13 use 5 as type field value of metadata for storing a slot. 1.13 and so on, use 6
+          // Also the structure of a slot changes from 1.12 to 1.13
+          if (bot.supportFeature('metadataType5IsSlot')) { // Uses the same versions as 'itemsAreAlsoBlocks'
+            metadataPacket.metadata[0].type = 5
+            metadataPacket.metadata[0].value.blockId = itemData.itemId
+            metadataPacket.metadata[0].value.itemDamage = 0
+          } else {
+            metadataPacket.metadata[0].value.itemId = itemData.itemId
+            metadataPacket.metadata[0].value.present = true
+          }
+          client.write('entity_metadata', metadataPacket)
         })
       })
     })
