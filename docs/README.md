@@ -11,7 +11,7 @@
 | US [English](README.md) | RU [Russian](README_RU.md) | ES [Spanish](README_ES.md) |
 |-------------------------|----------------------------|----------------------------|
 
-Create Minecraft bots with a powerful, stable, and high level JavaScript API.
+Create Minecraft bots with a powerful, stable, and high level JavaScript [API](api.md).
 
 First time using node.js ? You may want to start with the [tutorial](tutorial.md)
 
@@ -65,9 +65,9 @@ For example `version:"1.8"`.
 
 ### Echo Example
 ```js
-var mineflayer = require('mineflayer')
+const mineflayer = require('mineflayer')
 
-var bot = mineflayer.createBot({
+const bot = mineflayer.createBot({
   host: 'localhost', // optional
   port: 25565,       // optional
   username: 'email@example.com', // email and password are required only for
@@ -80,6 +80,8 @@ bot.on('chat', function (username, message) {
   bot.chat(message)
 })
 
+// Log errors and kick reasons:
+bot.on('kicked', (reason, loggedIn) => console.log(reason, loggedIn))
 bot.on('error', err => console.log(err))
 ```
 
