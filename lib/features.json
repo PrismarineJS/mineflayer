@@ -193,10 +193,5 @@
       "name": "doesntHaveChestType",
       "description": "chests don't have a type property",
       "versions": ["1.8", "1.9", "1.10", "1.11", "1.12"]
-    },
-    {
-      "name": "metadataType5IsSlot",
-      "description": "in entity metadata, the field type 5 is for a slot",
-      "versions": ["1.8", "1.9", "1.10", "1.11", "1.12"]
     }
   ]
