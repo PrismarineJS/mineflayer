@@ -248,7 +248,7 @@
       - [bot.activateEntity(entity, [callback])](#botactivateentityentity-callback)
       - [bot.consume(callback)](#botconsumecallback)
       - [bot.fish(callback)](#botfishcallback)
-      - [bot.activateItem()](#botactivateitem)
+      - [bot.activateItem(offHand=false)](#botactivateitemoffhandfalse)
       - [bot.deactivateItem()](#botdeactivateitem)
       - [bot.useOn(targetEntity)](#botuseontargetentity)
       - [bot.attack(entity)](#botattackentity)
@@ -1520,9 +1520,10 @@ Use fishing rod
 
  * `callback(error)` - called when fishing ends
 
-#### bot.activateItem()
+#### bot.activateItem(offHand=false)
 
 Activates the currently held item. This is how you eat, shoot bows, throw an egg, etc.
+Optional parameter is `true` for main hand and `false` for off hand.
 
 #### bot.deactivateItem()
 
