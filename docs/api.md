@@ -1523,7 +1523,7 @@ Use fishing rod
 #### bot.activateItem(offHand=false)
 
 Activates the currently held item. This is how you eat, shoot bows, throw an egg, etc.
-Optional parameter is `true` for main hand and `false` for off hand.
+Optional parameter is `false` for main hand and `true` for off hand.
 
 #### bot.deactivateItem()
 
