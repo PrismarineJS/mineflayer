@@ -18,6 +18,7 @@ const bot = mineflayer.createBot({
   password: process.argv[5],
   storageBuilder: ({ version, worldName }) => {
     const Anvil = require('prismarine-provider-anvil').Anvil(version)
+    worldName = worldName.replace(/:/g,'_')
     fs.mkdirSync(worldName)
     return new Anvil(worldName)
   }
