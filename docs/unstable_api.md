@@ -11,17 +11,6 @@
 
 These methods and classes are useful in some special cases but are not stable and can change at any moment.
 
-## bot._chunkColumn(x, z)
-
-Return the column at `x` and `y`. A column has :
-
- * a `blockType`
- * a `light`
- * a `skylight`
- * a `biome`
- 
-`blockType`, `light` and `skylight` are arrays of size 16.
-
 ## bot._client
 
 `bot._client` is created using [node-minecraft-protocol](https://github.com/PrismarineJS/node-minecraft-protocol).

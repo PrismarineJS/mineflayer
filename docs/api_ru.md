@@ -2,10 +2,6 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Содержание**  *сгенерировано с помощью [DocToc](https://github.com/thlorenz/doctoc)*
 
-Данный перевод был сделан добровольно, и не имеет прямого отношения к разработчикам Mineflayer.
-Данный перевод может быть неактуален, так как Mineflayer не стоит на месте и постоянно обновляется. 
-Чтобы посмотреть актуальную информацию, Вы можете обратиться к оригинальной документации [API](api.md).
-
 - [API](#api)
   - [Enums](#enums)
     - [minecraft-data](#minecraft-data)
@@ -114,13 +110,13 @@
       - [bot.settings.colorsEnabled](#botsettingscolorsenabled)
       - [bot.settings.viewDistance](#botsettingsviewdistance)
       - [bot.settings.difficulty](#botsettingsdifficulty)
-      - [bot.settings.showCape](#botsettingsshowcape)
-      - [bot.settings.showJacket](#botsettingsshowjacket)
-      - [bot.settings.showLeftSleeve](#botsettingsleftsleeve)
-      - [bot.settings.showRightSleeve](#botsettingsshowrightsleeve)
-      - [bot.settings.showLeftPants](#botsettingsshowleftpants)
-      - [bot.settings.showRightPants](#botsettingsshowrightpants)
-      - [bot.settings.showHat](#botsettingsshowhat)
+      - [bot.settings.skinParts.showCape](#botsettingsskinpartsshowcape)
+      - [bot.settings.skinParts.showJacket](#botsettingsskinpartsshowjacket)
+      - [bot.settings.skinParts.showLeftSleeve](#botsettingsskinpartsshowleftsleeve)
+      - [bot.settings.skinParts.showRightSleeve](#botsettingsskinpartsshowrightsleeve)
+      - [bot.settings.skinParts.showLeftPants](#botsettingsskinpartsshowleftpants)
+      - [bot.settings.skinParts.showRightPants](#botsettingsskinpartsshowrightpants)
+      - [bot.settings.skinParts.showHat](#botsettingsskinpartsshowhat)
       - [bot.experience.level](#botexperiencelevel)
       - [bot.experience.points](#botexperiencepoints)
       - [bot.experience.progress](#botexperienceprogress)
@@ -260,7 +256,7 @@
       - [bot.openVillager(villagerEntity)](#botopenvillagervillagerentity)
       - [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottradevillagerinstance-tradeindex-times-cb)
       - [bot.setCommandBlock(pos, command, track_output)](#botsetcommandblockpos-command-track_output)
-    - [Lower level inventory methods](#lower-level-inventory-methods)
+    - [Методы инвентаря низкого уровня](#%D0%BC%D0%B5%D1%82%D0%BE%D0%B4%D1%8B-%D0%B8%D0%BD%D0%B2%D0%B5%D0%BD%D1%82%D0%B0%D1%80%D1%8F-%D0%BD%D0%B8%D0%B7%D0%BA%D0%BE%D0%B3%D0%BE-%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D1%8F)
       - [bot.clickWindow(slot, mouseButton, mode, cb)](#botclickwindowslot-mousebutton-mode-cb)
       - [bot.putSelectedItemRange(start, end, window, slot, cb)](#botputselecteditemrangestart-end-window-slot-cb)
       - [bot.putAway(slot, cb)](#botputawayslot-cb)

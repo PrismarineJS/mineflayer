@@ -15,17 +15,6 @@
 
 Эти методы и классы могут быть полезны в особых случаях, но являются нестабильными и могут изменятся в любой момент.
 
-## bot._chunkColumn(x, z)
-
-Возвращает столбцы `x` и `y`. Столбцы содержат :
-
- * `blockType`
- * `light`
- * `skylight`
- * `biome`
- 
-`blockType`, `light` и `skylight` являются массивом, который содержит в себе 16 элементов.
-
 ## bot._client
 
 `bot._client` создан при помощи [node-minecraft-protocol](https://github.com/PrismarineJS/node-minecraft-protocol).
