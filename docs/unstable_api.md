@@ -14,7 +14,7 @@ These methods and classes are useful in some special cases but are not stable an
 
 ## bot._chunkColumn(x, z)
 
-Return the column at `x` and `y`. A column has :
+Return the column at `x` and `z`. A column has :
 
  * a `blockType`
  * a `light`
