@@ -18,4 +18,26 @@ assignees: ''
  - server: vanilla/spigot/paper #.#.#
  - node: #.#.#
 
-## Detailed description of a question
+## Clear question
+A clear question, with as much context as possible.
+What are you building? What problem are you trying to solve?
+
+## What did you try yet?
+
+Did you try any method from the API?
+Did you try any example? Any error from those?
+
+## Your current code
+
+Please put here any custom code you tried yet.
+
+```js
+
+/*
+Some code here, replace this
+*/
+
+```
+
+## Additional context
+Add any other context about the problem here.

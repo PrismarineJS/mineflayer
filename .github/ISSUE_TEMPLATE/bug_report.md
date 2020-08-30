@@ -15,14 +15,21 @@ assignees: ''
  - node: #.#.#
 
 ## Detailed description of a problem
-A clear and concise description of what the problem is.
+A clear and concise description of what the problem is, with as much context as possible.
+What are you building? What problem are you trying to solve?
+
+## What did you try yet?
+
+Did you try any method from the API?
+Did you try any example? Any error from those?
 
 ## Your current code
 ```js
 
-bot.placeBlock('grass', (err) => {
-  if (err) return bot.chat(err.message)
-})
+/*
+Some code here, replace this
+*/
+
 
 ```
 
