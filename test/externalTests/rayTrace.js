@@ -4,7 +4,7 @@ module.exports = () => (bot, done) => {
   const { position } = bot.entity
   bot.lookAt(position.offset(0, 3, 0), true, () => {
     const block = bot.blockInSight()
-    assert.strictEqual(block, undefined)
+    assert.strictEqual(block, null)
 
     bot.lookAt(position.offset(0, -3, 0), true, () => {
       const block = bot.blockInSight()
