@@ -74,6 +74,7 @@
       - [villager "ready"](#villager-ready)
       - [villager.close()](#villagerclose)
       - [villager.trades](#villagertrades)
+      - [villager.trade(tradeIndex, [times], [cb])](#villagertradetradeindex-times-cb)
     - [mineflayer.ScoreBoard](#mineflayerscoreboard)
       - [ScoreBoard.name](#scoreboardname)
       - [ScoreBoard.title](#scoreboardtitle)
@@ -649,6 +650,9 @@ Looks like:
   }
 ]
 ```
+
+#### villager.trade(tradeIndex, [times], [cb])
+Is the same as [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottradevillagerinstance-tradeindex-times-cb)
 
 ### mineflayer.ScoreBoard
 
