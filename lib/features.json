@@ -193,5 +193,10 @@
       "name": "doesntHaveChestType",
       "description": "chests don't have a type property",
       "versions": ["1.8", "1.9", "1.10", "1.11", "1.12"]
+    },
+    {
+      "name": "usesAdvCdm",
+      "description": "Packet MC|AdvCmd was incorrectly spelled in 1.8 as MC|AdvCdm",
+      "versions": ["1.8"]
     }
   ]
