@@ -21,7 +21,8 @@ const propOverrides = {
   'online-mode': 'false',
   gamemode: '1',
   'spawn-monsters': 'false',
-  'generate-structures': 'false'
+  'generate-structures': 'false',
+  'enable-command-block': 'true'
 }
 
 const Wrap = require('minecraft-wrap').Wrap
