@@ -39,6 +39,9 @@ client.on('ready', () => {
 client.on('message', message => {
   // Only handle messages in specified channel
   if (message.channel.id !== channel.id) return
+  // Ignore messages from the bot itself
+  if (message.author.id === client.user.id) return
+
   bot.chat(`${message.author.username}: ${message.content}`)
 })
 
@@ -46,7 +49,7 @@ client.on('message', message => {
 bot.on('chat', (username, message) => {
   // Ignore messages from the bot itself
   if (username === bot.username) return
-  if (!channel) return
+
   channel.send(`${username}: ${message}`)
 })
 
