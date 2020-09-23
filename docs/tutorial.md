@@ -195,9 +195,9 @@ This can be achieved using if-statements.
 ```js
 const name = 'Bob'
 
-if (name == 'Bob') {
+if (name === 'Bob') {
   console.log('Your name is Bob')
-} else if (name == 'Alice') {
+} else if (name === 'Alice') {
   console.log('Your name is Alice')
 } else {
   console.log('Your name is not Bob or Alice')
@@ -206,7 +206,7 @@ if (name == 'Bob') {
 
 An if-statement is created using the `if` keyword. After that you have a condition between the round brackets `()` followed by the body between the curly brackets `{}`
 A condition has to be something that computes to a boolean.  
-In this case it uses an equal operator `==` which will be `true` if the value in front is the same as the value after. Otherwise it will be `false`
+In this case it uses an equal operator `===` which will be `true` if the value in front is the same as the value after. Otherwise it will be `false`
 If the condition is `true` the code in the body will be executed.  
 You can chain an if-statement with an else-if-statement or an else-statement.  
 You can have as many else-if-statements as you want, but only 1 if and else statement.  
