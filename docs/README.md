@@ -85,6 +85,20 @@ bot.on('kicked', (reason, loggedIn) => console.log(reason, loggedIn))
 bot.on('error', err => console.log(err))
 ```
 
+### See what your bot is doing
+
+Thanks to [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer) project, it's possible to display in a browser window what your bot is doing.
+Just run `npm install prismarine-viewer` and add this to your bot:
+```js
+const mineflayerViewer = require('prismarine-viewer').mineflayer
+bot.once('spawn', () => {
+  mineflayerViewer(bot, { port: 3007 })
+})
+```
+And you'll get a *live* view looking like this:
+
+[<img src="https://prismarine.js.org/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarine.js.org/prismarine-viewer/)
+
 #### More Examples
 
 | example | description |
