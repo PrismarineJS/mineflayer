@@ -92,7 +92,7 @@ Just run `npm install prismarine-viewer` and add this to your bot:
 ```js
 const mineflayerViewer = require('prismarine-viewer').mineflayer
 bot.once('spawn', () => {
-  mineflayerViewer(bot, { port: 3007 })
+  mineflayerViewer(bot, { port: 3007, firstPerson: true })
 })
 ```
 And you'll get a *live* view looking like this:
