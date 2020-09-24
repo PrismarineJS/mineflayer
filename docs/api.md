@@ -265,7 +265,7 @@
       - [bot.openEnchantmentTable(enchantmentTableBlock)](#botopenenchantmenttableenchantmenttableblock)
       - [bot.openVillager(villagerEntity)](#botopenvillagervillagerentity)
       - [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottradevillagerinstance-tradeindex-times-cb)
-      - [bot.setCommandBlock(pos, command, track_output, [flags])](#botsetcommandblockpos-command-track_output-flags)
+      - [bot.setCommandBlock(pos, command, track_output, [mode])](#botsetcommandblockpos-command-track_output-mode)
     - [Lower level inventory methods](#lower-level-inventory-methods)
       - [bot.clickWindow(slot, mouseButton, mode, cb)](#botclickwindowslot-mousebutton-mode-cb)
       - [bot.putSelectedItemRange(start, end, window, slot, cb)](#botputselecteditemrangestart-end-window-slot-cb)
@@ -1608,7 +1608,7 @@ Returns an `Villager` instance which represents the trading window you are openi
 
 Uses the open `villagerInstance` to trade.
 
-#### bot.setCommandBlock(pos, command, track_output, [flags])
+#### bot.setCommandBlock(pos, command, track_output, [mode])
 
 Set a command block `command` at `pos`.
 
