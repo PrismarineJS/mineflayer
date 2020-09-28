@@ -1,3 +1,8 @@
+## 2.29.0
+* Add hand parameter to activateItem (thanks @Karang)
+* remove _chunkColumn from the api (bot.world should now be used)
+* Handle MC|AdvCmd misspelling (thanks @ImHarvol)
+
 ## 2.28.1
 * fix findBlocks (thanks @Karang)
 
