@@ -22,7 +22,7 @@ bot.on('chat', (username, message) => {
 
   const armorStand = bot.nearestEntity(e => e.mobType === 'Armor Stand' && bot.entity.position.distanceTo(e.position) < 4)
   if (!armorStand) {
-    bot.chat("No armor stands nearby!")
+    bot.chat('No armor stands nearby!')
     return
   }
 
@@ -40,7 +40,7 @@ bot.on('chat', (username, message) => {
     }
 
     if (!armor) {
-      bot.chat("I have no armor items in my inventory!")
+      bot.chat('I have no armor items in my inventory!')
       return
     }
 
