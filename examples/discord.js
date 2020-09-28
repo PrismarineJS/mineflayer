@@ -1,6 +1,7 @@
 /*
  * This example is an a very simple way how to connect a discord bot with a mineflayer bot.
  * For this example you will need discord.js installed. You can install with: npm install discord.js
+ * Note that discord.js v12 or newer is required.
  * You need to do this before running this example:
  * - You need a discord token
  * - You need to get the id of the channel you want to use
@@ -21,27 +22,36 @@ const mineflayer = require('mineflayer')
 const bot = mineflayer.createBot({
   host: process.argv[4],
   port: parseInt(process.argv[5]),
-  username: process.argv[6] ? process.argv[5] : 'discord',
+  username: process.argv[6] || 'discord',
   password: process.argv[7]
 })
 
 client.on('ready', () => {
   console.log(`The discord bot logged in! Username: ${client.user.username}!`)
-  channel = client.channels.find(x => x.id === channel)
+  channel = client.channels.cache.get(channel)
   if (!channel) {
     console.log(`I could not find the channel (${process.argv[3]})!\nUsage : node discord.js <discord bot token> <channel id> <host> <port> [<name>] [<password>]`)
     process.exit(1)
   }
 })
 
-client.on('message', msg => {
-  bot.chat(`${msg.author.username}: ${msg.content}`)
+// Redirect Discord messages to in-game chat
+client.on('message', message => {
+  // Only handle messages in specified channel
+  if (message.channel.id !== channel.id) return
+  // Ignore messages from the bot itself
+  if (message.author.id === client.user.id) return
+
+  bot.chat(`${message.author.username}: ${message.content}`)
 })
 
+// Redirect in-game messages to Discord channel
 bot.on('chat', (username, message) => {
+  // Ignore messages from the bot itself
   if (username === bot.username) return
-  if (!channel) return
+
   channel.send(`${username}: ${message}`)
 })
 
+// Login Discord bot
 client.login(process.argv[2])
