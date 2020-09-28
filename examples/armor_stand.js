@@ -18,7 +18,7 @@ const bot = mineflayer.createBot({
 
 bot.on('chat', (username, message) => {
   const args = message.split(' ')
-  if (args[0] != 'equip') return
+  if (args[0] !== 'equip' && args[0] !== 'unequip') return
 
   const armorStand = bot.nearestEntity(e => e.mobType === 'Armor Stand' && bot.entity.position.distanceTo(e.position) < 4)
   if (!armorStand) {
@@ -26,26 +26,38 @@ bot.on('chat', (username, message) => {
     return
   }
 
-  switch (args[1]) {
-    case 'helmet':
-      bot.activateEntityAt(armorStand, armorStand.position.offset(0, 1.8, 0), onError)
-      break
+  if (args[0] === 'equip') {
+    let armor
 
-    case 'chestplate':
-      bot.activateEntityAt(armorStand, armorStand.position.offset(0, 1.5, 0), onError)
-      break
+    if (args[1] === 'helmet') {
+      armor = bot.inventory.items().find(item => item.name.includes('helmet'))
+    } else if (args[1] === 'chestplate') {
+      armor = bot.inventory.items().find(item => item.name.includes('chestplate'))
+    } else if (args[1] === 'leggings') {
+      armor = bot.inventory.items().find(item => item.name.includes('leggings'))
+    } else if (args[1] === 'boots') {
+      armor = bot.inventory.items().find(item => item.name.includes('boots'))
+    }
 
-    case 'leggings':
-      bot.activateEntityAt(armorStand, armorStand.position.offset(0, 0.9, 0), onError)
-      break
+    if (!armor) {
+      bot.chat("I have no armor items in my inventory!")
+      return
+    }
 
-    case 'boots':
-      bot.activateEntityAt(armorStand, armorStand.position.offset(0, 0.1, 0), onError)
-      break
+    bot.equip(armor, 'hand', () => {
+      bot.activateEntityAt(armorStand, armorStand.position)
+    })
+  } else if (args[0] === 'unequip') {
+    bot.unequip('hand', () => {
+      if (args[1] === 'helmet') {
+        bot.activateEntityAt(armorStand, armorStand.position.offset(0, 1.8, 0))
+      } else if (args[1] === 'chestplate') {
+        bot.activateEntityAt(armorStand, armorStand.position.offset(0, 1.2, 0))
+      } else if (args[1] === 'leggings') {
+        bot.activateEntityAt(armorStand, armorStand.position.offset(0, 0.75, 0))
+      } else if (args[1] === 'boots') {
+        bot.activateEntityAt(armorStand, armorStand.position.offset(0, 0.1, 0))
+      }
+    })
   }
 })
-
-function onError(err) {
-  if (err)
-    bot.chat("Failed to equip armor on the armor stand!")
-}
