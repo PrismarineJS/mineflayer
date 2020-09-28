@@ -246,6 +246,7 @@
       - [bot.placeBlock(referenceBlock, faceVector, cb)](#botplaceblockreferenceblock-facevector-cb)
       - [bot.activateBlock(block, [callback])](#botactivateblockblock-callback)
       - [bot.activateEntity(entity, [callback])](#botactivateentityentity-callback)
+      - [bot.activateEntityAt(entity, position, [callback])](#botactivateentityatentity-callback)
       - [bot.consume(callback)](#botconsumecallback)
       - [bot.fish(callback)](#botfishcallback)
       - [bot.activateItem(offHand=false)](#botactivateitemoffhandfalse)
@@ -1506,6 +1507,14 @@ Punch a note block, open a door, etc.
 Activate an entity, useful for villager for example.
 
  * `entity` - the entity to activate
+ * `callback(err)` - (optional) called when the entity has been activated
+
+#### bot.activateEntityAt(entity, position, [callback])
+
+Activate an entity at the given position, useful for armor stands.
+
+ * `entity` - the entity to activate
+ * `position` - the world position to click at
  * `callback(err)` - (optional) called when the entity has been activated
 
 #### bot.consume(callback)
