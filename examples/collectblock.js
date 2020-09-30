@@ -1,3 +1,6 @@
+/**
+ * A quick and easy implementation of the collect block plugin. (Requires mineflayer-pathfinder and mineflayer-collectblock)
+ */
 const mineflayer = require('mineflayer')
 const pathfinder = require('mineflayer-pathfinder').pathfinder
 const collectBlock = require('mineflayer-collectblock').plugin
@@ -6,11 +9,6 @@ if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node collector.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
-
-/**
- * A quick and easy implementation of the collect block plugin. (Requires mineflayer-pathfinder and mineflayer-collectblock)
- */
-const mineflayer = require('mineflayer') 
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node collectBlock.js <host> <port> [<name>] [<password>]')
