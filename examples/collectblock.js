@@ -14,7 +14,7 @@ if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node collectBlock.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
- 
+
 const bot = mineflayer.createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
@@ -27,14 +27,14 @@ bot.loadPlugin(pathfinder)
 bot.loadPlugin(collectBlock)
 
 // Load mc data
-let mcData;
+let mcData
 bot.once('spawn', () => {
   mcData = require('minecraft-data')(bot.version)
 })
 
 // Listen for when a player says "collect [something]" in chat
 bot.on('chat', (username, message) => {
-  const args = message.split(" ")
+  const args = message.split(' ')
   if (args[0] !== 'collect') return
 
   // Get the correct block type
@@ -44,12 +44,12 @@ bot.on('chat', (username, message) => {
     return
   }
 
-  bot.chat("Collecting the nearest " + blockType.name)
+  bot.chat('Collecting the nearest ' + blockType.name)
 
   // Try and find that block type in the world
   const block = bot.findBlock({
     matching: blockType.id,
-    maxDistance: 64,
+    maxDistance: 64
   })
 
   if (!block) {
@@ -59,7 +59,6 @@ bot.on('chat', (username, message) => {
 
   // Collect the block if we found one
   bot.collectBlock.collect(block, err => {
-    if (err)
-      bot.chat(err.message)
+    if (err) bot.chat(err.message)
   })
 })
