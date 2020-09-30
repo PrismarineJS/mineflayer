@@ -518,7 +518,7 @@ export interface Instrument {
 
 export interface FindBlockOptions {
   point?: Vec3;
-  matching: number | Array<number> | (block: Block) => boolean;
+  matching: number | Array<number> | ((block: Block) => boolean);
   maxDistance?: number;
 }
 
