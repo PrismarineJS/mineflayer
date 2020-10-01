@@ -1,3 +1,7 @@
+## 2.29.1
+* fix findblock typescript def (thanks @TheDudeFromCI)
+* fix setCommandBlock for recent versions (thanks @ImHarvol)
+
 ## 2.29.0
 * Add hand parameter to activateItem (thanks @Karang)
 * remove _chunkColumn from the api (bot.world should now be used)
