@@ -169,6 +169,7 @@ The most updated and useful are :
  * [web-inventory](https://github.com/ImHarvol/mineflayer-web-inventory) - web based inventory viewer
  * [statemachine](https://github.com/TheDudeFromCI/mineflayer-statemachine) - A state machine API for more complex bot behavors
  * [Armor Manager](https://github.com/G07cha/MineflayerArmorManager) - automatic armor managment
+ * [Collect Block](https://github.com/TheDudeFromCI/mineflayer-collectblock) - Quick and simple block collection API.
 
 
  But also check out :
