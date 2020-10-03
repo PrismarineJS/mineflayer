@@ -203,5 +203,10 @@
       "name": "usesAdvCmd",
       "description": "Uses MC|AdvCmd to set command block information",
       "versions": ["1.9", "1.10", "1.11", "1.12"]
+    },
+    {
+      "name": "indexesVillagerRecipes",
+      "description": "Gives a index for each trade in a villagers metadata",
+      "versions": ["1.8", "1.9", "1.10", "1.11"]
     }
 ]
