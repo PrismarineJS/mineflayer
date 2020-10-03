@@ -1,5 +1,5 @@
 /*
- * This script will automaticly set if a totem is in the inventory the totem in the off-hand.
+ * This script will automatically set if a totem is in the inventory or the off-hand.
  * It checks for a totem every tick.
  */
 const mineflayer = require('mineflayer')
@@ -17,7 +17,7 @@ const bot = mineflayer.createBot({
 })
 
 bot.on('spawn', () => {
-  const mcData = require('minecraft-data')(bot.version) // You know the version when the bot has spawned
+  const mcData = require('minecraft-data')(bot.version) // You will know the version when the bot has spawned
   const totemId = mcData.itemsByName.totem_of_undying.id // Get the correct id
   if (mcData.itemsByName.totem_of_undying) {
     setInterval(() => {
