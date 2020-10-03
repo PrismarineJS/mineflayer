@@ -11,9 +11,7 @@ module.exports = () => (bot, done) => {
     : `/summon ${villagerType} ~ ~1 ~ {NoAI:1, Offers:{Recipes:[{maxUses:7,buy:{id:"minecraft:emerald",Count:2},sell:{id:"minecraft:wheat",Count:2}, uses:1}]}}`
 
   const commandBlockPos = bot.entity.position.offset(0.5, 0, 0.5)
-  const commandBlockPosTxt = commandBlockPos.toArray().join(' ')
   const redstoneBlockPos = commandBlockPos.offset(1, 0, 0)
-  const redstoneBlockPosTxt = redstoneBlockPos.toArray().join(' ')
 
   function onEntitySpawn (entity) {
     if (entity.name !== villagerType) return
@@ -58,8 +56,8 @@ module.exports = () => (bot, done) => {
     bot.on('entitySpawn', onEntitySpawn)
 
     // A command block is needed to spawn the villager due to the chat's character limit in some versions
-    bot.test.sayEverywhere(`/setblock ${commandBlockPosTxt} command_block`)
+    bot.test.sayEverywhere(`/setblock ${commandBlockPos.toArray().join(' ')} command_block`)
     bot.setCommandBlock(commandBlockPos, summonCommand, 1, 2)
-    bot.test.sayEverywhere(`/setblock ${redstoneBlockPosTxt} redstone_block`) // Activate the command block
+    bot.test.sayEverywhere(`/setblock ${redstoneBlockPos.toArray().join(' ')} redstone_block`) // Activate the command block
   })
 }
