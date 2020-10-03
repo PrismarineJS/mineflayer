@@ -1621,9 +1621,20 @@ Returns an `Villager` instance which represents the trading window you are openi
 
 Uses the open `villagerInstance` to trade.
 
-#### bot.setCommandBlock(pos, command, track_output, [mode])
+#### bot.setCommandBlock(pos, command, [options])
 
-Set a command block `command` at `pos`.
+Set a command block's properties at `pos`.
+Example `options` argument:
+```js
+{
+  mode: 2,
+  trackOutput: true,
+  conditional: false,
+  alwaysActive: true
+}
+```
+options.mode can have 3 values: 0 (SEQUENCE), 1 (AUTO), 2 (REDSTONE)
+All options attributes are false by default, except mode which is 2 (as to replicate the default command block in Minecraft).
 
 ### Lower level inventory methods
 
