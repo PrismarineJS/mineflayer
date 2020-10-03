@@ -170,6 +170,7 @@ The most updated and useful are :
  * [statemachine](https://github.com/TheDudeFromCI/mineflayer-statemachine) - A state machine API for more complex bot behavors
  * [Armor Manager](https://github.com/G07cha/MineflayerArmorManager) - automatic armor managment
  * [Collect Block](https://github.com/TheDudeFromCI/mineflayer-collectblock) - Quick and simple block collection API.
+ * [Dashboard](https://github.com/wvffle/mineflayer-dashboard) - Frontend dashboard for mineflayer bot
 
 
  But also check out :
