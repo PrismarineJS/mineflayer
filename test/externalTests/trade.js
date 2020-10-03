@@ -1,5 +1,11 @@
 const assert = require('assert')
 
+function sleep (ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms)
+  })
+}
+
 module.exports = () => (bot, done) => {
   const mcData = require('minecraft-data')(bot.version)
   const Item = require('prismarine-item')(bot.version)
@@ -51,13 +57,14 @@ module.exports = () => (bot, done) => {
     })
   }
 
-  bot.test.setInventorySlot(36, new Item(mcData.itemsByName.emerald.id, 64, 0), (err) => {
+  bot.test.setInventorySlot(36, new Item(mcData.itemsByName.emerald.id, 64, 0), async (err) => {
     assert.ifError(err)
     bot.on('entitySpawn', onEntitySpawn)
 
     // A command block is needed to spawn the villager due to the chat's character limit in some versions
     bot.test.sayEverywhere(`/setblock ${commandBlockPos.toArray().join(' ')} command_block`)
-    bot.setCommandBlock(commandBlockPos, summonCommand, 1, 2)
+    await sleep(500)
+    bot.setCommandBlock(commandBlockPos, summonCommand)
     bot.test.sayEverywhere(`/setblock ${redstoneBlockPos.toArray().join(' ')} redstone_block`) // Activate the command block
   })
 }
