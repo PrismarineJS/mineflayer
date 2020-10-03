@@ -31,7 +31,7 @@ First time using node.js ? You may want to start with the [tutorial](tutorial.md
 
 ### Roadmap
 
- Checkout this page to see what are your current [projects](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects). 
+ Checkout this page to see what are our current [projects](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects). 
  
 ## Installation
 
