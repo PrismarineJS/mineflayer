@@ -2,7 +2,6 @@
  * An example of how to make multiple bots connect to a server.
  */
 
-
 const mineflayer = require('mineflayer')
 
 if (process.argv.length < 3 || process.argv.length > 5) {
