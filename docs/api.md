@@ -940,7 +940,7 @@ Which quick bar slot is selected (0 - 8).
 
 #### bot.inventory
 
-A `Window` instance representing your inventory.
+A [`Window`](https://github.com/PrismarineJS/prismarine-windows#windowswindow-base-class) instance representing your inventory.
 
 #### bot.targetDigBlock
 
