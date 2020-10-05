@@ -54,9 +54,11 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) and [prismarine-contribute](https
 
 ## Usage
 
-**Video**
+**Videos**
 
 A tutorial video explaining the basic set up process for a bot can be found [here.](https://www.youtube.com/watch?v=ltWosy4Z0Kw)
+
+For individuals wanting to learn more, a Mineflayer tutorial playlist can be found [here,](https://www.youtube.com/playlist?list=PLh_alXmxHmzGy3FKbo95AkPp5D8849PEV) and the correspoding source codes for those bots, [here.](https://github.com/TheDudeFromCI/Mineflayer-Youtube-Tutorials)
 
 **Getting Started**
 
