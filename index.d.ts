@@ -367,6 +367,8 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
 
   updateHeldItem();
 
+  getEquipmentDestSlot(destination: string): number;
+
 }
 
 export interface GameState {

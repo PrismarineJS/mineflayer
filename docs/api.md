@@ -1677,6 +1677,10 @@ Move an item from `sourceSlot` to `destSlot` in the current window.
 
 Update `bot.heldItem`.
 
+#### bot.getEquipmentDestSlot(destination)
+
+Gets the inventory equipment slot id for the given equipment destination name.
+
 ### bot.creative
 
 This collection of apis is useful in creative mode.
