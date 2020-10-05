@@ -278,6 +278,7 @@
       - [bot.openEntity(entity, Class)](#botopenentityentity-class)
       - [bot.moveSlotItem(sourceSlot, destSlot, cb)](#botmoveslotitemsourceslot-destslot-cb)
       - [bot.updateHeldItem()](#botupdatehelditem)
+      - [bot.getEquipmentDestSlot(destination)](#botgetequipmentdestslot-destination)
     - [bot.creative](#botcreative)
       - [bot.creative.setInventorySlot(slot, item, [callback])](#botcreativesetinventoryslotslot-item-callback)
       - [bot.creative.flyTo(destination, [cb])](#botcreativeflytodestination-cb)
@@ -1676,6 +1677,18 @@ Move an item from `sourceSlot` to `destSlot` in the current window.
 #### bot.updateHeldItem()
 
 Update `bot.heldItem`.
+
+#### bot.getEquipmentDestSlot(destination)
+
+Gets the inventory equipment slot id for the given equipment destination name.
+
+Available destinations are:
+* head
+* torso
+* legs
+* feet
+* hand
+* off-hand
 
 ### bot.creative
 
