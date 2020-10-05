@@ -1681,6 +1681,14 @@ Update `bot.heldItem`.
 
 Gets the inventory equipment slot id for the given equipment destination name.
 
+Available destinations are:
+* head
+* torso
+* legs
+* feet
+* hand
+* off-hand
+
 ### bot.creative
 
 This collection of apis is useful in creative mode.
