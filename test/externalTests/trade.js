@@ -57,7 +57,9 @@ module.exports = () => (bot, done) => {
 
     // A command block is needed to spawn the villager due to the chat's character limit in some versions
     bot.test.sayEverywhere(`/setblock ${commandBlockPos.toArray().join(' ')} command_block`)
-    bot.setCommandBlock(commandBlockPos, summonCommand, 1, 2)
-    bot.test.sayEverywhere(`/setblock ${redstoneBlockPos.toArray().join(' ')} redstone_block`) // Activate the command block
+    setTimeout(() => {
+      bot.setCommandBlock(commandBlockPos, summonCommand)
+      bot.test.sayEverywhere(`/setblock ${redstoneBlockPos.toArray().join(' ')} redstone_block`) // Activate the command block
+    }, 500)
   })
 }
