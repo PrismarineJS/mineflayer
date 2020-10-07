@@ -1,3 +1,10 @@
+## 2.30.0
+* Add support for Barrel (#1344) (thanks @ImHarvol)
+* Fix attack cooldown bug (thanks @TheDudeFromCI)
+* Exposed getDestSlot (thanks @TheDudeFromCI)
+* Simplify setCommandBlock arguments (thanks @ImHarvol)
+* hide unknown transaction warning if hideErrors option is enabled
+
 ## 2.29.1
 * fix findblock typescript def (thanks @TheDudeFromCI)
 * fix setCommandBlock for recent versions (thanks @ImHarvol)
