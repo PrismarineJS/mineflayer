@@ -143,7 +143,7 @@
       - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
       - ["whisper" (username, message, translate, jsonMsg, matches)](#whisper-username-message-translate-jsonmsg-matches)
       - ["actionBar" (jsonMsg)](#actionbar-jsonmsg)
-      - ["message" (jsonMsg)](#message-jsonmsg)
+      - ["message" (jsonMsg, position)](#message-jsonmsg-position)
       - ["login"](#login)
       - ["spawn"](#spawn)
       - ["respawn"](#respawn)
@@ -998,11 +998,13 @@ Emitted for every server message which appears on the Action Bar.
 
  * `jsonMsg` - unmodified JSON message from the server
 
-#### "message" (jsonMsg)
+#### "message" (jsonMsg, position)
 
 Emitted for every server message, including chats.
 
  * `jsonMsg` - unmodified JSON message from the server
+
+ * `positon` - position of Chat message
 
 #### "login"
 
