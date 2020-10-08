@@ -84,7 +84,9 @@ module.exports = () => (bot, done) => {
               assert.ifError(err)
               furnace.takeFuel((err) => {
                 assert.ifError(err)
-                furnace.once('close', cb)
+                furnace.once('close', () => {
+                  setTimeout(cb, 500)
+                })
                 furnace.close()
               })
             })
@@ -93,7 +95,6 @@ module.exports = () => (bot, done) => {
       }, 500)
     },
     (cb) => { // Check inventory
-      console.log(bot.inventory.slots)
       const cookedPorkchopCount = bot.inventory.count(cookedPorkchopId)
       const porkchopCount = bot.inventory.count(porkchopId)
       const coalCount = bot.inventory.count(coalId)
