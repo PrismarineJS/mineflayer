@@ -178,6 +178,7 @@ The most updated and useful are :
  * [Armor Manager](https://github.com/G07cha/MineflayerArmorManager) - automatic armor managment
  * [Collect Block](https://github.com/TheDudeFromCI/mineflayer-collectblock) - Quick and simple block collection API.
  * [Dashboard](https://github.com/wvffle/mineflayer-dashboard) - Frontend dashboard for mineflayer bot
+ * [PVP](https://github.com/TheDudeFromCI/mineflayer-pvp) - Easy API for basic PVP and PVE.
 
 
  But also check out :
