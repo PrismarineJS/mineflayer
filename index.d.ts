@@ -281,7 +281,7 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
 
   fish(callback: (err?: Error) => void): void;
 
-  activateItem(): void;
+  activateItem(offhand?: boolean): void;
 
   deactivateItem(): void;
 
