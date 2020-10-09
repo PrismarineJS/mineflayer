@@ -1004,7 +1004,10 @@ Emitted for every server message, including chats.
 
  * `jsonMsg` - unmodified JSON message from the server
 
- * `positon` - position of Chat message
+ * `positon` - (>= 1.8.1): position of Chat message can be
+   * chat
+   * system
+   * game_info
 
 #### "login"
 

@@ -60,7 +60,7 @@ interface BotEvents {
     ) => void;
   actionBar: (jsonMsg: string) => void;
   error: (err: Error) => void;
-  message: (jsonMsg: string, position: number) => void;
+  message: (jsonMsg: string, position: string) => void;
   login: () => void;
   spawn: () => void;
   respawn: () => void;
