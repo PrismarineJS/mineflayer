@@ -59,8 +59,8 @@ bot.on('physicTick', () => {
   if (!guardPos) return // Do nothing if bot is not guarding anything
 
   // Only look for mobs within 16 blocks
-  const filter = e => e.type === 'mob' && e.position.distanceTo(bot.entity.position) < 16
-                    && e.mobType !== 'Armor Stand' // Mojang classifies armor stands as mobs for some reason?
+  const filter = e => e.type === 'mob' && e.position.distanceTo(bot.entity.position) < 16 &&
+                    e.mobType !== 'Armor Stand' // Mojang classifies armor stands as mobs for some reason?
 
   const entity = bot.nearestEntity(filter)
   if (entity) {
@@ -71,7 +71,6 @@ bot.on('physicTick', () => {
 
 // Listen for player commands
 bot.on('chat', (username, message) => {
-
   // Guard the location the player is standing
   if (message === 'guard') {
     const player = bot.players[username]
