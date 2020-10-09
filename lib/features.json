@@ -208,5 +208,10 @@
       "name": "indexesVillagerRecipes",
       "description": "Gives a index for each trade in a villagers metadata",
       "versions": ["1.8", "1.9", "1.10", "1.11"]
+    },
+    {
+      "name": "hasAttackCooldown",
+      "description": "If there is a cooldown after attacks to deal full damage.",
+      "versions": ["1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15", "1.16"]
     }
 ]
