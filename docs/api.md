@@ -268,6 +268,7 @@
       - [bot.openVillager(villagerEntity)](#botopenvillagervillagerentity)
       - [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottradevillagerinstance-tradeindex-times-cb)
       - [bot.setCommandBlock(pos, command, track_output, [mode])](#botsetcommandblockpos-command-track_output-mode)
+      - [bot.supportFeature(name)](#botsupportfeaturename)
     - [Lower level inventory methods](#lower-level-inventory-methods)
       - [bot.clickWindow(slot, mouseButton, mode, cb)](#botclickwindowslot-mousebutton-mode-cb)
       - [bot.putSelectedItemRange(start, end, window, slot, cb)](#botputselecteditemrangestart-end-window-slot-cb)
@@ -278,7 +279,7 @@
       - [bot.openEntity(entity, Class)](#botopenentityentity-class)
       - [bot.moveSlotItem(sourceSlot, destSlot, cb)](#botmoveslotitemsourceslot-destslot-cb)
       - [bot.updateHeldItem()](#botupdatehelditem)
-      - [bot.getEquipmentDestSlot(destination)](#botgetequipmentdestslot-destination)
+      - [bot.getEquipmentDestSlot(destination)](#botgetequipmentdestslotdestination)
     - [bot.creative](#botcreative)
       - [bot.creative.setInventorySlot(slot, item, [callback])](#botcreativesetinventoryslotslot-item-callback)
       - [bot.creative.flyTo(destination, [cb])](#botcreativeflytodestination-cb)
@@ -1636,6 +1637,55 @@ Example `options` argument:
 ```
 options.mode can have 3 values: 0 (SEQUENCE), 1 (AUTO), 2 (REDSTONE)
 All options attributes are false by default, except mode which is 2 (as to replicate the default command block in Minecraft).
+
+#### bot.supportFeature(name)
+
+This can be used to check is a specific feature is available in the current Minecraft version. This is usually only required for handling version-specific functionality.
+
+Available Features:
+* mobSpawner - spawner is called mob_spawner
+* spawner - spawner is called spawner
+* blockMetadata - block metadata is encoded in a separate metadata
+* blockStateId - block metadata is encoded as state id
+* creativeSleepNearMobs - can sleep near mobs in creative
+* fixedPointPosition - Entity positions are represented with fixed point numbers
+* doublePosition - Entity positions are represented with double
+* fixedPointDelta - Delta of position are represented with fixed point numbers
+* fixedPointDelta128 - Delta of position are represented with fixed point numbers times 128
+* customChannelMCPrefixed - custom channel are prefixed by MC|
+* customChannelNotPrefixed - custom channel don't have a prefix
+* useItemWithBlockPlace - use item is done with block place packet
+* useItemWithOwnPacket - use item is done with its own packet
+* blockPlaceHasHeldItem - block_place packet has heldItem
+* blockPlaceHasHandAndIntCursor - block_place packet has hand and int cursor
+* blockPlaceHasHandAndFloatCursor - block_place packet has hand and float cursor
+* blockPlaceHasInsideBlock - block_place packet has inside block
+* teleportUsesPositionPacket - teleport is done using position packet
+* positionUpdateSentEveryTick -
+* teleportUsesOwnPacket - teleport is done using its own packet
+* oneBlockForSeveralVariations - one block of several variations
+* blockSchemeIsFlat - all variations of a packet have their own id
+* tabCompleteHasNoToolTip - tab complete doesn't have a tool tip
+* tabCompleteHasAToolTip - tab complete has a tool tip
+* effectAreMinecraftPrefixed - effect are not prefixed
+* effectAreNotPrefixed - effect are prefixed by minecraft:
+* itemsAreAlsoBlocks - items are also blocks
+* itemsAreNotBlocks - items are not block
+* fishingBobberCorrectlyNamed - the fishing hook entity is named fishing_bobber
+* editBookIsPluginChannel - book editing is handled through plugin channels
+* hasEditBookPacket - book editing is handled through a packet
+* clientUpdateBookIdWhenSign - when sending MC|BSign, item type should be written_book
+* useMCTrSel - select trade through plugin channel MC|TrSel
+* useMCTrList - receive trade list through plugin channel MC|TrList
+* usetraderlist - receive trade list through plugin channel usetrader_list
+* doesntHaveOffHandSlot - doesn't have an off-hand slot
+* dimensionIsAnInt - description is an int (an enum)
+* dimensionIsAString - description is a string
+* doesntHaveChestType - chests don't have a type property
+* usesAdvCdm - Packet MC|AdvCmd was incorrectly spelled in 1.8 as MC|AdvCdm
+* usesAdvCmd - Uses MC|AdvCmd to set command block information
+* indexesVillagerRecipes - Gives a index for each trade in a villagers metadata
+* hasAttackCooldown - If there is a cooldown after attacks to deal full damage.
 
 ### Lower level inventory methods
 
