@@ -281,7 +281,7 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
 
   fish(callback: (err?: Error) => void): void;
 
-  activateItem(): void;
+  activateItem(offhand?: boolean): void;
 
   deactivateItem(): void;
 
@@ -625,12 +625,14 @@ export class Furnace extends (EventEmitter as new () => TypedEmitter<FurnaceEven
   putInput(
     itemType: number,
     metadata: number | null,
+    count: number,
     cb?: (err?: Error) => void
   ): void;
 
   putFuel(
     itemType: number,
     metadata: number | null,
+    count: number,
     cb?: (err?: Error) => void
   ): void;
 
