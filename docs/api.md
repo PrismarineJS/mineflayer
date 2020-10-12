@@ -268,6 +268,7 @@
       - [bot.openVillager(villagerEntity)](#botopenvillagervillagerentity)
       - [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottradevillagerinstance-tradeindex-times-cb)
       - [bot.setCommandBlock(pos, command, track_output, [mode])](#botsetcommandblockpos-command-track_output-mode)
+      - [bot.supportFeature(name)](#botsupportfeaturename)
     - [Lower level inventory methods](#lower-level-inventory-methods)
       - [bot.clickWindow(slot, mouseButton, mode, cb)](#botclickwindowslot-mousebutton-mode-cb)
       - [bot.putSelectedItemRange(start, end, window, slot, cb)](#botputselecteditemrangestart-end-window-slot-cb)
@@ -278,7 +279,7 @@
       - [bot.openEntity(entity, Class)](#botopenentityentity-class)
       - [bot.moveSlotItem(sourceSlot, destSlot, cb)](#botmoveslotitemsourceslot-destslot-cb)
       - [bot.updateHeldItem()](#botupdatehelditem)
-      - [bot.getEquipmentDestSlot(destination)](#botgetequipmentdestslot-destination)
+      - [bot.getEquipmentDestSlot(destination)](#botgetequipmentdestslotdestination)
     - [bot.creative](#botcreative)
       - [bot.creative.setInventorySlot(slot, item, [callback])](#botcreativesetinventoryslotslot-item-callback)
       - [bot.creative.flyTo(destination, [cb])](#botcreativeflytodestination-cb)
@@ -1641,6 +1642,12 @@ Example `options` argument:
 ```
 options.mode can have 3 values: 0 (SEQUENCE), 1 (AUTO), 2 (REDSTONE)
 All options attributes are false by default, except mode which is 2 (as to replicate the default command block in Minecraft).
+
+#### bot.supportFeature(name)
+
+This can be used to check is a specific feature is available in the current Minecraft version. This is usually only required for handling version-specific functionality.
+
+The list of available features can be found inside the [./lib/features.json](https://github.com/PrismarineJS/mineflayer/blob/master/lib/features.json) file.
 
 ### Lower level inventory methods
 
