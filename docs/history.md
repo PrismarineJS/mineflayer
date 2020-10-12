@@ -1,3 +1,10 @@
+## 2.31.0
+* Fix furnace and add tests (thanks @ImHarvol)
+* Add offhand param to d.ts (thanks @TheDudeFromCI)
+* Add hasAttackCooldown feature (thanks @TheDudeFromCI)
+* Add type validation for bot.chat (thanks @BlueBurgersTDD)
+* Add chat position to message event (thanks @larspapen)
+
 ## 2.30.0
 * Add support for Barrel (#1344) (thanks @ImHarvol)
 * Fix attack cooldown bug (thanks @TheDudeFromCI)
