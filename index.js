@@ -130,8 +130,8 @@ class Bot extends EventEmitter {
         throw new Error(`Version ${version.minecraftVersion} is not supported.`)
       }
 
-      if (!testedVersions.find(v => compareVersions(v, version.minecraftVersion))) {
-        throw new Error(`Version ${version.minecraftVersion} is not supported.`)
+      if (!testedVersions.some(v => compareVersions(v, version.minecraftVersion))) {
+        throw new Error(`Version ${version.minecraftVersion} is not supported. Latest supported version is ${testedVersions[testedVersions.length - 1]}.`)
       }
 
       self.protocolVersion = version.version
