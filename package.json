@@ -23,6 +23,7 @@
   "dependencies": {
     "minecraft-data": "^2.62.1",
     "minecraft-protocol": "^1.13.0",
+    "minecrafthawkeye": "^1.0.7",
     "prismarine-biome": "^1.1.0",
     "prismarine-block": "^1.6.0",
     "prismarine-chat": "^1.0.0",
