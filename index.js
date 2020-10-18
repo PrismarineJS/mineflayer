@@ -36,6 +36,7 @@ const plugins = {
   time: require('./lib/plugins/time'),
   villager: require('./lib/plugins/villager')
 }
+
 const supportedVersions = require('./lib/version').supportedVersions
 const testedVersions = require('./lib/version').testedVersions
 
@@ -86,20 +87,6 @@ function createBot (options = {}) {
   return bot
 }
 
-function compareVersions (testedVersion, currentVersion) {
-  testedVersion = testedVersion.split('.')
-  currentVersion = currentVersion.split('.')
-
-  if (testedVersion.length === 2) testedVersion.push(0)
-  if (currentVersion.length === 2) currentVersion.push(0)
-
-  for (let i = 0; i < testedVersion.length; i++) {
-    if (testedVersion[i] < currentVersion[i]) return false
-  }
-
-  return true
-}
-
 class Bot extends EventEmitter {
   constructor () {
     super()
@@ -130,8 +117,10 @@ class Bot extends EventEmitter {
         throw new Error(`Version ${version.minecraftVersion} is not supported.`)
       }
 
-      if (!testedVersions.some(v => compareVersions(v, version.minecraftVersion))) {
-        throw new Error(`Version ${version.minecraftVersion} is not supported. Latest supported version is ${testedVersions[testedVersions.length - 1]}.`)
+      const latestTestedVersion = testedVersions[testedVersions.length - 1]
+      const latestProtocolVersion = require('minecraft-data')(latestTestedVersion).protocolVersion
+      if (version.protocolVersion > latestProtocolVersion) {
+        throw new Error(`Version ${version.minecraftVersion} is not supported. Latest supported version is ${latestTestedVersion}.`)
       }
 
       self.protocolVersion = version.version
