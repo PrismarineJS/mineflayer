@@ -594,13 +594,15 @@ export class Chest extends (EventEmitter as new () => TypedEmitter<StorageEvents
   deposit(
     itemType: number,
     metadata: number | null,
-    count: number | null
+    count: number | null,
+    cb?: (err?: Error) => void
   ): void;
 
   withdraw(
     itemType: number,
     metadata: number | null,
-    count: number | null
+    count: number | null,
+    cb?: (err?: Error) => void
   ): void;
 
   count(itemType: number, metadata: number | null): number;
