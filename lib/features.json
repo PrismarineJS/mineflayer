@@ -223,5 +223,10 @@
     "name": "usesMultiblockSingleLong",
     "description": "In the multi_block_change packet is stored as a single number",
     "versions": ["1.16.2", "1.16.3"]
+  },
+  {
+    "name": "usesMultiblock3DChunkCoords",
+    "description": "In the multi_block_change packet, all 3 axis coords are defined.",
+    "versions": ["1.16.2", "1.16.3"]
   }
 ]
