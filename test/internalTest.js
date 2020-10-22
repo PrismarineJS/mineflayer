@@ -174,16 +174,13 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
           difficulty: 0,
           maxPlayers: 20,
           reducedDebugInfo: (version.version >= 735 ? true : 1),
-          enableRespawnScreen: true
+          enableRespawnScreen: true,
+          isDebug: false,
+          isFlat: false,
+          isHardcore: false,
+          viewDistance: 10
         }
-        if (version.version >= 735) { // 1.16x
-          loginPacket.isDebug = false
-          loginPacket.isFlat = false
-          loginPacket.isHardcore = false
-          loginPacket.viewDistance = 10
-          delete loginPacket.levelType
-          delete loginPacket.difficulty
-        }
+
         client.write('login', loginPacket)
         const chunk = new Chunk()
 
