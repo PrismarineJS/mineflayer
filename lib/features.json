@@ -1,227 +1,227 @@
 [
-    {
-      "name": "mobSpawner",
-      "description": "spawner is called mob_spawner",
-      "versions": ["1.8", "1.12.2"]
-    },
-    {
-      "name": "spawner",
-      "description": "spawner is called spawner",
-      "versions": ["1.13", "1.16.3"]
-    },
-    {
-      "name": "blockMetadata",
-      "description": "block metadata is encoded in a separate metadata",
-      "versions": ["1.8", "1.12.2"]
-    }, 
-    {
-      "name": "blockStateId",
-      "description": "block metadata is encoded as state id",
-      "versions": ["1.13", "1.16.3"]
-    },
-    {
-      "name": "creativeSleepNearMobs",
-      "description": "can sleep near mobs in creative",
-      "versions": ["1.13", "1.16.3"]
-    },
-    {
-      "name": "fixedPointPosition",
-      "description": "Entity positions are represented with fixed point numbers",
-      "versions": ["1.8", "1.8"]
-    },
-    {
-      "name": "doublePosition",
-      "description": "Entity positions are represented with double",
-      "versions": ["1.9", "1.16.3"]
-    },
-    {
-      "name": "fixedPointDelta",
-      "description": "Delta of position are represented with fixed point numbers",
-      "versions": ["1.8"]
-    },
-    {
-      "name": "fixedPointDelta128",
-      "description": "Delta of position are represented with fixed point numbers times 128",
-      "versions": ["1.9", "1.16.3"]
-    },
-    {
-      "name": "customChannelMCPrefixed",
-      "description": "custom channel are prefixed by MC|",
-      "versions": ["1.8", "1.12.2"]
-    },
-    {
-      "name": "customChannelNotPrefixed",
-      "description": "custom channel don't have a prefix",
-      "versions": ["1.13", "1.16.3"]
-    },
-    {
-      "name": "useItemWithBlockPlace",
-      "description": "use item is done with block place packet",
-      "versions": ["1.8"]
-    },
-    {
-      "name": "useItemWithOwnPacket",
-      "description": "use item is done with its own packet",
-      "versions": ["1.9", "1.16.3"]
-    },
-    {
-      "name": "blockPlaceHasHeldItem",
-      "description": "block_place packet has heldItem",
-      "versions": ["1.8", "1.8"]
-    },
-    {
-      "name": "blockPlaceHasHandAndIntCursor",
-      "description": "block_place packet has hand and int cursor",
-      "versions": ["1.9", "1.10.2"]
-    },
-    {
-      "name": "blockPlaceHasHandAndFloatCursor",
-      "description": "block_place packet has hand and float cursor",
-      "versions": ["1.11", "1.13.2"]
-    },
-    {
-      "name": "blockPlaceHasInsideBlock",
-      "description": "block_place packet has inside block",
-      "versions": ["1.14", "1.16.3"]
-    },
-    {
-      "name": "teleportUsesPositionPacket",
-      "description": "teleport is done using position packet",
-      "versions": ["1.8", "1.8"]
-    },
-    {
-      "name": "positionUpdateSentEveryTick",
-      "description": "",
-      "versions": ["1.8", "1.11.2"]
-    },
-    {
-      "name": "teleportUsesOwnPacket",
-      "description": "teleport is done using its own packet",
-      "versions": ["1.9", "1.16.3"]
-    },
-    {
-      "name": "oneBlockForSeveralVariations",
-      "description": "one block of several variations",
-      "versions": ["1.8", "1.12.2"]
-    },
-    {
-      "name": "blockSchemeIsFlat",
-      "description": "all variations of a packet have their own id",
-      "versions": ["1.13", "1.16.3"]
-    },
-    {
-      "name": "tabCompleteHasNoToolTip",
-      "description": "tab complete doesn't have a tool tip",
-      "versions": ["1.8", "1.12.2"]
-    },
-    {
-      "name": "tabCompleteHasAToolTip",
-      "description": "tab complete has a tool tip",
-      "versions": ["1.13", "1.16.3"]
-    },
-    {
-      "name": "effectAreMinecraftPrefixed",
-      "description": "effect are not prefixed",
-      "versions": ["1.8", "1.12.2"]
-    },
-    {
-      "name": "effectAreNotPrefixed",
-      "description": "effect are prefixed by minecraft:",
-      "versions": ["1.13", "1.16.3"]
-    },
-    {
-      "name": "itemsAreAlsoBlocks",
-      "description": "items are also blocks",
-      "versions": ["1.8", "1.12.2"]
-    },
-    {
-      "name": "itemsAreNotBlocks",
-      "description": "items are not block",
-      "versions": ["1.13", "1.16.3"]
-    },
-    {
-      "name": "fishingBobberCorrectlyNamed",
-      "description": "the fishing hook entity is named fishing_bobber",
-      "versions": ["1.14", "1.16.3"]
-    },
-    {
-      "name": "editBookIsPluginChannel",
-      "description": "book editing is handled through plugin channels",
-      "versions": ["1.8", "1.12.2"]
-    },
-    {
-      "name": "hasEditBookPacket",
-      "description": "book editing is handled through a packet",
-      "versions": ["1.13", "1.16.3"]
-    },
-    {
-      "name": "clientUpdateBookIdWhenSign",
-      "description": "when sending MC|BSign, item type should be written_book",
-      "versions": ["1.8", "1.8"]
-    },
-    {
-      "name": "useMCTrSel",
-      "description": "select trade through plugin channel MC|TrSel",
-      "versions": ["1.8", "1.12.2"]
-    },
-    {
-      "name": "useMCTrList",
-      "description": "receive trade list through plugin channel MC|TrList",
-      "versions": ["1.8", "1.12.2"]
-    },
-    {
-      "name": "usetraderlist",
-      "description": "receive trade list through plugin channel usetrader_list",
-      "versions": ["1.13", "1.13.2"]
-    },
-    {
-      "name": "doesntHaveOffHandSlot",
-      "description": "doesn't have an off-hand slot",
-      "versions": ["1.8", "1.8"]
-    },
-    {
-      "name": "dimensionIsAnInt",
-      "description": "description is an int (an enum)",
-      "versions": ["1.8", "1.15.2"]
-    },
-    {
-      "name": "dimensionIsAString",
-      "description": "description is a string",
-      "versions": ["1.16", "1.16.3"]
-    },
-    {
-      "name": "doesntHaveChestType",
-      "description": "chests don't have a type property",
-      "versions": ["1.8", "1.12.2"]
-    },
-    {
-      "name": "usesAdvCdm",
-      "description": "Packet MC|AdvCmd was incorrectly spelled in 1.8 as MC|AdvCdm",
-      "versions": ["1.8", "1.8"]
-    },
-    {
-      "name": "usesAdvCmd",
-      "description": "Uses MC|AdvCmd to set command block information",
-      "versions": ["1.9", "1.12.2"]
-    },
-    {
-      "name": "indexesVillagerRecipes",
-      "description": "Gives a index for each trade in a villagers metadata",
-      "versions": ["1.8", "1.11.2"]
-    },
-    {
-      "name": "hasAttackCooldown",
-      "description": "If there is a cooldown after attacks to deal full damage.",
-      "versions": ["1.9", "1.16.3"]
-    },
-    {
-      "name": "usesLoginPacket",
-      "description": "Uses the login packet as defined in mcData",
-      "versions": ["1.16.2", "1.16.3"]
-    },
-    {
-      "name": "usesMultiblockSplitHorizontal",
-      "description": "In the multi_block_change packet, bit operations are split horizontally and vertically.",
-      "versions": ["1.16.2", "1.16.3"]
-    }
+  {
+    "name": "mobSpawner",
+    "description": "spawner is called mob_spawner",
+    "versions": ["1.8", "1.12.2"]
+  },
+  {
+    "name": "spawner",
+    "description": "spawner is called spawner",
+    "versions": ["1.13", "1.16.3"]
+  },
+  {
+    "name": "blockMetadata",
+    "description": "block metadata is encoded in a separate metadata",
+    "versions": ["1.8", "1.12.2"]
+  }, 
+  {
+    "name": "blockStateId",
+    "description": "block metadata is encoded as state id",
+    "versions": ["1.13", "1.16.3"]
+  },
+  {
+    "name": "creativeSleepNearMobs",
+    "description": "can sleep near mobs in creative",
+    "versions": ["1.13", "1.16.3"]
+  },
+  {
+    "name": "fixedPointPosition",
+    "description": "Entity positions are represented with fixed point numbers",
+    "versions": ["1.8", "1.8"]
+  },
+  {
+    "name": "doublePosition",
+    "description": "Entity positions are represented with double",
+    "versions": ["1.9", "1.16.3"]
+  },
+  {
+    "name": "fixedPointDelta",
+    "description": "Delta of position are represented with fixed point numbers",
+    "versions": ["1.8"]
+  },
+  {
+    "name": "fixedPointDelta128",
+    "description": "Delta of position are represented with fixed point numbers times 128",
+    "versions": ["1.9", "1.16.3"]
+  },
+  {
+    "name": "customChannelMCPrefixed",
+    "description": "custom channel are prefixed by MC|",
+    "versions": ["1.8", "1.12.2"]
+  },
+  {
+    "name": "customChannelNotPrefixed",
+    "description": "custom channel don't have a prefix",
+    "versions": ["1.13", "1.16.3"]
+  },
+  {
+    "name": "useItemWithBlockPlace",
+    "description": "use item is done with block place packet",
+    "versions": ["1.8"]
+  },
+  {
+    "name": "useItemWithOwnPacket",
+    "description": "use item is done with its own packet",
+    "versions": ["1.9", "1.16.3"]
+  },
+  {
+    "name": "blockPlaceHasHeldItem",
+    "description": "block_place packet has heldItem",
+    "versions": ["1.8", "1.8"]
+  },
+  {
+    "name": "blockPlaceHasHandAndIntCursor",
+    "description": "block_place packet has hand and int cursor",
+    "versions": ["1.9", "1.10.2"]
+  },
+  {
+    "name": "blockPlaceHasHandAndFloatCursor",
+    "description": "block_place packet has hand and float cursor",
+    "versions": ["1.11", "1.13.2"]
+  },
+  {
+    "name": "blockPlaceHasInsideBlock",
+    "description": "block_place packet has inside block",
+    "versions": ["1.14", "1.16.3"]
+  },
+  {
+    "name": "teleportUsesPositionPacket",
+    "description": "teleport is done using position packet",
+    "versions": ["1.8", "1.8"]
+  },
+  {
+    "name": "positionUpdateSentEveryTick",
+    "description": "",
+    "versions": ["1.8", "1.11.2"]
+  },
+  {
+    "name": "teleportUsesOwnPacket",
+    "description": "teleport is done using its own packet",
+    "versions": ["1.9", "1.16.3"]
+  },
+  {
+    "name": "oneBlockForSeveralVariations",
+    "description": "one block of several variations",
+    "versions": ["1.8", "1.12.2"]
+  },
+  {
+    "name": "blockSchemeIsFlat",
+    "description": "all variations of a packet have their own id",
+    "versions": ["1.13", "1.16.3"]
+  },
+  {
+    "name": "tabCompleteHasNoToolTip",
+    "description": "tab complete doesn't have a tool tip",
+    "versions": ["1.8", "1.12.2"]
+  },
+  {
+    "name": "tabCompleteHasAToolTip",
+    "description": "tab complete has a tool tip",
+    "versions": ["1.13", "1.16.3"]
+  },
+  {
+    "name": "effectAreMinecraftPrefixed",
+    "description": "effect are not prefixed",
+    "versions": ["1.8", "1.12.2"]
+  },
+  {
+    "name": "effectAreNotPrefixed",
+    "description": "effect are prefixed by minecraft:",
+    "versions": ["1.13", "1.16.3"]
+  },
+  {
+    "name": "itemsAreAlsoBlocks",
+    "description": "items are also blocks",
+    "versions": ["1.8", "1.12.2"]
+  },
+  {
+    "name": "itemsAreNotBlocks",
+    "description": "items are not block",
+    "versions": ["1.13", "1.16.3"]
+  },
+  {
+    "name": "fishingBobberCorrectlyNamed",
+    "description": "the fishing hook entity is named fishing_bobber",
+    "versions": ["1.14", "1.16.3"]
+  },
+  {
+    "name": "editBookIsPluginChannel",
+    "description": "book editing is handled through plugin channels",
+    "versions": ["1.8", "1.12.2"]
+  },
+  {
+    "name": "hasEditBookPacket",
+    "description": "book editing is handled through a packet",
+    "versions": ["1.13", "1.16.3"]
+  },
+  {
+    "name": "clientUpdateBookIdWhenSign",
+    "description": "when sending MC|BSign, item type should be written_book",
+    "versions": ["1.8", "1.8"]
+  },
+  {
+    "name": "useMCTrSel",
+    "description": "select trade through plugin channel MC|TrSel",
+    "versions": ["1.8", "1.12.2"]
+  },
+  {
+    "name": "useMCTrList",
+    "description": "receive trade list through plugin channel MC|TrList",
+    "versions": ["1.8", "1.12.2"]
+  },
+  {
+    "name": "usetraderlist",
+    "description": "receive trade list through plugin channel usetrader_list",
+    "versions": ["1.13", "1.13.2"]
+  },
+  {
+    "name": "doesntHaveOffHandSlot",
+    "description": "doesn't have an off-hand slot",
+    "versions": ["1.8", "1.8"]
+  },
+  {
+    "name": "dimensionIsAnInt",
+    "description": "description is an int (an enum)",
+    "versions": ["1.8", "1.15.2"]
+  },
+  {
+    "name": "dimensionIsAString",
+    "description": "description is a string",
+    "versions": ["1.16", "1.16.3"]
+  },
+  {
+    "name": "doesntHaveChestType",
+    "description": "chests don't have a type property",
+    "versions": ["1.8", "1.12.2"]
+  },
+  {
+    "name": "usesAdvCdm",
+    "description": "Packet MC|AdvCmd was incorrectly spelled in 1.8 as MC|AdvCdm",
+    "versions": ["1.8", "1.8"]
+  },
+  {
+    "name": "usesAdvCmd",
+    "description": "Uses MC|AdvCmd to set command block information",
+    "versions": ["1.9", "1.12.2"]
+  },
+  {
+    "name": "indexesVillagerRecipes",
+    "description": "Gives a index for each trade in a villagers metadata",
+    "versions": ["1.8", "1.11.2"]
+  },
+  {
+    "name": "hasAttackCooldown",
+    "description": "If there is a cooldown after attacks to deal full damage.",
+    "versions": ["1.9", "1.16.3"]
+  },
+  {
+    "name": "usesLoginPacket",
+    "description": "Uses the login packet as defined in mcData",
+    "versions": ["1.16.2", "1.16.3"]
+  },
+  {
+    "name": "usesMultiblockSplitHorizontal",
+    "description": "In the multi_block_change packet, bit operations are split horizontally and vertically.",
+    "versions": ["1.16.2", "1.16.3"]
+  }
 ]
