@@ -27,7 +27,7 @@
   {
     "name": "fixedPointPosition",
     "description": "Entity positions are represented with fixed point numbers",
-    "versions": ["1.8", "1.8"]
+    "versions": ["1.8", "1.8.9"]
   },
   {
     "name": "doublePosition",
@@ -37,7 +37,7 @@
   {
     "name": "fixedPointDelta",
     "description": "Delta of position are represented with fixed point numbers",
-    "versions": ["1.8", "1.8"]
+    "versions": ["1.8", "1.8.9"]
   },
   {
     "name": "fixedPointDelta128",
@@ -57,7 +57,7 @@
   {
     "name": "useItemWithBlockPlace",
     "description": "use item is done with block place packet",
-    "versions": ["1.8", "1.8"]
+    "versions": ["1.8", "1.8.9"]
   },
   {
     "name": "useItemWithOwnPacket",
@@ -67,7 +67,7 @@
   {
     "name": "blockPlaceHasHeldItem",
     "description": "block_place packet has heldItem",
-    "versions": ["1.8", "1.8"]
+    "versions": ["1.8", "1.8.9"]
   },
   {
     "name": "blockPlaceHasHandAndIntCursor",
@@ -87,7 +87,7 @@
   {
     "name": "teleportUsesPositionPacket",
     "description": "teleport is done using position packet",
-    "versions": ["1.8", "1.8"]
+    "versions": ["1.8", "1.8.9"]
   },
   {
     "name": "positionUpdateSentEveryTick",
@@ -157,7 +157,7 @@
   {
     "name": "clientUpdateBookIdWhenSign",
     "description": "when sending MC|BSign, item type should be written_book",
-    "versions": ["1.8", "1.8"]
+    "versions": ["1.8", "1.8.9"]
   },
   {
     "name": "useMCTrSel",
@@ -177,7 +177,7 @@
   {
     "name": "doesntHaveOffHandSlot",
     "description": "doesn't have an off-hand slot",
-    "versions": ["1.8", "1.8"]
+    "versions": ["1.8", "1.8.9"]
   },
   {
     "name": "dimensionIsAnInt",
@@ -197,7 +197,7 @@
   {
     "name": "usesAdvCdm",
     "description": "Packet MC|AdvCmd was incorrectly spelled in 1.8 as MC|AdvCdm",
-    "versions": ["1.8", "1.8"]
+    "versions": ["1.8", "1.8.9"]
   },
   {
     "name": "usesAdvCmd",
