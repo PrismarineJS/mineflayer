@@ -153,7 +153,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
     })
     it('blockAt', (done) => {
       const pos = vec3(1, 65, 1)
-      const goldId = 41
+      const goldId = mcData.blocksByName.gold_block.id
       bot.on('chunkColumnLoad', (columnPoint) => {
         assert.strictEqual(columnPoint.x, 0)
         assert.strictEqual(columnPoint.z, 0)
@@ -161,21 +161,28 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
         done()
       })
       server.on('login', (client) => {
-        client.write('login', {
-          entityId: 0,
-          levelType: 'fogetaboutit',
-          hashedSeed: [0, 0],
-          gameMode: 0,
-          previousGameMode: 255,
-          worldNames: ['minecraft:overworld'],
-          dimensionCodec: { name: '', type: 'compound', value: { dimension: { type: 'list', value: { type: 'compound', value: [w] } } } },
-          dimension: bot.supportFeature('dimensionIsAnInt') ? 0 : 'minecraft:overworld',
-          worldName: 'minecraft:overworld',
-          difficulty: 0,
-          maxPlayers: 20,
-          reducedDebugInfo: true,
-          enableRespawnScreen: true
-        })
+        let loginPacket
+        if (bot.supportFeature('usesLoginPacket')) {
+          loginPacket = mcData.loginPacket
+        } else {
+          loginPacket = {
+            entityId: 0,
+            levelType: 'fogetaboutit',
+            gameMode: 0,
+            previousGameMode: 255,
+            worldNames: ['minecraft:overworld'],
+            dimensionCodec: { name: '', type: 'compound', value: { dimension: { type: 'list', value: { type: 'compound', value: [w] } } } },
+            dimension: 0,
+            worldName: 'minecraft:overworld',
+            hashedSeed: [0, 0],
+            difficulty: 0,
+            maxPlayers: 20,
+            reducedDebugInfo: 1,
+            enableRespawnScreen: true
+          }
+        }
+
+        client.write('login', loginPacket)
         const chunk = new Chunk()
 
         chunk.setBlockType(pos, goldId)
@@ -218,21 +225,27 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
           }
         })
         server.on('login', (client) => {
-          client.write('login', {
-            entityId: 0,
-            levelType: 'fogetaboutit',
-            hashedSeed: [0, 0],
-            gameMode: 0,
-            previousGameMode: 255,
-            worldNames: ['minecraft:overworld'],
-            dimensionCodec: { name: '', type: 'compound', value: { dimension: { type: 'list', value: { type: 'compound', value: [w] } } } },
-            dimension: bot.supportFeature('dimensionIsAnInt') ? 0 : 'minecraft:overworld',
-            worldName: 'minecraft:overworld',
-            difficulty: 0,
-            maxPlayers: 20,
-            reducedDebugInfo: true,
-            enableRespawnScreen: true
-          })
+          let loginPacket
+          if (bot.supportFeature('usesLoginPacket')) {
+            loginPacket = mcData.loginPacket
+          } else {
+            loginPacket = {
+              entityId: 0,
+              levelType: 'fogetaboutit',
+              gameMode: 0,
+              previousGameMode: 255,
+              worldNames: ['minecraft:overworld'],
+              dimensionCodec: { name: '', type: 'compound', value: { dimension: { type: 'list', value: { type: 'compound', value: [w] } } } },
+              dimension: 0,
+              worldName: 'minecraft:overworld',
+              hashedSeed: [0, 0],
+              difficulty: 0,
+              maxPlayers: 20,
+              reducedDebugInfo: 1,
+              enableRespawnScreen: true
+            }
+          }
+          client.write('login', loginPacket)
           const chunk = new Chunk()
 
           chunk.setBlockType(pos, goldId)
@@ -540,21 +553,27 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
 
       server.once('login', (client) => {
         bot.time.timeOfDay = 18000
-        client.write('login', {
-          entityId: 0,
-          hashedSeed: [0, 0],
-          levelType: 'forgetaboutit',
-          gameMode: 0,
-          previousGameMode: 255,
-          worldNames: ['minecraft:overworld'],
-          dimensionCodec: { name: '', type: 'compound', value: { dimension: { type: 'list', value: { type: 'compound', value: [w] } } } },
-          dimension: bot.supportFeature('dimensionIsAnInt') ? 0 : 'minecraft:overworld',
-          worldName: 'minecraft:overworld',
-          difficulty: 0,
-          maxPlayers: 20,
-          reducedDebugInfo: true,
-          enableRespawnScreen: true
-        })
+        let loginPacket
+        if (bot.supportFeature('usesLoginPacket')) {
+          loginPacket = mcData.loginPacket
+        } else {
+          loginPacket = {
+            entityId: 0,
+            levelType: 'fogetaboutit',
+            gameMode: 0,
+            previousGameMode: 255,
+            worldNames: ['minecraft:overworld'],
+            dimensionCodec: { name: '', type: 'compound', value: { dimension: { type: 'list', value: { type: 'compound', value: [w] } } } },
+            dimension: 0,
+            worldName: 'minecraft:overworld',
+            hashedSeed: [0, 0],
+            difficulty: 0,
+            maxPlayers: 20,
+            reducedDebugInfo: 1,
+            enableRespawnScreen: true
+          }
+        }
+        client.write('login', loginPacket)
 
         const chunk = new Chunk()
 
