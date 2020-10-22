@@ -218,5 +218,10 @@
       "name": "usesLoginPacket",
       "description": "Uses the login packet as defined in mcData",
       "versions": ["1.16.2", "1.16.3"]
+    },
+    {
+      "name": "usesMultiblockSplitHorizontal",
+      "description": "In the multi_block_change packet, bit operations are split horizontally and vertically.",
+      "versions": ["1.16.2", "1.16.3"]
     }
 ]
