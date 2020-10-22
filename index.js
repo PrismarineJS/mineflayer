@@ -119,7 +119,7 @@ class Bot extends EventEmitter {
       self.majorVersion = version.majorVersion
       self.version = version.minecraftVersion
       options.version = version.minecraftVersion
-      self.supportFeature = feature => supportFeature(feature, version.majorVersion)
+      self.supportFeature = feature => supportFeature(feature, version.minecraftVersion)
       self.emit('inject_allowed')
     }
   }
