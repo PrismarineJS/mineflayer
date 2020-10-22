@@ -161,7 +161,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
         done()
       })
       server.on('login', (client) => {
-        const loginPacket
+        let loginPacket
         if (bot.supportFeature('usesLoginPacket')) {
           loginPacket = mcData.loginPacket
         } else {
@@ -178,7 +178,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
             difficulty: 0,
             maxPlayers: 20,
             reducedDebugInfo: 1,
-            enableRespawnScreen: true,
+            enableRespawnScreen: true
           }
         }
 
@@ -225,7 +225,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
           }
         })
         server.on('login', (client) => {
-          const loginPacket
+          let loginPacket
           if (bot.supportFeature('usesLoginPacket')) {
             loginPacket = mcData.loginPacket
           } else {
@@ -242,7 +242,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
               difficulty: 0,
               maxPlayers: 20,
               reducedDebugInfo: 1,
-              enableRespawnScreen: true,
+              enableRespawnScreen: true
             }
           }
           client.write('login', loginPacket)
@@ -553,7 +553,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
 
       server.once('login', (client) => {
         bot.time.timeOfDay = 18000
-        const loginPacket
+        let loginPacket
         if (bot.supportFeature('usesLoginPacket')) {
           loginPacket = mcData.loginPacket
         } else {
@@ -570,7 +570,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
             difficulty: 0,
             maxPlayers: 20,
             reducedDebugInfo: 1,
-            enableRespawnScreen: true,
+            enableRespawnScreen: true
           }
         }
         client.write('login', loginPacket)
