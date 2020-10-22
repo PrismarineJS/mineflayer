@@ -187,7 +187,12 @@
   {
     "name": "dimensionIsAString",
     "description": "description is a string",
-    "versions": ["1.16", "1.16.3"]
+    "versions": ["1.16", "1.16.1"]
+  },
+  {
+    "name": "dimensionIsAWorld",
+    "description": "description is a world name (string)",
+    "versions": ["1.16.2", "1.16.3"]
   },
   {
     "name": "doesntHaveChestType",
