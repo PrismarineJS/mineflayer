@@ -1,3 +1,8 @@
+## 2.32.0
+* 1.16.3 support (thanks @GroobleDierne and @TheDudeFromCI)
+* fix bug with entity width (thanks @TheDudeFromCI)
+* Add ability to call openChest on shulker boxes (thanks @efunneko)
+
 ## 2.31.0
 * Fix furnace and add tests (thanks @ImHarvol)
 * Add offhand param to d.ts (thanks @TheDudeFromCI)
