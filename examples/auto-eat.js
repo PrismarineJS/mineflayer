@@ -25,4 +25,3 @@ bot.on('autoeat_started', () => {
 bot.on('autoeat_stopped', () => {
   console.log('Auto Eat stopped!')
 })
-
