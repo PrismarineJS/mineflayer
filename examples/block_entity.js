@@ -9,10 +9,6 @@ if (process.argv.length < 4 || process.argv.length > 6) {
   process.exit(1)
 }
 
-// TODO: commands
-console.log('Commands :\n' +
-  '  spawner in message')
-
 const bot = createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),

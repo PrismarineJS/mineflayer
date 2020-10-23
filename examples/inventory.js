@@ -14,12 +14,6 @@ if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node trader.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
-// TODO: Finish commands
-console.log('Commands :\n' +
-  '  loaded\n' +
-  '  show inventory\n' +
-  '  show trades <id>\n' +
-  '  trade <id> <trade> [<times>]')
 
 const bot = createBot({
   host: process.argv[2],

@@ -9,13 +9,6 @@ if (process.argv.length < 4 || process.argv.length > 6) {
   process.exit(1)
 }
 
-// TODO: commands
-console.log('Commands :\n' +
-  '  show villagers\n' +
-  '  show inventory\n' +
-  '  show trades <id>\n' +
-  '  trade <id> <trade> [<times>]')
-
 const bot = createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),

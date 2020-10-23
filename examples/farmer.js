@@ -1,4 +1,4 @@
-import Vec3 from 'vec3'
+import { Vec3 }from 'vec3'
 import { createBot } from 'mineflayer'
 
 if (process.argv.length < 4 || process.argv.length > 6) {

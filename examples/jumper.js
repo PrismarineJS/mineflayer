@@ -12,28 +12,6 @@ if (process.argv.length < 4 || process.argv.length > 6) {
   process.exit(1)
 }
 
-console.log('Commands :\n' +
-  '  forward\n' +
-  '  back\n' +
-  '  left\n' +
-  '  right\n' +
-  '  sprint\n' +
-  '  stop\n' +
-  '  jump\n' +
-  '  jump a lot\n' +
-  '  stop jumping\n' +
-  '  attack\n' +
-  '  mount\n' +
-  '  dismount\n' +
-  '  move vehicle forward\n' +
-  '  move vehicle backward\n' +
-  '  move vehicle left\n' +
-  '  move vehicle left\n' +
-  '  move vehicle right\n' +
-  '  tp\n' +
-  '  pos\n' +
-  '  yp')
-
 const bot = createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
