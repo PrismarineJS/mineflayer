@@ -1,4 +1,4 @@
-import { createBot as _createBot } from 'mineflayer'
+import { createBot } from 'mineflayer'
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node multiple.js <host> <port> [<name>] [<password>]')
