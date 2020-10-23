@@ -134,5 +134,6 @@ class Bot extends EventEmitter {
 
   end () {
     this._client.end()
+    this.emit('end')
   }
 }
