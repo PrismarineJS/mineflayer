@@ -53,7 +53,7 @@ function showVillagers () {
 
 function showInventory () {
   if (bot.inventory.slots.every(element => element === null)) {
-    bot.chat("My Inventory is empty")
+    bot.chat("My Inventory is empty\n")
   }
   bot.inventory.slots.filter(item => item).forEach((item) => {
       bot.chat(stringifyItem(item))
