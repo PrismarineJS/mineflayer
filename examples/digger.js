@@ -10,15 +10,21 @@
  * Remember that in survival mode he might not have enough dirt to get back up,
  * so be sure to teach him a few more tricks before leaving him alone at night.
  */
-const mineflayer = require('mineflayer')
-const vec3 = require('vec3')
+import { createBot } from 'mineflayer'
+import { Vec3 } from 'vec3'
 
 if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node digger.js <host> <port> [<name>] [<password>]')
+  console.log('Usage : node trader.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
+# TODO: Commands
+console.log('Commands :\n' +
+  '  show villagers\n' +
+  '  show inventory\n' +
+  '  show trades <id>\n' +
+  '  trade <id> <trade> [<times>]')
 
-const bot = mineflayer.createBot({
+const bot = createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
   username: process.argv[4] ? process.argv[4] : 'digger',
@@ -89,7 +95,7 @@ function build () {
 
   function placeIfHighEnough () {
     if (bot.entity.position.y > jumpY) {
-      bot.placeBlock(referenceBlock, vec3(0, 1, 0), (err) => {
+      bot.placeBlock(referenceBlock, Vec3(0, 1, 0), (err) => {
         if (err) {
           tryCount++
           if (tryCount > 10) {

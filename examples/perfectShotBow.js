@@ -1,6 +1,12 @@
 import { createBot } from 'mineflayer'
 import minecraftHawkEye from 'minecrafthawkeye'
 
+if (process.argv.length < 4 || process.argv.length > 6) {
+  console.log('Usage : node perfectShotBow.js <host> <port> [<name>] [<password>]')
+  process.exit(1)
+}
+
+
 const bot = createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),

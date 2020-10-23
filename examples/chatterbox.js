@@ -16,9 +16,16 @@ import { createBot, Item } from 'mineflayer'
 import { Vec3 } from 'vec3'
 
 if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node chatterbot.js <host> <port> [<name>] [<password>]')
+  console.log('Usage : node chatterbox.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
+
+// TODO: commands
+console.log('Commands :\n' +
+  '  show villagers\n' +
+  '  show inventory\n' +
+  '  show trades <id>\n' +
+  '  trade <id> <trade> [<times>]')
 
 const bot = createBot({
   host: process.argv[2],

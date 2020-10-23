@@ -8,14 +8,20 @@
  * To learn more about the recipe system and how crafting works
  * remember to read the API documentation!
  */
-const mineflayer = require('mineflayer')
+import { createBot } from 'mineflayer'
 
 if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node inventory.js <host> <port> [<name>] [<password>]')
+  console.log('Usage : node trader.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
+// TODO: Finish commands
+console.log('Commands :\n' +
+  '  loaded\n' +
+  '  show inventory\n' +
+  '  show trades <id>\n' +
+  '  trade <id> <trade> [<times>]')
 
-const bot = mineflayer.createBot({
+const bot = createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
   username: process.argv[4] ? process.argv[4] : 'inventory',

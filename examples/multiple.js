@@ -1,9 +1,16 @@
 import { createBot as _createBot } from 'mineflayer'
 
-if (process.argv.length < 3 || process.argv.length > 5) {
-  console.log('Usage : node multiple.js <host> <port>')
+if (process.argv.length < 4 || process.argv.length > 6) {
+  console.log('Usage : node multiple.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
+
+const bot = createBot({
+  host: process.argv[2],
+  port: parseInt(process.argv[3]),
+  username: process.argv[4] ? process.argv[4] : 'multiple',
+  password: process.argv[5]
+})
 
 let i = 0
 function next () {
@@ -16,11 +23,3 @@ function next () {
   }
 }
 next()
-
-function createBot (name) {
-  _createBot({
-    host: process.argv[2],
-    port: parseInt(process.argv[3]),
-    username: name
-  })
-}

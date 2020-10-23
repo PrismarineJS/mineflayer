@@ -5,6 +5,9 @@ if (process.argv.length < 4 || process.argv.length > 6) {
   process.exit(1)
 }
 
+console.log('Commands :\n' +
+  '  have complete in your message')
+
 const bot = createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),

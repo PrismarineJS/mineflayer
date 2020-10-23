@@ -9,7 +9,7 @@
 import { createBot } from 'mineflayer'
 
 if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node echo.js <host> <port> [<name>] [<password>]')
+  console.log('Usage : node trader.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 

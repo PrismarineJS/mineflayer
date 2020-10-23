@@ -6,19 +6,21 @@ import { pathfinder } from 'mineflayer-pathfinder'
 import { plugin as collectBlock } from 'mineflayer-collectblock'
 
 if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node collector.js <host> <port> [<name>] [<password>]')
+  console.log('Usage : node collectblock.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 
-if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node collectBlock.js <host> <port> [<name>] [<password>]')
-  process.exit(1)
-}
+// TODO: commands
+console.log('Commands :\n' +
+  '  show villagers\n' +
+  '  show inventory\n' +
+  '  show trades <id>\n' +
+  '  trade <id> <trade> [<times>]')
 
 const bot = createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
-  username: process.argv[4] ? process.argv[4] : 'collector',
+  username: process.argv[4] ? process.argv[4] : 'collectblock',
   password: process.argv[5]
 })
 

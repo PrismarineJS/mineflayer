@@ -2,19 +2,25 @@
  * This bot example shows the basic usage of the mineflayer-pvp plugin for guarding a defined area from nearby mobs.
  */
 
-const mineflayer = require('mineflayer')
+import { createBot } from 'mineflayer'
 const { pathfinder, Movements, goals } = require('mineflayer-pathfinder')
 const pvp = require('mineflayer-pvp').plugin
 
 if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node guard.js <host> <port> [<name>] [<password>]')
+  console.log('Usage : node trader.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 
-const bot = mineflayer.createBot({
+console.log('Commands :\n' +
+  '  show villagers\n' +
+  '  show inventory\n' +
+  '  show trades <id>\n' +
+  '  trade <id> <trade> [<times>]')
+
+const bot = createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
-  username: process.argv[4] ? process.argv[4] : 'Guard',
+  username: process.argv[4] ? process.argv[4] : 'guard',
   password: process.argv[5]
 })
 
