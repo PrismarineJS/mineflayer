@@ -7,7 +7,7 @@ const { pathfinder, Movements, goals } = require('mineflayer-pathfinder')
 const pvp = require('mineflayer-pvp').plugin
 
 if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node trader.js <host> <port> [<name>] [<password>]')
+  console.log('Usage : node guard.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 
