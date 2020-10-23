@@ -14,7 +14,7 @@ import { createBot } from 'mineflayer'
 import { Vec3 } from 'vec3'
 
 if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node trader.js <host> <port> [<name>] [<password>]')
+  console.log('Usage : node digger.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 
