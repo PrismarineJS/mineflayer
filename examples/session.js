@@ -1,12 +1,12 @@
-const mineflayer = require('mineflayer')
-const path = require('path')
+import { createBot } from 'mineflayer'
+import { resolve } from 'path'
 
 if (process.argv.length !== 5) {
   console.log('Usage : node session.js <host> <port> <pathToLauncherProfiles>')
   process.exit(1)
 }
 
-const profile = require(path.resolve(process.argv[4], 'launcher_profiles.json'))
+const profile = require(resolve(process.argv[4], 'launcher_profiles.json'))
 const auth = profile.authenticationDatabase[profile.selectedUser.account]
 const profileID = profile.selectedUser.profile
 
@@ -19,7 +19,7 @@ const session = {
   }
 }
 
-const bot = mineflayer.createBot({
+const bot = createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
   session

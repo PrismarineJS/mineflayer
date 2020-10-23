@@ -1,4 +1,4 @@
-const mineflayer = require('mineflayer')
+import { createBot as _createBot } from 'mineflayer'
 
 if (process.argv.length < 3 || process.argv.length > 5) {
   console.log('Usage : node multiple.js <host> <port>')
@@ -18,7 +18,7 @@ function next () {
 next()
 
 function createBot (name) {
-  mineflayer.createBot({
+  _createBot({
     host: process.argv[2],
     port: parseInt(process.argv[3]),
     username: name

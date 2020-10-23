@@ -1,7 +1,7 @@
 /*
  * This example will automatically reconnect when it gets disconnected from the server.
  */
-const mineflayer = require('mineflayer')
+import { createBot as _createBot } from 'mineflayer'
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node reconnector.js <host> <port> [<name>] [<password>]')
@@ -9,7 +9,7 @@ if (process.argv.length < 4 || process.argv.length > 6) {
 }
 
 function createBot () {
-  const bot = mineflayer.createBot({
+  const bot = _createBot({
     host: process.argv[2],
     port: parseInt(process.argv[3]),
     username: process.argv[4] ? process.argv[4] : 'reconnector',

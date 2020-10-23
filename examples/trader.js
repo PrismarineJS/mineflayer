@@ -7,7 +7,7 @@
  * You can ask the bot to trade with a villager, display the villagers in range
  * and show what trades a villager has by sending a chat message.
  */
-const mineflayer = require('mineflayer')
+import { createBot } from 'mineflayer'
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node trader.js <host> <port> [<name>] [<password>]')
@@ -19,7 +19,7 @@ console.log('Commands :\n' +
   '  show trades <id>\n' +
   '  trade <id> <trade> [<times>]')
 
-const bot = mineflayer.createBot({
+const bot = createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
   username: process.argv[4] ? process.argv[4] : 'trader',

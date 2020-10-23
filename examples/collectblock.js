@@ -1,9 +1,9 @@
 /**
  * A quick and easy implementation of the collect block plugin. (Requires mineflayer-pathfinder and mineflayer-collectblock)
  */
-const mineflayer = require('mineflayer')
-const pathfinder = require('mineflayer-pathfinder').pathfinder
-const collectBlock = require('mineflayer-collectblock').plugin
+import { createBot } from 'mineflayer'
+import { pathfinder } from 'mineflayer-pathfinder'
+import { plugin as collectBlock } from 'mineflayer-collectblock'
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node collector.js <host> <port> [<name>] [<password>]')
@@ -15,7 +15,7 @@ if (process.argv.length < 4 || process.argv.length > 6) {
   process.exit(1)
 }
 
-const bot = mineflayer.createBot({
+const bot = createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
   username: process.argv[4] ? process.argv[4] : 'collector',

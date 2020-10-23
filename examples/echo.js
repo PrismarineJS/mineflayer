@@ -6,14 +6,14 @@
  * It's not very useful yet, but you can use this as a starting point
  * to create your own bot.
  */
-const mineflayer = require('mineflayer')
+import { createBot } from 'mineflayer'
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node echo.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 
-const bot = mineflayer.createBot({
+const bot = createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
   username: process.argv[4] ? process.argv[4] : 'echo',

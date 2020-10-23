@@ -5,15 +5,15 @@
  *
  */
 
-const mineflayer = require('mineflayer')
-const mineflayerViewer = require('prismarine-viewer').mineflayer
+import { createBot } from 'mineflayer'
+import { mineflayer as mineflayerViewer } from 'prismarine-viewer'
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node viewer.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 
-const bot = mineflayer.createBot({
+const bot = createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
   username: process.argv[4] ? process.argv[4] : 'viewer',

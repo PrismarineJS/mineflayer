@@ -3,15 +3,15 @@
  * https://github.com/PrismarineJS/prismarine-provider-anvil
  */
 
-const mineflayer = require('mineflayer')
-const fs = require('fs')
+import { createBot } from 'mineflayer'
+import { mkdirSync } from 'fs'
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node saver.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 
-const bot = mineflayer.createBot({
+const bot = createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
   username: process.argv[4] ? process.argv[4] : 'saver',
@@ -19,7 +19,7 @@ const bot = mineflayer.createBot({
   storageBuilder: ({ version, worldName }) => {
     const Anvil = require('prismarine-provider-anvil').Anvil(version)
     worldName = worldName.replace(/:/g, '_')
-    fs.mkdirSync(worldName)
+    mkdirSync(worldName)
     return new Anvil(worldName)
   }
 })

@@ -1,12 +1,12 @@
-const mineflayer = require('mineflayer')
-const repl = require('repl')
+import { createBot } from 'mineflayer'
+import { start } from 'repl'
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node repl.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 
-const bot = mineflayer.createBot({
+const bot = createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
   username: process.argv[4] ? process.argv[4] : 'repl',
@@ -14,7 +14,7 @@ const bot = mineflayer.createBot({
 })
 
 bot.on('login', () => {
-  const r = repl.start('> ')
+  const r = start('> ')
   r.context.bot = bot
 
   r.on('exit', () => {

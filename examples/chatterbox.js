@@ -12,15 +12,15 @@
  * This bot also replies to some specific chat messages so you can ask him
  * a few informations while you are in game.
  */
-const mineflayer = require('mineflayer')
-const Vec3 = require('vec3').Vec3
+import { createBot, Item } from 'mineflayer'
+import { Vec3 } from 'vec3'
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node chatterbot.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 
-const bot = mineflayer.createBot({
+const bot = createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
   username: process.argv[4] ? process.argv[4] : 'chatterbox',
@@ -170,7 +170,7 @@ bot.on('playerLeft', (player) => {
 bot.on('playerCollect', (collector, collected) => {
   if (collector.type === 'player' && collected.type === 'object') {
     const rawItem = collected.metadata[10]
-    const item = mineflayer.Item.fromNotch(rawItem)
+    const item = Item.fromNotch(rawItem)
     bot.chat(`${collector.username !== bot.username ? ("I'm so jealous. " + collector.username) : 'I '} collected ${item.count} ${item.displayName}`)
   }
 })

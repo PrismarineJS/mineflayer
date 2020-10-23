@@ -2,14 +2,14 @@
  * This bot example shows the basic usage of the mineflayer-pvp plugin for guarding a defined area from nearby mobs.
  */
 
+const mineflayer = require('mineflayer')
+const { pathfinder, Movements, goals } = require('mineflayer-pathfinder')
+const pvp = require('mineflayer-pvp').plugin
+
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node guard.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
-
-const mineflayer = require('mineflayer')
-const { pathfinder, Movements, goals } = require('mineflayer-pathfinder')
-const pvp = require('mineflayer-pvp').plugin
 
 const bot = mineflayer.createBot({
   host: process.argv[2],

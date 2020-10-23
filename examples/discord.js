@@ -13,13 +13,13 @@ if (process.argv.length < 6 || process.argv.length > 8) {
 }
 
 // Load discord
-const Discord = require('discord.js')
-const client = new Discord.Client()
+import { Client } from 'discord.js'
+const client = new Client()
 let channel = process.argv[3]
 
 // Load mineflayer
-const mineflayer = require('mineflayer')
-const bot = mineflayer.createBot({
+import { createBot } from 'mineflayer'
+const bot = createBot({
   host: process.argv[4],
   port: parseInt(process.argv[5]),
   username: process.argv[6] || 'discord',
