@@ -55,9 +55,9 @@ module.exports = (version) => {
     if (mcData.blocks[id] !== undefined) {
       const block = mcData.blocks[id]
       if (block.diggable && excludedBlocks.indexOf(block.name) === -1) {
-        funcs[block.name] = ((blockId => (bot, done) => {
+        funcs[block.name] = (blockId => (bot, done) => {
           digSomething(blockId, bot, done)
-        }))(block.id)
+        })(block.id)
       }
     }
   }

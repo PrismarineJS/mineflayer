@@ -23,9 +23,11 @@ function testedRange (nodeIndex, nodeTotal, numberOfVersions) {
   }
 }
 console.log({ nodeIndex, nodeTotal, versions: mc.supportedVersions.length })
-const { firstVersion, lastVersion } = parallel ? testedRange(nodeIndex, nodeTotal, mc.supportedVersions.length) : {
-  firstVersion: 0,
-  lastVersion: mc.supportedVersions.length - 1
-}
+const { firstVersion, lastVersion } = parallel
+  ? testedRange(nodeIndex, nodeTotal, mc.supportedVersions.length)
+  : {
+      firstVersion: 0,
+      lastVersion: mc.supportedVersions.length - 1
+    }
 
 module.exports = { firstVersion, lastVersion }

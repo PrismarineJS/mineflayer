@@ -127,11 +127,11 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
           if (typeof testFunctions === 'object') {
             for (const testFunctionName in testFunctions) {
               if (testFunctions[testFunctionName] !== undefined) {
-                it(`${test} ${testFunctionName}`, ((testFunctionName => function (done) {
+                it(`${test} ${testFunctionName}`, (testFunctionName => function (done) {
                   this.timeout(30000)
                   bot.test.sayEverywhere(`starting ${test} ${testFunctionName}`)
                   testFunctions[testFunctionName](bot, done)
-                }))(testFunctionName))
+                })(testFunctionName))
               }
             }
           } else {

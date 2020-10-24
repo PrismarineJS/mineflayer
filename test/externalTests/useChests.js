@@ -5,7 +5,7 @@ module.exports = () => (bot, done) => {
   const mcData = require('minecraft-data')(bot.version)
   const Item = require('prismarine-item')(bot.version)
 
-  const chestManagementTest = ((() => {
+  const chestManagementTest = (() => {
     const smallChestLocation = new Vec3(0, 4, -1)
     const largeChestLocations = [new Vec3(0, 4, 1), new Vec3(1, 4, 1)]
     const smallTrappedChestLocation = new Vec3(1, 4, 0)
@@ -173,7 +173,7 @@ module.exports = () => (bot, done) => {
         assert(window.slots[i] == null)
       }
     }
-  }))()
+  })()
 
   bot.test.callbackChain(chestManagementTest, done)
 }
