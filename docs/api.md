@@ -102,7 +102,6 @@
       - [bot.game.difficulty](#botgamedifficulty)
       - [bot.game.gameMode](#botgamegamemode)
       - [bot.game.hardcore](#botgamehardcore)
-      - [bot.game.worldHeight](#botgameworldheight)
       - [bot.game.maxPlayers](#botgamemaxplayers)
     - [bot.player](#botplayer)
       - [bot.players](#botplayers)
@@ -788,8 +787,6 @@ Coordinates to the main spawn point, where all compasses point to.
 #### bot.game.gameMode
 
 #### bot.game.hardcore
-
-#### bot.game.worldHeight
 
 #### bot.game.maxPlayers
 
