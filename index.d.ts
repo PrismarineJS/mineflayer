@@ -168,6 +168,7 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
   controlState: ControlStateStatus;
   void;
   creative: creativeMethods;
+  world: any;
   _client: Client;
 
   constructor();
@@ -226,7 +227,7 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
 
   sleep(bedBlock: Block, cb?: (err?: Error) => void): void;
 
-  isABd(bedBlock: Block): void;
+  isABed(bedBlock: Block): void;
 
   wake(cb?: (err?: Error) => void): void;
 
@@ -276,6 +277,8 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
   activateBlock(block: Block, callback?: (err?: Error) => void): void;
 
   activateEntity(block: Entity, callback?: (err?: Error) => void): void;
+
+  activateEntityAt(block: Entity, position: Vec3, callback?: (err?: Error) => void): void;
 
   consume(callback: (err?: Error) => void): void;
 
@@ -369,6 +372,9 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
 
   getEquipmentDestSlot(destination: string): number;
 
+  waitForChunksToLoad(cb?: (err?: Error) => void): void;
+
+  nearestEntity(filter?: (entity: Entity) => boolean): Entity | null;
 }
 
 export interface GameState {
