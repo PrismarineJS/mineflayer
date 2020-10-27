@@ -100,7 +100,6 @@
       - [bot.game.difficulty](#botgamedifficulty)
       - [bot.game.gameMode](#botgamegamemode)
       - [bot.game.hardcore](#botgamehardcore)
-      - [bot.game.worldHeight](#botgameworldheight)
       - [bot.game.maxPlayers](#botgamemaxplayers)
     - [bot.player](#botplayer)
       - [bot.players](#botplayers)
@@ -762,8 +761,6 @@ Create and return an instance of the class bot.
 #### bot.game.gameMode
 
 #### bot.game.hardcore
-
-#### bot.game.worldHeight
 
 #### bot.game.maxPlayers
 
