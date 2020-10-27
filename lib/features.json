@@ -233,5 +233,10 @@
     "name": "usesMultiblock3DChunkCoords",
     "description": "In the multi_block_change packet, all 3 axis coords are defined.",
     "versions": ["1.16.2", "1.16.3"]
+  },
+  {
+    "name": "setBlockUsesMetadataNumber",
+    "description": "The parameter metadata of the setblock command is a number",
+    "versions": ["1.8", "1.12.2"]
   }
 ]

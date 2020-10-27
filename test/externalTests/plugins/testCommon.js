@@ -25,6 +25,7 @@ function inject (bot) {
   bot.test.tellAndListen = tellAndListen
 
   function callbackChain (functions, cb) {
+    assert(cb, new Error('You must provide a callback to bot.test.callbackChain'))
     let i = 0
     callNext()
     function callNext () {
