@@ -56,17 +56,13 @@ function inject (bot) {
     // and then air
   ]
 
-  const deltas3x3 = [
-    new Vec3(-1, 0, -1),
-    new Vec3(0, 0, -1),
-    new Vec3(1, 0, -1),
-    new Vec3(-1, 0, 0),
-    new Vec3(0, 0, 0),
-    new Vec3(1, 0, 0),
-    new Vec3(-1, 0, 1),
-    new Vec3(0, 0, 1),
-    new Vec3(1, 0, 1)
-  ]
+  const deltas = []
+  const deltaSize = 5
+  for (let i = -Math.floor(deltaSize / 2); i <= Math.floor(deltaSize / 2); i++) {
+    for (let j = -Math.floor(deltaSize / 2); j <= Math.floor(deltaSize / 2); j++) {
+      deltas.push(new Vec3(i, 0, j))
+    }
+  }
 
   // eslint-disable-next-line no-unused-vars
   function resetBlocksToSuperflat (cb) {
@@ -74,8 +70,8 @@ function inject (bot) {
     const groundY = 4
     for (let y = groundY + 4; y >= groundY - 1; y--) {
       const expectedBlock = superflatLayers[y] === undefined ? null : superflatLayers[y].block
-      for (let i = 0; i < deltas3x3.length; i++) {
-        const position = bot.entity.position.plus(deltas3x3[i])
+      for (let i = 0; i < deltas.length; i++) {
+        const position = bot.entity.position.plus(deltas[i])
         position.y = y
         const block = bot.blockAt(position)
         if (expectedBlock === null) {
