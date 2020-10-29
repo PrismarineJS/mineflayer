@@ -1378,13 +1378,15 @@ function somePlugin(bot, options) {
   function someFunction() {
     bot.chat('Yay!');
   }
-  bot.someFunction = someFunction;
+
+  bot.myPlugin = {} // Good practice to namespace plugin API
+  bot.myPlugin.someFunction = someFunction;
 }
 
 var bot = mineflayer.createBot(...);
 bot.loadPlugin(somePlugin);
 bot.once('login', function() {
-  bot.someFunction(); // Yay!
+  bot.myPlugin.someFunction(); // Yay!
 });
 ```
 
