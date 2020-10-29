@@ -225,6 +225,8 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
 
   loadPlugins(plugins: Array<Plugin>): void;
 
+  hasPlugin(plugin: Plugin): boolean;
+
   sleep(bedBlock: Block, cb?: (err?: Error) => void): void;
 
   isABed(bedBlock: Block): void;

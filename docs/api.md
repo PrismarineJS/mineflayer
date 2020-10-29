@@ -1369,7 +1369,8 @@ See the `bot.settings` property.
 
 #### bot.loadPlugin(plugin)
 
-Injects a Plugin.
+Injects a Plugin. Does nothing if the plugin is already loaded.
+
  * `plugin` - function
 
 ```js
@@ -1391,6 +1392,10 @@ bot.once('login', function() {
 
 Injects plugins see `bot.loadPlugin`.
  * `plugins` - array of functions
+
+#### bot.hasPlugin(plugin)
+
+Checks if the given plugin is loaded (or scheduled to be loaded) on this bot.
 
 #### bot.sleep(bedBlock, [cb])
 
