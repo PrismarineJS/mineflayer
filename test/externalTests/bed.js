@@ -20,7 +20,17 @@ module.exports = () => (bot, done) => {
         bot.chat(`/setblock ${bedPos2.toArray().join(' ')} ${bedItem.name}[part=head]`)
       }
       bot.chat(`/time set ${midnight}`)
-      bot.on('time', cb)
+      function shoudlCb () {
+        console.log(bot.time.timeOfDay)
+        const isNight = bot.time.timeOfDay >= midnight
+        const pos1IsBed = bot.blockAt(bedPos1).name.endsWith('bed')
+        const pos2IsBed = bot.blockAt(bedPos2).name.endsWith('bed')
+        if (isNight && pos1IsBed && pos2IsBed) {
+          bot.removeListener('time', shoudlCb)
+          cb()
+        }
+      }
+      bot.on('time', shoudlCb)
     },
     (cb) => { // Sleep
       assert(!bot.isSleeping)
