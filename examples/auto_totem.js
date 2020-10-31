@@ -21,7 +21,7 @@ bot.on('spawn', () => {
   const totemId = mcData.itemsByName.totem_of_undying.id // Get the correct id
   if (mcData.itemsByName.totem_of_undying) {
     setInterval(() => {
-      var totem = bot.inventory.findInventoryItem(totemId, null)
+      const totem = bot.inventory.findInventoryItem(totemId, null)
       if (totem) {
         bot.equip(totem, 'off-hand')
       }

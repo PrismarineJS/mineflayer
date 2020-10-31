@@ -58,10 +58,11 @@ function sayItems (items = bot.inventory.items()) {
 }
 
 function dig () {
+  let target
   if (bot.targetDigBlock) {
     bot.chat(`already digging ${bot.targetDigBlock.name}`)
   } else {
-    var target = bot.blockAt(bot.entity.position.offset(0, -1, 0))
+    target = bot.blockAt(bot.entity.position.offset(0, -1, 0))
     if (target && bot.canDigBlock(target)) {
       bot.chat(`starting to dig ${target.name}`)
       bot.dig(target, onDiggingCompleted)

@@ -73,8 +73,8 @@ function createBot (options = {}) {
   pluginLoader(bot, options)
   const internalPlugins = Object.keys(plugins)
     .filter(key => {
-      if (typeof options.plugins[key] === 'function') return
-      if (options.plugins[key] === false) return
+      if (typeof options.plugins[key] === 'function') return false
+      if (options.plugins[key] === false) return false
       return options.plugins[key] || options.loadInternalPlugins
     }).map(key => plugins[key])
   const externalPlugins = Object.keys(options.plugins)
