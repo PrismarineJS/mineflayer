@@ -529,9 +529,7 @@ export interface FindBlockOptions {
   matching: number | Array<number> | ((block: Block) => boolean);
   maxDistance?: number;
   count?: number;
-  point?: Vec3;
   useExtraInfo?: boolean;
-  start?: { x: number, y: number, z: number };
 }
 
 export type EquipmentDestination = "hand" | "head" | "torso" | "legs" | "feet" | "off-hand";
