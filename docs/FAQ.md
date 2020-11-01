@@ -38,7 +38,15 @@ Enabled debug mode https://github.com/PrismarineJS/mineflayer#debug
 One way is to increase the [checkTimeoutInterval](https://github.com/PrismarineJS/node-minecraft-protocol/blob/master/docs/API.md#mccreateclientoptions) option (to set in createBot) to an higher value (for example `300*1000` which is 5min instead of the default 30s). If you still get disconnected, you can auto reconnect using something like this example https://github.com/PrismarineJS/mineflayer/blob/master/examples/reconnector.js
 
 ### How to get the lore / text of an item ?
+
 You can use the .nbt property of an item. prismarine-nbt nbt.simplify method may be useful
 
 ### How can I send message from the console to the server?
+
 You can use a library like `repl` to read the console input and use `bot.chat` to send it. You can find an example [here.](https://github.com/PrismarineJS/mineflayer/blob/master/examples/repl.js)
+
+### When creating a plugin, how can I specify another plugin as a dependency?
+
+In the `inject()` function for your plugin, you can safely call `bot.loadPlugin(anotherPlugin)` to make sure that plugin is loaded. If the plugin was already loaded before, nothing happens.
+
+Note that the order in which plugins are loaded is dynamic, so you should never call another plugin in your `inject()` function.

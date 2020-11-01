@@ -1369,7 +1369,8 @@ See the `bot.settings` property.
 
 #### bot.loadPlugin(plugin)
 
-Injects a Plugin.
+Injects a Plugin. Does nothing if the plugin is already loaded.
+
  * `plugin` - function
 
 ```js
@@ -1377,13 +1378,15 @@ function somePlugin(bot, options) {
   function someFunction() {
     bot.chat('Yay!');
   }
-  bot.someFunction = someFunction;
+
+  bot.myPlugin = {} // Good practice to namespace plugin API
+  bot.myPlugin.someFunction = someFunction;
 }
 
 var bot = mineflayer.createBot(...);
 bot.loadPlugin(somePlugin);
 bot.once('login', function() {
-  bot.someFunction(); // Yay!
+  bot.myPlugin.someFunction(); // Yay!
 });
 ```
 
@@ -1391,6 +1394,10 @@ bot.once('login', function() {
 
 Injects plugins see `bot.loadPlugin`.
  * `plugins` - array of functions
+
+#### bot.hasPlugin(plugin)
+
+Checks if the given plugin is loaded (or scheduled to be loaded) on this bot.
 
 #### bot.sleep(bedBlock, [cb])
 
