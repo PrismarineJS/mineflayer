@@ -1,3 +1,10 @@
+## 2.33.0
+* block_actions fix (thanks @SpikeThatMike)
+* typescript fixes (thanks @TheDudeFromCI and @NotSugden)
+* add uuid by objectUUID handling (thanks @Rob9315)
+* fix bed packet (thanks @imharvol)
+* better plugin handling (thanks @TheDudeFromCI)
+
 ## 2.32.0
 * 1.16.3 support (thanks @GroobleDierne and @TheDudeFromCI)
 * fix bug with entity width (thanks @TheDudeFromCI)
