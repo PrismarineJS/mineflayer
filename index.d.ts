@@ -45,19 +45,19 @@ export type Plugin = (bot: Bot, options: BotOptions) => void;
 
 interface BotEvents {
   chat: (
-      username: string,
-      message: string,
-      translate: string | null,
-      jsonMsg: string,
-      matches: Array<string> | null
-    ) => void;
+    username: string,
+    message: string,
+    translate: string | null,
+    jsonMsg: string,
+    matches: Array<string> | null
+  ) => void;
   whisper: (
-      username: string,
-      message: string,
-      translate: string | null,
-      jsonMsg: string,
-      matches: Array<string> | null
-    ) => void;
+    username: string,
+    message: string,
+    translate: string | null,
+    jsonMsg: string,
+    matches: Array<string> | null
+  ) => void;
   actionBar: (jsonMsg: string) => void;
   error: (err: Error) => void;
   message: (jsonMsg: string, position: string) => void;
@@ -166,7 +166,7 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
   scoreboards: { [name: string]: ScoreBoard };
   scoreboard: { [slot in DisplaySlot]: ScoreBoard };
   controlState: ControlStateStatus;
-  void;
+  void: void;
   creative: creativeMethods;
   world: any;
   _client: Client;
@@ -186,7 +186,7 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
   canSeeBlock(block: Block): boolean;
 
   findBlock(options: FindBlockOptions): Block;
-  
+
   findBlocks(options: FindBlockOptions): Block[];
 
   canDigBlock(block: Block): boolean;
@@ -370,7 +370,7 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
     cb?: (err?: Error) => void
   ): void;
 
-  updateHeldItem();
+  updateHeldItem(): void;
 
   getEquipmentDestSlot(destination: string): number;
 
@@ -424,7 +424,7 @@ export class ChatMessage {
   clickEvent: object;
   hoverEvent: object;
 
-  constructor(message);
+  constructor(message: ChatMessage);
 
   parse(): void;
 
@@ -448,13 +448,13 @@ export interface ChatPattern {
 }
 
 export interface SkinParts {
-    showCape: boolean;
-    showJacket: boolean;
-    showLeftSleeve: boolean;
-    showRightSleeve: boolean;
-    showLeftPants: boolean;
-    showRightPants: boolean;
-    showHat: boolean;
+  showCape: boolean;
+  showJacket: boolean;
+  showLeftSleeve: boolean;
+  showRightSleeve: boolean;
+  showLeftPants: boolean;
+  showRightPants: boolean;
+  showHat: boolean;
 }
 
 export interface GameSettings {
@@ -728,7 +728,7 @@ export class ScoreBoard {
 
   constructor(packet: object);
 
-  setTitle(title: string);
+  setTitle(title: string): void;
 
   add(name: string, value: number): ScoreBoardItem;
 
