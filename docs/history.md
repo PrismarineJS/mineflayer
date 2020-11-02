@@ -1,3 +1,6 @@
+## 2.34.0
+* 1.16.4 support
+
 ## 2.33.0
 * block_actions fix (thanks @SpikeThatMike)
 * typescript fixes (thanks @TheDudeFromCI and @NotSugden)
