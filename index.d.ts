@@ -166,7 +166,6 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
   scoreboards: { [name: string]: ScoreBoard };
   scoreboard: { [slot in DisplaySlot]: ScoreBoard };
   controlState: ControlStateStatus;
-  void: void;
   creative: creativeMethods;
   world: any;
   _client: Client;
