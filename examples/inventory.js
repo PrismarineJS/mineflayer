@@ -132,7 +132,7 @@ function craftItem (name, amount) {
   amount = parseInt(amount, 10)
   const item = require('minecraft-data')(bot.version).findItemOrBlockByName(name)
   const craftingTable = bot.findBlock({
-    matching: 58
+    matching: require('minecraft-data')(bot.version).blocksByName.crafting_table.id
   })
 
   if (item) {
