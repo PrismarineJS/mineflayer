@@ -125,9 +125,13 @@ function useEquippedItem () {
 
 async function craftItem (name, amount) {
   amount = parseInt(amount, 10)
-  const item = require('minecraft-data')(bot.version).findItemOrBlockByName(name)
+  const mcData = require('minecraft-data')(bot.version)
+
+  const item = mcData.findItemOrBlockByName(name)
+  const craftingTableID = mcData.blocksByName.crafting_table.id
+
   const craftingTable = bot.findBlock({
-    matching: 58
+    matching: craftingTableID
   })
 
   if (item) {
