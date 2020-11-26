@@ -169,6 +169,7 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
   creative: creativeMethods;
   world: any;
   _client: Client;
+  heldItem: Item | null;
 
   constructor();
 
