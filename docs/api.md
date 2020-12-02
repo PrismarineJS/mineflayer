@@ -210,7 +210,8 @@
     - [Functions](#functions)
       - [bot.blockAt(point, extraInfos=true)](#botblockatpoint-extrainfostrue)
       - [bot.waitForChunksToLoad(cb)](#botwaitforchunkstoloadcb)
-      - [bot.blockInSight(maxDistance=256)](#botblockinsightmaxdistance256)
+      - [bot.blockInSight(maxSteps, vectorLength)](#botblockinsightmaxsteps-vectorlength)
+      - [bot.blockAtCursor(maxDistance=256)](#botblockatcursormaxdistance256)
       - [bot.canSeeBlock(block)](#botcanseeblockblock)
       - [bot.findBlocks(options)](#botfindblocksoptions)
       - [bot.findBlock(options)](#botfindblockoptions)
@@ -1268,7 +1269,15 @@ See `Block`.
 
 The cb gets called when many chunks have loaded.
 
-#### bot.blockInSight(maxDistance=256)
+#### bot.blockInSight(maxSteps, vectorLength)
+
+Deprecated, use `blockAtCursor` instead.
+
+Returns the block at which bot is looking at or `null`
+ * `maxSteps` - Number of steps to raytrace, defaults to 256.
+ * `vectorLength` - Length of raytracing vector, defaults to `5/16`.
+
+#### bot.blockAtCursor(maxDistance=256)
 
 Returns the block at which bot is looking at or `null`
  * `maxDistance` - The maximum distance the block can be from the eye, defaults to 256.
