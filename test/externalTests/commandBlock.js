@@ -1,10 +1,5 @@
 const vec3 = require('vec3')
-
-function sleep (ms) {
-  return new Promise((resolve, reject) => {
-    setTimeout(resolve, ms)
-  })
-}
+const { sleep } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot, done) => {
   const command = `/say ${Math.floor(Math.random() * 1000)}`
