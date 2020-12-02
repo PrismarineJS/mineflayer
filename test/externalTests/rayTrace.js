@@ -3,14 +3,21 @@ const assert = require('assert')
 module.exports = () => (bot, done) => {
   const { position } = bot.entity
   bot.lookAt(position.offset(0, 3, 0), true, () => {
-    const block = bot.blockAtCursor()
+    let block = bot.blockAtCursor()
     assert.strictEqual(block, null)
 
+    block = bot.blockInSight()
+    assert.strictEqual(block, undefined)
+
     bot.lookAt(position.offset(0, -3, 0), true, () => {
-      const block = bot.blockAtCursor()
+      let block = bot.blockAtCursor()
       const relBlock = bot.blockAt(position.offset(0, -1, 0))
 
       assert.deepStrictEqual(block, relBlock)
+
+      block = bot.blockInSight()
+      assert.deepStrictEqual(block, relBlock)
+
       done()
     })
   })
