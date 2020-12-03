@@ -211,7 +211,7 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
     cb: (matches: Array<string>) => void,
     assumeCommand?: boolean,
     sendBlockInSight?: boolean
-  ): void;
+  ): Promise<Array<string>>;
 
   chat(message: string): void;
 
@@ -227,11 +227,11 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
 
   hasPlugin(plugin: Plugin): boolean;
 
-  sleep(bedBlock: Block, cb?: (err?: Error) => void): void;
+  sleep(bedBlock: Block, cb?: (err?: Error) => void): Promise<void>;
 
   isABed(bedBlock: Block): void;
 
-  wake(cb?: (err?: Error) => void): void;
+  wake(cb?: (err?: Error) => void): Promise<void>;
 
   setControlState(control: ControlState, state: boolean): void;
 
@@ -274,7 +274,7 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
 
   digTime(block: Block): number;
 
-  placeBlock(referenceBlock: Block, faceVector: Vec3, cb: () => void): void;
+  placeBlock(referenceBlock: Block, faceVector: Vec3, cb: () => void): Promise<void>;
 
   activateBlock(block: Block, callback?: (err?: Error) => void): void;
 
@@ -344,7 +344,7 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
     mouseButton: number,
     mode: number,
     cb?: (err?: Error) => void
-  ): void;
+  ): Promise<void>;
 
   putSelectedItemRange(
     start: number,
@@ -352,13 +352,13 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
     window: Window,
     slot: any,
     cb?: (err?: Error) => void
-  ): void;
+  ): Promise<void>;
 
-  putAway(slot: number, cb?: (err?: Error) => void): void;
+  putAway(slot: number, cb?: (err?: Error) => void): Promise<void>;
 
   closeWindow(window: Window): void;
 
-  transfer(options: TransferOptions, cb?: (err?: Error) => void): void;
+  transfer(options: TransferOptions, cb?: (err?: Error) => void): Promise<void>;
 
   openBlock(block: Block, Class: new () => EventEmitter): void;
 
@@ -368,13 +368,13 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
     sourceSlot: number,
     destSlot: number,
     cb?: (err?: Error) => void
-  ): void;
+  ): Promise<void>;
 
   updateHeldItem(): void;
 
   getEquipmentDestSlot(destination: string): number;
 
-  waitForChunksToLoad(cb?: (err?: Error) => void): void;
+  waitForChunksToLoad(cb?: (err?: Error) => void): Promise<void>;
 
   nearestEntity(filter?: (entity: Entity) => boolean): Entity | null;
 }
@@ -553,7 +553,7 @@ export interface creativeMethods {
     callback?: (error?: Error) => void
   ): void;
 
-  flyTo(destination: Vec3, cb?: () => void): void;
+  flyTo(destination: Vec3, cb?: () => void): Promise<void>;
 
   startFlying(): void;
 
@@ -606,14 +606,14 @@ export class Chest extends (EventEmitter as new () => TypedEmitter<StorageEvents
     metadata: number | null,
     count: number | null,
     cb?: (err?: Error) => void
-  ): void;
+  ): Promise<void>;
 
   withdraw(
     itemType: number,
     metadata: number | null,
     count: number | null,
     cb?: (err?: Error) => void
-  ): void;
+  ): Promise<void>;
 
   count(itemType: number, metadata: number | null): number;
 
@@ -628,25 +628,25 @@ export class Furnace extends (EventEmitter as new () => TypedEmitter<FurnaceEven
 
   close(): void;
 
-  takeInput(cb: (err: Error | null, item: Item) => void): void;
+  takeInput(cb: (err: Error | null, item: Item) => void): Promise<Item>;
 
-  takeFuel(cb: (err: Error | null, item: Item) => void): void;
+  takeFuel(cb: (err: Error | null, item: Item) => void): Promise<Item>;
 
-  takeOutput(cb: (err: Error | null, item: Item) => void): void;
+  takeOutput(cb: (err: Error | null, item: Item) => void): Promise<Item>;
 
   putInput(
     itemType: number,
     metadata: number | null,
     count: number,
     cb?: (err?: Error) => void
-  ): void;
+  ): Promise<void>;
 
   putFuel(
     itemType: number,
     metadata: number | null,
     count: number,
     cb?: (err?: Error) => void
-  ): void;
+  ): Promise<void>;
 
   inputItem(): Item;
 
@@ -689,13 +689,13 @@ export class EnchantmentTable extends (EventEmitter as new () => TypedEmitter<Co
   enchant(
     choice: string | number,
     cb?: (err: Error | null, item: Item) => void
-  ): void;
+  ): Promise<Item>;
 
-  takeTargetItem(cb?: (err: Error | null, item: Item) => void): void;
+  takeTargetItem(cb?: (err: Error | null, item: Item) => void): Promise<Item>;
 
-  putTargetItem(item: Item, cb?: (err: Error | null, item: Item) => void): void;
+  putTargetItem(item: Item, cb?: (err: Error | null) => void): Promise<Item>;
 
-  putLapis(item: Item, cb?: (err: Error | null, item: Item) => void): void;
+  putLapis(item: Item, cb?: (err: Error | null) => void): Promise<Item>;
 }
 
 export type Enchantment = {
