@@ -103,6 +103,7 @@
       - [bot.game.gameMode](#botgamegamemode)
       - [bot.game.hardcore](#botgamehardcore)
       - [bot.game.maxPlayers](#botgamemaxplayers)
+      - [bot.mcData](#botmcdata)
     - [bot.player](#botplayer)
       - [bot.players](#botplayers)
       - [bot.isRaining](#botisraining)
@@ -789,6 +790,10 @@ Coordinates to the main spawn point, where all compasses point to.
 #### bot.game.hardcore
 
 #### bot.game.maxPlayers
+
+#### bot.mcData
+
+A reference to the Minecraft-Data object for the Minecraft version that is currently being used by this bot.
 
 ### bot.player
 

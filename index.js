@@ -112,7 +112,8 @@ class Bot extends EventEmitter {
     if (!self._client.wait_connect) next()
     else self._client.once('connect_allowed', next)
     function next () {
-      const version = require('minecraft-data')(self._client.version).version
+      const mcData = require('minecraft-data')(self._client.version)
+      const version = mcData.version
       if (supportedVersions.indexOf(version.majorVersion) === -1) {
         throw new Error(`Version ${version.minecraftVersion} is not supported.`)
       }
@@ -128,6 +129,8 @@ class Bot extends EventEmitter {
       self.version = version.minecraftVersion
       options.version = version.minecraftVersion
       self.supportFeature = feature => supportFeature(feature, version.minecraftVersion)
+      self.mcData = mcData
+
       self.emit('inject_allowed')
     }
   }
