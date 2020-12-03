@@ -237,14 +237,14 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
 
   clearControlStates(): void;
 
-  lookAt(point: Vec3, force?: boolean, callback?: () => void): void;
+  lookAt(point: Vec3, force?: boolean, callback?: () => void): Promise<void>;
 
   look(
     yaw: number,
     pitch: number,
     force?: boolean,
     callback?: () => void
-  ): void;
+  ): Promise<void>;
 
   updateSign(block: Block, text: string): void;
 
@@ -252,23 +252,23 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
     item: Item,
     destination: EquipmentDestination | null,
     callback?: (error?: Error) => void
-  ): void;
+  ): Promise<void>;
 
   unequip(
     destination: EquipmentDestination | null,
     callback?: () => void
-  ): void;
+  ): Promise<void>;
 
-  tossStack(item: Item, callback?: (error?: Error) => void): void;
+  tossStack(item: Item, callback?: (error?: Error) => void): Promise<void>;
 
   toss(
     itemType: number,
     metadata: number | null,
     count: number | null,
     callback?: (err?: Error) => void
-  ): void;
+  ): Promise<void>;
 
-  dig(block: Block, callback?: (err?: Error) => void): void;
+  dig(block: Block, callback?: (err?: Error) => void): Promise<void>;
 
   stopDigging(): void;
 
@@ -276,15 +276,15 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
 
   placeBlock(referenceBlock: Block, faceVector: Vec3, cb: () => void): Promise<void>;
 
-  activateBlock(block: Block, callback?: (err?: Error) => void): void;
+  activateBlock(block: Block, callback?: (err?: Error) => void): Promise<void>;
 
-  activateEntity(block: Entity, callback?: (err?: Error) => void): void;
+  activateEntity(block: Entity, callback?: (err?: Error) => void): Promise<void>;
 
-  activateEntityAt(block: Entity, position: Vec3, callback?: (err?: Error) => void): void;
+  activateEntityAt(block: Entity, position: Vec3, callback?: (err?: Error) => void): Promise<void>;
 
-  consume(callback: (err?: Error) => void): void;
+  consume(callback: (err?: Error) => void): Promise<void>;
 
-  fish(callback: (err?: Error) => void): void;
+  fish(callback: (err?: Error) => void): Promise<void>;
 
   activateItem(offhand?: boolean): void;
 
@@ -309,13 +309,13 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
     count: number | null,
     craftingTable: Block,
     callback?: () => void
-  ): void;
+  ): Promise<void>;
 
   writeBook(
     slot: number,
     pages: Array<string>,
     callback?: (err?: Error) => void
-  ): void;
+  ): Promise<void>;
 
   openChest(chest: Block | Entity): Chest;
 
@@ -551,7 +551,7 @@ export interface creativeMethods {
     slot: number,
     item: Item | null,
     callback?: (error?: Error) => void
-  ): void;
+  ): Promise<void>;
 
   flyTo(destination: Vec3, cb?: () => void): Promise<void>;
 
