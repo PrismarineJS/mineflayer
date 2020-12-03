@@ -109,7 +109,6 @@ class Bot extends EventEmitter {
     self._client.on('end', () => {
       self.emit('end')
     })
-    self._internalEvents = new EventEmitter()
     if (!self._client.wait_connect) next()
     else self._client.once('connect_allowed', next)
     function next () {
