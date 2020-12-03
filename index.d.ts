@@ -663,14 +663,16 @@ export class Dispenser extends (EventEmitter as new () => TypedEmitter<StorageEv
   deposit(
     itemType: number,
     metadata: number | null,
-    count: number | null
-  ): void;
+    count: number | null,
+    cb?: (err?: Error) => void
+  ): Promise<void>;
 
   withdraw(
     itemType: number,
     metadata: number | null,
-    count: number | null
-  ): void;
+    count: number | null,
+    cb?: (err?: Error) => void
+  ): Promise<void>;
 
   count(itemType: number, metadata: number | null): number;
 
