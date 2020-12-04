@@ -1,3 +1,9 @@
+## 2.35.0
+* Extra position packet after TP
+* Add blockAtCursor
+* Deprecate blockInSight
+* TS typing fixes
+
 ## 2.34.0
 * 1.16.4 support
 
