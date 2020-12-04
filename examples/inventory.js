@@ -22,14 +22,13 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
-bot.on('chat', (username, message) => {
+bot.on('chat', async (username, message) => {
   if (username === bot.username) return
   const command = message.split(' ')
   switch (true) {
     case message === 'loaded':
-      bot.waitForChunksToLoad(() => {
-        bot.chat('Ready!')
-      })
+      await bot.waitForChunksToLoad()
+      bot.chat('Ready!')
       break
     case /^list$/.test(message):
       sayItems()
@@ -96,31 +95,27 @@ function tossItem (name, amount) {
   }
 }
 
-function equipItem (name, destination) {
+async function equipItem (name, destination) {
   const item = itemByName(name)
   if (item) {
-    bot.equip(item, destination, checkIfEquipped)
+    try {
+      await bot.equip(item, destination)
+      bot.chat(`equipped ${name}`)
+    } catch (err) {
+      bot.chat(`cannot equip ${name}: ${err.message}`)
+    }
   } else {
     bot.chat(`I have no ${name}`)
   }
-
-  function checkIfEquipped (err) {
-    if (err) {
-      bot.chat(`cannot equip ${name}: ${err.message}`)
-    } else {
-      bot.chat(`equipped ${name}`)
-    }
-  }
 }
 
-function unequipItem (destination) {
-  bot.unequip(destination, (err) => {
-    if (err) {
-      bot.chat(`cannot unequip: ${err.message}`)
-    } else {
-      bot.chat('unequipped')
-    }
-  })
+async function unequipItem (destination) {
+  try {
+    await bot.unequip(destination)
+    bot.chat('unequipped')
+  } catch (err) {
+    bot.chat(`cannot unequip: ${err.message}`)
+  }
 }
 
 function useEquippedItem () {
@@ -128,7 +123,7 @@ function useEquippedItem () {
   bot.activateItem()
 }
 
-function craftItem (name, amount) {
+async function craftItem (name, amount) {
   amount = parseInt(amount, 10)
   const item = require('minecraft-data')(bot.version).findItemOrBlockByName(name)
   const craftingTable = bot.findBlock({
@@ -139,13 +134,12 @@ function craftItem (name, amount) {
     const recipe = bot.recipesFor(item.id, null, 1, craftingTable)[0]
     if (recipe) {
       bot.chat(`I can make ${name}`)
-      bot.craft(recipe, amount, craftingTable, (err) => {
-        if (err) {
-          bot.chat(`error making ${name}`)
-        } else {
-          bot.chat(`did the recipe for ${name} ${amount} times`)
-        }
-      })
+      try {
+        await bot.craft(recipe, amount, craftingTable)
+        bot.chat(`did the recipe for ${name} ${amount} times`)
+      } catch (err) {
+        bot.chat(`error making ${name}`)
+      }
     } else {
       bot.chat(`I cannot make ${name}`)
     }
