@@ -407,12 +407,16 @@ Fires when the chest you are looking at is updated.
 
 #### chest.deposit(itemType, metadata, count, [callback])
 
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
  * `itemType` - numerical item id
  * `metadata` - numerical value. `null` means match anything.
  * `count` - how many to deposit. `null` is an alias to 1.
  * `callback(err)` - (optional) - called when done depositing
 
 #### chest.withdraw(itemType, metadata, count, [callback])
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
 
  * `itemType` - numerical item id
  * `metadata` - numerical value. `null` means match anything.
@@ -454,19 +458,29 @@ Fires when a slot in the furnace you have open has updated.
 
 #### furnace.takeInput([callback])
 
+This function also returns a `Promise`, with `item` as its argument upon completion.
+
  * `callback(err, item)`
 
 #### furnace.takeFuel([callback])
+
+This function also returns a `Promise`, with `item` as its argument upon completion.
 
  * `callback(err, item)`
 
 #### furnace.takeOutput([callback])
 
+This function also returns a `Promise`, with `item` as its argument upon completion.
+
  * `callback(err, item)`
 
 #### furnace.putInput(itemType, metadata, count, [cb])
 
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
 #### furnace.putFuel(itemType, metadata, count, [cb])
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
 
 #### furnace.inputItem()
 
@@ -512,12 +526,16 @@ Returns a list of `Item` instances from the dispenser.
 
 #### dispenser.deposit(itemType, metadata, count, [callback])
 
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
  * `itemType` - numerical item id
  * `metadata` - numerical value. `null` means match anything.
  * `count` - how many to deposit. `null` is an alias to 1.
  * `callback(err)` - (optional) - called when done depositing
 
 #### dispenser.withdraw(itemType, metadata, count, [callback])
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
 
  * `itemType` - numerical item id
  * `metadata` - numerical value. `null` means match anything.
@@ -582,14 +600,26 @@ Looks like:
 
 #### enchantmentTable.enchant(choice, [callback])
 
+This function also returns a `Promise`, with `item` as its argument upon completion.
+
  * `choice` - [0-2], the index of the enchantment you want to pick.
  * `callback(err, item)` - (optional) called when the item has been enchanted
 
 #### enchantmentTable.takeTargetItem([callback])
 
+This function also returns a `Promise`, with `item` as its argument upon completion.
+
  * `callback(err, item)`
 
 #### enchantmentTable.putTargetItem(item, [callback])
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
+ * `callback(err)`
+
+ #### enchantmentTable.putLapis(item, [callback])
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
 
  * `callback(err)`
 
@@ -1275,6 +1305,8 @@ See `Block`.
 
 #### bot.waitForChunksToLoad(cb)
 
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
 The cb gets called when many chunks have loaded.
 
 #### bot.blockInSight(maxSteps, vectorLength)
@@ -1341,6 +1373,8 @@ Gracefully disconnect from the server with the given reason (defaults to 'discon
 
 #### bot.tabComplete(str, cb, [assumeCommand], [sendBlockInSight])
 
+This function also returns a `Promise`, with `matches` as its argument upon completion.
+
 Requests chat completion from the server.
  * `str` - String to complete.
  * `callback(matches)`
@@ -1401,6 +1435,8 @@ Checks if the given plugin is loaded (or scheduled to be loaded) on this bot.
 
 #### bot.sleep(bedBlock, [cb])
 
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
 Sleep in a bed. `bedBlock` should be a `Block` instance which is a bed. `cb` can have an err parameter if the bot cannot sleep.
 
 #### bot.isABed(bedBlock)
@@ -1408,6 +1444,8 @@ Sleep in a bed. `bedBlock` should be a `Block` instance which is a bed. `cb` can
 Return true if `bedBlock` is a bed
 
 #### bot.wake([cb])
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
 
 Get out of bed. `cb` can have an err parameter if the bot cannot wake up.
 
@@ -1426,11 +1464,15 @@ Sets all controls to off.
 
 #### bot.lookAt(point, [force], [callback])
 
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
  * `point` [Vec3](https://github.com/andrewrk/node-vec3) instance - tilts your head so that it is directly facing this point.
  * `force` - See `force` in `bot.look`
  * `callback()` optional, called when you are looking at `point`
 
 #### bot.look(yaw, pitch, [force], [callback])
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
 
 Set the direction your head is facing.
 
@@ -1450,6 +1492,8 @@ Changes the text on the sign.
 
 #### bot.equip(item, destination, [callback])
 
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
 Equips an item from your inventory.
 
  * `item` - `Item` instance. See `window.items()`.
@@ -1465,15 +1509,21 @@ Equips an item from your inventory.
 
 #### bot.unequip(destination, [callback])
 
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
 Remove an article of equipment.
 
 #### bot.tossStack(item, [callback])
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
 
  * `item` - the stack of items you wish to toss
  * `callback(error)` - optional, called when tossing is done. if error is
    truthy, you were not able to complete the toss.
 
 #### bot.toss(itemType, metadata, count, [callback])
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
 
  * `itemType` - numerical id of the item you wish to toss
  * `metadata` - metadata of the item you wish to toss. Use `null`
@@ -1482,6 +1532,8 @@ Remove an article of equipment.
  * `callback(err)` - (optional) called once tossing is complete
 
 #### bot.dig(block, [forceLook = true], [callback])
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
 
 Begin digging into `block` with the currently equipped item.
 See also "diggingCompleted" and "diggingAborted" events.
@@ -1503,6 +1555,8 @@ Tells you how long it will take to dig the block, in milliseconds.
 
 #### bot.placeBlock(referenceBlock, faceVector, cb)
 
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
  * `referenceBlock` - the block you want to place a new block next to
  * `faceVector` - one of the six cardinal directions, such as `new Vec3(0, 1, 0)` for the top face,
    indicating which face of the `referenceBlock` to place the block against.
@@ -1512,6 +1566,8 @@ The new block will be placed at `referenceBlock.position.plus(faceVector)`.
 
 #### bot.activateBlock(block, [callback])
 
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
 Punch a note block, open a door, etc.
 
  * `block` - the block to activate
@@ -1519,12 +1575,16 @@ Punch a note block, open a door, etc.
 
 #### bot.activateEntity(entity, [callback])
 
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
 Activate an entity, useful for villager for example.
 
  * `entity` - the entity to activate
  * `callback(err)` - (optional) called when the entity has been activated
 
 #### bot.activateEntityAt(entity, position, [callback])
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
 
 Activate an entity at the given position, useful for armor stands.
 
@@ -1534,11 +1594,15 @@ Activate an entity at the given position, useful for armor stands.
 
 #### bot.consume(callback)
 
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
 Eat / drink currently held item
 
  * `callback(error)` - called when consume ends
 
 #### bot.fish(callback)
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
 
 Use fishing rod
 
@@ -1591,6 +1655,8 @@ All the direction are relative to where the bot is looking at
 
 #### bot.craft(recipe, count, craftingTable, [callback])
 
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
  * `recipe` - A `Recipe` instance. See `bot.recipesFor`.
  * `count` - How many times you wish to perform the operation.
    If you want to craft planks into `8` sticks, you would set
@@ -1602,6 +1668,8 @@ All the direction are relative to where the bot is looking at
    inventory is updated.
 
 #### bot.writeBook(slot, pages, [callback])
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
 
  * `slot` is in inventory window coordinates (where 36 is the first quickbar slot, etc.).
  * `pages` is an array of strings represents the pages.
@@ -1659,13 +1727,19 @@ These are lower level methods for the inventory, they can be useful sometimes bu
 
 #### bot.clickWindow(slot, mouseButton, mode, cb)
 
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
 Click on the current window. See details at https://wiki.vg/Protocol#Click_Window
 
 #### bot.putSelectedItemRange(start, end, window, slot, cb)
 
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
 Put the item at `slot` in the specified range.
 
 #### bot.putAway(slot, cb)
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
 
 Put the item at `slot` in the inventory.
 
@@ -1674,6 +1748,8 @@ Put the item at `slot` in the inventory.
 Close the `window`.
 
 #### bot.transfer(options, cb)
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
 
 Transfer some kind of item from one range to an other. `options` is an object containing :
 
@@ -1698,6 +1774,8 @@ Open an entity with an inventory, for example a villager.
  * `Class` is the type of window that will be opened
 
 #### bot.moveSlotItem(sourceSlot, destSlot, cb)
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
 
 Move an item from `sourceSlot` to `destSlot` in the current window.
 
@@ -1725,6 +1803,8 @@ but it is assumed and often required that the bot be in creative mode for these 
 
 #### bot.creative.setInventorySlot(slot, item, [callback])
 
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
 Gives the bot the specified item in the specified inventory slot.
 If called twice on the same slot before first callback exceeds, first callback will have an error parameter
 
@@ -1736,6 +1816,8 @@ If called twice on the same slot before first callback exceeds, first callback w
 If this method changes anything, you can be notified via `bot.inventory.on("windowUpdate")`.
 
 #### bot.creative.flyTo(destination, [cb])
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
 
 Calls `startFlying()` and moves at a constant speed through 3d space in a straight line to the destination.
 `destination` is a `Vec3`, and often the `x` and `z` coordinates will end with `.5`.
