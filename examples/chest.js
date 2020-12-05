@@ -141,31 +141,29 @@ function watchChest (minecart) {
     bot.removeListener('chat', onChat)
   }
 
-  function withdrawItem (name, amount) {
+  async function withdrawItem (name, amount) {
     const item = itemByName(chest.items(), name)
     if (item) {
-      chest.withdraw(item.type, null, amount, (err) => {
-        if (err) {
-          bot.chat(`unable to withdraw ${amount} ${item.name}`)
-        } else {
-          bot.chat(`withdrew ${amount} ${item.name}`)
-        }
-      })
+      try {
+        await chest.withdraw(item.type, null, amount)
+        bot.chat(`withdrew ${amount} ${item.name}`)
+      } catch (err) {
+        bot.chat(`unable to withdraw ${amount} ${item.name}`)
+      }
     } else {
       bot.chat(`unknown item ${name}`)
     }
   }
 
-  function depositItem (name, amount) {
+  async function depositItem (name, amount) {
     const item = itemByName(bot.inventory.items(), name)
     if (item) {
-      chest.deposit(item.type, null, amount, (err) => {
-        if (err) {
-          bot.chat(`unable to deposit ${amount} ${item.name}`)
-        } else {
-          bot.chat(`deposited ${amount} ${item.name}`)
-        }
-      })
+      try {
+        await chest.deposit(item.type, null, amount)
+        bot.chat(`deposited ${amount} ${item.name}`)
+      } catch (err) {
+        bot.chat(`unable to deposit ${amount} ${item.name}`)
+      }
     } else {
       bot.chat(`unknown item ${name}`)
     }
@@ -308,31 +306,29 @@ function watchDispenser () {
     bot.removeListener('chat', onChat)
   }
 
-  function withdrawItem (name, amount) {
+  async function withdrawItem (name, amount) {
     const item = itemByName(dispenser.items(), name)
     if (item) {
-      dispenser.withdraw(item.type, null, amount, (err) => {
-        if (err) {
-          bot.chat(`unable to withdraw ${amount} ${item.name}`)
-        } else {
-          bot.chat(`withdrew ${amount} ${item.name}`)
-        }
-      })
+      try {
+        await dispenser.withdraw(item.type, null, amount)
+        bot.chat(`withdrew ${amount} ${item.name}`)
+      } catch (err) {
+        bot.chat(`unable to withdraw ${amount} ${item.name}`)
+      }
     } else {
       bot.chat(`unknown item ${name}`)
     }
   }
 
-  function depositItem (name, amount) {
+  async function depositItem (name, amount) {
     const item = itemByName(bot.inventory.items(), name)
     if (item) {
-      dispenser.deposit(item.type, null, amount, (err) => {
-        if (err) {
-          bot.chat(`unable to deposit ${amount} ${item.name}`)
-        } else {
-          bot.chat(`deposited ${amount} ${item.name}`)
-        }
-      })
+      try {
+        await dispenser.deposit(item.type, null, amount)
+        bot.chat(`deposited ${amount} ${item.name}`)
+      } catch (err) {
+        bot.chat(`unable to deposit ${amount} ${item.name}`)
+      }
     } else {
       bot.chat(`unknown item ${name}`)
     }
@@ -393,56 +389,52 @@ function watchEnchantmentTable () {
       table.close()
     }
 
-    function putItem (name) {
+    async function putItem (name) {
       const item = itemByName(table.window.items(), name)
       if (item) {
-        table.putTargetItem(item, (err) => {
-          if (err) {
-            bot.chat(`error putting ${itemToString(item)}`)
-          } else {
-            bot.chat(`I put ${itemToString(item)}`)
-          }
-        })
+        try {
+          await table.putTargetItem(item)
+          bot.chat(`I put ${itemToString(item)}`)
+        } catch (err) {
+          bot.chat(`error putting ${itemToString(item)}`)
+        }
       } else {
         bot.chat(`unknown item ${name}`)
       }
     }
 
-    function addLapis () {
+    async function addLapis () {
       const item = itemByType(table.window.items(), ['dye', 'purple_dye'].filter(name => mcData.itemByName[name] !== undefined)
         .map(name => mcData.itemByName[name].id))
       if (item) {
-        table.putLapis(item, (err) => {
-          if (err) {
-            bot.chat(`error putting ${itemToString(item)}`)
-          } else {
-            bot.chat(`I put ${itemToString(item)}`)
-          }
-        })
+        try {
+          await table.putLapis(item)
+          bot.chat(`I put ${itemToString(item)}`)
+        } catch (err) {
+          bot.chat(`error putting ${itemToString(item)}`)
+        }
       } else {
         bot.chat("I don't have any lapis")
       }
     }
 
-    function enchantItem (choice) {
+    async function enchantItem (choice) {
       choice = parseInt(choice, 10)
-      table.enchant(choice, (err, item) => {
-        if (err) {
-          bot.chat('error enchanting')
-        } else {
-          bot.chat(`enchanted ${itemToString(item)}`)
-        }
-      })
+      try {
+        const item = await table.enchant(choice)
+        bot.chat(`enchanted ${itemToString(item)}`)
+      } catch (err) {
+        bot.chat('error enchanting')
+      }
     }
 
-    function takeEnchantedItem () {
-      table.takeTargetItem((err, item) => {
-        if (err) {
-          bot.chat('error getting item')
-        } else {
-          bot.chat(`got ${itemToString(item)}`)
-        }
-      })
+    async function takeEnchantedItem () {
+      try {
+        const item = await table.takeTargetItem()
+        bot.chat(`got ${itemToString(item)}`)
+      } catch (err) {
+        bot.chat('error getting item')
+      }
     }
   }
 }

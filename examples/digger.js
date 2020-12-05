@@ -25,13 +25,12 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
-bot.on('chat', (username, message) => {
+bot.on('chat', async (username, message) => {
   if (username === bot.username) return
   switch (message) {
     case 'loaded':
-      bot.waitForChunksToLoad(() => {
-        bot.chat('Ready!')
-      })
+      await bot.waitForChunksToLoad()
+      bot.chat('Ready!')
       break
     case 'list':
       sayItems()

@@ -15,29 +15,20 @@ const bot = mineflayer.createBot({
 
 // /gamemode creative bee
 
-let i = 0
-function loop (n) {
-  if (i > n) {
-    bot.chat('My flight was amazing !')
-    return
+async function loop (n) {
+  for (let i = 0; i <= n; i++) {
+    const { position } = bot.entity
+    await bot.creative.flyTo(position.offset(Math.sin(i) * 2, 0.5, Math.cos(i) * 2))
   }
-  i += 1
-
-  const { position } = bot.entity
-
-  // Draw a spiral
-  bot.creative.flyTo(position.offset(Math.sin(i) * 2, 0.5, Math.cos(i) * 2), () => {
-    loop(n)
-  })
+  bot.chat('My flight was amazing !')
 }
 
-bot.on('chat', (username, message) => {
+bot.on('chat', async (username, message) => {
   if (username === bot.username) return
   switch (message) {
     case 'loaded':
-      bot.waitForChunksToLoad(() => {
-        bot.chat('Ready!')
-      })
+      await bot.waitForChunksToLoad()
+      bot.chat('Ready!')
       break
     case 'fly':
       bot.creative.startFlying()

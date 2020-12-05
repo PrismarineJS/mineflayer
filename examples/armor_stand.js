@@ -16,7 +16,7 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
-bot.on('chat', (username, message) => {
+bot.on('chat', async (username, message) => {
   const args = message.split(' ')
   if (args[0] !== 'equip' && args[0] !== 'unequip') return
 
@@ -44,20 +44,18 @@ bot.on('chat', (username, message) => {
       return
     }
 
-    bot.equip(armor, 'hand', () => {
-      bot.activateEntityAt(armorStand, armorStand.position)
-    })
+    await bot.equip(armor, 'hand')
+    bot.activateEntityAt(armorStand, armorStand.position)
   } else if (args[0] === 'unequip') {
-    bot.unequip('hand', () => {
-      if (args[1] === 'helmet') {
-        bot.activateEntityAt(armorStand, armorStand.position.offset(0, 1.8, 0))
-      } else if (args[1] === 'chestplate') {
-        bot.activateEntityAt(armorStand, armorStand.position.offset(0, 1.2, 0))
-      } else if (args[1] === 'leggings') {
-        bot.activateEntityAt(armorStand, armorStand.position.offset(0, 0.75, 0))
-      } else if (args[1] === 'boots') {
-        bot.activateEntityAt(armorStand, armorStand.position.offset(0, 0.1, 0))
-      }
-    })
+    await bot.unequip('hand')
+    if (args[1] === 'helmet') {
+      bot.activateEntityAt(armorStand, armorStand.position.offset(0, 1.8, 0))
+    } else if (args[1] === 'chestplate') {
+      bot.activateEntityAt(armorStand, armorStand.position.offset(0, 1.2, 0))
+    } else if (args[1] === 'leggings') {
+      bot.activateEntityAt(armorStand, armorStand.position.offset(0, 0.75, 0))
+    } else if (args[1] === 'boots') {
+      bot.activateEntityAt(armorStand, armorStand.position.offset(0, 0.1, 0))
+    }
   }
 })

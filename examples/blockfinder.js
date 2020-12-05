@@ -17,16 +17,15 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
-bot.on('chat', (username, message) => {
+bot.on('chat', async (username, message) => {
   if (username === bot.username) return
 
   const mcData = require('minecraft-data')(bot.version)
 
   if (message === 'loaded') {
     console.log(bot.entity.position)
-    bot.waitForChunksToLoad(() => {
-      bot.chat('Ready!')
-    })
+    await bot.waitForChunksToLoad()
+    bot.chat('Ready!')
   }
 
   if (message.startsWith('find')) {
