@@ -7,6 +7,7 @@
  * You can ask the bot to trade with a villager, display the villagers in range
  * and show what trades a villager has by sending a chat message.
  */
+const { once } = require('events')
 const mineflayer = require('mineflayer')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
@@ -63,7 +64,7 @@ function showInventory () {
     })
 }
 
-function showTrades (id) {
+async function showTrades (id) {
   const e = bot.entities[id]
   switch (true) {
     case !e:
@@ -77,17 +78,16 @@ function showTrades (id) {
       break
     default: {
       const villager = bot.openVillager(e)
-      villager.once('ready', () => {
-        villager.close()
-        stringifyTrades(villager.trades).forEach((trade, i) => {
-          bot.chat(`${i + 1}: ${trade}`)
-        })
+      await once(villager, 'ready')
+      villager.close()
+      stringifyTrades(villager.trades).forEach((trade, i) => {
+        bot.chat(`${i + 1}: ${trade}`)
       })
     }
   }
 }
 
-function trade (id, index, count) {
+async function trade (id, index, count) {
   const e = bot.entities[id]
   switch (true) {
     case !e:
@@ -101,39 +101,37 @@ function trade (id, index, count) {
       break
     default: {
       const villager = bot.openVillager(e)
-      villager.once('ready', () => {
-        const trade = villager.trades[index - 1]
-        count = count || trade.maxTradeuses - trade.tooluses
-        switch (true) {
-          case !trade:
-            villager.close()
-            bot.chat('trade not found')
-            break
-          case trade.disabled:
-            villager.close()
-            bot.chat('trade is disabled')
-            break
-          case trade.maxTradeuses - trade.tooluses < count:
-            villager.close()
-            bot.chat('cant trade that often')
-            break
-          case !hasResources(villager.window, trade, count):
-            villager.close()
-            bot.chat('dont have the resources to do that trade')
-            break
-          default:
-            bot.chat('starting to trade')
-            bot.trade(villager, index - 1, count, (err) => {
-              villager.close()
-              if (err) {
-                bot.chat('an error acured while tyring to trade')
-                console.log(err)
-              } else {
-                bot.chat(`traded ${count} times`)
-              }
-            })
-        }
-      })
+      await once(villager, 'ready')
+      const trade = villager.trades[index - 1]
+      count = count || trade.maxTradeuses - trade.tooluses
+      switch (true) {
+        case !trade:
+          villager.close()
+          bot.chat('trade not found')
+          break
+        case trade.disabled:
+          villager.close()
+          bot.chat('trade is disabled')
+          break
+        case trade.maxTradeuses - trade.tooluses < count:
+          villager.close()
+          bot.chat('cant trade that often')
+          break
+        case !hasResources(villager.window, trade, count):
+          villager.close()
+          bot.chat('dont have the resources to do that trade')
+          break
+        default:
+          bot.chat('starting to trade')
+          try {
+            await bot.trade(villager, index - 1, count)
+            bot.chat(`traded ${count} times`)
+          } catch (err) {
+            bot.chat('an error acured while tyring to trade')
+            console.log(err)
+          }
+          villager.close()
+      }
     }
   }
 
