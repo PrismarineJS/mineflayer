@@ -91,7 +91,6 @@ class Bot extends EventEmitter {
   constructor () {
     super()
     this._client = null
-    this._internalEvents = new EventEmitter()
   }
 
   connect (options) {
