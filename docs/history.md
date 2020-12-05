@@ -1,3 +1,6 @@
+## 2.36.0
+* all async method now both return promises and take a callback (thanks @ph0t0shop for this great improvement)
+
 ## 2.35.0
 * Extra position packet after TP
 * Add blockAtCursor
