@@ -326,8 +326,7 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
   openEnchantmentTable(enchantmentTable: Block): EnchantmentTable;
 
   openVillager(
-    villager: Entity,
-    cb?: (err: null, villager: Villager) => void
+    villager: Entity
   ): Villager;
 
   trade(
@@ -335,7 +334,7 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
     tradeIndex: string | number,
     times?: number,
     cb?: (err?: Error) => void
-  ): void;
+  ): Promise<void>;
 
   setCommandBlock(pos: Vec3, command: string, trackOutput: boolean): void;
 

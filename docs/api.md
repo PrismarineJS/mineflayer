@@ -1703,8 +1703,11 @@ you are opening.
 #### bot.openVillager(villagerEntity)
 
 Returns an `Villager` instance which represents the trading window you are opening.
+You can listen to the `ready` event on this `Villager` to know when it's ready
 
 #### bot.trade(villagerInstance, tradeIndex, [times], [cb])
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
 
 Uses the open `villagerInstance` to trade.
 
