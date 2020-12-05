@@ -12,6 +12,7 @@
  */
 const mineflayer = require('mineflayer')
 const vec3 = require('vec3')
+const { on } = require('events')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node digger.js <host> <port> [<name>] [<password>]')
@@ -25,27 +26,31 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
-bot.on('chat', async (username, message) => {
-  if (username === bot.username) return
-  switch (message) {
-    case 'loaded':
-      await bot.waitForChunksToLoad()
-      bot.chat('Ready!')
-      break
-    case 'list':
-      sayItems()
-      break
-    case 'dig':
-      dig()
-      break
-    case 'build':
-      build()
-      break
-    case 'equip dirt':
-      equipDirt()
-      break
+commandHandler()
+
+async function commandHandler () {
+  for await (const [username, message] of on(bot, 'chat')) {
+    if (username === bot.username) continue
+    switch (message) {
+      case 'loaded':
+        await bot.waitForChunksToLoad()
+        bot.chat('Ready!')
+        break
+      case 'list':
+        sayItems()
+        break
+      case 'dig':
+        await dig()
+        break
+      case 'build':
+        await build()
+        break
+      case 'equip dirt':
+        await equipDirt()
+        break
+    }
   }
-})
+}
 
 function sayItems (items = bot.inventory.items()) {
   const output = items.map(itemToString).join(', ')
@@ -56,7 +61,7 @@ function sayItems (items = bot.inventory.items()) {
   }
 }
 
-function dig () {
+async function dig () {
   let target
   if (bot.targetDigBlock) {
     bot.chat(`already digging ${bot.targetDigBlock.name}`)
@@ -64,51 +69,46 @@ function dig () {
     target = bot.blockAt(bot.entity.position.offset(0, -1, 0))
     if (target && bot.canDigBlock(target)) {
       bot.chat(`starting to dig ${target.name}`)
-      bot.dig(target, onDiggingCompleted)
+      try {
+        await bot.dig(target)
+        bot.chat(`finished digging ${target.name}`)
+      } catch (err) {
+        console.log(err.stack)
+      }
     } else {
       bot.chat('cannot dig')
     }
   }
-
-  function onDiggingCompleted (err) {
-    if (err) {
-      console.log(err.stack)
-      return
-    }
-    bot.chat(`finished digging ${target.name}`)
-  }
 }
 
-function build () {
+async function build () {
   const referenceBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
   const jumpY = Math.floor(bot.entity.position.y) + 1.0
   bot.setControlState('jump', true)
-  bot.on('move', placeIfHighEnough)
 
   let tryCount = 0
 
-  function placeIfHighEnough () {
+  for await (const e of on(bot, 'move')) { // eslint-disable-line
     if (bot.entity.position.y > jumpY) {
-      bot.placeBlock(referenceBlock, vec3(0, 1, 0), (err) => {
-        if (err) {
-          tryCount++
-          if (tryCount > 10) {
-            bot.chat(err.message)
-            bot.setControlState('jump', false)
-            bot.removeListener('move', placeIfHighEnough)
-            return
-          }
+      try {
+        await bot.placeBlock(referenceBlock, vec3(0, 1, 0))
+        bot.setControlState('jump', false)
+        bot.chat('Placing a block was successful')
+        break
+      } catch (err) {
+        tryCount++
+        if (tryCount > 10) {
+          bot.chat(err.message)
+          bot.setControlState('jump', false)
           return
         }
-        bot.setControlState('jump', false)
-        bot.removeListener('move', placeIfHighEnough)
-        bot.chat('Placing a block was successful')
-      })
+        continue
+      }
     }
   }
 }
 
-function equipDirt () {
+async function equipDirt () {
   const mcData = require('minecraft-data')(bot.version)
   let itemsByName
   if (bot.supportFeature('itemsAreNotBlocks')) {
@@ -116,13 +116,12 @@ function equipDirt () {
   } else if (bot.supportFeature('itemsAreAlsoBlocks')) {
     itemsByName = 'blocksByName'
   }
-  bot.equip(mcData[itemsByName].dirt.id, 'hand', (err) => {
-    if (err) {
-      bot.chat(`unable to equip dirt: ${err.message}`)
-    } else {
-      bot.chat('equipped dirt')
-    }
-  })
+  try {
+    await bot.equip(mcData[itemsByName].dirt.id, 'hand')
+    bot.chat('equipped dirt')
+  } catch (err) {
+    bot.chat(`unable to equip dirt: ${err.message}`)
+  }
 }
 
 function itemToString (item) {

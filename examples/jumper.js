@@ -19,6 +19,10 @@ const bot = mineflayer.createBot({
   username: process.argv[4] ? process.argv[4] : 'jumper',
   password: process.argv[5]
 })
+commandHandler()
+looker()
+mounter()
+dismounter()
 
 let target = null
 
@@ -125,8 +129,3 @@ async function dismounter () {
     bot.chat(`dismounted ${vehicle.objectType}`)
   }
 }
-
-commandHandler()
-looker()
-mounter()
-dismounter()

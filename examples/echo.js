@@ -21,11 +21,11 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
+repeater()
+
 async function repeater () {
   for await (const [username, message] of on(bot, 'chat')) {
     if (username === bot.username) return
     bot.chat(message)
   }
 }
-
-repeater()

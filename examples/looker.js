@@ -16,6 +16,7 @@ const bot = mineflayer.createBot({
   username: process.argv[4] ? process.argv[4] : 'looker',
   password: process.argv[5]
 })
+looker()
 
 function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
@@ -35,5 +36,3 @@ async function looker () {
     await sleep(50)
   }
 }
-
-looker()
