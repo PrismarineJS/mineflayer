@@ -44,15 +44,14 @@ function toss () {
   bot.tossStack(book)
 }
 
-function write () {
+async function write () {
   const [book] = bot.inventory.items().filter(({ name }) => name === 'writable_book')
   if (!book) {
     bot.chat("I don't have a book.")
     return
   }
-  bot.writeBook(book.slot, pages, () => {
-    print()
-  })
+  await bot.writeBook(book.slot, pages)
+  print()
 }
 
 function print () {

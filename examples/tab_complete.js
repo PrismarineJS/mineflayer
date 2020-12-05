@@ -20,13 +20,12 @@ bot.on('message', (cm) => {
   }
 })
 
-function complete (str) {
-  bot.tabComplete(str, (err, matches) => {
-    if (err) {
-      return bot.chat(err.message)
-    }
-
+async function complete (str) {
+  try {
+    const matches = await bot.tabComplete(str)
     console.log(str, matches)
     bot.chat(`Matches for "${str}": ${matches.join(', ')}`)
-  })
+  } catch (err) {
+    bot.chat(err.message)
+  }
 }

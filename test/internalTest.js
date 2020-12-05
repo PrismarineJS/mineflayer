@@ -481,12 +481,12 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
           assert.strictEqual(bedBockMetadata.part, false, 'The part property seems to be wrong') // Is the foot
 
           if (beds[bed].throws) {
-            assert.throws(() => {
-              bot.sleep(bedBock)
-            }, beds[bed].error)
+            bot.sleep(bedBock, (err) => {
+              assert.strictEqual(err, beds[bed].error)
+            })
           } else {
-            assert.doesNotThrow(() => {
-              bot.sleep(bedBock)
+            bot.sleep(bedBock, (err) => {
+              assert.ifError(err)
             })
           }
         }

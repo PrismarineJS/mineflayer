@@ -39,29 +39,26 @@ bot.on('wake', () => {
   bot.chat('Good morning!')
 })
 
-function goToSleep () {
+async function goToSleep () {
   const bed = bot.findBlock({
     matching: block => bot.isABed(block)
   })
   if (bed) {
-    bot.sleep(bed, (err) => {
-      if (err) {
-        bot.chat(`I can't sleep: ${err.message}`)
-      } else {
-        bot.chat("I'm sleeping")
-      }
-    })
+    try {
+      await bot.sleep(bed)
+      bot.chat("I'm sleeping")
+    } catch (err) {
+      bot.chat(`I can't sleep: ${err.message}`)
+    }
   } else {
     bot.chat('No nearby bed')
   }
 }
 
-function wakeUp () {
-  bot.wake((err) => {
-    if (err) {
-      bot.chat(`I can't wake up: ${err.message}`)
-    } else {
-      bot.chat('I woke up')
-    }
-  })
+async function wakeUp () {
+  try {
+    await bot.wake()
+  } catch (err) {
+    bot.chat(`I can't wake up: ${err.message}`)
+  }
 }
