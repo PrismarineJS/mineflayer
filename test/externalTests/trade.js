@@ -41,7 +41,7 @@ module.exports = () => (bot, done) => {
         assert.strictEqual(bot.currentWindow.count(mcData.itemsByName.emerald.id), 64 - 12)
         assert.strictEqual(bot.currentWindow.count(mcData.itemsByName.wheat.id), 12)
 
-        assert.throws(() => bot.trade(villager, 0, 1)) // Shouldn't be able, the trade is blocked!
+        assert.rejects(bot.trade(villager, 0, 1)) // Shouldn't be able, the trade is blocked!
 
         villager.close(() => {
           bot.test.sayEverywhere(`/kill @e[type=${villagerType}]`)
