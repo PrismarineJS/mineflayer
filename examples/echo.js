@@ -7,6 +7,7 @@
  * to create your own bot.
  */
 const mineflayer = require('mineflayer')
+const { on } = require('events')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node echo.js <host> <port> [<name>] [<password>]')
@@ -20,7 +21,11 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
-bot.on('chat', (username, message) => {
-  if (username === bot.username) return
-  bot.chat(message)
-})
+async function repeater () {
+  for await (const [username, message] of on(bot, 'chat')) {
+    if (username === bot.username) return
+    bot.chat(message)
+  }
+}
+
+repeater()
