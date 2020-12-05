@@ -64,7 +64,7 @@ function showInventory () {
     })
 }
 
-function showTrades (id) {
+async function showTrades (id) {
   const e = bot.entities[id]
   switch (true) {
     case !e:

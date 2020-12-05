@@ -17,8 +17,8 @@ module.exports = () => (bot, done) => {
     if (entity.name !== villagerType) return
     bot.removeListener('entitySpawn', onEntitySpawn)
 
-    bot.openVillager(entity, (err, villager) => {
-      assert.ifError(err)
+    const villager = bot.openVillager(entity)
+    villager.once('ready', () => {
       const trade = villager.trades[0]
       const sell = trade.inputItem1
       const buy = trade.outputItem
