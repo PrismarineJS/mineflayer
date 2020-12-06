@@ -1,3 +1,6 @@
+## 2.37.1
+* Optimize lookAt promise behavior (@ph0t0shop)
+
 ## 2.37.0
 * Promisify villager & Trader (thanks @ph0t0shop)
 * protect against action id going over 32767 (@rom1504)
