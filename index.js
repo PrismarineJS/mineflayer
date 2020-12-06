@@ -96,10 +96,6 @@ class Bot extends EventEmitter {
   connect (options) {
     const self = this
     self._client = mc.createClient(options)
-    self.username = self._client.username
-    self._client.on('session', () => {
-      self.username = self._client.username
-    })
     self._client.on('connect', () => {
       self.emit('connect')
     })
