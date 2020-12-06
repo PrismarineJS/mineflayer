@@ -1,3 +1,8 @@
+## 2.37.0
+* Promisify villager & Trader (thanks @ph0t0shop)
+* protect against action id going over 32767 (@rom1504)
+* fix incorrect handling of username definition (@rom1504)
+
 ## 2.36.0
 * all async method now both return promises and take a callback (thanks @ph0t0shop for this great improvement)
 
