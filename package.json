@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@types/node": "^14.0.1",
-    "doctoc": "^1.0.0",
+    "doctoc": "^2.0.0",
     "minecraft-wrap": "^1.2.1",
     "mocha": "^8.0.1",
     "require-self": "^0.2.3",
