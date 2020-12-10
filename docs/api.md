@@ -821,6 +821,8 @@ Coordinates to the main spawn point, where all compasses point to.
 
 #### bot.game.maxPlayers
 
+#### bot.game.serverBrand
+
 ### bot.player
 
 Bot's player object
