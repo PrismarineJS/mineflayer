@@ -437,7 +437,7 @@ export class ChatMessage {
 
   toMotd(lang?: { [key: string]: string }): string;
 
-  toAnsi(lang: { [key: string]: string }): string;
+  toAnsi(lang?: { [key: string]: string }): string;
 }
 
 export interface ChatPattern {
