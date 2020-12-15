@@ -268,7 +268,7 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
     callback?: (err?: Error) => void
   ): Promise<void>;
 
-  dig(block: Block, callback?: (err?: Error) => void): Promise<void>;
+  dig(block: Block, forceLook?: boolean | 'ignore', callback?: (err?: Error) => void): Promise<void>;
 
   stopDigging(): void;
 
