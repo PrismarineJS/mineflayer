@@ -48,19 +48,20 @@ interface BotEvents {
     username: string,
     message: string,
     translate: string | null,
-    jsonMsg: string,
+    jsonMsg: ChatMessage,
     matches: Array<string> | null
   ) => void;
   whisper: (
     username: string,
     message: string,
     translate: string | null,
-    jsonMsg: string,
+    jsonMsg: ChatMessage,
     matches: Array<string> | null
   ) => void;
-  actionBar: (jsonMsg: string) => void;
+  actionBar: (jsonMsg: ChatMessage) => void;
   error: (err: Error) => void;
-  message: (jsonMsg: string, position: string) => void;
+  message: (jsonMsg: ChatMessage, position: string) => void;
+  unmatchedMessage: (stringMsg: string, jsonMsg: ChatMessage) => void;
   login: () => void;
   spawn: () => void;
   respawn: () => void;
