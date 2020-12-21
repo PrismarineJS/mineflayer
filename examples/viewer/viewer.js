@@ -21,5 +21,5 @@ const bot = mineflayer.createBot({
 })
 
 bot.once('spawn', () => {
-  mineflayerViewer(bot, { port: 3007, firstPerson: true })
+  mineflayerViewer(bot, { port: 3007, firstPerson: false })
 })
