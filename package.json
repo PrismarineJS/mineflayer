@@ -6,10 +6,9 @@
   "types": "index.d.ts",
   "scripts": {
     "test": "mocha --reporter spec --exit",
-    "pretest": "npm run lint && require-self",
+    "pretest": "npm run lint",
     "lint": "standard",
     "fix": "standard --fix",
-    "prepare": "npm install require-self && require-self",
     "prepublishOnly": "cp docs/README.md README.md"
   },
   "repository": {
@@ -38,11 +37,11 @@
     "vec3": "^0.1.6"
   },
   "devDependencies": {
+    "mineflayer": "file:.",
     "@types/node": "^14.0.1",
     "doctoc": "^2.0.0",
     "minecraft-wrap": "^1.2.1",
     "mocha": "^8.0.1",
-    "require-self": "^0.2.3",
     "standard": "^16.0.1"
   }
 }
