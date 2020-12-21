@@ -1557,7 +1557,7 @@ dig any other blocks until the block has been broken, or you call
 `bot.stopDigging()`.
 
  * `block` - the block to start digging into
- * `forceLook` - (optional) if true, look at the block and start mining instantly
+ * `forceLook` - (optional) if true, look at the block and start mining instantly. If false, the bot will slowly turn to the block to mine. Additionally, this can be assigned to 'ignore' to prevent the bot from moving it's head at all.
  * `callback(err)` - (optional) called when the block is broken or you
    are interrupted.
 
