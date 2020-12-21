@@ -1,3 +1,8 @@
+## 2.39.0
+* Add number support to bot.chat (@BlueBurgersTDD)
+* Fixed && Improved blockFind function with useExtraInfo = true (@magicaltoast)
+* Added option to allow the bot to keep it's head in place when mining. (@TheDudeFromCI)
+
 ## 2.38.0
 * Add bot.game.serverBrand property (@Karang)
 * set extraInfos to false in blockIsNotEmpty (@mat-1)
