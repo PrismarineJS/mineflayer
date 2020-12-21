@@ -275,7 +275,7 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
 
   digTime(block: Block): number;
 
-  placeBlock(referenceBlock: Block, faceVector: Vec3, cb: () => void): Promise<void>;
+  placeBlock(referenceBlock: Block, faceVector: Vec3, cb?: () => void): Promise<void>;
 
   activateBlock(block: Block, callback?: (err?: Error) => void): Promise<void>;
 
