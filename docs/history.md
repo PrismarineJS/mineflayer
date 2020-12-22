@@ -1,3 +1,6 @@
+## 2.39.2
+* explicit node 14 support
+
 ## 2.39.1
 * add null check in bot.dig (@rom1504)
 * Fix deprecation warning for block in sight (@Karang)
