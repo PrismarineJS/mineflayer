@@ -1,3 +1,7 @@
+## 2.39.1
+* add null check in bot.dig (@rom1504)
+* Fix deprecation warning for block in sight (@Karang)
+
 ## 2.39.0
 * Add number support to bot.chat (@BlueBurgersTDD)
 * Fixed && Improved blockFind function with useExtraInfo = true (@magicaltoast)
