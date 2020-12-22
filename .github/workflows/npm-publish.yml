@@ -13,13 +13,20 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@master
       with:
-        node-version: 10.0.0
-    - name: Publish if version has been updated
-      uses: pascalgn/npm-publish-action@4f4bf159e299f65d21cd1cbd96fc5d53228036df
-      with: # All of theses inputs are optional
-        tag_name: "%s"
-        tag_message: "%s"
-        commit_pattern: "^Release (\\S+)"
-      env: # More info about the environment variables in the README
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this as is, it's automatically generated
-        NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }} # You need to set this in your repo settings
+        node-version: 14.0.0
+    - id: publish
+      uses: JS-DevTools/npm-publish@v1
+      with:
+        token: ${{ secrets.NPM_AUTH_TOKEN }}
+    - name: Create Release
+      if: steps.publish.outputs.type != 'none'
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.publish.outputs.version }}
+        release_name: Release ${{ steps.publish.outputs.version }}
+        body: ${{ steps.publish.outputs.version }}
+        draft: false
+        prerelease: false
