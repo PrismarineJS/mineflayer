@@ -50,3 +50,27 @@ You can use a library like `repl` to read the console input and use `bot.chat` t
 In the `inject()` function for your plugin, you can safely call `bot.loadPlugin(anotherPlugin)` to make sure that plugin is loaded. If the plugin was already loaded before, nothing happens.
 
 Note that the order in which plugins are loaded is dynamic, so you should never call another plugin in your `inject()` function.
+
+### How can I make the bot drop all items from it's inventory?
+
+Use the `tossStack` function for each item in your inventory. This takes a few ticks to drop (since it has to recieve a confirmation packet from the server), so use the callback of the tossStack function to wait for the previous item to finish dropping before preforming the next one.
+
+Callback-based:
+```js
+function tossNext () {
+  if (bot.inventory.items().length === 0) return
+  const item = bot.inventory.items()[0]
+  bot.tossStack(item, tossNext)
+}
+tossNext()
+```
+
+Promise-based:
+```js
+async function tossNext () {
+  while (bot.inventory.items().length > 0) {
+    const item = bot.inventory.items()[0]
+    await bot.tossStack(item)
+  }
+}
+tossNext()
