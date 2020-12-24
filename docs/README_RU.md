@@ -45,9 +45,9 @@
 | Ссылка | Описание |
 |---|---|
 |[Обучение](tutorial.md) | Знакомство с Node.js и Mineflayer |
-| [FAQ](FAQ.md) | Появился вопрос? Найди ответ тут |
-| [API](api.md) | Методы API |
-| [Нестабильное API](unstable_api.md) | Нестабильный методы API |
+| [FAQ](FAQ_RU.md) | Появился вопрос? Найди ответ тут |
+| [API](api_ru.md) | Методы API |
+| [Нестабильное API](unstable_api_ru.md) | Нестабильный методы API |
 | [Обновления](history.md) | Список изменений в обновлениях |
 | [Примеры](https://github.com/PrismarineJS/mineflayer/tree/master/examples) | Примеры использования Mineflayer|
 
