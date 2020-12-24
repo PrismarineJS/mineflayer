@@ -5,6 +5,7 @@
 [![Discord](https://img.shields.io/badge/chat-on%20discord-brightgreen.svg)](https://discord.gg/GsEFRM8)
 [![Gitter](https://img.shields.io/badge/chat-on%20gitter-brightgreen.svg)](https://gitter.im/PrismarineJS/general)
 [![Irc](https://img.shields.io/badge/chat-on%20irc-brightgreen.svg)](https://irc.gitter.im/)
+[![Issue Hunt](https://github.com/BoostIO/issuehunt-materials/blob/master/v1/issuehunt-shield-v1.svg)](https://issuehunt.io/r/PrismarineJS/mineflayer)
 
 [![Попробуйте на gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 
@@ -34,6 +35,8 @@
  Узнайте про наши текущие [задачи](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects). 
  
 ## Установка
+
+Сначало установите nodejs >= 14 из [nodejs.org](https://nodejs.org/) затем:
 
 `npm install mineflayer`
 
@@ -80,7 +83,8 @@ const bot = mineflayer.createBot({
   port: 25565,       // optional
   username: 'email@example.com', // email и password используются для
   password: '12345678',          // лицензионных серверов
-  version: false                 // при установленном значении false версия будет выбрана автоматически, используйте пример выше чтобы выбрать нужную версию
+  version: false,                // при установленном значении false версия будет выбрана автоматически, используйте пример выше чтобы выбрать нужную версию
+  auth: 'mojang'                 // необязательный. По умолчанию использует mojang, если используется учетная запись microsoft, установите значение «microsoft»
 })
 
 bot.on('chat', function (username, message) {
@@ -208,7 +212,7 @@ Mineflayer поддерживает сторонние плагины. С пом
 
 ### Установка
 
-In order to get all tests to run successfully you must first:
+Чтобы все тесты прошли успешно, вы должны сначала:
 
 1. Создайте папку для хранения сервера
 2. Установите MC_SERVER_JAR_DIR для этой папки
