@@ -5,6 +5,7 @@
 [![Discord](https://img.shields.io/badge/chat-on%20discord-brightgreen.svg)](https://discord.gg/GsEFRM8)
 [![Gitter](https://img.shields.io/badge/chat-on%20gitter-brightgreen.svg)](https://gitter.im/PrismarineJS/general)
 [![Irc](https://img.shields.io/badge/chat-on%20irc-brightgreen.svg)](https://irc.gitter.im/)
+[![Issue Hunt](https://github.com/BoostIO/issuehunt-materials/blob/master/v1/issuehunt-shield-v1.svg)](https://issuehunt.io/r/PrismarineJS/mineflayer)
 
 [![Попробуйте на gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 
@@ -35,6 +36,8 @@
  
 ## Установка
 
+Сначало установите nodejs >= 14 из [nodejs.org](https://nodejs.org/) затем:
+
 `npm install mineflayer`
 
 ## Документация
@@ -42,9 +45,9 @@
 | Ссылка | Описание |
 |---|---|
 |[Обучение](tutorial.md) | Знакомство с Node.js и Mineflayer |
-| [FAQ](FAQ.md) | Появился вопрос? Найди ответ тут |
-| [API](api.md) | Методы API |
-| [Нестабильное API](unstable_api.md) | Нестабильный методы API |
+| [FAQ](FAQ_RU.md) | Появился вопрос? Найди ответ тут |
+| [API](api_ru.md) | Методы API |
+| [Нестабильное API](unstable_api_ru.md) | Нестабильный методы API |
 | [Обновления](history.md) | Список изменений в обновлениях |
 | [Примеры](https://github.com/PrismarineJS/mineflayer/tree/master/examples) | Примеры использования Mineflayer|
 
@@ -80,7 +83,8 @@ const bot = mineflayer.createBot({
   port: 25565,       // optional
   username: 'email@example.com', // email и password используются для
   password: '12345678',          // лицензионных серверов
-  version: false                 // при установленном значении false версия будет выбрана автоматически, используйте пример выше чтобы выбрать нужную версию
+  version: false,                // при установленном значении false версия будет выбрана автоматически, используйте пример выше чтобы выбрать нужную версию
+  auth: 'mojang'                 // необязательный. По умолчанию использует mojang, если используется учетная запись microsoft, установите значение «microsoft»
 })
 
 bot.on('chat', function (username, message) {
@@ -208,7 +212,7 @@ Mineflayer поддерживает сторонние плагины. С пом
 
 ### Установка
 
-In order to get all tests to run successfully you must first:
+Чтобы все тесты прошли успешно, вы должны сначала:
 
 1. Создайте папку для хранения сервера
 2. Установите MC_SERVER_JAR_DIR для этой папки
