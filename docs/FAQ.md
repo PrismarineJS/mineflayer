@@ -19,7 +19,12 @@ chat plugin. Also read http://mineflayer.prismarine.js.org/#/tutorial?id=custom-
 
 ### How can I send a command ?
 
-by using bot.chat
+By using `bot.chat()`.
+
+**Example:**
+```js
+bot.chat('/give @p diamond')
+```
 
 ### Is it possible to login multiple accounts using bot = mineflayer.createbot while controlling them all separately ?
 
@@ -39,11 +44,38 @@ One way is to increase the [checkTimeoutInterval](https://github.com/PrismarineJ
 
 ### How to get the lore / text of an item ?
 
-You can use the .nbt property of an item. prismarine-nbt nbt.simplify method may be useful
+You can use the `item.nbt` property. It is also recommended to use the `prismarine-nbt` library. The `nbt.simplify()` method may be useful.
+
+**Example:**
+```js
+function getLore(item) {
+  let message = ''
+  if (item.nbt == null) return message
+
+  const nbt = require('prismarine-nbt')
+  const ChatMessage = require('prismarine-chat')(bot.version)
+
+  const data = nbt.simplify(item.nbt)
+  const display = data['display']
+  if (display == null) return message
+
+  const lore = display['Lore']
+  if (lore == null) return message
+
+  for (const line of lore) {
+    for (const group of JSON.parse(line)) {
+      message += new ChatMessage(group).toString()
+      message += '\n'
+      }
+  }
+
+  return message
+}
+```
 
 ### How can I send message from the console to the server?
 
-You can use a library like `repl` to read the console input and use `bot.chat` to send it. You can find an example [here.](https://github.com/PrismarineJS/mineflayer/blob/master/examples/repl.js)
+You can use a library like `repl` to read the console input and use `bot.chat()` to send it. You can find an example [here.](https://github.com/PrismarineJS/mineflayer/blob/master/examples/repl.js)
 
 ### When creating a plugin, how can I specify another plugin as a dependency?
 
