@@ -68,7 +68,9 @@ function createBot (options = {}) {
   options.hideErrors = options.hideErrors || true
   options.logErrors = options.logErrors === undefined ? true : options.logErrors
   options.loadInternalPlugins = options.loadInternalPlugins !== false
-  const bot = new Bot()
+  const bot = new EventEmitter()
+  bot._client = null
+  bot.end = () => bot._client.end()
   if (options.logErrors) {
     bot.on('error', err => {
       if (!options.hideErrors) {
@@ -90,52 +92,36 @@ function createBot (options = {}) {
     }).map(key => options.plugins[key])
   bot.loadPlugins([...internalPlugins, ...externalPlugins])
 
-  bot.connect(options)
-  return bot
-}
-
-class Bot extends EventEmitter {
-  constructor () {
-    super()
-    this._client = null
-  }
-
-  connect (options) {
-    const self = this
-    self._client = mc.createClient(options)
-    self._client.on('connect', () => {
-      self.emit('connect')
-    })
-    self._client.on('error', (err) => {
-      self.emit('error', err)
-    })
-    self._client.on('end', () => {
-      self.emit('end')
-    })
-    if (!self._client.wait_connect) next()
-    else self._client.once('connect_allowed', next)
-    function next () {
-      const version = require('minecraft-data')(self._client.version).version
-      if (supportedVersions.indexOf(version.majorVersion) === -1) {
-        throw new Error(`Version ${version.minecraftVersion} is not supported.`)
-      }
-
-      const latestTestedVersion = testedVersions[testedVersions.length - 1]
-      const latestProtocolVersion = require('minecraft-data')(latestTestedVersion).protocolVersion
-      if (version.protocolVersion > latestProtocolVersion) {
-        throw new Error(`Version ${version.minecraftVersion} is not supported. Latest supported version is ${latestTestedVersion}.`)
-      }
-
-      self.protocolVersion = version.version
-      self.majorVersion = version.majorVersion
-      self.version = version.minecraftVersion
-      options.version = version.minecraftVersion
-      self.supportFeature = feature => supportFeature(feature, version.minecraftVersion)
-      self.emit('inject_allowed')
+  bot._client = mc.createClient(options)
+  bot._client.on('connect', () => {
+    bot.emit('connect')
+  })
+  bot._client.on('error', (err) => {
+    bot.emit('error', err)
+  })
+  bot._client.on('end', () => {
+    bot.emit('end')
+  })
+  if (!bot._client.wait_connect) next()
+  else bot._client.once('connect_allowed', next)
+  function next () {
+    const version = require('minecraft-data')(bot._client.version).version
+    if (supportedVersions.indexOf(version.majorVersion) === -1) {
+      throw new Error(`Version ${version.minecraftVersion} is not supported.`)
     }
-  }
 
-  end () {
-    this._client.end()
+    const latestTestedVersion = testedVersions[testedVersions.length - 1]
+    const latestProtocolVersion = require('minecraft-data')(latestTestedVersion).protocolVersion
+    if (version.protocolVersion > latestProtocolVersion) {
+      throw new Error(`Version ${version.minecraftVersion} is not supported. Latest supported version is ${latestTestedVersion}.`)
+    }
+
+    bot.protocolVersion = version.version
+    bot.majorVersion = version.majorVersion
+    bot.version = version.minecraftVersion
+    options.version = version.minecraftVersion
+    bot.supportFeature = feature => supportFeature(feature, version.minecraftVersion)
+    bot.emit('inject_allowed')
   }
+  return bot
 }
