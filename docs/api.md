@@ -126,6 +126,7 @@
       - [bot.food](#botfood)
       - [bot.foodSaturation](#botfoodsaturation)
       - [bot.physics](#botphysics)
+      - [bot.time.doDaylightCycle](#bottimedodaylightcycle)
       - [bot.time.time](#bottimetime)
       - [bot.time.timeOfDay](#bottimetimeofday)
       - [bot.time.day](#bottimeday)
@@ -934,6 +935,10 @@ saturation of 5.0. Eating food increases the saturation as well as the food bar.
 
 Edit these numbers to tweak gravity, jump speed, terminal velocity, etc.
 Do this at your own risk.
+
+### bot.time.doDaylightCycle
+
+Whether or not the gamerule doDaylightCycle is true or false.
 
 #### bot.time.time
 
