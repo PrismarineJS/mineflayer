@@ -127,11 +127,13 @@
       - [bot.foodSaturation](#botfoodsaturation)
       - [bot.physics](#botphysics)
       - [bot.time.doDaylightCycle](#bottimedodaylightcycle)
+      - [bot.time.bigTime](#bottimebigtime)
       - [bot.time.time](#bottimetime)
       - [bot.time.timeOfDay](#bottimetimeofday)
       - [bot.time.day](#bottimeday)
       - [bot.time.isDay](#bottimeisday)
       - [bot.time.moonPhase](#bottimemoonphase)
+      - [bot.time.bigAge](#bottimebigage)
       - [bot.time.age](#bottimeage)
       - [bot.quickBarSlot](#botquickbarslot)
       - [bot.inventory](#botinventory)
@@ -936,13 +938,22 @@ saturation of 5.0. Eating food increases the saturation as well as the food bar.
 Edit these numbers to tweak gravity, jump speed, terminal velocity, etc.
 Do this at your own risk.
 
-### bot.time.doDaylightCycle
+#### bot.time.doDaylightCycle
 
 Whether or not the gamerule doDaylightCycle is true or false.
 
+#### bot.time.bigTime
+
+The total number of ticks since day 0.
+
+This value is of type BigInt and is accurate even at very large values. (more than 2^51 - 1 ticks)
+
 #### bot.time.time
 
-Total time of the world since day 0.
+The total numbers of ticks since day 0.
+
+Because the Number limit of Javascript is at 2^51 - 1 bot.time.time becomes inaccurate higher than this limit and the use of bot.time.bigTime is recommended.  
+Realistically though you'll probably never need to use bot.time.bigTime as it will only reach 2^51 - 1 ticks naturally after ~14280821 real years.  
 
 #### bot.time.timeOfDay
 
@@ -962,7 +973,7 @@ Day of the world.
 
 Whether it is day or not.
 
-Based on whether the current time of day isn't between 13000 and 23000 ticks.
+Based on whether the current time of day is between 13000 and 23000 ticks.
 
 #### bot.time.moonPhase
 
@@ -970,9 +981,18 @@ Phase of the moon.
 
 0-7 where 0 is full moon.
 
+#### bot.time.bigAge
+
+Age of the world, in ticks.
+
+This value is of type BigInt and is accurate even at very large values. (more than 2^51 - 1 ticks)
+
 #### bot.time.age
 
 Age of the world, in ticks.
+
+Because the Number limit of Javascript is at 2^51 - 1 bot.time.age becomes inaccurate higher than this limit and the use of bot.time.bigAge is recommended.  
+Realistically though you'll probably never need to use bot.time.bigAge as it will only reach 2^51 - 1 ticks naturally after ~14280821 real years.  
 
 #### bot.quickBarSlot
 
