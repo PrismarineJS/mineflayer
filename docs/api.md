@@ -765,7 +765,7 @@ Create and return an instance of the class bot.
  * password : can be omitted (if the tokens are also omitted then it tries to connect in offline mode)
  * host : default to localhost
  * version : default to automatically guessing the version of the server. Example of value : "1.12.2"
- * auth : default to mojang
+ * auth : default to 'mojang', can also be 'microsoft'
  * clientToken : generated if a password is given
  * accessToken : generated if a password is given
  * logErrors : true by default, catch errors and log them
