@@ -1,3 +1,7 @@
+## 2.40.1
+* Fix for not handling negative numbers in time plugin (@Naomi)
+* Fix typescript Bot definition (@rom1504)
+
 ## 2.40.0
 * fix for dig ignore (@TheDudeFromCI)
 * better calculation of digging range (@goncharovchik)
