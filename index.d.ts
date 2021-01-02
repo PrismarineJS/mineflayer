@@ -140,7 +140,7 @@ interface BotEvents {
   bossBarUpdated: (bossBar: BossBar) => void;
 }
 
-export interface Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
+export interface Bot extends TypedEmitter<BotEvents> {
   username: string;
   protocolVersion: string;
   majorVersion: string;
