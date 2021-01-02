@@ -488,11 +488,14 @@ export interface PhysicsOptions {
 }
 
 export interface Time {
+  doDaylightCycle: boolean;
+  bigTime: BigInt;
   time: number;
   timeOfDay: number;
   day: number;
   isDay: boolean;
   moonPhase: number;
+  bigAge: BigInt;
   age: number;
 }
 
