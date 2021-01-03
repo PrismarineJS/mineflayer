@@ -1,4 +1,5 @@
 const assert = require('assert')
+const { BlockFace } = require('prismarine-world').iterators
 
 module.exports = () => (bot, done) => {
   const { position } = bot.entity
@@ -14,6 +15,7 @@ module.exports = () => (bot, done) => {
       const relBlock = bot.blockAt(position.offset(0, -1, 0))
 
       assert.deepStrictEqual(block, relBlock)
+      assert.strictEqual(block.face, BlockFace.TOP)
 
       block = bot.blockInSight()
       assert.deepStrictEqual(block, relBlock)
