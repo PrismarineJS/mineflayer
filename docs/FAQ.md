@@ -48,22 +48,22 @@ You can use the `item.nbt` property. It is also recommended to use the `prismari
 
 **Example:**
 ```js
-function getLore(item) {
-  let message = ""
+function getLore (item) {
+  let message = ''
   if (item.nbt == null) return message
 
-  const nbt = require("prismarine-nbt")
-  const ChatMessage = require("prismarine-chat")(bot.version)
+  const nbt = require('prismarine-nbt')
+  const ChatMessage = require('prismarine-chat')(bot.version)
 
   const data = nbt.simplify(item.nbt)
-  const display = data["display"]
+  const display = data.display
   if (display == null) return message
 
-  const lore = display["Lore"]
+  const lore = display.Lore
   if (lore == null) return message
   for (const line of lore) {
     message += new ChatMessage(line).toString()
-    message += "\n"
+    message += '\n'
   }
 
   return message
