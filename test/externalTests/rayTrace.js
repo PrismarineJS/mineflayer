@@ -13,9 +13,9 @@ module.exports = () => (bot, done) => {
     bot.lookAt(position.offset(0, -3, 0), true, () => {
       let block = bot.blockAtCursor()
       const relBlock = bot.blockAt(position.offset(0, -1, 0))
+      relBlock.face = BlockFace.TOP
 
       assert.deepStrictEqual(block, relBlock)
-      assert.strictEqual(block.face, BlockFace.TOP)
 
       block = bot.blockInSight()
       assert.deepStrictEqual(block, relBlock)
