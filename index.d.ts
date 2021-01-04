@@ -172,7 +172,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   _client: Client;
   heldItem: Item | null;
 
-  constructor();
+  constructor(): Bot;
 
   connect(options: BotOptions): void;
 
