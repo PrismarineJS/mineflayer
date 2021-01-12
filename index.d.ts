@@ -140,7 +140,7 @@ interface BotEvents {
   bossBarUpdated: (bossBar: BossBar) => void;
 }
 
-export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
+export interface Bot extends TypedEmitter<BotEvents> {
   username: string;
   protocolVersion: string;
   majorVersion: string;
@@ -171,8 +171,6 @@ export class Bot extends (EventEmitter as new () => TypedEmitter<BotEvents>) {
   world: any;
   _client: Client;
   heldItem: Item | null;
-
-  constructor();
 
   connect(options: BotOptions): void;
 
@@ -488,11 +486,14 @@ export interface PhysicsOptions {
 }
 
 export interface Time {
+  doDaylightCycle: boolean;
+  bigTime: BigInt;
   time: number;
   timeOfDay: number;
   day: number;
   isDay: boolean;
   moonPhase: number;
+  bigAge: BigInt;
   age: number;
 }
 

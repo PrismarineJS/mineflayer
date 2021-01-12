@@ -16,7 +16,7 @@ The objective of these tests is to know automatically what works and what doesn'
 
 In order to add an external test now you only need to create a file in [test/externalTests](test/externalTests)
 
-An example : [test/externalTests/digAndBuild.js](test/externalTests/digAndBuild.js)
+An example : [test/externalTests/digAndBuild.js](https://github.com/PrismarineJS/mineflayer/blob/master/test/externalTests/digAndBuild.js)
 
 That file needs to export a function returning a function or an array of function taking as parameter the bot object and a done callback,
  it should contain asserts to test if the tested functionality failed.

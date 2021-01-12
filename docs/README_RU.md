@@ -10,11 +10,11 @@
 [![Попробуйте на gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 
 | 🇺🇸 [English](README.md) | 🇷🇺 [Russian](README_RU.md) | 🇪🇸 [Spanish](README_ES.md) |
-|-------------------------|----------------------------|----------------------------|
+| ----------------------- | -------------------------- | -------------------------- |
 
 Создавайте ботов Minecraft с помощью мощного, стабильного и высокоуровневого JavaScript [API](api.md).
 
-Первый раз используете Node.js? Начни с [этого](tutorial.md)
+Первый раз используете Node.js? Начните с [этого](tutorial.md).
 
 ## Возможности
 
@@ -32,24 +32,24 @@
 
 ### Наши цели
 
- Узнайте про наши текущие [задачи](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects). 
+Узнайте про наши текущие [задачи](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects). 
  
 ## Установка
 
-Сначало установите nodejs >= 14 из [nodejs.org](https://nodejs.org/) затем:
+Сначало установите nodejs >= 14 из [nodejs.org](https://nodejs.org/) затем выполните:
 
 `npm install mineflayer`
 
 ## Документация
 
-| Ссылка | Описание |
-|---|---|
-|[Обучение](tutorial.md) | Знакомство с Node.js и Mineflayer |
-| [FAQ](FAQ_RU.md) | Появился вопрос? Найди ответ тут |
-| [API](api_ru.md) | Методы API |
-| [Нестабильное API](unstable_api_ru.md) | Нестабильный методы API |
-| [Обновления](history.md) | Список изменений в обновлениях |
-| [Примеры](https://github.com/PrismarineJS/mineflayer/tree/master/examples) | Примеры использования Mineflayer|
+| Ссылка                                                                     | Описание                              |
+| -------------------------------------------------------------------------- | ------------------------------------- |
+| [Обучение](tutorial.md)                                                    | Знакомство с Node.js и Mineflayer     |
+| [FAQ](FAQ_RU.md)                                                           | Появился вопрос? Найдите ответ здесь. |
+| [API](api_ru.md)                                                           | Методы API                            |
+| [Нестабильное API](unstable_api_ru.md)                                     | Нестабильные методы API               |
+| [Обновления](history.md)                                                   | Список изменений в обновлениях        |
+| [Примеры](https://github.com/PrismarineJS/mineflayer/tree/master/examples) | Примеры использования Mineflayer      |
 
 
 ## Сделать вклад в развитие Mineflayer
@@ -58,7 +58,7 @@
 
 ## Использование
 
-**Videos**
+**Видео**
 
 Обучающее видео, объясняющее базовый процесс настройки бота, можно найти [здесь](https://www.youtube.com/watch?v=ltWosy4Z0Kw)
 
@@ -71,8 +71,8 @@
 
 **Перед запуском**
 
-Если версия не указана, она будет выбрана автоматически, исходя из поддерживаемых сервером версиях.
-Например: `version:"1.8"`.
+Если версия не указана она будет выбрана автоматически исходя из поддерживаемых сервером версиях.
+Например: `version: "1.8"`.
 
 ### Простой пример
 ```js
@@ -81,10 +81,10 @@ const mineflayer = require('mineflayer')
 const bot = mineflayer.createBot({
   host: 'localhost', // optional
   port: 25565,       // optional
-  username: 'email@example.com', // email и password используются для
+  username: 'email@example.com', // E-mail и пароль используются для
   password: '12345678',          // лицензионных серверов
-  version: false,                // при установленном значении false версия будет выбрана автоматически, используйте пример выше чтобы выбрать нужную версию
-  auth: 'mojang'                 // необязательный. По умолчанию использует mojang, если используется учетная запись microsoft, установите значение «microsoft»
+  version: false,                // При установленном значении false версия будет выбрана автоматически, используйте пример выше чтобы выбрать нужную версию
+  auth: 'mojang'                 // Необязательное поле. По умолчанию используется mojang, если используется учетная запись microsoft, установите значение «microsoft»
 })
 
 bot.on('chat', function (username, message) {
@@ -92,12 +92,12 @@ bot.on('chat', function (username, message) {
   bot.chat(message)
 })
 
-// Отлов ошибок и причин отключения:
+// Прослушивание ошибок и причин отключения от сервера:
 bot.on('kicked', (reason, loggedIn) => console.log(reason, loggedIn))
 bot.on('error', err => console.log(err))
 ```
 
-### Посмотреть, что делает бот
+### Смотрите, что делает бот
 
 Спасибо репозиторию [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer), с помощью которого можно увидеть от лица бота, что на данный момент происходит на сервере.
 Установите [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer) c помощью `npm install prismarine-viewer` и добавьте это в Ваш код:
@@ -107,52 +107,51 @@ bot.once('spawn', () => {
   mineflayerViewer(bot, { port: 3007, firstPerson: true })
 })
 ```
-После запуска вы в прямом эфире сможете наблюдать за происходящим:
+После запуска, вы в прямом эфире сможете наблюдать за происходящим:
 
 [<img src="https://prismarine.js.org/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarine.js.org/prismarine-viewer/)
 
 #### Больше примеров
 
-| Пример | Описание |
-|---|---|
-|[viewer](https://github.com/PrismarineJS/mineflayer/tree/master/examples/viewer) | Отобразить через браузер вид от лица бота|
-|[pathfinder](https://github.com/Karang/mineflayer-pathfinder/blob/master/examples/test.js) | Передвижение бота по координатам и не только |
-|[chest](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chest.js) | Использование сундуков, печек, раздатчиков и чаровальных столов |
-|[digger](https://github.com/PrismarineJS/mineflayer/blob/master/examples/digger.js) | Пример для создания бота-шахтёра |
-|[discord](https://github.com/PrismarineJS/mineflayer/blob/master/examples/discord.js) | Создайте Discord бота  |
-|[jumper](https://github.com/PrismarineJS/mineflayer/blob/master/examples/jumper.js) | Научите бота передвигатся, прыгать, использовать транспортные средства, а также атаковать энтити |
+| Пример                                                                                     | Описание |
+| ------------------------------------------------------------------------------------------ | --------------------------------------------------------------- |
+| [viewer](https://github.com/PrismarineJS/mineflayer/tree/master/examples/viewer)           | Отобразить через браузер вид от лица бота                       |
+| [pathfinder](https://github.com/Karang/mineflayer-pathfinder/blob/master/examples/test.js) | Передвижение бота по координатам и не только                    |
+| [chest](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chest.js)          | Использование сундуков, печек, раздатчиков и чаровальных столов |
+| [digger](https://github.com/PrismarineJS/mineflayer/blob/master/examples/digger.js)        | Пример для создания бота-шахтёра                                |
+| [discord](https://github.com/PrismarineJS/mineflayer/blob/master/examples/discord.js)      | Создайте Discord бота                                           |
+| [jumper](https://github.com/PrismarineJS/mineflayer/blob/master/examples/jumper.js)        | Научите бота передвигатся, прыгать, использовать средства пережвижения, а также атаковать |
 
-И много других примеров в данной [папке](https://github.com/PrismarineJS/mineflayer/tree/master/examples) folder
+И много других примеров в данной [папке](https://github.com/PrismarineJS/mineflayer/tree/master/examples)
 
 ### Модули
 
 Большая часть разработки происходит внутри небольших пакетов npm, которые используются mineflayer.
 
-
 Модули, из которых состоит Mineflayer
 
-| module | description |
-|---|---|
-| [minecraft-protocol](https://github.com/PrismarineJS/node-minecraft-protocol) | Парсинг пакетов Minecraft, аутентификация и шифрование
-| [minecraft-data](https://github.com/PrismarineJS/minecraft-data) | Независимый от языка модуль, предоставляющий данные Minecraft для клиента и сервера
-| [prismarine-physics](https://github.com/PrismarineJS/prismarine-physics) | Взаимодействие с физикой 
-| [prismarine-chunk](https://github.com/PrismarineJS/prismarine-chunk) | Хранение чанков Minecraft
-| [node-vec3](https://github.com/PrismarineJS/node-vec3) | векторная обработка координат
-| [prismarine-block](https://github.com/PrismarineJS/prismarine-block) | Взаимодействие с блоками и их данными
-| [prismarine-chat](https://github.com/PrismarineJS/prismarine-chat) | Парсер чата Minecraft (вырезана из Mineflayer)
-| [node-yggdrasil](https://github.com/PrismarineJS/node-yggdrasil) | Библиотека для взаимодействия с системой аутентификации Mojang, известная как Yggdrasil
-| [prismarine-world](https://github.com/PrismarineJS/prismarine-world) | Реализация миров для prismarine
-| [prismarine-windows](https://github.com/PrismarineJS/prismarine-windows) | Взаимодействие с GUI
-| [prismarine-item](https://github.com/PrismarineJS/prismarine-item) | Взаимодействие с предметами и их данными
-| [prismarine-nbt](https://github.com/PrismarineJS/prismarine-nbt) | Парсер NBT для node-minecraft-protocol
-| [prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe) | Взаимодействие с рецептами крафта
-| [prismarine-biome](https://github.com/PrismarineJS/prismarine-biome) | Взаимодействие с биомами
-| [prismarine-entity](https://github.com/PrismarineJS/prismarine-entity) | Взаимодействие с энтити
+| Модуль                                                                        | Описание                                                                                |
+| ----------------------------------------------------------------------------- |---------------------------------------------------------------------------------------- |
+| [minecraft-protocol](https://github.com/PrismarineJS/node-minecraft-protocol) | Парсинг пакетов Minecraft, аутентификация и шифрование                                  |
+| [minecraft-data](https://github.com/PrismarineJS/minecraft-data)              | Независимый от языка модуль, предоставляющий данные Minecraft для клиента и сервера     |
+| [prismarine-physics](https://github.com/PrismarineJS/prismarine-physics)      | Взаимодействие с физикой                                                                |
+| [prismarine-chunk](https://github.com/PrismarineJS/prismarine-chunk)          | Хранение чанков Minecraft                                                               |
+| [node-vec3](https://github.com/PrismarineJS/node-vec3)                        | Векторная обработка координат                                                           |
+| [prismarine-block](https://github.com/PrismarineJS/prismarine-block)          | Взаимодействие с блоками и их данными                                                   |
+| [prismarine-chat](https://github.com/PrismarineJS/prismarine-chat)            | Парсер чата Minecraft (вырезана из Mineflayer)                                          |
+| [node-yggdrasil](https://github.com/PrismarineJS/node-yggdrasil)              | Библиотека для взаимодействия с системой аутентификации Mojang, известная как Yggdrasil |
+| [prismarine-world](https://github.com/PrismarineJS/prismarine-world)          | Реализация миров для prismarine                                                         |
+| [prismarine-windows](https://github.com/PrismarineJS/prismarine-windows)      | Взаимодействие с GUI                                                                    |
+| [prismarine-item](https://github.com/PrismarineJS/prismarine-item)            | Взаимодействие с предметами и их данными                                                |
+| [prismarine-nbt](https://github.com/PrismarineJS/prismarine-nbt)              | Парсер NBT для node-minecraft-protocol                                                  |
+| [prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe)        | Взаимодействие с рецептами крафта                                                       |
+| [prismarine-biome](https://github.com/PrismarineJS/prismarine-biome)          | Взаимодействие с биомами                                                                |
+| [prismarine-entity](https://github.com/PrismarineJS/prismarine-entity)        | Взаимодействие с сущностями                                                             |
 
 
 ### Дебаг
 
-Вы можете отлавливать ошибки с помощью `DEBUG`:
+Вы можете отлавливать ошибки с помощью переменной окружения `DEBUG`:
 
 ```bash
 DEBUG="minecraft-protocol" node [...]
@@ -212,12 +211,12 @@ Mineflayer поддерживает сторонние плагины. С пом
 
 ### Установка
 
-Чтобы все тесты прошли успешно, вы должны сначала:
+Чтобы все тесты прошли успешно, вы должны:
 
-1. Создайте папку для хранения сервера
-2. Установите MC_SERVER_JAR_DIR для этой папки
+1. Создайть папку для хранения сервера
+2. Установить переменную окружения `MC_SERVER_JAR_DIR` с путём на эту папку
 
-Нппример:
+Например:
 
 1. `mkdir server_jars`
 2. `export MC_SERVER_JAR_DIR=/полный/путь/до/сервера`
@@ -229,10 +228,10 @@ Mineflayer поддерживает сторонние плагины. С пом
 Запустите: `npm test`
 
 ### Тестирование с определенной версии:
-Run `npm test -g <version>`, где `<version>` это версия Minecraft `1.12`, `1.15.2`...
+Выполните: `npm test -g <version>`, где `<version>` это версия Minecraft `1.12`, `1.15.2`...
 
 ### Тестирование конкретного теста
-Run `npm test -g <test_name>`, где `<test_name>` любое название скрипта, по типу `bed`, `useChests`, `rayTrace`...
+Выполните: `npm test -g <test_name>`, где `<test_name>` любое название скрипта, по типу `bed`, `useChests`, `rayTrace`...
 
 ## Лицензия
 

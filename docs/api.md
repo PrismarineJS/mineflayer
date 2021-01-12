@@ -126,11 +126,14 @@
       - [bot.food](#botfood)
       - [bot.foodSaturation](#botfoodsaturation)
       - [bot.physics](#botphysics)
+      - [bot.time.doDaylightCycle](#bottimedodaylightcycle)
+      - [bot.time.bigTime](#bottimebigtime)
       - [bot.time.time](#bottimetime)
       - [bot.time.timeOfDay](#bottimetimeofday)
       - [bot.time.day](#bottimeday)
       - [bot.time.isDay](#bottimeisday)
       - [bot.time.moonPhase](#bottimemoonphase)
+      - [bot.time.bigAge](#bottimebigage)
       - [bot.time.age](#bottimeage)
       - [bot.quickBarSlot](#botquickbarslot)
       - [bot.inventory](#botinventory)
@@ -271,6 +274,7 @@
       - [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottradevillagerinstance-tradeindex-times-cb)
       - [bot.setCommandBlock(pos, command, [options])](#botsetcommandblockpos-command-options)
       - [bot.supportFeature(name)](#botsupportfeaturename)
+      - [bot.waitForTicks(ticks)](#botwaitforticksticks)
     - [Lower level inventory methods](#lower-level-inventory-methods)
       - [bot.clickWindow(slot, mouseButton, mode, cb)](#botclickwindowslot-mousebutton-mode-cb)
       - [bot.putSelectedItemRange(start, end, window, slot, cb)](#botputselecteditemrangestart-end-window-slot-cb)
@@ -764,6 +768,7 @@ Create and return an instance of the class bot.
  * password : can be omitted (if the tokens are also omitted then it tries to connect in offline mode)
  * host : default to localhost
  * version : default to automatically guessing the version of the server. Example of value : "1.12.2"
+ * auth : default to 'mojang', can also be 'microsoft'
  * clientToken : generated if a password is given
  * accessToken : generated if a password is given
  * logErrors : true by default, catch errors and log them
@@ -934,9 +939,22 @@ saturation of 5.0. Eating food increases the saturation as well as the food bar.
 Edit these numbers to tweak gravity, jump speed, terminal velocity, etc.
 Do this at your own risk.
 
+#### bot.time.doDaylightCycle
+
+Whether or not the gamerule doDaylightCycle is true or false.
+
+#### bot.time.bigTime
+
+The total number of ticks since day 0.
+
+This value is of type BigInt and is accurate even at very large values. (more than 2^51 - 1 ticks)
+
 #### bot.time.time
 
-Total time of the world since day 0.
+The total numbers of ticks since day 0.
+
+Because the Number limit of Javascript is at 2^51 - 1 bot.time.time becomes inaccurate higher than this limit and the use of bot.time.bigTime is recommended.  
+Realistically though you'll probably never need to use bot.time.bigTime as it will only reach 2^51 - 1 ticks naturally after ~14280821 real years.  
 
 #### bot.time.timeOfDay
 
@@ -956,7 +974,7 @@ Day of the world.
 
 Whether it is day or not.
 
-Based on whether the current time of day isn't between 13000 and 23000 ticks.
+Based on whether the current time of day is between 13000 and 23000 ticks.
 
 #### bot.time.moonPhase
 
@@ -964,9 +982,18 @@ Phase of the moon.
 
 0-7 where 0 is full moon.
 
+#### bot.time.bigAge
+
+Age of the world, in ticks.
+
+This value is of type BigInt and is accurate even at very large values. (more than 2^51 - 1 ticks)
+
 #### bot.time.age
 
 Age of the world, in ticks.
+
+Because the Number limit of Javascript is at 2^51 - 1 bot.time.age becomes inaccurate higher than this limit and the use of bot.time.bigAge is recommended.  
+Realistically though you'll probably never need to use bot.time.bigAge as it will only reach 2^51 - 1 ticks naturally after ~14280821 real years.  
 
 #### bot.quickBarSlot
 
@@ -1737,6 +1764,10 @@ All options attributes are false by default, except mode which is 2 (as to repli
 This can be used to check is a specific feature is available in the current Minecraft version. This is usually only required for handling version-specific functionality.
 
 The list of available features can be found inside the [./lib/features.json](https://github.com/PrismarineJS/mineflayer/blob/master/lib/features.json) file.
+
+#### bot.waitForTicks(ticks)
+
+This is a promise-based function that waits for a given number of in-game ticks to pass before continuing. This is useful for quick timers that need to function with specific timing, regardless of the given physics tick speed of the bot. This is similar to the standard Javascript setTimeout function, but runs on the physics timer of the bot specifically.
 
 ### Lower level inventory methods
 

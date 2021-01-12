@@ -48,7 +48,7 @@ You can use the `item.nbt` property. It is also recommended to use the `prismari
 
 **Example:**
 ```js
-function getLore(item) {
+function getLore (item) {
   let message = ''
   if (item.nbt == null) return message
 
@@ -56,17 +56,14 @@ function getLore(item) {
   const ChatMessage = require('prismarine-chat')(bot.version)
 
   const data = nbt.simplify(item.nbt)
-  const display = data['display']
+  const display = data.display
   if (display == null) return message
 
-  const lore = display['Lore']
+  const lore = display.Lore
   if (lore == null) return message
-
   for (const line of lore) {
-    for (const group of JSON.parse(line)) {
-      message += new ChatMessage(group).toString()
-      message += '\n'
-      }
+    message += new ChatMessage(line).toString()
+    message += '\n'
   }
 
   return message
