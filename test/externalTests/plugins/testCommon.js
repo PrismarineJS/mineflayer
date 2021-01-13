@@ -1,9 +1,11 @@
 const Vec3 = require('vec3').Vec3
 
 const { spawn } = require('child_process')
+const { once } = require('events')
 const process = require('process')
 const assert = require('assert')
-const { callbackify, sleep } = require('../../../lib/promise_utils')
+const util = require('util')
+const { callbackify, sleep, onceWithCleanup, withTimeout } = require('../../../lib/promise_utils')
 
 module.exports = inject
 
@@ -133,35 +135,29 @@ function inject (bot) {
   }
 
   async function setCreativeMode (value) {
-    return new Promise((resolve) => {
-      // this function behaves the same whether we start in creative mode or not.
-      // also, creative mode is always allowed for ops, even if server.properties says force-gamemode=true in survival mode.
+    // this function behaves the same whether we start in creative mode or not.
+    // also, creative mode is always allowed for ops, even if server.properties says force-gamemode=true in survival mode.
 
-      function onMessage (jsonMsg) {
-        // console.log(jsonMsg)
-        switch (jsonMsg.translate) {
-          case 'commands.gamemode.success.self':
-          case 'gameMode.changed':
-            // good.
-            bot.removeListener('message', onMessage)
-            clearTimeout(timeOut)
-            return resolve()
-          case 'commands.generic.permission':
-            sayEverywhere('ERROR: I need to be an op (allow cheats).')
-            bot.removeListener('message', onMessage)
-          // at this point we just wait forever.
-          // the intention is that someone ops us while we're sitting here, then you kill and restart the test.
-        }
-        // console.log("I didn't expect this message:", jsonMsg);
+    const onMessage = (jsonMsg) => {
+      // console.log(jsonMsg)
+      switch (jsonMsg.translate) {
+        case 'commands.gamemode.success.self':
+        case 'gameMode.changed':
+          return true
+        case 'commands.generic.permission':
+          sayEverywhere('ERROR: I need to be an op (allow cheats).')
+        // at this point we just wait forever.
+        // the intention is that someone ops us while we're sitting here, then you kill and restart the test.
       }
+      // console.log("I didn't expect this message:", jsonMsg);
+      return false
+    }
 
-      bot.on('message', onMessage)
-      bot.chat(`/gamemode ${value ? 'creative' : 'survival'}`)
-      const timeOut = setTimeout(() => {
-        bot.removeListener('message', onMessage)
-        resolve()
-      }, 10000)
-    })
+    const listenerPromise = onceWithCleanup(bot, 'message', { checkCondition: onMessage, timeout: 10000 })
+
+    bot.chat(`/gamemode ${value ? 'creative' : 'survival'}`)
+
+    return listenerPromise
   }
 
   async function clearInventory () {
@@ -188,14 +184,8 @@ function inject (bot) {
   async function teleport (position) {
     bot.chat(`/tp ${bot.username} ${position.x} ${position.y} ${position.z}`)
 
-    return new Promise(resolve => {
-      bot.on('move', function onMove () {
-        // the bot is close enough to the desired position
-        if (bot.entity.position.distanceTo(position) < 0.9) {
-          bot.removeListener('move', onMove)
-          resolve()
-        }
-      })
+    return onceWithCleanup(bot, 'move', {
+      checkCondition: () => bot.entity.position.distanceTo(position) < 0.9
     })
   }
 
@@ -222,55 +212,54 @@ function inject (bot) {
   }
 
   async function runExample (file, run) {
-    return new Promise((resolve, reject) => {
-      let childBotName
+    // TODO: remove this once all examples have been converted to promises
+    run = util.promisify(run)
 
-      function joinHandler (message) {
-        if (message.json.translate === 'multiplayer.player.joined') {
-          bot.removeListener('message', joinHandler)
-          childBotName = message.json.with[0].insertion
-          bot.chat(`/tp ${childBotName} 50 4 0`)
-          setTimeout(() => {
-            bot.chat('loaded')
-          }, 5000)
-        }
+    let childBotName
+
+    const detectChildJoin = async () => {
+      const [message] = await onceWithCleanup(bot, 'message', {
+        checkCondition: message => message.json.translate === 'multiplayer.player.joined'
+      })
+      childBotName = message.json.with[0].insertion
+      bot.chat(`/tp ${childBotName} 50 4 0`)
+      setTimeout(() => {
+        bot.chat('loaded')
+      }, 5000)
+    }
+
+    const runExampleOnReady = async () => {
+      await onceWithCleanup(bot, 'chat', {
+        checkCondition: (username, message) => message === 'Ready!'
+      })
+      return run(childBotName)
+    }
+
+    const child = spawn('node', [file, 'localhost', `${bot.test.port}`])
+
+    // Useful to debug child processes:
+    child.stdout.on('data', (data) => { console.log(`${data}`) })
+    child.stderr.on('data', (data) => { console.error(`${data}`) })
+
+    const closeExample = async (err) => {
+      console.log('kill process ' + child.pid)
+
+      process.kill(child.pid, 'SIGTERM')
+
+      const [code] = await once(child, 'close')
+      console.log('close requested', code)
+
+      if (err) {
+        throw err
       }
+    }
 
-      const onChatMessage = (username, message) => {
-        if (message === 'Ready!') {
-          run(childBotName, closeExample)
-        }
-      }
-      bot.on('chat', onChatMessage)
-      bot.on('message', joinHandler)
-
-      const child = spawn('node', [file, 'localhost', `${bot.test.port}`])
-
-      // Useful to debug child processes:
-      child.stdout.on('data', (data) => { console.log(`${data}`) })
-      child.stderr.on('data', (data) => { console.error(`${data}`) })
-
-      const timeout = setTimeout(() => {
-        console.log('Timeout, test took too long')
-        closeExample(new Error('Timeout, test took too long'))
-      }, 20000)
-
-      function closeExample (err) {
-        if (timeout) clearTimeout(timeout)
-        console.log('kill process ' + child.pid)
-
-        bot.removeListener('chat', onChatMessage)
-
-        child.once('close', (code) => {
-          console.log('close requested ' + code)
-          if (err) {
-            reject(err)
-          } else {
-            resolve()
-          }
-        })
-        process.kill(child.pid, 'SIGTERM')
-      }
-    })
+    try {
+      await withTimeout(Promise.all([detectChildJoin(), runExampleOnReady()]), 20000)
+    } catch (err) {
+      console.log(err)
+      return closeExample(err)
+    }
+    return closeExample()
   }
 }
