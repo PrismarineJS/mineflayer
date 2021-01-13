@@ -11,7 +11,7 @@ const path = require('path')
 const START_THE_SERVER = true
 // if you want to have time to look what's happening increase this (milliseconds)
 const WAIT_TIME_BEFORE_STARTING = 5000
-const TEST_TIMEOUT_MS = 30000
+const TEST_TIMEOUT_MS = 60000
 
 const excludedTests = ['digEverything']
 
