@@ -153,15 +153,23 @@ function inject (bot) {
       return false
     }
 
-    // For whatever reason, timeout = success, and there is no other failure condition in this promise
-    const listenerPromise = new Promise((resolve) => onceWithCleanup(bot, 'message', {
-      checkCondition: onMessage,
-      timeout: 10000
-    }).then(resolve, resolve))
+    const waitForMessage = async () => {
+      try {
+        await onceWithCleanup(bot, 'message', {
+          checkCondition: onMessage,
+          timeout: 10000
+        })
+      } catch (_) {
+        // For whatever reason, timeout = success, and there is no other failure condition in this promise,
+        // so we can safely eat this exception.
+      }
+    }
+
+    const messagePromise = waitForMessage()
 
     bot.chat(`/gamemode ${value ? 'creative' : 'survival'}`)
 
-    return listenerPromise
+    return messagePromise
   }
 
   async function clearInventory () {
