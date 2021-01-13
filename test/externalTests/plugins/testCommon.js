@@ -153,7 +153,11 @@ function inject (bot) {
       return false
     }
 
-    const listenerPromise = onceWithCleanup(bot, 'message', { checkCondition: onMessage, timeout: 10000 })
+    // For whatever reason, timeout = success, and there is no other failure condition in this promise
+    const listenerPromise = new Promise((resolve) => onceWithCleanup(bot, 'message', {
+      checkCondition: onMessage,
+      timeout: 10000
+    }).then(resolve, resolve))
 
     bot.chat(`/gamemode ${value ? 'creative' : 'survival'}`)
 
@@ -199,16 +203,13 @@ function inject (bot) {
   }
 
   async function tellAndListen (to, what, listen) {
-    return new Promise(resolve => {
-      const onChatMessage = (username, message) => {
-        if (username === to && listen(message)) {
-          bot.removeListener('chat', onChatMessage)
-          resolve()
-        }
-      }
-      bot.on('chat', onChatMessage)
-      bot.chat(what)
+    const chatMessagePromise = onceWithCleanup(bot, 'chat', {
+      checkCondition: (username, message) => username === to && listen(message)
     })
+
+    bot.chat(what)
+
+    return chatMessagePromise
   }
 
   async function runExample (file, run) {
