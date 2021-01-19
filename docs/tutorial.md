@@ -18,7 +18,7 @@
   - [Passing along functions](#passing-along-functions)
   - [Listening for an event](#listening-for-an-event)
   - [Callbacks](#callbacks)
-    - [Correct and incorrect aproach](#correct-and-incorrect-aproach)
+    - [Correct and incorrect approach](#correct-and-incorrect-approach)
 - [Advanced](#advanced)
   - [Asynchronousy](#asynchronousy)
   - [Loop over an object](#loop-over-an-object)
@@ -448,11 +448,11 @@ When the consuming ends, the function that is passed along is called.
 We can then do other things that we want to do after.  
 The function could also be called when an error occurs.
 
-#### Correct and incorrect aproach
+#### Correct and incorrect approach
 
 Below is an example of a bot that will craft oak logs into oak planks and then into sticks.
 
-Incorect aproach ❌:
+Incorect approach ❌:
 
 ```js
 const plankRecipe = bot.recipesFor(5)[0] // Get the first recipe for item id 5, which is oak planks.
