@@ -171,7 +171,7 @@ node your_script.js
 ## Third Party Plugins
 
 Mineflayer is pluggable; anyone can create a plugin that adds an even
-higher level API on top of Mineflayer.
+higher level API on top of Mineflayer
 
 The most updated and useful are :
 
