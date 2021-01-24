@@ -12,7 +12,7 @@
 | 🇺🇸 [English](README.md) | 🇷🇺 [Russian](README_RU.md) | 🇪🇸 [Spanish](README_ES.md) |
 |-------------------------|----------------------------|----------------------------|
 
-Create Minecraft bots with a powerful, stable, and high level JavaScript [API](api.md).
+Create Minecraft bot with a powerful, stable, and high level JavaScript [API](api.md).
 
 First time using node.js ? You may want to start with the [tutorial](tutorial.md)
 
