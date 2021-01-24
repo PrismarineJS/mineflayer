@@ -1,5 +1,4 @@
 const assert = require('assert')
-// const { callbackify } = require('util')
 
 const tests = [
   {
