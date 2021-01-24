@@ -7,7 +7,7 @@
   {
     "name": "spawner",
     "description": "spawner is called spawner",
-    "versions": ["1.13", "1.16.4"]
+    "versions": ["1.13", "1.16.5"]
   },
   {
     "name": "blockMetadata",
@@ -17,12 +17,12 @@
   {
     "name": "blockStateId",
     "description": "block metadata is encoded as state id",
-    "versions": ["1.13", "1.16.4"]
+    "versions": ["1.13", "1.16.5"]
   },
   {
     "name": "creativeSleepNearMobs",
     "description": "can sleep near mobs in creative",
-    "versions": ["1.13", "1.16.4"]
+    "versions": ["1.13", "1.16.5"]
   },
   {
     "name": "fixedPointPosition",
@@ -32,7 +32,7 @@
   {
     "name": "doublePosition",
     "description": "Entity positions are represented with double",
-    "versions": ["1.9", "1.16.4"]
+    "versions": ["1.9", "1.16.5"]
   },
   {
     "name": "fixedPointDelta",
@@ -42,7 +42,7 @@
   {
     "name": "fixedPointDelta128",
     "description": "Delta of position are represented with fixed point numbers times 128",
-    "versions": ["1.9", "1.16.4"]
+    "versions": ["1.9", "1.16.5"]
   },
   {
     "name": "customChannelMCPrefixed",
@@ -52,7 +52,7 @@
   {
     "name": "customChannelNotPrefixed",
     "description": "custom channel don't have a prefix",
-    "versions": ["1.13", "1.16.4"]
+    "versions": ["1.13", "1.16.5"]
   },
   {
     "name": "useItemWithBlockPlace",
@@ -62,7 +62,7 @@
   {
     "name": "useItemWithOwnPacket",
     "description": "use item is done with its own packet",
-    "versions": ["1.9", "1.16.4"]
+    "versions": ["1.9", "1.16.5"]
   },
   {
     "name": "blockPlaceHasHeldItem",
@@ -82,7 +82,7 @@
   {
     "name": "blockPlaceHasInsideBlock",
     "description": "block_place packet has inside block",
-    "versions": ["1.14", "1.16.4"]
+    "versions": ["1.14", "1.16.5"]
   },
   {
     "name": "teleportUsesPositionPacket",
@@ -97,7 +97,7 @@
   {
     "name": "teleportUsesOwnPacket",
     "description": "teleport is done using its own packet",
-    "versions": ["1.9", "1.16.4"]
+    "versions": ["1.9", "1.16.5"]
   },
   {
     "name": "oneBlockForSeveralVariations",
@@ -107,7 +107,7 @@
   {
     "name": "blockSchemeIsFlat",
     "description": "all variations of a packet have their own id",
-    "versions": ["1.13", "1.16.4"]
+    "versions": ["1.13", "1.16.5"]
   },
   {
     "name": "tabCompleteHasNoToolTip",
@@ -117,7 +117,7 @@
   {
     "name": "tabCompleteHasAToolTip",
     "description": "tab complete has a tool tip",
-    "versions": ["1.13", "1.16.4"]
+    "versions": ["1.13", "1.16.5"]
   },
   {
     "name": "effectAreMinecraftPrefixed",
@@ -127,7 +127,7 @@
   {
     "name": "effectAreNotPrefixed",
     "description": "effect are prefixed by minecraft:",
-    "versions": ["1.13", "1.16.4"]
+    "versions": ["1.13", "1.16.5"]
   },
   {
     "name": "itemsAreAlsoBlocks",
@@ -137,12 +137,12 @@
   {
     "name": "itemsAreNotBlocks",
     "description": "items are not block",
-    "versions": ["1.13", "1.16.4"]
+    "versions": ["1.13", "1.16.5"]
   },
   {
     "name": "fishingBobberCorrectlyNamed",
     "description": "the fishing hook entity is named fishing_bobber",
-    "versions": ["1.14", "1.16.4"]
+    "versions": ["1.14", "1.16.5"]
   },
   {
     "name": "editBookIsPluginChannel",
@@ -152,7 +152,7 @@
   {
     "name": "hasEditBookPacket",
     "description": "book editing is handled through a packet",
-    "versions": ["1.13", "1.16.4"]
+    "versions": ["1.13", "1.16.5"]
   },
   {
     "name": "clientUpdateBookIdWhenSign",
@@ -192,7 +192,7 @@
   {
     "name": "dimensionIsAWorld",
     "description": "description is a world name (string)",
-    "versions": ["1.16.2", "1.16.4"]
+    "versions": ["1.16.2", "1.16.5"]
   },
   {
     "name": "doesntHaveChestType",
@@ -217,22 +217,22 @@
   {
     "name": "hasAttackCooldown",
     "description": "If there is a cooldown after attacks to deal full damage.",
-    "versions": ["1.9", "1.16.4"]
+    "versions": ["1.9", "1.16.5"]
   },
   {
     "name": "usesLoginPacket",
     "description": "Uses the login packet as defined in mcData",
-    "versions": ["1.16", "1.16.4"]
+    "versions": ["1.16", "1.16.5"]
   },
   {
     "name": "usesMultiblockSingleLong",
     "description": "In the multi_block_change packet is stored as a single number",
-    "versions": ["1.16.2", "1.16.4"]
+    "versions": ["1.16.2", "1.16.5"]
   },
   {
     "name": "usesMultiblock3DChunkCoords",
     "description": "In the multi_block_change packet, all 3 axis coords are defined.",
-    "versions": ["1.16.2", "1.16.4"]
+    "versions": ["1.16.2", "1.16.5"]
   },
   {
     "name": "setBlockUsesMetadataNumber",
