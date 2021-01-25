@@ -338,7 +338,7 @@ See [andrewrk/node-vec3](https://github.com/andrewrk/node-vec3)
 All points in mineflayer are supplied as instances of this class.
 
  * x - south
- * y - up
+ * y - u
  * z - west
 
 Functions and methods which require a point argument accept `Vec3` instances
