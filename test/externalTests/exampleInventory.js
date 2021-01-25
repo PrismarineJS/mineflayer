@@ -62,6 +62,7 @@ module.exports = () => (bot, done) => {
     bot.chat('/give inventory iron_ore 64')
     bot.chat('/give inventory diamond_boots 1')
     const inventoryTest = Object.values(tests).map(testData => generateTest(testData, cb))
+    inventoryTest.push(removeCraftingTable)
     // start test
     setTimeout(() => {
       bot.test.callbackChain(inventoryTest, cb)
@@ -69,6 +70,10 @@ module.exports = () => (bot, done) => {
 
     function generateTest ({ command, wantedMessage }, cb) {
       return () => bot.test.tellAndListen(ign, command, makeListener(wantedMessage), cb)
+    }
+    function removeCraftingTable () {
+      bot.chat('/setblock ~2 ~ ~2 air')
+      return true
     }
   }, done)
 }
