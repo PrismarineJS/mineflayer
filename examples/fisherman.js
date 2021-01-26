@@ -55,11 +55,10 @@ async function startFishing () {
     return bot.chat(err.message)
   }
 
-  nowFishing = true
   bot.on('playerCollect', onCollect)
 
   try {
-    await bot.fish()
+    nowFishing = await bot.fish()
   } catch (err) {
     bot.chat(err.message)
   }
@@ -70,7 +69,7 @@ function stopFishing () {
   bot.removeListener('playerCollect', onCollect)
 
   if (nowFishing) {
-    bot.activateItem()
+    nowFishing.cancel()
   }
 }
 
