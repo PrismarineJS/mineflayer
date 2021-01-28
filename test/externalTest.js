@@ -11,6 +11,7 @@ const path = require('path')
 const START_THE_SERVER = true
 // if you want to have time to look what's happening increase this (milliseconds)
 const WAIT_TIME_BEFORE_STARTING = 5000
+const TEST_TIMEOUT_MS = 60000
 
 const excludedTests = ['digEverything']
 
@@ -118,27 +119,28 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
       })
     })
 
-    fs.readdirSync('./test/externalTests')
-      .filter(file => fs.statSync(`./test/externalTests/${file}`).isFile())
+    const externalTestsFolder = path.resolve(__dirname, './externalTests')
+    fs.readdirSync(externalTestsFolder)
+      .filter(file => fs.statSync(path.join(externalTestsFolder, file)).isFile())
       .forEach((test) => {
         test = path.basename(test, '.js')
         const testFunctions = require(`./externalTests/${test}`)(supportedVersion)
+        const runTest = (testName, testFunction) => {
+          return function (done) {
+            this.timeout(TEST_TIMEOUT_MS)
+            bot.test.sayEverywhere(`starting ${testName}`)
+            testFunction(bot, done)
+          }
+        }
         if (excludedTests.indexOf(test) === -1) {
           if (typeof testFunctions === 'object') {
             for (const testFunctionName in testFunctions) {
               if (testFunctions[testFunctionName] !== undefined) {
-                it(`${test} ${testFunctionName}`, (testFunctionName => function (done) {
-                  this.timeout(30000)
-                  bot.test.sayEverywhere(`starting ${test} ${testFunctionName}`)
-                  testFunctions[testFunctionName](bot, done)
-                })(testFunctionName))
+                it(`${test} ${testFunctionName}`, (testFunctionName => runTest(`${test} ${testFunctionName}`, testFunctions[testFunctionName]))(testFunctionName))
               }
             }
           } else {
-            it(test, (done) => {
-              bot.test.sayEverywhere(`starting ${test}`)
-              testFunctions(bot, done)
-            })
+            it(test, runTest(test, testFunctions))
           }
         }
       })
