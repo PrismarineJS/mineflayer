@@ -1,3 +1,10 @@
+## 2.41.0
+* Fix Time type definition (@hivivo)
+* Add face for block in sight result (@Karang)
+* Fix skin restorer bug (@TheDudeFromCI)
+* Improve enchantment table info (@Karang)
+* 1.16.5 support (@rom1504)
+
 ## 2.40.1
 * Fix for not handling negative numbers in time plugin (@Naomi)
 * Fix typescript Bot definition (@rom1504)
