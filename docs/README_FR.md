@@ -9,7 +9,7 @@
 
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 
-| 🇺🇸 [English](README.md) | 🇷🇺 [Russian](README_RU.md) | 🇪🇸 [Spanish](README_ES.md) | 🇫🇷 [French](README_FR.md) |
+| 🇺🇸 [Anglais](README.md) | 🇷🇺 [Russe](README_RU.md) | 🇪🇸 [Espagnol](README_ES.md) | 🇫🇷 [Français](README_FR.md) |
 |-------------------------|----------------------------|----------------------------|----------------------------|
 
 Crée des robots minecraft puissant, stable, avec un haut niveaux de javascript [API](api.md).
@@ -21,10 +21,10 @@ Première fois que vous utiliser Node js? Commencer avec le [tutoriel](tutorial.
  * Supporte Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15 et 1.16.
  * Recherche et donnée d'entités.
  * Données de blocks. Vous pouver tout connaitre sur le monde autour de vous. A peine des miliseconds pour chercher un blocks spécifique.
- * Physique et movement - handle all bounding boxes
- * Attacking entities and using vehicles.
- * Inventory management.
- * Crafting, chests, dispensers, enchantment tables.
+ * Physique et movement.
+ * Peut attaquer des entitées et utiliser des véhicules.
+ * Gestion d'inventaire.
+ * Craft, coffre, dispensers, table d'enchantement.
  * Digging and building.
  * Miscellaneous stuff such as knowing your health and whether it is raining.
  * Activating blocks and using items.
@@ -36,24 +36,24 @@ Première fois que vous utiliser Node js? Commencer avec le [tutoriel](tutorial.
  
 ## Installation
 
-First install nodejs >= 14 from [nodejs.org](https://nodejs.org/) then:
+En premier installer nodejs >= 14 sur [nodejs.org](https://nodejs.org/) puis taper dans la console:
 
 `npm install mineflayer`
 
-## Documentation
+## Documentation (en anglais)
 
-| link | description |
+| lien | description |
 |---|---|
-|[tutorial](tutorial.md) | Begin with node.js and mineflayer |
-| [FAQ.md](FAQ.md) | Got a question ? go there first |
-| [api.md](api.md) [unstable_api.md](unstable_api.md) | The full API reference |
-| [history.md](history.md) | The changelog for mineflayer |
-| [examples/](https://github.com/PrismarineJS/mineflayer/tree/master/examples) | Checkout all the mineflayer examples |
+|[tutorial](tutorial.md) | Commencer par un tutorial node js et mineflayer |
+| [FAQ.md](FAQ.md) | Une question? Regarde pars ici d'abord |
+| [api.md](api.md) [unstable_api.md](unstable_api.md) | L'entierté de l'API |
+| [history.md](history.md) | Les derniers changement dans mineflayer |
+| [examples/](https://github.com/PrismarineJS/mineflayer/tree/master/examples) | Vas voir les examples mineflayer |
 
 
-## Contribute
+## Pour Aider
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) and [prismarine-contribute](https://github.com/PrismarineJS/prismarine-contribute)
+S'il vous plait aller lire [CONTRIBUTING.md](CONTRIBUTING.md) and [prismarine-contribute](https://github.com/PrismarineJS/prismarine-contribute) (en anglais)
 
 ## Usage
 
