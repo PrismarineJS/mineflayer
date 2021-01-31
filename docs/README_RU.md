@@ -9,8 +9,8 @@
 
 [![Попробуйте на gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 
-| 🇺🇸 [English](README.md) | 🇷🇺 [Russian](README_RU.md) | 🇪🇸 [Spanish](README_ES.md) |
-| ----------------------- | -------------------------- | -------------------------- |
+| 🇺🇸 [English](README.md) | 🇷🇺 [Russian](README_RU.md) | 🇪🇸 [Spanish](README_ES.md) | 🇫🇷 [French](README_FR.md) |
+| ----------------------- | -------------------------- | -------------------------- | -------------------------- |
 
 Создавайте ботов Minecraft с помощью мощного, стабильного и высокоуровневого JavaScript [API](api.md).
 
