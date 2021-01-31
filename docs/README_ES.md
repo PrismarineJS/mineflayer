@@ -5,10 +5,11 @@
 [![Discord](https://img.shields.io/badge/chat-on%20discord-brightgreen.svg)](https://discord.gg/GsEFRM8)
 [![Gitter](https://img.shields.io/badge/chat-on%20gitter-brightgreen.svg)](https://gitter.im/PrismarineJS/general)
 [![Irc](https://img.shields.io/badge/chat-on%20irc-brightgreen.svg)](https://irc.gitter.im/)
+[![Issue Hunt](https://github.com/BoostIO/issuehunt-materials/blob/master/v1/issuehunt-shield-v1.svg)](https://issuehunt.io/r/PrismarineJS/mineflayer)
 
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 
-| 🇺🇸 [Inglés](README.md) | 🇷🇺 [Ruso](README_RU.md) | 🇪🇸 [Español](README_ES.md) | 🇫🇷 [French](README_FR.md) |
+| 🇺🇸 [Inglés](README.md) | 🇷🇺 [Ruso](README_RU.md) | 🇪🇸 [Español](README_ES.md) | 🇫🇷 [Francés](README_FR.md) |
 |------------------------|-------------------------|----------------------------|----------------------------|
 
 Crea bots de Minecraft con una API JavaScript potente, estable y de alto nivel.
