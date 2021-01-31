@@ -44,8 +44,8 @@ En premier installer nodejs >= 14 sur [nodejs.org](https://nodejs.org/) puis tap
 
 | lien | description |
 |---|---|
-|[tutorial](tutorial.md) | Commencer par un tutorial node js et mineflayer |
-| [FAQ.md](FAQ.md) | Une question? Regarde pars ici d'abord |
+|[tutorial](tutorial.md) | Commencer par un tutoriel node js et mineflayer |
+| [FAQ.md](FAQ.md) | Une question? Regarde pars ici en premier |
 | [api.md](api.md) [unstable_api.md](unstable_api.md) | L'entierté de l'API |
 | [history.md](history.md) | Les derniers changement dans mineflayer |
 | [examples/](https://github.com/PrismarineJS/mineflayer/tree/master/examples) | Vas voir les examples mineflayer |
