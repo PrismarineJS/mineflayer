@@ -163,10 +163,7 @@ DEBUG="minecraft-protocol" node [...]
 ```
 
 On windows :
-```
-set DEBUG=minecraft-protocol
-node your_script.js
-```
+refer to https://www.npmjs.com/package/debug#windows-command-prompt-notes
 
 ## Third Party Plugins
 
