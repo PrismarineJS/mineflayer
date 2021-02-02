@@ -1,5 +1,3 @@
-const assert = require('assert')
-
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.version)
   const mcData = require('minecraft-data')(bot.version)
