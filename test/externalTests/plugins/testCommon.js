@@ -14,7 +14,6 @@ function inject (bot) {
   const Item = require('prismarine-item')(bot.version)
 
   bot.test = {}
-  bot.test.callbackChain = callbackChain
   bot.test.sayEverywhere = sayEverywhere
   bot.test.clearInventory = callbackify(clearInventory)
   bot.test.becomeSurvival = callbackify(becomeSurvival)
@@ -26,20 +25,6 @@ function inject (bot) {
   bot.test.tellAndListen = callbackify(tellAndListen)
   bot.test.wait = function (ms) {
     return new Promise((resolve) => { setTimeout(resolve, ms) })
-  }
-
-  async function callbackChain (functions, cb) {
-    assert(cb, new Error('You must provide a callback to bot.test.callbackChain'))
-    let i = 0
-    await callNext()
-
-    async function callNext () {
-      if (i < functions.length) {
-        await functions[i++](callNext)
-      } else {
-        cb()
-      }
-    }
   }
 
   let grassName
