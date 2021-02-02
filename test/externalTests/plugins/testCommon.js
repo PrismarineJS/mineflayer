@@ -121,10 +121,9 @@ function inject (bot) {
   }
 
   async function clearInventory () {
-    for (let i = 0; i < bot.inventory.slots.length; i++) {
-      if (bot.inventory.slots[i] == null) continue
-      await setInventorySlot(i, null)
-    }
+    bot.chat('/clear')
+    // We don't care if its success of failure (it fails if the inventory was empty already)
+    await once(bot, 'message')
   }
 
   // you need to be in creative mode for this to work
