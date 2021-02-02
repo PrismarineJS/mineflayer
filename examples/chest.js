@@ -49,13 +49,13 @@ bot.on('chat', (username, message) => {
       sayItems()
       break
     case /^chest$/.test(message):
-      watchChest()
+      watchChest(false, ['chest', 'ender_chest', 'trapped_chest'])
       break
     case /^furnace$/.test(message):
       watchFurnace()
       break
     case /^dispenser$/.test(message):
-      watchDispenser()
+      watchChest(false, ['dispenser'])
       break
     case /^enchant$/.test(message):
       watchEnchantmentTable()
@@ -82,7 +82,7 @@ function sayItems (items = bot.inventory.items()) {
   }
 }
 
-function watchChest (minecart) {
+async function watchChest (minecart, blocks = []) {
   let chestToOpen
   if (minecart) {
     chestToOpen = Object.keys(bot.entities)
@@ -95,7 +95,7 @@ function watchChest (minecart) {
     }
   } else {
     chestToOpen = bot.findBlock({
-      matching: ['chest', 'ender_chest', 'trapped_chest'].map(name => mcData.blocksByName[name].id),
+      matching: blocks.map(name => mcData.blocksByName[name].id),
       maxDistance: 6
     })
     if (!chestToOpen) {
@@ -103,12 +103,10 @@ function watchChest (minecart) {
       return
     }
   }
-  const chest = bot.openChest(chestToOpen)
-  chest.on('open', () => {
-    sayItems(chest.items())
-  })
-  chest.on('updateSlot', (oldItem, newItem) => {
-    bot.chat(`chest update: ${itemToString(oldItem)} -> ${itemToString(newItem)}`)
+  const chest = await bot.openChest(chestToOpen)
+  sayItems(chest.containerItems())
+  chest.on('updateSlot', (slot, oldItem, newItem) => {
+    bot.chat(`chest update: ${itemToString(oldItem)} -> ${itemToString(newItem)} (slot: ${slot})`)
   })
   chest.on('close', () => {
     bot.chat('chest closed')
@@ -142,7 +140,7 @@ function watchChest (minecart) {
   }
 
   async function withdrawItem (name, amount) {
-    const item = itemByName(chest.items(), name)
+    const item = itemByName(chest.containerItems(), name)
     if (item) {
       try {
         await chest.withdraw(item.type, null, amount)
@@ -156,7 +154,7 @@ function watchChest (minecart) {
   }
 
   async function depositItem (name, amount) {
-    const item = itemByName(bot.inventory.items(), name)
+    const item = itemByName(chest.items(), name)
     if (item) {
       try {
         await chest.deposit(item.type, null, amount)
@@ -170,7 +168,7 @@ function watchChest (minecart) {
   }
 }
 
-function watchFurnace () {
+async function watchFurnace () {
   const furnaceBlock = bot.findBlock({
     matching: ['furnace', 'lit_furnace'].filter(name => mcData.blocksByName[name] !== undefined).map(name => mcData.blocksByName[name].id),
     maxDistance: 6
@@ -179,16 +177,15 @@ function watchFurnace () {
     bot.chat('no furnace found')
     return
   }
-  const furnace = bot.openFurnace(furnaceBlock)
-  furnace.on('open', () => {
-    let output = ''
-    output += `input: ${itemToString(furnace.inputItem())}, `
-    output += `fuel: ${itemToString(furnace.fuelItem())}, `
-    output += `output: ${itemToString(furnace.outputItem())}`
-    bot.chat(output)
-  })
-  furnace.on('updateSlot', (oldItem, newItem) => {
-    bot.chat(`furnace update: ${itemToString(oldItem)} -> ${itemToString(newItem)}`)
+  const furnace = await bot.openFurnace(furnaceBlock)
+  let output = ''
+  output += `input: ${itemToString(furnace.inputItem())}, `
+  output += `fuel: ${itemToString(furnace.fuelItem())}, `
+  output += `output: ${itemToString(furnace.outputItem())}`
+  bot.chat(output)
+
+  furnace.on('updateSlot', (slot, oldItem, newItem) => {
+    bot.chat(`furnace update: ${itemToString(oldItem)} -> ${itemToString(newItem)} (slot: ${slot})`)
   })
   furnace.on('close', () => {
     bot.chat('furnace closed')
@@ -224,7 +221,7 @@ function watchFurnace () {
     }
 
     function putInFurnace (where, name, amount) {
-      const item = itemByName(bot.inventory.items(), name)
+      const item = itemByName(furnace.items(), name)
       if (item) {
         const fn = {
           input: furnace.putInput,
@@ -259,83 +256,7 @@ function watchFurnace () {
   }
 }
 
-function watchDispenser () {
-  const dispenserBlock = bot.findBlock({
-    matching: ['dispenser'].map(name => mcData.blocksByName[name].id),
-    maxDistance: 6
-  })
-  if (!dispenserBlock) {
-    bot.chat('no dispenser found')
-    return
-  }
-  const dispenser = bot.openDispenser(dispenserBlock)
-  dispenser.on('open', () => {
-    sayItems(dispenser.items())
-  })
-  dispenser.on('updateSlot', (oldItem, newItem) => {
-    bot.chat(`dispenser update: ${itemToString(oldItem)} -> ${itemToString(newItem)}`)
-  })
-  dispenser.on('close', () => {
-    bot.chat('dispenser closed')
-  })
-
-  bot.on('chat', onChat)
-
-  function onChat (username, message) {
-    if (username === bot.username) return
-    const command = message.split(' ')
-    switch (true) {
-      case /^close$/.test(message):
-        closeDispenser()
-        break
-      case /^withdraw \d+ \w+$/.test(message):
-        // withdraw amount name
-        // ex: withdraw 16 stick
-        withdrawItem(command[2], command[1])
-        break
-      case /^deposit \d+ \w+$/.test(message):
-        // deposit amount name
-        // ex: deposit 16 stick
-        depositItem(command[2], command[1])
-        break
-    }
-  }
-
-  function closeDispenser () {
-    dispenser.close()
-    bot.removeListener('chat', onChat)
-  }
-
-  async function withdrawItem (name, amount) {
-    const item = itemByName(dispenser.items(), name)
-    if (item) {
-      try {
-        await dispenser.withdraw(item.type, null, amount)
-        bot.chat(`withdrew ${amount} ${item.name}`)
-      } catch (err) {
-        bot.chat(`unable to withdraw ${amount} ${item.name}`)
-      }
-    } else {
-      bot.chat(`unknown item ${name}`)
-    }
-  }
-
-  async function depositItem (name, amount) {
-    const item = itemByName(bot.inventory.items(), name)
-    if (item) {
-      try {
-        await dispenser.deposit(item.type, null, amount)
-        bot.chat(`deposited ${amount} ${item.name}`)
-      } catch (err) {
-        bot.chat(`unable to deposit ${amount} ${item.name}`)
-      }
-    } else {
-      bot.chat(`unknown item ${name}`)
-    }
-  }
-}
-
-function watchEnchantmentTable () {
+async function watchEnchantmentTable () {
   const enchantTableBlock = bot.findBlock({
     matching: ['enchanting_table'].map(name => mcData.blocksByName[name].id),
     maxDistance: 6
@@ -344,12 +265,11 @@ function watchEnchantmentTable () {
     bot.chat('no enchantment table found')
     return
   }
-  const table = bot.openEnchantmentTable(enchantTableBlock)
-  table.on('open', () => {
-    bot.chat(itemToString(table.targetItem()))
-  })
-  table.on('updateSlot', (oldItem, newItem) => {
-    bot.chat(`enchantment table update: ${itemToString(oldItem)} -> ${itemToString(newItem)}`)
+  const table = await bot.openEnchantmentTable(enchantTableBlock)
+  bot.chat(itemToString(table.targetItem()))
+
+  table.on('updateSlot', (slot, oldItem, newItem) => {
+    bot.chat(`enchantment table update: ${itemToString(oldItem)} -> ${itemToString(newItem)} (slot: ${slot})`)
   })
   table.on('close', () => {
     bot.chat('enchantment table closed')
@@ -404,7 +324,7 @@ function watchEnchantmentTable () {
     }
 
     async function addLapis () {
-      const item = itemByType(table.window.items(), ['dye', 'purple_dye'].filter(name => mcData.itemByName[name] !== undefined)
+      const item = itemByType(table.window.items(), ['dye', 'purple_dye', 'lapis_lazuli'].filter(name => mcData.itemByName[name] !== undefined)
         .map(name => mcData.itemByName[name].id))
       if (item) {
         try {
