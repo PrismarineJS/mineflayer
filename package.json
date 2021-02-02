@@ -30,7 +30,7 @@
     "prismarine-item": "^1.5.0",
     "prismarine-physics": "^1.0.4",
     "prismarine-recipe": "^1.1.0",
-    "prismarine-windows": "^1.5.0",
+    "prismarine-windows": "Karang/prismarine-windows",
     "prismarine-world": "^3.2.0",
     "protodef": "^1.8.0",
     "typed-emitter": "^1.2.0",
