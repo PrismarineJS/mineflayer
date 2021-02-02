@@ -1,4 +1,4 @@
-const Vec3 = require('vec3').Vec3
+const { Vec3 } = require('vec3')
 const assert = require('assert')
 
 // this test takes about 20min
@@ -55,8 +55,8 @@ module.exports = (version) => {
     if (mcData.blocks[id] !== undefined) {
       const block = mcData.blocks[id]
       if (block.diggable && excludedBlocks.indexOf(block.name) === -1) {
-        funcs[block.name] = (blockId => (bot, done) => {
-          digSomething(blockId, bot, done)
+        funcs[block.name] = (blockId => async (bot) => {
+          await digSomething(blockId, bot)
         })(block.id)
       }
     }
@@ -65,45 +65,19 @@ module.exports = (version) => {
   return funcs
 }
 
-function digSomething (blockId, bot, done) {
+async function digSomething (blockId, bot) {
   const mcData = require('minecraft-data')(bot.version)
   const Item = require('prismarine-item')(bot.version)
 
-  const diggingTest = [
-    (cb) => {
-      bot.test.setInventorySlot(36, new Item(blockId, 1, 0), (err) => {
-        assert.ifError(err)
-        cb()
-      })
-    },
-    (cb) => {
-      // TODO: find a better way than this setTimeout(cb,200);
-      bot.test.placeBlock(36, bot.entity.position.plus(new Vec3(1, 0, 0)), () => {
-        setTimeout(cb, 200)
-      })
-    },
-    bot.test.clearInventory,
-    (cb) => {
-      bot.test.setInventorySlot(36, new Item(mcData.itemsByName.diamond_pickaxe.id, 1, 0), (err) => {
-        assert.ifError(err)
-        cb()
-      })
-    },
-    bot.test.becomeSurvival,
-    (cb) => {
-      // we are bare handed
-      bot.dig(bot.blockAt(bot.entity.position.plus(new Vec3(1, 0, 0))), (err) => {
-        assert(!err)
-        cb()
-      })
-    },
-    (cb) => {
-      // make sure that block is gone
-
-      assert.strictEqual(bot.blockAt(bot.entity.position.plus(new Vec3(1, 0, 0))).type, 0)
-      cb()
-    }
-  ]
-
-  bot.test.callbackChain(diggingTest, done)
+  await bot.test.setInventorySlot(36, new Item(blockId, 1, 0))
+  await bot.test.placeBlock(36, bot.entity.position.plus(new Vec3(1, 0, 0)))
+  // TODO: find a better way than this bot.test.wait(200)
+  await bot.test.wait(200)
+  await bot.test.clearInventory()
+  await bot.test.setInventorySlot(36, new Item(mcData.itemsByName.diamond_pickaxe.id, 1, 0))
+  await bot.test.becomeSurvival()
+  // we are bare handed
+  await bot.dig(bot.blockAt(bot.entity.position.plus(new Vec3(1, 0, 0))))
+  // make sure that block is gone
+  assert.strictEqual(bot.blockAt(bot.entity.position.plus(new Vec3(1, 0, 0))).type, 0)
 }

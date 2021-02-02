@@ -1,4 +1,4 @@
-const Vec3 = require('vec3').Vec3
+const { Vec3 } = require('vec3')
 
 const { spawn } = require('child_process')
 const { once } = require('events')
@@ -10,8 +10,6 @@ const { callbackify, sleep, onceWithCleanup, withTimeout } = require('../../../l
 module.exports = inject
 
 function inject (bot) {
-  const mcData = require('minecraft-data')(bot.version)
-  const Block = require('prismarine-block')(bot.version)
   console.log(bot.version)
   const Item = require('prismarine-item')(bot.version)
 
@@ -26,15 +24,18 @@ function inject (bot) {
   bot.test.placeBlock = callbackify(placeBlock)
   bot.test.runExample = callbackify(runExample)
   bot.test.tellAndListen = callbackify(tellAndListen)
+  bot.test.wait = function (ms) {
+    return new Promise((resolve) => { setTimeout(resolve, ms) })
+  }
 
-  function callbackChain (functions, cb) {
+  async function callbackChain (functions, cb) {
     assert(cb, new Error('You must provide a callback to bot.test.callbackChain'))
     let i = 0
-    callNext()
+    await callNext()
 
-    function callNext () {
+    async function callNext () {
       if (i < functions.length) {
-        functions[i++](callNext)
+        await functions[i++](callNext)
       } else {
         cb()
       }
@@ -42,68 +43,30 @@ function inject (bot) {
   }
 
   let grassName
-  let itemsByName
-
   if (bot.supportFeature('itemsAreNotBlocks')) {
     grassName = 'grass_block'
-    itemsByName = 'itemsByName'
   } else if (bot.supportFeature('itemsAreAlsoBlocks')) {
     grassName = 'grass'
-    itemsByName = 'blocksByName'
   }
 
-  const superflatLayers = [
-    { block: new Block(mcData.blocksByName.bedrock.id), item: new Item(mcData[itemsByName].bedrock.id) },
-    { block: new Block(mcData.blocksByName.dirt.id), item: new Item(mcData[itemsByName].dirt.id) },
-    { block: new Block(mcData.blocksByName.dirt.id), item: new Item(mcData[itemsByName].dirt.id) },
-    { block: new Block(mcData.blocksByName[grassName].id), item: new Item(mcData[itemsByName][grassName].id) }
-    // and then air
+  const layerNames = [
+    'bedrock',
+    'dirt',
+    'dirt',
+    grassName,
+    'air',
+    'air',
+    'air',
+    'air',
+    'air'
   ]
 
-  const deltas = []
-  const deltaSize = 5
-  for (let i = -Math.floor(deltaSize / 2); i <= Math.floor(deltaSize / 2); i++) {
-    for (let j = -Math.floor(deltaSize / 2); j <= Math.floor(deltaSize / 2); j++) {
-      deltas.push(new Vec3(i, 0, j))
-    }
-  }
-
   async function resetBlocksToSuperflat () {
-    // console.log('reset blocks to superflat')
     const groundY = 4
     for (let y = groundY + 4; y >= groundY - 1; y--) {
-      const expectedBlock = superflatLayers[y] === undefined ? null : superflatLayers[y].block
-      for (let i = 0; i < deltas.length; i++) {
-        const position = bot.entity.position.plus(deltas[i])
-        position.y = y
-        const block = bot.blockAt(position)
-        if (expectedBlock === null) {
-          if (block.name === 'air') continue
-          // dig it
-          await dig(position)
-        } else {
-          if (expectedBlock.type === block.type) continue
-          // fix it
-          if (block.type !== 0) {
-            // dig it
-            await dig(position)
-          }
-          console.log('going to place layer ', y, 'with item ', superflatLayers[y].item.type, position)
-          // place it
-          await place(position, superflatLayers[y].item)
-        }
-      }
+      bot.test.sayEverywhere(`/fill ~-5 ${y} ~-5 ~5 ${y} ~5 ` + layerNames[y])
     }
-
-    function dig (position) {
-      return bot.dig(bot.blockAt(position))
-    }
-
-    async function place (position, item) {
-      // console.log('place and resume with', item)
-      await setInventorySlot(36, new Item(item.type, 1, 0))
-      await placeBlock(36, position)
-    }
+    await bot.test.wait(100)
   }
 
   async function placeBlock (slot, position) {

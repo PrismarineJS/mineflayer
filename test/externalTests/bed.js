@@ -1,6 +1,7 @@
 const assert = require('assert')
+const { once } = require('events')
 
-module.exports = () => (bot, done) => {
+module.exports = () => async (bot) => {
   const mcData = require('minecraft-data')(bot.version)
 
   const midnight = 18000
@@ -10,45 +11,30 @@ module.exports = () => (bot, done) => {
 
   assert(bedItem)
 
-  bot.test.callbackChain([
-    (cb) => { // Put the bed
-      if (bot.supportFeature('setBlockUsesMetadataNumber', bot.version)) {
-        bot.chat(`/setblock ${bedPos1.toArray().join(' ')} ${bedItem.name} 0`) // Footer
-        bot.chat(`/setblock ${bedPos2.toArray().join(' ')} ${bedItem.name} 8`) // Head
-      } else {
-        bot.chat(`/setblock ${bedPos1.toArray().join(' ')} ${bedItem.name}[part=foot]`)
-        bot.chat(`/setblock ${bedPos2.toArray().join(' ')} ${bedItem.name}[part=head]`)
-      }
-      bot.chat(`/time set ${midnight}`)
-      function shoudlCb () {
-        console.log(bot.time.timeOfDay)
-        const isNight = bot.time.timeOfDay >= midnight
-        const pos1IsBed = bot.blockAt(bedPos1).name.endsWith('bed')
-        const pos2IsBed = bot.blockAt(bedPos2).name.endsWith('bed')
-        if (isNight && pos1IsBed && pos2IsBed) {
-          bot.removeListener('time', shoudlCb)
-          cb()
-        }
-      }
-      bot.on('time', shoudlCb)
-    },
-    (cb) => { // Sleep
-      assert(!bot.isSleeping)
-      bot.once('sleep', cb)
-      bot.sleep(bot.blockAt(bedPos1), (err) => {
-        assert.ifError(err)
-      })
-    },
-    (cb) => { // Wake
-      assert(bot.isSleeping)
-      bot.once('wake', cb)
-      bot.wake((err) => {
-        assert.ifError(err)
-      })
-    },
-    (cb) => {
-      assert(!bot.isSleeping)
-      cb()
-    }
-  ], done)
+  // Put the bed
+  if (bot.supportFeature('setBlockUsesMetadataNumber', bot.version)) {
+    bot.chat(`/setblock ${bedPos1.toArray().join(' ')} ${bedItem.name} 0`) // Footer
+    bot.chat(`/setblock ${bedPos2.toArray().join(' ')} ${bedItem.name} 8`) // Head
+  } else {
+    bot.chat(`/setblock ${bedPos1.toArray().join(' ')} ${bedItem.name}[part=foot]`)
+    bot.chat(`/setblock ${bedPos2.toArray().join(' ')} ${bedItem.name}[part=head]`)
+  }
+  bot.chat(`/time set ${midnight}`)
+  await once(bot, 'time')
+
+  console.log(bot.time.timeOfDay)
+  assert(bot.time.timeOfDay >= midnight)
+  assert(bot.blockAt(bedPos1).name.endsWith('bed'))
+  assert(bot.blockAt(bedPos2).name.endsWith('bed'))
+
+  // Sleep
+  assert(!bot.isSleeping)
+  await bot.sleep(bot.blockAt(bedPos1))
+  await once(bot, 'sleep')
+
+  // Wake
+  assert(bot.isSleeping)
+  await bot.wake()
+  await once(bot, 'wake')
+  assert(!bot.isSleeping)
 }
