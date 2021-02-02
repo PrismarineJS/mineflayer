@@ -117,6 +117,4 @@ module.exports = () => async (bot) => {
 
   await withdrawBones(smallTrappedChestLocation, 1)
   await withdrawBones(largeTrappedChestLocations[0], 2)
-
-  bot.test.sayEverywhere('chest management test: pass')
 }
