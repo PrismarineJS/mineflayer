@@ -1861,7 +1861,7 @@ If called twice on the same slot before first callback exceeds, first callback w
     If `item` is `null`, the item at the specified slot is deleted.
  * `callback(err)` (optional) is a callback which gets fired when the servers sets the slot
 
-If this method changes anything, you can be notified via `bot.inventory.on("windowUpdate")`.
+If this method changes anything, you can be notified via `bot.inventory.on("updateSlot")`.
 
 #### bot.creative.flyTo(destination, [cb])
 
