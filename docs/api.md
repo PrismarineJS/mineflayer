@@ -20,23 +20,13 @@
     - [Biome](#biome)
     - [Item](#item)
     - [windows.Window (base class)](#windowswindow-base-class)
+      - [window.deposit(itemType, metadata, count, [callback])](#windowdeposititemtype-metadata-count-callback)
+      - [window.withdraw(itemType, metadata, count, [callback])](#windowwithdrawitemtype-metadata-count-callback)
+      - [window.close()](#windowclose)
     - [Recipe](#recipe)
-    - [mineflayer.Chest](#mineflayerchest)
-      - [chest.window](#chestwindow)
-      - [chest "open"](#chest-open)
-      - [chest "close"](#chest-close)
-      - [chest "updateSlot" (oldItem, newItem)](#chest-updateslot-olditem-newitem)
-      - [chest.close()](#chestclose)
-      - [chest.deposit(itemType, metadata, count, [callback])](#chestdeposititemtype-metadata-count-callback)
-      - [chest.withdraw(itemType, metadata, count, [callback])](#chestwithdrawitemtype-metadata-count-callback)
-      - [chest.count(itemType, [metadata])](#chestcountitemtype-metadata)
-      - [chest.items()](#chestitems)
+    - [mineflayer.Container](#mineflayercontainer)
     - [mineflayer.Furnace](#mineflayerfurnace)
-      - [furnace "open"](#furnace-open)
-      - [furnace "close"](#furnace-close)
       - [furnace "update"](#furnace-update)
-      - [furnace "updateSlot" (oldItem, newItem)](#furnace-updateslot-olditem-newitem)
-      - [furnace.close()](#furnaceclose)
       - [furnace.takeInput([callback])](#furnacetakeinputcallback)
       - [furnace.takeFuel([callback])](#furnacetakefuelcallback)
       - [furnace.takeOutput([callback])](#furnacetakeoutputcallback)
@@ -47,32 +37,16 @@
       - [furnace.outputItem()](#furnaceoutputitem)
       - [furnace.fuel](#furnacefuel)
       - [furnace.progress](#furnaceprogress)
-    - [mineflayer.Dispenser](#mineflayerdispenser)
-      - [dispenser "open"](#dispenser-open)
-      - [dispenser "close"](#dispenser-close)
-      - [dispenser "updateSlot" (oldItem, newItem)](#dispenser-updateslot-olditem-newitem)
-      - [dispenser.close()](#dispenserclose)
-      - [dispenser.items()](#dispenseritems)
-      - [dispenser.deposit(itemType, metadata, count, [callback])](#dispenserdeposititemtype-metadata-count-callback)
-      - [dispenser.withdraw(itemType, metadata, count, [callback])](#dispenserwithdrawitemtype-metadata-count-callback)
-      - [dispenser.count(itemType, [metadata])](#dispensercountitemtype-metadata)
     - [mineflayer.EnchantmentTable](#mineflayerenchantmenttable)
-      - [enchantmentTable "open"](#enchantmenttable-open)
-      - [enchantmentTable "close"](#enchantmenttable-close)
-      - [enchantmentTable "updateSlot" (oldItem, newItem)](#enchantmenttable-updateslot-olditem-newitem)
       - [enchantmentTable "ready"](#enchantmenttable-ready)
-      - [enchantmentTable.close()](#enchantmenttableclose)
       - [enchantmentTable.targetItem()](#enchantmenttabletargetitem)
+      - [enchantmentTable.xpseed](#enchantmenttablexpseed)
       - [enchantmentTable.enchantments](#enchantmenttableenchantments)
       - [enchantmentTable.enchant(choice, [callback])](#enchantmenttableenchantchoice-callback)
       - [enchantmentTable.takeTargetItem([callback])](#enchantmenttabletaketargetitemcallback)
       - [enchantmentTable.putTargetItem(item, [callback])](#enchantmenttableputtargetitemitem-callback)
     - [mineflayer.Villager](#mineflayervillager)
-      - [villager "open"](#villager-open)
-      - [villager "close"](#villager-close)
-      - [villager "updateSlot" (oldItem, newItem)](#villager-updateslot-olditem-newitem)
       - [villager "ready"](#villager-ready)
-      - [villager.close()](#villagerclose)
       - [villager.trades](#villagertrades)
       - [villager.trade(tradeIndex, [times], [cb])](#villagertradetradeindex-times-cb)
     - [mineflayer.ScoreBoard](#mineflayerscoreboard)
@@ -266,6 +240,7 @@
       - [bot.setQuickBarSlot(slot)](#botsetquickbarslotslot)
       - [bot.craft(recipe, count, craftingTable, [callback])](#botcraftrecipe-count-craftingtable-callback)
       - [bot.writeBook(slot, pages, [callback])](#botwritebookslot-pages-callback)
+      - [bot.openContainer(containerBlock or containerEntity)](#botopencontainercontainerblock-or-containerentity)
       - [bot.openChest(chestBlock or minecartchestEntity)](#botopenchestchestblock-or-minecartchestentity)
       - [bot.openFurnace(furnaceBlock)](#botopenfurnacefurnaceblock)
       - [bot.openDispenser(dispenserBlock)](#botopendispenserdispenserblock)
@@ -281,8 +256,8 @@
       - [bot.putAway(slot, cb)](#botputawayslot-cb)
       - [bot.closeWindow(window)](#botclosewindowwindow)
       - [bot.transfer(options, cb)](#bottransferoptions-cb)
-      - [bot.openBlock(block, Class)](#botopenblockblock-class)
-      - [bot.openEntity(entity, Class)](#botopenentityentity-class)
+      - [bot.openBlock(block)](#botopenblockblock)
+      - [bot.openEntity(entity)](#botopenentityentity)
       - [bot.moveSlotItem(sourceSlot, destSlot, cb)](#botmoveslotitemsourceslot-destslot-cb)
       - [bot.updateHeldItem()](#botupdatehelditem)
       - [bot.getEquipmentDestSlot(destination)](#botgetequipmentdestslotdestination)
@@ -384,35 +359,7 @@ See [prismarine-item](https://github.com/PrismarineJS/prismarine-item)
 
 See [prismarine-windows](https://github.com/PrismarineJS/prismarine-windows)
 
-### Recipe
-
-See [prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe)
-
-### mineflayer.Chest
-
-Represents a single session of opening and closing a chest.
-See `bot.openChest(chestBlock or minecartchestEntity)`.
-
-#### chest.window
-
-If the chest is open, this property is a `ChestWindow` instance.
-If the chest is closed, this property is `null`.
-
-#### chest "open"
-
-Fires when the chest has successfully been opened.
-
-#### chest "close"
-
-Fires when the chest closes.
-
-#### chest "updateSlot" (oldItem, newItem)
-
-Fires when the chest you are looking at is updated.
-
-#### chest.close()
-
-#### chest.deposit(itemType, metadata, count, [callback])
+#### window.deposit(itemType, metadata, count, [callback])
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
 
@@ -421,7 +368,7 @@ This function also returns a `Promise`, with `void` as its argument upon complet
  * `count` - how many to deposit. `null` is an alias to 1.
  * `callback(err)` - (optional) - called when done depositing
 
-#### chest.withdraw(itemType, metadata, count, [callback])
+#### window.withdraw(itemType, metadata, count, [callback])
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
 
@@ -430,38 +377,25 @@ This function also returns a `Promise`, with `void` as its argument upon complet
  * `count` - how many to withdraw. `null` is an alias to 1.
  * `callback(err)` - (optional) - called when done withdrawing
 
-#### chest.count(itemType, [metadata])
+#### window.close()
 
-Return how many of a certain type of item are in the chest.
+### Recipe
 
- * `itemType` - numerical item id
- * `metadata` - (optional) numerical value. `null` means match anything.
+See [prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe)
 
-#### chest.items()
+### mineflayer.Container
 
-Returns a list of `Item` instances from the chest.
+Extends windows.Window for chests, dispensers, etc...
+See `bot.openChest(chestBlock or minecartchestEntity)`.
 
 ### mineflayer.Furnace
 
+Extends windows.Window for furnace, smelter, etc...
 See `bot.openFurnace(furnaceBlock)`.
-
-#### furnace "open"
-
-Fires when the furnace has successfully been opened.
-
-#### furnace "close"
-
-Fires when the furnace closes.
 
 #### furnace "update"
 
 Fires when `furnace.fuel` and/or `furnace.progress` update.
-
-#### furnace "updateSlot" (oldItem, newItem)
-
-Fires when a slot in the furnace you have open has updated.
-
-#### furnace.close()
 
 #### furnace.takeInput([callback])
 
@@ -509,85 +443,29 @@ How much fuel is left between 0 and 1.
 
 How much cooked the input is between 0 and 1.
 
-### mineflayer.Dispenser
-
-See `bot.openDispenser(dispenserBlock)`.
-
-#### dispenser "open"
-
-Fires when the dispenser has successfully been opened.
-
-#### dispenser "close"
-
-Fires when the dispenser closes.
-
-#### dispenser "updateSlot" (oldItem, newItem)
-
-Fires when a slot in the dispenser you have open has updated.
-
-#### dispenser.close()
-
-#### dispenser.items()
-
-Returns a list of `Item` instances from the dispenser.
-
-#### dispenser.deposit(itemType, metadata, count, [callback])
-
-This function also returns a `Promise`, with `void` as its argument upon completion.
-
- * `itemType` - numerical item id
- * `metadata` - numerical value. `null` means match anything.
- * `count` - how many to deposit. `null` is an alias to 1.
- * `callback(err)` - (optional) - called when done depositing
-
-#### dispenser.withdraw(itemType, metadata, count, [callback])
-
-This function also returns a `Promise`, with `void` as its argument upon completion.
-
- * `itemType` - numerical item id
- * `metadata` - numerical value. `null` means match anything.
- * `count` - how many to withdraw. `null` is an alias to 1.
- * `callback(err)` - (optional) - called when done withdrawing
-
-#### dispenser.count(itemType, [metadata])
-
-Return how many of a certain type of item are in the dispenser.
-
- * `itemType` - numerical item id
- * `metadata` - (optional) numerical value. `null` means match anything.
-
 ### mineflayer.EnchantmentTable
 
+Extends windows.Window for enchantment tables
 See `bot.openEnchantmentTable(enchantmentTableBlock)`.
-
-#### enchantmentTable "open"
-
-Fires when the enchantment table has successfully been opened.
-
-#### enchantmentTable "close"
-
-Fires when the enchantment table closes.
-
-#### enchantmentTable "updateSlot" (oldItem, newItem)
-
-Fires when a slot in the enchantment table you have open has updated.
 
 #### enchantmentTable "ready"
 
 Fires when `enchantmentTable.enchantments` is fully populated and you
 may make a selection by calling `enchantmentTable.enchant(choice)`.
 
-#### enchantmentTable.close()
-
 #### enchantmentTable.targetItem()
 
 Gets the target item. This is both the input and the output of the
 enchantment table.
 
+#### enchantmentTable.xpseed
+
+The 16 bits xpseed sent by the server.
+
 #### enchantmentTable.enchantments
 
 Array of length 3 which are the 3 enchantments to choose from.
-`level` can be `null` if the server has not sent the data yet.
+`level` can be `-1` if the server has not sent the data yet.
 
 Looks like:
 
@@ -632,25 +510,12 @@ This function also returns a `Promise`, with `void` as its argument upon complet
 
 ### mineflayer.Villager
 
+Extends windows.Window for villagers
 See `bot.openVillager(villagerEntity)`.
-
-#### villager "open"
-
-Fires when the trading window has successfully been opened.
-
-#### villager "close"
-
-Fires when the trading window closes.
-
-#### villager "updateSlot" (oldItem, newItem)
-
-Fires when a slot in the trading window has updated.
 
 #### villager "ready"
 
 Fires when `villager.trades` is loaded.
-
-#### villager.close()
 
 #### villager.trades
 
@@ -1716,26 +1581,30 @@ This function also returns a `Promise`, with `void` as its argument upon complet
  * `pages` is an array of strings represents the pages.
  * `callback(error)` - optional. called when the writing was successfully or an error occurred.
 
+#### bot.openContainer(containerBlock or containerEntity)
+
+Returns a promise on a `Container` instance which represents the container you are opening.
+
 #### bot.openChest(chestBlock or minecartchestEntity)
 
-Returns a `Chest` instance which represents the chest you are opening.
+Deprecated. Same as `openContainer`
 
 #### bot.openFurnace(furnaceBlock)
 
-Returns a `Furnace` instance which represents the furnace you are opening.
+Returns a promise on a `Furnace` instance which represents the furnace you are opening.
 
 #### bot.openDispenser(dispenserBlock)
 
-Returns a `Dispenser` instance which represents the dispenser you are opening.
+Deprecated. Same as `openContainer`
 
 #### bot.openEnchantmentTable(enchantmentTableBlock)
 
-Returns an `EnchantmentTable` instance which represents the enchantment table
+Returns a promise on an `EnchantmentTable` instance which represents the enchantment table
 you are opening.
 
 #### bot.openVillager(villagerEntity)
 
-Returns an `Villager` instance which represents the trading window you are opening.
+Returns a promise on a `Villager` instance which represents the trading window you are opening.
 You can listen to the `ready` event on this `Villager` to know when it's ready
 
 #### bot.trade(villagerInstance, tradeIndex, [times], [cb])
@@ -1807,19 +1676,17 @@ Transfer some kind of item from one range to an other. `options` is an object co
  * `sourceStart` and `sourceEnd` : the source range
  * `destStart` and `destEnd` : the dest Range
 
-#### bot.openBlock(block, Class)
+#### bot.openBlock(block)
 
-Open a block, for example a chest.
+Open a block, for example a chest, returns a promise on the opening `Window`.
 
  * `block` is the block the bot will open
- * `Class` is the type of window that will be opened
 
-#### bot.openEntity(entity, Class)
+#### bot.openEntity(entity)
 
-Open an entity with an inventory, for example a villager.
+Open an entity with an inventory, for example a villager, returns a promise on the opening `Window`.
 
  * `entity` is the entity the bot will open
- * `Class` is the type of window that will be opened
 
 #### bot.moveSlotItem(sourceSlot, destSlot, cb)
 
