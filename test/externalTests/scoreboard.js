@@ -28,7 +28,8 @@ module.exports = () => async (bot) => {
   assert.strictEqual(test2.name, test2.title)
   assert.strictEqual(test1, bot.scoreboard.sidebar)
 
+  const promise = once(bot, 'scoreUpdated')
   bot.test.sayEverywhere(`/kill ${bot.username}`)
-  const [scoreboard] = await once(bot, 'scoreUpdated')
-  assert.strictEqual(scoreboard.itemsMap[bot.username].value, 1)
+  const [scoreboard, updated] = await promise
+  assert.strictEqual(scoreboard.itemsMap[bot.username], updated)
 }
