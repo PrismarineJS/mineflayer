@@ -12,31 +12,31 @@
 | 🇺🇸 [Anglais](README.md) | 🇷🇺 [Russe](README_RU.md) | 🇪🇸 [Espagnol](README_ES.md) | 🇫🇷 [Français](README_FR.md) |
 |-------------------------|----------------------------|----------------------------|----------------------------|
 
-Crée des robots minecraft puissant, stable, avec un haut niveaux de javascript [API](api.md).
+Créé des robots Minecraft avec API stable, puissante et facilement maniable, [API (en anglais)](api.md).
 
-Première fois que vous utiliser Node js? Commencer avec le [tutoriel](tutorial.md) (en anglais)
+Si c'est la première fois que vous utilisez Node.js, il vaut mieux commencer avec le [tutoriel (en anglais)](tutorial.md)
 
-## Features
+## Caractéristiques:
 
- * Supporte Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15 et 1.16.
- * Recherche et donnée d'entités.
- * Données de blocks. Vous pouver tout connaitre sur le monde autour de vous. A peine des miliseconds pour chercher un blocks spécifique.
- * Physique et movement.
+ * Compatible avec Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15 et 1.16.
+ * Reconnaissante et pistage des entités.
+ * Identification des blocs. Vous pouvez passer en revue le monde autour de vous. Quelques millisecondes suffisent pour trouver n'importe quel bloc.
+ * Information sur la physique et mouvements, données sur la taille des blocs...
  * Peut attaquer des entitées et utiliser des véhicules.
  * Gestion d'inventaire.
- * Craft, coffre, dispensers, table d'enchantement.
- * Digging and building.
- * Miscellaneous stuff such as knowing your health and whether it is raining.
- * Activating blocks and using items.
- * Chat.
+ * Gestion de l'établi, coffre, distributeur, table d'enchantement.
+ * creuser et construire.
+ * Autres actions diverses, telle que connaitre tes points de vie ou si il pleut.
+ * Utiliser les blocs et items.
+ * Discuter avec le chat.
 
-### Roadmap
+### Projets à venir:
 
- Checkout this page to see what are our current [projects](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects). 
+ Visite cette page pour voir nos projets [projets (en anglais)](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects). 
  
 ## Installation
 
-En premier installer nodejs >= 14 sur [nodejs.org](https://nodejs.org/) puis taper dans la console:
+En premier installer Node.js (version minimale requise: 14) sur [nodejs.org](https://nodejs.org/) puis taper dans la console:
 
 `npm install mineflayer`
 
@@ -44,16 +44,16 @@ En premier installer nodejs >= 14 sur [nodejs.org](https://nodejs.org/) puis tap
 
 | lien | description |
 |---|---|
-|[tutorial](tutorial.md) | Commencer par un tutoriel node js et mineflayer |
-| [FAQ.md](FAQ.md) | Une question? Regarde pars ici en premier |
-| [api.md](api.md) [unstable_api.md](unstable_api.md) | L'entierté de l'API |
-| [history.md](history.md) | Les derniers changement dans mineflayer |
-| [examples/](https://github.com/PrismarineJS/mineflayer/tree/master/examples) | Vas voir les examples mineflayer |
+|[tutoriel](tutorial.md) | Démarre par un tutoriel node js et mineflayer |
+| [FAQ](FAQ.md) | Une question? Regarde d'abord ici ! |
+| [API](api.md) [unstable_api.md](unstable_api.md) | L'API intégrale |
+| [changement](history.md) | Les derniers changement dans mineflayer |
+| [exemples](https://github.com/PrismarineJS/mineflayer/tree/master/examples) | quelques  exemples mineflayer |
 
 
 ## Pour Aider
 
-S'il vous plait aller lire [CONTRIBUTING.md](CONTRIBUTING.md) and [prismarine-contribute](https://github.com/PrismarineJS/prismarine-contribute) (en anglais)
+Aller lire [CONTRIBUTING.md](CONTRIBUTING.md) et [prismarine-contribute](https://github.com/PrismarineJS/prismarine-contribute) (en anglais)
 
 ## Usage
 
