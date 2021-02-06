@@ -18,6 +18,11 @@ module.exports = () => async (bot) => {
     console.log(`[book] slot updated ${slot}`, newItem)
   }
 
+  function onSetSlot (packet) {
+    console.log('[book] set_slot', packet)
+  }
+
+  bot._client.on('set_slot', onSetSlot)
   bot.inventory.on('updateSlot', onUpdateSlot)
 
   console.log('[book] setInventory')
@@ -35,6 +40,7 @@ module.exports = () => async (bot) => {
   assert.strictEqual(book.nbt.value.author.value, bot.username)
   assert.strictEqual(book.nbt.value.title.value, 'My Very First Book')
 
+  bot._client.removeListener('set_slot', onSetSlot)
   bot.inventory.removeListener('updateSlot', onUpdateSlot)
   console.log('[book] done')
 }
