@@ -1214,10 +1214,11 @@ Returns the block at which bot is looking at or `null`
  * `maxSteps` - Number of steps to raytrace, defaults to 256.
  * `vectorLength` - Length of raytracing vector, defaults to `5/16`.
 
-#### bot.blockAtCursor(maxDistance=256)
+#### bot.blockAtCursor(maxDistance=256, liquid=true)
 
 Returns the block at which bot is looking at or `null`
  * `maxDistance` - The maximum distance the block can be from the eye, defaults to 256.
+ * `liquid` - Optional parameter, default is `true`. If the parameter is `false`, fluids are passed.
 
 #### bot.canSeeBlock(block)
 
