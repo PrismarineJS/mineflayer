@@ -189,7 +189,7 @@
       - [bot.blockAt(point, extraInfos=true)](#botblockatpoint-extrainfostrue)
       - [bot.waitForChunksToLoad(cb)](#botwaitforchunkstoloadcb)
       - [bot.blockInSight(maxSteps, vectorLength)](#botblockinsightmaxsteps-vectorlength)
-      - [bot.blockAtCursor(maxDistance=256)](#botblockatcursormaxdistance256)
+      - [bot.blockAtCursor(maxDistance=256, liquid=true)](#botblockatcursormaxdistance256)
       - [bot.canSeeBlock(block)](#botcanseeblockblock)
       - [bot.findBlocks(options)](#botfindblocksoptions)
       - [bot.findBlock(options)](#botfindblockoptions)
