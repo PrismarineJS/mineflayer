@@ -1572,7 +1572,7 @@ This function also returns a `Promise`, with `void` as its argument upon complet
  * `count` - how many you want to toss. `null` is an alias for `1`.
  * `callback(err)` - (optional) called once tossing is complete
 
-#### bot.dig(block, [forceLook = true], [callback])
+#### bot.dig(block, [forceLook = true], [digFace], [callback])
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
 
@@ -1585,6 +1585,8 @@ dig any other blocks until the block has been broken, or you call
 
  * `block` - the block to start digging into
  * `forceLook` - (optional) if true, look at the block and start mining instantly. If false, the bot will slowly turn to the block to mine. Additionally, this can be assigned to 'ignore' to prevent the bot from moving it's head at all.
+ * `digFace` - (optional) Default is 'auto' looks at the center of the block and mines the top face. Can also be a vec3 vector 
+ of the face the bot should be looking at when digging the block. For example: ```vec3(0, 1, 0)``` when mining the top. Can also be 'raycast' raycast checks if there is a face visible by the bot and mines that face. Useful for servers with anti cheat.
  * `callback(err)` - (optional) called when the block is broken or you
    are interrupted.
 
