@@ -1582,7 +1582,7 @@ bot.once('login', function() {
      Если `item` равен` null`, элемент в указанном слоте удаляется.
  * `callback(err)` (необязательно) вызывается, если сервер одобрил выдачу предмета
 
-Если этот метод меняет ваш инвентарь, вы можете использовать `bot.inventory.on("windowUpdate")`.
+Если этот метод меняет ваш инвентарь, вы можете использовать `bot.inventory.on("updateSlot")`.
 
 #### bot.creative.flyTo(destination, [cb])
 

@@ -7,7 +7,6 @@
  * You can ask the bot to trade with a villager, display the villagers in range
  * and show what trades a villager has by sending a chat message.
  */
-const { once } = require('events')
 const mineflayer = require('mineflayer')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
@@ -77,8 +76,7 @@ async function showTrades (id) {
       bot.chat('villager out of reach')
       break
     default: {
-      const villager = bot.openVillager(e)
-      await once(villager, 'ready')
+      const villager = await bot.openVillager(e)
       villager.close()
       stringifyTrades(villager.trades).forEach((trade, i) => {
         bot.chat(`${i + 1}: ${trade}`)
@@ -100,8 +98,7 @@ async function trade (id, index, count) {
       bot.chat('villager out of reach')
       break
     default: {
-      const villager = bot.openVillager(e)
-      await once(villager, 'ready')
+      const villager = await bot.openVillager(e)
       const trade = villager.trades[index - 1]
       count = count || trade.maxTradeuses - trade.tooluses
       switch (true) {
