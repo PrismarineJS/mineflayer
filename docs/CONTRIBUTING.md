@@ -4,6 +4,14 @@ Mineflayer has originally been made mostly by [andrewrk](http://github.com/andre
 but has since then be improved and fixed by many [contributors](https://github.com/andrewrk/mineflayer/graphs/contributors).
 That's why it is important to know the best ways to contribute to mineflayer.
 
+## Issue organization
+
+We have 3 stage labels to try to organize issues:
+
+* Stage 1: just created by someone new to the project, we don't know yet if it deserves an implementation / a fix
+* Stage 2: promising idea, but needs more thinking before implementation
+* Stage 3: idea is precisely specified, only coding is left to do
+
 ## Creating tests
 Mineflayer has two kind of tests :
 
