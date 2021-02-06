@@ -12,6 +12,8 @@ We have 3 stage labels to try to organize issues:
 * Stage 2: promising idea, but needs more thinking before implementation
 * Stage 3: idea is precisely specified, only coding is left to do
 
+Links like https://github.com/PrismarineJS/mineflayer/issues?q=is%3Aopen+is%3Aissue+-label%3AStage1 can be used to filter out stage 1 if you're looking for things that are ready for contribution
+
 ## Creating tests
 Mineflayer has two kind of tests :
 
