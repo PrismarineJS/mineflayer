@@ -1,3 +1,14 @@
+## 3.0.0
+* added null or undefined check in inventory (@u9g)
+* Removed broken use of "this" in physics.js (@TheDudeFromCI)
+* Promisify testCommon (@ArcticZeroo)
+* Fixed Bot not skipping end credits (@IceTank)
+* BREAKING: Simplify windows API and promisify tests (@Karang) : several methods and events from window API were changed:
+  * Removed Chest, EnchantmentTable, Furnace, Dispenser and Villager classes (they all are Windows now)
+  * Dispensers are now handled by the same code as other containers, hopper too (they were missing)
+  * There is now only 2 events signaling a slot update ("updateSlot" and "updateSlot:slotId" of the Window class) (before there was: "setSlot", "setSlot:windowId", "windowUpdate", "updateSlot", on 3 different eventEmitter (and not all of them were working properly))
+  * All windows (present and future) now have a withdraw and deposit function
+
 ## 2.41.0
 * Fix Time type definition (@hivivo)
 * Add face for block in sight result (@Karang)
