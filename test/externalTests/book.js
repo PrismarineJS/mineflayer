@@ -14,15 +14,27 @@ module.exports = () => async (bot) => {
     .map((word, i) => `§${(i % 13 + 1).toString(16)}${i % 2 ? '§l' : ''}${word}`)
     .join(' '))
 
+  function onUpdateSlot (slot, old, newItem) {
+    console.log(`[book] slot updated ${slot}`, newItem)
+  }
+
+  bot.inventory.on('updateSlot', onUpdateSlot)
+
+  console.log('[book] setInventory')
   await bot.test.setInventorySlot(30, new Item(mcData.itemsByName.writable_book.id, 1, 0))
 
+  console.log('[book] writeBook')
   await bot.writeBook(30, pages)
   let book = bot.inventory.slots[30]
   book.nbt.value.pages.value.value.forEach((page, i) => assert.strictEqual(page, pages[i]))
 
+  console.log('[book] signBook')
   await bot.signBook(30, pages, bot.username, 'My Very First Book')
   book = bot.inventory.slots[30]
   assert.strictEqual(book.type, mcData.itemsByName.written_book.id)
   assert.strictEqual(book.nbt.value.author.value, bot.username)
   assert.strictEqual(book.nbt.value.title.value, 'My Very First Book')
+
+  bot.inventory.removeListener('updateSlot', onUpdateSlot)
+  console.log('[book] done')
 }
