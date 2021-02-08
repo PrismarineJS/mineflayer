@@ -1,24 +1,15 @@
 const assert = require('assert')
+const { once } = require('events')
 
-module.exports = () => (bot, done) => {
+module.exports = () => async (bot) => {
   bot.test.sayEverywhere('/weather clear')
-  setTimeout(() => {
-    bot.test.sayEverywhere('/weather rain')
+  await bot.test.wait(1000)
+  bot.test.sayEverywhere('/weather rain')
 
-    let raining = true
-    function rainListener () {
-      if (raining) {
-        assert.strictEqual(bot.isRaining, true)
-        bot.test.sayEverywhere('/weather clear')
-        raining = false
-        return
-      }
+  await once(bot, 'rain')
+  assert.strictEqual(bot.isRaining, true)
+  bot.test.sayEverywhere('/weather clear')
 
-      assert.strictEqual(bot.isRaining, false)
-      bot.removeListener('rain', rainListener)
-      done()
-    }
-
-    bot.on('rain', rainListener)
-  }, 1000)
+  await once(bot, 'rain')
+  assert.strictEqual(bot.isRaining, false)
 }

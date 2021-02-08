@@ -1,6 +1,6 @@
 {
   "name": "mineflayer",
-  "version": "2.41.0",
+  "version": "3.0.0",
   "description": "create minecraft bots with a stable, high level API",
   "main": "index.js",
   "types": "index.d.ts",
@@ -30,7 +30,7 @@
     "prismarine-item": "^1.5.0",
     "prismarine-physics": "^1.0.4",
     "prismarine-recipe": "^1.1.0",
-    "prismarine-windows": "^1.5.0",
+    "prismarine-windows": "^2.0.0",
     "prismarine-world": "^3.2.0",
     "protodef": "^1.8.0",
     "typed-emitter": "^1.2.0",

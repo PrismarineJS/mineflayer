@@ -1,179 +1,120 @@
-const Vec3 = require('vec3').Vec3
+const { Vec3 } = require('vec3')
 const assert = require('assert')
+const { once } = require('events')
 
-module.exports = () => (bot, done) => {
+module.exports = () => async (bot) => {
   const mcData = require('minecraft-data')(bot.version)
   const Item = require('prismarine-item')(bot.version)
 
-  const chestManagementTest = (() => {
-    const smallChestLocation = new Vec3(0, 4, -1)
-    const largeChestLocations = [new Vec3(0, 4, 1), new Vec3(1, 4, 1)]
-    const smallTrappedChestLocation = new Vec3(1, 4, 0)
-    const largeTrappedChestLocations = [
-      new Vec3(-1, 4, 1),
-      new Vec3(-1, 4, 0)
-    ]
-    const chestSlot = 36
-    const trappedChestSlot = 37
-    const boneSlot = 38
+  const smallChestLocation = new Vec3(0, 4, -1)
+  const largeChestLocations = [new Vec3(0, 4, 1), new Vec3(1, 4, 1)]
+  const smallTrappedChestLocation = new Vec3(1, 4, 0)
+  const largeTrappedChestLocations = [
+    new Vec3(-1, 4, 1),
+    new Vec3(-1, 4, 0)
+  ]
+  const chestSlot = 36
+  const trappedChestSlot = 37
+  const boneSlot = 38
 
-    let blockItemsByName
-    if (bot.supportFeature('itemsAreNotBlocks')) {
-      blockItemsByName = 'itemsByName'
-    } else if (bot.supportFeature('itemsAreAlsoBlocks')) {
-      blockItemsByName = 'blocksByName'
+  let blockItemsByName
+  if (bot.supportFeature('itemsAreNotBlocks')) {
+    blockItemsByName = 'itemsByName'
+  } else if (bot.supportFeature('itemsAreAlsoBlocks')) {
+    blockItemsByName = 'blocksByName'
+  }
+
+  function itemByName (items, name) {
+    for (let i = 0; i < items.length; ++i) {
+      const item = items[i]
+      if (item && item.name === name) return item
     }
+    return null
+  }
 
-    return [
-      (cb) => {
-        bot.test.setInventorySlot(chestSlot, new Item(mcData[blockItemsByName].chest.id, 3, 0), (err) => {
-          assert.ifError(err)
+  async function depositBones (chestLocation, count) {
+    const chest = await bot.openChest(bot.blockAt(chestLocation))
+    assert(chest.containerItems().length === 0)
+    assert(chest.items().length > 0)
+    const name = 'bone'
+    const item = itemByName(chest.items(), name)
+    if (!item) {
+      bot.test.sayEverywhere(`unknown item ${name}`)
+      throw new Error(`unknown item ${name}`)
+    }
+    await chest.deposit(item.type, null, count)
+    chest.close()
+  }
 
-          bot.test.setInventorySlot(trappedChestSlot, new Item(mcData[blockItemsByName].trapped_chest.id, 3, 0), (err) => {
-            assert.ifError(err)
+  async function withdrawBones (chestLocation, count) {
+    const chest = await bot.openChest(bot.blockAt(chestLocation))
+    const name = 'bone'
+    const item = itemByName(chest.containerItems(), name)
+    if (!item) {
+      bot.test.sayEverywhere(`unknown item ${name}`)
+      throw new Error(`unknown item ${name}`)
+    }
+    await chest.withdraw(item.type, null, count)
+    assert(chest.containerItems().length === 0)
+    assert(chest.items().length > 0)
+    chest.close()
+  }
 
-            bot.test.setInventorySlot(boneSlot, new Item(mcData.itemsByName.bone.id, 3, 0), (err) => {
-              assert.ifError(err)
-              cb()
-            })
-          })
-        })
-      },
-      bot.test.becomeSurvival,
-      (cb) => {
-        // place the chests around us
-        bot.test.placeBlock(chestSlot, largeChestLocations[0], () => {
-          bot.test.placeBlock(chestSlot, largeChestLocations[1], () => {
-            bot.test.placeBlock(chestSlot, smallChestLocation, () => {
-              bot.test.placeBlock(trappedChestSlot, largeTrappedChestLocations[0], () => {
-                bot.test.placeBlock(trappedChestSlot, largeTrappedChestLocations[1], () => {
-                  bot.test.placeBlock(trappedChestSlot, smallTrappedChestLocation, () => {
-                    cb()
-                  })
-                })
-              })
-            })
-          })
-        })
-      },
-      (cb) => {
-        // Test that "chestLidMove" is emitted only once when opening a double chest
-        let emitted = false
-        const chest = bot.openChest(bot.blockAt(largeChestLocations[0]))
+  await bot.test.setInventorySlot(chestSlot, new Item(mcData[blockItemsByName].chest.id, 3, 0))
+  await bot.test.setInventorySlot(trappedChestSlot, new Item(mcData[blockItemsByName].trapped_chest.id, 3, 0))
+  await bot.test.setInventorySlot(boneSlot, new Item(mcData.itemsByName.bone.id, 3, 0))
 
-        function handler (block, isOpen, block2) {
-          if (emitted) {
-            assert.fail(new Error('chestLidMove emitted twice'))
-          } else {
-            emitted = true
+  await bot.test.becomeSurvival()
 
-            let blockAssert = false; let block2Assert = false
-            for (const location of largeChestLocations) {
-              if (location.equals(block.position)) blockAssert = true
-              if (location.equals(block2.position)) block2Assert = true
-            }
-            assert(blockAssert && block2Assert, new Error('The block instance emitted by chestLidMove is not part of the chest oppened'))
-            assert.strictEqual(isOpen, 1, new Error('isOpen should be 1 when opened by one only player'))
+  // place the chests around us
+  await bot.test.placeBlock(chestSlot, largeChestLocations[0])
+  await bot.test.placeBlock(chestSlot, largeChestLocations[1])
+  await bot.test.placeBlock(chestSlot, smallChestLocation)
+  await bot.test.placeBlock(trappedChestSlot, largeTrappedChestLocations[0])
+  await bot.test.placeBlock(trappedChestSlot, largeTrappedChestLocations[1])
+  await bot.test.placeBlock(trappedChestSlot, smallTrappedChestLocation)
 
-            setTimeout(() => {
-              bot.removeListener('chestLidMove', handler)
-              chest.close()
-              cb()
-            }, 500)
-          }
-        }
-        bot.on('chestLidMove', handler)
-      },
-      (cb) => {
-        depositBones(smallChestLocation, 1, cb)
-      },
-      (cb) => {
-        depositBones(largeChestLocations[0], 2, cb)
-      },
-      (cb) => {
-        checkSlotsAreEmpty(bot.inventory)
-        cb()
-      },
-      (cb) => {
-        withdrawBones(smallChestLocation, 1, cb)
-      },
-      (cb) => {
-        withdrawBones(largeChestLocations[0], 2, cb)
-      },
-      (cb) => {
-        depositBones(smallTrappedChestLocation, 1, cb)
-      },
-      (cb) => {
-        depositBones(largeTrappedChestLocations[0], 2, cb)
-      },
-      (cb) => {
-        checkSlotsAreEmpty(bot.inventory)
-        cb()
-      },
-      (cb) => {
-        withdrawBones(smallTrappedChestLocation, 1, cb)
-      },
-      (cb) => {
-        withdrawBones(largeTrappedChestLocations[0], 2, cb)
-      },
-      (cb) => {
-        bot.test.sayEverywhere('chest management test: pass')
-        cb()
+  // Test that "chestLidMove" is emitted only once when opening a double chest
+  let emitted = false
+  bot.on('chestLidMove', handler)
+  function handler (block, isOpen, block2) {
+    if (emitted) {
+      assert.fail(new Error('chestLidMove emitted twice'))
+    } else {
+      emitted = true
+
+      let blockAssert = false; let block2Assert = false
+      for (const location of largeChestLocations) {
+        if (location.equals(block.position)) blockAssert = true
+        if (location.equals(block2.position)) block2Assert = true
       }
-    ]
+      assert(blockAssert && block2Assert, new Error('The block instance emitted by chestLidMove is not part of the chest oppened'))
+      assert.strictEqual(isOpen, 1, new Error('isOpen should be 1 when opened by one only player'))
 
-    function itemByName (items, name) {
-      let item
-      let i
-      for (i = 0; i < items.length; ++i) {
-        item = items[i]
-        if (item && item.name === name) return item
-      }
-      return null
+      setTimeout(() => {
+        bot.removeListener('chestLidMove', handler)
+        chest.close()
+      }, 500)
     }
+  }
+  const chest = await bot.openChest(bot.blockAt(largeChestLocations[0]))
+  await once(chest, 'close')
 
-    function depositBones (chestLocation, count, cb) {
-      const chest = bot.openChest(bot.blockAt(chestLocation))
-      chest.on('open', () => {
-        checkSlotsAreEmpty(chest.window)
-        const name = 'bone'
-        const item = itemByName(bot.inventory.items(), name)
-        if (!item) {
-          bot.test.sayEverywhere(`unknown item ${name}`)
-          throw new Error(`unknown item ${name}`)
-        }
-        chest.deposit(item.type, null, count, (err) => {
-          assert(!err)
-          chest.close()
-          cb()
-        })
-      })
-    }
+  await depositBones(smallChestLocation, 1)
+  await depositBones(largeChestLocations[0], 2)
 
-    function withdrawBones (chestLocation, count, cb) {
-      const chest = bot.openChest(bot.blockAt(chestLocation))
-      chest.on('open', () => {
-        const name = 'bone'
-        const item = itemByName(chest.items(), name)
-        if (!item) {
-          bot.test.sayEverywhere(`unknown item ${name}`)
-          throw new Error(`unknown item ${name}`)
-        }
-        chest.withdraw(item.type, null, count, (err) => {
-          assert(!err)
-          checkSlotsAreEmpty(chest.window)
-          chest.close()
-          cb()
-        })
-      })
-    }
+  await bot.test.wait(100) // wait for inventory to update
+  assert(bot.inventory.items().length === 0)
 
-    function checkSlotsAreEmpty (window) {
-      for (let i = 0; i < window.inventorySlotStart; i++) {
-        assert(window.slots[i] == null)
-      }
-    }
-  })()
+  await withdrawBones(smallChestLocation, 1)
+  await withdrawBones(largeChestLocations[0], 2)
 
-  bot.test.callbackChain(chestManagementTest, done)
+  await depositBones(smallTrappedChestLocation, 1)
+  await depositBones(largeTrappedChestLocations[0], 2)
+
+  await bot.test.wait(100) // wait for inventory to update
+  assert(bot.inventory.items().length === 0)
+
+  await withdrawBones(smallTrappedChestLocation, 1)
+  await withdrawBones(largeTrappedChestLocations[0], 2)
 }

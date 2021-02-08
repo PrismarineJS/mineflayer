@@ -129,7 +129,7 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
           return function (done) {
             this.timeout(TEST_TIMEOUT_MS)
             bot.test.sayEverywhere(`starting ${testName}`)
-            testFunction(bot, done)
+            testFunction(bot, done).then(res => done()).catch(e => done(e))
           }
         }
         if (excludedTests.indexOf(test) === -1) {
