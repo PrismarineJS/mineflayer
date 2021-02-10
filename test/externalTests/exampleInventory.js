@@ -62,7 +62,6 @@ module.exports = () => async (bot) => {
       await test()
       await bot.test.wait(100)
     }
-    await Promise.allSettled(tests)
     cb()
 
     function makeTest (inStr, outStr) {
