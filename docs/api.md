@@ -1239,7 +1239,7 @@ Returns an array (possibly empty) with the found block coordinates (not the bloc
 
 #### bot.findBlock(options)
 
-Alias for `bot.findBlock(options)[0]`. Return a single block or `null`.
+Alias for `bot.findBlocks(options)[0]`. Return a single block or `null`.
 
 #### bot.canDigBlock(block)
 
