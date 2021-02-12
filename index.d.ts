@@ -184,9 +184,9 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   canSeeBlock(block: Block): boolean;
 
-  findBlock(options: FindBlockOptions): Block;
+  findBlock(options: FindBlockOptions): Block | null;
 
-  findBlocks(options: FindBlockOptions): Block[];
+  findBlocks(options: FindBlockOptions): Vec3[];
 
   canDigBlock(block: Block): boolean;
 
