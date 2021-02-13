@@ -40,7 +40,8 @@ const plugins = {
   spawn_point: require('./lib/plugins/spawn_point'),
   tablist: require('./lib/plugins/tablist'),
   time: require('./lib/plugins/time'),
-  villager: require('./lib/plugins/villager')
+  villager: require('./lib/plugins/villager'),
+  anvil: require('./lib/plugins/anvil')
 }
 
 const supportedVersions = require('./lib/version').supportedVersions
