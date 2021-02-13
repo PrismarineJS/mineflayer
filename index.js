@@ -31,6 +31,7 @@ const plugins = {
   inventory: require('./lib/plugins/inventory'),
   kick: require('./lib/plugins/kick'),
   physics: require('./lib/plugins/physics'),
+  place_block: require('./lib/plugins/place_block'),
   rain: require('./lib/plugins/rain'),
   ray_trace: require('./lib/plugins/ray_trace'),
   scoreboard: require('./lib/plugins/scoreboard'),
