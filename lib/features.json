@@ -238,5 +238,10 @@
     "name": "setBlockUsesMetadataNumber",
     "description": "The parameter metadata of the setblock command is a number",
     "versions": ["1.8", "1.12.2"]
+  },
+  {
+    "name": "selectingTradeMovesItems",
+    "description": "Selecting a trade automatically puts the required items into trading slots.",
+    "versions": ["1.14", "1.16.5"]
   }
 ]
