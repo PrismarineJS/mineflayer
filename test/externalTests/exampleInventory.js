@@ -5,42 +5,34 @@ const tests = [
     command: 'list',
     wantedMessage: 'dirt x 64, stick x 7, iron_ore x 64, diamond_boots x 1'
   },
-
   {
     command: 'equip hand dirt',
     wantedMessage: 'equipped dirt'
   },
-
   {
     command: 'toss 64 dirt',
     wantedMessage: 'tossed 64 x dirt'
   },
-
   {
     command: 'craft 1 ladder',
     wantedMessage: 'I can make ladder'
   },
-
   {
     command: '',
     wantedMessage: 'did the recipe for ladder 1 times'
   },
-
   {
     command: 'equip feet diamond_boots',
     wantedMessage: 'equipped diamond_boots'
   },
-
   {
     command: 'toss iron_ore',
     wantedMessage: 'tossed iron_ore'
   },
-
   {
     command: 'unequip feet',
     wantedMessage: 'unequipped'
   },
-
   { // after tests layout
     command: 'list',
     wantedMessage: 'ladder x 3, diamond_boots x 1'
@@ -56,9 +48,15 @@ module.exports = () => async (bot) => {
     bot.chat('/give inventory stick 7')
     bot.chat('/give inventory iron_ore 64')
     bot.chat('/give inventory diamond_boots 1')
+    bot.chat('/setblock 52 4 0 crafting_table')
     await bot.test.wait(2000)
     const testFuncs = tests.map(test => makeTest(test.command, test.wantedMessage))
-    for await (const test of testFuncs) {
+    testFuncs.push(() => {
+      // cleanup
+      bot.chat('/setblock 52 4 0 crafting_table')
+      return true
+    })
+    for (const test of testFuncs) {
       await test()
       await bot.test.wait(100)
     }
