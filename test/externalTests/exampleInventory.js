@@ -48,18 +48,15 @@ module.exports = () => async (bot) => {
     bot.chat('/give inventory stick 7')
     bot.chat('/give inventory iron_ore 64')
     bot.chat('/give inventory diamond_boots 1')
-    bot.chat('/setblock 52 4 0 air')
+    bot.chat('/setblock 52 4 0 crafting_table')
     await bot.test.wait(2000)
     const testFuncs = tests.map(test => makeTest(test.command, test.wantedMessage))
-    testFuncs.push(() => {
-      // cleanup
-      bot.chat('/setblock 52 4 0 crafting_table')
-      return true
-    })
     for (const test of testFuncs) {
       await test()
       await bot.test.wait(100)
     }
+    //cleanup
+    bot.chat('/setblock 52 4 0 air')
     cb()
 
     function makeTest (inStr, outStr) {
