@@ -11,13 +11,12 @@ client.on('error', () => {})
 client.on('end', () => {})
 ```
 
-### I'm not getting chat event on a custom server, how can I solve it ?
+### Je n'ai aucun event de chat pour mon serveur custom, comment faire??
 
-Spigot servers, in particular some plugins, use custom chat formats, you need to parse it with a custom regex / parser.
-Read and adapt [chatAddPattern.js](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chatAddPattern.js) to make it work for your particular
-chat plugin. Also read http://mineflayer.prismarine.js.org/#/tutorial?id=custom-chat
+Les serveurs Spigot, en particulier avec quelque plugins, utilisent des systeme de chat customisé, que vous avez besoin de traduire avec des régles RegEx.
+Lisez et adaptez [chatAddPattern.js](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chatAddPattern.js) pour faire marcher mineflayer avec vos plugins préfférés. Aussi liser http://mineflayer.prismarine.js.org/#/tutorial?id=custom-chat
 
-### Comment puis-je executer une commande?
+### Comment j'envoie une commande?
 
 En utilisant `bot.chat()`.
 
