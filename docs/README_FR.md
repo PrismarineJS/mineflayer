@@ -57,33 +57,33 @@ Aller lire [CONTRIBUTING.md](CONTRIBUTING.md) et [prismarine-contribute](https:/
 
 ## Usage
 
-**Videos**
+**Vidéos**
 
-A tutorial video explaining the basic set up process for a bot can be found [here.](https://www.youtube.com/watch?v=ltWosy4Z0Kw)
+une tutoriel vidéo que explique comment mettre en place un robot mineflayer est trouvable [ici (en anglais).](https://www.youtube.com/watch?v=ltWosy4Z0Kw)
 
-If you want to learn more, more video tutorials are [there,](https://www.youtube.com/playlist?list=PLh_alXmxHmzGy3FKbo95AkPp5D8849PEV) and the corresponding source codes for those bots is [there.](https://github.com/TheDudeFromCI/Mineflayer-Youtube-Tutorials)
+Si tu veut en apprendre plus, plus de tutoriel video peuve être trouvées [ici,](https://www.youtube.com/playlist?list=PLh_alXmxHmzGy3FKbo95AkPp5D8849PEV) et le code source correspondant peut être trouver [ici.](https://github.com/TheDudeFromCI/Mineflayer-Youtube-Tutorials)
 
 [<img src="https://img.youtube.com/vi/ltWosy4Z0Kw/0.jpg" alt="tutorial 1" width="200">](https://www.youtube.com/watch?v=ltWosy4Z0Kw)
 [<img src="https://img.youtube.com/vi/UWGSf08wQSc/0.jpg" alt="tutorial 2" width="200">](https://www.youtube.com/watch?v=UWGSf08wQSc)
 [<img src="https://img.youtube.com/vi/ssWE0kXDGJE/0.jpg" alt="tutorial 3" width="200">](https://www.youtube.com/watch?v=ssWE0kXDGJE)
 [<img src="https://img.youtube.com/vi/walbRk20KYU/0.jpg" alt="tutorial 4" width="200">](https://www.youtube.com/watch?v=walbRk20KYU)
 
-**Getting Started**
+**Introduction à mineflayer**
 
-Without version specified, the version of the server will be guessed automatically, you can set a specific one using the version option.
-For example `version:"1.8"`.
+Sans de version specifié, la version du serveur est automatiquement trouvé, mais tu peut toujour en mettre une manuellement en la specifiant dans les options:
+Par exemple `version:"1.8"`.
 
 ### Echo Example
 ```js
 const mineflayer = require('mineflayer')
 
 const bot = mineflayer.createBot({
-  host: 'localhost', // optional
-  port: 25565,       // optional
-  username: 'email@example.com', // email and password are required only for
-  password: '12345678',          // online-mode=true servers
-  version: false,                 // false corresponds to auto version detection (that's the default), put for example "1.8.8" if you need a specific version
-  auth: 'mojang'      // optional; by default uses mojang, if using a microsoft account, set to 'microsoft'
+  host: 'localhost', // optionel
+  port: 25565,       // optionel
+  username: 'email@example.com', // l'email et le mot de passe sont requis seulement pour les serveurs
+  password: '12345678',          // online-mode=true
+  version: false,                 // faux, corresponds pour la detection automatique(par défaut), met "1.8.8" par exemple si tu a besoin d'une version specifique
+  auth: 'mojang'      // optionel; par defaut utilise mojang, si vous utilisez un compte microsoft, preciser 'microsoft'
 })
 
 bot.on('chat', function (username, message) {
@@ -91,7 +91,7 @@ bot.on('chat', function (username, message) {
   bot.chat(message)
 })
 
-// Log errors and kick reasons:
+// érreur de code, ou raison de kick:
 bot.on('kicked', (reason, loggedIn) => console.log(reason, loggedIn))
 bot.on('error', err => console.log(err))
 ```
