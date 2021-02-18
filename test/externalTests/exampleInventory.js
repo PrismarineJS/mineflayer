@@ -55,7 +55,7 @@ module.exports = () => async (bot) => {
       await test()
       await bot.test.wait(100)
     }
-    //cleanup
+    // cleanup
     bot.chat('/setblock 52 4 0 air')
     cb()
 
