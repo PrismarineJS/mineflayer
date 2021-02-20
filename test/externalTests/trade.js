@@ -6,10 +6,10 @@ module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.version)
 
   const villagerType = mcData.entitiesByName.villager ? 'villager' : 'Villager'
-
+  const testFluctuations = bot.supportFeature('selectingTradeMovesItems')
   const summonCommand = bot.supportFeature('indexesVillagerRecipes')
-    ? `/summon ${villagerType} ~ ~1 ~ {NoAI:1, Offers:{Recipes:[0:{maxUses:7,buy:{id:"minecraft:emerald",Count:2},sell:{id:"minecraft:wheat",Count:2}, uses:1}]}}`
-    : `/summon ${villagerType} ~ ~1 ~ {NoAI:1, Offers:{Recipes:[{maxUses:7,buy:{id:"minecraft:emerald",Count:2},sell:{id:"minecraft:wheat",Count:2}, uses:1}]}}`
+    ? `/summon ${villagerType} ~ ~1 ~ {NoAI:1, Offers:{Recipes:[0:{maxUses:7,buy:{id:"minecraft:emerald",Count:2},sell:{id:"minecraft:pumpkin_pie",Count:2},uses: 1},1:{maxUses:7,buy:{id:"minecraft:emerald",Count:2},buyB:{id:"minecraft:pumpkin_pie",Count:2},sell:{id:"minecraft:wheat",Count:2}, uses:1}]}}`
+    : `/summon ${villagerType} ~ ~1 ~ {NoAI:1, Offers:{Recipes:[{maxUses:7,buy:{id:"minecraft:emerald",Count:2},sell:{id:"minecraft:pumpkin_pie",Count:2},${testFluctuations ? 'demand:60,priceMultiplier:0.05f,specialPrice:-4,' : ''}uses: 1},{maxUses:7,buy:{id:"minecraft:emerald",Count:2},buyB:{id:"minecraft:pumpkin_pie",Count:2},sell:{id:"minecraft:wheat",Count:2}, uses:1}]}}`
 
   const commandBlockPos = bot.entity.position.offset(0.5, 0, 0.5)
   const redstoneBlockPos = commandBlockPos.offset(1, 0, 0)
@@ -26,30 +26,49 @@ module.exports = () => async (bot) => {
   assert(entity.name === villagerType)
 
   const villager = await bot.openVillager(entity)
-  const trade = villager.trades[0]
-  const sell = trade.inputItem1
-  const buy = trade.outputItem
+  for (const [index, trade] of villager.trades.entries()) {
+    const sell1 = trade.inputItem1
+    const sell2 = trade.inputItem2
+    const buy = trade.outputItem
 
-  assert.notStrictEqual(sell, null)
-  assert.notStrictEqual(buy, null)
-  assert.strictEqual(trade.nbTradeUses, 1)
-  assert.strictEqual(trade.maximumNbTradeUses, 7)
-  assert.strictEqual(trade.tradeDisabled, false)
-  assert(trade.inputItem2 === null || (trade.inputItem2.type === undefined && trade.inputItem2.count === undefined)) // In some versions it returns null in others it returns an empty Item instance
-  assert.strictEqual(sell.name, 'emerald')
-  assert.strictEqual(sell.count, 2)
-  assert.strictEqual(buy.name, 'wheat')
-  assert.strictEqual(buy.count, 2)
+    assert.notStrictEqual(sell1, null)
+    assert.notStrictEqual(buy, null)
+    assert.strictEqual(trade.nbTradeUses, 1)
+    assert.strictEqual(trade.maximumNbTradeUses, 7)
+    assert.strictEqual(trade.tradeDisabled, false)
 
-  bot.test.sayEverywhere(`I have ${bot.currentWindow.count(mcData.itemsByName.emerald.id)} emeralds`)
-  bot.test.sayEverywhere(`I can trade ${sell.count}x ${sell.displayName} for ${buy.count}x ${buy.displayName}`)
+    if (index === 0) {
+      assert(trade.inputItem2 === null || (trade.inputItem2.type === undefined && trade.inputItem2.count === undefined)) // In some versions it returns null in others it returns an empty Item instance
+    } else {
+      assert.strictEqual(sell2.count, 2)
+      assert.strictEqual(sell2.name, 'pumpkin_pie')
+    }
+    assert.strictEqual(sell1.name, 'emerald')
+    assert.strictEqual(sell1.count, 2)
+    assert.strictEqual(buy.name, index ? 'wheat' : 'pumpkin_pie')
+    assert.strictEqual(buy.count, 2)
 
-  await bot.trade(villager, 0, 6)
-  assert.strictEqual(bot.currentWindow.count(mcData.itemsByName.emerald.id), 64 - 12)
-  assert.strictEqual(bot.currentWindow.count(mcData.itemsByName.wheat.id), 12)
+    const printCountInv = function (item) {
+      return `${bot.currentWindow.count(mcData.itemsByName[item.name].id)}x ${item.displayName}`
+    }
+    const printCountTrade = function (item) {
+      return `${item.count}x ${item.displayName}`
+    }
+    bot.test.sayEverywhere(`I have ${printCountInv(sell1)} ${trade.hasItem2 ? 'and ' + printCountInv(sell2) : ''}`)
+    bot.test.sayEverywhere(`I can trade ${printCountTrade(sell1)} ${trade.hasItem2 ? 'and ' + printCountTrade(sell2) : ''} for ${printCountTrade(buy)}`)
 
-  assert.rejects(bot.trade(villager, 0, 1)) // Shouldn't be able, the trade is blocked!
+    await bot.trade(villager, index, 6)
+    if (index === 0) {
+      assert.strictEqual(bot.currentWindow.count(mcData.itemsByName.emerald.id), testFluctuations ? 64 - 24 : 64 - 12)
+      assert.strictEqual(bot.currentWindow.count(mcData.itemsByName.pumpkin_pie.id), 12)
+    } else {
+      assert.strictEqual(bot.currentWindow.count(mcData.itemsByName.emerald.id), testFluctuations ? 64 - 36 : 64 - 24)
+      assert.strictEqual(bot.currentWindow.count(mcData.itemsByName.pumpkin_pie.id), 0)
+      assert.strictEqual(bot.currentWindow.count(mcData.itemsByName.wheat.id), 12)
+    }
+  }
 
+  assert.rejects(bot.trade(villager, 1, 1)) // Shouldn't be able, the trade is blocked!
   villager.close()
   bot.test.sayEverywhere(`/kill @e[type=${villagerType}]`)
 }
