@@ -716,6 +716,10 @@ The item in the bot's hand, represented as a [prismarine-item](https://github.co
 
 #### bot.game.serverBrand
 
+### bot.physicEnabled
+
+Enable physics, default true.
+
 ### bot.player
 
 Bot's player object
