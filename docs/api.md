@@ -1049,14 +1049,14 @@ or boat.
 
 #### "blockUpdate" (oldBlock, newBlock)
 
-Fires when a block updates. Both `oldBlock` and `newBlock` provided for
+(It is better to use this event from bot.world instead of bot directly) Fires when a block updates. Both `oldBlock` and `newBlock` provided for
 comparison.
 
 Note that `oldBlock` may be `null`.
 
 #### "blockUpdate:(x, y, z)" (oldBlock, newBlock)
 
-Fires for a specific point. Both `oldBlock` and `newBlock` provided for
+(It is better to use this event from bot.world instead of bot directly) Fires for a specific point. Both `oldBlock` and `newBlock` provided for
 comparison.
 
 Note that `oldBlock` may be `null`.
