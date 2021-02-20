@@ -1,3 +1,11 @@
+## 3.1.0
+* Fix typings of findBlock and findBlocks (@csorfab)
+* place block improvements (@Karang)
+* add face option to dig (@IceTank)
+* trading fixes (@validgem)
+* world events exposed by pworld (@u9g)
+* fix wait for ticks and expose physicsEnabled (@Karang)
+
 ## 3.0.0
 * added null or undefined check in inventory (@u9g)
 * Removed broken use of "this" in physics.js (@TheDudeFromCI)
