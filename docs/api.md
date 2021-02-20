@@ -665,6 +665,23 @@ Create and return an instance of the class bot.
 
 A sync representation of the world. Check the doc at http://github.com/PrismarineJS/prismarine-world
 
+#### Events:
+
+#### "blockUpdate" (oldBlock, newBlock)
+
+Fires when a block updates. Both `oldBlock` and `newBlock` provided for
+comparison.
+
+Note that `oldBlock` may be `null`.
+
+#### "blockUpdate:(x, y, z)" (oldBlock, newBlock)
+
+Fires for a specific point. Both `oldBlock` and `newBlock` provided for
+comparison.
+
+Note that `oldBlock` may be `null`.
+
+
 #### bot.entity
 
 Your own entity. See `Entity`.
