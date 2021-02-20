@@ -48,7 +48,6 @@ module.exports = () => async (bot) => {
     bot.chat('/give inventory stick 7')
     bot.chat('/give inventory iron_ore 64')
     bot.chat('/give inventory diamond_boots 1')
-    bot.chat('/setblock 52 4 0 air')
     await bot.test.wait(2000)
     const testFuncs = tests.map(test => makeTest(test.command, test.wantedMessage))
     for (const test of testFuncs) {
