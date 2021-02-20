@@ -681,6 +681,10 @@ Use this to find out your own name.
 
 Coordinates to the main spawn point, where all compasses point to.
 
+#### bot.heldItem
+
+The item in the bot's hand, represented as a [prismarine-item](https://github.com/PrismarineJS/prismarine-item) instance specified with arbitrary metadata, nbtdata, etc.
+
 #### bot.game.levelType
 
 #### bot.game.dimension
