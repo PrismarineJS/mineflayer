@@ -155,6 +155,7 @@
       - ["playerLeft" (player)](#playerleft-player)
       - ["blockUpdate" (oldBlock, newBlock)](#blockupdate-oldblock-newblock)
       - ["blockUpdate:(x, y, z)" (oldBlock, newBlock)](#blockupdatex-y-z-oldblock-newblock)
+      - ["blockPlaced" (oldBlock, newBlock)](#blockplaced-oldblock-newblock)
       - ["chunkColumnLoad" (point)](#chunkcolumnload-point)
       - ["chunkColumnUnload" (point)](#chunkcolumnunload-point)
       - ["soundEffectHeard" (soundName, position, volume, pitch)](#soundeffectheard-soundname-position-volume-pitch)
@@ -1065,6 +1066,13 @@ Note that `oldBlock` may be `null`.
 #### "blockUpdate:(x, y, z)" (oldBlock, newBlock)
 
 (It is better to use this event from bot.world instead of bot directly) Fires for a specific point. Both `oldBlock` and `newBlock` provided for
+comparison.
+
+Note that `oldBlock` may be `null`.
+
+#### "blockPlaced" (oldBlock, newBlock)
+
+Fires when bot places block. Both `oldBlock` and `newBlock` provided for
 comparison.
 
 Note that `oldBlock` may be `null`.
