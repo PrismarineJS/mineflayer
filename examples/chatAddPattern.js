@@ -27,14 +27,21 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
-/*
+bot.on('spawn', () => {
+  /*
  * Add chat patterns after creating the bot like so.
  * NOTE: adding patterns does NOT overwrite previous patterns,
  * so if you want to use your bot in multiple servers it is safe to add
  * multiple "whisper" and "chat" patterns in the same bot.
  */
-bot.chatAddPattern(/^(?:\[[^\]]*\] )?([^ :]*) ?: (.*)$/, 'chat', 'Skyblock.net chat')
-bot.chatAddPattern(/^\[ ?([^ ]*) -> me ?] (.*)$/, 'whisper', 'Skyblock.net whisper')
+  bot.chatAddPattern(/^(?:\[[^\]]*\] )?([^ :]*) ?: (.*)$/, 'chat', 'Skyblock.net chat')
+  bot.chatAddPattern(/^\[ ?([^ ]*) -> me ?] (.*)$/, 'whisper', 'Skyblock.net whisper')
+  /*
+ * ADVANCED USEAGE - creating your own events!
+ * It is also possible to set up custom events using the chat handler. For instance:
+ */
+  bot.chatAddPattern(/^\s?It is \[-\] ([^\s]+) first visit[^!]*!$/, 'welcome', 'Welcome message')
+})
 
 /*
  * The chat event returns username as the first regex match and message as the second match
@@ -54,12 +61,6 @@ bot.on('chat', (username, message, type, rawMessage, matches) => {
    * console.log("Message: " + matches[2]);
    */
 })
-
-/*
- * ADVANCED USEAGE - creating your own events!
- * It is also possible to set up custom events using the chat handler. For instance:
- */
-bot.chatAddPattern(/^\s?It is \[-\] ([^\s]+) first visit[^!]*!$/, 'welcome', 'Welcome message')
 
 /*
  * This pattern will trigger a bot.on('welcome') event, with the same peramiters as described above.
