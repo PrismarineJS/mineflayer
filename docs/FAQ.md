@@ -84,7 +84,7 @@ Note that the order in which plugins are loaded is dynamic, so you should never 
 
 In the options object for `mineflayer.createBot(options)`, remove your `host` option from the options object, have the following variables declared `PROXY_IP, PROXY_PORT, PROXY_USERNAME, PROXY_PASSWORD, MC_SERVER_IP, MC_SERVER_PORT` and add this to your options object:
 ```js
-connect: {
+connect: (client) => {
     socks.createConnection({
       proxy: {
         host: PROXY_IP,
