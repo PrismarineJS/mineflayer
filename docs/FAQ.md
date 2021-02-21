@@ -79,3 +79,32 @@ You can use a library like `repl` to read the console input and use `bot.chat()`
 In the `inject()` function for your plugin, you can safely call `bot.loadPlugin(anotherPlugin)` to make sure that plugin is loaded. If the plugin was already loaded before, nothing happens.
 
 Note that the order in which plugins are loaded is dynamic, so you should never call another plugin in your `inject()` function.
+
+### How can I use a socks5 proxy?
+
+In the options object for `mineflayer.createBot(options)`, remove your `host` option from the options object, have the following variables declared `PROXY_IP, PROXY_PORT, PROXY_USERNAME, PROXY_PASSWORD, MC_SERVER_IP, MC_SERVER_PORT` and add this to your options object:
+```js
+connect: {
+    socks.createConnection({
+      proxy: {
+        host: PROXY_IP,
+        port: PROXY_PORT,
+        type: 5,
+        userId: PROXY_USERNAME,
+        password: PROXY_PASSWORD
+      },
+      command: 'connect',
+      destination: {
+        host: MC_SERVER_IP,
+        port: MC_SERVER_PORT
+      }
+    }, (err, info) => {
+      if (err) {
+        console.log(err)
+        return
+      }
+      client.setSocket(info.socket)
+      client.emit('connect')
+    })
+  }
+  ```
