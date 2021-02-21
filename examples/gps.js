@@ -18,6 +18,8 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
+const PROXIMITY_GOAL = 1 // walk to the bot +/- this many blocks
+
 bot.loadPlugin(pathfinder)
 
 bot.once('spawn', startBot)
@@ -38,7 +40,7 @@ function startBot () {
       const { x: playerX, y: playerY, z: playerZ } = target.position
 
       bot.pathfinder.setMovements(defaultMove)
-      bot.pathfinder.setGoal(new GoalNear(playerX, playerY, playerZ, 1))
+      bot.pathfinder.setGoal(new GoalNear(playerX, playerY, playerZ, PROXIMITY_GOAL))
     }
   })
 }
