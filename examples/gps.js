@@ -7,27 +7,26 @@ const Movements = require('mineflayer-pathfinder').Movements
 const { GoalNear } = require('mineflayer-pathfinder').goals
 
 if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node chest.js <host> <port> [<name>] [<password>]')
+  console.log('Usage : node gps.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 
 const bot = mineflayer.createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
-  username: process.argv[4] ? process.argv[4] : 'chest',
+  username: process.argv[4] ? process.argv[4] : 'gps',
   password: process.argv[5]
 })
 
 bot.loadPlugin(pathfinder)
 
-bot.once('spawn', () => {
+bot.once('spawn', startBot)
 
+function startBot () {
   const mcData = require('minecraft-data')(bot.version)
-
   const defaultMove = new Movements(bot, mcData)
-  
-  bot.on('chat', function(username, message) {
-  
+
+  bot.on('chat', (username, message) => {
     if (username === bot.username) return
 
     const target = bot.players[username] ? bot.players[username].entity : null
@@ -36,9 +35,10 @@ bot.once('spawn', () => {
         bot.chat("I don't see you !")
         return
       }
-      const p = target.position
+      const { x: playerX, y: playerY, z: playerZ } = target.position
 
       bot.pathfinder.setMovements(defaultMove)
-      bot.pathfinder.setGoal(new GoalNear(p.x, p.y, p.z, 1))
-    } 
-})
+      bot.pathfinder.setGoal(new GoalNear(playerX, playerY, playerZ, 1))
+    }
+  })
+}
