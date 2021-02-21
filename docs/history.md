@@ -1,3 +1,6 @@
+## 3.2.0
+* Fix position in getBlock()
+
 ## 3.1.0
 * Fix typings of findBlock and findBlocks (@csorfab)
 * place block improvements (@Karang)
