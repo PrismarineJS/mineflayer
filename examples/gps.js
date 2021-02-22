@@ -1,10 +1,7 @@
 // This is an example that uses mineflayer-pathfinder to showcase how simple it is to walk to goals
-// * Requires the npm package "mineflayer-pathfinder"
 
 const mineflayer = require('mineflayer')
-const pathfinder = require('mineflayer-pathfinder').pathfinder
-const Movements = require('mineflayer-pathfinder').Movements
-const { GoalNear } = require('mineflayer-pathfinder').goals
+const { pathfinder, Movements, goals: { GoalNear } } = require('mineflayer-pathfinder')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node gps.js <host> <port> [<name>] [<password>]')
@@ -18,29 +15,25 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
-const PROXIMITY_GOAL = 1 // walk to the bot +/- this many blocks
+const RANGE_GOAL = 1 // get within this radius of the player
 
 bot.loadPlugin(pathfinder)
 
-bot.once('spawn', startBot)
-
-function startBot () {
+bot.once('spawn', () => {
   const mcData = require('minecraft-data')(bot.version)
   const defaultMove = new Movements(bot, mcData)
 
   bot.on('chat', (username, message) => {
     if (username === bot.username) return
-
-    const target = bot.players[username] ? bot.players[username].entity : null
-    if (message === 'come') {
-      if (!target) {
-        bot.chat("I don't see you !")
-        return
-      }
-      const { x: playerX, y: playerY, z: playerZ } = target.position
-
-      bot.pathfinder.setMovements(defaultMove)
-      bot.pathfinder.setGoal(new GoalNear(playerX, playerY, playerZ, PROXIMITY_GOAL))
+    if (message !== 'come') return
+    const target = bot.players[username]?.entity
+    if (!target) {
+      bot.chat("I don't see you !")
+      return
     }
+    const { x: playerX, y: playerY, z: playerZ } = target.position
+
+    bot.pathfinder.setMovements(defaultMove)
+    bot.pathfinder.setGoal(new GoalNear(playerX, playerY, playerZ, RANGE_GOAL))
   })
-}
+})
