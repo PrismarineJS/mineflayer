@@ -69,7 +69,7 @@ async function showTrades (id) {
     case !e:
       bot.chat(`cant find entity with id ${id}`)
       break
-    case e.entityType !== mcData.entitiesByName.villager:
+    case e.entityType !== mcData.entitiesByName.villager.id:
       bot.chat('entity is not a villager')
       break
     case bot.entity.position.distanceTo(e.position) > 3:
@@ -91,7 +91,7 @@ async function trade (id, index, count) {
     case !e:
       bot.chat(`cant find entity with id ${id}`)
       break
-    case e.entityType !== mcData.entitiesByName.villager:
+    case e.entityType !== mcData.entitiesByName.villager.id:
       bot.chat('entity is not a villager')
       break
     case bot.entity.position.distanceTo(e.position) > 3:
