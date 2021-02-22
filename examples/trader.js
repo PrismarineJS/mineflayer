@@ -50,7 +50,7 @@ bot.on('chat', (username, message) => {
 })
 
 function showVillagers () {
-  const villagers = Object.keys(bot.entities).map(id => bot.entities[id]).filter(e => e.entityType === mcData.entitiesByName.villager)
+  const villagers = Object.keys(bot.entities).map(id => bot.entities[id]).filter(e => e.entityType === mcData.entitiesByName.villager.id)
   const closeVillagersId = villagers.filter(e => bot.entity.position.distanceTo(e.position) < 3).map(e => e.id)
   bot.chat(`found ${villagers.length} villagers`)
   bot.chat(`villager(s) you can trade with: ${closeVillagersId.join(', ')}`)
