@@ -159,6 +159,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   food: number;
   foodSaturation: number;
   physics: PhysicsOptions;
+  physicsEnabled: boolean;
   time: Time;
   quickBarSlot: number;
   inventory: Window;
