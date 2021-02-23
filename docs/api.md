@@ -717,7 +717,7 @@ The item in the bot's hand, represented as a [prismarine-item](https://github.co
 
 #### bot.game.serverBrand
 
-### bot.physicEnabled
+### bot.physicsEnabled
 
 Enable physics, default true.
 
