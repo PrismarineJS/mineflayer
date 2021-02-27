@@ -55,7 +55,7 @@ bot.on('stoppedAttacking', () => {
 })
 
 // Check for new enemies to attack
-bot.on('physicTick', () => {
+bot.on('physicsTick', () => {
   if (!guardPos) return // Do nothing if bot is not guarding anything
 
   // Only look for mobs within 16 blocks

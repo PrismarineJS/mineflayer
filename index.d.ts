@@ -128,6 +128,7 @@ interface BotEvents {
   sleep: () => void;
   wake: () => void;
   experience: () => void;
+  physicsTick: () => void;
   physicTick: () => void;
   scoreboardCreated: (scoreboard: ScoreBoard) => void
   scoreboardDeleted: (scoreboard: ScoreBoard) => void
