@@ -647,17 +647,11 @@ Create and return an instance of the class bot.
    - pluginName : false : don't load internal plugin with given name ie. `pluginName`
    - pluginName : true : load internal plugin with given name ie. `pluginName` even though loadInternalplugins is set to false
    - pluginName : external plugin inject function : loads external plugin, overrides internal plugin with given name ie. `pluginName`
- * [chat](bot.settings.chat)
- * [colorsEnabled](bot.settings.colorsEnabled)
- * [viewDistance](bot.settings.viewDistance)
- * [difficulty](bot.settings.difficulty)
- * [showCape](bot.settings.skinParts.showCape)
- * [showJacket](bot.settings.skinParts.showJacket)
- * [showLeftSleeve](bot.settings.skinParts.showLeftSleeve)
- * [showRightSleeve](bot.settings.skinParts.showRightSleeve)
- * [showLeftPants](bot.settings.skinParts.showLeftPants)
- * [showRigthtPants](bot.settings.skinParts.showRightPants)
- * [showHat](bot.settings.skinParts.showHat)
+ * [chat](#bot.settings.chat)
+ * [colorsEnabled](#bot.settings.colorsEnabled)
+ * [viewDistance](#bot.settings.viewDistance)
+ * [difficulty](#bot.settings.difficulty)
+ * [skinParts](#bot.settings.skinParts)
  * chatLengthLimit : the maximum amount of characters that can be sent in a single message. If this is not set, it will be 100 in < 1.11 and 256 in >= 1.11.
 
 ### Properties
@@ -772,33 +766,26 @@ Choices:
 
 Same as from server.properties.
 
-#### bot.settings.skinParts.showCape
+#### bot.settings.skinParts
+
+These boolean Settings control if extra Skin Details on the own players' skin should be visible
+
+##### bot.settings.skinParts.showCape
 
 If you have a cape you can turn it off by setting this to false.
 
-#### bot.settings.skinParts.showJacket
+##### bot.settings.skinParts.showJacket
 
-Set the jacket layer of the skin.
+##### bot.settings.skinParts.showLeftSleeve
 
-#### bot.settings.skinParts.showLeftSleeve
+##### bot.settings.skinParts.showRightSleeve
 
-Set the left sleeve layer of the skin.
+##### bot.settings.skinParts.showLeftPants
 
-#### bot.settings.skinParts.showRightSleeve
+##### bot.settings.skinParts.showRightPants
 
-Set the right sleeve layer of the skin.
+##### bot.settings.skinParts.showHat
 
-#### bot.settings.skinParts.showLeftPants
-
-Set the left pants layer of the skin.
-
-#### bot.settings.skinParts.showRightPants
-
-Set the right pants layer of the skin.
-
-#### bot.settings.skinParts.showHat
-
-Set the hat layer of the skin.
 
 #### bot.experience.level
 
