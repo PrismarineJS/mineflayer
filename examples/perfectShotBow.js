@@ -25,7 +25,7 @@ bot.on('spawn', function () {
     return false
   }
 
-  const validWeapons = ['bow', 'crossbow', 'snowball', 'ender_pearl', 'egg', 'splash_potion']
+  // const validWeapons = ['bow', 'crossbow', 'snowball', 'ender_pearl', 'egg', 'splash_potion']
   const weapon = 'crossbow'
 
   // Auto attack every 1,2 secs with bow

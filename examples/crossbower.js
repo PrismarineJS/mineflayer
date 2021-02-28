@@ -21,7 +21,6 @@ bot.on('spawn', function () {
 
 bot.on('chat', async (username, message) => {
   if (message === 'fire') {
-
     // Check if weapon is equipped
     const slotID = bot.getEquipmentDestSlot('hand')
     if (bot.inventory.slots[slotID] === null || bot.inventory.slots[slotID].name !== 'crossbow') {
@@ -30,14 +29,11 @@ bot.on('chat', async (username, message) => {
         await bot.equip(weaponFound, 'hand')
       } else {
         console.log('No weapon in inventory')
-        stop()
         return
       }
     }
 
-    const isEnchanted = bot.heldItem.nbt.value.Enchantments ? bot.heldItem.nbt.value.Enchantments.value.value.find(enchant => {
-      return enchant.id.value === 'quick_charge'
-    }) : undefined
+    const isEnchanted = bot.heldItem.nbt.value.Enchantments ? bot.heldItem.nbt.value.Enchantments.value.value.find(enchant => enchant.id.value === 'quick_charge') : undefined
 
     const timeForCharge = 1250 - ((isEnchanted ? isEnchanted.lvl.value : 0) * 250)
 
@@ -56,7 +52,6 @@ bot.on('chat', async (username, message) => {
   }
 })
 
-
-function sleep(ms) {
+function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
