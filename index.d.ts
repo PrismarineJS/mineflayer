@@ -31,6 +31,7 @@ export interface BotOptions extends ClientOptions {
   mainHand?: MainHands;
   difficulty?: number;
   chatLengthLimit?: number;
+  physicsEnabled?: boolean;
 }
 
 export type ChatLevel = "enabled" | "commandsOnly" | "disabled";
