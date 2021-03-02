@@ -126,6 +126,10 @@ And you'll get a *live* view looking like this:
 
 And many mores in the [examples](https://github.com/PrismarineJS/mineflayer/tree/master/examples) folder
 
+### Modules
+
+A lot of the active development is happening inside of small npm packages which are used by mineflayer.
+
 #### The Node Way&trade;
 
 > "When applications are done well, they are just the really application-specific, brackish residue that can't be so easily abstracted away. All the nice, reusable components sublimate away onto github and npm where everybody can collaborate to advance the commons." — substack from ["how I write modules"](https://gist.github.com/substack/5075355)
