@@ -135,6 +135,7 @@
       - ["time"](#time)
       - ["kicked" (reason, loggedIn)](#kicked-reason-loggedin)
       - ["end"](#end)
+      - ["error" (err)](#error-err)
       - ["spawnReset"](#spawnreset)
       - ["death"](#death)
       - ["health"](#health)
@@ -999,6 +1000,10 @@ or `false` if the kick occurred in the login phase.
 #### "end"
 
 Emitted when you are no longer connected to the server.
+
+#### "error" (err)
+
+Emitted when an error occurs.
 
 #### "spawnReset"
 
