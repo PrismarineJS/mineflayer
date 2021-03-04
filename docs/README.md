@@ -232,6 +232,6 @@ Run `npm test -- -g <version>`, where `<version>` is a minecraft version like `1
 ### Testing specific test
 Run `npm test -- -g <test_name>`, where `<test_name>` is a name of the test like `bed`, `useChests`, `rayTrace`...
 
-## Licence
+## License
 
-[MIT](LICENCE)
+[MIT](LICENSE)
