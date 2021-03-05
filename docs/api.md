@@ -951,6 +951,10 @@ Emitted for every server message, including chats.
    * system
    * game_info
 
+#### "messagestr" (message, messagePosition)
+
+alias for the "message" event but it calls .toString() on the message object to get a string for the message before emitting.
+
 #### "login"
 
 Fires after you successfully login to the server.
