@@ -67,10 +67,13 @@
     - [mineflayer.createBot(options)](#mineflayercreatebotoptions)
     - [Properties](#properties)
       - [bot.world](#botworld)
+        - [world "blockUpdate" (oldBlock, newBlock)](#world-blockupdate-oldblock-newblock)
+        - [world "blockUpdate:(x, y, z)" (oldBlock, newBlock)](#world-blockupdatex-y-z-oldblock-newblock)
       - [bot.entity](#botentity)
       - [bot.entities](#botentities)
       - [bot.username](#botusername)
       - [bot.spawnPoint](#botspawnpoint)
+      - [bot.heldItem](#bothelditem)
       - [bot.game.levelType](#botgameleveltype)
       - [bot.game.dimension](#botgamedimension)
       - [bot.game.difficulty](#botgamedifficulty)
@@ -78,6 +81,7 @@
       - [bot.game.hardcore](#botgamehardcore)
       - [bot.game.maxPlayers](#botgamemaxplayers)
       - [bot.game.serverBrand](#botgameserverbrand)
+    - [bot.physicEnabled](#botphysicenabled)
     - [bot.player](#botplayer)
       - [bot.players](#botplayers)
       - [bot.isRaining](#botisraining)
@@ -86,13 +90,14 @@
       - [bot.settings.colorsEnabled](#botsettingscolorsenabled)
       - [bot.settings.viewDistance](#botsettingsviewdistance)
       - [bot.settings.difficulty](#botsettingsdifficulty)
-      - [bot.settings.skinParts.showCape](#botsettingsskinpartsshowcape)
-      - [bot.settings.skinParts.showJacket](#botsettingsskinpartsshowjacket)
-      - [bot.settings.skinParts.showLeftSleeve](#botsettingsskinpartsshowleftsleeve)
-      - [bot.settings.skinParts.showRightSleeve](#botsettingsskinpartsshowrightsleeve)
-      - [bot.settings.skinParts.showLeftPants](#botsettingsskinpartsshowleftpants)
-      - [bot.settings.skinParts.showRightPants](#botsettingsskinpartsshowrightpants)
-      - [bot.settings.skinParts.showHat](#botsettingsskinpartsshowhat)
+      - [bot.settings.skinParts](#botsettingsskinparts)
+        - [bot.settings.skinParts.showCape](#botsettingsskinpartsshowcape)
+        - [bot.settings.skinParts.showJacket](#botsettingsskinpartsshowjacket)
+        - [bot.settings.skinParts.showLeftSleeve](#botsettingsskinpartsshowleftsleeve)
+        - [bot.settings.skinParts.showRightSleeve](#botsettingsskinpartsshowrightsleeve)
+        - [bot.settings.skinParts.showLeftPants](#botsettingsskinpartsshowleftpants)
+        - [bot.settings.skinParts.showRightPants](#botsettingsskinpartsshowrightpants)
+        - [bot.settings.skinParts.showHat](#botsettingsskinpartsshowhat)
       - [bot.experience.level](#botexperiencelevel)
       - [bot.experience.points](#botexperiencepoints)
       - [bot.experience.progress](#botexperienceprogress)
@@ -130,6 +135,7 @@
       - ["time"](#time)
       - ["kicked" (reason, loggedIn)](#kicked-reason-loggedin)
       - ["end"](#end)
+      - ["error" (err)](#error-err)
       - ["spawnReset"](#spawnreset)
       - ["death"](#death)
       - ["health"](#health)
@@ -221,7 +227,7 @@
       - [bot.unequip(destination, [callback])](#botunequipdestination-callback)
       - [bot.tossStack(item, [callback])](#bottossstackitem-callback)
       - [bot.toss(itemType, metadata, count, [callback])](#bottossitemtype-metadata-count-callback)
-      - [bot.dig(block, [forceLook = true], [callback])](#botdigblock-forcelook--true-callback)
+      - [bot.dig(block, [forceLook = true], [digFace], [callback])](#botdigblock-forcelook--true-digface-callback)
       - [bot.stopDigging()](#botstopdigging)
       - [bot.digTime(block)](#botdigtimeblock)
       - [bot.placeBlock(referenceBlock, faceVector, cb)](#botplaceblockreferenceblock-facevector-cb)
@@ -647,17 +653,11 @@ Create and return an instance of the class bot.
    - pluginName : false : don't load internal plugin with given name ie. `pluginName`
    - pluginName : true : load internal plugin with given name ie. `pluginName` even though loadInternalplugins is set to false
    - pluginName : external plugin inject function : loads external plugin, overrides internal plugin with given name ie. `pluginName`
- * [chat](bot.settings.chat)
- * [colorsEnabled](bot.settings.colorsEnabled)
- * [viewDistance](bot.settings.viewDistance)
- * [difficulty](bot.settings.difficulty)
- * [showCape](bot.settings.skinParts.showCape)
- * [showJacket](bot.settings.skinParts.showJacket)
- * [showLeftSleeve](bot.settings.skinParts.showLeftSleeve)
- * [showRightSleeve](bot.settings.skinParts.showRightSleeve)
- * [showLeftPants](bot.settings.skinParts.showLeftPants)
- * [showRigthtPants](bot.settings.skinParts.showRightPants)
- * [showHat](bot.settings.skinParts.showHat)
+ * [chat](#bot.settings.chat)
+ * [colorsEnabled](#bot.settings.colorsEnabled)
+ * [viewDistance](#bot.settings.viewDistance)
+ * [difficulty](#bot.settings.difficulty)
+ * [skinParts](#bot.settings.skinParts)
  * chatLengthLimit : the maximum amount of characters that can be sent in a single message. If this is not set, it will be 100 in < 1.11 and 256 in >= 1.11.
 
 ### Properties
@@ -666,16 +666,14 @@ Create and return an instance of the class bot.
 
 A sync representation of the world. Check the doc at http://github.com/PrismarineJS/prismarine-world
 
-#### Events:
-
-#### "blockUpdate" (oldBlock, newBlock)
+##### world "blockUpdate" (oldBlock, newBlock)
 
 Fires when a block updates. Both `oldBlock` and `newBlock` provided for
 comparison.
 
 Note that `oldBlock` may be `null`.
 
-#### "blockUpdate:(x, y, z)" (oldBlock, newBlock)
+##### world "blockUpdate:(x, y, z)" (oldBlock, newBlock)
 
 Fires for a specific point. Both `oldBlock` and `newBlock` provided for
 comparison.
@@ -772,33 +770,26 @@ Choices:
 
 Same as from server.properties.
 
-#### bot.settings.skinParts.showCape
+#### bot.settings.skinParts
+
+These boolean Settings control if extra Skin Details on the own players' skin should be visible
+
+##### bot.settings.skinParts.showCape
 
 If you have a cape you can turn it off by setting this to false.
 
-#### bot.settings.skinParts.showJacket
+##### bot.settings.skinParts.showJacket
 
-Set the jacket layer of the skin.
+##### bot.settings.skinParts.showLeftSleeve
 
-#### bot.settings.skinParts.showLeftSleeve
+##### bot.settings.skinParts.showRightSleeve
 
-Set the left sleeve layer of the skin.
+##### bot.settings.skinParts.showLeftPants
 
-#### bot.settings.skinParts.showRightSleeve
+##### bot.settings.skinParts.showRightPants
 
-Set the right sleeve layer of the skin.
+##### bot.settings.skinParts.showHat
 
-#### bot.settings.skinParts.showLeftPants
-
-Set the left pants layer of the skin.
-
-#### bot.settings.skinParts.showRightPants
-
-Set the right pants layer of the skin.
-
-#### bot.settings.skinParts.showHat
-
-Set the hat layer of the skin.
 
 #### bot.experience.level
 
@@ -1009,6 +1000,10 @@ or `false` if the kick occurred in the login phase.
 #### "end"
 
 Emitted when you are no longer connected to the server.
+
+#### "error" (err)
+
+Emitted when an error occurs.
 
 #### "spawnReset"
 
