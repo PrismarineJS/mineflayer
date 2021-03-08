@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [12.x]
         mcVersionIndex: [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
     steps:
