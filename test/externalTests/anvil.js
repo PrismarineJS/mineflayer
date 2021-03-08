@@ -44,8 +44,8 @@ module.exports = () => async (bot) => {
     bot.chat(`/clear ${bot.username}`)
     await bot.test.becomeCreative()
 
-    await bot.test.setInventorySlot(36, makeItem({ type: mcData.itemsByName.diamond_sword.id, enchants: [{ name: 'sharpness', lvl: 5 }] }))
-    await bot.test.setInventorySlot(37, new Item(mcData.itemsByName.diamond_sword.id, 1))
+    await bot.test.setInventorySlot(36, new Item(mcData.itemsByName.diamond_sword.id, 1))
+    await bot.test.setInventorySlot(37, makeItem({ type: mcData.itemsByName.diamond_sword.id, enchants: [{ name: 'sharpness', lvl: 5 }] }))
     await bot.test.setInventorySlot(38, makeBook([{ name: 'unbreaking', lvl: 3 }]))
 
     await bot.test.becomeSurvival()
@@ -87,8 +87,8 @@ module.exports = () => async (bot) => {
     bot.chat(`/clear ${bot.username}`)
     await bot.test.becomeCreative()
 
-    await bot.test.setInventorySlot(36, makeItem({ type: mcData.itemsByName.diamond_sword.id, enchants: [{ name: 'sharpness', lvl: 5 }] }))
-    await bot.test.setInventorySlot(37, new Item(mcData.itemsByName.diamond_sword.id, 1))
+    await bot.test.setInventorySlot(36, new Item(mcData.itemsByName.diamond_sword.id, 1))
+    await bot.test.setInventorySlot(37, makeItem({ type: mcData.itemsByName.diamond_sword.id, enchants: [{ name: 'sharpness', lvl: 5 }] }))
     await bot.test.setInventorySlot(38, makeBook([{ name: 'unbreaking', lvl: 3 }]))
 
     await bot.test.becomeSurvival()
