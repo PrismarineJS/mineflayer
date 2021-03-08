@@ -3,8 +3,10 @@ const assert = require('assert')
 module.exports = () => async (bot) => {
   const mcData = require('minecraft-data')(bot.version)
   const Item = require('prismarine-item')(bot.version)
-  await bot.test.becomeCreative()
+  const renameCost = () => mcData.isNewerOrEqualTo('1.8.8') ? 0 : 1 // weird quirk of anvils
+  const renameName = (name) => mcData.isNewerOrEqualTo('1.8.8') ? JSON.stringify({ text: name }) : name // weird quirk of anvils
   /* setup */
+  await bot.test.becomeCreative()
   await bot.test.setInventorySlot(36, new Item(mcData.itemsByName.anvil.id, 1))
   await bot.test.becomeSurvival()
   await bot.test.placeBlock(36, bot.entity.position.offset(1, 0, 0))
@@ -77,8 +79,8 @@ module.exports = () => async (bot) => {
     await bot.test.wait(1000)
     // test result
     assert.strictEqual(bot.experience.level, 990)
-    assert.strictEqual(bot.inventory.slots[9].repairCost, 1)
-    assert.deepStrictEqual(bot.inventory.slots[9].customName, 'hello')
+    assert.strictEqual(bot.inventory.slots[9].repairCost, renameCost())
+    assert.deepStrictEqual(bot.inventory.slots[9].customName, renameName('hello'))
   }
 
   async function testFour () { // test 2 + a rename
@@ -102,7 +104,7 @@ module.exports = () => async (bot) => {
     assert.strictEqual(bot.experience.level, 986)
     assert.strictEqual(bot.inventory.slots[9].repairCost, 1)
     assert.deepStrictEqual(bot.inventory.slots[9].enchants, [{ name: 'sharpness', lvl: 5 }, { name: 'unbreaking', lvl: 3 }])
-    assert.strictEqual(bot.inventory.slots[9].customName, 'lol')
+    assert.strictEqual(bot.inventory.slots[9].customName, renameName('lol'))
   }
 
   function makeBook (enchants) {
