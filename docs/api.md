@@ -653,6 +653,8 @@ Create and return an instance of the class bot.
    - pluginName : false : don't load internal plugin with given name ie. `pluginName`
    - pluginName : true : load internal plugin with given name ie. `pluginName` even though loadInternalplugins is set to false
    - pluginName : external plugin inject function : loads external plugin, overrides internal plugin with given name ie. `pluginName`
+=======
+ * physicsEnabled : true by default, should the bot be affected by physics? can later be modified via bot.physicsEnabled
  * [chat](#bot.settings.chat)
  * [colorsEnabled](#bot.settings.colorsEnabled)
  * [viewDistance](#bot.settings.viewDistance)
@@ -715,7 +717,7 @@ The item in the bot's hand, represented as a [prismarine-item](https://github.co
 
 #### bot.game.serverBrand
 
-### bot.physicEnabled
+### bot.physicsEnabled
 
 Enable physics, default true.
 
@@ -950,6 +952,10 @@ Emitted for every server message, including chats.
    * chat
    * system
    * game_info
+
+#### "messagestr" (message, messagePosition)
+
+alias for the "message" event but it calls .toString() on the message object to get a string for the message before emitting.
 
 #### "login"
 

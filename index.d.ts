@@ -31,6 +31,7 @@ export interface BotOptions extends ClientOptions {
   mainHand?: MainHands;
   difficulty?: number;
   chatLengthLimit?: number;
+  physicsEnabled?: boolean;
 }
 
 export type ChatLevel = "enabled" | "commandsOnly" | "disabled";
@@ -128,6 +129,7 @@ interface BotEvents {
   sleep: () => void;
   wake: () => void;
   experience: () => void;
+  physicsTick: () => void;
   physicTick: () => void;
   scoreboardCreated: (scoreboard: ScoreBoard) => void
   scoreboardDeleted: (scoreboard: ScoreBoard) => void
@@ -159,6 +161,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   food: number;
   foodSaturation: number;
   physics: PhysicsOptions;
+  physicsEnabled: boolean;
   time: Time;
   quickBarSlot: number;
   inventory: Window;
