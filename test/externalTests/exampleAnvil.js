@@ -1,7 +1,7 @@
 const assert = require('assert')
 
 module.exports = () => async (bot) => {
-  await bot.test.runExample('examples/use_anvil.js', async (name, done) => {
+  await bot.test.runExample('examples/anvil.js', async (name, done) => {
     assert.strictEqual(name, 'anvilman')
     bot.chat('/op anvilman') // to counteract spawn protection
     bot.chat('/setblock 52 4 0 anvil')
