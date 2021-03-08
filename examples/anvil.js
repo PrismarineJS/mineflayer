@@ -21,12 +21,6 @@ let mcData
 bot.on('spawn', () => { mcData = require('minecraft-data')(bot.version) })
 
 bot.on('chat', async (username, message) => {
-  // for tests
-  if (message === 'loaded') {
-    await bot.waitForChunksToLoad()
-    bot.chat('Ready!')
-  }
-
   if (!message.startsWith('anvil')) return
   if (message.includes('combine')) {
     const [, firstSlot, secondSlot, name] = message.match(/^anvil combine (\d+) (\d+)(?: (.+))?/)

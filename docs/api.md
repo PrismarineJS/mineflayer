@@ -509,16 +509,28 @@ This function also returns a `Promise`, with `void` as its argument upon complet
 
  * `callback(err)`
 
- #### enchantmentTable.putLapis(item, [callback])
+#### enchantmentTable.putLapis(item, [callback])
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
 
  * `callback(err)`
 
-### mineflayer.Villager
+### mineflayer.anvil
 
-Extends windows.Window for villagers
-See `bot.openVillager(villagerEntity)`.
+Extends windows.Window for anvils
+See `bot.openAnvil(anvilBlock)`.
+
+#### anvil.combine(itemOne, itemTwo[, name, callback])
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
+ * `callback(err)` - in order to use callback, pass an empty string ('') for name
+
+#### anvil.combine(item[, name, callback])
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
+ * `callback(err)`
 
 #### villager "ready"
 
@@ -1636,6 +1648,10 @@ Deprecated. Same as `openContainer`
 
 Returns a promise on an `EnchantmentTable` instance which represents the enchantment table
 you are opening.
+
+#### bot.openAnvil(anvilBlock)
+
+Returns a promise on an `anvil` instance which represents the anvil you are opening.
 
 #### bot.openVillager(villagerEntity)
 
