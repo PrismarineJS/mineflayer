@@ -1,32 +1,38 @@
 const assert = require('assert')
 
 module.exports = () => async (bot) => {
-  await bot.test.runExample('examples/anvil.js', async (name, done) => {
-    assert.strictEqual(name, 'anvilman')
-    bot.chat('/op anvilman') // to counteract spawn protection
-    bot.chat('/setblock 52 4 0 anvil')
-    console.log('placed block!')
-    bot.chat('/clear anvilman')
-    bot.chat('/give anvilman diamond_sword 1')
-    getBook(bot)
-    await bot.test.wait(1000)
-    await bot.test.tellAndListen('anvilman', 'anvil combine 36 37', makeListener('Anvil used successfully.'))
-    bot.chat('/setblock 52 4 0 air')
-    done()
-  })
-}
-
-function getBook (bot) {
   const mcData = require('minecraft-data')(bot.version)
-  if (mcData.isNewerOrEqualTo('1.13')) bot.chat('/give anvilman enchanted_book{StoredEnchantments:[{id:"minecraft:sharpness",lvl:5s}]}')
-  else bot.chat('/give anvilman enchanted_book 1 0 {StoredEnchantments:[{id:16s,lvl:5s}]}')
-}
+  const Item = require('prismarine-item')(bot.version)
+  await bot.test.becomeCreative()
+  /* setup */
+  await bot.test.setInventorySlot(36, new Item(mcData.itemsByName.anvil.id, 1))
+  await bot.test.becomeSurvival()
+  await bot.test.placeBlock(36, bot.entity.position.offset(1, 0, 0))
+  /* test one */
+  await bot.test.becomeCreative()
+  // get items
+  await bot.test.setInventorySlot(36, new Item(mcData.itemsByName.diamond_sword.id, 1))
+  await bot.test.setInventorySlot(37, makeBook([{ name: 'sharpness', lvl: 5 }]))
 
-function makeListener (wantedMessage) {
-  return (message) => {
-    if (!message.startsWith(wantedMessage)) {
-      assert.fail(`Unexpected message: ${message}`) // err
-    }
-    return true // stop listening
+  if (mcData.isNewerOrEqualTo('1.13')) {
+    bot.chat(`/xp set ${bot.username} 999 levels`)
+  } else {
+    bot.chat(`/xp 999L ${bot.username}`)
+  }
+  await bot.test.becomeSurvival()
+
+  const b = bot.findBlock({ matching: mcData.blocksByName.anvil.id })
+  const anvil = await bot.openAnvil(b)
+
+  const sword = anvil.findInventoryItem(mcData.itemsByName.anvil.id)
+  const book = anvil.findInventoryItem(mcData.itemsByName.anvil.id)
+
+  anvil.combine(sword, book, false, undefined)
+  console.log('Used anvil')
+
+  function makeBook (enchs) {
+    const book = new Item(mcData.itemsByName.enchanted_book.id, 1)
+    book.enchants = enchs
+    return book
   }
 }
