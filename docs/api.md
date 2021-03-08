@@ -653,7 +653,6 @@ Create and return an instance of the class bot.
    - pluginName : false : don't load internal plugin with given name ie. `pluginName`
    - pluginName : true : load internal plugin with given name ie. `pluginName` even though loadInternalplugins is set to false
    - pluginName : external plugin inject function : loads external plugin, overrides internal plugin with given name ie. `pluginName`
-=======
  * physicsEnabled : true by default, should the bot be affected by physics? can later be modified via bot.physicsEnabled
  * [chat](#bot.settings.chat)
  * [colorsEnabled](#bot.settings.colorsEnabled)
