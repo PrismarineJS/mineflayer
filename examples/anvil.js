@@ -44,17 +44,22 @@ bot.on('chat', async (username, message) => {
   }
 })
 
+function getAnvilIds () {
+  const matchingBlocks = [mcData.blocksByName.anvil.id]
+  if (mcData.blocksByName?.chipped_anvil) {
+    matchingBlocks.push(mcData.blocksByName.chipped_anvil.id)
+    matchingBlocks.push(mcData.blocksByName.damaged_anvil.id)
+  }
+  return matchingBlocks
+}
+
 async function rename (bot, slot, name) {
   const anvilBlock = bot.findBlock({
-    matching: [
-      mcData.blocksByName.anvil.id
-      // mcData.blocksByName.chipped_anvil?.id,
-      // mcData.blocksByName.damaged_anvil?.id
-    ]
+    matching: getAnvilIds()
   })
   const anvil = await bot.openAnvil(anvilBlock)
   try {
-    await anvil.rename(Number.parseInt(slot), name)
+    await anvil.rename(bot.inventory.slots[Number.parseInt(slot)], name)
     bot.chat('Anvil used successfully.')
   } catch (err) {
     bot.chat(err.message)
@@ -63,15 +68,11 @@ async function rename (bot, slot, name) {
 
 async function combine (bot, slotOne, slotTwo, name) {
   const anvilBlock = bot.findBlock({
-    matching: [
-      mcData.blocksByName.anvil.id
-      // mcData.blocksByName.chipped_anvil?.id,
-      // mcData.blocksByName.damaged_anvil?.id
-    ]
+    matching: getAnvilIds()
   })
   const anvil = await bot.openAnvil(anvilBlock)
   try {
-    await anvil.combine(Number.parseInt(slotOne), Number.parseInt(slotTwo), name)
+    await anvil.combine(bot.inventory.slots[Number.parseInt(slotOne)], bot.inventory.slots[Number.parseInt(slotTwo)], name)
     bot.chat('Anvil used successfully.')
   } catch (err) {
     bot.chat(err.message)
