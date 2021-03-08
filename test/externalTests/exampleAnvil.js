@@ -27,7 +27,7 @@ module.exports = () => async (bot) => {
   const sword = anvil.findInventoryItem(mcData.itemsByName.anvil.id)
   const book = anvil.findInventoryItem(mcData.itemsByName.anvil.id)
 
-  anvil.combine(sword, book, false, undefined)
+  anvil.combine(sword, book)
   console.log('Used anvil')
 
   function makeBook (enchs) {
