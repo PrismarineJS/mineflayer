@@ -4,7 +4,7 @@ module.exports = () => async (bot) => {
   const mcData = require('minecraft-data')(bot.version)
   const Item = require('prismarine-item')(bot.version)
   const renameCost = () => mcData.isNewerOrEqualTo('1.8.9') ? 0 : 1 // weird quirk of anvils
-  const renameName = (name) => mcData.isNewerOrEqualTo('1.8.9') ? JSON.stringify({ text: name }) : name // weird quirk of anvils
+  const renameName = (name) => mcData.isOlderThan('1.14') ? name : JSON.stringify({ text: name }) // weird quirk of anvils
   /* setup */
   await bot.test.becomeCreative()
   await bot.test.setInventorySlot(36, new Item(mcData.itemsByName.anvil.id, 1))
