@@ -16,7 +16,7 @@ module.exports = () => async (bot) => {
   /* test one */
   await testOne()
   /* test two */
-  // await testTwo()
+  await testTwo()
 
   async function testOne () {
     await bot.test.becomeCreative()
