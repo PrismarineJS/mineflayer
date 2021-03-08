@@ -171,6 +171,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   world: any;
   _client: Client;
   heldItem: Item | null;
+  currentWindow: Window | null;
 
   connect(options: BotOptions): void;
 

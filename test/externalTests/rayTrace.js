@@ -17,8 +17,10 @@ module.exports = () => async (bot) => {
   const relBlock = bot.blockAt(position.offset(0, -1, 0))
   relBlock.face = BlockFace.TOP
 
-  assert.deepStrictEqual(block, relBlock)
+  assert.deepStrictEqual(block.position, relBlock.position)
+  assert.deepStrictEqual(block.face, relBlock.face)
 
   block = bot.blockInSight()
-  assert.deepStrictEqual(block, relBlock)
+  assert.deepStrictEqual(block.position, relBlock.position)
+  assert.deepStrictEqual(block.face, relBlock.face)
 }

@@ -9,7 +9,7 @@
 
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 
-| 🇺🇸 [English](README.md) | 🇷🇺 [Russian](README_RU.md) | 🇪🇸 [Spanish](README_ES.md) |
+| 🇺🇸 [English](README.md) | 🇷🇺 [Russian](ru/README_RU.md) | 🇪🇸 [Spanish](es/README_ES.md) |
 |-------------------------|----------------------------|----------------------------|
 
 Create Minecraft bots with a powerful, stable, and high level JavaScript [API](api.md).
@@ -242,10 +242,10 @@ Where the "/full/path/to/" is the fully qualified path name.
 Simply run: `npm test`
 
 ### Testing specific version
-Run `npm test -g <version>`, where `<version>` is a minecraft version like `1.12`, `1.15.2`...
+Run `npm test -- -g <version>`, where `<version>` is a minecraft version like `1.12`, `1.15.2`...
 
 ### Testing specific test
-Run `npm test -g <test_name>`, where `<test_name>` is a name of the test like `bed`, `useChests`, `rayTrace`...
+Run `npm test -- -g <test_name>`, where `<test_name>` is a name of the test like `bed`, `useChests`, `rayTrace`...
 
 ## Licence
 

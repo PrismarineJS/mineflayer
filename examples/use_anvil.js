@@ -1,3 +1,7 @@
+// This example demonstrates how to use anvils w/ mineflayer
+// the options are: (<Option> are required, [<Option>] are optional)
+// 1. "anvil combine <slotOne> <slotTwo> [<name>]"
+// 2. "anvil rename <slot> <name>"
 const mineflayer = require('mineflayer')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
@@ -12,25 +16,66 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
+let mcData
+
+bot.on('spawn', () => { mcData = require('minecraft-data')(bot.version) })
+
 bot.on('chat', async (username, message) => {
-  const mcData = require('minecraft-data')(bot.version)
-  if (message === 'interact') {
-    const anvilBlock = bot.findBlock({
-      matching: [
-        mcData.blocksByName.anvil.id,
-        mcData.blocksByName.chipped_anvil.id,
-        mcData.blocksByName.damaged_anvil.id
-      ]
-    })
-    const anvil = await bot.openAnvil(anvilBlock)
-    bot.chat('Anvil opened.')
-    try {
-      await anvil.useAnvil(bot.inventory.hotbarStart, bot.inventory.hotbarStart + 1, 'ok')
-      console.log('Anvil used successfully.')
-    } catch (err) {
-      console.log(err)
+  // for tests
+  if (message === 'loaded') {
+    await bot.waitForChunksToLoad()
+    bot.chat('Ready!')
+  }
+
+  if (!message.startsWith('anvil')) return
+  if (message.includes('combine')) {
+    const [, firstSlot, secondSlot, name] = message.match(/^anvil combine (\d+) (\d+)(?: (.+))?/)
+    switch (true) {
+      case /^anvil combine \d+ \d+$/.test(message): // anvil firstSlot secondSlot
+        combine(bot, firstSlot, secondSlot)
+        break
+      case /^anvil combine (\d+) (\d+) (.+)$/.test(message): // anvil firstSlot secondSlot name
+        combine(bot, firstSlot, secondSlot, name)
+        break
     }
+  } else if (message.match(/^anvil rename (\d+) (.+)/)) {
+    const [, slot, name] = message.match(/^anvil rename (\d+) (.+)/)
+    rename(bot, slot, name)
   }
 })
+
+async function rename (bot, slot, name) {
+  const anvilBlock = bot.findBlock({
+    matching: [
+      mcData.blocksByName.anvil.id
+      // mcData.blocksByName.chipped_anvil?.id,
+      // mcData.blocksByName.damaged_anvil?.id
+    ]
+  })
+  const anvil = await bot.openAnvil(anvilBlock)
+  try {
+    await anvil.rename(Number.parseInt(slot), name)
+    bot.chat('Anvil used successfully.')
+  } catch (err) {
+    bot.chat(err.message)
+  }
+}
+
+async function combine (bot, slotOne, slotTwo, name) {
+  const anvilBlock = bot.findBlock({
+    matching: [
+      mcData.blocksByName.anvil.id
+      // mcData.blocksByName.chipped_anvil?.id,
+      // mcData.blocksByName.damaged_anvil?.id
+    ]
+  })
+  const anvil = await bot.openAnvil(anvilBlock)
+  try {
+    await anvil.combine(Number.parseInt(slotOne), Number.parseInt(slotTwo), name)
+    bot.chat('Anvil used successfully.')
+  } catch (err) {
+    bot.chat(err.message)
+  }
+}
 
 bot.on('error', console.log)

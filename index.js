@@ -31,6 +31,7 @@ const plugins = {
   inventory: require('./lib/plugins/inventory'),
   kick: require('./lib/plugins/kick'),
   physics: require('./lib/plugins/physics'),
+  place_block: require('./lib/plugins/place_block'),
   rain: require('./lib/plugins/rain'),
   ray_trace: require('./lib/plugins/ray_trace'),
   scoreboard: require('./lib/plugins/scoreboard'),
@@ -40,7 +41,8 @@ const plugins = {
   spawn_point: require('./lib/plugins/spawn_point'),
   tablist: require('./lib/plugins/tablist'),
   time: require('./lib/plugins/time'),
-  villager: require('./lib/plugins/villager')
+  villager: require('./lib/plugins/villager'),
+  anvil: require('./lib/plugins/anvil')
 }
 
 const supportedVersions = require('./lib/version').supportedVersions
@@ -58,12 +60,12 @@ module.exports = {
 }
 
 function createBot (options = {}) {
-  options.username = options.username || 'Player'
-  options.version = options.version || false
-  options.plugins = options.plugins || {}
-  options.hideErrors = options.hideErrors || true
-  options.logErrors = options.logErrors === undefined ? true : options.logErrors
-  options.loadInternalPlugins = options.loadInternalPlugins !== false
+  options.username = options.username ?? 'Player'
+  options.version = options.version ?? false
+  options.plugins = options.plugins ?? {}
+  options.hideErrors = options.hideErrors ?? true
+  options.logErrors = options.logErrors ?? true
+  options.loadInternalPlugins = options.loadInternalPlugins ?? true
   const bot = new EventEmitter()
   bot._client = null
   bot.end = () => bot._client.end()
