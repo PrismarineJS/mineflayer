@@ -58,6 +58,7 @@ async function rename (bot, slot, name) {
   } catch (err) {
     bot.chat(err.message)
   }
+  anvil.close()
 }
 
 async function combine (bot, slotOne, slotTwo, name) {
@@ -71,6 +72,7 @@ async function combine (bot, slotOne, slotTwo, name) {
   } catch (err) {
     bot.chat(err.message)
   }
+  anvil.close()
 }
 
 bot.on('error', console.log)
