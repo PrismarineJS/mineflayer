@@ -1699,15 +1699,20 @@ This function also returns a `Promise`, with `void` as its argument upon complet
 
 Click on the current window. See details at https://wiki.vg/Protocol#Click_Window
 
-#### bot.putSelectedItemRange(start, end, window, slot, cb)
+#### bot.putSelectedItemRange(start, end, window, slot, noWaiting)
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
 
 Put the item at `slot` in the specified range.
 
-#### bot.putAway(slot, cb)
+`noWaiting` will not wait for items to be moved.
+Can be useful in case the client is supposed to simulate without feedback from the server.
+
+#### bot.putAway(slot, noWaiting)
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
+`noWaiting` calls putSelectedItemRange with `noWaiting` option: it will not wait for items to be moved.
+Can be useful in case the client is supposed to simulate without feedback from the server.
 
 Put the item at `slot` in the inventory.
 
