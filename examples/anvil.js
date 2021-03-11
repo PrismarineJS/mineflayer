@@ -40,6 +40,11 @@ bot.on('chat', async (username, message) => {
     case /^list$/.test(message):
       sayItems()
       break
+    case /^toss \w+$/.test(message):
+      // toss name
+      // ex: toss diamond
+      tossItem(command[1])
+      break
     case /^xp$/.test(message):
       bot.chat(bot.experience.level)
       break
@@ -57,6 +62,28 @@ bot.on('chat', async (username, message) => {
       break
   }
 })
+
+function tossItem (name, amount) {
+  amount = parseInt(amount, 10)
+  const item = itemByName(name)
+  if (!item) {
+    bot.chat(`I have no ${name}`)
+  } else if (amount) {
+    bot.toss(item.type, null, amount, checkIfTossed)
+  } else {
+    bot.tossStack(item, checkIfTossed)
+  }
+
+  function checkIfTossed (err) {
+    if (err) {
+      bot.chat(`unable to toss: ${err.message}`)
+    } else if (amount) {
+      bot.chat(`tossed ${amount} x ${name}`)
+    } else {
+      bot.chat(`tossed ${name}`)
+    }
+  }
+}
 
 function itemByName (name) {
   return bot.inventory.items().filter(item => item.name === name)[0]
