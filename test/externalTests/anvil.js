@@ -61,6 +61,7 @@ module.exports = () => {
     assert.strictEqual(anvil.slots[3].repairCost, 1)
     assert.deepStrictEqual(anvil.slots[3].enchants, [{ name: 'sharpness', lvl: 5 }])
     anvil.close()
+    await bot.test.wait(1000)
   })
 
   addTest('combine with nbt selection two items', async (b, renameCost, renameName, Item, bot, mcData, makeBook, makeItem) => { // combining two items in inventory, but there are three items, so this is more a test of using nbt when picking the item in inventory
@@ -84,6 +85,7 @@ module.exports = () => {
     assert.strictEqual(anvil.slots[3].repairCost, 1)
     assert.deepStrictEqual(anvil.slots[3].enchants, [{ name: 'sharpness', lvl: 5 }, { name: 'unbreaking', lvl: 3 }])
     anvil.close()
+    await bot.test.wait(1000)
   })
 
   addTest('using anvil.rename', async (b, renameCost, renameName, Item, bot, mcData, makeBook, makeItem) => { // using anvil.rename
@@ -103,6 +105,7 @@ module.exports = () => {
     assert.strictEqual(anvil.slots[3].repairCost, renameCost())
     assert.deepStrictEqual(anvil.slots[3].customName, renameName('hello'))
     anvil.close()
+    await bot.test.wait(1000)
   })
 
   addTest('two item + rename', async (b, renameCost, renameName, Item, bot, mcData, makeBook, makeItem) => { // test 2 + a rename
@@ -127,6 +130,7 @@ module.exports = () => {
     assert.deepStrictEqual(anvil.slots[3].enchants, [{ name: 'sharpness', lvl: 5 }, { name: 'unbreaking', lvl: 3 }])
     assert.strictEqual(anvil.slots[3].customName, renameName('lol'))
     anvil.close()
+    await bot.test.wait(1000)
   })
 
   return tests
