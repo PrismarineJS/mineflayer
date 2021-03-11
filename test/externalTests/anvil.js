@@ -13,7 +13,11 @@ module.exports = () => {
     await bot.test.placeBlock(36, bot.entity.position.offset(1, 0, 0))
 
     if (mcData.isNewerOrEqualTo('1.13')) bot.chat(`/xp set ${bot.username} 999 levels`)
-    else bot.chat(`/xp 999 ${bot.username}`)
+    else {
+      bot.chat(`/xp -2147483648L ${bot.username}`)
+      await once(bot, 'experience')
+      bot.chat(`/xp 999L ${bot.username}`)
+    }
 
     await once(bot, 'experience')
 
