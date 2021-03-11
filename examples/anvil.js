@@ -1,7 +1,20 @@
-// This example demonstrates how to use anvils w/ mineflayer
-// the options are: (<Option> are required, [<Option>] are optional)
-// 1. "anvil combine <slotOne> <slotTwo> [<name>]"
-// 2. "anvil rename <slot> <name>"
+/**
+ * This example demonstrates how to use anvils w/ mineflayer
+ *  the options are: (<Option> are required, [<Option>] are optional)
+ * 1. "anvil combine <itemName1> <itemName2> [<name>]"
+ * 2. "anvil rename <itemName> <name>"
+ *
+ * to use this:
+ * /op anvilman
+ * /gamemode anvilman creative
+ * /xp set anvilman 999 levels
+ *
+ * Put an anvil near the bot
+ * Give him a sword and an enchanted book
+ * say list
+ * say xp
+ * say anvil combine diamond_sword enchanted_book
+ */
 const mineflayer = require('mineflayer')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
@@ -21,22 +34,50 @@ let mcData
 bot.on('spawn', () => { mcData = require('minecraft-data')(bot.version) })
 
 bot.on('chat', async (username, message) => {
-  if (!message.startsWith('anvil')) return
-  if (message.includes('combine')) {
-    const [, firstSlot, secondSlot, name] = message.match(/^anvil combine (\d+) (\d+)(?: (.+))?/)
-    switch (true) {
-      case /^anvil combine \d+ \d+$/.test(message): // anvil firstSlot secondSlot
-        combine(bot, firstSlot, secondSlot)
-        break
-      case /^anvil combine (\d+) (\d+) (.+)$/.test(message): // anvil firstSlot secondSlot name
-        combine(bot, firstSlot, secondSlot, name)
-        break
-    }
-  } else if (message.match(/^anvil rename (\d+) (.+)/)) {
-    const [, slot, name] = message.match(/^anvil rename (\d+) (.+)/)
-    rename(bot, slot, name)
+  const command = message.split(' ')
+
+  switch (true) {
+    case /^list$/.test(message):
+      sayItems()
+      break
+    case /^xp$/.test(message):
+      bot.chat(bot.experience.level)
+      break
+    case /^gamemode$/.test(message):
+      bot.chat(bot.game.gameMode)
+      break
+    case /^anvil combine \w+ \w+$/.test(message): // anvil firstSlot secondSlot
+      combine(bot, command[2], command[3])
+      break
+    case /^anvil combine \w+ \w+ (.+)$/.test(message): // anvil firstSlot secondSlot name
+      combine(bot, command[2], command[3], command.slice(4).join(' '))
+      break
+    case /^anvil rename \w+ (.+)/.test((message)):
+      rename(bot, command[2], command.slice(3).join(' '))
+      break
   }
 })
+
+function itemByName (name) {
+  return bot.inventory.items().filter(item => item.name === name)[0]
+}
+
+function itemToString (item) {
+  if (item) {
+    return `${item.name} x ${item.count}`
+  } else {
+    return '(nothing)'
+  }
+}
+
+function sayItems (items = bot.inventory.items()) {
+  const output = items.map(itemToString).join(', ')
+  if (output) {
+    bot.chat(output)
+  } else {
+    bot.chat('empty')
+  }
+}
 
 function getAnvilIds () {
   const matchingBlocks = [mcData.blocksByName.anvil.id]
@@ -47,13 +88,13 @@ function getAnvilIds () {
   return matchingBlocks
 }
 
-async function rename (bot, slot, name) {
+async function rename (bot, itemName, name) {
   const anvilBlock = bot.findBlock({
     matching: getAnvilIds()
   })
   const anvil = await bot.openAnvil(anvilBlock)
   try {
-    await anvil.rename(bot.inventory.slots[Number.parseInt(slot)], name)
+    await anvil.rename(itemByName(itemName), name)
     bot.chat('Anvil used successfully.')
   } catch (err) {
     bot.chat(err.message)
@@ -61,13 +102,14 @@ async function rename (bot, slot, name) {
   anvil.close()
 }
 
-async function combine (bot, slotOne, slotTwo, name) {
+async function combine (bot, itemName1, itemName2, name) {
   const anvilBlock = bot.findBlock({
     matching: getAnvilIds()
   })
   const anvil = await bot.openAnvil(anvilBlock)
   try {
-    await anvil.combine(bot.inventory.slots[Number.parseInt(slotOne)], bot.inventory.slots[Number.parseInt(slotTwo)], name)
+    bot.chat('Using the anvil...')
+    await anvil.combine(itemByName(itemName1), itemByName(itemName2), name)
     bot.chat('Anvil used successfully.')
   } catch (err) {
     bot.chat(err.message)
