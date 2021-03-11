@@ -38,16 +38,16 @@ const regex = {
 
 let jackpot = {}
 bot.on('messagestr', msg => {
-  if (regex.first.test(text)) {
-    const username = text.match(regex.first)[1]
+  if (regex.first.test(msg)) {
+    const username = msg.match(regex.first)[1]
     jackpot.username = username
-  } else if (regex.second.test(text)) {
-    const [, moneyWon, boughtTickets, winPercent] = text.match(regex.second)
+  } else if (regex.second.test(msg)) {
+    const [, moneyWon, boughtTickets, winPercent] = msg.match(regex.second)
     jackpot.moneyWon = parseInt(moneyWon.replace(/,/g, ''))
     jackpot.boughtTickets = parseInt(boughtTickets.replace(/,/g, ''))
     jackpot.winPercent = parseFloat(winPercent)
-  } else if (regex.third.test(text)) {
-    const totalTickets = text.match(regex.third)[1]
+  } else if (regex.third.test(msg)) {
+    const totalTickets = msg.match(regex.third)[1]
     jackpot.totalTickets = parseInt(totalTickets.replace(/,/g, ''))
     onDone(jackpot)
     jackpot = {}
