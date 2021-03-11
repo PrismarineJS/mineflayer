@@ -1,4 +1,5 @@
 const assert = require('assert')
+const { once } = require('events')
 
 module.exports = () => {
   async function runTest (bot, testFunction) {
@@ -13,6 +14,8 @@ module.exports = () => {
 
     if (mcData.isNewerOrEqualTo('1.13')) bot.chat(`/xp set ${bot.username} 999 levels`)
     else bot.chat(`/xp 999L ${bot.username}`)
+
+    await once(bot, 'experience')
 
     const b = bot.findBlock({ matching: mcData.blocksByName.anvil.id }) // find anvil before tests so all tests can use it
 
@@ -37,7 +40,6 @@ module.exports = () => {
   }
 
   addTest('combine two items', async (b, renameCost, renameName, Item, bot, mcData, makeBook, makeItem) => { // combine two items
-    console.log(('lol one'))
     await bot.test.becomeCreative()
     // get items
     await bot.test.setInventorySlot(36, new Item(mcData.itemsByName.diamond_sword.id, 1))
@@ -49,15 +51,14 @@ module.exports = () => {
     const sword = anvil.findInventoryItem(mcData.itemsByName.diamond_sword.id)
     const book = anvil.findInventoryItem(mcData.itemsByName.enchanted_book.id)
 
-    await anvil.combine(sword, book)
-    await bot.test.wait(1000)
+    await Promise.all([anvil.combine(sword, book), once(bot.inventory, 'updateSlot:9')])
     // test result
     assert.strictEqual(bot.experience.level, 994)
     assert.strictEqual(bot.inventory.slots[9].repairCost, 1)
     assert.deepStrictEqual(bot.inventory.slots[9].enchants, [{ name: 'sharpness', lvl: 5 }])
   })
 
-  addTest('combine two items with nbt selection among three items', async (b, renameCost, renameName, Item, bot, mcData, makeBook, makeItem) => { // combining two items in inventory, but there are three items, so this is more a test of using nbt when picking the item in inventory
+  addTest('combine with nbt selection two items', async (b, renameCost, renameName, Item, bot, mcData, makeBook, makeItem) => { // combining two items in inventory, but there are three items, so this is more a test of using nbt when picking the item in inventory
     bot.chat(`/clear ${bot.username}`)
     await bot.test.becomeCreative()
 
@@ -72,8 +73,7 @@ module.exports = () => {
     const sword = bot.inventory.slots[37]
     const book = anvil.findInventoryItem(mcData.itemsByName.enchanted_book.id)
 
-    await anvil.combine(sword, book)
-    await bot.test.wait(1000)
+    await Promise.all([anvil.combine(sword, book), once(bot.inventory, 'updateSlot:9')])
     // test result
     assert.strictEqual(bot.experience.level, 996)
     assert.strictEqual(bot.inventory.slots[9].repairCost, 1)
@@ -91,8 +91,7 @@ module.exports = () => {
     const anvil = await bot.openAnvil(b)
 
     const sword = anvil.findInventoryItem(mcData.itemsByName.diamond_sword.id)
-    await anvil.rename(sword, 'hello')
-    await bot.test.wait(1000)
+    await await Promise.all([anvil.rename(sword, 'hello'), once(bot.inventory, 'updateSlot:9')])
     // test result
     assert.strictEqual(bot.experience.level, 998)
     assert.strictEqual(bot.inventory.slots[9].repairCost, renameCost())
@@ -114,8 +113,7 @@ module.exports = () => {
     const sword = bot.inventory.slots[37]
     const book = anvil.findInventoryItem(mcData.itemsByName.enchanted_book.id)
 
-    await anvil.combine(sword, book, 'lol')
-    await bot.test.wait(1000)
+    await await Promise.all([anvil.combine(sword, book, 'lol'), once(bot.inventory, 'updateSlot:9')])
     // test result
     assert.strictEqual(bot.experience.level, 995)
     assert.strictEqual(bot.inventory.slots[9].repairCost, 1)
