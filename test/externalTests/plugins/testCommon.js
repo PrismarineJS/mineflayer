@@ -17,6 +17,7 @@ function inject (bot) {
   bot.test.sayEverywhere = sayEverywhere
   bot.test.clearInventory = callbackify(clearInventory)
   bot.test.becomeSurvival = callbackify(becomeSurvival)
+  bot.test.becomeCreative = callbackify(becomeCreative)
   bot.test.fly = callbackify(fly)
   bot.test.resetState = callbackify(resetState)
   bot.test.setInventorySlot = callbackify(setInventorySlot)

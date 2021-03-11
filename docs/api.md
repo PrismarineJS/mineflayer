@@ -509,16 +509,28 @@ This function also returns a `Promise`, with `void` as its argument upon complet
 
  * `callback(err)`
 
- #### enchantmentTable.putLapis(item, [callback])
+#### enchantmentTable.putLapis(item, [callback])
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
 
  * `callback(err)`
 
-### mineflayer.Villager
+### mineflayer.anvil
 
-Extends windows.Window for villagers
-See `bot.openVillager(villagerEntity)`.
+Extends windows.Window for anvils
+See `bot.openAnvil(anvilBlock)`.
+
+#### anvil.combine(itemOne, itemTwo[, name, callback])
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
+ * `callback(err)` - in order to use callback, pass an empty string ('') for name
+
+#### anvil.combine(item[, name, callback])
+
+This function also returns a `Promise`, with `void` as its argument upon completion.
+
+ * `callback(err)`
 
 #### villager "ready"
 
@@ -1637,6 +1649,10 @@ Deprecated. Same as `openContainer`
 Returns a promise on an `EnchantmentTable` instance which represents the enchantment table
 you are opening.
 
+#### bot.openAnvil(anvilBlock)
+
+Returns a promise on an `anvil` instance which represents the anvil you are opening.
+
 #### bot.openVillager(villagerEntity)
 
 Returns a promise on a `Villager` instance which represents the trading window you are opening.
@@ -1683,15 +1699,20 @@ This function also returns a `Promise`, with `void` as its argument upon complet
 
 Click on the current window. See details at https://wiki.vg/Protocol#Click_Window
 
-#### bot.putSelectedItemRange(start, end, window, slot, cb)
+#### bot.putSelectedItemRange(start, end, window, slot, noWaiting)
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
 
 Put the item at `slot` in the specified range.
 
-#### bot.putAway(slot, cb)
+`noWaiting` will not wait for items to be moved.
+Can be useful in case the client is supposed to simulate without feedback from the server.
+
+#### bot.putAway(slot, noWaiting)
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
+`noWaiting` calls putSelectedItemRange with `noWaiting` option: it will not wait for items to be moved.
+Can be useful in case the client is supposed to simulate without feedback from the server.
 
 Put the item at `slot` in the inventory.
 

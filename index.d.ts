@@ -328,6 +328,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   openEnchantmentTable(enchantmentTable: Block): EnchantmentTable;
 
+  openAnvil(anvil: Block): Anvil;
+
   openVillager(
     villager: Entity
   ): Villager;
@@ -703,6 +705,11 @@ export class EnchantmentTable extends (EventEmitter as new () => TypedEmitter<Co
   putTargetItem(item: Item, cb?: (err: Error | null) => void): Promise<Item>;
 
   putLapis(item: Item, cb?: (err: Error | null) => void): Promise<Item>;
+}
+
+export class Anvil {
+  combine(itemOne: Item, itemTwo: Item, name?: string): Promise<void>
+  rename(item: Item, name?: string): Promise<void>
 }
 
 export type Enchantment = {
