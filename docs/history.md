@@ -1,3 +1,12 @@
+## 3.3.0
+* trading fix (@validgem)
+* fix enchantments (@goncharovchik)
+* fix newListener and removeListener stacking on world change (@U5B)
+* add a 'messagestr' event (@U9G)
+* Add an option forceLook for place block similar to the digging one (@CyberPatrick)
+* Can see block add intersect match (@sefirosweb)
+* Add ability to use an anvil fully (@U9G)
+
 ## 3.2.0
 * Fix position in getBlock()
 
