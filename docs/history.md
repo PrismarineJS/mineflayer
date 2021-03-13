@@ -1,3 +1,6 @@
+## 3.3.1
+* fix stop digging (@Karang)
+
 ## 3.3.0
 * trading fix (@validgem)
 * fix enchantments (@goncharovchik)
