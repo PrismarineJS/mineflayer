@@ -17,8 +17,10 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
-bot.on('spawn', () => {
+bot.on('spawn', spam)
+
+function spam() {
   setInterval(() => {
     bot.chat('I am spamming') 
-  }, 1000)
-})
+  }, 1000)  
+}
