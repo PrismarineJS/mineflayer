@@ -1238,6 +1238,10 @@ Fires when new boss bar is updated.
 
 Fires when the held item is changed.
 
+#### "physicsTick" ()
+
+Fires every tick if bot.physicsEnabled is set to true.
+
 ### Functions
 
 #### bot.blockAt(point, extraInfos=true)
