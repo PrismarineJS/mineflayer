@@ -1240,7 +1240,7 @@ Fires when the held item is changed.
 
 #### "physicsTick" ()
 
-Fires every tick
+Fires every tick if bot.physicsEnabled is set to true.
 
 ### Functions
 
