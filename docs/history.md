@@ -1,3 +1,6 @@
+## 3.3.2
+* fix entity names
+
 ## 3.3.1
 * fix stop digging (@Karang)
 
