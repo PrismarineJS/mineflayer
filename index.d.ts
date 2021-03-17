@@ -381,6 +381,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
   waitForChunksToLoad(cb?: (err?: Error) => void): Promise<void>;
 
   nearestEntity(filter?: (entity: Entity) => boolean): Entity | null;
+
+  waitForTicks(ticks: number): Promise<void>;
 }
 
 export interface GameState {
