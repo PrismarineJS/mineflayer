@@ -32,6 +32,12 @@ export interface BotOptions extends ClientOptions {
   difficulty?: number;
   chatLengthLimit?: number;
   physicsEnabled?: boolean;
+  proxy?: {
+    enabled: boolean;
+    port?: number;
+    host: string;
+    type?: number;
+  }
 }
 
 export type ChatLevel = "enabled" | "commandsOnly" | "disabled";

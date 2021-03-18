@@ -8,6 +8,7 @@ const mc = require('minecraft-protocol')
 const EventEmitter = require('events').EventEmitter
 const pluginLoader = require('./lib/plugin_loader')
 const supportFeature = require('./lib/supportFeature')
+const socks = require('socks')
 const plugins = {
   bed: require('./lib/plugins/bed'),
   title: require('./lib/plugins/title'),
@@ -66,6 +67,9 @@ function createBot (options = {}) {
   options.hideErrors = options.hideErrors ?? true
   options.logErrors = options.logErrors ?? true
   options.loadInternalPlugins = options.loadInternalPlugins ?? true
+  options.proxy = options.proxy ?? {
+    enabled: false
+  }
   const bot = new EventEmitter()
   bot._client = null
   bot.end = () => bot._client.end()
@@ -76,7 +80,31 @@ function createBot (options = {}) {
       }
     })
   }
-
+  if (options.proxy.enabled) {
+    if (!options.proxy.host || !options.proxy.port) throw new Error('Proxy is enabled but no host or port is specified')
+    options.connect = (client) => {
+      socks.createConnection({
+        proxy: {
+          host: options.proxy.host,
+          port: options.proxy.port ?? 1080,
+          type: options.proxy.type ?? 5,
+          userId: options.proxy.user,
+          password: options.proxy.password
+        },
+        command: 'connect',
+        destination: {
+          host: options.host,
+          port: options.port ?? 25565
+        }
+      }, (err, info) => {
+        if (err) bot.emit('error', err)
+        client.setSocket(info.socket)
+        client.emit('connect')
+      })
+    }
+    options.host = null
+    options.port = null
+  }
   pluginLoader(bot, options)
   const internalPlugins = Object.keys(plugins)
     .filter(key => {
