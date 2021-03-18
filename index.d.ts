@@ -238,6 +238,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   setControlState(control: ControlState, state: boolean): void;
 
+  getControlState(control: ControlState): boolean;
+
   clearControlStates(): void;
 
   lookAt(point: Vec3, force?: boolean, callback?: () => void): Promise<void>;
