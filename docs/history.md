@@ -1,3 +1,6 @@
+## 3.3.3
+* fix world switch leak
+
 ## 3.3.2
 * fix entity names
 
