@@ -5,7 +5,7 @@
       "prefix": "mineflayer",
       "body": "const mineflayer = require('mineflayer')"
     },
-    "mineflayer-creatbot": {
+    "mineflayer-createbot": {
         "scope": "javascript",
         "prefix": "mfbot",
         "body": [
