@@ -1,0 +1,13 @@
+// https://code.visualstudio.com/docs/editor/userdefinedsnippets#_project-snippet-scope
+{
+    "mineflayer": {
+      "scope": "javascript",
+      "prefix": "mineflayer",
+      "body": "const mineflayer = require('mineflayer')"
+    },
+    "mineflayer-creatbot": {
+        "scope": "javascript",
+        "prefix": "mfbot",
+        "body": "const bot = mineflayer.createBot({\n  host: ${1:'localhost'},\n  username: ${2:'bot'}\n})"
+      },
+  }
