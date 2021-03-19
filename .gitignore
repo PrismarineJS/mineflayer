@@ -7,4 +7,3 @@ yarn.lock
 versions/
 server_jars/
 test/server_*
-.vscode
