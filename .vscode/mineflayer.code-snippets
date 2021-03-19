@@ -8,6 +8,11 @@
     "mineflayer-creatbot": {
         "scope": "javascript",
         "prefix": "mfbot",
-        "body": "const bot = mineflayer.createBot({\n  host: ${1:'localhost'},\n  username: ${2:'bot'}\n})"
+        "body": [
+          "const bot = mineflayer.createBot({",
+          "  host: ${1:'localhost'},",
+          "  username: ${2:'bot'}",
+          "})"
+        ]
       },
   }
