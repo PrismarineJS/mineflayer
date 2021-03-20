@@ -1,3 +1,5 @@
+// This example describes how to login using a launcher_profiles folder instead of a usual minecraft username & password
+
 const mineflayer = require('mineflayer')
 const path = require('path')
 
