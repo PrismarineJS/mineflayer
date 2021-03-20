@@ -189,7 +189,8 @@ The most updated and useful are :
  * [auto-eat](https://github.com/LINKdiscordd/mineflayer-auto-eat) - Automatic eating of food.
  * [Tool](https://github.com/TheDudeFromCI/mineflayer-tool) - A utility for automatic tool/weapon selection with a high level API.
  * [Hawkeye](https://github.com/sefirosweb/minecraftHawkEye) - A utility for using auto-aim with bows.
-
+ * [chatregex](https://github.com/u9g/ChatRegex) - A utility to simplify parsing chat using many (or just one) regex pattern(s) with events
+ * [mineflayer-altlogin](https://github.com/u9g/mineflayer-altlogin) - A utility to change how login works.
 
  But also check out :
 
