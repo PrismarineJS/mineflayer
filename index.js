@@ -28,6 +28,7 @@ const plugins = {
   furnace: require('./lib/plugins/furnace'),
   game: require('./lib/plugins/game'),
   health: require('./lib/plugins/health'),
+  horse: require('./lib/plugins/horse'),
   inventory: require('./lib/plugins/inventory'),
   kick: require('./lib/plugins/kick'),
   physics: require('./lib/plugins/physics'),
