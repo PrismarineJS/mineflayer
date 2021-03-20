@@ -1,3 +1,10 @@
 # shared with .gitignore
 # different than .gitignore
-test
+# https://docs.npmjs.com/cli/v7/using-npm/developers#keeping-files-out-of-your-package
+test/
+docs/
+examples/
+.github/
+.gitignore
+.gitpod.DockerFile
+.gitpod.yml
