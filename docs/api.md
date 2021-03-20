@@ -85,6 +85,8 @@
     - [bot.player](#botplayer)
       - [bot.players](#botplayers)
       - [bot.isRaining](#botisraining)
+      - [bot.rainState](#botrainstate)
+      - [bot.thunderState](#botthunderstate)
       - [bot.chatPatterns](#botchatpatterns)
       - [bot.settings.chat](#botsettingschat)
       - [bot.settings.colorsEnabled](#botsettingscolorsenabled)
@@ -132,6 +134,7 @@
       - ["game"](#game)
       - ["title"](#title)
       - ["rain"](#rain)
+      - ["weatherUpdate"](#weatherUpdate)
       - ["time"](#time)
       - ["kicked" (reason, loggedIn)](#kicked-reason-loggedin)
       - ["end"](#end)
@@ -751,6 +754,25 @@ Map of username to people playing the game.
 
 #### bot.isRaining
 
+#### bot.rainState
+
+A number indicating the current rain level. When it isn't raining, this
+will be equal to 0. When it starts to rain, this value will increase
+gradually up to 1. When it stops raining, this value gradually decreases back to 0.
+
+Each time `bot.rainState` is changed, the "weatherUpdate" event is emitted.
+
+#### bot.thunderState
+
+A number indicating the current thunder level. When there isn't a thunderstorm, this
+will be equal to 0. When a thunderstorm starts, this value will increase
+gradually up to 1. When the thunderstorm stops, this value gradually decreases back to 0.
+
+Each time `bot.thunderState` is changed, the "weatherUpdate" event is emitted.
+
+This is the same as `bot.rainState`, but for thunderstorms. 
+For thunderstorms, both `bot.rainState` and `bot.thunderState` will change.
+
 #### bot.chatPatterns
 
 This is an array of pattern objects, of the following format:
@@ -1002,6 +1024,11 @@ Emitted when the server sends a title
 
 Emitted when it starts or stops raining. If you join a
 server where it is already raining, this event will fire.
+
+#### "weatherUpdate"
+
+Emitted when either `bot.thunderState` or `bot.rainState` changes.
+If you join a server where it is already raining, this event will fire.
 
 #### "time"
 
