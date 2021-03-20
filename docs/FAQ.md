@@ -19,7 +19,7 @@ chat plugin. Also read http://mineflayer.prismarine.js.org/#/tutorial?id=custom-
 
 ### How can I collect info from an custom plugin in chat ?
 
-Most custom minecraft servers have plugin support, and a lot of these plugins say something in chat when something happens. If it is just one message, it's best to use the solution discussed in the solution above, but when these messages are split into many small messages, another option is using the `"messagestr"` event as it allows for easily parsing multi-line messages.
+Most custom minecraft servers have plugin support, and a lot of these plugins say something in chat when something happens. If it is just one message, it's best to use the solution discussed in the solution above, but when these messages are split into many small messages, another option is using the `"messagestr"` event as it allows for easily parsing multi-line messages. (if you are willing to use an external plugin, [chatregex](https://www.npmjs.com/package/chatregex) can make this much easier. [example with chatregex](https://gist.github.com/u9g/4af81808555c8d64054ab3fc31b128fa))
 
 **Example:**
 
