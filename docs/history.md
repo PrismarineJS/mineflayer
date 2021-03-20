@@ -1,3 +1,8 @@
+## 3.4.0
+* fix once leak in placeBlock (@Karang)
+* allow sleeping during rain/thunderstorms (@qrvd)
+* Change transaction apology packet to match vanilla client (@FeldrinH)
+
 ## 3.3.3
 * fix world switch leak
 
