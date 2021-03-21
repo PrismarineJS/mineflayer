@@ -248,5 +248,10 @@
     "name": "selectingTradeMovesItems",
     "description": "Selecting a trade automatically puts the required items into trading slots.",
     "versions": ["1.14", "1.16.5"]
+  },
+  {
+    "name": "lessCharsInChat",
+    "description": "max chars in chat",
+    "versions": ["1.8", "1.10.2"]
   }
 ]
