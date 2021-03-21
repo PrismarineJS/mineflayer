@@ -51,15 +51,16 @@ bot.on('spawn', () => {
  */
 bot.on('chat', (username, message, type, rawMessage, matches) => {
   if (username === bot.username) return
-  console.log('Chat received!')
-  console.log(`Username: ${username}`)
-  console.log(`Message: ${message}`)
-
-  /*
-   * Using the matches object, you could get the same output using
-   * console.log("Username: " + matches[1]); and
-   * console.log("Message: " + matches[2]);
-   */
+  console.log('username')
+  console.log(username)
+  console.log('message')
+  console.log(message)
+  console.log('type')
+  console.log(type)
+  console.log('rawMessage')
+  console.log(rawMessage)
+  console.log('matches')
+  console.log(matches)
 })
 
 /*
