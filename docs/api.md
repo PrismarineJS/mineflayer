@@ -222,6 +222,7 @@
       - [bot.isABed(bedBlock)](#botisabedbedblock)
       - [bot.wake([cb])](#botwakecb)
       - [bot.setControlState(control, state)](#botsetcontrolstatecontrol-state)
+      - [bot.getControlState(control)](#botgetcontrolstatecontrol-state)
       - [bot.clearControlStates()](#botclearcontrolstates)
       - [bot.lookAt(point, [force], [callback])](#botlookatpoint-force-callback)
       - [bot.look(yaw, pitch, [force], [callback])](#botlookyaw-pitch-force-callback)
@@ -1439,6 +1440,12 @@ You may use bot.lookAt in conjunction with this to control movement. The jumper.
 
  * `control` - one of ['forward', 'back', 'left', 'right', 'jump', 'sprint', 'sneak']
  * `state` - `true` or `false`
+
+#### bot.getControlState(control)
+
+Returns true if a control state is toggled.
+
+* `control` - one of ['forward', 'back', 'left', 'right', 'jump', 'sprint', 'sneak']
 
 #### bot.clearControlStates()
 
