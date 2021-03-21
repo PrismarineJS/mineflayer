@@ -33,5 +33,31 @@ module.exports = () => {
     assert.strictEqual(chatMessage.constructor.name, 'ChatMessage')
   })
 
+  addTest('test addChatPattern', async (bot) => {
+    await once(bot, 'message') // => starting chat test chatAddPattern
+    bot.addChatPattern('theTest', /<.+> Hello World!!!!/, { repeat: false })
+    bot.chat('/tellraw @p {"translate":"chat.type.text", "with":["U9G", "Hello World!!!!"]}')
+    const [[match]] = await once(bot, 'chat:theTest')
+    assert.strictEqual(match, '<U9G> Hello World!!!!')
+  })
+
+  addTest('test parse', async (bot) => {
+    await once(bot, 'message') // => starting chat test chatAddPattern
+    bot.addChatPattern('theTest', /<.+> Hello World(!!!!)/, { repeat: false, parse: true })
+    bot.chat('/tellraw @p {"translate":"chat.type.text", "with":["U9G", "Hello World!!!!"]}')
+    const [[matches]] = await once(bot, 'chat:theTest')
+    assert.strictEqual(matches[0], '!!!!')
+  })
+
+  addTest('test addChatPatterns', async (bot) => {
+    await once(bot, 'message') // => starting chat test chatAddPattern
+    bot.addChatPatternSet('theTest', [/<.+> Hello/, /<.+> World/], { repeat: false })
+    bot.chat('/tellraw @p {"translate":"chat.type.text", "with":["U9G", "Hello"]}')
+    bot.chat('/tellraw @p {"translate":"chat.type.text", "with":["U9G", "World"]}')
+    const [[partOne, partTwo]] = await once(bot, 'chat:theTest')
+    assert.strictEqual(partOne, '<U9G> Hello')
+    assert.strictEqual(partTwo, '<U9G> World')
+  })
+
   return tests
 }
