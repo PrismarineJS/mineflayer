@@ -30,7 +30,7 @@ module.exports = () => {
     const [username, message, messageType, chatMessage] = await once(bot, 'chat')
     assert.strictEqual(username, 'U9G')
     assert.strictEqual(message, 'Hello World!')
-    assert.strictEqual(messageType, 'chat.type.text')
+    // assert.strictEqual(messageType, 'chat.type.text') // not valid anymore
     assert.strictEqual(chatMessage.constructor.name, 'ChatMessage')
   })
 
