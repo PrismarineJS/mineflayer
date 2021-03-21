@@ -13,7 +13,7 @@ module.exports = () => {
   }
 
   addTest('start tests', async (bot) => {
-    await once(bot, 'chat') // => <flatbot> starting chat test message event
+    await once(bot, 'message') // => <flatbot> starting chat test message event
   })
 
   addTest('test message event', async (bot) => {
