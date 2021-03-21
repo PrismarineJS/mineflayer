@@ -11,26 +11,24 @@ bot has just left!
 const mineflayer = require('mineflayer')
 const bot = mineflayer.createBot({
   host: 'localhost',
-  username: 'bot1'
+  username: 'bot'
 })
 
 bot.once('spawn', () => {
-  bot.addChatPattern('bot_left_the_game', /bot left the game/)
-  bot.addChatPatternSet('bot_rejoins_the_game', [/bot left the game/, /bot joined the game/])
+  bot.addChatPattern('bot_left_the_game', /bot. left the game/)
+  bot.addChatPatternSet('bot_rejoins_the_game', [/bot. left the game/, /bot. joined the game/])
   bot.addChatPattern('who_just_joined', /(.+) joined the game/, { parse: true, repeat: false })
   makeChatMessages()
 })
 
 bot.on('chat:bot_left_the_game', matches => {
-  if (matches[0] === 'bot left the game') {
-    console.log('bot has just left!')
-  }
+  // => ['bot left the game']
+  console.log('bot has just left!')
 })
 
 bot.on('chat:bot_rejoins_the_game', matches => {
-  if (matches[0] === 'bot left the game' && matches[1] === 'bot joined the game') {
-    console.log('bot has just rejoined!')
-  }
+  // => ['bot left the game', 'bot joined the game']
+  console.log('bot has just rejoined!')
 })
 
 bot.on('chat:who_just_joined', matches => {
@@ -38,19 +36,25 @@ bot.on('chat:who_just_joined', matches => {
 })
 
 async function makeChatMessages () {
-  let bot1, bot2
+  let bot1 = mineflayer.createBot({
+    host: 'localhost',
+    username: 'bot1'
+  })
+  let bot2
+  setTimeout(() => bot1.quit(), 1500)
   setTimeout(() => {
     bot1 = mineflayer.createBot({
       host: 'localhost',
-      username: 'bot'
+      username: 'bot1'
     })
-  }, 1000)
-  setTimeout(() => bot1.quit(), 1500)
+  }, 1750)
   setTimeout(() => {
     bot2 = mineflayer.createBot({
       host: 'localhost',
-      username: 'bot'
+      username: 'bot2'
     }, 2000)
   })
   setTimeout(() => bot2.quit(), 2500)
 }
+
+bot.on('error', console.log)
