@@ -1269,7 +1269,9 @@ Fires when the held item is changed.
 
 Fires every tick if bot.physicsEnabled is set to true.
 
-#### "chat:(name)"
+#### "chat:name" (matches)
+
+Fires when the all of a chat pattern's regexs have matches
 
 ### Functions
 
