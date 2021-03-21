@@ -383,6 +383,15 @@ export interface Bot extends TypedEmitter<BotEvents> {
   nearestEntity(filter?: (entity: Entity) => boolean): Entity | null;
 
   waitForTicks(ticks: number): Promise<void>;
+
+  addChatPattern(name: string, pattern: RegExp, options: chatPatternOptions): void;
+
+  addChatPatternSet(name: string, patterns: Array<RegExp>, options?: chatPatternOptions): void;
+}
+
+export interface chatPatternOptions {
+  repeat: boolean;
+  parse: boolean;
 }
 
 export interface GameState {
