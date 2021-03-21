@@ -27,10 +27,9 @@ module.exports = () => {
   addTest('test chatAddPattern', async (bot) => {
     await once(bot, 'message') // => starting chat test chatAddPattern
     bot.chat('/tellraw @p {"translate":"chat.type.text", "with":["U9G", "Hello World!"]}')
-    const [username, message, messageType, chatMessage] = await once(bot, 'chat')
+    const [username, message, , chatMessage] = await once(bot, 'chat')
     assert.strictEqual(username, 'U9G')
     assert.strictEqual(message, 'Hello World!')
-    // assert.strictEqual(messageType, 'chat.type.text') // not valid anymore
     assert.strictEqual(chatMessage.constructor.name, 'ChatMessage')
   })
 
