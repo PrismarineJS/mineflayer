@@ -12,8 +12,8 @@ function inject (bot, option) {
   bot.afk = {}
 
   let afkInterval, rotation
-  // This namespace can be used to store some variuabels for user reffrence.
-  bot.afk.status = 'Idel'
+  // This namespace can be used to store some variables for user reference.
+  bot.afk.status = 'Idle'
 
   // All your plugin functions should be in the name space other than the logic.
   bot.afk.start = async function () {
@@ -32,7 +32,7 @@ function inject (bot, option) {
   bot.afk.stop = function () {
     if (afkInterval) {
       clearInterval(afkInterval)
-      bot.afk.status = 'Idel'
+      bot.afk.status = 'Idle'
     }
   }
 }
