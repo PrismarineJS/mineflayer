@@ -8,7 +8,6 @@
 // Each plugin should have a inject function
 // This is the function that will be put in bot.loadPlugin
 function inject (bot, option) {
-
 // It is a good idea to make a namespace for your plugin
   bot.afk = {}
 
