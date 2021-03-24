@@ -60,12 +60,12 @@ module.exports = {
 }
 
 function createBot (options = {}) {
-  options.username = options.username ?? 'Player'
-  options.version = options.version ?? false
-  options.plugins = options.plugins ?? {}
-  options.hideErrors = options.hideErrors ?? true
-  options.logErrors = options.logErrors ?? true
-  options.loadInternalPlugins = options.loadInternalPlugins ?? true
+  options.username = options.username || 'Player'
+  options.version = options.version || false
+  options.plugins = options.plugins || {}
+  options.hideErrors = options.hideErrors || true
+  options.logErrors = options.logErrors || true
+  options.loadInternalPlugins = options.loadInternalPlugins || true
   const bot = new EventEmitter()
   bot._client = null
   bot.end = () => bot._client.end()
