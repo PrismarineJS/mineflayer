@@ -1,3 +1,9 @@
+## 3.5.0
+* Add common errors to FAQ (@U9G)
+* Move mosts of index.js to lib/loader.js (@U9G)
+* Improve packet_info handling (@Karang)
+* Add getControlState function (@Camezza)
+
 ## 3.4.0
 * fix once leak in placeBlock (@Karang)
 * allow sleeping during rain/thunderstorms (@qrvd)
