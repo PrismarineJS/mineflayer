@@ -5,13 +5,14 @@
 // Each plugin should have a inject function
 // This is the function that will be put in bot.loadPlugin
 function inject (bot, option) {
+  // create a scope for you functions
   bot.afk = {}
 
   let afkInterval, rotation
-  // This namespace can be used to store some variables for user reference.
+  // This scope can be used to store some variables for user reference.
   bot.afk.status = 'Idle'
 
-  // All your plugin functions should be in the name space other than the logic.
+  // All your plugin functions should be in the scope other than the logic.
   bot.afk.start = async () => {
     afkInterval = setInterval(async () => {
       if (rotation === 0) {
