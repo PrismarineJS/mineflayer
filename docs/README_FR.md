@@ -97,25 +97,24 @@ bot.on('error', err => console.log(err))
 ```
 
 ### See what your bot is doing
-
-Thanks to [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer) project, it's possible to display in a browser window what your bot is doing.
-Just run `npm install prismarine-viewer` and add this to your bot:
+Grace au projet [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer), il est maintenant possible de voir ce que ton bot fait.
+Juste lance `npm install prismarine-viewer` dans ta console et ajoute ceci a ton code:
 ```js
 const mineflayerViewer = require('prismarine-viewer').mineflayer
 bot.once('spawn', () => {
   mineflayerViewer(bot, { port: 3007, firstPerson: true })
 })
 ```
-And you'll get a *live* view looking like this:
+et to aura un affichage en *direct* qui ressemble a ceci:
 
 [<img src="https://prismarine.js.org/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarine.js.org/prismarine-viewer/)
 
-#### More Examples
+#### Exemples:
 
-| example | description |
+| exemple | description |
 |---|---|
-|[viewer](https://github.com/PrismarineJS/mineflayer/tree/master/examples/viewer) | display your bot world view in the browser |
-|[pathfinder](https://github.com/Karang/mineflayer-pathfinder/blob/master/examples/test.js) | make your bot go to any location automatically |
+|[viewer](https://github.com/PrismarineJS/mineflayer/tree/master/examples/viewer) | affiche ce que ton bot fait en direct |
+|[pathfinder](https://github.com/Karang/mineflayer-pathfinder/blob/master/examples/test.js) | Fait ton robot ce déplacé la ou tu veux |
 |[chest](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chest.js) | Use chests, furnaces, dispensers, enchantment tables |
 |[digger](https://github.com/PrismarineJS/mineflayer/blob/master/examples/digger.js) | Learn how to create a simple bot that is capable of digging the block |
 |[discord](https://github.com/PrismarineJS/mineflayer/blob/master/examples/discord.js) | connect a discord bot with a mineflayer bot |
