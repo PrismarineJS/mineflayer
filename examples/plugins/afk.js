@@ -1,8 +1,5 @@
-// Plugins are loaded using the bot.loadPlugin() function
-// The load plugin function excepts one function as its only parameter
-// The plugin runs the function passing it two parameter
-// The former is the bot object and the latter is the bot option
-// the options contain version player info and other plugins
+// All plugins are loaded with the bot.loadPlugin function, look at documentation for more info
+// https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md#botloadpluginplugin
 // Here is an example AFK plugin
 
 // Each plugin should have a inject function
@@ -15,7 +12,7 @@ function inject (bot, option) {
   bot.afk.status = 'Idle'
 
   // All your plugin functions should be in the name space other than the logic.
-  bot.afk.start = async function () {
+  bot.afk.start = async () => {
     afkInterval = setInterval(async () => {
       if (rotation === 0) {
         await bot.look(0, 0)
@@ -28,7 +25,7 @@ function inject (bot, option) {
     bot.afk.status = 'afk'
   }
 
-  bot.afk.stop = function () {
+  bot.afk.stop = () => {
     if (afkInterval) {
       clearInterval(afkInterval)
       bot.afk.status = 'Idle'
@@ -41,9 +38,4 @@ module.exports = {
   // Here you should name your inject function what ever you want.
   afk: inject
 }
-
 // This is a simple plugin with two methods, start and stop.
-// On the start method this plugin makes the bot look from east to west in 3-second intervals,
-// On stop it stops the bot from looking constantly spinning around
-// Additionally it also has a status variable inside the name space,
-// Users can use the variable as a reference for the code.
