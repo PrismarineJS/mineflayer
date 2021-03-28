@@ -1,3 +1,6 @@
+## 3.6.0
+* add bot.addChatPattern() & bot.addChatPatternSet() & deprecate bot.chatAddPattern() (@U9G)
+
 ## 3.5.0
 * Add common errors to FAQ (@U9G)
 * Move mosts of index.js to lib/loader.js (@U9G)
