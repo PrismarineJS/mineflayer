@@ -34,9 +34,7 @@ function inject (bot, option) {
   }
 }
 
-// Most of the time plugins are stored in different files so you must export them.
 module.exports = {
-  // Here you should name your inject function what ever you want.
   afk: inject
 }
 // This is a simple plugin with two methods, start and stop.
