@@ -9,32 +9,29 @@ function inject (bot, option) {
   bot.afk = {}
 
   let afkInterval, rotation
-  // This scope can be used to store some variables for user reference.
-  bot.afk.status = 'Idle'
 
   // All your plugin functions should be in the scope other than the logic.
   bot.afk.start = async () => {
     afkInterval = setInterval(async () => {
-      if (rotation === 0) {
+      if (rotation) {
         await bot.look(0, 0)
-        rotation = true
+        rotation = false
       } else {
         await bot.look(Math.PI, 0)
-        rotation = false
+        rotation = true
       }
     }, 3000)
-    bot.afk.status = 'afk'
   }
 
   bot.afk.stop = () => {
     if (afkInterval) {
       clearInterval(afkInterval)
-      bot.afk.status = 'Idle'
     }
   }
 }
 
+// finally export the inject function
+
 module.exports = {
   afk: inject
 }
-// This is a simple plugin with two methods, start and stop.
