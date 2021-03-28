@@ -1397,7 +1397,7 @@ the event will be called `"chat:name"`, with name being the name passed
   * `parse` - instead of returning the actual message that was matched, return the capture groups from the regex
   * `deprecated` - (**unstable**) used by bot.chatAddPattern to keep compatability, likely to be removed
 
-#### bot.addChatPatterns(name, patterns, chatPatternOptions)
+#### bot.addChatPatternSet(name, patterns, chatPatternOptions)
 
 make an event that is called every time all patterns havee been matched to messages,
 the event will be called `"chat:name"`, with name being the name passed
