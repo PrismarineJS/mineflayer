@@ -2,7 +2,7 @@ const assert = require('assert')
 const { once } = require('events')
 
 module.exports = () => {
-  async function runTest (bot, testFunction) { // eslint-disable-line
+  async function runTest (bot, testFunction) {
     await testFunction(bot)
   }
 
@@ -27,9 +27,10 @@ module.exports = () => {
   addTest('test chatAddPattern', async (bot) => {
     await once(bot, 'message') // => starting chat test chatAddPattern
     bot.chat('/tellraw @p {"translate":"chat.type.text", "with":["U9G", "Hello World!"]}')
-    const [username, message, , chatMessage] = await once(bot, 'chat')
+    const [username, message, translate, chatMessage] = await once(bot, 'chat')
     assert.strictEqual(username, 'U9G')
     assert.strictEqual(message, 'Hello World!')
+    assert.strictEqual(translate, 'chat.type.text')
     assert.strictEqual(chatMessage.constructor.name, 'ChatMessage')
   })
 
