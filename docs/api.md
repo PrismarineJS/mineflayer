@@ -1270,6 +1270,10 @@ Fires when the held item is changed.
 
 Fires every tick if bot.physicsEnabled is set to true.
 
+#### "chat:name" (matches)
+
+Fires when the all of a chat pattern's regexs have matches
+
 ### Functions
 
 #### bot.blockAt(point, extraInfos=true)
@@ -1375,10 +1379,33 @@ Shortcut for "/tell <username>". All split messages will be whispered to usernam
 
 #### bot.chatAddPattern(pattern, chatType, description)
 
+Deprecated, use `addChatPattern` instead.
+
 Adds a regex pattern to the bot's chat matching. Useful for bukkit servers where the chat format changes a lot.
  * `pattern` - regular expression to match chat
  * `chatType` - the event the bot emits when the pattern matches. Eg: "chat" or "whisper"
  * 'description ' - Optional, describes what the pattern is for
+
+#### bot.addChatPattern(name, pattern, chatPatternOptions)
+
+make an event that is called every time the pattern is matched to a message,
+the event will be called `"chat:name"`, with name being the name passed
+* `name` - the name used to listen for the event
+* `pattern` - regular expression to match to messages recieved
+* `chatPatternOptions` - object
+  * `repeat` - defaults to true, whether to listen for this event after the first match
+  * `parse` - instead of returning the actual message that was matched, return the capture groups from the regex
+  * `deprecated` - (**unstable**) used by bot.chatAddPattern to keep compatability, likely to be removed
+
+#### bot.addChatPatterns(name, patterns, chatPatternOptions)
+
+make an event that is called every time all patterns havee been matched to messages,
+the event will be called `"chat:name"`, with name being the name passed
+* `name` - the name used to listen for the event
+* `patterns` - array of regular expression to match to messages recieved
+* `chatPatternOptions` - object
+  * `repeat` - defaults to true, whether to listen for this event after the first match
+  * `parse` - instead of returning the actual message that was matched, return the capture groups from the regex
 
 #### bot.setSettings(options)
 
