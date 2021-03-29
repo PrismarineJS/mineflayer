@@ -186,7 +186,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   blockInSight(maxSteps: number, vectorLength: number): Block | null;
 
-  blockAtCursor(maxDistance: number, matcher?: Function): Block | null;
+  blockAtCursor(maxDistance?: number, matcher?: Function): Block | null;
 
   canSeeBlock(block: Block): boolean;
 
