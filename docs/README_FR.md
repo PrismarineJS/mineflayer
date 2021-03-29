@@ -115,16 +115,16 @@ et to aura un affichage en *direct* qui ressemble a ceci:
 |---|---|
 |[viewer](https://github.com/PrismarineJS/mineflayer/tree/master/examples/viewer) | affiche ce que ton bot fait en direct |
 |[pathfinder](https://github.com/Karang/mineflayer-pathfinder/blob/master/examples/test.js) | Fait ton robot ce déplacé la ou tu veux |
-|[chest](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chest.js) | Use chests, furnaces, dispensers, enchantment tables |
-|[digger](https://github.com/PrismarineJS/mineflayer/blob/master/examples/digger.js) | Learn how to create a simple bot that is capable of digging the block |
-|[discord](https://github.com/PrismarineJS/mineflayer/blob/master/examples/discord.js) | connect a discord bot with a mineflayer bot |
-|[jumper](https://github.com/PrismarineJS/mineflayer/blob/master/examples/jumper.js) | Learn how to move, jump, ride vehicles, attack nearby entities |
+|[chest](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chest.js) | Utilise les coffres, fours, dispensers, tables d'enchantements |
+|[digger](https://github.com/PrismarineJS/mineflayer/blob/master/examples/digger.js) | Aprend comment créer a robot simple capable de creuser |
+|[discord](https://github.com/PrismarineJS/mineflayer/blob/master/examples/discord.js) | connecte un bot discord avec un robot mineflayer |
+|[jumper](https://github.com/PrismarineJS/mineflayer/blob/master/examples/jumper.js) | Un bot simple qui peut bouger, sauter, conduire des vehicules, attaque des créatures proche |
 
-And many mores in the [examples](https://github.com/PrismarineJS/mineflayer/tree/master/examples) folder
+Et beaucoup plus d'exemples dans le dossier [exemples](https://github.com/PrismarineJS/mineflayer/tree/master/examples)
 
 ### Modules
 
-A lot of the active development is happening inside of small npm packages which are used by mineflayer.
+Beaucoup du developement se passe is happening inside of small npm packages which are used by mineflayer.
 
 #### The Node Way&trade;
 
@@ -132,7 +132,7 @@ A lot of the active development is happening inside of small npm packages which 
 
 #### Modules
 
-These are the main modules that make up mineflayer:
+Voici les modules principales qui contruisent mineflayer:
 
 | module | description |
 |---|---|
@@ -155,13 +155,13 @@ These are the main modules that make up mineflayer:
 
 ### Debug
 
-You can enable some protocol debugging output using `DEBUG` environment variable:
+Tu peut activer le debug du protocol en utilisant `DEBUG` comme variable d'environnement:
 
 ```bash
 DEBUG="minecraft-protocol" node [...]
 ```
 
-On windows :
+Sur windows :
 ```
 set DEBUG=minecraft-protocol
 node your_script.js
@@ -201,18 +201,17 @@ The most updated and useful are :
  * [Bloodhound](https://github.com/Nixes/mineflayer-bloodhound) - determine who and what is responsible for damage to another entity
  * [tps](https://github.com/SiebeDW/mineflayer-tps) - get the current tps (processed tps)
 
-## Projects Using Mineflayer
+## Projets utilisant Mineflayer
 
  * [rom1504/rbot](https://github.com/rom1504/rbot)
-   - [YouTube - building a spiral staircase](https://www.youtube.com/watch?v=UM1ZV5200S0)
-   - [YouTube - replicating a building](https://www.youtube.com/watch?v=0cQxg9uDnzA)
+   - [YouTube - créé un escalier en collimasson](https://www.youtube.com/watch?v=UM1ZV5200S0)
+   - [YouTube - réplicé une contruction](https://www.youtube.com/watch?v=0cQxg9uDnzA)
  * [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot)
- * [vogonistic/voxel](https://github.com/vogonistic/mineflayer-voxel) - visualize what
-   the bot is up to using voxel.js
+ * [vogonistic/voxel](https://github.com/vogonistic/mineflayer-voxel) - visualise se qui se passe avec to robot en utilisant [voxel.js](https://www.voxeljs.com/)
  * [JonnyD/Skynet](https://github.com/JonnyD/Skynet) -  log player activity onto an online API
  * [MinecraftChat](https://github.com/rom1504/MinecraftChat) (last open source version, built by AlexKvazos) -  Minecraft web based chat client <https://minecraftchat.net/>
  * [Cheese Bot](https://github.com/Minecheesecraft/Cheese-Bot) - Plugin based bot with a clean GUI. Made with Node-Webkit. http://bot.ezcha.net/
- * [Chaoscraft](https://github.com/schematical/chaoscraft) - Minecraft bot using genetic algorithms, see [its youtube videos](https://www.youtube.com/playlist?list=PLLkpLgU9B5xJ7Qy4kOyBJl5J6zsDIMceH)
+ * [Chaoscraft](https://github.com/schematical/chaoscraft) - Des robots minecraft en utilisant des algorithmes genetiques, regarde [ces videos youtube (en anglais)](https://www.youtube.com/playlist?list=PLLkpLgU9B5xJ7Qy4kOyBJl5J6zsDIMceH)
  * [hexatester/minetelegram](https://github.com/hexatester/minetelegram) -  Minecraft - Telegram bridge, build on top of mineflayer & telegraf.
  * [ProZedd/mineflayer-printer](https://github.com/ProZedd/mineflayer-printer) - Prints minecraft schematics
  * [and hundreds more](https://github.com/PrismarineJS/mineflayer/network/dependents) - All the projects that github detected are using mineflayer
@@ -229,16 +228,16 @@ In order to get all tests to run successfully you must first:
 1. create a new folder in which to store minecraft server jars
 2. set the MC_SERVER_JAR_DIR to this folder
 
-Example:
+Exemple:
 
 1. `mkdir server_jars`
 2. `export MC_SERVER_JAR_DIR=/full/path/to/server_jars`
 
-Where the "/full/path/to/" is the fully qualified path name.
+Et "/full/path/to/" est le chemin précise.
 
-### Testing everything
+### Tester tout
 
-Simply run: `npm test`
+Simplement executer: `npm test`
 
 ### Testing specific version
 Run `npm test -g <version>`, where `<version>` is a minecraft version like `1.12`, `1.15.2`...
