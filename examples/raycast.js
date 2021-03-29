@@ -19,7 +19,7 @@ bot.on('message', (cm) => {
 })
 
 function block () {
-  const block = bot.blockInSight()
+  const block = bot.blockAtCursor()
 
   if (!block) {
     return bot.chat('Looking at Air')
