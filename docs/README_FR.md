@@ -113,20 +113,23 @@ et to aura un affichage en *direct* qui ressemble a ceci:
 
 | exemple | description |
 |---|---|
-|[viewer](https://github.com/PrismarineJS/mineflayer/tree/master/examples/viewer) | affiche ce que ton bot fait en direct |
+|[maps](https://github.com/PrismarineJS/mineflayer/tree/master/examples/viewer) | affiche ce que ton bot fait en direct |
 |[pathfinder](https://github.com/Karang/mineflayer-pathfinder/blob/master/examples/test.js) | Fait ton robot ce déplacé la ou tu veux |
-|[chest](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chest.js) | Utilise les coffres, fours, dispensers, tables d'enchantements |
-|[digger](https://github.com/PrismarineJS/mineflayer/blob/master/examples/digger.js) | Aprend comment créer a robot simple capable de creuser |
+|[coffre](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chest.js) | Utilise les coffres, fours, dispensers, tables d'enchantements |
+|[pelteuse](https://github.com/PrismarineJS/mineflayer/blob/master/examples/digger.js) | Aprend comment créer a robot simple capable de creuser |
 |[discord](https://github.com/PrismarineJS/mineflayer/blob/master/examples/discord.js) | connecte un bot discord avec un robot mineflayer |
 |[jumper](https://github.com/PrismarineJS/mineflayer/blob/master/examples/jumper.js) | Un bot simple qui peut bouger, sauter, conduire des vehicules, attaque des créatures proche |
+|[ansi](https://github.com/PrismarineJS/mineflayer/blob/master/examples/ansi.js) | Affiche la chat du robot avec les couleurs du chat dans ton terminal |
+|[guard](https://github.com/PrismarineJS/mineflayer/blob/master/examples/guard.js) | Fait a robot guarder une zone definie |
+|[multiple-from-file](https://github.com/PrismarineJS/mineflayer/blob/master/examples/multiple_from_file.js) | Est un fichier texte avec tout les comptes minecraft |
 
 Et beaucoup plus d'exemples dans le dossier [exemples](https://github.com/PrismarineJS/mineflayer/tree/master/examples)
 
 ### Modules
 
-Beaucoup du developement se passe is happening inside of small npm packages which are used by mineflayer.
+Beaucoup du development arrive à l'interieur de petit package npm, qui sont utilisé par mineflayer
 
-#### The Node Way&trade;
+#### The Node Way&trade; (en anglais)
 
 > "When applications are done well, they are just the really application-specific, brackish residue that can't be so easily abstracted away. All the nice, reusable components sublimate away onto github and npm where everybody can collaborate to advance the commons." — substack from ["how I write modules"](https://gist.github.com/substack/5075355)
 
@@ -136,14 +139,14 @@ Voici les modules principales qui contruisent mineflayer:
 
 | module | description |
 |---|---|
-| [minecraft-protocol](https://github.com/PrismarineJS/node-minecraft-protocol) | Parse and serialize minecraft packets, plus authentication and encryption.
-| [minecraft-data](https://github.com/PrismarineJS/minecraft-data) | Language independent module providing minecraft data for minecraft clients, servers and libraries.
-| [prismarine-physics](https://github.com/PrismarineJS/prismarine-physics) | Provide the physics engine for minecraft entities
-| [prismarine-chunk](https://github.com/PrismarineJS/prismarine-chunk) | A class to hold chunk data for Minecraft
-| [node-vec3](https://github.com/PrismarineJS/node-vec3) | 3d vector math with robust unit tests
-| [prismarine-block](https://github.com/PrismarineJS/prismarine-block) | Represent a minecraft block with its associated data
-| [prismarine-chat](https://github.com/PrismarineJS/prismarine-chat) | A parser for a minecraft chat message (extracted from mineflayer)
-| [node-yggdrasil](https://github.com/PrismarineJS/node-yggdrasil) | Node.js library to interact with Mojang's authentication system, known as Yggdrasil
+| [minecraft-protocol](https://github.com/PrismarineJS/node-minecraft-protocol) | Traduis et serialise les packets minecraft, plus l'authentication et l'encryption.
+| [minecraft-data](https://github.com/PrismarineJS/minecraft-data) | Module qui provide des données minecraft pour les clients minecraft, les serveurs et les librairies.
+| [prismarine-physics](https://github.com/PrismarineJS/prismarine-physics) | provide les moteurs de physique pour les entitées minecraft.
+| [prismarine-chunk](https://github.com/PrismarineJS/prismarine-chunk) | Une class pour contenir les chunks minecraft
+| [node-vec3](https://github.com/PrismarineJS/node-vec3) | Mathematique de vecteur 3D
+| [prismarine-block](https://github.com/PrismarineJS/prismarine-block) | Represente un block minecraft avec les données associés.
+| [prismarine-chat](https://github.com/PrismarineJS/prismarine-chat) | Une traducteur pour les messages de chat minecraft (extracté depuis mineflayer)
+| [node-yggdrasil](https://github.com/PrismarineJS/node-yggdrasil) | Une librairies Node.js pour intéragir avecles systeme d'authenfication de mojang, connue sous le nom de Yggdrasil
 | [prismarine-world](https://github.com/PrismarineJS/prismarine-world) | The core implementation of worlds for prismarine
 | [prismarine-windows](https://github.com/PrismarineJS/prismarine-windows) | Represent minecraft windows
 | [prismarine-item](https://github.com/PrismarineJS/prismarine-item) | Represent a minecraft item with its associated data
@@ -219,28 +222,12 @@ The most updated and useful are :
 
 ## Testing
 
-Some setup is required after first cloning the project but after that is done it's very easy to run them.
-
-### Setup
-
-In order to get all tests to run successfully you must first:
-
-1. create a new folder in which to store minecraft server jars
-2. set the MC_SERVER_JAR_DIR to this folder
-
-Exemple:
-
-1. `mkdir server_jars`
-2. `export MC_SERVER_JAR_DIR=/full/path/to/server_jars`
-
-Et "/full/path/to/" est le chemin précise.
-
 ### Tester tout
 
 Simplement executer: `npm test`
 
-### Testing specific version
-Run `npm test -g <version>`, where `<version>` is a minecraft version like `1.12`, `1.15.2`...
+### Tester une version specifique
+Execute `npm test -g <version>`, ou `<version>` est une version de minecraft comme `1.12`, `1.15.2`...
 
 ### Testing specific test
 Run `npm test -g <test_name>`, where `<test_name>` is a name of the test like `bed`, `useChests`, `rayTrace`...
