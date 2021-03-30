@@ -1,6 +1,6 @@
-// this example is to show the different ways to parse chat messages
-
 /*
+this example is to show the different ways to parse chat messages
+
 Expected output in console:
 
 bot has just joined!
