@@ -1,6 +1,5 @@
 /*
- * This script will automaticly set if a totem is in the inventory the totem in the off-hand.
- * It checks for a totem every tick.
+ * This script will apply armor onto an armor stand within 4 blocks of the bot
  */
 const mineflayer = require('mineflayer')
 
@@ -16,9 +15,16 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
+const armorTypes = {
+  helmet: [0, 1.8, 0],
+  chestplate: [0, 1.2, 0],
+  leggings: [0, 0.75, 0],
+  boots: [0, 0.1, 0]
+}
+
 bot.on('chat', async (username, message) => {
-  const args = message.split(' ')
-  if (args[0] !== 'equip' && args[0] !== 'unequip') return
+  const [mainCommand, subCommand] = message.split(' ')
+  if (mainCommand !== 'equip' && mainCommand !== 'unequip') return
 
   const armorStand = bot.nearestEntity(e => e.mobType === 'Armor Stand' && bot.entity.position.distanceTo(e.position) < 4)
   if (!armorStand) {
@@ -26,36 +32,27 @@ bot.on('chat', async (username, message) => {
     return
   }
 
-  if (args[0] === 'equip') {
-    let armor
+  if (mainCommand === 'equip') {
+    let armor = null
+    // parse chat
+    Object.keys(armorTypes).forEach(armorType => {
+      if (subCommand !== armorType) return
+      armor = bot.inventory.items().find(item => item.name.includes(armorType))
+    })
 
-    if (args[1] === 'helmet') {
-      armor = bot.inventory.items().find(item => item.name.includes('helmet'))
-    } else if (args[1] === 'chestplate') {
-      armor = bot.inventory.items().find(item => item.name.includes('chestplate'))
-    } else if (args[1] === 'leggings') {
-      armor = bot.inventory.items().find(item => item.name.includes('leggings'))
-    } else if (args[1] === 'boots') {
-      armor = bot.inventory.items().find(item => item.name.includes('boots'))
-    }
-
-    if (!armor) {
+    if (armor === null) {
       bot.chat('I have no armor items in my inventory!')
       return
     }
 
     await bot.equip(armor, 'hand')
     bot.activateEntityAt(armorStand, armorStand.position)
-  } else if (args[0] === 'unequip') {
+  } else if (mainCommand === 'unequip') {
     await bot.unequip('hand')
-    if (args[1] === 'helmet') {
-      bot.activateEntityAt(armorStand, armorStand.position.offset(0, 1.8, 0))
-    } else if (args[1] === 'chestplate') {
-      bot.activateEntityAt(armorStand, armorStand.position.offset(0, 1.2, 0))
-    } else if (args[1] === 'leggings') {
-      bot.activateEntityAt(armorStand, armorStand.position.offset(0, 0.75, 0))
-    } else if (args[1] === 'boots') {
-      bot.activateEntityAt(armorStand, armorStand.position.offset(0, 0.1, 0))
-    }
+
+    const offset = armorTypes[subCommand]
+    if (!offset) return
+
+    bot.activateEntityAt(armorStand, armorStand.position.offset(...offset))
   }
 })
