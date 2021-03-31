@@ -1388,6 +1388,8 @@ Adds a regex pattern to the bot's chat matching. Useful for bukkit servers where
 
 #### bot.addChatPattern(name, pattern, chatPatternOptions)
 
+** this is an alias of `bot.addChatPatternSet(name, [pattern], chatPatternOptions)`
+
 make an event that is called every time the pattern is matched to a message,
 the event will be called `"chat:name"`, with name being the name passed
 * `name` - the name used to listen for the event
