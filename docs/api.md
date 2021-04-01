@@ -665,7 +665,7 @@ Create and return an instance of the class bot.
  * checkTimeoutInterval : default to `30*1000` (30s), check if keepalive received at that period, disconnect otherwise.
  * loadInternalPlugins : defaults to true
  * storageBuilder : an optional function, takes as argument version and worldName and return an instance of something with the same API as prismarine-provider-anvil. Will be used to save the world.
- * client : an instance of node-minecraft-protocol, if not specified, mineflayer makes it's own client
+ * client : an instance of node-minecraft-protocol, if not specified, mineflayer makes it's own client. This can be used to enable using mineflayer through a proxy of many clients or a vanilla client and a mineflayer client.
  * plugins : object : defaults to {}
    - pluginName : false : don't load internal plugin with given name ie. `pluginName`
    - pluginName : true : load internal plugin with given name ie. `pluginName` even though loadInternalplugins is set to false
