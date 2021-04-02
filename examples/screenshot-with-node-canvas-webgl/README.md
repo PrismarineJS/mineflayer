@@ -40,7 +40,8 @@ docker build . -t screenshot-bot
 
 Running the image and saving the screenshot to the current directory:
 ```bash
-docker run -v $(pwd):/usr/src/app/screenshots screenshot-bot
+docker run -v $(pwd):/usr/src/app/screenshots -e HOST='<server ip address>' -e PORT=<port> screenshot-bot
 ```
+`-e USERNAME=User1` and `-e PASSWORD=<Your password>` can be added if the server is not running in offline mode.
 
 
