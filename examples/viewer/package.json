@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "prismarine-viewer": "^1.0.3"
     "prismarine-viewer": "^1.0.3",
     "mineflayer": "file:../../"
   },
