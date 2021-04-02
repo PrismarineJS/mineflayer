@@ -253,5 +253,20 @@
     "name": "lessCharsInChat",
     "description": "max chars in chat",
     "versions": ["1.8", "1.10.2"]
+  },
+  {
+    "name": "enderCrystalNameEndsInEr",
+    "description": "this is when the end_crystal's entity name is ender_crystal",
+    "versions": ["1.11", "1.12.2"]
+  },
+  {
+    "name": "enderCrystalNameNoCapsNoUnderscore",
+    "description": "this is when the end_crystal's entity name is endercrystal",
+    "versions": ["1.13", "1.13.2"]
+  },
+  {
+    "name": "enderCrystalNameNoCapsWithUnderscore",
+    "description": "this is when the end_crystal's entity name is end_crystal",
+    "versions": ["1.14", "1.16.5"]
   }
 ]
