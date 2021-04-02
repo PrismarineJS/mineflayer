@@ -4,7 +4,7 @@
  *
  */
 
-const mineflayer = require('../../index')
+const mineflayer = require('mineflayer')
 const { Viewer, WorldView, getBufferFromStream } = require('prismarine-viewer').viewer
 global.Worker = require('worker_threads').Worker
 
@@ -30,12 +30,12 @@ bot.on('spawn', async () => {
   await bot.waitForChunksToLoad()
   const camera = new Camera(bot)
   camera.on('ready', async () => {
-    await camera.takePicture(new Vec3(0, -1, 0), '1')
-    await camera.takePicture(new Vec3(1, 0, 0), '2')
-    await camera.takePicture(new Vec3(0, 0, 1), '3')
-    await camera.takePicture(new Vec3(-1, 0, 0), '4')
-    await camera.takePicture(new Vec3(0, 0, -1), '5')
+    await camera.takePicture(new Vec3(1, -0.2, 0), 'screenshot1')
   })
+})
+
+bot.on('error', (err) => {
+  console.error(err)
 })
 
 class Camera extends EventEmitter {
@@ -65,13 +65,14 @@ class Camera extends EventEmitter {
     this.viewer.camera.position.set(center.x, center.y, center.z)
 
     await worldView.init(center)
-    await new Promise(resolve => setTimeout(resolve, 5000))
   }
 
   async takePicture (direction, name) {
     const cameraPos = new Vec3(this.viewer.camera.position.x, this.viewer.camera.position.y, this.viewer.camera.position.z)
     const point = cameraPos.add(direction)
     this.viewer.camera.lookAt(point.x, point.y, point.z)
+    console.info('Waiting for world to load')
+    await new Promise(resolve => setTimeout(resolve, 5000))
     this.renderer.render(this.viewer.scene, this.viewer.camera)
 
     const imageStream = this.canvas.createJPEGStream({
