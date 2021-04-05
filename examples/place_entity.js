@@ -7,7 +7,7 @@ bot.on('chat', async (_, msg) => {
     const crystal = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
     console.log(crystal)
   } else if (msg === 'go_boat') {
-    const boat = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, -1, -2)), new Vec3(0, 1, 0))
+    const boat = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, -2, -2)), new Vec3(0, 1, 0))
     console.log(boat)
   } else if (msg === 'go_spawnegg') {
     const mob = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, -2)), new Vec3(0, 1, 0))

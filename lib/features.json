@@ -255,7 +255,7 @@
     "versions": ["1.8", "1.10.2"]
   },
   {
-    "name": "enderCrystalNameEndsInEr",
+    "name": "enderCrystalNameEndsInErNoCaps",
     "description": "this is when the end_crystal's entity name is ender_crystal",
     "versions": ["1.11", "1.12.2"]
   },
