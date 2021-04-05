@@ -1065,8 +1065,15 @@ Fires when your hp or food change.
 
 #### "entitySwingArm" (entity)
 #### "entityHurt" (entity)
+#### "entityDead" (entity)
+#### "entityTaming" (entity)
+#### "entityTamed" (entity)
+#### "entityShakingOffWater (entity)
+#### "entityEatingGrass" (entity)
 #### "entityWake" (entity)
 #### "entityEat" (entity)
+#### "entityCriticalEffect" (entity)
+#### "entityMagicCriticalEffect" (entity)
 #### "entityCrouch" (entity)
 #### "entityUncrouch" (entity)
 #### "entityEquip" (entity)
@@ -1095,6 +1102,7 @@ or boat.
 #### "entityEffect" (entity, effect)
 #### "entityEffectEnd" (entity, effect)
 #### "playerJoined" (player)
+#### "playerUpdated" (player)
 #### "playerLeft" (player)
 
 #### "blockUpdate" (oldBlock, newBlock)
