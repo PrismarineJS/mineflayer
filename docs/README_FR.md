@@ -147,13 +147,13 @@ Voici les modules principales qui contruisent mineflayer:
 | [prismarine-block](https://github.com/PrismarineJS/prismarine-block) | Represente un block minecraft avec les données associés.
 | [prismarine-chat](https://github.com/PrismarineJS/prismarine-chat) | Une traducteur pour les messages de chat minecraft (extracté depuis mineflayer)
 | [node-yggdrasil](https://github.com/PrismarineJS/node-yggdrasil) | Une librairies Node.js pour intéragir avecles systeme d'authenfication de mojang, connue sous le nom de Yggdrasil
-| [prismarine-world](https://github.com/PrismarineJS/prismarine-world) | The core implementation of worlds for prismarine
-| [prismarine-windows](https://github.com/PrismarineJS/prismarine-windows) | Represent minecraft windows
-| [prismarine-item](https://github.com/PrismarineJS/prismarine-item) | Represent a minecraft item with its associated data
-| [prismarine-nbt](https://github.com/PrismarineJS/prismarine-nbt) | An NBT parser for node-minecraft-protocol
-| [prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe) | Represent minecraft recipes
-| [prismarine-biome](https://github.com/PrismarineJS/prismarine-biome) | Represent a minecraft biome with its associated data
-| [prismarine-entity](https://github.com/PrismarineJS/prismarine-entity) | Represent a minecraft entity
+| [prismarine-world](https://github.com/PrismarineJS/prismarine-world) | l'implementation des mondes pour prismarine
+| [prismarine-windows](https://github.com/PrismarineJS/prismarine-windows) | Represente une fenetre minecraft
+| [prismarine-item](https://github.com/PrismarineJS/prismarine-item) | Contient les items minecraft et les donnnées qui y sont associé
+| [prismarine-nbt](https://github.com/PrismarineJS/prismarine-nbt) | Un traducteur NBT pour node-minecraft-protocol
+| [prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe) | Contient les récettes minecraft
+| [prismarine-biome](https://github.com/PrismarineJS/prismarine-biome) | Contient les biome et leur données 
+| [prismarine-entity](https://github.com/PrismarineJS/prismarine-entity) | Represente une entitées minecraft
 
 
 ### Debug
@@ -211,12 +211,12 @@ The most updated and useful are :
    - [YouTube - réplicé une contruction](https://www.youtube.com/watch?v=0cQxg9uDnzA)
  * [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot)
  * [vogonistic/voxel](https://github.com/vogonistic/mineflayer-voxel) - visualise se qui se passe avec to robot en utilisant [voxel.js](https://www.voxeljs.com/)
- * [JonnyD/Skynet](https://github.com/JonnyD/Skynet) -  log player activity onto an online API
+ * [JonnyD/Skynet](https://github.com/JonnyD/Skynet) -  Affiche les info des joueurs sur une API en ligne
  * [MinecraftChat](https://github.com/rom1504/MinecraftChat) (last open source version, built by AlexKvazos) -  Minecraft web based chat client <https://minecraftchat.net/>
  * [Cheese Bot](https://github.com/Minecheesecraft/Cheese-Bot) - Plugin based bot with a clean GUI. Made with Node-Webkit. http://bot.ezcha.net/
  * [Chaoscraft](https://github.com/schematical/chaoscraft) - Des robots minecraft en utilisant des algorithmes genetiques, regarde [ces videos youtube (en anglais)](https://www.youtube.com/playlist?list=PLLkpLgU9B5xJ7Qy4kOyBJl5J6zsDIMceH)
- * [hexatester/minetelegram](https://github.com/hexatester/minetelegram) -  Minecraft - Telegram bridge, build on top of mineflayer & telegraf.
- * [ProZedd/mineflayer-printer](https://github.com/ProZedd/mineflayer-printer) - Prints minecraft schematics
+ * [hexatester/minetelegram](https://github.com/hexatester/minetelegram) -  Minecraft - une API telgram, construite sur Mineflayer et telegraf.
+ * [ProZedd/mineflayer-printer](https://github.com/ProZedd/mineflayer-printer) - "Imprimme" un .schematic dans minecraft
  * [and hundreds more](https://github.com/PrismarineJS/mineflayer/network/dependents) - All the projects that github detected are using mineflayer
 
 
