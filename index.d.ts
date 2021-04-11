@@ -63,6 +63,7 @@ interface BotEvents {
   actionBar: (jsonMsg: ChatMessage) => void;
   error: (err: Error) => void;
   message: (jsonMsg: ChatMessage, position: string) => void;
+  messagestr: (message: string, position: string) => void;
   unmatchedMessage: (stringMsg: string, jsonMsg: ChatMessage) => void;
   login: () => void;
   spawn: () => void;
