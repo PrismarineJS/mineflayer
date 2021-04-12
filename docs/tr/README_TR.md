@@ -233,5 +233,5 @@ Basitçe `npm test` komutunu çalıştırın
 `npm test -- -g <test_adı>` komutunu çalıştırın, `<test_name>` kısmının olduğu bölüm bir test olmalı mesela `bed`, `useChests`, `rayTrace`...
 
 ## Lisans
-###TR Çeviri KaffinPX tarafından yapılmıştır. | TR translation made by KaffinPX : Discord KaffinPX#1744
+### TR Çeviri KaffinPX tarafından yapılmıştır. | TR translation made by KaffinPX : Discord KaffinPX#1744
 [MIT](LICENSE)
