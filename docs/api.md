@@ -988,7 +988,7 @@ Emitted for every server message, including chats.
    * system
    * game_info
 
-#### "messagestr" (message, messagePosition)
+#### "messagestr" (message, messagePosition, jsonMsg)
 
 alias for the "message" event but it calls .toString() on the message object to get a string for the message before emitting.
 
