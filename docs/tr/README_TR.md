@@ -14,7 +14,7 @@
 
 Yüksek seviye JavaScript ile güçlü, dengeli Minecraft robotları oluşturun [API](api.md).
 
-Node.js ile ilk deneyimin mi ? İstersen [tutorial](tutorial.md) ile başlayabilirsin
+Node.js ile ilk deneyimin mi ? İstersen [öğretici](tutorial.md) ile başlayabilirsin
 
 ## Özellikler
 
@@ -114,15 +114,15 @@ Ve *canlı* görüntü şuna benzeyecektir:
 
 | Örnek | Açıklama |
 |---|---|
-|[viewer](https://github.com/PrismarineJS/mineflayer/tree/master/examples/viewer) | Display your bot world view in the browser |
-|[pathfinder](https://github.com/PrismarineJS/mineflayer/tree/master/examples/pathfinder) | Make your bot go to any location automatically |
-|[chest](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chest.js) | Use chests, furnaces, dispensers, enchantment tables |
-|[digger](https://github.com/PrismarineJS/mineflayer/blob/master/examples/digger.js) | Learn how to create a simple bot that is capable of digging the block |
-|[discord](https://github.com/PrismarineJS/mineflayer/blob/master/examples/discord.js) | Connect a discord bot with a mineflayer bot |
-|[jumper](https://github.com/PrismarineJS/mineflayer/blob/master/examples/jumper.js) | Learn how to move, jump, ride vehicles, attack nearby entities |
-|[ansi](https://github.com/PrismarineJS/mineflayer/blob/master/examples/ansi.js) | Display your bot's chat with all of the chat colors shown in your terminal |
-|[guard](https://github.com/PrismarineJS/mineflayer/blob/master/examples/guard.js) | Make a bot guard a defined area from nearby mobs |
-|[multiple-from-file](https://github.com/PrismarineJS/mineflayer/blob/master/examples/multiple_from_file.js) | Add a text file with accounts and have them all login |
+|[viewer](https://github.com/PrismarineJS/mineflayer/tree/master/examples/viewer) | Botunu tarayıcında izle |
+|[pathfinder](https://github.com/PrismarineJS/mineflayer/tree/master/examples/pathfinder) | Botunun belirli bir yere gitmesini sağla |
+|[chest](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chest.js) | Sandıkları, fırınları, fırlatıcıları ve büyü masalarını kullan |
+|[digger](https://github.com/PrismarineJS/mineflayer/blob/master/examples/digger.js) | Basit bir kazıcı botun nasıl yapılacağını öğren |
+|[discord](https://github.com/PrismarineJS/mineflayer/blob/master/examples/discord.js) | Discord ile bir mineflayer botunu bağla |
+|[jumper](https://github.com/PrismarineJS/mineflayer/blob/master/examples/jumper.js) | Nasıl hareket ettiğini, zıplamayı, binek sürmeyi, canlılara saldıracağını öğren |
+|[ansi](https://github.com/PrismarineJS/mineflayer/blob/master/examples/ansi.js) | Botun sohbetini renkli bir şekilde izle |
+|[guard](https://github.com/PrismarineJS/mineflayer/blob/master/examples/guard.js) | Gardiyan bir bot yap bir alanı korusun |
+|[multiple-from-file](https://github.com/PrismarineJS/mineflayer/blob/master/examples/multiple_from_file.js) | Bir dosyadan çoklu giriş sağla |
 
 Ve daha fazlası [burada](https://github.com/PrismarineJS/mineflayer/tree/master/examples)
 
@@ -140,21 +140,21 @@ Mineflayerin bazı yapı taşları olarak kullanılan modüller:
 
 | Modül | Açıklama |
 |---|---|
-| [minecraft-protocol](https://github.com/PrismarineJS/node-minecraft-protocol) | Parse and serialize minecraft packets, plus authentication and encryption.
-| [minecraft-data](https://github.com/PrismarineJS/minecraft-data) | Language independent module providing minecraft data for minecraft clients, servers and libraries.
-| [prismarine-physics](https://github.com/PrismarineJS/prismarine-physics) | Provide the physics engine for minecraft entities
-| [prismarine-chunk](https://github.com/PrismarineJS/prismarine-chunk) | A class to hold chunk data for Minecraft
-| [node-vec3](https://github.com/PrismarineJS/node-vec3) | 3d vector math with robust unit tests
-| [prismarine-block](https://github.com/PrismarineJS/prismarine-block) | Represent a minecraft block with its associated data
-| [prismarine-chat](https://github.com/PrismarineJS/prismarine-chat) | A parser for a minecraft chat message (extracted from mineflayer)
-| [node-yggdrasil](https://github.com/PrismarineJS/node-yggdrasil) | Node.js library to interact with Mojang's authentication system, known as Yggdrasil
-| [prismarine-world](https://github.com/PrismarineJS/prismarine-world) | The core implementation of worlds for prismarine
-| [prismarine-windows](https://github.com/PrismarineJS/prismarine-windows) | Represent minecraft windows
-| [prismarine-item](https://github.com/PrismarineJS/prismarine-item) | Represent a minecraft item with its associated data
-| [prismarine-nbt](https://github.com/PrismarineJS/prismarine-nbt) | An NBT parser for node-minecraft-protocol
-| [prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe) | Represent minecraft recipes
-| [prismarine-biome](https://github.com/PrismarineJS/prismarine-biome) | Represent a minecraft biome with its associated data
-| [prismarine-entity](https://github.com/PrismarineJS/prismarine-entity) | Represent a minecraft entity
+| [minecraft-protocol](https://github.com/PrismarineJS/node-minecraft-protocol) | Minecraft paketlerini kullanmayı sağlar.
+| [minecraft-data](https://github.com/PrismarineJS/minecraft-data) | Minecraft hakkında bir veritabanı.
+| [prismarine-physics](https://github.com/PrismarineJS/prismarine-physics) | Minecraft canlılarının fizik motoru
+| [prismarine-chunk](https://github.com/PrismarineJS/prismarine-chunk) | Chunk bilgisini tutan bir modül
+| [node-vec3](https://github.com/PrismarineJS/node-vec3) | 3B Vektör matematiği burada
+| [prismarine-block](https://github.com/PrismarineJS/prismarine-block) | Minecraft bloğunu verisi ile tanımlamaya yarayan modül
+| [prismarine-chat](https://github.com/PrismarineJS/prismarine-chat) | Minecraft sohbetini düzenleyici (mineflayerdan çıkartıldı)
+| [node-yggdrasil](https://github.com/PrismarineJS/node-yggdrasil) | Mojangın üyelik sistemiyle etkileşime geçebilmek için node.js kütüphanesi
+| [prismarine-world](https://github.com/PrismarineJS/prismarine-world) | Prismarine dünyaların ana kütüphanesi
+| [prismarine-windows](https://github.com/PrismarineJS/prismarine-windows) | Minecraft sekmeleri için bir yönetim kütüphanesi
+| [prismarine-item](https://github.com/PrismarineJS/prismarine-item) | Bir Minecraft eşyasını verileri ile tanımlamaya yarayan modül
+| [prismarine-nbt](https://github.com/PrismarineJS/prismarine-nbt) | Minecraft-protocol için nbt kütüphanesi
+| [prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe) | Minecraft tarif kütüphanesi
+| [prismarine-biome](https://github.com/PrismarineJS/prismarine-biome) | Bir Minecraft biyomunu verileri ile tanımlamaya yarayan modül
+| [prismarine-entity](https://github.com/PrismarineJS/prismarine-entity) | Bir minecraft canlısını tanımlar
 
 
 ### Hata ayıklama
@@ -178,47 +178,46 @@ Mineflayerin olduğundan daha üstü destek için.
 
 Genellikle güncellenen ve kullanışlı olan bazıları :
 
- * [pathfinder](https://github.com/Karang/mineflayer-pathfinder) - advanced A* pathfinding with a lot of configurable features
- * [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer) - simple web chunk viewer
- * [web-inventory](https://github.com/ImHarvol/mineflayer-web-inventory) - web based inventory viewer
- * [statemachine](https://github.com/TheDudeFromCI/mineflayer-statemachine) - A state machine API for more complex bot behavors
- * [Armor Manager](https://github.com/G07cha/MineflayerArmorManager) - automatic armor managment
- * [Collect Block](https://github.com/TheDudeFromCI/mineflayer-collectblock) - Quick and simple block collection API.
- * [Dashboard](https://github.com/wvffle/mineflayer-dashboard) - Frontend dashboard for mineflayer bot
- * [PVP](https://github.com/TheDudeFromCI/mineflayer-pvp) - Easy API for basic PVP and PVE.
- * [auto-eat](https://github.com/LINKdiscordd/mineflayer-auto-eat) - Automatic eating of food.
- * [Tool](https://github.com/TheDudeFromCI/mineflayer-tool) - A utility for automatic tool/weapon selection with a high level API.
- * [Hawkeye](https://github.com/sefirosweb/minecraftHawkEye) - A utility for using auto-aim with bows.
+ * [pathfinder](https://github.com/Karang/mineflayer-pathfinder) - Yön bulma ve birsürü konfigürasyon ayarları.
+ * [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer) - Basit tarayıcı chunk gösterici.
+ * [web-inventory](https://github.com/ImHarvol/mineflayer-web-inventory) - Tarayıcı bazlı envanter gösterici.
+ * [statemachine](https://github.com/TheDudeFromCI/mineflayer-statemachine) - Daha kompleks bot eventleri için bir API.
+ * [Armor Manager](https://github.com/G07cha/MineflayerArmorManager) - Otomatik zırh düzenleyici.
+ * [Collect Block](https://github.com/TheDudeFromCI/mineflayer-collectblock) - Basit ve hızlı blok toplama APIsi.
+ * [Dashboard](https://github.com/wvffle/mineflayer-dashboard) - Mineflayer botu için kontrol panel.
+ * [PVP](https://github.com/TheDudeFromCI/mineflayer-pvp) - PVP ve PVE için basit API.
+ * [auto-eat](https://github.com/LINKdiscordd/mineflayer-auto-eat) - Otomatik yemek yeme.
+ * [Tool](https://github.com/TheDudeFromCI/mineflayer-tool) - Otomatik eşya seçimi için yüksek API.
+ * [Hawkeye](https://github.com/sefirosweb/minecraftHawkEye) - Yaylarla auto-aim için API.
 
 
  Bunlarıda deneyebilirsin :
 
- * [radar](https://github.com/andrewrk/mineflayer-radar/) - web based radar
-   interface using canvas and socket.io. [YouTube Demo](https://www.youtube.com/watch?v=FjDmAfcVulQ)
- * [blockfinder](https://github.com/Darthfett/mineflayer-blockFinder) - find blocks in the 3D world
- * [scaffold](https://github.com/andrewrk/mineflayer-scaffold) - get to
-   a target destination even if you have to build or break blocks to do so.
-   [YouTube Demo](http://youtu.be/jkg6psMUSE0)
- * [auto-auth](https://github.com/G07cha/MineflayerAutoAuth) - chat-based bot authentication
- * [Bloodhound](https://github.com/Nixes/mineflayer-bloodhound) - determine who and what is responsible for damage to another entity
- * [tps](https://github.com/SiebeDW/mineflayer-tps) - get the current tps (processed tps)
- + [panorama](https://github.com/IceTank/mineflayer-panorama) - take Panorama Images of your world
+ * [radar](https://github.com/andrewrk/mineflayer-radar/) - tarayıcı bazlı radar
+   arayüzü canvas and socket.io kullanılarak. [YouTube Demo](https://www.youtube.com/watch?v=FjDmAfcVulQ)
+ * [blockfinder](https://github.com/Darthfett/mineflayer-blockFinder) - 3 boyutlu dünyada blok bulun
+ * [scaffold](https://github.com/andrewrk/mineflayer-scaffold) - bir hedefe blok koyarak
+ veya kırarak ulaş [YouTube Demo](http://youtu.be/jkg6psMUSE0)
+ * [auto-auth](https://github.com/G07cha/MineflayerAutoAuth) - sohbet-bazlı bot giriş sistemi
+ * [Bloodhound](https://github.com/Nixes/mineflayer-bloodhound) - pvp hakkında bilgi APIsi
+ * [tps](https://github.com/SiebeDW/mineflayer-tps) - şuanki tpsi elde et (işlenmiş tps)
+ + [panorama](https://github.com/IceTank/mineflayer-panorama) - dünyanın panorama resimlerini çek
 
 ## Mineflayer Kullanan Projeler
 
  * [rom1504/rbot](https://github.com/rom1504/rbot)
-   - [YouTube - building a spiral staircase](https://www.youtube.com/watch?v=UM1ZV5200S0)
-   - [YouTube - replicating a building](https://www.youtube.com/watch?v=0cQxg9uDnzA)
+   - [YouTube - spiral bir merdiven inşaa etme](https://www.youtube.com/watch?v=UM1ZV5200S0)
+   - [YouTube - bir yapıyı taklit etme](https://www.youtube.com/watch?v=0cQxg9uDnzA)
  * [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot)
- * [vogonistic/voxel](https://github.com/vogonistic/mineflayer-voxel) - visualize what
-   the bot is up to using voxel.js
- * [JonnyD/Skynet](https://github.com/JonnyD/Skynet) -  log player activity onto an online API
- * [MinecraftChat](https://github.com/rom1504/MinecraftChat) (last open source version, built by AlexKvazos) -  Minecraft web based chat client <https://minecraftchat.net/>
- * [Cheese Bot](https://github.com/Minecheesecraft/Cheese-Bot) - Plugin based bot with a clean GUI. Made with Node-Webkit.
- * [Chaoscraft](https://github.com/schematical/chaoscraft) - Minecraft bot using genetic algorithms, see [its youtube videos](https://www.youtube.com/playlist?list=PLLkpLgU9B5xJ7Qy4kOyBJl5J6zsDIMceH)
- * [hexatester/minetelegram](https://github.com/hexatester/minetelegram) -  Minecraft - Telegram bridge, build on top of mineflayer & telegraf.
- * [PrismarineJS/mineflayer-builder](https://github.com/PrismarineJS/mineflayer-builder) - Prints minecraft schematics in survival, keeping orientation
- * [ve daha niceleri](https://github.com/PrismarineJS/mineflayer/network/dependents) - All the projects that github detected are using mineflayer
+ * [vogonistic/voxel](https://github.com/vogonistic/mineflayer-voxel) - Voxel.js ile 
+ botun ne kullandğını gör
+ * [JonnyD/Skynet](https://github.com/JonnyD/Skynet) - Bot aktivitesini bir APIye gönder
+ * [MinecraftChat](https://github.com/rom1504/MinecraftChat) (son açık kaynak sürümü, AlexKvazos tarafından yapıldı) - Minecraft internet tabanlı sohbet <https://minecraftchat.net/>
+ * [Cheese Bot](https://github.com/Minecheesecraft/Cheese-Bot) - GUIli bir bot.
+ * [Chaoscraft](https://github.com/schematical/chaoscraft) - Genetik algoritmalar ile minecraft botu, şu [videoyu izle](https://www.youtube.com/playlist?list=PLLkpLgU9B5xJ7Qy4kOyBJl5J6zsDIMceH)
+ * [hexatester/minetelegram](https://github.com/hexatester/minetelegram) -  Minecraft - Telegram köprüsü, mineflayer & telegram üzerinde inşaa edildi
+ * [PrismarineJS/mineflayer-builder](https://github.com/PrismarineJS/mineflayer-builder) - Minecraft şemalarını survivalde inşaa eder
+ * [ve daha niceleri](https://github.com/PrismarineJS/mineflayer/network/dependents) - Mineflayer kullanan github tarafından tespit edilen tüm projeler
 
 
 ## Test etme
@@ -234,5 +233,5 @@ Basitçe `npm test` komutunu çalıştırın
 `npm test -- -g <test_adı>` komutunu çalıştırın, `<test_name>` kısmının olduğu bölüm bir test olmalı mesela `bed`, `useChests`, `rayTrace`...
 
 ## Lisans
-TR Çeviri KaffinPX tarafından yapılmıştır. | TR translation made by KaffinPX : Discord KaffinPX#1744
+*TR Çeviri KaffinPX tarafından yapılmıştır. | TR translation made by KaffinPX : Discord KaffinPX#1744
 [MIT](LICENSE)
