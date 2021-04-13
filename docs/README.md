@@ -202,7 +202,7 @@ The most updated and useful are :
  * [auto-auth](https://github.com/G07cha/MineflayerAutoAuth) - chat-based bot authentication
  * [Bloodhound](https://github.com/Nixes/mineflayer-bloodhound) - determine who and what is responsible for damage to another entity
  * [tps](https://github.com/SiebeDW/mineflayer-tps) - get the current tps (processed tps)
- + [panorama](https://github.com/IceTank/mineflayer-panorama) - take Panorama Images of your world
+ * [panorama](https://github.com/IceTank/mineflayer-panorama) - take Panorama Images of your world
 
 ## Projects Using Mineflayer
 
