@@ -1068,7 +1068,7 @@ Fires when your hp or food change.
 #### "entityDead" (entity)
 #### "entityTaming" (entity)
 #### "entityTamed" (entity)
-#### "entityShakingOffWater (entity)
+#### "entityShakingOffWater" (entity)
 #### "entityEatingGrass" (entity)
 #### "entityWake" (entity)
 #### "entityEat" (entity)
