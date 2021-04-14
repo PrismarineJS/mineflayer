@@ -79,8 +79,15 @@ interface BotEvents {
   health: () => void;
   entitySwingArm: (entity: Entity) => void;
   entityHurt: (entity: Entity) => void;
+  entityDead: (entity: Entity) => void;
+  entityTaming: (entity: Entity) => void;
+  entityTamed: (entity: Entity) => void;
+  entityShakingOffWater: (entity: Entity) => void;
+  entityEatingGrass: (entity: Entity) => void;
   entityWake: (entity: Entity) => void;
   entityEat: (entity: Entity) => void;
+  entityCriticalEffect: (entity: Entity) => void;
+  entityMagicCriticalEffect: (entity: Entity) => void;
   entityCrouch: (entity: Entity) => void;
   entityUncrouch: (entity: Entity) => void;
   entityEquip: (entity: Entity) => void;
