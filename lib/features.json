@@ -253,5 +253,10 @@
     "name": "lessCharsInChat",
     "description": "max chars in chat",
     "versions": ["1.8", "1.10.2"]
+  },
+  {
+    "name": "sendTwoRespawnPackets",
+    "description": "Before 1.16, respawn packet was sent twice by server",
+    "versions": ["1.8", "1.15.2"]
   }
 ]
