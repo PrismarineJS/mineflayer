@@ -69,7 +69,7 @@ module.exports = () => {
     bot.chat('world')
     await p2
     const p3 = bot.awaitMessage(/<.+> hello/)
-    bot.chat(hello)
+    bot.chat('hello')
     await p3
     const p4 = bot.awaitMessage([/<.+> hello/, /<.+> world/])
     bot.chat('world')
