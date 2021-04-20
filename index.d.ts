@@ -401,7 +401,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   addChatPatternSet(name: string, patterns: Array<RegExp>, options?: chatPatternOptions): void;
 
-  awaitMessage(...args: string | string[]): Promise<string>;
+  awaitMessage(...args: string | string[] | RegExp): Promise<string>;
 }
 
 export interface chatPatternOptions {
