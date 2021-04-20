@@ -1418,7 +1418,7 @@ the event will be called `"chat:name"`, with name being the name passed
   * `repeat` - defaults to true, whether to listen for this event after the first match
   * `parse` - instead of returning the actual message that was matched, return the capture groups from the regex
 
-#### awaitMessage(...args)
+#### bot.awaitMessage(...args)
 
 promise that is resolved when one of the messages passed as an arg is resolved
 
