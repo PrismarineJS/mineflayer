@@ -400,6 +400,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
   addChatPattern(name: string, pattern: RegExp, options: chatPatternOptions): void;
 
   addChatPatternSet(name: string, patterns: Array<RegExp>, options?: chatPatternOptions): void;
+
+  awaitMessage(...args: string | string[]): Promise<string>;
 }
 
 export interface chatPatternOptions {

@@ -60,5 +60,15 @@ module.exports = () => {
     assert.strictEqual(partTwo, '<U9G> World')
   })
 
+  addTest('test awaitMessage', async (bot) => {
+    // let resolves = 0
+    const p = bot.awaitMessage('<flatbot> hello')
+    bot.chat('hello')
+    await p
+    const p2 = bot.awaitMessage(['<flatbot> hello', '<flatbot> world'])
+    bot.chat('world')
+    await p2
+  })
+
   return tests
 }
