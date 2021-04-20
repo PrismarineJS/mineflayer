@@ -1429,6 +1429,7 @@ await bot.awaitMessage('<flatbot> hello world') // resolves on "hello world" in 
 await bot.awaitMessage(['<flatbot> hello', '<flatbot> world']) // resolves on "hello" or "world" in chat by flatbot
 await bot.awaitMessage(['<flatbot> hello', '<flatbot> world'], ['<flatbot> im', '<flatbot> batman']) //resolves on "hello" or "world" or "im" or "batman" in chat by flatbot
 await bot.awaitMessage('<flatbot> hello', '<flatbot> world') // resolves on "hello" or "world" in chat by flatbot
+await bot.awaitMessage(/<flatbot> (.+)/) // resolves on first message matching the regex
 ```
 
 #### bot.setSettings(options)
