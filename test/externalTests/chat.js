@@ -62,12 +62,18 @@ module.exports = () => {
 
   addTest('test awaitMessage', async (bot) => {
     // let resolves = 0
-    const p = bot.awaitMessage('<flatbot> hello')
+    const p1 = bot.awaitMessage('<flatbot> hello')
     bot.chat('hello')
-    await p
+    await p1
     const p2 = bot.awaitMessage(['<flatbot> hello', '<flatbot> world'])
     bot.chat('world')
     await p2
+    const p3 = bot.awaitMessage(/<.+> hello/)
+    bot.chat(hello)
+    await p3
+    const p4 = bot.awaitMessage([/<.+> hello/, /<.+> world/])
+    bot.chat('world')
+    await p4
   })
 
   return tests
