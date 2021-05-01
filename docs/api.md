@@ -1418,6 +1418,20 @@ the event will be called `"chat:name"`, with name being the name passed
   * `repeat` - defaults to true, whether to listen for this event after the first match
   * `parse` - instead of returning the actual message that was matched, return the capture groups from the regex
 
+#### bot.awaitMessage(...args)
+
+promise that is resolved when one of the messages passed as an arg is resolved
+
+Example:
+
+```js
+await bot.awaitMessage('<flatbot> hello world') // resolves on "hello world" in chat by flatbot
+await bot.awaitMessage(['<flatbot> hello', '<flatbot> world']) // resolves on "hello" or "world" in chat by flatbot
+await bot.awaitMessage(['<flatbot> hello', '<flatbot> world'], ['<flatbot> im', '<flatbot> batman']) //resolves on "hello" or "world" or "im" or "batman" in chat by flatbot
+await bot.awaitMessage('<flatbot> hello', '<flatbot> world') // resolves on "hello" or "world" in chat by flatbot
+await bot.awaitMessage(/<flatbot> (.+)/) // resolves on first message matching the regex
+```
+
 #### bot.setSettings(options)
 
 See the `bot.settings` property.
