@@ -37,7 +37,6 @@ async function main () {
   const file = await readFile(config.file)
   const accounts = file.split(/\r?\n/).map(login => login.split(':'))
   const botProms = accounts.map(makeBot)
-  // const bots = await Promise.allSettled(botProms)
   const bots = (await Promise.allSettled(botProms)).map(({ value, reason }) => value || reason).filter(value => !(value instanceof Error))
   console.log(`Bots (${bots.length} / ${accounts.length}) successfully logged in.`)
 }
