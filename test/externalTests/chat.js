@@ -60,6 +60,19 @@ module.exports = () => {
     assert.strictEqual(partTwo, '<U9G> World')
   })
 
+  addTest('test removeChatPattern', async (bot) => {
+    await once(bot, 'message') // => starting chat test removeChatPattern
+    bot.addChatPattern('test', /<.+> Hello/)
+    bot.removeChatPattern('test')
+    let triggered = false
+    const listener = () => { triggered = true }
+    bot.once('chat:test', listener)
+    bot.chat('/tellraw @p {"translate":"chat.type.text", "with":["U9G", "Hello"]}')
+    await once(bot, 'message')
+    assert.ok(triggered === false)
+    bot.off('chat:test')
+  })
+
   addTest('test awaitMessage', async (bot) => {
     // let resolves = 0
     const p1 = bot.awaitMessage('<flatbot> hello')
