@@ -401,6 +401,10 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   addChatPatternSet(name: string, patterns: Array<RegExp>, options?: chatPatternOptions): void;
 
+  removeChatPattern(name: string): void;
+
+  removeChatPatternSet(name: string): void;
+
   awaitMessage(...args: string | string[] | RegExp | RegExp[]): Promise<string>;
 }
 
