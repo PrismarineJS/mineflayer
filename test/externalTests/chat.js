@@ -70,7 +70,7 @@ module.exports = () => {
     bot.chat('/tellraw @p {"translate":"chat.type.text", "with":["U9G", "Hello"]}')
     await once(bot, 'message')
     assert.ok(triggered === false)
-    bot.off('chat:test')
+    bot.off('chat:test', listener)
   })
 
   addTest('test awaitMessage', async (bot) => {
