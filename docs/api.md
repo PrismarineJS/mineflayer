@@ -124,6 +124,7 @@
       - [bot.scoreboard](#botscoreboard)
       - [bot.controlState](#botcontrolstate)
     - [Events](#events)
+      - ["particle" (particle)](#particle-particle)
       - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
       - ["whisper" (username, message, translate, jsonMsg, matches)](#whisper-username-message-translate-jsonmsg-matches)
       - ["actionBar" (jsonMsg)](#actionbar-jsonmsg)
@@ -950,6 +951,11 @@ An object whose keys are the main control states: ['forward', 'back', 'left', 'r
 Setting values for this object internally calls [bot.setControlState](#botsetcontrolstatecontrol-state).
 
 ### Events
+
+#### "particle" (particle)
+
+Only emitted when a particle is created.
+ * `particle` - The particle created, type Json
 
 #### "chat" (username, message, translate, jsonMsg, matches)
 
