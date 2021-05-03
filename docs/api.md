@@ -659,6 +659,7 @@ Create and return an instance of the class bot.
  * auth : default to 'mojang', can also be 'microsoft'
  * clientToken : generated if a password is given
  * accessToken : generated if a password is given
+ * acceptTextures : false by default, if server prompts bot with a custom texture pack, it accepts it.
  * logErrors : true by default, catch errors and log them
  * hideErrors : true by default, do not log errors (even if logErrors is true)
  * keepAlive : send keep alive packets : default to true
