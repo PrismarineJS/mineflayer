@@ -25,6 +25,7 @@ export interface BotOptions extends ClientOptions {
   hideErrors?: boolean;
   loadInternalPlugins?: boolean;
   plugins?: PluginOptions;
+  acceptTextures?: boolean;
   chat?: ChatLevel;
   colorsEnabled?: boolean;
   viewDistance?: ViewDistance;
