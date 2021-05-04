@@ -956,7 +956,7 @@ Setting values for this object internally calls [bot.setControlState](#botsetcon
 Only emitted when a particle is created.
 Particle is a Json object that contains:
  * `particleId` - The particle Id.
- * `longDistance` - Boolen, if the particle is supper far
+ * `longDistance` - Boolen, If true, particle distance increases from 256 to 65536.
  * `x` - The particle's x location
  * `y` - The particle's y location
  * `z` - The particle's z location
