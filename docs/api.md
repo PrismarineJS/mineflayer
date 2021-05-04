@@ -124,7 +124,6 @@
       - [bot.scoreboard](#botscoreboard)
       - [bot.controlState](#botcontrolstate)
     - [Events](#events)
-      - ["particle" (particle)](#particle-particle)
       - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
       - ["whisper" (username, message, translate, jsonMsg, matches)](#whisper-username-message-translate-jsonmsg-matches)
       - ["actionBar" (jsonMsg)](#actionbar-jsonmsg)
