@@ -965,7 +965,7 @@ Particle is a Json object that contains:
  * `offsetZ` - This is added to the Z position after being multiplied by random.nextGaussian()
  * `particleData` - The data of each particle.
  * `particles` - The number of particles to create.
- * `data` - The variable data listed in the particle data type.
+ * `data` - The variable data listed in [the particle data type.](https://wiki.vg/Protocol#Particle) 
 
 #### "chat" (username, message, translate, jsonMsg, matches)
 
