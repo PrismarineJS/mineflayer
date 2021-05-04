@@ -951,10 +951,21 @@ Setting values for this object internally calls [bot.setControlState](#botsetcon
 
 ### Events
 
-#### "particle" (particle)
+#### "particles" (particle)
 
 Only emitted when a particle is created.
- * `particle` - The particle created, type Json
+Particle is a Json object that contains:
+ * `particleId` - The particle Id.
+ * `longDistance` - Boolen, if the particle is supper far
+ * `x` - The particle's x location
+ * `y` - The particle's y location
+ * `z` - The particle's z location
+ * `offsetX` - This is added to the X position after being multiplied by random.nextGaussian()
+ * `offsetY` - This is added to the Y position after being multiplied by random.nextGaussian()
+ * `offsetZ` - This is added to the Z position after being multiplied by random.nextGaussian()
+ * `particleData` - The data of each particle.
+ * `particles` - The number of particles to create.
+ * `data` - The variable data listed in the particle data type.
 
 #### "chat" (username, message, translate, jsonMsg, matches)
 
