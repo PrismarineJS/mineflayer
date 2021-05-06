@@ -9,8 +9,8 @@
 
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 
-| 🇺🇸 [Anglais](README.md) | 🇷🇺 [Russe](README_RU.md) | 🇪🇸 [Espagnol](README_ES.md) | 🇫🇷 [Français](README_FR.md) |
-|-------------------------|----------------------------|----------------------------|----------------------------|
+| 🇺🇸 [Anglais](README.md) | 🇷🇺 [Russe](README_RU.md) | 🇪🇸 [Espagnol](README_ES.md) | 🇫🇷 [Français](README_FR.md) | 🇹🇷 [Türkçe](tr/README_TR.md) |
+|-------------------------|----------------------------|----------------------------|----------------------------| -------------------------- |
 
 Créé des robots Minecraft avec API stable, puissante et facilement maniable, [API](api.md).
 
@@ -178,32 +178,29 @@ higher level API on top of Mineflayer.
 
 The most updated and useful are :
 
- * [pathfinder](https://github.com/Karang/mineflayer-pathfinder) - advanced A* pathfinding with a lot of configurable features
+ * [pathfinder](https://github.com/PrismarineJS/mineflayer-pathfinder) - advanced A* pathfinding with a lot of configurable features
  * [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer) - simple web chunk viewer
  * [web-inventory](https://github.com/ImHarvol/mineflayer-web-inventory) - web based inventory viewer
- * [statemachine](https://github.com/TheDudeFromCI/mineflayer-statemachine) - A state machine API for more complex bot behavors
- * [Armor Manager](https://github.com/G07cha/MineflayerArmorManager) - automatic armor managment
- * [Collect Block](https://github.com/TheDudeFromCI/mineflayer-collectblock) - Quick and simple block collection API.
+ * [statemachine](https://github.com/PrismarineJS/mineflayer-statemachine) - Une API pour machine à état pour des robots aux comportements complexes
+ * [Armor Manager](https://github.com/PrismarineJS/MineflayerArmorManager) - gestion d'armure automatique
+ * [Collect Block](https://github.com/PrismarineJS/mineflayer-collectblock) - Une API rapide et flexible pour récolleter des blocs.
  * [Dashboard](https://github.com/wvffle/mineflayer-dashboard) - Frontend dashboard for mineflayer bot
- * [PVP](https://github.com/TheDudeFromCI/mineflayer-pvp) - Easy API for basic PVP and PVE.
- * [auto-eat](https://github.com/LINKdiscordd/mineflayer-auto-eat) - Automatic eating of food.
- * [Tool](https://github.com/TheDudeFromCI/mineflayer-tool) - A utility for automatic tool/weapon selection with a high level API.
- * [Hawkeye](https://github.com/sefirosweb/minecraftHawkEye) - A utility for using auto-aim with bows.
+ * [PVP](https://github.com/PrismarineJS/mineflayer-pvp) - Une API facile pour du combat facile contre entitées et joueurs.
+ * [auto-eat](https://github.com/LINKdiscordd/mineflayer-auto-eat) - Mange automatiquement de la nouriture.
+ * [Tool](https://github.com/PrismarineJS/mineflayer-tool) - Un plugin pour choisir automatiquement le meilleur outil pour la tache donné
+ * [Hawkeye](https://github.com/sefirosweb/minecraftHawkEye) - Un plugin pour visée avec perfection avec des arcs.
 
 
- But also check out :
-
- * [navigate](https://github.com/andrewrk/mineflayer-navigate/) - get around
-   easily using A* pathfinding. [YouTube Demo](https://www.youtube.com/watch?v=O6lQdmRz8eE)
- * [radar](https://github.com/andrewrk/mineflayer-radar/) - web based radar
-   interface using canvas and socket.io. [YouTube Demo](https://www.youtube.com/watch?v=FjDmAfcVulQ)
- * [blockfinder](https://github.com/Darthfett/mineflayer-blockFinder) - find blocks in the 3D world
- * [scaffold](https://github.com/andrewrk/mineflayer-scaffold) - get to
-   a target destination even if you have to build or break blocks to do so.
+Laissez un coup d'oeil à ses projets :
+ 
+ * [radar](https://github.com/andrewrk/mineflayer-radar/) - interface web utilisant canvas et socket.io. [YouTube Demo](https://www.youtube.com/watch?v=FjDmAfcVulQ)
+ * [blockfinder](https://github.com/Darthfett/mineflayer-blockFinder) - trouvez des blocs dans un monde 3D
+ * [scaffold](https://github.com/PrismarineJS/mineflayer-scaffold) - trouvez le meilleur chemin vers une destination presice en cassant et plaçant des blocs
    [YouTube Demo](http://youtu.be/jkg6psMUSE0)
- * [auto-auth](https://github.com/G07cha/MineflayerAutoAuth) - chat-based bot authentication
- * [Bloodhound](https://github.com/Nixes/mineflayer-bloodhound) - determine who and what is responsible for damage to another entity
- * [tps](https://github.com/SiebeDW/mineflayer-tps) - get the current tps (processed tps)
+ * [auto-auth](https://github.com/G07cha/MineflayerAutoAuth) - remplissage de compte via le chat
+ * [Bloodhound](https://github.com/Nixes/mineflayer-bloodhound) - determinez qui et quoi est responsable de attaquer d'autres entitées.
+ * [tps](https://github.com/SiebeDW/mineflayer-tps) - trouvez le tps du serveur
+ * [panorama](https://github.com/IceTank/mineflayer-panorama) - prenez des photos panoramique de vos mondes.
 
 ## Projets utilisant Mineflayer
 
@@ -211,27 +208,27 @@ The most updated and useful are :
    - [YouTube - créé un escalier en collimasson](https://www.youtube.com/watch?v=UM1ZV5200S0)
    - [YouTube - réplicé une contruction](https://www.youtube.com/watch?v=0cQxg9uDnzA)
  * [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot)
- * [vogonistic/voxel](https://github.com/vogonistic/mineflayer-voxel) - visualise se qui se passe avec to robot en utilisant [voxel.js](https://www.voxeljs.com/)
- * [JonnyD/Skynet](https://github.com/JonnyD/Skynet) -  Affiche les info des joueurs sur une API en ligne
+ * [vogonistic/voxel](https://github.com/vogonistic/mineflayer-voxel) - visualisez se qui se passe avec to robot en utilisant [voxel.js](https://www.voxeljs.com/)
+ * [JonnyD/Skynet](https://github.com/JonnyD/Skynet) -  Affichez les info des joueurs sur une API en ligne
  * [MinecraftChat](https://github.com/rom1504/MinecraftChat) (last open source version, built by AlexKvazos) -  Minecraft web based chat client <https://minecraftchat.net/>
  * [Cheese Bot](https://github.com/Minecheesecraft/Cheese-Bot) - Plugin based bot with a clean GUI. Made with Node-Webkit. http://bot.ezcha.net/
  * [Chaoscraft](https://github.com/schematical/chaoscraft) - Des robots minecraft en utilisant des algorithmes genetiques, regarde [ces videos youtube](https://www.youtube.com/playlist?list=PLLkpLgU9B5xJ7Qy4kOyBJl5J6zsDIMceH)
  * [hexatester/minetelegram](https://github.com/hexatester/minetelegram) -  Minecraft - une API telgram, construite sur Mineflayer et telegraf.
- * [ProZedd/mineflayer-printer](https://github.com/ProZedd/mineflayer-printer) - "Imprimme" un .schematic dans minecraft
- * [and hundreds more](https://github.com/PrismarineJS/mineflayer/network/dependents) - All the projects that github detected are using mineflayer
+ * [ProZedd/mineflayer-builder](https://github.com/PrismarineJS/mineflayer-builder) - "Imprimme" un .schematic dans minecraft
+ * [et beaucoup plus](https://github.com/PrismarineJS/mineflayer/network/dependents) - Tout les projets utilisant mineflayer
 
 
 ## Testing
 
-### Tester tout
+### Testez tout
 
 Simplement executer: `npm test`
 
-### Tester une version specifique
-Execute `npm test -g <version>`, ou `<version>` est une version de minecraft comme `1.12`, `1.15.2`...
+### Testez une version specifique
+Executez `npm test -g <version>`, où `<version>` est une version de minecraft comme `1.12`, `1.15.2`...
 
-### Testing specific test
-Run `npm test -g <test_name>`, where `<test_name>` is a name of the test like `bed`, `useChests`, `rayTrace`...
+### Testez un teste specifique
+Executer `npm test -g <test_name>`, où `<test_name>` est le nom d'un teste comme `lit`, `utiliseCoffre`, `rayTrace`...
 
 ## Licence
 
