@@ -173,10 +173,9 @@ node your_script.js
 
 ## Third Party Plugins
 
-Mineflayer is pluggable; anyone can create a plugin that adds an even
-higher level API on top of Mineflayer.
+Mineflayer peut être fait avec de plugins; tout le monde peut créer un plugin qui ajoute une API de plus haut niveaux au dessus de Mineflayer.
 
-The most updated and useful are :
+Les plus mis à jours et utile sont :
 
  * [pathfinder](https://github.com/PrismarineJS/mineflayer-pathfinder) - advanced A* pathfinding with a lot of configurable features
  * [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer) - simple web chunk viewer
@@ -210,8 +209,8 @@ Laissez un coup d'oeil à ses projets :
  * [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot)
  * [vogonistic/voxel](https://github.com/vogonistic/mineflayer-voxel) - visualisez se qui se passe avec to robot en utilisant [voxel.js](https://www.voxeljs.com/)
  * [JonnyD/Skynet](https://github.com/JonnyD/Skynet) -  Affichez les info des joueurs sur une API en ligne
- * [MinecraftChat](https://github.com/rom1504/MinecraftChat) (last open source version, built by AlexKvazos) -  Minecraft web based chat client <https://minecraftchat.net/>
- * [Cheese Bot](https://github.com/Minecheesecraft/Cheese-Bot) - Plugin based bot with a clean GUI. Made with Node-Webkit. http://bot.ezcha.net/
+ * [MinecraftChat](https://github.com/rom1504/MinecraftChat) (derniere version open source, par AlexKvazos) -  Un client minecraft basé seulement sur le chat<https://minecraftchat.net/>
+ * [Cheese Bot](https://github.com/Minecheesecraft/Cheese-Bot) - Un robot basé sur les plugins, qui a une jolie interface. Fait avec Node-Webkit. http://bot.ezcha.net/
  * [Chaoscraft](https://github.com/schematical/chaoscraft) - Des robots minecraft en utilisant des algorithmes genetiques, regarde [ces videos youtube](https://www.youtube.com/playlist?list=PLLkpLgU9B5xJ7Qy4kOyBJl5J6zsDIMceH)
  * [hexatester/minetelegram](https://github.com/hexatester/minetelegram) -  Minecraft - une API telgram, construite sur Mineflayer et telegraf.
  * [ProZedd/mineflayer-builder](https://github.com/PrismarineJS/mineflayer-builder) - "Imprimme" un .schematic dans minecraft
