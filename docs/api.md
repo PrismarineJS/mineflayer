@@ -1423,11 +1423,6 @@ the event will be called `"chat:name"`, with name being the name passed
 removes a chat pattern
 * `name` the name of the chat pattern
 
-#### bot.removeChatPatternSet(name)
-
-removes a chat pattern
-* `name` the name of the chat pattern
-
 #### bot.awaitMessage(...args)
 
 promise that is resolved when one of the messages passed as an arg is resolved
