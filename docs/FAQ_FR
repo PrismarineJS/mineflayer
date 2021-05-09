@@ -25,17 +25,17 @@ En utilisant `bot.chat()`.
 bot.chat('/give @p diamond')
 ```
 
-### Is it possible to login multiple accounts using bot = mineflayer.createbot while controlling them all separately ?
+### Est-ce possible de se connecter avec plusieurs compte un utilisant un seul bot toute en les controllant séparément ?
 
-Create different bot instances by calling createBot then do different things for each, see multiple.js
+Créer different instance de robot en appellant createBot plusieur fois tout en faisant plusieur chose, voir multiple.js
 
 ### How would I make the bot drop it's entire inventory?
 
 bot.inventory.items() returns an array of the bot's items. You can use a recursive function to loop through them and drop every item using bot.toss(). Click [here](https://gist.github.com/dada513/3d88f772be4224b40f9e5d1787bd63e9) to see an example
 
-### How do I check packets that are sent/received ?
+### Comment puis-je voir les paquets envoyer et reçus?
 
-Enabled debug mode https://github.com/PrismarineJS/mineflayer#debug
+En activant le mode debug: https://github.com/PrismarineJS/mineflayer#debug
 
 ### I want to avoid disconnection even in case of server lag, how can I achieve this ?
 
