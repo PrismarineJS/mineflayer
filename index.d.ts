@@ -374,6 +374,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
   putAway(slot: number, cb?: (err?: Error) => void): Promise<void>;
 
   closeWindow(window: Window): void;
+  
+  createActionNumber(): void;
 
   transfer(options: TransferOptions, cb?: (err?: Error) => void): Promise<void>;
 

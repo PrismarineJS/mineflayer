@@ -265,6 +265,7 @@
       - [bot.clickWindow(slot, mouseButton, mode, cb)](#botclickwindowslot-mousebutton-mode-cb)
       - [bot.putSelectedItemRange(start, end, window, slot, cb)](#botputselecteditemrangestart-end-window-slot-cb)
       - [bot.putAway(slot, cb)](#botputawayslot-cb)
+      - [bot.createActionNumber()](#botcreateactionnumber)
       - [bot.closeWindow(window)](#botclosewindowwindow)
       - [bot.transfer(options, cb)](#bottransferoptions-cb)
       - [bot.openBlock(block)](#botopenblockblock)
@@ -1805,6 +1806,10 @@ This function also returns a `Promise`, with `void` as its argument upon complet
 Can be useful in case the client is supposed to simulate without feedback from the server.
 
 Put the item at `slot` in the inventory.
+
+#### bot.createActionNumber()
+
+Create a valid actionId for lower level window operations
 
 #### bot.closeWindow(window)
 
