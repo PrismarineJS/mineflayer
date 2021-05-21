@@ -286,6 +286,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   dig(block: Block, forceLook?: boolean | 'ignore', callback?: (err?: Error) => void): Promise<void>;
 
+  dig(block: Block, forceLook: boolean | 'ignore', digFace: 'auto' | Vec3 | 'raycast', callback?: (err?: Error) => void): Promise<void>;
+
   stopDigging(): void;
 
   digTime(block: Block): number;
