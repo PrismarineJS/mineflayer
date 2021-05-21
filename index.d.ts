@@ -405,7 +405,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   removeChatPattern(name: string): void;
 
-  awaitMessage(...args: string | string[] | RegExp | RegExp[]): Promise<string>;
+  awaitMessage(...args: string[] | RegExp[]): Promise<string>;
 }
 
 export interface chatPatternOptions {
