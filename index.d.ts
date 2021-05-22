@@ -357,6 +357,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   setCommandBlock(pos: Vec3, command: string, trackOutput: boolean): void;
 
   clickWindow(
+    window: Window,
     slot: number,
     mouseButton: number,
     mode: number,
