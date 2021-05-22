@@ -262,7 +262,7 @@
       - [bot.supportFeature(name)](#botsupportfeaturename)
       - [bot.waitForTicks(ticks)](#botwaitforticksticks)
     - [Lower level inventory methods](#lower-level-inventory-methods)
-      - [bot.clickWindow(slot, mouseButton, mode, cb)](#botclickwindowslot-mousebutton-mode-cb)
+      - [bot.clickWindow(window, slot, mouseButton, mode, cb)](#botclickwindowslot-mousebutton-mode-cb)
       - [bot.putSelectedItemRange(start, end, window, slot, cb)](#botputselecteditemrangestart-end-window-slot-cb)
       - [bot.putAway(slot, cb)](#botputawayslot-cb)
       - [bot.closeWindow(window)](#botclosewindowwindow)
@@ -1788,11 +1788,11 @@ This is a promise-based function that waits for a given number of in-game ticks 
 
 These are lower level methods for the inventory, they can be useful sometimes but prefer the inventory methods presented above if you can.
 
-#### bot.clickWindow(slot, mouseButton, mode, cb)
+#### bot.clickWindow(window, slot, mouseButton, mode, cb)
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
 
-Click on the current window. See details at https://wiki.vg/Protocol#Click_Window
+Click on the specified window. See details at https://wiki.vg/Protocol#Click_Window
 
 #### bot.putSelectedItemRange(start, end, window, slot, noWaiting)
 

@@ -5,7 +5,7 @@ This code snippet will tell the bot not to wait for chest confirmations that som
 ```js
 bot.on('windowOpen', async (window) => {
   window.requiresConfirmation = false // fix
-  await bot.clickWindow(13, 0, 0)
+  await bot.clickWindow(window, 13, 0, 0)
   console.log(bot._events) // without the fix this code is unreachable, the promise never resolve
 })
 bot.on('windowClose', () => {
