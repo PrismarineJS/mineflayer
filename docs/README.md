@@ -110,6 +110,39 @@ And you'll get a *live* view looking like this:
 
 [<img src="https://prismarine.js.org/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarine.js.org/prismarine-viewer/)
 
+### Making a bot that can move around
+
+Thanks to [mineflayer-pathfinder](https://github.com/PrismarineJS/mineflayer-pathfinder) your bot can move around by its own.
+After installing Mineflayer-Pathfinder with `npm install mineflayer-pathfinder` you can use this example to get going.
+```js
+const mineflayer = require('mineflayer')
+const pathfinder = require('mineflayer-pathfinder').pathfinder
+const Movements = require('mineflayer-pathfinder').Movements
+const { GoalNear } = require('mineflayer-pathfinder').goals
+const bot = mineflayer.createBot({ username: 'Player' })
+
+bot.loadPlugin(pathfinder) // Load pathfinder as a mineflayer plugin
+
+bot.once('spawn', () => {
+  const mcData = require('minecraft-data')(bot.version) // Load the right Minecraft data version
+  const defaultMove = new Movements(bot, mcData) // Create the movement set
+  
+  bot.on('chat', function(username, message) {
+    if (username === bot.username) return
+    const target = bot.players[username] ? bot.players[username].entity : null
+    if (message === 'come') {
+      if (!target) {
+        bot.chat('I don\'t see you !')
+        return
+      }
+      const p = target.position
+      bot.pathfinder.setMovements(defaultMove) // Sets the bots movement set
+      bot.pathfinder.setGoal(new GoalNear(p.x, p.y, p.z, 1)) // Creates a new goal and sets it as the active pathfinder goal
+    } 
+  })
+})
+```
+
 #### More Examples
 
 | example | description |
