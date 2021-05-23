@@ -65,6 +65,7 @@ interface BotEvents {
   message: (jsonMsg: ChatMessage, position: string) => void;
   messagestr: (message: string, position: string, jsonMsg: ChatMessage) => void;
   unmatchedMessage: (stringMsg: string, jsonMsg: ChatMessage) => void;
+  inject_allowed: () => void;
   login: () => void;
   spawn: () => void;
   respawn: () => void;
