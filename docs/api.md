@@ -990,7 +990,10 @@ Emitted for every server message, including chats.
 
 #### "messagestr" (message, messagePosition, jsonMsg)
 
-alias for the "message" event but it calls .toString() on the message object to get a string for the message before emitting.
+Alias for the "message" event but it calls .toString() on the message object to get a string for the message before emitting.
+
+#### "inject_allowed"
+Fires when the index file has been loaded, you can load mcData and plugins here but it's better to wait for "spawn" event.
 
 #### "login"
 
