@@ -252,7 +252,7 @@
   {
     "name": "resourcePackUsesHash",
     "description": "resource pack uses hash validation",
-    "versions": ["1.8", "1.10.2"]
+    "versions": ["1.8", "1.9.4"]
   },
   {
     "name": "lessCharsInChat",
