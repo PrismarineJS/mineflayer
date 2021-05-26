@@ -1016,6 +1016,10 @@ event instead.
 
 Emitted when the server changes any of the game properties.
 
+#### "resource_pack"
+
+Emitted when the server sends a resource pack.
+
 #### "title"
 
 Emitted when the server sends a title
@@ -1600,6 +1604,14 @@ dig any other blocks until the block has been broken, or you call
 #### bot.digTime(block)
 
 Tells you how long it will take to dig the block, in milliseconds.
+  
+#### bot.acceptResourcePack()
+
+Accepts resource pack.
+  
+#### bot.denyResourcePack()
+
+Denies resource pack.
 
 #### bot.placeBlock(referenceBlock, faceVector, cb)
 
