@@ -201,42 +201,42 @@
   },
   {
     "name": "usesAdvCdm",
-    "description": "Packet MC|AdvCmd was incorrectly spelled in 1.8 as MC|AdvCdm",
+    "description": "packet MC|AdvCmd was incorrectly spelled in 1.8 as MC|AdvCdm",
     "versions": ["1.8", "1.8.9"]
   },
   {
     "name": "usesAdvCmd",
-    "description": "Uses MC|AdvCmd to set command block information",
+    "description": "uses MC|AdvCmd to set command block information",
     "versions": ["1.9", "1.12.2"]
   },
   {
     "name": "indexesVillagerRecipes",
-    "description": "Gives a index for each trade in a villagers metadata",
+    "description": "gives a index for each trade in a villagers metadata",
     "versions": ["1.8", "1.11.2"]
   },
   {
     "name": "hasAttackCooldown",
-    "description": "If there is a cooldown after attacks to deal full damage.",
+    "description": "if there is a cooldown after attacks to deal full damage",
     "versions": ["1.9", "1.16.5"]
   },
   {
     "name": "usesLoginPacket",
-    "description": "Uses the login packet as defined in mcData",
+    "description": "uses the login packet as defined in mcData",
     "versions": ["1.16", "1.16.5"]
   },
   {
     "name": "usesMultiblockSingleLong",
-    "description": "In the multi_block_change packet is stored as a single number",
+    "description": "in the multi_block_change packet is stored as a single number",
     "versions": ["1.16.2", "1.16.5"]
   },
   {
     "name": "usesMultiblock3DChunkCoords",
-    "description": "In the multi_block_change packet, all 3 axis coords are defined.",
+    "description": "in the multi_block_change packet, all 3 axis coords are defined",
     "versions": ["1.16.2", "1.16.5"]
   },
   {
     "name": "setBlockUsesMetadataNumber",
-    "description": "The parameter metadata of the setblock command is a number",
+    "description": "the parameter metadata of the setblock command is a number",
     "versions": ["1.8", "1.12.2"]
   },
   {
@@ -246,8 +246,13 @@
   },
   {
     "name": "selectingTradeMovesItems",
-    "description": "Selecting a trade automatically puts the required items into trading slots.",
+    "description": "selecting a trade automatically puts the required items into trading slots",
     "versions": ["1.14", "1.16.5"]
+  },
+  {
+    "name": "resourcePackUsesHash",
+    "description": "resource pack uses hash validation",
+    "versions": ["1.8", "1.10.2"]
   },
   {
     "name": "lessCharsInChat",
