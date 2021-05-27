@@ -132,7 +132,7 @@
       - ["spawn"](#spawn)
       - ["respawn"](#respawn)
       - ["game"](#game)
-      - ["resourcePack"](#resourcepack)
+      - ["resourcePack" (url, hash)](#resourcepack-url-hash)
       - ["title"](#title)
       - ["rain"](#rain)
       - ["weatherUpdate"](#weatherUpdate)
@@ -1019,7 +1019,7 @@ event instead.
 
 Emitted when the server changes any of the game properties.
 
-#### "resourcePack"
+#### "resourcePack" (url, hash)
 
 Emitted when the server sends a resource pack.
 
