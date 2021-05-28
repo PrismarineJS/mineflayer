@@ -113,7 +113,7 @@ And you'll get a *live* view looking like this:
 ### Making a bot that can move around
 
 Thanks to [mineflayer-pathfinder](https://github.com/PrismarineJS/mineflayer-pathfinder) your bot can move around by its own.
-After installing Mineflayer-Pathfinder with `npm install mineflayer-pathfinder` you can use this example to get going.
+After installing Mineflayer-Pathfinder with `npm install mineflayer-pathfinder` you can use this example to get started.
 ```js
 const mineflayer = require('mineflayer')
 const pathfinder = require('mineflayer-pathfinder').pathfinder
@@ -124,8 +124,9 @@ const bot = mineflayer.createBot({ username: 'Player' })
 bot.loadPlugin(pathfinder) // Load pathfinder as a mineflayer plugin
 
 bot.once('spawn', () => {
-  const mcData = require('minecraft-data')(bot.version) // Load the right Minecraft data version
-  const defaultMove = new Movements(bot, mcData) // Create the movement set
+  const mcData = require('minecraft-data')(bot.version) // Loads the right Minecraft data version
+  const defaultMove = new Movements(bot, mcData) // Creates possible movements
+  bot.pathfinder.setMovements(defaultMove) // Loads the movements
   
   bot.on('chat', function(username, message) {
     if (username === bot.username) return
@@ -136,8 +137,8 @@ bot.once('spawn', () => {
         return
       }
       const p = target.position
-      bot.pathfinder.setMovements(defaultMove) // Sets the bots movement set
-      bot.pathfinder.setGoal(new GoalNear(p.x, p.y, p.z, 1)) // Creates a new goal and sets it as the active pathfinder goal
+      const goal = new GoalNear(p.x, p.y, p.z, 1) // Creates a new Goal that will finish if it is within a given distance of the destination.
+      bot.pathfinder.setGoal(goal) // Sets a new active Goal. The Bot will start moving after it calculated a valid path.
     } 
   })
 })
