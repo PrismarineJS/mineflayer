@@ -132,6 +132,7 @@
       - ["spawn"](#spawn)
       - ["respawn"](#respawn)
       - ["game"](#game)
+      - ["resourcePack" (url, hash)](#resourcepack-url-hash)
       - ["title"](#title)
       - ["rain"](#rain)
       - ["weatherUpdate"](#weatherUpdate)
@@ -234,6 +235,8 @@
       - [bot.dig(block, [forceLook = true], [digFace], [callback])](#botdigblock-forcelook--true-digface-callback)
       - [bot.stopDigging()](#botstopdigging)
       - [bot.digTime(block)](#botdigtimeblock)
+      - [bot.acceptResourcePack()](#botacceptresourcepack)
+      - [bot.denyResourcePack()](#botdenyresourcepack)
       - [bot.placeBlock(referenceBlock, faceVector, cb)](#botplaceblockreferenceblock-facevector-cb)
       - [bot.activateBlock(block, [callback])](#botactivateblockblock-callback)
       - [bot.activateEntity(entity, [callback])](#botactivateentityentity-callback)
@@ -1019,6 +1022,10 @@ event instead.
 
 Emitted when the server changes any of the game properties.
 
+#### "resourcePack" (url, hash)
+
+Emitted when the server sends a resource pack.
+
 #### "title"
 
 Emitted when the server sends a title
@@ -1603,6 +1610,14 @@ dig any other blocks until the block has been broken, or you call
 #### bot.digTime(block)
 
 Tells you how long it will take to dig the block, in milliseconds.
+  
+#### bot.acceptResourcePack()
+
+Accepts resource pack.
+  
+#### bot.denyResourcePack()
+
+Denies resource pack.
 
 #### bot.placeBlock(referenceBlock, faceVector, cb)
 
