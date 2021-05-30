@@ -1,5 +1,4 @@
 const assert = require('assert')
-const { once } = require('events')
 
 module.exports = () => async (bot) => {
   await new Promise((resolve, reject) => setTimeout(resolve, 5000))
