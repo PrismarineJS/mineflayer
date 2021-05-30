@@ -287,6 +287,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   dig(block: Block, forceLook?: boolean | 'ignore', callback?: (err?: Error) => void): Promise<void>;
 
+  dig(block: Block, forceLook: boolean | 'ignore', digFace: 'auto' | Vec3 | 'raycast', callback?: (err?: Error) => void): Promise<void>;
+
   stopDigging(): void;
 
   digTime(block: Block): number;
@@ -404,7 +406,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   removeChatPattern(name: string): void;
 
-  awaitMessage(...args: string | string[] | RegExp | RegExp[]): Promise<string>;
+  awaitMessage(...args: string[] | RegExp[]): Promise<string>;
 }
 
 export interface chatPatternOptions {
