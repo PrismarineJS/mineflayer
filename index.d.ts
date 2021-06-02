@@ -186,6 +186,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   _client: Client;
   heldItem: Item | null;
   currentWindow: Window | null;
+  simpleClick: simpleClick;
 
   connect(options: BotOptions): void;
 
@@ -412,6 +413,11 @@ export interface Bot extends TypedEmitter<BotEvents> {
   acceptResourcePack(): void;
   
   denyResourcePack(): void;
+}
+
+export interface simpleClick {
+  leftMouse(slot: number): Promise<void>
+  rightMouse(slot: number): Promise<void>
 }
 
 export interface chatPatternOptions {
