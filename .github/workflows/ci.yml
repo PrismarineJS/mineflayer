@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  lint:
+  Standard:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -21,7 +21,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm lint
 
-  build:
+  Mocha:
     runs-on: ubuntu-latest
     strategy:
       matrix:
