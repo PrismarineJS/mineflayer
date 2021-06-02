@@ -258,5 +258,10 @@
     "name": "lessCharsInChat",
     "description": "max chars in chat",
     "versions": ["1.8", "1.10.2"]
+  },
+  {
+    "name": "usesPayload",
+    "description": "uses payload to send client_command",
+    "versions": ["1.8", "1.8.9"]
   }
 ]
