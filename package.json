@@ -7,8 +7,8 @@
   "scripts": {
     "test": "mocha --reporter spec --exit",
     "pretest": "npm run lint",
-    "lint": "standard",
-    "fix": "standard --fix",
+    "lint": "standard && ts-standard *.d.ts",
+    "fix": "standard --fix && ts-standard --fix *.d.ts",
     "prepublishOnly": "cp docs/README.md README.md"
   },
   "repository": {
@@ -42,6 +42,8 @@
     "minecraft-wrap": "^1.2.1",
     "mineflayer": "file:.",
     "mocha": "^8.0.1",
-    "standard": "^16.0.1"
+    "standard": "^16.0.1",
+    "ts-standard": "^10.0.0",
+    "typescript": "^4.3.2"
   }
 }
