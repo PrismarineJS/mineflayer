@@ -208,6 +208,7 @@
       - [bot.recipesFor(itemType, metadata, minResultCount, craftingTable)](#botrecipesforitemtype-metadata-minresultcount-craftingtable)
       - [bot.recipesAll(itemType, metadata, craftingTable)](#botrecipesallitemtype-metadata-craftingtable)
       - [bot.nearestEntity(match = (entity) => { return true })](#botnearestentitymatch--entity---return-true-)
+      - [bot.requestStatistics(cb)](#botrequeststatisticscb)
     - [Methods](#methods)
       - [bot.end()](#botend)
       - [bot.quit(reason)](#botquitreason)
@@ -1366,6 +1367,10 @@ The same as bot.recipesFor except that it does not check wether the bot has enou
 #### bot.nearestEntity(match = (entity) => { return true })
 
 Return the nearest entity to the bot, matching the function (default to all entities). Return null if no entity is found.
+
+#### bot.requestStatistics(cb)
+
+This function returns a `Promise`, with `object` filled by statistics.
 
 ### Methods
 
