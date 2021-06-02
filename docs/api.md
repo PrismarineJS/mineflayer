@@ -861,11 +861,11 @@ saturation of 5.0. Eating food increases the saturation as well as the food bar.
 Edit these numbers to tweak gravity, jump speed, terminal velocity, etc.
 Do this at your own risk.
 
-#### bot.simpleClick.leftClick (slot)
+#### bot.simpleClick.leftMouse (slot)
 
 abstraction over `bot.clickWindow(slot, 0, 0)`
 
-#### bot.simpleClick.rightClick (slot)
+#### bot.simpleClick.rightMouse (slot)
 
 abstraction over `bot.clickWindow(slot, 1, 0)`
 
