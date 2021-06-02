@@ -21,7 +21,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm i && npm run lint
 
-  Minecraft Interaction:
+  "Minecraft Server":
     runs-on: ubuntu-latest
     strategy:
       matrix:
