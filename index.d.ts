@@ -115,18 +115,18 @@ interface BotEvents {
     position: Vec3,
     volume: number,
     pitch: number
-  ) => void
+  ) => void;
   hardcodedSoundEffectHeard: (
     soundId: number,
     soundCategory: number,
     position: Vec3,
     volume: number,
     pitch: number
-  ) => void
-  noteHeard: (block: Block, instrument: Instrument, pitch: number) => void
-  pistonMove: (block: Block, isPulling: number, direction: number) => void
-  chestLidMove: (block: Block, isOpen: number) => void
-  blockBreakProgressObserved: (block: Block, destroyStage: number) => void
+  ) => void;
+  noteHeard: (block: Block, instrument: Instrument, pitch: number) => void;
+  pistonMove: (block: Block, isPulling: number, direction: number) => void;
+  chestLidMove: (block: Block, isOpen: number) => void;
+  blockBreakProgressObserved: (block: Block, destroyStage: number) => void;
   blockBreakProgressEnd: (block: Block) => void;
   diggingCompleted: (block: Block) => void;
   diggingAborted: (block: Block) => void;
@@ -141,15 +141,16 @@ interface BotEvents {
   experience: () => void;
   physicsTick: () => void;
   physicTick: () => void;
-  scoreboardCreated: (scoreboard: ScoreBoard) => void
-  scoreboardDeleted: (scoreboard: ScoreBoard) => void
-  scoreboardTitleChanged: (scoreboard: ScoreBoard) => void
-  scoreUpdated: (scoreboard: ScoreBoard, item: number) => void
-  scoreRemoved: (scoreboard: ScoreBoard, item: number) => void
-  scoreboardPosition: (position: DisplaySlot, scoreboard: ScoreBoard) => void
+  scoreboardCreated: (scoreboard: ScoreBoard) => void;
+  scoreboardDeleted: (scoreboard: ScoreBoard) => void;
+  scoreboardTitleChanged: (scoreboard: ScoreBoard) => void;
+  scoreUpdated: (scoreboard: ScoreBoard, item: number) => void;
+  scoreRemoved: (scoreboard: ScoreBoard, item: number) => void;
+  scoreboardPosition: (position: DisplaySlot, scoreboard: ScoreBoard) => void;
   bossBarCreated: (bossBar: BossBar) => void;
   bossBarDeleted: (bossBar: BossBar) => void;
   bossBarUpdated: (bossBar: BossBar) => void;
+  resourcePack: (url: string, hash: string) => void;
 }
 
 export interface Bot extends TypedEmitter<BotEvents> {
@@ -407,6 +408,10 @@ export interface Bot extends TypedEmitter<BotEvents> {
   removeChatPattern(name: string): void;
 
   awaitMessage(...args: string[] | RegExp[]): Promise<string>;
+
+  acceptResourcePack(): void;
+  
+  denyResourcePack(): void;
 }
 
 export interface chatPatternOptions {
