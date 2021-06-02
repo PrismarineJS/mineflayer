@@ -19,7 +19,7 @@ jobs:
       uses: actions/setup-node@v1.4.4
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm run lint
+    - run: npm i && npm run lint
 
   Mocha:
     runs-on: ubuntu-latest
