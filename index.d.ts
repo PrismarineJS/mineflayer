@@ -295,6 +295,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
   digTime(block: Block): number;
 
   placeBlock(referenceBlock: Block, faceVector: Vec3, cb?: () => void): Promise<void>;
+  
+  _placeBlockWithOptions(referenceBlock: Block, faceVector: Vec3, options: {forceLook?: boolean | string, offhand?: boolean});
 
   activateBlock(block: Block, callback?: (err?: Error) => void): Promise<void>;
 
