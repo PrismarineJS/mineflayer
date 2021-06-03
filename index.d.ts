@@ -475,6 +475,11 @@ export class ChatMessage {
   toAnsi (lang?: { [key: string]: string }): string;
 }
 
+export interface simpleClick {
+  leftMouse: (slot: number) => Promise<void>
+  rightMouse: (slot: number) => Promise<void>
+}
+
 export interface ChatPattern {
   pattern: RegExp
   type: string
