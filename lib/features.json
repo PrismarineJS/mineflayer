@@ -260,8 +260,13 @@
     "versions": ["1.8", "1.10.2"]
   },
   {
-    "name": "usesPayload",
+    "name": "statisticsUsesPayload",
     "description": "uses payload to send client_command",
     "versions": ["1.8", "1.8.9"]
+  },
+  {
+    "name": "statisticsFormatChanges",
+    "description": "statistics packet now uses packetId instead of sending stat name",
+    "versions": ["1.13.2", "1.16.5"]
   }
 ]
