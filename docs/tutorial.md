@@ -64,7 +64,7 @@ This will let VSCode know we are working with Javascript, and give you the corre
 Start by typing the following:
 
 ```js
-let test = 5
+const test = 5
 ```
 
 This will create a new variable named `test` and assign it the value `5`  
@@ -81,6 +81,7 @@ If you want a modifiable variable, you will still have to use `let` of course.
 
 ```js
 const test = 5
+// eslint-disable-next-line
 test = 10 // This line is invalid.
 ```
 
@@ -171,7 +172,7 @@ const object = {} // object type
 - Functions are also their own type.
 
 ```js
-const function = (a, b) => { return a+b } // function type
+const adder = (a, b) => { return a + b } // function type
 ```
 
 - A boolean is a type that can only be `true` or `false`
@@ -183,7 +184,7 @@ const boolean = true // boolean type
 - When something is not (yet) defined, its type is `undefined`
 
 ```js
-const nothing                // undefined type
+let nothing // undefined type
 const notDefined = undefined // undefined type
 ```
 
@@ -311,7 +312,7 @@ If you want to choose which server you want your bot to connect to, you have to 
 const mineflayer = require('mineflayer')
 
 const options = {
-  host: 'localhost',  // Change this to the ip you want.
+  host: 'localhost', // Change this to the ip you want.
   port: 25565 // Change this to the port you want.
 }
 
@@ -354,8 +355,8 @@ To log into a specific account, you have to supply both the `username` and the `
 const bot = mineflayer.createBot({
   host: 'localhost',
   port: 25565,
-  username: `Player`,
-  password: `password`
+  username: 'Player',
+  password: 'password'
 })
 ```
 
@@ -506,18 +507,18 @@ Interacting with the filesystem is often done using asynchronousy, because readi
 
 ```js
 const myPromise = new Promise((resolve, reject) => {
-  setTimeout( () => {
-    resolve("Success!")  // Yay! Everything went well!
-  }, 1000) 
-}) 
+  setTimeout(() => {
+    resolve('Success!') // Yay! Everything went well!
+  }, 1000)
+})
 
 myPromise.then((successMessage) => {
-  console.log(successMessage) 
+  console.log(successMessage)
 })
 
 myPromise.catch((error) => {
   console.log(error)
-}
+})
 ```
 
 The above codes uses what is called a Promise. A promise promises it will eventually complete.  
@@ -530,11 +531,11 @@ The `.then` and `.catch` function can also be chained together with the promise 
 
 ```js
 const myPromise = new Promise((resolve, reject) => {
-  setTimeout( () => {
-    resolve("Success!")  // Yay! Everything went well!
-  }, 1000) 
+  setTimeout(() => {
+    resolve('Success!') // Yay! Everything went well!
+  }, 1000)
 }).then((successMessage) => {
-  console.log(successMessage) 
+  console.log(successMessage)
 }).catch((error) => {
   console.log(error)
 })
@@ -586,7 +587,7 @@ You can also loop over the keys and values at the same time. You will have to de
 
 ```js
 for (const [key, value] of Object.entries(obj)) {
-  console.log(key + ', ' + value);
+  console.log(key + ', ' + value)
 }
 ```
 
@@ -631,7 +632,7 @@ bot.chatAddPattern(
   'Someone says hello'
 )
 
-const hi =  () => {
+const hi = () => {
   bot.chat('Hi!')
 }
 

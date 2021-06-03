@@ -80,11 +80,11 @@ const mineflayer = require('mineflayer')
 
 const bot = mineflayer.createBot({
   host: 'localhost', // optional
-  port: 25565,       // optional
+  port: 25565, // optional
   username: 'email@example.com', // E-mail и пароль используются для
-  password: '12345678',          // лицензионных серверов
-  version: false,                // При установленном значении false версия будет выбрана автоматически, используйте пример выше чтобы выбрать нужную версию
-  auth: 'mojang'                 // Необязательное поле. По умолчанию используется mojang, если используется учетная запись microsoft, установите значение «microsoft»
+  password: '12345678', // лицензионных серверов
+  version: false, // При установленном значении false версия будет выбрана автоматически, используйте пример выше чтобы выбрать нужную версию
+  auth: 'mojang' // Необязательное поле. По умолчанию используется mojang, если используется учетная запись microsoft, установите значение «microsoft»
 })
 
 bot.on('chat', function (username, message) {

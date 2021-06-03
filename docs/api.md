@@ -357,7 +357,7 @@ Also `block.blockEntity` is additional field with block entity data as `Object`
   Text1: { toString: Function }, // ChatMessage object
   Text2: { toString: Function }, // ChatMessage object
   Text3: { toString: Function }, // ChatMessage object
-  Text4: { toString: Function }, // ChatMessage object
+  Text4: { toString: Function } // ChatMessage object
 }
 ```
 
@@ -486,13 +486,13 @@ Looks like:
 ```js
 [
   {
-    "level": 3
+    level: 3
   },
   {
-    "level": 4
+    level: 4
   },
   {
-    "level": 9
+    level: 9
   }
 ]
 ```
@@ -749,7 +749,7 @@ Bot's player object
   displayName: { toString: Function }, // ChatMessage object.
   gamemode: 0,
   ping: 28,
-  entity: entity, // null if you are too far away
+  entity: entity // null if you are too far away
 }
 ```
 
@@ -1448,11 +1448,13 @@ promise that is resolved when one of the messages passed as an arg is resolved
 Example:
 
 ```js
-await bot.awaitMessage('<flatbot> hello world') // resolves on "hello world" in chat by flatbot
-await bot.awaitMessage(['<flatbot> hello', '<flatbot> world']) // resolves on "hello" or "world" in chat by flatbot
-await bot.awaitMessage(['<flatbot> hello', '<flatbot> world'], ['<flatbot> im', '<flatbot> batman']) //resolves on "hello" or "world" or "im" or "batman" in chat by flatbot
-await bot.awaitMessage('<flatbot> hello', '<flatbot> world') // resolves on "hello" or "world" in chat by flatbot
-await bot.awaitMessage(/<flatbot> (.+)/) // resolves on first message matching the regex
+async function wait () {
+  await bot.awaitMessage('<flatbot> hello world') // resolves on "hello world" in chat by flatbot
+  await bot.awaitMessage(['<flatbot> hello', '<flatbot> world']) // resolves on "hello" or "world" in chat by flatbot
+  await bot.awaitMessage(['<flatbot> hello', '<flatbot> world'], ['<flatbot> im', '<flatbot> batman']) // resolves on "hello" or "world" or "im" or "batman" in chat by flatbot
+  await bot.awaitMessage('<flatbot> hello', '<flatbot> world') // resolves on "hello" or "world" in chat by flatbot
+  await bot.awaitMessage(/<flatbot> (.+)/) // resolves on first message matching the regex
+}
 ```
 
 #### bot.setSettings(options)
@@ -1466,20 +1468,20 @@ Injects a Plugin. Does nothing if the plugin is already loaded.
  * `plugin` - function
 
 ```js
-function somePlugin(bot, options) {
-  function someFunction() {
-    bot.chat('Yay!');
+function somePlugin (bot, options) {
+  function someFunction () {
+    bot.chat('Yay!')
   }
 
   bot.myPlugin = {} // Good practice to namespace plugin API
-  bot.myPlugin.someFunction = someFunction;
+  bot.myPlugin.someFunction = someFunction
 }
 
-var bot = mineflayer.createBot(...);
-bot.loadPlugin(somePlugin);
-bot.once('login', function() {
-  bot.myPlugin.someFunction(); // Yay!
-});
+const bot = mineflayer.createBot({})
+bot.loadPlugin(somePlugin)
+bot.once('login', function () {
+  bot.myPlugin.someFunction() // Yay!
+})
 ```
 
 #### bot.loadPlugins(plugins)

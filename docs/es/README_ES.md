@@ -67,11 +67,11 @@ Por ejemplo `version:" 1.8 "`.
 const mineflayer = require('mineflayer')
 
 const bot = mineflayer.createBot({
-  host: "localhost", // opcional
-  port: 25565,       // opcional
-  username: "email@example.com", // el correo electrónico y contraseña sólo son necesarios   
-  password: "12345678",          // para servidores con el flag online-mode=true
-  version: false                 // el valor false implica detectar la versión automáticamente, puedes configurar una versión específica utilizando por ejemplo "1.8.8"
+  host: 'localhost', // opcional
+  port: 25565, // opcional
+  username: 'email@example.com', // el correo electrónico y contraseña sólo son necesarios
+  password: '12345678', // para servidores con el flag online-mode=true
+  version: false // el valor false implica detectar la versión automáticamente, puedes configurar una versión específica utilizando por ejemplo "1.8.8"
 })
 
 bot.on('chat', function (username, message) {
