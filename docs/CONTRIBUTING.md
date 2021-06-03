@@ -69,13 +69,15 @@ What that means is we shouldn't use `throw(new Error("error"))` but instead use 
 For example : 
 
 ```js
-function myfunction(param1,callback)
-{
+function myfunction (param1, callback) {
   // do stuff
-  if(/* everything worked*/)
-    callback();
-  else
-    callback(new Error("something failed"));
+  let toDo = 1
+  toDo = 2
+  if (toDo === 2) { // everything worked
+    callback()
+  } else {
+    callback(new Error('something failed'))
+  }
 }
 ```
 

@@ -53,7 +53,6 @@ bot.on('messagestr', msg => {
     jackpot = {}
   }
 })
-
 ```
 ### How can I send a command ?
 

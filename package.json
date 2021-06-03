@@ -8,8 +8,8 @@
     "mocha_test": "mocha --reporter spec --exit",
     "test": "npm run mocha_test",
     "pretest": "npm run lint",
-    "lint": "standard",
-    "fix": "standard --fix",
+    "lint": "standard && standard-markdown",
+    "fix": "standard --fix && standard-markdown --fix",
     "prepublishOnly": "cp docs/README.md README.md"
   },
   "repository": {
@@ -43,6 +43,7 @@
     "minecraft-wrap": "^1.2.1",
     "mineflayer": "file:.",
     "mocha": "^8.0.1",
-    "standard": "^16.0.1"
+    "standard": "^16.0.1",
+    "standard-markdown": "^6.0.0"
   }
 }
