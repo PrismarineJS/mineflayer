@@ -1285,18 +1285,18 @@ of the chunk with the smallest x, y, and z values.
  * `plugin` - функция
 
 ```js
-function somePlugin(bot, options) {
-  function someFunction() {
-    bot.chat('Yay!');
+function somePlugin (bot, options) {
+  function someFunction () {
+    bot.chat('Yay!')
   }
-  bot.someFunction = someFunction;
+  bot.someFunction = someFunction
 }
 
-var bot = mineflayer.createBot({});
-bot.loadPlugin(somePlugin);
-bot.once('login', function() {
-  bot.someFunction(); // Yay!
-});
+var bot = mineflayer.createBot({})
+bot.loadPlugin(somePlugin)
+bot.once('login', () => {
+  bot.someFunction() // Yay!
+})
 ```
 
 #### bot.loadPlugins(plugins)
