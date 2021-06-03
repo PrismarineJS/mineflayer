@@ -5,7 +5,9 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "test": "mocha --reporter spec --exit",
+    "mocha_test": "mocha --reporter spec --exit",
+    "test": "npm run mocha_test",
+    "pretest": "npm run lint",
     "lint": "standard",
     "fix": "standard --fix",
     "prepublishOnly": "cp docs/README.md README.md"
