@@ -106,6 +106,7 @@
       - [bot.health](#bothealth)
       - [bot.food](#botfood)
       - [bot.foodSaturation](#botfoodsaturation)
+      - [bot.oxygenLevel](#botoxygenlevel)
       - [bot.physics](#botphysics)
       - [bot.time.doDaylightCycle](#bottimedodaylightcycle)
       - [bot.time.bigTime](#bottimebigtime)
@@ -143,6 +144,7 @@
       - ["spawnReset"](#spawnreset)
       - ["death"](#death)
       - ["health"](#health)
+      - ["breath"](#breath)
       - ["entitySwingArm" (entity)](#entityswingarm-entity)
       - ["entityHurt" (entity)](#entityhurt-entity)
       - ["entityWake" (entity)](#entitywake-entity)
@@ -847,7 +849,7 @@ Number in the range [0, 20] representing the number of half-hearts.
 
 #### bot.food
 
-Number, in the range [0, 20] representing the number of half-turkey-legs.
+Number in the range [0, 20] representing the number of half-turkey-legs.
 
 #### bot.foodSaturation
 
@@ -855,6 +857,9 @@ Food saturation acts as a food "overcharge". Food values will not decrease
 while the saturation is over zero. Players logging in automatically get a
 saturation of 5.0. Eating food increases the saturation as well as the food bar.
 
+#### bot.oxygenLevel
+
+Number in the range [0, 20] respresenting the number of water-icons known as oxygen level.
 
 #### bot.physics
 
@@ -1080,6 +1085,10 @@ Fires when you die.
 #### "health"
 
 Fires when your hp or food change.
+
+#### "breath"
+
+Fires when your oxygen level change.
 
 #### "entitySwingArm" (entity)
 #### "entityHurt" (entity)
