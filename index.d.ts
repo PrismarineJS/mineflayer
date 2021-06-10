@@ -402,7 +402,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   waitForTicks(ticks: number): Promise<void>;
 
-  addChatPattern(name: string, pattern: RegExp, options: chatPatternOptions): void;
+  addChatPattern(name: string, pattern: RegExp, options?: chatPatternOptions): void;
 
   addChatPatternSet(name: string, patterns: Array<RegExp>, options?: chatPatternOptions): void;
 
