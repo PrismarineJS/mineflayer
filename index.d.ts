@@ -147,6 +147,11 @@ interface BotEvents {
   scoreUpdated: (scoreboard: ScoreBoard, item: number) => void;
   scoreRemoved: (scoreboard: ScoreBoard, item: number) => void;
   scoreboardPosition: (position: DisplaySlot, scoreboard: ScoreBoard) => void;
+  teamCreated: (team: Team) => void,
+  teamRemoved: (team: Team) => void,
+  teamUpdated: (team: Team) => void,
+  teamMemberAdded: (team: Team) => void,
+  teamMemberRemoved: (team: Team) => void,
   bossBarCreated: (bossBar: BossBar) => void;
   bossBarDeleted: (bossBar: BossBar) => void;
   bossBarUpdated: (bossBar: BossBar) => void;
@@ -411,7 +416,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   awaitMessage(...args: string[] | RegExp[]): Promise<string>;
 
   acceptResourcePack(): void;
-  
+
   denyResourcePack(): void;
 }
 
@@ -795,6 +800,26 @@ export type ScoreBoardItem = {
   name: string;
   value: number;
 };
+
+export class Team {
+  name: string;
+  friendlyFire: number;
+  nameTagVisibility: string;
+  collisionRule: string;
+  // formatting
+  prefix: ChatMessage;
+  suffix: ChatMessage;
+
+  constructor(packet: object, ChatMessage: ChatMessage);
+
+  parseMessage(value: string, ChatMessage: ChatMessage): ChatMessage;
+
+  add(name: string, value: number): void;
+
+  remove(name: string): void;
+
+  update(packet: object): void;
+}
 
 export type DisplaySlot =
   | "list"
