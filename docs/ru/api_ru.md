@@ -345,7 +345,7 @@
   Text1: { toString: Function }, // ChatMessage object
   Text2: { toString: Function }, // ChatMessage object
   Text3: { toString: Function }, // ChatMessage object
-  Text4: { toString: Function }, // ChatMessage object
+  Text4: { toString: Function } // ChatMessage object
 }
 ```
 
@@ -552,13 +552,13 @@
 ```js
 [
   {
-    "level": 3
+    level: 3
   },
   {
-    "level": 4
+    level: 4
   },
   {
-    "level": 9
+    level: 9
   }
 ]
 ```
@@ -773,7 +773,7 @@ Create and return an instance of the class bot.
   displayName: { toString: Function }, // Объект ChatMessage.
   gamemode: 0,
   ping: 28,
-  entity: entity, // null, если Вы находитесь слишком далеко
+  entity: entity // null, если Вы находитесь слишком далеко
 }
 ```
 
@@ -1285,18 +1285,18 @@ of the chunk with the smallest x, y, and z values.
  * `plugin` - функция
 
 ```js
-function somePlugin(bot, options) {
-  function someFunction() {
-    bot.chat('Yay!');
+function somePlugin (bot, options) {
+  function someFunction () {
+    bot.chat('Yay!')
   }
-  bot.someFunction = someFunction;
+  bot.someFunction = someFunction
 }
 
-var bot = mineflayer.createBot(...);
-bot.loadPlugin(somePlugin);
-bot.once('login', function() {
-  bot.someFunction(); // Yay!
-});
+var bot = mineflayer.createBot({})
+bot.loadPlugin(somePlugin)
+bot.once('login', () => {
+  bot.someFunction() // Yay!
+})
 ```
 
 #### bot.loadPlugins(plugins)
