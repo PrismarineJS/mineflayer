@@ -2,23 +2,22 @@ name: CI
 
 on:
   push:
-    branches: master
+    branches:
+      - main
   pull_request:
-    branches: master
+    branches:
+      - main
 
 jobs:
   Lint:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [14.x]
 
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js 14.x
       uses: actions/setup-node@v1.4.4
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 14.x
     - run: npm i && npm run lint
 
   MinecraftServer:
@@ -42,4 +41,4 @@ jobs:
     - name: Install Dependencies
       run: npm install
     - name: Start Tests
-      run: npm run mocha_test -- -g ${{ matrix.mcVersionIndex }}
+      run: npm run mocha_test -- -g ${{ matrix.mcVersion }}
