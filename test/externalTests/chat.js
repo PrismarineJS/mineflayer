@@ -96,7 +96,7 @@ module.exports = () => {
     bot.removeChatPattern(patternIndex)
     await new Promise((resolve, reject) => {
       setTimeout(() => resolve(), 5000)
-      bot.on('chat:hello', reject(new Error("Hello event shouldn't work after removing it")))
+      bot.on('chat:hello', () => reject(new Error("Hello event shouldn't work after removing it")))
     })
   })
 
