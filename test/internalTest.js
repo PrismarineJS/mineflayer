@@ -5,11 +5,7 @@ const vec3 = require('vec3')
 const mc = require('minecraft-protocol')
 const assert = require('assert')
 
-const { firstVersion, lastVersion } = require('./common/parallel')
-mineflayer.testedVersions.forEach((supportedVersion, i) => {
-  if (!(i >= firstVersion && i <= lastVersion)) {
-    return
-  }
+for (const supportedVersion of mineflayer.testedVersions) {
   const mcData = require('minecraft-data')(supportedVersion)
   const version = mcData.version
   const Chunk = require('prismarine-chunk')(supportedVersion)
@@ -617,4 +613,4 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
       })
     })
   })
-})
+}
