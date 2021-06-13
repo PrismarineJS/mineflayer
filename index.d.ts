@@ -224,7 +224,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   whisper: (username: string, message: string) => void
 
-  chatAddPattern: (pattern: RegExp, chatType: string, description?: string) => void
+  chatAddPattern: (pattern: RegExp, chatType: string, description?: string) => number
 
   setSettings: (options: Partial<GameSettings>) => void
 
@@ -390,11 +390,11 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   waitForTicks: (ticks: number) => Promise<void>
 
-  addChatPattern: (name: string, pattern: RegExp, options?: chatPatternOptions) => void
+  addChatPattern: (name: string, pattern: RegExp, options?: chatPatternOptions) => number
 
-  addChatPatternSet: (name: string, patterns: RegExp[], options?: chatPatternOptions) => void
+  addChatPatternSet: (name: string, patterns: RegExp[], options?: chatPatternOptions) => number
 
-  removeChatPattern: (name: string) => void
+  removeChatPattern: (name: string | number) => void
 
   awaitMessage: (...args: string[] | RegExp[]) => Promise<string>
 

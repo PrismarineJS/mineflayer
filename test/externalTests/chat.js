@@ -89,5 +89,16 @@ module.exports = () => {
     await p4
   })
 
+  addTest('test removechatpattern with a number input', async (bot) => {
+    const patternIndex = bot.addChatPattern('hello', /hello/)
+    bot.chat('hello')
+    await once(bot, 'chat:hello')
+    bot.removeChatPattern(patternIndex)
+    await new Promise((resolve, reject) => {
+      setTimeout(() => resolve(), 5000)
+      bot.on('chat:hello', reject(new Error("Hello event shouldn't work after removing it")))
+    })
+  })
+
   return tests
 }
