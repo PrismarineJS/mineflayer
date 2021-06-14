@@ -33,9 +33,14 @@ function inject (bot) {
     bot.chat(command)
     await p // await getting the item
   })
-  // setting offset to true makes x, y, & z relative using ~
+  // setting relative to true makes x, y, & z relative using ~
   bot.test.setBlock = callbackify(async ({ x = 0, y = 0, z = 0, relative, blockName }) => {
-    const p = bot.awaitMessage('Block placed', /Changed the block/)
+    const { x: _x, y: _y, z: _z } = relative ? bot.entity.position.floored().offset(x, y, z) : { x, y, z }
+    const block = bot.blockAt(new Vec3(_x, _y, _z))
+    if (block.name === blockName) {
+      return
+    }
+    const p = once(bot.world, `blockUpdate:(${_x}, ${_y}, ${_z})`)
     const prefix = relative ? '~' : ''
     bot.chat(`/setblock ${prefix}${x} ${prefix}${y} ${prefix}${z} ${blockName}`)
     await p

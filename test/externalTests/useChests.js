@@ -24,6 +24,9 @@ module.exports = () => async (bot) => {
     blockItemsByName = 'blocksByName'
   }
 
+  const chestBlockId = mcData.blocksByName.chest.id
+  const trappedChestBlockId = mcData.blocksByName.trapped_chest.id
+
   function itemByName (items, name) {
     for (let i = 0; i < items.length; ++i) {
       const item = items[i]
@@ -74,10 +77,17 @@ module.exports = () => async (bot) => {
   await bot.test.placeBlock(trappedChestSlot, largeTrappedChestLocations[1])
   await bot.test.placeBlock(trappedChestSlot, smallTrappedChestLocation)
 
+  assert.strictEqual(bot.blockAt(largeChestLocations[0]).type, chestBlockId)
+  assert.strictEqual(bot.blockAt(largeChestLocations[1]).type, chestBlockId)
+  assert.strictEqual(bot.blockAt(smallChestLocation).type, chestBlockId)
+  assert.strictEqual(bot.blockAt(largeTrappedChestLocations[0]).type, trappedChestBlockId)
+  assert.strictEqual(bot.blockAt(largeTrappedChestLocations[1]).type, trappedChestBlockId)
+  assert.strictEqual(bot.blockAt(smallTrappedChestLocation).type, trappedChestBlockId)
+
   // Test that "chestLidMove" is emitted only once when opening a double chest
   let emitted = false
   bot.on('chestLidMove', handler)
-  function handler (block, isOpen, block2) {
+  async function handler (block, isOpen, block2) {
     if (emitted) {
       assert.fail(new Error('chestLidMove emitted twice'))
     } else {
@@ -91,10 +101,10 @@ module.exports = () => async (bot) => {
       assert(blockAssert && block2Assert, new Error('The block instance emitted by chestLidMove is not part of the chest oppened'))
       assert.strictEqual(isOpen, 1, new Error('isOpen should be 1 when opened by one only player'))
 
-      setTimeout(() => {
-        bot.removeListener('chestLidMove', handler)
-        chest.close()
-      }, 500)
+      await bot.test.wait(500)
+
+      bot.removeListener('chestLidMove', handler)
+      chest.close()
     }
   }
   const chest = await bot.openChest(bot.blockAt(largeChestLocations[0]))

@@ -8,13 +8,14 @@ module.exports = () => async (bot) => {
   const item2 = new Item(2, 1, 0)
 
   const cb = bot.creative.setInventorySlot(SLOT, item2)
-  await assert.rejects(async () => {
-    await bot.creative.setInventorySlot(SLOT, item1)
-  }, (err) => {
+
+  try {
+    bot.creative.setInventorySlot(SLOT, item1)
+  } catch (err) {
     assert.ok(err instanceof Error, 'The error has not been passed')
     assert.ok(bot.inventory.slots[SLOT] == null)
-    return true
-  })
+  }
+
   await cb
   assert.ok(bot.inventory.slots[SLOT] != null)
   assert.ok(bot.inventory.slots[SLOT].type === item2.type)

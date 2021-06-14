@@ -22,21 +22,25 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        javaVersion: [1.8]
         mcVersion: ['1.8.8', '1.9.4', '1.10.2', '1.11.2', '1.12.2', '1.13.2', '1.14.4', '1.15.2', '1.16.5']
+        include:
+         - mcVersion: '1.17.1'
+           javaVersion: 16
       fail-fast: false
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1.4.4
-      with:
-        node-version: 14.x
-    - name: Setup Java JDK
-      uses: actions/setup-java@v1.4.3
-      with:
-        java-version: 1.8
-        java-package: jre
-    - name: Install Dependencies
-      run: npm install
-    - name: Start Tests
-      run: npm run mocha_test -- -g ${{ matrix.mcVersion }}
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1.4.4
+        with:
+          node-version: 14.x
+      - name: Setup Java JDK
+        uses: actions/setup-java@v1.4.3
+        with:
+          java-version: ${{ matrix.javaVersion }}
+          java-package: jre
+      - name: Install Dependencies
+        run: npm install
+      - name: Start Tests
+        run: npm run mocha_test -- -g ${{ matrix.mcVersion }}

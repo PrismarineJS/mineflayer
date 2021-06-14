@@ -302,9 +302,9 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   activateEntityAt: (block: Entity, position: Vec3, callback?: (err?: Error) => void) => Promise<void>
 
-  consume: (callback: (err?: Error) => void) => Promise<void>
+  consume: (callback?: (err?: Error) => void) => Promise<void>
 
-  fish: (callback: (err?: Error) => void) => Promise<void>
+  fish: (callback?: (err?: Error) => void) => Promise<void>
 
   activateItem: (offhand?: boolean) => void
 
