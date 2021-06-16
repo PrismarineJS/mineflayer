@@ -9,7 +9,7 @@
 
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 
-| 🇺🇸 [English](README.md) | 🇷🇺 [Russian](ru/README_RU.md) | 🇪🇸 [Spanish](es/README_ES.md) | 🇹🇷 [Türkçe](tr/README_TR.md) |
+| 🇺🇸 [English](../README.md) | 🇷🇺 [Russian](../ru/README_RU.md) | 🇪🇸 [Spanish](../es/README_ES.md) | 🇹🇷 [Turkish](../tr/README_TR.md) |
 |-------------------------|----------------------------|----------------------------|----------------------------|
 
 JavaScript ile güçlü, stabil ve üst seviye Minecraft botları oluşturabileceğiniz bir [API](api.md).
@@ -75,9 +75,9 @@ Eğer sürüm belirtilmezse otomatik olarak ayarlanacaktır. Kimlik doğrulama t
 const mineflayer = require('mineflayer')
 
 const bot = mineflayer.createBot({
-  host: 'localhost',             // sunucu IP adresi
+  host: 'localhost', // sunucu IP adresi
   username: 'email@example.com', // Minecraft kullanıcı adı / e-posta adresi
-  password: '12345678',          // Minecraft şifresi, korsan sunucular için boş bırakabilirsin
+  password: '12345678' // Minecraft şifresi, korsan sunucular için boş bırakabilirsin
   // port: 25565,                // sadece port 25565 olmadığında kullan
   // version: false,             // özellikle bir sürüm belirteceğin zaman burayı değiştirebilirsin
   // auth: 'mojang'              // Microsoft kullanıyorsan 'microsoft' olarak değiştirebilirsin
