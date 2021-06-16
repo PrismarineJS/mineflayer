@@ -1435,6 +1435,8 @@ the event will be called `"chat:name"`, with name being the name passed
   * `parse` - instead of returning the actual message that was matched, return the capture groups from the regex
   * `deprecated` - (**unstable**) used by bot.chatAddPattern to keep compatability, likely to be removed
 
+returns a number which can be used with bot.removeChatPattern() to only delete this pattern
+
 #### bot.addChatPatternSet(name, patterns, chatPatternOptions)
 
 make an event that is called every time all patterns havee been matched to messages,
@@ -1445,10 +1447,15 @@ the event will be called `"chat:name"`, with name being the name passed
   * `repeat` - defaults to true, whether to listen for this event after the first match
   * `parse` - instead of returning the actual message that was matched, return the capture groups from the regex
 
+returns a number which can be used with bot.removeChatPattern() to only delete this patternset
+
 #### bot.removeChatPattern(name)
 
-removes a chat pattern
-* `name` the name of the chat pattern
+removes a chat pattern(s)
+* `name` : string or number
+
+if name is a string, all patterns that have that name will be removed
+else if name is a number, only that exact pattern will be removed
 
 #### bot.awaitMessage(...args)
 
