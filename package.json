@@ -42,7 +42,7 @@
     "doctoc": "^2.0.0",
     "minecraft-wrap": "^1.2.1",
     "mineflayer": "file:.",
-    "mocha": "^8.0.1",
+    "mocha": "^9.0.0",
     "standard": "^16.0.1",
     "ts-standard": "^10.0.0",
     "typescript": "^4.3.2",
