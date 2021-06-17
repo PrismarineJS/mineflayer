@@ -268,5 +268,10 @@
     "name": "enderCrystalNameNoCapsWithUnderscore",
     "description": "this is when the end_crystal's entity name is end_crystal",
     "versions": ["1.14", "1.16.5"]
+  },
+  {
+    "name": "boatNameIsCaps",
+    "description": "this is when the boat's entity name is Boat",
+    "versions": ["1.8.9", "1.10.2"]
   }
 ]

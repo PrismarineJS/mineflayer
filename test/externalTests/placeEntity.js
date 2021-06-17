@@ -57,7 +57,7 @@ module.exports = (version) => {
     const p = once(bot.inventory, 'updateSlot')
     bot.chat(`/give ${bot.username} ${mcData?.itemsByName?.oak_boat ? 'oak_boat' : 'boat'}`)
     await p // await getting the boat
-    const boat = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, -1, -2)), new Vec3(0, 1, 0))
+    const boat = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, -1, -2)), new Vec3(0, -1, 0))
     assert(boat !== null)
     const entity = bot.nearestEntity(o => o.name === 'Boat')
     assert(entity?.name === 'Boat')
