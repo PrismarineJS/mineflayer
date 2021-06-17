@@ -23,18 +23,18 @@ module.exports = (version) => {
     await p // await getting the end crystal
     const crystal = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
     assert(crystal !== null)
-    let crystalName = 'EnderCrystal'
+    let name = 'EnderCrystal'
     if (bot.supportFeature('enderCrystalNameEndsInErNoCaps')) {
-      crystalName = 'ender_crystal'
+      name = 'ender_crystal'
     } else if (bot.supportFeature('enderCrystalNameNoCapsNoUnderscore')) {
-      crystalName = 'endercrystal'
+      name = 'endercrystal'
     } else if (bot.supportFeature('enderCrystalNameNoCapsWithUnderscore')) {
-      crystalName = 'end_crystal'
+      name = 'end_crystal'
     }
-    const entity = bot.nearestEntity(o => o.name === crystalName)
-    assert(entity?.name === crystalName)
+    const entity = bot.nearestEntity(o => o.name === name)
+    assert(entity?.name === name)
 
-    bot.attack(entity) // clear the crystal
+    bot.chat(`/kill @e[type=${name}]`)
     bot.chat('/setblock ~ ~ ~1 air')
   })
 
@@ -44,16 +44,12 @@ module.exports = (version) => {
       obo (b = water where we place the boat)
       ooo
     */
-    bot.chat('/setblock ~-1 ~-1 ~-3 water')
-    bot.chat('/setblock ~ ~-1 ~-3 water')
-    bot.chat('/setblock ~1 ~-1 ~-3 water')
-    bot.chat('/setblock ~-1 ~-1 ~-2 water')
-    bot.chat('/setblock ~ ~-1 ~-2 water')
-    bot.chat('/setblock ~1 ~-1 ~-2 water')
-    bot.chat('/setblock ~-1 ~-1 ~-1 water')
-    bot.chat('/setblock ~ ~-1 ~-1 water')
-    bot.chat('/setblock ~1 ~-1 ~-1 water')
-
+    for (let z = -1; z >= -3; z--) {
+      const y = -1
+      for (let x = -1; x <= 1; x++) {
+        bot.chat(`/setblock ~${x} ~${y} ~${z} water`)
+      }
+    }
     const p = once(bot.inventory, 'updateSlot')
     bot.chat(`/give ${bot.username} ${mcData?.itemsByName?.oak_boat ? 'oak_boat' : 'boat'}`)
     await p // await getting the boat
@@ -65,21 +61,10 @@ module.exports = (version) => {
     }
     const entity = bot.nearestEntity(o => o.name === boatName)
     assert(entity?.name === boatName)
+    bot.chat(`/kill @e[type=${mcData?.itemsByName?.oak_boat ? 'oak_boat' : 'boat'}`)
   })
 
-  addTest('Use summon egg', async (bot) => {
-    [
-      '/setblock ~1 ~ ~ stone',
-      '/setblock ~-1 ~ ~ stone',
-      '/setblock ~ ~ ~1 stone',
-      '/setblock ~ ~ ~-1 stone',
-
-      '/setblock ~-1 ~ ~-1 stone',
-      '/setblock ~1 ~ ~-1 stone',
-      '/setblock ~-1 ~ ~1 stone',
-      '/setblock ~1 ~ ~1 stone'
-    ].forEach(o => bot.chat(o))
-
+  addTest('place summon egg', async (bot) => {
     let command
     if (mcData.isOlderThan('1.9')) {
       command = '/give @p spawn_egg 1 54' // 1.8
@@ -95,13 +80,17 @@ module.exports = (version) => {
     const p = once(bot.inventory, 'updateSlot')
     bot.chat(command)
     await p // await getting the spawn egg
-    // const mobName = require('../../mobFromSpawnEgg')(bot.version)(bot.inventory.slots[0])
     const zombie = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
     assert(zombie !== null)
-    const zombieName = mcData.isNewerOrEqualTo('1.11') ? 'zombie' : 'Zombie'
-    const entity = bot.nearestEntity(o => o.name === zombieName)
-    assert(entity?.name === zombieName)
+    const name = mcData.isNewerOrEqualTo('1.11') ? 'zombie' : 'Zombie'
+    const entity = bot.nearestEntity(o => o.name === name)
+    assert(entity?.name === name)
+    bot.chat(`/kill @e[type=${name}`)
   })
+
+  // addTest('place armor stand', async (bot) => {
+
+  // })
 
   return tests
 }
