@@ -106,6 +106,7 @@
       - [bot.health](#bothealth)
       - [bot.food](#botfood)
       - [bot.foodSaturation](#botfoodsaturation)
+      - [bot.oxygenLevel](#botoxygenlevel)
       - [bot.physics](#botphysics)
       - [bot.time.doDaylightCycle](#bottimedodaylightcycle)
       - [bot.time.bigTime](#bottimebigtime)
@@ -132,6 +133,7 @@
       - ["spawn"](#spawn)
       - ["respawn"](#respawn)
       - ["game"](#game)
+      - ["resourcePack" (url, hash)](#resourcepack-url-hash)
       - ["title"](#title)
       - ["rain"](#rain)
       - ["weatherUpdate"](#weatherUpdate)
@@ -142,6 +144,7 @@
       - ["spawnReset"](#spawnreset)
       - ["death"](#death)
       - ["health"](#health)
+      - ["breath"](#breath)
       - ["entitySwingArm" (entity)](#entityswingarm-entity)
       - ["entityHurt" (entity)](#entityhurt-entity)
       - ["entityWake" (entity)](#entitywake-entity)
@@ -234,6 +237,8 @@
       - [bot.dig(block, [forceLook = true], [digFace], [callback])](#botdigblock-forcelook--true-digface-callback)
       - [bot.stopDigging()](#botstopdigging)
       - [bot.digTime(block)](#botdigtimeblock)
+      - [bot.acceptResourcePack()](#botacceptresourcepack)
+      - [bot.denyResourcePack()](#botdenyresourcepack)
       - [bot.placeBlock(referenceBlock, faceVector, cb)](#botplaceblockreferenceblock-facevector-cb)
       - [bot.activateBlock(block, [callback])](#botactivateblockblock-callback)
       - [bot.activateEntity(entity, [callback])](#botactivateentityentity-callback)
@@ -354,7 +359,7 @@ Also `block.blockEntity` is additional field with block entity data as `Object`
   Text1: { toString: Function }, // ChatMessage object
   Text2: { toString: Function }, // ChatMessage object
   Text3: { toString: Function }, // ChatMessage object
-  Text4: { toString: Function }, // ChatMessage object
+  Text4: { toString: Function } // ChatMessage object
 }
 ```
 
@@ -483,13 +488,13 @@ Looks like:
 ```js
 [
   {
-    "level": 3
+    level: 3
   },
   {
-    "level": 4
+    level: 4
   },
   {
-    "level": 9
+    level: 9
   }
 ]
 ```
@@ -665,6 +670,7 @@ Create and return an instance of the class bot.
  * checkTimeoutInterval : default to `30*1000` (30s), check if keepalive received at that period, disconnect otherwise.
  * loadInternalPlugins : defaults to true
  * storageBuilder : an optional function, takes as argument version and worldName and return an instance of something with the same API as prismarine-provider-anvil. Will be used to save the world.
+ * client : an instance of node-minecraft-protocol, if not specified, mineflayer makes it's own client. This can be used to enable using mineflayer through a proxy of many clients or a vanilla client and a mineflayer client.
  * plugins : object : defaults to {}
    - pluginName : false : don't load internal plugin with given name ie. `pluginName`
    - pluginName : true : load internal plugin with given name ie. `pluginName` even though loadInternalplugins is set to false
@@ -745,7 +751,7 @@ Bot's player object
   displayName: { toString: Function }, // ChatMessage object.
   gamemode: 0,
   ping: 28,
-  entity: entity, // null if you are too far away
+  entity: entity // null if you are too far away
 }
 ```
 
@@ -843,7 +849,7 @@ Number in the range [0, 20] representing the number of half-hearts.
 
 #### bot.food
 
-Number, in the range [0, 20] representing the number of half-turkey-legs.
+Number in the range [0, 20] representing the number of half-turkey-legs.
 
 #### bot.foodSaturation
 
@@ -851,11 +857,22 @@ Food saturation acts as a food "overcharge". Food values will not decrease
 while the saturation is over zero. Players logging in automatically get a
 saturation of 5.0. Eating food increases the saturation as well as the food bar.
 
+#### bot.oxygenLevel
+
+Number in the range [0, 20] respresenting the number of water-icons known as oxygen level.
 
 #### bot.physics
 
 Edit these numbers to tweak gravity, jump speed, terminal velocity, etc.
 Do this at your own risk.
+
+#### bot.simpleClick.leftMouse (slot)
+
+abstraction over `bot.clickWindow(slot, 0, 0)`
+
+#### bot.simpleClick.rightMouse (slot)
+
+abstraction over `bot.clickWindow(slot, 1, 0)`
 
 #### bot.time.doDaylightCycle
 
@@ -987,9 +1004,12 @@ Emitted for every server message, including chats.
    * system
    * game_info
 
-#### "messagestr" (message, messagePosition)
+#### "messagestr" (message, messagePosition, jsonMsg)
 
-alias for the "message" event but it calls .toString() on the message object to get a string for the message before emitting.
+Alias for the "message" event but it calls .toString() on the message object to get a string for the message before emitting.
+
+#### "inject_allowed"
+Fires when the index file has been loaded, you can load mcData and plugins here but it's better to wait for "spawn" event.
 
 #### "login"
 
@@ -1014,6 +1034,10 @@ event instead.
 #### "game"
 
 Emitted when the server changes any of the game properties.
+
+#### "resourcePack" (url, hash)
+
+Emitted when the server sends a resource pack.
 
 #### "title"
 
@@ -1062,10 +1086,21 @@ Fires when you die.
 
 Fires when your hp or food change.
 
+#### "breath"
+
+Fires when your oxygen level change.
+
 #### "entitySwingArm" (entity)
 #### "entityHurt" (entity)
+#### "entityDead" (entity)
+#### "entityTaming" (entity)
+#### "entityTamed" (entity)
+#### "entityShakingOffWater" (entity)
+#### "entityEatingGrass" (entity)
 #### "entityWake" (entity)
 #### "entityEat" (entity)
+#### "entityCriticalEffect" (entity)
+#### "entityMagicCriticalEffect" (entity)
 #### "entityCrouch" (entity)
 #### "entityUncrouch" (entity)
 #### "entityEquip" (entity)
@@ -1094,6 +1129,7 @@ or boat.
 #### "entityEffect" (entity, effect)
 #### "entityEffectEnd" (entity, effect)
 #### "playerJoined" (player)
+#### "playerUpdated" (player)
 #### "playerLeft" (player)
 
 #### "blockUpdate" (oldBlock, newBlock)
@@ -1388,6 +1424,8 @@ Adds a regex pattern to the bot's chat matching. Useful for bukkit servers where
 
 #### bot.addChatPattern(name, pattern, chatPatternOptions)
 
+** this is an alias of `bot.addChatPatternSet(name, [pattern], chatPatternOptions)`
+
 make an event that is called every time the pattern is matched to a message,
 the event will be called `"chat:name"`, with name being the name passed
 * `name` - the name used to listen for the event
@@ -1396,6 +1434,8 @@ the event will be called `"chat:name"`, with name being the name passed
   * `repeat` - defaults to true, whether to listen for this event after the first match
   * `parse` - instead of returning the actual message that was matched, return the capture groups from the regex
   * `deprecated` - (**unstable**) used by bot.chatAddPattern to keep compatability, likely to be removed
+
+returns a number which can be used with bot.removeChatPattern() to only delete this pattern
 
 #### bot.addChatPatternSet(name, patterns, chatPatternOptions)
 
@@ -1406,6 +1446,32 @@ the event will be called `"chat:name"`, with name being the name passed
 * `chatPatternOptions` - object
   * `repeat` - defaults to true, whether to listen for this event after the first match
   * `parse` - instead of returning the actual message that was matched, return the capture groups from the regex
+
+returns a number which can be used with bot.removeChatPattern() to only delete this patternset
+
+#### bot.removeChatPattern(name)
+
+removes a chat pattern(s)
+* `name` : string or number
+
+if name is a string, all patterns that have that name will be removed
+else if name is a number, only that exact pattern will be removed
+
+#### bot.awaitMessage(...args)
+
+promise that is resolved when one of the messages passed as an arg is resolved
+
+Example:
+
+```js
+async function wait () {
+  await bot.awaitMessage('<flatbot> hello world') // resolves on "hello world" in chat by flatbot
+  await bot.awaitMessage(['<flatbot> hello', '<flatbot> world']) // resolves on "hello" or "world" in chat by flatbot
+  await bot.awaitMessage(['<flatbot> hello', '<flatbot> world'], ['<flatbot> im', '<flatbot> batman']) // resolves on "hello" or "world" or "im" or "batman" in chat by flatbot
+  await bot.awaitMessage('<flatbot> hello', '<flatbot> world') // resolves on "hello" or "world" in chat by flatbot
+  await bot.awaitMessage(/<flatbot> (.+)/) // resolves on first message matching the regex
+}
+```
 
 #### bot.setSettings(options)
 
@@ -1418,20 +1484,20 @@ Injects a Plugin. Does nothing if the plugin is already loaded.
  * `plugin` - function
 
 ```js
-function somePlugin(bot, options) {
-  function someFunction() {
-    bot.chat('Yay!');
+function somePlugin (bot, options) {
+  function someFunction () {
+    bot.chat('Yay!')
   }
 
   bot.myPlugin = {} // Good practice to namespace plugin API
-  bot.myPlugin.someFunction = someFunction;
+  bot.myPlugin.someFunction = someFunction
 }
 
-var bot = mineflayer.createBot(...);
-bot.loadPlugin(somePlugin);
-bot.once('login', function() {
-  bot.myPlugin.someFunction(); // Yay!
-});
+const bot = mineflayer.createBot({})
+bot.loadPlugin(somePlugin)
+bot.once('login', function () {
+  bot.myPlugin.someFunction() // Yay!
+})
 ```
 
 #### bot.loadPlugins(plugins)
@@ -1570,6 +1636,14 @@ dig any other blocks until the block has been broken, or you call
 #### bot.digTime(block)
 
 Tells you how long it will take to dig the block, in milliseconds.
+  
+#### bot.acceptResourcePack()
+
+Accepts resource pack.
+  
+#### bot.denyResourcePack()
+
+Denies resource pack.
 
 #### bot.placeBlock(referenceBlock, faceVector, cb)
 

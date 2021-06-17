@@ -60,5 +60,45 @@ module.exports = () => {
     assert.strictEqual(partTwo, '<U9G> World')
   })
 
+  addTest('test removeChatPattern', async (bot) => {
+    await once(bot, 'message') // => starting chat test removeChatPattern
+    bot.addChatPattern('test', /<.+> Hello/)
+    bot.removeChatPattern('test')
+    let triggered = false
+    const listener = () => { triggered = true }
+    bot.once('chat:test', listener)
+    bot.chat('/tellraw @p {"translate":"chat.type.text", "with":["U9G", "Hello"]}')
+    await once(bot, 'message')
+    assert.ok(triggered === false)
+    bot.off('chat:test', listener)
+  })
+
+  addTest('test awaitMessage', async (bot) => {
+    // let resolves = 0
+    const p1 = bot.awaitMessage('<flatbot> hello')
+    bot.chat('hello')
+    await p1
+    const p2 = bot.awaitMessage(['<flatbot> hello', '<flatbot> world'])
+    bot.chat('world')
+    await p2
+    const p3 = bot.awaitMessage(/<.+> hello/)
+    bot.chat('hello')
+    await p3
+    const p4 = bot.awaitMessage([/<.+> hello/, /<.+> world/])
+    bot.chat('world')
+    await p4
+  })
+
+  addTest('test removechatpattern with a number input', async (bot) => {
+    const patternIndex = bot.addChatPattern('hello', /hello/)
+    bot.chat('hello')
+    await once(bot, 'chat:hello')
+    bot.removeChatPattern(patternIndex)
+    await new Promise((resolve, reject) => {
+      setTimeout(() => resolve(), 5000)
+      bot.on('chat:hello', () => reject(new Error("Hello event shouldn't work after removing it")))
+    })
+  })
+
   return tests
 }

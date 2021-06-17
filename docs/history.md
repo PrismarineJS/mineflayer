@@ -1,3 +1,17 @@
+## 3.7.0
+* Add bot.removeChatPattern() (@BlueBurgersTDD)
+* Add events to typings (@DrMoraschi)
+* Add TR translation (@KaffinPX)
+* Create plugin example (@Zn10plays)
+* Revise readme (@IceTank)
+* Revise chat_parsing example comments (@U5B)
+* Revise raycast example (@IceTank)
+* allow passing nmpclient as an option in createbot (@u9g)
+* Add bot.awaitMessage() (@u9g)
+* Add modular example (@u9g)
+* Fix bug with chat patterns (@u9g)
+* Fix bug with game event (@u9g)
+
 ## 3.6.0
 * add bot.addChatPattern() & bot.addChatPatternSet() & deprecate bot.chatAddPattern() (@U9G)
 

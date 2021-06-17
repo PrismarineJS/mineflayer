@@ -14,7 +14,7 @@ client.on('end', () => {})
 ### I'm not getting chat event on a custom server, how can I solve it ?
 
 Spigot servers, in particular some plugins, use custom chat formats, you need to parse it with a custom regex / parser.
-Read and adapt [chatAddPattern.js](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chatAddPattern.js) to make it work for your particular
+Read and adapt [chat_parsing.js](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chat_parsing.js) to make it work for your particular
 chat plugin. Also read http://mineflayer.prismarine.js.org/#/tutorial?id=custom-chat
 
 ### How can I collect info from an custom plugin in chat ?
@@ -53,7 +53,6 @@ bot.on('messagestr', msg => {
     jackpot = {}
   }
 })
-
 ```
 ### How can I send a command ?
 

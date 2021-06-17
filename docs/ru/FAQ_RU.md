@@ -6,8 +6,8 @@
 
 Используйте `hideErrors: true` в параметрах createBot. Вы также можете добавить эти слушатели:
 ```js
-client.on('error', () => {});
-client.on('end', () => {});
+client.on('error', () => {})
+client.on('end', () => {})
 ```
 
 ### Я не получаю событие чата на сервере, как я могу это решить?
@@ -23,7 +23,7 @@ client.on('end', () => {});
 Пример:
 
 ```js
-bot.chat('/give @p diamond');
+bot.chat('/give @p diamond')
 ```
 
 ### Можно ли войти в несколько учетных записей с помощью bot = mineflayer.createbot, контролируя их все по отдельности?
@@ -49,7 +49,7 @@ bot.chat('/give @p diamond');
 Пример:
 
 ```js
-function getLore(item) {
+function getLore (item) {
   let message = ''
   if (item.nbt == null) return message
 
@@ -57,17 +57,17 @@ function getLore(item) {
   const ChatMessage = require('prismarine-chat')(bot.version)
 
   const data = nbt.simplify(item.nbt)
-  const display = data['display']
+  const display = data.display
   if (display == null) return message
 
-  const lore = display['Lore']
+  const lore = display.Lore
   if (lore == null) return message
 
   for (const line of lore) {
     for (const group of JSON.parse(line)) {
       message += new ChatMessage(group).toString()
       message += '\n'
-      }
+    }
   }
 
   return message
