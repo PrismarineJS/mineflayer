@@ -59,8 +59,12 @@ module.exports = (version) => {
     await p // await getting the boat
     const boat = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, -1, -2)), new Vec3(0, -1, 0))
     assert(boat !== null)
-    const entity = bot.nearestEntity(o => o.name === 'Boat')
-    assert(entity?.name === 'Boat')
+    let boatName = 'boat'
+    if (bot.supportFeature('boatNameIsCaps')) {
+      boatName = 'Boat'
+    }
+    const entity = bot.nearestEntity(o => o.name === boatName)
+    assert(entity?.name === boatName)
   })
 
   return tests

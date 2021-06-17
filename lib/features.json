@@ -272,6 +272,6 @@
   {
     "name": "boatNameIsCaps",
     "description": "this is when the boat's entity name is Boat",
-    "versions": ["1.8.9", "1.10.2"]
+    "versions": ["1.8", "1.10.2"]
   }
 ]
