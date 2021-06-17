@@ -1644,11 +1644,12 @@ use shears.
 
 Attack a player or a mob.
 
-#### bot.swingArm([hand])
+#### bot.swingArm([hand], showHand)
 
 Play an arm swing animation.
 
  * `hand` can take `left` or `right` which is arm that is animated. Default: `right`
+ * `showHand` is a boolean whether to add the hand to the packet, Default: `true`
 
 #### bot.mount(entity)
 

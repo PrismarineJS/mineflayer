@@ -301,7 +301,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   attack(entity: Entity): void;
 
-  swingArm(hand?: "left" | "right"): void;
+  swingArm(hand?: "left" | "right", showHand: boolean): void;
 
   mount(entity: Entity): void;
 

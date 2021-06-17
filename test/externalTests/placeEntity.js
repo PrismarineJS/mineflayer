@@ -67,5 +67,41 @@ module.exports = (version) => {
     assert(entity?.name === boatName)
   })
 
+  addTest('Use summon egg', async (bot) => {
+    [
+      '/setblock ~1 ~ ~ stone',
+      '/setblock ~-1 ~ ~ stone',
+      '/setblock ~ ~ ~1 stone',
+      '/setblock ~ ~ ~-1 stone',
+
+      '/setblock ~-1 ~ ~-1 stone',
+      '/setblock ~1 ~ ~-1 stone',
+      '/setblock ~-1 ~ ~1 stone',
+      '/setblock ~1 ~ ~1 stone'
+    ].forEach(o => bot.chat(o))
+
+    let command
+    if (mcData.isOlderThan('1.9')) {
+      command = '/give @p spawn_egg 1 54' // 1.8
+    } else if (mcData.isOlderThan('1.11')) {
+      command = '/give @p spawn_egg 1 0 {EntityTag:{id:Zombie}}' // 1.9 / 1.10
+    } else if (mcData.isOlderThan('1.12')) {
+      command = '/give @p spawn_egg 1 0 {EntityTag:{id:minecraft:zombie}}' // 1.11
+    } else if (mcData.isOlderThan('1.13')) {
+      command = '/give @p spawn_egg 1 0 {EntityTag:{id:zombie}}' // 1.12
+    } else {
+      command = '/give @p zombie_spawn_egg 1' // >1.12
+    }
+    const p = once(bot.inventory, 'updateSlot')
+    bot.chat(command)
+    await p // await getting the spawn egg
+    // const mobName = require('../../mobFromSpawnEgg')(bot.version)(bot.inventory.slots[0])
+    const zombie = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
+    assert(zombie !== null)
+    const zombieName = mcData.isNewerOrEqualTo('1.11') ? 'zombie' : 'Zombie'
+    const entity = bot.nearestEntity(o => o.name === zombieName)
+    assert(entity?.name === zombieName)
+  })
+
   return tests
 }
