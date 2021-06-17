@@ -34,7 +34,7 @@ module.exports = (version) => {
     const entity = bot.nearestEntity(o => o.name === name)
     assert(entity?.name === name)
 
-    bot.chat(`/kill @e[type=${name}]`)
+    bot.chat(`kill @e[type=!player]`)
     bot.chat('/setblock ~ ~ ~1 air')
   })
 
@@ -61,7 +61,7 @@ module.exports = (version) => {
     }
     const entity = bot.nearestEntity(o => o.name === boatName)
     assert(entity?.name === boatName)
-    bot.chat(`/kill @e[type=${mcData?.itemsByName?.oak_boat ? 'oak_boat' : 'boat'}`)
+    bot.chat(`kill @e[type=!player]`)
   })
 
   addTest('place summon egg', async (bot) => {
@@ -85,7 +85,7 @@ module.exports = (version) => {
     const name = mcData.isNewerOrEqualTo('1.11') ? 'zombie' : 'Zombie'
     const entity = bot.nearestEntity(o => o.name === name)
     assert(entity?.name === name)
-    bot.chat(`/kill @e[type=${name}`)
+    bot.chat(`kill @e[type=!player]`)
   })
 
   // addTest('place armor stand', async (bot) => {
