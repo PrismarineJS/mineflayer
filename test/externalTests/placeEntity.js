@@ -34,22 +34,25 @@ module.exports = (version) => {
     const entity = bot.nearestEntity(o => o.name === name)
     assert(entity?.name === name)
 
-    bot.chat(`kill @e[type=!player]`)
+    bot.chat('kill @e[type=!player]')
     bot.chat('/setblock ~ ~ ~1 air')
   })
 
   addTest('place boat', async (bot) => {
+    const makeWaterForBoatTest = (material = 'water') => {
+      for (let z = -1; z >= -3; z--) {
+        const y = -1
+        for (let x = -1; x <= 1; x++) {
+          bot.chat(`/setblock ~${x} ~${y} ~${z} ${material}`)
+        }
+      }
+    }
     /* Block Placement (o = water)
       ooo
       obo (b = water where we place the boat)
       ooo
     */
-    for (let z = -1; z >= -3; z--) {
-      const y = -1
-      for (let x = -1; x <= 1; x++) {
-        bot.chat(`/setblock ~${x} ~${y} ~${z} water`)
-      }
-    }
+    makeWaterForBoatTest()
     const p = once(bot.inventory, 'updateSlot')
     bot.chat(`/give ${bot.username} ${mcData?.itemsByName?.oak_boat ? 'oak_boat' : 'boat'}`)
     await p // await getting the boat
@@ -61,7 +64,8 @@ module.exports = (version) => {
     }
     const entity = bot.nearestEntity(o => o.name === boatName)
     assert(entity?.name === boatName)
-    bot.chat(`kill @e[type=!player]`)
+    makeWaterForBoatTest('air')
+    bot.chat('kill @e[type=!player]')
   })
 
   // addTest('place summon egg', async (bot) => {
