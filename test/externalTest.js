@@ -13,7 +13,7 @@ const START_THE_SERVER = true
 const WAIT_TIME_BEFORE_STARTING = 5000
 const TEST_TIMEOUT_MS = 60000
 
-const excludedTests = ['digEverything', 'book', 'anvil']
+const excludedTests = ['digEverything', 'book'] //, 'anvil']
 
 const propOverrides = {
   'level-type': 'FLAT',
