@@ -1,5 +1,4 @@
 const assert = require('assert')
-const { once } = require('events')
 const { Vec3 } = require('vec3')
 
 module.exports = (version) => {
@@ -16,11 +15,8 @@ module.exports = (version) => {
 
   addTest('place crystal', async (bot) => {
     if (!mcData?.itemsByName?.end_crystal?.id) return // unsupported
-
-    bot.chat('/setblock ~ ~ ~1 obsidian')
-    const p = once(bot.inventory, 'updateSlot')
-    bot.chat(`/give ${bot.username} end_crystal`)
-    await p // await getting the end crystal
+    await bot.test.setBlock({ z: 1, relative: true, blockName: 'obsidian' })
+    await bot.test.awaitItemRecieved(`/give ${bot.username} end_crystal`)
     const crystal = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
     assert(crystal !== null)
     let name = 'EnderCrystal'
@@ -33,39 +29,28 @@ module.exports = (version) => {
     }
     const entity = bot.nearestEntity(o => o.name === name)
     assert(entity?.name === name)
-
     bot.attack(entity)
-    bot.chat('/setblock ~ ~ ~1 air')
+    await bot.test.setBlock({ z: 1, blockName: 'air', relative: true })
   })
 
   addTest('place boat', async (bot) => {
-    /* Block Placement (o = water)
-      ooo
-      obo (b = water where we place the boat)
-      ooo
-    */
-    const makeWaterForBoatTest = async (material = 'water') => {
+    async function placeBlocksForTest (blockName) {
       for (let z = -1; z >= -3; z--) {
         const y = -1
         for (let x = -1; x <= 1; x++) {
-          bot.chat(`/setblock ~${x} ~${y} ~${z} ${material}`)
-          await bot.awaitMessage('Block placed', /Changed the block/)
+          await bot.test.setBlock({ x, y, z, blockName, relative: true })
         }
       }
     }
-    await makeWaterForBoatTest()
-    const p = once(bot.inventory, 'updateSlot')
-    bot.chat(`/give ${bot.username} ${mcData?.itemsByName?.oak_boat ? 'oak_boat' : 'boat'}`)
-    await p // await getting the boat
+
+    await placeBlocksForTest('water')
+    await bot.test.awaitItemRecieved(`/give ${bot.username} ${mcData?.itemsByName?.oak_boat ? 'oak_boat' : 'boat'}`)
     const boat = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, -1, -2)), new Vec3(0, -1, 0))
     assert(boat !== null)
-    let boatName = 'boat'
-    if (bot.supportFeature('boatNameIsCaps')) {
-      boatName = 'Boat'
-    }
-    const entity = bot.nearestEntity(o => o.name === boatName)
-    assert(entity?.name === boatName)
-    await makeWaterForBoatTest('air')
+    const name = bot.supportFeature('entityNameUpperCaseNoUnderscore') ? 'Boat' : 'boat'
+    const entity = bot.nearestEntity(o => o.name === name)
+    assert(entity?.name === name)
+    await placeBlocksForTest('air')
     bot.attack(entity)
   })
 
@@ -82,20 +67,24 @@ module.exports = (version) => {
     } else {
       command = '/give @p zombie_spawn_egg 1' // >1.12
     }
-    const p = once(bot.inventory, 'updateSlot')
-    bot.chat(command)
-    await p // await getting the spawn egg
+    await bot.test.awaitItemRecieved(command)
     const zombie = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
     assert(zombie !== null)
-    const name = mcData.isNewerOrEqualTo('1.11') ? 'zombie' : 'Zombie'
+    const name = bot.supportFeature('entityNameUpperCaseNoUnderscore') ? 'Zombie' : 'zombie'
     const entity = bot.nearestEntity(o => o.name === name)
     assert(entity?.name === name)
-    bot.chat(`/kill @e[type=${name}]`)
+    bot.chat(`/kill @e[type=${name}]`) // use /kill instead of bot.attack() because it takes more than one hit to kill
   })
 
-  // addTest('place armor stand', async (bot) => {
-
-  // })
+  addTest('place armor stand', async (bot) => {
+    await bot.test.awaitItemRecieved(`/give ${bot.username} armor_stand`)
+    const zombie = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
+    assert(zombie !== null)
+    const name = bot.supportFeature('entityNameUpperCaseNoUnderscore') ? 'ArmorStand' : 'armor_stand'
+    const entity = bot.nearestEntity(o => o.name === name)
+    assert(entity?.name === name)
+    bot.chat(`/kill @e[type=${name}]`) // use /kill instead of bot.attack() because it takes more than one hit to kill
+  })
 
   return tests
 }

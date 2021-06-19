@@ -275,8 +275,8 @@
     "versions": ["1.14", "1.16.5"]
   },
   {
-    "name": "boatNameIsCaps",
-    "description": "this is when the boat's entity name is Boat",
+    "name": "entityNameUpperCaseNoUnderscore",
+    "description": "this is when some entities name's start with an upper case like 'boat' would be 'Boat'",
     "versions": ["1.8", "1.10.2"]
   }
 ]
