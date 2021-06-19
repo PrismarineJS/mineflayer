@@ -265,18 +265,18 @@
     "versions": ["1.11", "1.12.2"]
   },
   {
-    "name": "enderCrystalNameNoCapsNoUnderscore",
-    "description": "this is when the end_crystal's entity name is endercrystal",
-    "versions": ["1.13", "1.13.2"]
-  },
-  {
     "name": "enderCrystalNameNoCapsWithUnderscore",
     "description": "this is when the end_crystal's entity name is end_crystal",
     "versions": ["1.14", "1.16.5"]
   },
   {
     "name": "entityNameUpperCaseNoUnderscore",
-    "description": "this is when some entities name's start with an upper case like 'boat' would be 'Boat'",
+    "description": "this is when some entities names would be captialized and appended without underscores like 'Boat' or 'ArmorStand'",
     "versions": ["1.8", "1.10.2"]
+  },
+  {
+    "name": "entityNameLowerCaseNoUnderscore",
+    "description": "this is when some entity names are lowercase and appended without underscores like 'armorstand' or 'endercrystal'",
+    "versions": ["1.13", "1.13.2"]
   }
 ]

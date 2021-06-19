@@ -22,7 +22,7 @@ module.exports = (version) => {
     let name = 'EnderCrystal'
     if (bot.supportFeature('enderCrystalNameEndsInErNoCaps')) {
       name = 'ender_crystal'
-    } else if (bot.supportFeature('enderCrystalNameNoCapsNoUnderscore')) {
+    } else if (bot.supportFeature('entityNameLowerCaseNoUnderscore')) {
       name = 'endercrystal'
     } else if (bot.supportFeature('enderCrystalNameNoCapsWithUnderscore')) {
       name = 'end_crystal'
@@ -80,7 +80,14 @@ module.exports = (version) => {
     await bot.test.awaitItemRecieved(`/give ${bot.username} armor_stand`)
     const zombie = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
     assert(zombie !== null)
-    const name = bot.supportFeature('entityNameUpperCaseNoUnderscore') ? 'ArmorStand' : 'armor_stand'
+    let name
+    if (bot.supportFeature('entityNameUpperCaseNoUnderscore')) {
+      name = 'ArmorStand'
+    } else if (bot.supportFeature('entityNameLowerCaseNoUnderscore')) {
+      name = 'armorstand'
+    } else {
+      name = 'armor_stand'
+    }
     const entity = bot.nearestEntity(o => o.name === name)
     assert(entity?.name === name)
     bot.chat(`/kill @e[type=${name}]`) // use /kill instead of bot.attack() because it takes more than one hit to kill
