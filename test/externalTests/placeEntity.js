@@ -34,25 +34,26 @@ module.exports = (version) => {
     const entity = bot.nearestEntity(o => o.name === name)
     assert(entity?.name === name)
 
-    bot.chat('kill @e[type=!player]')
+    bot.attack(entity)
     bot.chat('/setblock ~ ~ ~1 air')
   })
 
   addTest('place boat', async (bot) => {
-    const makeWaterForBoatTest = (material = 'water') => {
-      for (let z = -1; z >= -3; z--) {
-        const y = -1
-        for (let x = -1; x <= 1; x++) {
-          bot.chat(`/setblock ~${x} ~${y} ~${z} ${material}`)
-        }
-      }
-    }
     /* Block Placement (o = water)
       ooo
       obo (b = water where we place the boat)
       ooo
     */
-    makeWaterForBoatTest()
+    const makeWaterForBoatTest = async (material = 'water') => {
+      for (let z = -1; z >= -3; z--) {
+        const y = -1
+        for (let x = -1; x <= 1; x++) {
+          bot.chat(`/setblock ~${x} ~${y} ~${z} ${material}`)
+          await bot.awaitMessage('Block placed')
+        }
+      }
+    }
+    await makeWaterForBoatTest()
     const p = once(bot.inventory, 'updateSlot')
     bot.chat(`/give ${bot.username} ${mcData?.itemsByName?.oak_boat ? 'oak_boat' : 'boat'}`)
     await p // await getting the boat
@@ -64,33 +65,33 @@ module.exports = (version) => {
     }
     const entity = bot.nearestEntity(o => o.name === boatName)
     assert(entity?.name === boatName)
-    makeWaterForBoatTest('air')
-    bot.chat('kill @e[type=!player]')
+    await makeWaterForBoatTest('air')
+    bot.attack(entity)
   })
 
-  // addTest('place summon egg', async (bot) => {
-  //   let command
-  //   if (mcData.isOlderThan('1.9')) {
-  //     command = '/give @p spawn_egg 1 54' // 1.8
-  //   } else if (mcData.isOlderThan('1.11')) {
-  //     command = '/give @p spawn_egg 1 0 {EntityTag:{id:Zombie}}' // 1.9 / 1.10
-  //   } else if (mcData.isOlderThan('1.12')) {
-  //     command = '/give @p spawn_egg 1 0 {EntityTag:{id:minecraft:zombie}}' // 1.11
-  //   } else if (mcData.isOlderThan('1.13')) {
-  //     command = '/give @p spawn_egg 1 0 {EntityTag:{id:zombie}}' // 1.12
-  //   } else {
-  //     command = '/give @p zombie_spawn_egg 1' // >1.12
-  //   }
-  //   const p = once(bot.inventory, 'updateSlot')
-  //   bot.chat(command)
-  //   await p // await getting the spawn egg
-  //   const zombie = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
-  //   assert(zombie !== null)
-  //   const name = mcData.isNewerOrEqualTo('1.11') ? 'zombie' : 'Zombie'
-  //   const entity = bot.nearestEntity(o => o.name === name)
-  //   assert(entity?.name === name)
-  //   bot.chat(`kill @e[type=!player]`)
-  // })
+  addTest('place summon egg', async (bot) => {
+    let command
+    if (mcData.isOlderThan('1.9')) {
+      command = '/give @p spawn_egg 1 54' // 1.8
+    } else if (mcData.isOlderThan('1.11')) {
+      command = '/give @p spawn_egg 1 0 {EntityTag:{id:Zombie}}' // 1.9 / 1.10
+    } else if (mcData.isOlderThan('1.12')) {
+      command = '/give @p spawn_egg 1 0 {EntityTag:{id:minecraft:zombie}}' // 1.11
+    } else if (mcData.isOlderThan('1.13')) {
+      command = '/give @p spawn_egg 1 0 {EntityTag:{id:zombie}}' // 1.12
+    } else {
+      command = '/give @p zombie_spawn_egg 1' // >1.12
+    }
+    const p = once(bot.inventory, 'updateSlot')
+    bot.chat(command)
+    await p // await getting the spawn egg
+    const zombie = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
+    assert(zombie !== null)
+    const name = mcData.isNewerOrEqualTo('1.11') ? 'zombie' : 'Zombie'
+    const entity = bot.nearestEntity(o => o.name === name)
+    assert(entity?.name === name)
+    bot.chat(`/kill @e[type=${name}]`)
+  })
 
   // addTest('place armor stand', async (bot) => {
 
