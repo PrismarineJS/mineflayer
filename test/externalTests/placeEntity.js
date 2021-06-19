@@ -49,7 +49,7 @@ module.exports = (version) => {
         const y = -1
         for (let x = -1; x <= 1; x++) {
           bot.chat(`/setblock ~${x} ~${y} ~${z} ${material}`)
-          await bot.awaitMessage('Block placed')
+          await bot.awaitMessage('Block placed', /Changed the block/)
         }
       }
     }
