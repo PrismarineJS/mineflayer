@@ -28,7 +28,7 @@
     "prismarine-chat": "^1.0.0",
     "prismarine-chunk": "^1.20.3",
     "prismarine-entity": "^1.0.0",
-    "prismarine-item": "u9g/prismarine-item#codespace-442c",
+    "prismarine-item": "^1.6.0",
     "prismarine-physics": "^1.0.4",
     "prismarine-recipe": "^1.1.0",
     "prismarine-windows": "^2.2.0",
