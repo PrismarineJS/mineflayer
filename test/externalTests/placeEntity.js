@@ -78,8 +78,8 @@ module.exports = (version) => {
 
   addTest('place armor stand', async (bot) => {
     await bot.test.awaitItemRecieved(`/give ${bot.username} armor_stand`)
-    const zombie = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
-    assert(zombie !== null)
+    const armorStand = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
+    assert(armorStand !== null)
     let name
     if (bot.supportFeature('entityNameUpperCaseNoUnderscore')) {
       name = 'ArmorStand'
@@ -90,7 +90,7 @@ module.exports = (version) => {
     }
     const entity = bot.nearestEntity(o => o.name === name)
     assert(entity?.name === name)
-    bot.chat(`/kill @e[type=${name}]`) // use /kill instead of bot.attack() because it takes more than one hit to kill
+    bot.attack(entity)
   })
 
   return tests
