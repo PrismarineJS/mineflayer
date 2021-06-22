@@ -68,6 +68,7 @@ interface BotEvents {
   spawnReset: () => void
   death: () => void
   health: () => void
+  breath: () => void
   entitySwingArm: (entity: Entity) => void
   entityHurt: (entity: Entity) => void
   entityDead: (entity: Entity) => void
@@ -161,6 +162,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   health: number
   food: number
   foodSaturation: number
+  oxygenLevel: number
   physics: PhysicsOptions
   physicsEnabled: boolean
   time: Time
