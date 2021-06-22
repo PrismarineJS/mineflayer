@@ -1656,14 +1656,13 @@ This function also returns a `Promise`, with `void` as its argument upon complet
 
 The new block will be placed at `referenceBlock.position.plus(faceVector)`.
 
-#### bot.placeEntity(referenceBlock, faceVector, cb)
+#### bot.placeEntity(referenceBlock, faceVector)
 
 This function also returns a `Promise`, with `Entity` as its argument upon completion.
 
  * `referenceBlock` - the block you want to place the entity next to
  * `faceVector` - one of the six cardinal directions, such as `new Vec3(0, 1, 0)` for the top face,
    indicating which face of the `referenceBlock` to place the block against.
- * `cb` will be called when the server confirms that the Entity has indeed been placed
 
 The new block will be placed at `referenceBlock.position.plus(faceVector)`.
 
