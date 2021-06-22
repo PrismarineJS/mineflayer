@@ -285,6 +285,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   placeBlock: (referenceBlock: Block, faceVector: Vec3, cb?: () => void) => Promise<void>
 
+  placeEntity: (referenceBlock: Block, faceVector: Vec3) => Promise<Entity>
+
   activateBlock: (block: Block, callback?: (err?: Error) => void) => Promise<void>
 
   activateEntity: (block: Entity, callback?: (err?: Error) => void) => Promise<void>
@@ -303,7 +305,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   attack: (entity: Entity) => void
 
-  swingArm: (hand?: 'left' | 'right') => void
+  swingArm: (hand: 'left' | 'right' | undefined, showHand?: boolean) => void
 
   mount: (entity: Entity) => void
 

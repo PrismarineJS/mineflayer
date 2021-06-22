@@ -1656,6 +1656,16 @@ This function also returns a `Promise`, with `void` as its argument upon complet
 
 The new block will be placed at `referenceBlock.position.plus(faceVector)`.
 
+#### bot.placeEntity(referenceBlock, faceVector)
+
+This function also returns a `Promise`, with `Entity` as its argument upon completion.
+
+ * `referenceBlock` - the block you want to place the entity next to
+ * `faceVector` - one of the six cardinal directions, such as `new Vec3(0, 1, 0)` for the top face,
+   indicating which face of the `referenceBlock` to place the block against.
+
+The new block will be placed at `referenceBlock.position.plus(faceVector)`.
+
 #### bot.activateBlock(block, [callback])
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
@@ -1718,11 +1728,12 @@ use shears.
 
 Attack a player or a mob.
 
-#### bot.swingArm([hand])
+#### bot.swingArm([hand], showHand)
 
 Play an arm swing animation.
 
  * `hand` can take `left` or `right` which is arm that is animated. Default: `right`
+ * `showHand` is a boolean whether to add the hand to the packet, Default: `true`
 
 #### bot.mount(entity)
 
