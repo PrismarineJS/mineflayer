@@ -185,6 +185,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   isSleeping: boolean;
   scoreboards: { [name: string]: ScoreBoard };
   scoreboard: { [slot in DisplaySlot]: ScoreBoard };
+  teamMap: { [name: string]: Team };
   controlState: ControlStateStatus;
   creative: creativeMethods;
   world: any;

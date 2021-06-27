@@ -65,7 +65,7 @@
       - [Team.color](#teamcolor)
       - [Team.prefix](#teamprefix)
       - [Team.suffix](#teamsuffix)
-      - [Team.member](#teammember)
+      - [Team.members](#teammembers)
     - [mineflayer.BossBar](#mineflayerbossbar)
       - [BossBar.title](#bossbartitle)
       - [BossBar.health](#bossbarhealth)
@@ -138,6 +138,7 @@
       - [bot.scoreboards](#botscoreboards)
       - [bot.scoreboard](#botscoreboard)
       - [bot.teams](#botteams)
+      - [bot.teamMap](#botteammap)
       - [bot.controlState](#botcontrolstate)
     - [Events](#events)
       - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
@@ -675,7 +676,7 @@ One of `always`, `pushOtherTeams`, `pushOwnTeam`
 
 #### Team.suffix
 
-#### Team.member
+#### Team.members
 
 Array of team members. Usernames for player and UUIDs for other entities.
 
@@ -1025,6 +1026,10 @@ All scoreboards known to the bot in an object scoreboard displaySlot -> scoreboa
 #### bot.teams
 
 All teams known to the bot
+
+#### bot.teamMap
+
+Mapping of member to team. Uses usernames for players and UUIDs for entities.
 
 #### bot.controlState
 
