@@ -792,13 +792,14 @@ export class ScoreBoard {
 
   setTitle(title: string): void;
 
-  add(name: string, value: number): ScoreBoardItem;
+  add(name: string, value: number, displayName: ChatMessage): ScoreBoardItem;
 
   remove(name: string): ScoreBoardItem;
 }
 
 export type ScoreBoardItem = {
   name: string;
+  displayName: ChatMessage;
   value: number;
 };
 
