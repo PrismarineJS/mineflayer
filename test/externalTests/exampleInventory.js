@@ -10,8 +10,16 @@ const tests = [
     wantedMessage: 'equipped dirt'
   },
   {
-    command: 'toss 64 dirt',
+    command: 'equip off-hand dirt',
+    wantedMessage: 'equipped dirt'
+  },
+  {
+    command: 'toss 32 dirt',
     wantedMessage: 'tossed 64 x dirt'
+  },
+  {
+    command: 'equip hand dirt',
+    wantedMessage: 'equipped dirt'
   },
   {
     command: 'craft 1 ladder',
