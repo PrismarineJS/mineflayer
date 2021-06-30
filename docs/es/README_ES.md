@@ -20,7 +20,7 @@ Crea bots para Minecraft con una API de JavaScript potente, estable y de alto ni
  * Soporta Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15 y 1.16.
  * Rastreo e información de entidades.
  * Información sobre bloques. Puedes solicitar información de todo lo que te rodea. Encuentra bloques en milisegundos
- * Físicas y movimientos básicos - disponibles todos los cuadros de colisión
+ * Físicas y movimientos básicos - maneja todos los cuadros de colisión
  * Atacar entidades y usar vehículos.
  * Gestión del inventario.
  * Crafteo, cofres, dispensadores, mesas de encantamiento.
