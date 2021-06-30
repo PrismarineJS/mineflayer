@@ -43,7 +43,7 @@ bot.on('chat', async (username, message) => {
       // ex: toss diamond
       tossItem(command[1])
       break
-    case /^equip \w+ \w+$/.test(message):
+    case /^equip [\w-]+ \w+$/.test(message):
       // equip destination name
       // ex: equip hand diamond
       equipItem(command[2], command[1])

@@ -15,7 +15,7 @@ const tests = [
   },
   {
     command: 'toss 32 dirt',
-    wantedMessage: 'tossed 64 x dirt'
+    wantedMessage: 'tossed 32 x dirt'
   },
   {
     command: 'equip hand dirt',
