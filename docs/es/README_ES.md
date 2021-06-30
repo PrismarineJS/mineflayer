@@ -76,7 +76,7 @@ const mineflayer = require('mineflayer')
 const bot = mineflayer.createBot({
   host: 'localhost', // ip del servidor de minecraft
   username: 'email@example.com', // usuario de la cuenta, e-mail si es premium
-  password: '12345678', // para servidores premium
+  password: '12345678' // para servidores premium
   // port: 25565, // modificar solo si es un servidor que no utiliza el puerto predeterminado (25565)
   // version: false, // modificar solo si se necesita una version específica
   // auth: 'mojang', // solo modificar si tienes una cuenta microsoft (en ese caso sería auth: 'microsoft')
