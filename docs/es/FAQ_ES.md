@@ -12,7 +12,7 @@ client.on('error', () => {})
 client.on('end', () => {})
 ```
 
-## Mi evento de chat no se dispara en un servidor personalizado, cómo lo resuelvo?
+## Mi evento de chat no se emite en un servidor personalizado, cómo lo resuelvo?
 
 Los servidores spigot, en particular algunos plugins, usan formatos personalizados de chat, tienes que analizarlos con un regex personalizado.
 Lee y modifica [chat_parsing.js](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chat_parsing.js) para que funcione con tu plugin de chat particular. Lee también http://mineflayer.prismarine.js.org/#/tutorial?id=custom-chat
@@ -25,32 +25,32 @@ La mayoría de servidores de minecraft tienen plugins, que mandan mensajes al ch
 
 El mensaje podría ser así:
 ```
-(!) U9G ha ganado la /lotería y ha recibido
-$26,418,402,450! Compró 2,350,000 (76.32%) ticket(s) del total de
-3,079,185 ticket(s) vendidos!
+(!) U9G has won the /jackpot and received
+$26,418,402,450! They purchased 2,350,000 (76.32%) ticket(s) out of the
+3,079,185 ticket(s) sold!
 ```
 ```js
 const regex = {
-  primero: /\(!\) (.+) ha ganado la \/lotería y ha recibido +/,
-  segundo: /\$(.+)! Compró (.+) \((.+)%\) ticket\(s\) del total de /,
-  tercero: /(.+) ticket\(s\) vendidos!/
+  first: /\(!\) (.+) has won the \/jackpot and received +/,
+  second: /\$(.+)! They purchased (.+) \((.+)%\) ticket\(s\) out of the /,
+  third: /(.+) ticket\(s\) sold!/
 }
 
-let loteria = {}
+let jackpot = {}
 bot.on('messagestr', msg => {
-  if (regex.primero.test(msg)) {
-    const nombre = msg.match(regex.primero)[1]
-    loteria.nombre = nombre
-  } else if (regex.segundo.test(msg)) {
-    const [, dineroGanado, ticketsComprados, porcentajeGanancia] = msg.match(regex.segundo)
-    loteria.dineroGanado = parseInt(dineroGanado.replace(/,/g, ''))
-    loteria.ticketsComprados = parseInt(ticketsComprados.replace(/,/g, ''))
-    loteria.porcentajeGanancia = parseFloat(porcentajeGanancia)
-  } else if (regex.tercero.test(msg)) {
-    const totalTickets = msg.match(regex.tercero)[1]
-    loteria.totalTickets = parseInt(totalTickets.replace(/,/g, ''))
-    alFinalizar(loteria)
-    loteria = {}
+  if (regex.first.test(msg)) {
+    const username = msg.match(regex.first)[1]
+    jackpot.username = username
+  } else if (regex.second.test(msg)) {
+    const [, moneyWon, boughtTickets, winPercent] = msg.match(regex.second)
+    jackpot.moneyWon = parseInt(moneyWon.replace(/,/g, ''))
+    jackpot.boughtTickets = parseInt(boughtTickets.replace(/,/g, ''))
+    jackpot.winPercent = parseFloat(winPercent)
+  } else if (regex.third.test(msg)) {
+    const totalTickets = msg.match(regex.third)[1]
+    jackpot.totalTickets = parseInt(totalTickets.replace(/,/g, ''))
+    onDone(jackpot)
+    jackpot = {}
   }
 })
 ```
@@ -86,25 +86,25 @@ Puedes usar la propiedad `item.nbt`. Está recomendado usar la librería `prisma
 
 **Ejemplo:**
 ```js
-function obtenerLore (item) {
-  let texto = ''
-  if (item.nbt == null) return texto
+function getLore (item) {
+  let message = ''
+  if (item.nbt == null) return message
 
   const nbt = require('prismarine-nbt')
   const ChatMessage = require('prismarine-chat')(bot.version)
 
   const data = nbt.simplify(item.nbt)
   const display = data.display
-  if (display == null) return texto
+  if (display == null) return message
 
   const lore = display.Lore
-  if (lore == null) return texto
+  if (lore == null) return message
   for (const line of lore) {
-    texto += new ChatMessage(line).toString()
-    texto += '\n'
+    message += new ChatMessage(line).toString()
+    message += '\n'
   }
 
-  return texto
+  return message
 }
 ```
 
@@ -120,21 +120,21 @@ Nota: el orden en el cual los plugins son cargados es dinámico, nunca deberías
 
 ### Como puedo usar un proxy socks5?
 
-En las opciones de `mineflayer.createBot(opciones)`, quita tu `host` de las opciones y pon las cosas que se necesite en estas variables `IP_PROXY`, `PUERTO_PROXY`, `USUARIO_PROXY`, `CONTRASEÑA_PROXY` (Puede que algunos programas no admitan la 'ñ') , `IP_SERVIDOR`, `PUERTO_SERVIDOR`, y añade esto a tus opciones:
+En las opciones de `mineflayer.createBot(opciones)`, quita tu `host` de las opciones y pon las cosas que se necesite en estas variables `PROXY_IP`, `PROXY_PORT`, `PROXY_USERNAME`, `PROXY_PASSWORD`, `MC_SERVER_IP`, `MC_SERVER_PORT`, y añade esto a tus opciones:
 ```js
 connect: (client) => {
   socks.createConnection({
     proxy: {
-      host: IP_PROXY,
-      port: PUERTO_PROXY,
+      host: PROXY_IP,
+      port: PROXY_PORT,
       type: 5,
-      userId: USUARIO_PROXY,
-      password: CONTRASEÑA_PROXY
+      userId: PROXY_USERNAME,
+      password: PROXY_PASSWORD
     },
     command: 'connect',
     destination: {
-      host: IP_SERVIDOR,
-      port: PUERTO_SERVIDOR
+      host: MC_SERVER_IP,
+      port: MC_SERVER_PORT
     }
   }, (err, info) => {
     if (err) {

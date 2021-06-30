@@ -43,7 +43,7 @@ Echa un vistazo a nuestros [proyectos actuales](https://github.com/PrismarineJS/
 |---|---|
 |[tutorial](tutorial.md) | Empieza con node.js y mineflayer |
 | [FAQ.md](FAQ_ES.md) | Alguna duda? Echa un vistazo a esto |
-| [api.md](api.md) [unstable_api.md](unstable_api.md) | Toda la documentación de la API |
+| [api.md](api.md) [unstable_api.md](unstable_api_es.md) | Toda la documentación de la API |
 | [history.md](history.md) | Historial de cambios de Mineflayer |
 | [examples/](https://github.com/PrismarineJS/mineflayer/tree/master/examples) | Todos los ejemplos de mineflayer |
 
@@ -145,7 +145,7 @@ Estos son los módulos principales que forman mineflayer:
 | [node-yggdrasil](https://github.com/PrismarineJS/node-yggdrasil) | Librería Node.js para interactuar con el sistema de autentificación de Mojang conocido como Yggdrasil.
 | [prismarine-world](https://github.com/PrismarineJS/prismarine-world) | Implementación principal de los mundos de Minecraft para Prismarine
 | [prismarine-windows](https://github.com/PrismarineJS/prismarine-windows) | Representa las interfaces de minecraft
-| [prismarine-item](https://github.com/PrismarineJS/prismarine-item) | Representa un ítem y su información asociada de Minecraft
+| [prismarine-item](https://github.com/PrismarineJS/prismarine-item) | Representa un item y su información asociada de Minecraft
 | [prismarine-nbt](https://github.com/PrismarineJS/prismarine-nbt) | Analizador de NBT para node-minecraft-protocol
 | [prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe) | Representa recetas/crafteos de Minecraft
 | [prismarine-biome](https://github.com/PrismarineJS/prismarine-biome) | Representa un bioma y su información asociada de Minecraft
