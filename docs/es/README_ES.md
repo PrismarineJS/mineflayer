@@ -42,7 +42,7 @@ Echa un vistazo a nuestros [proyectos actuales](https://github.com/PrismarineJS/
 | link | descripción |
 |---|---|
 |[tutorial](tutorial.md) | Empieza con node.js y mineflayer |
-| [FAQ.md](FAQ.md) | Alguna duda? Echa un vistazo a esto |
+| [FAQ.md](FAQ_ES.md) | Alguna duda? Echa un vistazo a esto |
 | [api.md](api.md) [unstable_api.md](unstable_api.md) | Toda la documentación de la API |
 | [history.md](history.md) | Historial de cambios de Mineflayer |
 | [examples/](https://github.com/PrismarineJS/mineflayer/tree/master/examples) | Todos los ejemplos de mineflayer |
