@@ -393,6 +393,8 @@ Esta función también devueve un `Promise`, con `void` como argumento al finali
 
 #### window.close()
 
+Cierra la interfaz/ventana
+
 ### Recipe
 
 Mira [prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe)
@@ -522,30 +524,30 @@ Esta función también devueve un `Promise`, con `void` como argumento al finali
 
 ### mineflayer.anvil
 
-Extends windows.Window for anvils
-See `bot.openAnvil(anvilBlock)`.
+Extiende windows.Window para yunques
+Mira `bot.openAnvil(anvilBlock)`.
 
 #### anvil.combine(itemOne, itemTwo[, name, callback])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
- * `callback(err)` - in order to use callback, pass an empty string ('') for name
+ * `callback(err)` - para poder usar el callback, el nombre tiene que estar vacío ('')
 
 #### anvil.combine(item[, name, callback])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
  * `callback(err)`
 
 #### villager "ready"
 
-Fires when `villager.trades` is loaded.
+Se emite cuando `villager.trades` se ha cargado.
 
 #### villager.trades
 
-Array of trades.
+Array de tradeos
 
-Looks like:
+Se parece a:
 
 ```js
 [
@@ -580,21 +582,21 @@ Looks like:
 ```
 
 #### villager.trade(tradeIndex, [times], [cb])
-Is the same as [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottradevillagerinstance-tradeindex-times-cb)
+Es el mismo que [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottradevillagerinstance-tradeindex-times-cb)
 
 ### mineflayer.ScoreBoard
 
 #### ScoreBoard.name
 
-Name of the scoreboard.
+Nombre del scoreboard.
 
 #### ScoreBoard.title
 
-The title of the scoreboard (does not always equal the name)
+El título del scoreboard (no es siempre igual al nombre)
 
 #### ScoreBoard.itemsMap
 
-An object with all items in the scoreboard in it
+Un object con todos los items del scoreboard en él
 ```js
 {
   wvffle: { name: 'wvffle', value: 3 },
@@ -604,7 +606,7 @@ An object with all items in the scoreboard in it
 
 #### ScoreBoard.items
 
-An array with all sorted items in the scoreboard in it
+Un array con todos los items en el scoreboard en él
 ```js
 [
   { name: 'dzikoysk', value: 6 },
@@ -616,315 +618,332 @@ An array with all sorted items in the scoreboard in it
 
 #### BossBar.title
 
-Title of boss bar, instance of ChatMessage
+Título de la barra de vida del jefe, instancia de ChatMessage
 
 #### BossBar.health
 
-Percent of boss health, from `0` to `1`
+Porcentaje de la vida del jefe, del `0` al `1`
 
 #### BossBar.dividers
 
-Number of boss bar dividers, one of `0`, `6`, `10`, `12`, `20`
+Número de separadores en la barra, puede ser `0`, `6`, `10`, `12` o `20`
 
 #### BossBar.entityUUID
 
-Boss bar entity uuid
+UUID de la entidad del jefe
 
 #### BossBar.shouldDarkenSky
 
-Determines whether or not to darken the sky
+Determina si el cielo debería oscurecerse o no
 
 #### BossBar.isDragonBar
 
-Determines whether or not boss bar is dragon bar
+Determina si la barra es la barra de vida del dragón
 
 #### BossBar.createFog
 
-Determines whether or not boss bar creates fog
+Determina si la barra crea niebla o no
 
 #### BossBar.color
 
-Determines what color the boss bar color is, one of `pink`, `blue`, `red`, `green`, `yellow`, `purple`, `white`
+Determina el color de la barra entre `pink`, `blue`, `red`, `green`, `yellow`, `purple` y `white` (`rosa`, `azul`, `rojo`, `verde`, `amarillo`, `morado` y `blanco`)
 
 ## Bot
 
 ### mineflayer.createBot(options)
 
-Create and return an instance of the class bot.
-`options` is an object containing the optional properties :
- * username : default to 'Player'
- * port : default to 25565
- * password : can be omitted (if the tokens are also omitted then it tries to connect in offline mode)
- * host : default to localhost
- * version : default to automatically guessing the version of the server. Example of value : "1.12.2"
- * auth : default to 'mojang', can also be 'microsoft'
- * clientToken : generated if a password is given
- * accessToken : generated if a password is given
- * logErrors : true by default, catch errors and log them
- * hideErrors : true by default, do not log errors (even if logErrors is true)
- * keepAlive : send keep alive packets : default to true
- * checkTimeoutInterval : default to `30*1000` (30s), check if keepalive received at that period, disconnect otherwise.
- * loadInternalPlugins : defaults to true
- * storageBuilder : an optional function, takes as argument version and worldName and return an instance of something with the same API as prismarine-provider-anvil. Will be used to save the world.
- * client : an instance of node-minecraft-protocol, if not specified, mineflayer makes it's own client. This can be used to enable using mineflayer through a proxy of many clients or a vanilla client and a mineflayer client.
- * plugins : object : defaults to {}
-   - pluginName : false : don't load internal plugin with given name ie. `pluginName`
-   - pluginName : true : load internal plugin with given name ie. `pluginName` even though loadInternalplugins is set to false
-   - pluginName : external plugin inject function : loads external plugin, overrides internal plugin with given name ie. `pluginName`
- * physicsEnabled : true by default, should the bot be affected by physics? can later be modified via bot.physicsEnabled
+Crea y devuelve una instancia de la clase Bot.
+`options` es un object que contiene las propiedades opcionales :
+ * username : (usuario) el valor predeterminado es 'Player'
+ * port : (puerto) el valor predeterminado es 25565
+ * password : (contraseña) se puede omitir (si los tokens también son omitidos intentará conectarse en modo offline)
+ * host : (ip) el valor predeterminado es localhost
+ * version : si se omite intentará averiguar automáticamente la versión. Por ejemplo : "1.12.2"
+ * auth : (autentificación) el valor predeterminado es 'mojang', también puede ser 'microsoft'
+ * clientToken : generado si se proporciona una contraseña
+ * accessToken : generado si se proporciona una contraseña
+ * logErrors : el valor predeterminado es true, retiene errores y los imprime
+ * hideErrors : el valor predeterminado es true, para ocultar errores (incluso si logErrors es true)
+ * keepAlive : manda paquetes keepAlive : el valor predeterminado es true
+ * checkTimeoutInterval : el valor predeterminado es `30*1000` (30s), comprueba si el paquete keepAlive ha sido recibido en ese periodo, desconectar el bot si no ha sido recibido.
+ * loadInternalPlugins : (cargarPluginsInternos) el valor predeterminado es true
+ * storageBuilder : una función opcional, toma como argumentos la versión y el nombre del mundo (worldName) y devuelve una instancia de algo con la misma API que prismarine-provider-anvil. Se usará para guardar el mundo.
+ * client : una instancia de node-minecraft-protocol, si no se especifíca, mineflayer creará su propio cliente. Esto sirve para usar mineflayer a través de un proxy de muchos clientes o para un cliente vanilla y un cliente mineflayer.
+ * plugins : object : el valor predeterminado es {}
+   - pluginName : false : no cargar el plugin interno con ese nombre ej. `pluginName`
+   - pluginName : true : carga el plugin interno con ese nombre ej. `pluginName` incluso si loadInternalPlugins está en false 
+   - pluginName : función para injectar : carga un plugin de terceros (externo), anula el plugin interno con el mismo nombre ej. `pluginName`
+ * physicsEnabled : el valor predeterminado es true, si el bot debería ser afectado por las físicas, puede modificarse mediante bot.physicsEnabled
  * [chat](#bot.settings.chat)
  * [colorsEnabled](#bot.settings.colorsEnabled)
  * [viewDistance](#bot.settings.viewDistance)
  * [difficulty](#bot.settings.difficulty)
  * [skinParts](#bot.settings.skinParts)
- * chatLengthLimit : the maximum amount of characters that can be sent in a single message. If this is not set, it will be 100 in < 1.11 and 256 in >= 1.11.
+ * chatLengthLimit : el valor máximo de carácteres que se pueden mandar con un solo mensaje. Si no se especifíca, será 100 en versiones anteriores a la 1.11 y 256 en la 1.11 a las posteriores de la 1.11
 
 ### Properties
 
 #### bot.world
 
-A sync representation of the world. Check the doc at http://github.com/PrismarineJS/prismarine-world
+Una representación sincronizada del mundo. Mira su documentación en http://github.com/PrismarineJS/prismarine-world
 
 ##### world "blockUpdate" (oldBlock, newBlock)
 
-Fires when a block updates. Both `oldBlock` and `newBlock` provided for
-comparison.
+Se emite cuando un bloque se actualiza. Devuelve el bloque antiguo `oldBlock` y el bloque nuevo `newBlock`.
 
-Note that `oldBlock` may be `null`.
+Nota: `oldBlock` podría ser `null`.
 
 ##### world "blockUpdate:(x, y, z)" (oldBlock, newBlock)
 
-Fires for a specific point. Both `oldBlock` and `newBlock` provided for
-comparison.
+Se emite cuando un bloque en una coordenada se actualiza. Devuelve el bloque antiguo `oldBlock` y el bloque nuevo `newBlock`.
 
-Note that `oldBlock` may be `null`.
+Nota: `oldBlock` podría ser `null`.
 
 
 #### bot.entity
 
-Your own entity. See `Entity`.
+Tu propia entidad. Mira `Entity`.
 
 #### bot.entities
 
-All nearby entities. This object is a map of entityId to entity.
+Todas las entidades cercanas. Este object es un map de entityId (id de la entidad) a entity (entidad)
 
 #### bot.username
 
-Use this to find out your own name.
+Usa esto para averiguar tu propio nombre.
 
 #### bot.spawnPoint
 
-Coordinates to the main spawn point, where all compasses point to.
+Coordenadas del punto de spawn, donde todas las brújulas apuntan.
 
 #### bot.heldItem
 
-The item in the bot's hand, represented as a [prismarine-item](https://github.com/PrismarineJS/prismarine-item) instance specified with arbitrary metadata, nbtdata, etc.
+El item en la mano del bot, presentado como una instancia [prismarine-item](https://github.com/PrismarineJS/prismarine-item) especificado con su metadata, nbtdata, etc.
 
 #### bot.game.levelType
 
+Tipo del nivel de juego
+
 #### bot.game.dimension
+
+Tipo de dimension
 
 #### bot.game.difficulty
 
+Tipo de dificultad de juego
+
 #### bot.game.gameMode
+
+Gamemode del bot
 
 #### bot.game.hardcore
 
+Si el juego está en hardcore o no
+
 #### bot.game.maxPlayers
+
+El número máximo de jugadores del juego
 
 #### bot.game.serverBrand
 
+La marca del servidor
+
 ### bot.physicsEnabled
 
-Enable physics, default true.
+Si las físicas deberían habilitarse, el valor predeterminado es true.
 
 ### bot.player
 
-Bot's player object
+Object del jugador del bot
 ```js
 {
   username: 'player',
   displayName: { toString: Function }, // ChatMessage object.
   gamemode: 0,
   ping: 28,
-  entity: entity // null if you are too far away
+  entity: entity // null si estás demasiado lejos (fuera de la zona renderizada)
 }
 ```
 
 #### bot.players
 
-Map of username to people playing the game.
+Map de los nombres de los jugadores del juego
 
 #### bot.isRaining
 
 #### bot.rainState
 
-A number indicating the current rain level. When it isn't raining, this
-will be equal to 0. When it starts to rain, this value will increase
-gradually up to 1. When it stops raining, this value gradually decreases back to 0.
+Un número indicano el nivel de lluvia actual. Si no está lloviendo, este valdrá 0. Cuando empiece a llover, el valor aumentará gradualmente a 1. Y cuando pare de llover, disminuirá gradualmente a 0.
 
-Each time `bot.rainState` is changed, the "weatherUpdate" event is emitted.
+Cada vez que `bot.rainState` cambia, se emitirá el evento "weatherUpdate"
 
 #### bot.thunderState
 
-A number indicating the current thunder level. When there isn't a thunderstorm, this
-will be equal to 0. When a thunderstorm starts, this value will increase
-gradually up to 1. When the thunderstorm stops, this value gradually decreases back to 0.
+Un número indicando el nivel de tormenta de rayos actual. Si no hay tormenta, este valdrá 0. Cuando empiece una tormenta, el valor aumentará gradualmente a 1. Y cuando pare la tormenta, disminuirá gradualmente a 0.
 
-Each time `bot.thunderState` is changed, the "weatherUpdate" event is emitted.
+Cada vez que `bot.thunderState` cambia, se emitirá el evento "weatherUpdate".
 
-This is the same as `bot.rainState`, but for thunderstorms. 
-For thunderstorms, both `bot.rainState` and `bot.thunderState` will change.
+Esto es lo mismo que `bot.rainState`, pero para tormentas de rayos.
+Para tormentas de rayos, `bot.rainState` y `bot.thunderState` cambiarán.
 
 #### bot.chatPatterns
 
-This is an array of pattern objects, of the following format:
+Esto es un array de objects de patrones, del siguiente formato:
 { /regex/, "chattype", "description")
- * /regex/ - a regular expression pattern, that should have at least two capture groups
- * 'chattype' - the type of chat the pattern matches, ex "chat" or "whisper", but can be anything.
- * 'description' - description of what the pattern is for, optional.
+ * /regex/ - un patrón regex, debería tener al menos dos grupos de captura
+ * 'chattype' - el tipo de chat que debería coincidir, puede ser "chat" o "whisper" (susurro), o también puede ser cualquiera.
+ * 'description' - descripción del patrón, opcional.
 
 #### bot.settings.chat
 
-Choices:
+Opciones:
 
- * `enabled` (default)
- * `commandsOnly`
- * `disabled`
+ * `enabled` (habilitado) (predeterminado)
+ * `commandsOnly` (soloComandos)
+ * `disabled` (deshabilitado)
 
 #### bot.settings.colorsEnabled
 
-Default true, whether or not you receive color codes in chats from the server.
+Su valor predeterminado es true, si debería recibir códigos de color del servidor
 
 #### bot.settings.viewDistance
 
-Choices:
- * `far` (default)
+Opciones:
+ * `far` (lejano) (predeterminado)
  * `normal`
- * `short`
- * `tiny`
+ * `short` (cercano)
+ * `tiny` (diminuto)
 
 #### bot.settings.difficulty
 
-Same as from server.properties.
+Lo mismo que server.properties.
 
 #### bot.settings.skinParts
 
-These boolean Settings control if extra Skin Details on the own players' skin should be visible
+Estos booleans controlan si las partes externas de la skin del jugadordebería ser visible
 
 ##### bot.settings.skinParts.showCape
 
-If you have a cape you can turn it off by setting this to false.
+Si tienes una capa puedes desactivarla cambiando esto a false
 
 ##### bot.settings.skinParts.showJacket
 
+Si debería mostrarse la skin externa del pecho
+
 ##### bot.settings.skinParts.showLeftSleeve
+
+Si debería mostrarse la skin externa del brazo izquierdo
 
 ##### bot.settings.skinParts.showRightSleeve
 
+Si debería mostrarse la skin externa del brazo derecho
+
 ##### bot.settings.skinParts.showLeftPants
+
+Si debería mostrarse la skin externa de la pierna izquierda
 
 ##### bot.settings.skinParts.showRightPants
 
+Si debería mostrarse la skin externa de la pierna derecha
+
 ##### bot.settings.skinParts.showHat
+
+Si debería mostrarse la skin externa de la cabeza
 
 
 #### bot.experience.level
 
+El nivel de experiencia del bot
+
 #### bot.experience.points
 
-Total experience points.
+Total de los puntos de experiencia del bot
 
 #### bot.experience.progress
 
-Between 0 and 1 - amount to get to the next level.
+Entre 0 y 1 - cantidad que falta para llegar al siguiente nivel.
 
 #### bot.health
 
-Number in the range [0, 20] representing the number of half-hearts.
+Números entre el 0 y el 20 representando el número de mitades de corazón.
 
 #### bot.food
 
-Number in the range [0, 20] representing the number of half-turkey-legs.
+Números entre el 0 y el 20 representando el número de mitades de muslos de pollo.
 
 #### bot.foodSaturation
 
-Food saturation acts as a food "overcharge". Food values will not decrease
-while the saturation is over zero. Players logging in automatically get a
-saturation of 5.0. Eating food increases the saturation as well as the food bar.
+La saturación actúa como una "sobrecarga" de la comida. Si la saturación es mayor que 0, el nivel de la comida no disminuirá. Los jugadores que entran al juego automáticamente tienen una saturación de 5.0. Comer aumenta la saturación y el nivel de la comida.
 
 #### bot.oxygenLevel
 
-Number in the range [0, 20] respresenting the number of water-icons known as oxygen level.
+Número entre el 0 y el 20 representando el número de mitades de burbujas del nivel de oxígeno.
 
 #### bot.physics
 
-Edit these numbers to tweak gravity, jump speed, terminal velocity, etc.
-Do this at your own risk.
+Modifica estos números para cambiar la gravedad, velocidad del salto, velocidad terminal, etc. Hazlo bajo tu propio riesgo
 
 #### bot.simpleClick.leftMouse (slot)
 
-abstraction over `bot.clickWindow(slot, 0, 0)`
+abstracción de `bot.clickWindow(slot, 0, 0)`
 
 #### bot.simpleClick.rightMouse (slot)
 
-abstraction over `bot.clickWindow(slot, 1, 0)`
+abstracción de `bot.clickWindow(slot, 1, 0)`
 
 #### bot.time.doDaylightCycle
 
-Whether or not the gamerule doDaylightCycle is true or false.
+Si el gamerule doDaylightCycle es true o false.
 
 #### bot.time.bigTime
 
-The total number of ticks since day 0.
+El número total de ticks desde el día 0.
 
-This value is of type BigInt and is accurate even at very large values. (more than 2^51 - 1 ticks)
+Este valor es de tipo BigInt y es muy preciso incluso con valores muy grandes. (más de 2^51 - 1 tick)
 
 #### bot.time.time
 
-The total numbers of ticks since day 0.
+El número total de ticks desde el día 0.
 
-Because the Number limit of Javascript is at 2^51 - 1 bot.time.time becomes inaccurate higher than this limit and the use of bot.time.bigTime is recommended.  
-Realistically though you'll probably never need to use bot.time.bigTime as it will only reach 2^51 - 1 ticks naturally after ~14280821 real years.  
+Ya que el límite de números en Javascript es de 2^51 - 1 bot.time.time es menos preciso en valores más altos que este límite, por eso es recomendado el uso de bot.time.bigTime.
+Siendo realistas, probablemente nunca tendrás que usar bot.time.bigTime ya que alcanzará naturalmente 2^51 - 1 tick tras ~14280821 años reales.
 
 #### bot.time.timeOfDay
 
-Time of the day, in ticks.
+Hora del día, en ticks.
 
-Time is based on ticks, where 20 ticks happen every second. There are 24000
-ticks in a day, making Minecraft days exactly 20 minutes long.
+La hora está basada en ticks, donde 20 ticks ocurren cada segundo. Hay 24000 ticks al día, haciendo que los días en Minecraft sean exactamente 20 minutos.
 
-The time of day is based on the timestamp modulo 24000. 0 is sunrise, 6000
-is noon, 12000 is sunset, and 18000 is midnight.
+La hora del día está basada en el módulo timestamp 24000. 0 es el amanecer, 6000 es el mediodía, 12000 es el anochecer, y 18000 es medianoche.
 
 #### bot.time.day
 
-Day of the world.
+Día del mundo
 
 #### bot.time.isDay
 
-Whether it is day or not.
+Si es de día o no
 
-Based on whether the current time of day is between 13000 and 23000 ticks.
+Basado en si la hora actual está entre los 13000 y 23000 ticks.
 
 #### bot.time.moonPhase
 
-Phase of the moon.
+Fase de la luna.
 
-0-7 where 0 is full moon.
+Entre 0 y 7 donde 0 es luna llena.
 
 #### bot.time.bigAge
 
-Age of the world, in ticks.
+Edad del mundo, en ticks
 
-This value is of type BigInt and is accurate even at very large values. (more than 2^51 - 1 ticks)
+Este valor es de tipo BigInt y es preciso incluso en valores muy altos. (más de 2^51 - 1 tick)
 
 #### bot.time.age
 
 Age of the world, in ticks.
 
-Because the Number limit of Javascript is at 2^51 - 1 bot.time.age becomes inaccurate higher than this limit and the use of bot.time.bigAge is recommended.  
-Realistically though you'll probably never need to use bot.time.bigAge as it will only reach 2^51 - 1 ticks naturally after ~14280821 real years.  
+Ya que el límite de números en Javascript es de 2^51 - 1 bot.time.age es menos preciso en valores más altos que este límite, por eso es recomendado el uso de bot.time.bigAge.
+Siendo realistas, probablemente nunca tendrás que usar bot.time.bigAge ya que alcanzará naturalmente 2^51 - 1 tick tras ~14280821 años reales.
 
 #### bot.quickBarSlot
 
