@@ -1859,28 +1859,27 @@ Obsoleto. Lo mismo que `openContainer`
 
 #### bot.openEnchantmentTable(enchantmentTableBlock)
 
-Returns a promise on an `EnchantmentTable` instance which represents the enchantment table
-you are opening.
+Devuelve un promise con una instancia `EnchantmentTable` que representa la mesa de encantamiento que estás abriendo.
 
 #### bot.openAnvil(anvilBlock)
 
-Returns a promise on an `anvil` instance which represents the anvil you are opening.
+Devuelve un promise con una instancia `anvil` que representa el yunque que estás abriendo.
 
 #### bot.openVillager(villagerEntity)
 
-Returns a promise on a `Villager` instance which represents the trading window you are opening.
-You can listen to the `ready` event on this `Villager` to know when it's ready
+Devuelve un promise con una instancia `Villager` que representa la ventana de tradeo que estás abriendo
+El evento `ready` en la instancia `Villager` se puede usar para saber cuando están listos los tradeos
 
 #### bot.trade(villagerInstance, tradeIndex, [times], [cb])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-Uses the open `villagerInstance` to trade.
+Usa la instancia `Villager` para comerciar.
 
 #### bot.setCommandBlock(pos, command, [options])
 
-Set a command block's properties at `pos`.
-Example `options` argument:
+Cambia las propiedadezs de un bloque de comandos en la posición `pos`.
+Ejemplo de `options`:
 ```js
 {
   mode: 2,
@@ -1889,18 +1888,18 @@ Example `options` argument:
   alwaysActive: true
 }
 ```
-options.mode can have 3 values: 0 (SEQUENCE), 1 (AUTO), 2 (REDSTONE)
-All options attributes are false by default, except mode which is 2 (as to replicate the default command block in Minecraft).
+options.mode puede tener 3 valores: 0 (SEQUENCE) (secuencia), 1 (AUTO), 2 (REDSTONE)
+Todas las opciones tienen como predeterminado false, excepto modo que es 2 (para parecerse al bloque de comandos de Minecraft).
 
 #### bot.supportFeature(name)
 
-This can be used to check is a specific feature is available in the current Minecraft version. This is usually only required for handling version-specific functionality.
+Esto puede usarse para ver si una característica está disponible en la versión del bot de Minecraft. Normalmente esto es solo para manejar funciones que son específicas de una versión.
 
-The list of available features can be found inside the [./lib/features.json](https://github.com/PrismarineJS/mineflayer/blob/master/lib/features.json) file.
+Puedes encontrar la lista de características en [./lib/features.json](https://github.com/PrismarineJS/mineflayer/blob/master/lib/features.json) file.
 
 #### bot.waitForTicks(ticks)
 
-This is a promise-based function that waits for a given number of in-game ticks to pass before continuing. This is useful for quick timers that need to function with specific timing, regardless of the given physics tick speed of the bot. This is similar to the standard Javascript setTimeout function, but runs on the physics timer of the bot specifically.
+Esta función devuelve un promise y espera a que el número de ticks especificado pase dentro del juego, esta función es similar a la función setTimeout de Javascript pero esta funciona con el reloj físico del juego.
 
 ### Lower level inventory methods
 
