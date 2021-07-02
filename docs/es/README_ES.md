@@ -49,7 +49,7 @@ Echa un vistazo a nuestros [proyectos actuales](https://github.com/PrismarineJS/
 
 ## Contribuir
 
-Por favor, lee [CONTRIBUTING.md](../CONTRIBUTING.md) y [prismarine-contribute](https://github.com/PrismarineJS/prismarine-contribute)
+Por favor, lee [CONTRIBUTING.md](CONTRIBUTING_ES.md) y [prismarine-contribute](https://github.com/PrismarineJS/prismarine-contribute)
 
 ## Uso
 
@@ -224,3 +224,6 @@ Ejecuta `npm test -- -g <test_name>`, donde `<test_name>` es el nombre de la pru
 ## Licencia
 
 [MIT](LICENSE)
+
+
+Esta documentación no está mantenida oficialmente, si quiere ver las últimas novedades, por favor dirijase a la documentación original: [unstable_api](../README.md)

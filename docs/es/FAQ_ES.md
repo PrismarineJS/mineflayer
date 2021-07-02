@@ -164,3 +164,6 @@ Actualiza la versión de tu node
 ### The bot can't break/place blocks or open chests
 
 Comprueba que la protección de spawn no está impidiendo el bot de realizar la acción
+
+
+Esta documentación no está mantenida oficialmente, si quiere ver las últimas novedades, por favor dirijase a la documentación original: [FAQ](../FAQ.md)
