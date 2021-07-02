@@ -1645,225 +1645,217 @@ Cambia el texto en un cartel.
 
 #### bot.equip(item, destination, [callback])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-Equips an item from your inventory.
+Equipar un item del inventario.
 
- * `item` - `Item` instance. See `window.items()`.
- * `destination`
-   - `"hand"` - `null` aliases to this
-   - `"head"`
-   - `"torso"`
-   - `"legs"`
-   - `"feet"`
-   - `"off-hand"` - when available
- * `callback(error)` - optional. called when you have successfully equipped
-   the item or when you learn that you have failed to equip the item.
+ * `item` - instancia `Item`. Mira `window.items()`.
+ * `destination` (destino)
+   - `"hand"` - (mano) `null` es un alias de esto
+   - `"head"` - cabeza
+   - `"torso"` - pecho
+   - `"legs"` - piernas
+   - `"feet"` - pies
+   - `"off-hand"` - (mano izquierda) when available
+ * `callback(error)` - opcional. ejecutado cuando el bot ha equipado el item o cuando ha fallado al hacerlo.
 
 #### bot.unequip(destination, [callback])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-Remove an article of equipment.
+Quita un item del destino.
 
 #### bot.tossStack(item, [callback])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
- * `item` - the stack of items you wish to toss
- * `callback(error)` - optional, called when tossing is done. if error is
-   truthy, you were not able to complete the toss.
+Suelta el stack de items especificado.
+ * `item` - el stack de items que quieres soltar
+ * `callback(error)` - opcional, ejecutado cuando el bot ha terminado de soltar o cuando ha fallado al hacerlo.
 
 #### bot.toss(itemType, metadata, count, [callback])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
- * `itemType` - numerical id of the item you wish to toss
- * `metadata` - metadata of the item you wish to toss. Use `null`
-   to match any metadata
- * `count` - how many you want to toss. `null` is an alias for `1`.
- * `callback(err)` - (optional) called once tossing is complete
+ * `itemType` - ID numérico del item que quieres soltar
+ * `metadata` - metadata del item que quieres soltar. `null` para cualquier metadata
+ * `count` - cuantos items quieres soltar. `null` significa `1`.
+ * `callback(err)` - (opcional) ejecutado cuando el bot ha terminado de soltar o cuando ha fallado al hacerlo
 
 #### bot.dig(block, [forceLook = true], [digFace], [callback])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-Begin digging into `block` with the currently equipped item.
-See also "diggingCompleted" and "diggingAborted" events.
+Empezar a picar el `block` (bloque) con el item de la mano.
+Mira los eventos "diggingCompleted" y "diggingAborted".
 
-Note that once you begin digging into a block, you may not
-dig any other blocks until the block has been broken, or you call
-`bot.stopDigging()`.
+Nota: al empezar a romper un bloque, no podrás romper otro bloque hasta que terminas de romper ese bloque o ejecutas `bot.stopDigging()`.
 
- * `block` - the block to start digging into
- * `forceLook` - (optional) if true, look at the block and start mining instantly. If false, the bot will slowly turn to the block to mine. Additionally, this can be assigned to 'ignore' to prevent the bot from moving it's head at all.
- * `digFace` - (optional) Default is 'auto' looks at the center of the block and mines the top face. Can also be a vec3 vector 
- of the face the bot should be looking at when digging the block. For example: ```vec3(0, 1, 0)``` when mining the top. Can also be 'raycast' raycast checks if there is a face visible by the bot and mines that face. Useful for servers with anti cheat.
- * `callback(err)` - (optional) called when the block is broken or you
-   are interrupted.
+ * `block` - el bloque que quieres picar
+ * `forceLook` - (opcional) si es true, mirar al bloque rápidamente y empezar a picarlo. Si es false, mirar al bloque lentamente antes de picarlo. Adicionalemente, se puede poner 'ignore', para que el bot no mire el bloque al picarlo.
+ * `digFace` - (opcional) Predeterminado: 'auto', mira al centro del bloque y lo rompe desde la cara de arriba, también puede ser un vector Vec3 de la cara del bloque donde el bot debería estar mirando. Por ejemplo: ```vec3(0, 1, 0)``` para picar la cara de arriba. También puede ser 'raycast', esto comprueba si alguna cara es visible para empezar a picar por esa cara, esto es útil en servidores con un anti cheat.
+ * `callback(err)` - (opcional) ejecutado cuando el bot ha roto el bloque o cuando ha fallado al hacerlo
 
 #### bot.stopDigging()
 
+Parar de romper el bloque.
+
 #### bot.digTime(block)
 
-Tells you how long it will take to dig the block, in milliseconds.
-  
+Devuelve cuanto va a tardar en romper el bloque, en milisegundos.
+
 #### bot.acceptResourcePack()
 
-Accepts resource pack.
-  
+Acepta el paquete de recursos
+
 #### bot.denyResourcePack()
 
-Denies resource pack.
+Deniega el paquete de recursos
 
 #### bot.placeBlock(referenceBlock, faceVector, cb)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
- * `referenceBlock` - the block you want to place a new block next to
- * `faceVector` - one of the six cardinal directions, such as `new Vec3(0, 1, 0)` for the top face,
-   indicating which face of the `referenceBlock` to place the block against.
- * `cb` will be called when the server confirms that the block has indeed been placed
+ * `referenceBlock` - (bloque de referencia) el bloque al lado del bloque que quieres colocar
+ * `faceVector` - una de las seis direcciones cardinales, por ejemplo, `new Vec3(0, 1, 0)` para la cara de arriba, indicando la cara del bloque de referencia.
+ * `cb` será ejecutado cuando el servidor confirma que el bloque ha sido roto
 
-The new block will be placed at `referenceBlock.position.plus(faceVector)`.
+El bloque será colocado en `referenceBlock.position.plus(faceVector)` (posición del bloque de referencia más el vector de cara).
 
 #### bot.placeEntity(referenceBlock, faceVector)
 
-This function also returns a `Promise`, with `Entity` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
- * `referenceBlock` - the block you want to place the entity next to
- * `faceVector` - one of the six cardinal directions, such as `new Vec3(0, 1, 0)` for the top face,
-   indicating which face of the `referenceBlock` to place the block against.
+ * `referenceBlock` - (bloque de referencia) el bloque al lado de donde quieres colocar la entidad
+ * `faceVector` - una de las seis direcciones cardinales, por ejemplo, `new Vec3(0, 1, 0)` para la cara de arriba, indicando la cara del bloque de referencia.
 
-The new block will be placed at `referenceBlock.position.plus(faceVector)`.
+La entidad será colocada en `referenceBlock.position.plus(faceVector)` (posición del bloque de referencia más el vector de cara).
 
 #### bot.activateBlock(block, [callback])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-Punch a note block, open a door, etc.
+Golpea un bloque de notas, abre una puerta, etc.
 
- * `block` - the block to activate
- * `callback(err)` - (optional) called when the block has been activated
+ * `block` - el bloque que hay que activar
+ * `callback(err)` - (opcional) ejecutado cuando el bot ha activado el bloque o ha fallado al hacerlo
 
 #### bot.activateEntity(entity, [callback])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-Activate an entity, useful for villager for example.
+Activa una entidad, por ejemplo con aldeanos.
 
- * `entity` - the entity to activate
- * `callback(err)` - (optional) called when the entity has been activated
+ * `entity` - la entidad que hay que activar
+ * `callback(err)` - (opcional) ejecutado cuano el bot ha activado la entidad o ha fallado al hacerlo
 
 #### bot.activateEntityAt(entity, position, [callback])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-Activate an entity at the given position, useful for armor stands.
+Activa una entitdad en la posición especificada, útil para los soportes de armadura.
 
- * `entity` - the entity to activate
- * `position` - the world position to click at
- * `callback(err)` - (optional) called when the entity has been activated
+ * `entity` - la entidad que hay que activar
+ * `position` - la posición donde hay que hacer click
+ * `callback(err)` - (opcional) ejecutado cuano el bot ha activado la entidad o ha fallado al hacerlo
 
 #### bot.consume(callback)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-Eat / drink currently held item
+Consumir / beber el item en la mano
 
- * `callback(error)` - called when consume ends
+ * `callback(error)` - ejecutado cuano el bot ha consuimdo el item o ha fallado al hacerlo
 
 #### bot.fish(callback)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-Use fishing rod
+Pescar con la caña en la mano
 
- * `callback(error)` - called when fishing ends
+ * `callback(error)` - (opcional) ejecutado cuano el bot ha pescado algo o ha fallado al hacerlo
 
 #### bot.activateItem(offHand=false)
 
-Activates the currently held item. This is how you eat, shoot bows, throw an egg, etc.
-Optional parameter is `false` for main hand and `true` for off hand.
+Activa el item en la mano. Esto es para comer, disparar flechas, tirar huevos, etc.
+El parámetro opcional puede ser `false` para la mano izquierda.
 
 #### bot.deactivateItem()
 
-Deactivates the currently held item. This is how you release an arrow, stop eating, etc.
+Desactiva el item en la mano. Esto es como disparas la flecha, dejas de comer, etc.
 
 #### bot.useOn(targetEntity)
 
-Use the currently held item on an `Entity` instance. This is how you apply a saddle and
-use shears.
+Usar el item en la mano en la instancia de `Entity` (entidad). Esto es como colocas un sillín en un caballo o usas las tijeras en una oveja.
 
 #### bot.attack(entity)
 
-Attack a player or a mob.
+Ataca la entidad o el mob.
 
 #### bot.swingArm([hand], showHand)
 
-Play an arm swing animation.
+Reproduce la animación de mover el brazo.
 
- * `hand` can take `left` or `right` which is arm that is animated. Default: `right`
- * `showHand` is a boolean whether to add the hand to the packet, Default: `true`
+ * `hand` la mano qe se va a animar, puede ser `left` (izquierda) o `right` (derecha). Predeterminado: `right`
+ * `showHand` es un boolean que indica si añadir la mano al paquete para mostrar la animación. Predeterminado: `true`
 
 #### bot.mount(entity)
 
-Mount a vehicle. To get back out, use `bot.dismount`.
+Subirse a una entidad. Para bajarse, usar `bot.dismount`.
 
 #### bot.dismount()
 
-Dismounts from the vehicle you are in.
+Baja de la entidad en la que estás montado.
 
 #### bot.moveVehicle(left,forward)
 
-Moves the vehicle :
+Mover el vehículo :
 
- * left can take -1 or 1 : -1 means right, 1 means left
- * forward can take -1 or 1 : -1 means backward, 1 means forward
+ * left puede ser -1 o 1 : -1 significa derecha, 1 significa izquierda
+ * forward puede ser -1 o 1 : -1 significa hacia atrás, 1 significa hacia adelante
 
-All the direction are relative to where the bot is looking at
+Todas las direcciones son relativas a donde está mirando el bot
 
 #### bot.setQuickBarSlot(slot)
 
- * `slot` - 0-8 the quick bar slot to select.
+ * `slot` - puede ser de 0 a 8, la casilla de la barra de acceso rápido
 
 #### bot.craft(recipe, count, craftingTable, [callback])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
- * `recipe` - A `Recipe` instance. See `bot.recipesFor`.
- * `count` - How many times you wish to perform the operation.
-   If you want to craft planks into `8` sticks, you would set
-   `count` to `2`. `null` is an alias for `1`.
- * `craftingTable` - A `Block` instance, the crafting table you wish to
-   use. If the recipe does not require a crafting table, you may use
-   `null` for this argument.
- * `callback` - (optional) Called when the crafting is complete and your
-   inventory is updated.
+ * `recipe` - Una instancia `Recipe`. Mira `bot.recipesFor`.
+ * `count` - Cuantas veces quieres repetir la acción.
+   Si quieres craftear `8` palos con tablas de madera, pondrías
+   `count` a `2`. `null` significa `1`.
+ * `craftingTable` - Una instancia de `Block`, la mesa de crafteo que quieres usar. Si el crafteo no necesita una mesa, este argumento se puede dejar como `null`.
+ * `callback` - (opcional) Ejecutado cuando el bot ha terminado de craftear y el inventario ha sido actualizado.
 
 #### bot.writeBook(slot, pages, [callback])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
- * `slot` is in inventory window coordinates (where 36 is the first quickbar slot, etc.).
- * `pages` is an array of strings represents the pages.
- * `callback(error)` - optional. called when the writing was successfully or an error occurred.
+ * `slot` es un número de casilla del inventario (36 es la primera casilla, etc.).
+ * `pages` es un array de strings representando las páginas.
+ * `callback(error)` - opcional. Ejecutado cuando el bot ha terminado de escribir o ha ocurrido un error.
 
 #### bot.openContainer(containerBlock or containerEntity)
 
-Returns a promise on a `Container` instance which represents the container you are opening.
+Abre un contenedor.
+Devuelve un promise con una instancia `Container` que representa el contenedor que estás abriendo.
 
 #### bot.openChest(chestBlock or minecartchestEntity)
 
-Deprecated. Same as `openContainer`
+Obsoleto. Lo mismo que `openContainer`
 
 #### bot.openFurnace(furnaceBlock)
 
-Returns a promise on a `Furnace` instance which represents the furnace you are opening.
+Abre un horno.
+Devuelve un promise con una instancia `Furnace` que representa el horno que estás abriendo.
 
 #### bot.openDispenser(dispenserBlock)
 
-Deprecated. Same as `openContainer`
+Obsoleto. Lo mismo que `openContainer`
 
 #### bot.openEnchantmentTable(enchantmentTableBlock)
 
