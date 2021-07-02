@@ -339,7 +339,7 @@ Las funciones y los métodos que necesitan un punto aceptan instancias `Vec3`, u
 
 ### Entity
 
-Las entidades representan jugadores, mobs, y objetos. Son emitidos en muchos eventos, pero puedes acceder a tu propia entidad con `bot.entity`.
+Las entidades representan jugadores, mobs, y objetos. Se emiten en muchos eventos, pero puedes acceder a tu propia entidad con `bot.entity`.
 Mira [prismarine-entity](https://github.com/PrismarineJS/prismarine-entity)
 
 ### Block
@@ -947,383 +947,450 @@ Siendo realistas, probablemente nunca tendrás que usar bot.time.bigAge ya que a
 
 #### bot.quickBarSlot
 
-Which quick bar slot is selected (0 - 8).
+Que casilla está seleccionada en la barra de acceso rápido (0 - 8).
 
 #### bot.inventory
 
-A [`Window`](https://github.com/PrismarineJS/prismarine-windows#windowswindow-base-class) instance representing your inventory.
+Una instancia [`Window`](https://github.com/PrismarineJS/prismarine-windows#windowswindow-base-class) (ventana/interfaz) representando tu inventario.
 
 #### bot.targetDigBlock
 
-The `block` that you are currently digging, or `null`.
+El `block` (bloque) que estás picando/rompiendo en ese momento, o `null`.
 
 #### bot.isSleeping
 
-Boolean, whether or not you are in bed.
+Boolean representando si estás durmiendo o no.
 
 #### bot.scoreboards
 
-All scoreboards known to the bot in an object scoreboard name -> scoreboard.
+Todos los scoreboards que el bot conoce en un object de forma nombre scoreboard -> scoreboard
 
 #### bot.scoreboard
 
-All scoreboards known to the bot in an object scoreboard displaySlot -> scoreboard.
+Todos los scoreboards que el bot conoce en un object de forma casilla de visualización -> scoreboard.
 
- * `belowName` - scoreboard placed in belowName
- * `sidebar` - scoreboard placed in sidebar
- * `list` - scoreboard placed in list
- * `0-18` - slots defined in [protocol](https://wiki.vg/Protocol#Display_Scoreboard)
+ * `belowName` - scoreboard que está debajo del nombre
+ * `sidebar` - scoreboard que está en la barra del lado
+ * `list` - scoreboard que está en la lista
+ * `0-18` - casillas definidas en el [protocol](https://wiki.vg/Protocol#Display_Scoreboard)
 
 #### bot.controlState
 
-An object whose keys are the main control states: ['forward', 'back', 'left', 'right', 'jump', 'sprint', 'sneak'].
+Un object que contiene los estados de control principales: ['forward', 'back', 'left', 'right', 'jump', 'sprint', 'sneak']. ('adelante', 'atrás', 'izquierda', 'derecha', 'salto', 'sprint/correr', 'agachado')
 
-Setting values for this object internally calls [bot.setControlState](#botsetcontrolstatecontrol-state).
+Estos valores se pueden usar en [bot.setControlState](#botsetcontrolstatecontrol-state).
 
 ### Events
 
 #### "chat" (username, message, translate, jsonMsg, matches)
 
-Only emitted when a player chats publicly.
+Solo se emite cuando un jugador chatea públicamente.
 
- * `username` - who said the message (compare with `bot.username` to ignore your own chat)
- * `message` - stripped of all color and control characters
- * `translate` - chat message type. Null for most bukkit chat messages
- * `jsonMsg` - unmodified JSON message from the server
- * `matches` - array of returned matches from regular expressions. May be null
+ * `username` - el jugador que ha mandado el mensaje (compáralo con `bot.username` para ignorar tus propios mensajes)
+ * `message` - mensaje sin códigos de color
+ * `translate` - tipo de mensaje de chat. Null para la mayoría de mensajes de bukkit
+ * `jsonMsg` - mensaje JSON sin modificar del servidor
+ * `matches` - array de las coincidencias devueltas de las expresiones regulares. Puede ser Null
 
 #### "whisper" (username, message, translate, jsonMsg, matches)
 
-Only emitted when a player chats to you privately.
+Solos se emite cuando un jugador chatea contigo en privado (susurro).
 
- * `username` - who said the message
- * `message` - stripped of all color and control characters
- * `translate` - chat message type. Null for most bukkit chat messages
- * `jsonMsg` - unmodified JSON message from the server
- * `matches` - array of returned matches from regular expressions. May be null
+ * `username` - el jugador que ha mandado el mensaje
+ * `message` - mensaje sin códigos de color
+ * `translate` - tipo de mensaje de chat. Null para la mayoría de mensajes de bukkit
+ * `jsonMsg` - mensaje JSON sin modificar del servidor
+ * `matches` - array de las coincidencias devueltas de las expresiones regulares. Puede ser Null
 
 #### "actionBar" (jsonMsg)
 
-Emitted for every server message which appears on the Action Bar.
+Se emite por cada mensaje del servidor que aparece en la barra de acción.
 
- * `jsonMsg` - unmodified JSON message from the server
+ * `jsonMsg` - mensaje JSON sin modificar del servidor
 
 #### "message" (jsonMsg, position)
 
-Emitted for every server message, including chats.
+Se emite por cada mensaje del servidor, incluye chats.
 
- * `jsonMsg` - unmodified JSON message from the server
+ * `jsonMsg` - mensaje JSON sin modificar del servidor
 
- * `position` - (>= 1.8.1): position of Chat message can be
+ * `position` - (>= 1.8.1): la posición del mensaje de chat puede ser
    * chat
    * system
    * game_info
 
 #### "messagestr" (message, messagePosition, jsonMsg)
 
-Alias for the "message" event but it calls .toString() on the message object to get a string for the message before emitting.
+Parecido a "message" pero ejecuta .toString() en el mensaje JSON para obtener un string del mensaje antes de que se emita.
 
 #### "inject_allowed"
-Fires when the index file has been loaded, you can load mcData and plugins here but it's better to wait for "spawn" event.
+Se enute cuando el archivo index se ha cargado, puedes cargar mcData o los plugins aquí, pero es mejor esperar al evento "spawn".
 
 #### "login"
 
-Fires after you successfully login to the server.
-You probably want to wait for the `spawn` event
-before doing anything though.
+Se emite tras registrarse en el servidor.
+Aunque probablemente quieras esperar al evento "spawn" antes de hacer algo.
 
 #### "spawn"
 
-Emitted once after you log in and spawn for the first time
-and then emitted when you respawn after death.
+Se emite cuando te registras y spawneas y cuando respawneas al morir.
 
-This is usually the event that you want to listen to
-before doing anything on the server.
+Normalmente este es el evento que quieres recibir antes de hacer algo en el servidor.
 
 #### "respawn"
 
-Emitted when you change dimensions and just before you spawn.
-Usually you want to ignore this event and wait until the "spawn"
-event instead.
+Se emite al cambiar dimensiones o justo antes de spawnear.
+Normalmente querrás ignorar este evento y esperar hasta que el evento "spawn" se emita.
 
 #### "game"
 
-Emitted when the server changes any of the game properties.
+Se emite cuando el servidor cambia cualquiera de sus propiedades
 
 #### "resourcePack" (url, hash)
 
-Emitted when the server sends a resource pack.
+Se emite cuando el servidor manda un paquete de recursos
 
 #### "title"
 
-Emitted when the server sends a title
+Se emite cuando el servidor manda/muestra un título
 
- * `text` - title's text
+ * `text` - texto del título
 
 #### "rain"
 
-Emitted when it starts or stops raining. If you join a
-server where it is already raining, this event will fire.
+Se emite cuando empieza a llover o cuando para. Si cuando entras a un servidor ya está lloviendo, este evento se emitirá.
 
 #### "weatherUpdate"
 
-Emitted when either `bot.thunderState` or `bot.rainState` changes.
-If you join a server where it is already raining, this event will fire.
+Se emite cuando `bot.thunderState` o `bot.rainState` cambia.
+Si cuando entras a un servidor y está lloviendo, este evento se emitirá.
 
 #### "time"
 
-Emitted when the server sends a time update. See `bot.time`.
+Se emite cuando el servidor cambia/actualiza su hora. Mira `bot.time`.
 
 #### "kicked" (reason, loggedIn)
 
-Emitted when the bot is kicked from the server. `reason`
-is a chat message explaining why you were kicked. `loggedIn`
-is `true` if the client was kicked after successfully logging in,
-or `false` if the kick occurred in the login phase.
+Se emite cuando el bot es echado del servidor. `reason` es un mensaje de chat con la razón del kickeo. `loggedIn` será `true` si el cliente ya estaba conectado cuando se le echó, y `false` si el cliente fue echado durante el proceso de registración.
 
 #### "end"
 
-Emitted when you are no longer connected to the server.
+Se emite cuando ya no estás conectado en el servidor.
 
 #### "error" (err)
 
-Emitted when an error occurs.
+Se emite cuando ocurre un error.
 
 #### "spawnReset"
 
-Fires when you cannot spawn in your bed and your spawn point gets reset.
+Se emite cuando no puedes spawnear en tu cama, y se resetea tu spawn.
 
 #### "death"
 
-Fires when you die.
+Se emite al morir
 
 #### "health"
 
-Fires when your hp or food change.
+Se emite cuando tu vida o el nivel de comida cambia.
 
 #### "breath"
 
-Fires when your oxygen level change.
+Se emite cuando tu nivel de oxígeno cambia.
 
 #### "entitySwingArm" (entity)
+
+Se emite cuando una entidad mueve su brazo.
+
 #### "entityHurt" (entity)
+
+Se emite cuando una entidad se hace daño.
+
 #### "entityDead" (entity)
+
+Se emite cuando una entidad muere.
+
 #### "entityTaming" (entity)
+
+Se emite cuando una entidad está siendo domesticada.
+
 #### "entityTamed" (entity)
+
+Se emite cuando una entidad es domesticada.
+
 #### "entityShakingOffWater" (entity)
+
+Se emite cuando una entidad se seca (lobos por ejemplo).
+
 #### "entityEatingGrass" (entity)
+
+Se emite cuando una entidad come hierba.
+
 #### "entityWake" (entity)
+
+Se emite cuando una entidad se despierta.
+
 #### "entityEat" (entity)
+
+Se emite cuando una entidad come.
+
 #### "entityCriticalEffect" (entity)
+
+Se emite cuando una entidad recibe un ataque crítico.
+
 #### "entityMagicCriticalEffect" (entity)
+
+Se emite cuando una entidad recibe un ataque crítico con pociones.
+
 #### "entityCrouch" (entity)
+
+Se emite cuando una entidad se agacha.
+
 #### "entityUncrouch" (entity)
+
+Se emite cuando una entidad deja de agacharse.
+
 #### "entityEquip" (entity)
+
+Se emite cuando una entidad equipa algo.
+
 #### "entitySleep" (entity)
+
+Se emite cuando una entidad se duerme.
+
 #### "entitySpawn" (entity)
+
+Se emite cuando una entidad aparece.
+
 #### "itemDrop" (entity)
+
+Se emite cuando una entidad se dropea (los items también son entidades).
+
 #### "playerCollect" (collector, collected)
 
-An entity picked up an item.
+Se emite cuando una entidad recoge un item.
 
- * `collector` - entity that picked up the item.
- * `collected` - the entity that was the item on the ground.
+ * `collector` - la entidad que ha recogido el item.
+ * `collected` - la entidad que fue recogida (el item).
 
 #### "entityGone" (entity)
+
+Se emite cuando una entidad desaparece (muere, despawnea).
+
 #### "entityMoved" (entity)
+
+Se emite cuando una entidad se mueve.
+
 #### "entityDetach" (entity, vehicle)
+
+Se emite cuando una entidad se baja en un vehículo.
+
 #### "entityAttach" (entity, vehicle)
 
-An entity is attached to a vehicle, such as a mine cart
-or boat.
+Se emite cuando una entidad se sube en un vehículo.
 
- * `entity` - the entity hitching a ride
- * `vehicle` - the entity that is the vehicle
+ * `entity` - la entidad que se ha subido
+ * `vehicle` - la entidad del vehículo (minecart, caballo)
 
 #### "entityUpdate" (entity)
+
+Se emite cuando una entidad actualiza una de sus propiedades.
+
 #### "entityEffect" (entity, effect)
+
+Se emite cuando una entidad obtiene un efecto.
+
 #### "entityEffectEnd" (entity, effect)
+
+Se emite cuando una entidad finaliza un efecto.
+
 #### "playerJoined" (player)
+
+Se emite cuando un jugador se une al servidor.
+
 #### "playerUpdated" (player)
+
+Se emite cuando un jugador actualiza una de sus propiedades.
+
 #### "playerLeft" (player)
+
+Se emite cuando un jugador se desconecta del servidor.
 
 #### "blockUpdate" (oldBlock, newBlock)
 
-(It is better to use this event from bot.world instead of bot directly) Fires when a block updates. Both `oldBlock` and `newBlock` provided for
-comparison.
+(Es mejor usar este evento desde bot.world en vez que desde bot directamente) Se emite cuando un bloque se actualiza. Devuelve `oldBlock` y `newBlock`.
 
-Note that `oldBlock` may be `null`.
+Nota: `oldBlock` puede ser `null`.
 
 #### "blockUpdate:(x, y, z)" (oldBlock, newBlock)
 
-(It is better to use this event from bot.world instead of bot directly) Fires for a specific point. Both `oldBlock` and `newBlock` provided for
-comparison.
+(Es mejor usar este evento desde bot.world en vez que desde bot directamente) Se emite cuando un bloque en una coordenada específica se actualiza. Devuelve `oldBlock` y `newBlock`.
 
-Note that `oldBlock` may be `null`.
+Nota: `oldBlock` puede ser `null`.
 
 #### "blockPlaced" (oldBlock, newBlock)
 
-Fires when bot places block. Both `oldBlock` and `newBlock` provided for
-comparison.
+Se emite cuando el bot coloca un bloque. Devuelve `oldBlock` y `newBlock`.
 
-Note that `oldBlock` may be `null`.
+Nota: `oldBlock` puede ser `null`.
 
 #### "chunkColumnLoad" (point)
+
+Se emite cuando un chunk se carga
+
 #### "chunkColumnUnload" (point)
 
-Fires when a chunk has updated. `point` is the coordinates to the corner
-of the chunk with the smallest x, y, and z values.
+Se emite cuando un chunk se actualiza. `point` es la coordenada de la esquina del chunk con los valores x, y, y z más pequeños.
 
 #### "soundEffectHeard" (soundName, position, volume, pitch)
 
-Fires when the client hears a named sound effect.
+Se emite cuando el cliente oye un efecto de sonido con nombre.
 
- * `soundName`: name of the sound effect
- * `position`: a Vec3 instance where the sound originates
- * `volume`: floating point volume, 1.0 is 100%
- * `pitch`: integer pitch, 63 is 100%
+ * `soundName`: nombre del efecto de sonido
+ * `position`: una instancia Vec3 indicando el punto de donde el sonido ha originado
+ * `volume`: volumen con punto flotante, 1.0 es 100%
+ * `pitch`: tono con números enteros, 63 es 100%
 
 #### "hardcodedSoundEffectHeard" (soundId, soundCategory, position, volume, pitch)
 
-  Fires when the client hears a hardcoded sound effect.
+  Se emite cuando el cliente oye un efecto de sonido codificado.
 
-   * `soundId`: id of the sound effect
-   * `soundCategory`: category of the sound effect
-   * `position`: a Vec3 instance where the sound originates
-   * `volume`: floating point volume, 1.0 is 100%
-   * `pitch`: integer pitch, 63 is 100%
+   * `soundId`: id del efecto de sonido
+   * `soundCategory`: categoría del efecto de sonido
+   * `position`: una instancia Vec3 indicando el punto de donde el sonido ha originado
+   * `volume`: volumen con punto flotante, 1.0 es 100%
+   * `pitch`: tono con números enteros, 63 es 100%
 
 #### "noteHeard" (block, instrument, pitch)
 
-Fires when a note block goes off somewhere.
+Se emite cuando un bloque de notas se dispara en algún sitio
 
- * `block`: a Block instance, the block that emitted the noise
+ * `block`: una instancia Block, el bloque que ha emitido el sonido
  * `instrument`:
-   - `id`: integer id
-   - `name`: one of [`harp`, `doubleBass`, `snareDrum`, `sticks`, `bassDrum`].
- * `pitch`: The pitch of the note (between 0-24 inclusive where 0 is the
-   lowest and 24 is the highest). More information about how the pitch values
-   correspond to notes in real life are available on the
-   [official Minecraft wiki](http://www.minecraftwiki.net/wiki/Note_Block).
+   - `id`: id con números enteros
+   - `name`: uno de estos [`harp`, `doubleBass`, `snareDrum`, `sticks`, `bassDrum`]. (`harpa`, `dobleBajo`, `tambor`, `palos`, `tamborBajo`)
+ * `pitch`: El tono de la nota (entre 0 y 24 ambos incluídos donde 0 es el más bajo y 24 es el más alto). Se puede leer más (sobre como los valores de los tonos corresponden a las notas en la vida real) aquí: [official Minecraft wiki](http://www.minecraftwiki.net/wiki/Note_Block).
 
 #### "pistonMove" (block, isPulling, direction)
 
+Se emite cuando un pistón se mueve.
+
 #### "chestLidMove" (block, isOpen, block2)
-* `block`: a Block instance, the block whose lid opened. The right block if it's a double chest
-* `isOpen`: number of players that have the chest open. 0 if it's closed
-* `block2`: a Block instance, the other half of the block whose lid opened. null if it's not a double chest
+
+Se emite cuando la tapa de un cofre se mueve
+
+* `block`: una instancia de Block, el bloque de la tapadera que se ha movido. El bloque derecho si es un cofre doble
+* `isOpen`: número de jugadores que tienen el cofre abierto
+* `block2`: una instancia de Block, la otra mitad del bloque donde la tapadera se movió. null si no es un cofre doble
 
 #### "blockBreakProgressObserved" (block, destroyStage)
 
-Fires when the client observes a block in the process of being broken.
+Se emite cuando el cliente observa un bloque mientras este se está rompiendo
 
- * `block`: a Block instance, the block being broken
- * `destroyStage`: integer corresponding to the destroy progress (0-9)
+ * `block`: una instancia de Block, el que se está rompiendo
+ * `destroyStage`: número entero correspondiente al progreso (0-9)
 
 #### "blockBreakProgressEnd" (block)
 
-Fires when the client observes a block stops being broken.
-This occurs whether the process was completed or aborted.
+Se emite cuando el cliente observa un bloque que termina de romperse
+Esto ocurre cuando el proceso fue completado o abortado.
 
- * `block`: a Block instance, the block no longer being broken
+ * `block`: una instancia de Block, el bloque que ya no está siendo roto
 
 #### "diggingCompleted" (block)
 
- * `block` - the block that no longer exists
+Se emite cuando se ha terminado de romper un bloque.
+ * `block` - el bloque que ya no existe
 
 #### "diggingAborted" (block)
 
- * `block` - the block that still exists
+Se emite cuando se ha abortado el proceso de rotura de un bloque.
+ * `block` - el bloque que todavía existe
 
 #### "move"
 
-Fires when the bot moves. If you want the current position, use
-`bot.entity.position` and for normal moves if you want the previous position, use
-`bot.entity.position.minus(bot.entity.velocity)`.
+Se emite cuando el bot se mueve. Si quieres la posición actual, puedes usar `bot.entity.position` y si quieres averiguar la posición anterior, usa `bot.entity.positon.minus(bot.entity.velocity)`
 
 #### "forcedMove"
 
-Fires when the bot is force moved by the server (teleport, spawning, ...). If you want the current position, use
-`bot.entity.position`.
+Se emite cuando el bot es movido forzadamente por el servidor (teletransporte, spawnear, ...). Si quieres la posición actual, usa `bot.entity.position`.
 
 #### "mount"
 
-Fires when you mount an entity such as a minecart. To get access
-to the entity, use `bot.vehicle`.
+Se emite cuando el bot se sube a una entidad como un minecart. Para tener acceso a la entidad, usa `bot.vehicle`.
 
-To mount an entity, use `mount`.
+Para subirte a una entidad, usa `mount`.
 
 #### "dismount" (vehicle)
 
-Fires when you dismount from an entity.
+Se emite cuando te bajas de una entidad.
 
 #### "windowOpen" (window)
 
-Fires when you begin using a workbench, chest, brewing stand, etc.
+Se emite cuando empiezas a usar una mesa de crafteo, cofre, mesa de pociones, etc.
 
 #### "windowClose" (window)
 
-Fires when you may no longer work with a workbench, chest, etc.
+Se emite cuando ya no estás usando una mesa de crafteo, cofre, etc.
 
 #### "sleep"
 
-Fires when you sleep.
+Se emite cuando duermes.
 
 #### "wake"
 
-Fires when you wake up.
+Se emite cuando te despiertas.
 
 #### "experience"
 
-Fires when `bot.experience.*` has updated.
+Se emite cuando `bot.experience.*` cambia.
 
 #### "scoreboardCreated" (scoreboard)
 
-Fires when a scoreboard is added.
+Se emite cuando se crea un scoreboard.
 
 #### "scoreboardDeleted" (scoreboard)
 
-Fires when a scoreboard is deleted.
+Se emite cuando se elimina un scoreboard.
 
 #### "scoreboardTitleChanged" (scoreboard)
 
-Fires when a scoreboard's title is updated.
+Se emite cuando el título de un scoreboard se actualiza.
 
 #### "scoreUpdated" (scoreboard, item)
 
-Fires when the score of a item in a scoreboard is updated.
+Se emite cuando la puntuación de un item en el scoreboard se actualiza.
 
 #### "scoreRemoved" (scoreboard, item)
 
-Fires when the score of a item in a scoreboard is removed.
+Se emite cuando la puntuación de un item en el scoreboard se elimina.
 
 #### "scoreboardPosition" (position, scoreboard)
 
-Fires when the position of a scoreboard is updated.
+Se emite cuando la posición de un scoreboard se actualiza.
 
 #### "bossBarCreated" (bossBar)
 
-Fires when new boss bar is created.
+Se emite cuando se crea una barra de vida de jefe.
 
 #### "bossBarDeleted" (bossBar)
 
-Fires when new boss bar is deleted.
+Se emite cuando se elimina una barra.
 
 #### "bossBarUpdated" (bossBar)
 
-Fires when new boss bar is updated.
+Se emite cuando se actualiza una barra.
 
 #### "heldItemChanged" (heldItem)
 
-Fires when the held item is changed.
+Se emite cuando el item que sostienes cambia.
 
 #### "physicsTick" ()
 
-Fires every tick if bot.physicsEnabled is set to true.
+Se emite por cada tick si bot.physicsEnabled está en true.
 
 #### "chat:name" (matches)
 
-Fires when the all of a chat pattern's regexs have matches
+Se emite cuando todos patrones de chat tienen coincidencias.
 
 ### Functions
 
