@@ -13,7 +13,7 @@
 
 Crea bots para Minecraft con una API de JavaScript potente, estable y de alto nivel.
 
-¿Primera vez usando node.js? Puede que quieras empezar con el tutorial [tutorial](tutorial.md)
+¿Primera vez usando node.js? Puede que quieras empezar con el tutorial [tutorial](../tutorial.md)
 
 ## Características
 
@@ -41,15 +41,15 @@ Echa un vistazo a nuestros [proyectos actuales](https://github.com/PrismarineJS/
 
 | link | descripción |
 |---|---|
-|[tutorial](tutorial.md) | Empieza con node.js y mineflayer |
+|[tutorial](../tutorial.md) | Empieza con node.js y mineflayer |
 | [FAQ.md](FAQ_ES.md) | Alguna duda? Echa un vistazo a esto |
 | [api.md](api_es.md) [unstable_api.md](unstable_api_es.md) | Toda la documentación de la API |
-| [history.md](history.md) | Historial de cambios de Mineflayer |
+| [history.md](../history.md) | Historial de cambios de Mineflayer |
 | [examples/](https://github.com/PrismarineJS/mineflayer/tree/master/examples) | Todos los ejemplos de mineflayer |
 
 ## Contribuir
 
-Por favor, lee [CONTRIBUTING.md](CONTRIBUTING.md) y [prismarine-contribute](https://github.com/PrismarineJS/prismarine-contribute)
+Por favor, lee [CONTRIBUTING.md](../CONTRIBUTING.md) y [prismarine-contribute](https://github.com/PrismarineJS/prismarine-contribute)
 
 ## Uso
 

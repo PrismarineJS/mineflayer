@@ -672,7 +672,7 @@ Crea y devuelve una instancia de la clase Bot.
  * plugins : object : el valor predeterminado es {}
    - pluginName : false : no cargar el plugin interno con ese nombre ej. `pluginName`
    - pluginName : true : carga el plugin interno con ese nombre ej. `pluginName` incluso si loadInternalPlugins está en false 
-   - pluginName : función para injectar : carga un plugin de terceros (externo), anula el plugin interno con el mismo nombre ej. `pluginName`
+   - pluginName : función para introducir : carga un plugin de terceros (externo), anula el plugin interno con el mismo nombre ej. `pluginName`
  * physicsEnabled : el valor predeterminado es true, si el bot debería ser afectado por las físicas, puede modificarse mediante bot.physicsEnabled
  * [chat](#bot.settings.chat)
  * [colorsEnabled](#bot.settings.colorsEnabled)
@@ -1396,174 +1396,166 @@ Se emite cuando todos patrones de chat tienen coincidencias.
 
 #### bot.blockAt(point, extraInfos=true)
 
-Returns the block at `point` or `null` if that point is not loaded. If `extraInfos` set to true, also returns informations about signs, paintings and block entities (slower).
-See `Block`.
+Devuelve el bloque en el `point` (punto: un Vec3) o `null` si ese punto no está cargado. Si `extraInfos` está en true, también devuelve informaciones sobre carteles, cuadros y entidades de bloques (más lento). Mira `Block`.
 
 #### bot.waitForChunksToLoad(cb)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-The cb gets called when many chunks have loaded.
+El cb se ejecuta cuando se han cargado bastantes chunks.
 
 #### bot.blockInSight(maxSteps, vectorLength)
 
-Deprecated, use `blockAtCursor` instead.
+Obsoleto, usar `blockAtCursor` en su lugar.
 
-Returns the block at which bot is looking at or `null`
- * `maxSteps` - Number of steps to raytrace, defaults to 256.
- * `vectorLength` - Length of raytracing vector, defaults to `5/16`.
+Devuelve el bloque que se encuentra en el cursor del bot o `null`
+ * `maxSteps` - Número de pasos del trazado de rayos, el valor predeterminado es 256.
+ * `vectorLength` - Longitud del vector del trazado de rayos, el valor predeterminado es `5/16`.
 
 #### bot.blockAtCursor(maxDistance=256)
 
-Returns the block at which bot is looking at or `null`
- * `maxDistance` - The maximum distance the block can be from the eye, defaults to 256.
+Devuelve el bloque que se encuentra en el cursor del bot o `null`
+ * `maxDistance` - Distancia máxima a la que el bloque puede estar del ojo, el valor predeterminado es 256.
 
 #### bot.canSeeBlock(block)
 
-Returns true or false depending on whether the bot can see the specified `block`.
+Devuelve true o false dependiendo de si el bot puede ver el `block` (bloque).
 
 #### bot.findBlocks(options)
 
-Finds the closest blocks from the given point.
- * `options` - Options for the search:
-   - `point` - The start position of the search (center). Default is the bot position.
-   - `matching` - A function that returns true if the given block is a match. Also supports this value being a block id or array of block ids.
-   - `useExtraInfo` - To preserve backward compatibility can result in two behavior depending on the type
-      - **boolean** - Provide your `matching` function more data - noticeably slower aproach
-      - **function** - Creates two stage maching, if block passes `matching` function it is passed further to `useExtraInfo` with additional info
-   - `maxDistance` - The furthest distance for the search, defaults to 16.
-   - `count` - Number of blocks to find before returning the search. Default to 1. Can return less if not enough blocks are found exploring the whole area.
+Encuentra los bloques más cercanos al punto establecido.
+ * `options` - Opciones de búsqueda:
+   - `point` - La posición por donde empezar la búsqueda (centro). Predeterminado: la posición del bot.
+   - `matching` - Una función que devuelve true si el bloque cumple las condiciones. También puede ser un ID de un bloque o un array de IDs.
+   - `useExtraInfo` - Puede ser de dos tipos para preservar una compatibilidad a la inversa.
+      - **boolean** - Proporcionas tu función `matching` más datos - más lento
+      - **function** - Se hace mediante dos pasos, si el bloque pasa las condiciones de la función `matching` se pasa a `useExtraInfo` con información adicional
+   - `maxDistance` - La distancia máxima de búsqueda, predeterminado: 16.
+   - `count` - Número de bloques que hay que encontrar antes de devolver los resultados. Predeterminado: 1. Puede devolver menos si no hay suficientes bloques.
 
-Returns an array (possibly empty) with the found block coordinates (not the blocks). The array is sorted (closest first)
+Devuelve un array (puede estar vació) con las coordenadas de los bloques encontrados (no devuelve instancias de bloques). El array es ordenado (los más cercanos primero)
 
 #### bot.findBlock(options)
 
-Alias for `bot.blockAt(bot.findBlocks(options)[0])`. Return a single block or `null`.
+Parecido a `bot.blockAt(bot.findBlocks(options)[0])`. Devuelve un único bloque o `null`.
 
 #### bot.canDigBlock(block)
 
-Returns whether `block` is diggable and within range.
+Devuelve si `block` está dentro del rango y si es posible picarlo.
 
 #### bot.recipesFor(itemType, metadata, minResultCount, craftingTable)
 
-Returns a list of `Recipe` instances that you could use to craft `itemType`
-with `metadata`.
+Devuelve una lista de instancias `Recipe` (receta) que puedes usar para craftear `itemType` con `metadata`.
 
- * `itemType` - numerical item id of the thing you want to craft
- * `metadata` - the numerical metadata value of the item you want to craft
-   `null` matches any metadata.
- * `minResultCount` - based on your current inventory, any recipe from the
-   returned list will be able to produce this many items. `null` is an
-   alias for `1`.
- * `craftingTable` - a `Block` instance. If `null`, only recipes that can
-   be performed in your inventory window will be included in the list.
+ * `itemType` - ID numérico de la cosa que quieres craftear
+ * `metadata` - el valor numérico de metada del item que quieres craftear, `null` significa "con cualquier valor de metadata".
+ * `minResultCount` - se basa en tu inventario actual, cualquier receta de la lista devuelta podrá producir este número de items. `null` significa `1`.
+ * `craftingTable` - (mesa de crafteo) una instancia `Block`. Si es `null`, solo recetas que se pueden hacer en el inventario estarán incluidas en la lista.
 
 #### bot.recipesAll(itemType, metadata, craftingTable)
 
-The same as bot.recipesFor except that it does not check wether the bot has enough materials for the recipe.
+Parecido a bot.recipesFor pero este no comprueba si el bot tiene suicientes materiales para la receta.
 
 #### bot.nearestEntity(match = (entity) => { return true })
 
-Return the nearest entity to the bot, matching the function (default to all entities). Return null if no entity is found.
+Devuelve la entidad más cercana al bot, correspondiendo a la función (predeterminado: todas las entidades).
+Devuelve null si no se encuentra una entidad.
 
 ### Methods
 
 #### bot.end()
 
-End the connection with the server.
+Termina la conexión con el servidor.
 
 #### bot.quit(reason)
 
-Gracefully disconnect from the server with the given reason (defaults to 'disconnect.quitting').
+Para desconectarse con elegancia del servidor con una razón (predeterminado: 'disconnect.quitting')
 
 #### bot.tabComplete(str, cb, [assumeCommand], [sendBlockInSight])
 
-This function also returns a `Promise`, with `matches` as its argument upon completion.
+Esta función también devueve un `Promise`, con `matches` como argumento al finalizar.
 
-Requests chat completion from the server.
- * `str` - String to complete.
+Solicita completar el mensaje de chat (para comandos).
+ * `str` - String para completar.
  * `callback(matches)`
-   - `matches` - Array of matching strings.
- * `assumeCommand` - Field sent to server, defaults to false.
- * `sendBlockInSight` - Field sent to server, defaults to true. Set this option to false if you want more performance.
+   - `matches` - Array de strings que coinciden.
+ * `assumeCommand` - Campo mandado al servidor, predeterminado: false.
+ * `sendBlockInSight` - Campo mandado al servidor, predeterminado: true. Cambiarlo a false si quiere más eficacia.
 
 #### bot.chat(message)
 
-Sends a publicly broadcast chat message. Breaks up big messages into multiple chat messages as necessary.
+Manda un mensaje público al chat. Rompe grandes mensajes en trozos y los manda como múltiples mensajes si es necesario.
 
 #### bot.whisper(username, message)
 
-Shortcut for "/tell <username>". All split messages will be whispered to username.
+Atajo de "/tell <username>" (usuario). Todos los trozos serán susurrados al usuario.
 
 #### bot.chatAddPattern(pattern, chatType, description)
 
-Deprecated, use `addChatPattern` instead.
+Obsoleto, usar `addChatPattern` en su lugar.
 
-Adds a regex pattern to the bot's chat matching. Useful for bukkit servers where the chat format changes a lot.
- * `pattern` - regular expression to match chat
- * `chatType` - the event the bot emits when the pattern matches. Eg: "chat" or "whisper"
- * 'description ' - Optional, describes what the pattern is for
+Añade un patrón regex a la lista de patrones del bot. Útil para servidores bukkit donde el formato de chat cambia mucho.
+ * `pattern` - patrón regex para concidir
+ * `chatType` - el evento que el bot emite cuando el patrón coincide: Ej. "chat" or "whisper"
+ * 'description ' - Opcional, descripción del patrón
 
 #### bot.addChatPattern(name, pattern, chatPatternOptions)
 
-** this is an alias of `bot.addChatPatternSet(name, [pattern], chatPatternOptions)`
+** esto es parecido a `bot.addChatPatternSet(name, [pattern], chatPatternOptions)`
 
-make an event that is called every time the pattern is matched to a message,
-the event will be called `"chat:name"`, with name being the name passed
-* `name` - the name used to listen for the event
-* `pattern` - regular expression to match to messages recieved
+crea un evento que se emite cada vez que coincide un patrón, el evento se llamará `"chat:nombre"`, siendo nombre el nombre que se ha proporcionado
+* `name` - el nombre usado para el evento
+* `pattern` - expresión regular para probar en los mensajes
 * `chatPatternOptions` - object
-  * `repeat` - defaults to true, whether to listen for this event after the first match
-  * `parse` - instead of returning the actual message that was matched, return the capture groups from the regex
-  * `deprecated` - (**unstable**) used by bot.chatAddPattern to keep compatability, likely to be removed
+  * `repeat` - predeterminado: true, si seguir probando despues de coincidir una vez
+  * `parse` - en vez de devolver el mensaje, devolver los grupos de captura del regex
+  * `deprecated` - (**unstable**) (inestable) usado por bot.chatAddPattern para mantener compatibilidad, seguramente sea quitado
 
-returns a number which can be used with bot.removeChatPattern() to only delete this pattern
+devuelve un número que puede usarse en bot.removeChatPattern() para eliminar ese patrón
 
 #### bot.addChatPatternSet(name, patterns, chatPatternOptions)
 
-make an event that is called every time all patterns havee been matched to messages,
-the event will be called `"chat:name"`, with name being the name passed
-* `name` - the name used to listen for the event
-* `patterns` - array of regular expression to match to messages recieved
+crea un evento que se emite cada vez que coinciden todos los patrones, el evento se llamará `"chat:nombre"`, siendo nombre el nombre que se ha proporcionado
+* `name` - el nombre usado para el evento
+* `patterns` - expresión regular para probar en los mensajes
 * `chatPatternOptions` - object
-  * `repeat` - defaults to true, whether to listen for this event after the first match
-  * `parse` - instead of returning the actual message that was matched, return the capture groups from the regex
+  * `repeat` - predeterminado: true, si seguir probando despues de coincidir una vez
+  * `parse` - en vez de devolver el mensaje, devolver los grupos de captura del regex
 
-returns a number which can be used with bot.removeChatPattern() to only delete this patternset
+devuelve un número que puede usarse en bot.removeChatPattern() para eliminar ese set de patrones
 
 #### bot.removeChatPattern(name)
 
-removes a chat pattern(s)
-* `name` : string or number
+Elimina un patrón / unos patrones
+* `name` : string o número
 
-if name is a string, all patterns that have that name will be removed
-else if name is a number, only that exact pattern will be removed
+si name es un string, todos los patrones con ese nombre serán eliminados, al contrario, si es un número, solo se eliminará ese patrón exacto
 
 #### bot.awaitMessage(...args)
 
-promise that is resolved when one of the messages passed as an arg is resolved
+promise (promesa) que se resuelve cuando uno de los mensajes proporcionados se resuelve
 
-Example:
+Ejemplo:
 
 ```js
 async function wait () {
-  await bot.awaitMessage('<flatbot> hello world') // resolves on "hello world" in chat by flatbot
-  await bot.awaitMessage(['<flatbot> hello', '<flatbot> world']) // resolves on "hello" or "world" in chat by flatbot
-  await bot.awaitMessage(['<flatbot> hello', '<flatbot> world'], ['<flatbot> im', '<flatbot> batman']) // resolves on "hello" or "world" or "im" or "batman" in chat by flatbot
+  await bot.awaitMessage('<flatbot> hello world') // resolves on "hello world" in chat by flatbot (se resuelve cuando un usuario llamado flatbot escribe "hello world" en el chat)
+  await bot.awaitMessage(['<flatbot> hello', '<flatbot> world']) // resolves on "hello" or "world" in chat by flatbot (se resuelve cuando un usuario llamado flatbot escribe "hello" o "world" en el chat)
+  await bot.awaitMessage(['<flatbot> hello', '<flatbot> world'], ['<flatbot> im', '<flatbot> batman']) // resolves on "hello" or "world" or "im" or "batman" in chat by flatbot (se resuelve cuando un usuario llamado flatbot escribe "hello world", "world", "im" o "batman" en el chat)
   await bot.awaitMessage('<flatbot> hello', '<flatbot> world') // resolves on "hello" or "world" in chat by flatbot
-  await bot.awaitMessage(/<flatbot> (.+)/) // resolves on first message matching the regex
+  await bot.awaitMessage(/<flatbot> (.+)/) // resolves on first message matching the regex (se resuelve cuando un usuario llamado flatbot escribe algo que coincide con el patrón)
 }
 ```
 
 #### bot.setSettings(options)
 
-See the `bot.settings` property.
+Mira la propiedad `bot.settings`.
 
 #### bot.loadPlugin(plugin)
 
-Injects a Plugin. Does nothing if the plugin is already loaded.
+Introduce un Plugin. No have nada si el plugin ya está cargado/introducido.
 
- * `plugin` - function
+ * `plugin` - función
 
 ```js
 function somePlugin (bot, options) {
@@ -1571,7 +1563,7 @@ function somePlugin (bot, options) {
     bot.chat('Yay!')
   }
 
-  bot.myPlugin = {} // Good practice to namespace plugin API
+  bot.myPlugin = {} // Good practice to namespace plugin API (hacer esto para evitar errores como que myPlugin no está definido)
   bot.myPlugin.someFunction = someFunction
 }
 
@@ -1584,75 +1576,72 @@ bot.once('login', function () {
 
 #### bot.loadPlugins(plugins)
 
-Injects plugins see `bot.loadPlugin`.
- * `plugins` - array of functions
+Introduce plugins, mira `bot.loadPlugin`.
+ * `plugins` - array (lista) de funciones
 
 #### bot.hasPlugin(plugin)
 
-Checks if the given plugin is loaded (or scheduled to be loaded) on this bot.
+Comprueba si el plugin ya está cargado (o previsto para cargar) en el bot.
 
 #### bot.sleep(bedBlock, [cb])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-Sleep in a bed. `bedBlock` should be a `Block` instance which is a bed. `cb` can have an err parameter if the bot cannot sleep.
+Dormir en una cama. `bedBlock` tiene que ser una instancia `Block` que es una cama. `cb` es una función que puede tener un parámetro de error por si el bot no puede dormir.
 
 #### bot.isABed(bedBlock)
 
-Return true if `bedBlock` is a bed
+Devuelve true si `bedBlock` es una cama
 
 #### bot.wake([cb])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-Get out of bed. `cb` can have an err parameter if the bot cannot wake up.
+Levantarse de una cama. `cb` es una función que puede tener un parámetro de error por si el bot no puede levantarse.
 
 #### bot.setControlState(control, state)
 
-This is the main method controlling the bot movements. It works similarly to pressing keys in minecraft.
-For example forward with state true will make the bot move forward. Forward with state false will make the bot stop moving forward.
-You may use bot.lookAt in conjunction with this to control movement. The jumper.js example shows how to use this.
+Este es el método principal para controlar los movimientos del bot. Es parecido a presionar teclas en minecraft.
+Por ejemplo, forward con true hará que el bot se mueva hacia adelante. Forward con false hará que el bot deje de moverse hacia adelante.
+Puedes usar bot.lookAt con esto para controlar el movimiento. El ejemplo jumper.js te enseña como hacerlo
 
- * `control` - one of ['forward', 'back', 'left', 'right', 'jump', 'sprint', 'sneak']
- * `state` - `true` or `false`
+ * `control` - Uno de estos: ['forward', 'back', 'left', 'right', 'jump', 'sprint', 'sneak'] ('adelante', 'atrás', 'izquierda', 'derecha', 'salto', 'sprint/correr', 'agachado')
+ * `state` - `true` o `false`
 
 #### bot.getControlState(control)
 
-Returns true if a control state is toggled.
+Devuelve true si el control está activado.
 
-* `control` - one of ['forward', 'back', 'left', 'right', 'jump', 'sprint', 'sneak']
+* `control` - uno de estos ['forward', 'back', 'left', 'right', 'jump', 'sprint', 'sneak'] ('adelante', 'atrás', 'izquierda', 'derecha', 'salto', 'sprint/correr', 'agachado')
 
 #### bot.clearControlStates()
 
-Sets all controls to off.
+Deshabilita todos los controles.
 
 #### bot.lookAt(point, [force], [callback])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
- * `point` [Vec3](https://github.com/andrewrk/node-vec3) instance - tilts your head so that it is directly facing this point.
- * `force` - See `force` in `bot.look`
- * `callback()` optional, called when you are looking at `point`
+Mueve la cabeza.
+
+ * `point` una instancia [Vec3](https://github.com/andrewrk/node-vec3) - mueve la cabeza para que este mirando este punto
+ * `force` - Mira `force` en `bot.look`
+ * `callback()` opcional, ejecutado cuando esás mirando al `point`
 
 #### bot.look(yaw, pitch, [force], [callback])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-Set the direction your head is facing.
+Mueve la cabeza.
 
- * `yaw` - The number of radians to rotate around the vertical axis, starting
-   from due east. Counter clockwise.
- * `pitch` - Number of radians to point up or down. 0 means straight forward.
-   pi / 2 means straight up. -pi / 2 means straight down.
- * `force` - If present and true, skips the smooth server-side transition.
-   Specify this to true if you need the server to know exactly where you
-   are looking, such as for dropping items or shooting arrows. This is not
-   needed for client-side calculation such as walking direction.
- * `callback()` optional, called when you are looking at `yaw` and `pitch`
+ * `yaw` - El número de radianes para rotar alrededor del eje vertical, empezando por el este. Sentido anti-horario.
+ * `pitch` - Número de radianes para mirar arriba o abajo. 0 significa recto hacia adelante. PI / 2 significa arriba. -PI / 2 significa abajo.
+ * `force` - Si está presente y es true, salta la suave transición. Especifícalo como true si quieres valores precisos para soltar items o disparar flechas. Esto no es necesario para cálculos por parte del cliente como para moverse.
+ * `callback()` opcional, ejecutado cuando estás mirando al `yaw` y `pitch`
 
 #### bot.updateSign(block, text)
 
-Changes the text on the sign.
+Cambia el texto en un cartel.
 
 #### bot.equip(item, destination, [callback])
 
