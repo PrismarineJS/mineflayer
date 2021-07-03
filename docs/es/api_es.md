@@ -1903,127 +1903,131 @@ Esta función devuelve un promise y espera a que el número de ticks especificad
 
 ### Lower level inventory methods
 
-These are lower level methods for the inventory, they can be useful sometimes but prefer the inventory methods presented above if you can.
+Estos son métodos de un nivel más bajo para el inventario, pueden ser útils algunas veces pero es mejor usar los métodos presentados arriba si es posible.
 
 #### bot.clickWindow(slot, mouseButton, mode, cb)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-Click on the current window. See details at https://wiki.vg/Protocol#Click_Window
+Hacer click en la ventana/interfaz actual, los detalles están en https://wiki.vg/Protocol#Click_Window
+ * slot - número que representa la casilla de la ventan
+ * mouseButton - 0 para click izquierdo, y 1 para click derecho
+ * mode - mineflayer solo tiene disponible el modo 0
 
 #### bot.putSelectedItemRange(start, end, window, slot, noWaiting)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-Put the item at `slot` in the specified range.
+Mover el item en la casilla `slot` en un rango especificado
 
-`noWaiting` will not wait for items to be moved.
-Can be useful in case the client is supposed to simulate without feedback from the server.
+Si `noWaiting` esta en true, el bot no esperará a que los items se hayan movido.
+Puede ser útil en caso que el cliente tiene que simular la acción sin una respuesta del servidor.
 
 #### bot.putAway(slot, noWaiting)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
-`noWaiting` calls putSelectedItemRange with `noWaiting` option: it will not wait for items to be moved.
-Can be useful in case the client is supposed to simulate without feedback from the server.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
+`noWaiting` ejecuta putSelectedItemRanger con `noWaiting` en true.
+Puede ser útil en caso que el cliente tiene que simular la acción sin una respuesta del servidor.
 
-Put the item at `slot` in the inventory.
+Mover el item a la casilla `slot` en el inventario.
 
 #### bot.closeWindow(window)
 
-Close the `window`.
+Cerrar la ventana/interfaz.
+ * window - la ventana a cerrar
 
 #### bot.transfer(options, cb)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-Transfer some kind of item from one range to an other. `options` is an object containing :
+Transferir un item de un rango a otro. `options` es un object con :
 
- * `window` : the window where the item will be moved
- * `itemType` : the type of the moved items
- * `metadata` : the metadata of the moved items
- * `sourceStart` and `sourceEnd` : the source range
- * `destStart` and `destEnd` : the dest Range
+ * `window` : la ventana donde el item será movido
+ * `itemType` : el tipo de item a mover (id numérico)
+ * `metadata` : la metadata del item a mover
+ * `sourceStart` and `sourceEnd` : el rango
+ * `destStart` and `destEnd` : el rango de destino
 
 #### bot.openBlock(block)
 
-Open a block, for example a chest, returns a promise on the opening `Window`.
+Abre un bloque, por ejemplo un cofre, devuelve un promise con `Window` siendo la ventana abierta.
 
- * `block` is the block the bot will open
+ * `block` es el bloque a abrir
 
 #### bot.openEntity(entity)
 
-Open an entity with an inventory, for example a villager, returns a promise on the opening `Window`.
+Abre una entidad con un inventario, por ejemplo un aldeano, devuelve un promise con `Window` siendo la ventana abierta.
 
- * `entity` is the entity the bot will open
+ * `entity` es la entidad a abrir
 
 #### bot.moveSlotItem(sourceSlot, destSlot, cb)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-Move an item from `sourceSlot` to `destSlot` in the current window.
+Mover un item de una casilla `sourceSlot` a otra `destSlot` en una ventana.
 
 #### bot.updateHeldItem()
 
-Update `bot.heldItem`.
+Actualiza `bot.heldItem`.
 
 #### bot.getEquipmentDestSlot(destination)
 
-Gets the inventory equipment slot id for the given equipment destination name.
+Devuelve el id de la casilla de equipamiento por nombre del destino.
 
-Available destinations are:
-* head
-* torso
-* legs
-* feet
-* hand
-* off-hand
+El destino puede ser:
+* head - (cabeza)
+* torso - (pecho)
+* legs - (piernas)
+* feet - (pies)
+* hand - (mano)
+* off-hand - (mano izquierda)
 
 ### bot.creative
 
-This collection of apis is useful in creative mode.
-Detecting and changing gamemodes is not implemented here,
-but it is assumed and often required that the bot be in creative mode for these features to work.
+Esta colección de apis es útil en modo creativo.
+Detectar y cambiar de modo no está implementado,
+pero se asume y muchas veces se necesita que el bot esté en modo creativo para que estas características funcionen.
 
 #### bot.creative.setInventorySlot(slot, item, [callback])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-Gives the bot the specified item in the specified inventory slot.
-If called twice on the same slot before first callback exceeds, first callback will have an error parameter
+Proporciona al bot el item especificado en la casilla especificada.
+Si se ejecuta dos veces antes de que la primera ejecución no haya terminado, la primera ejecución contendrá un error.
 
- * `slot` is in inventory window coordinates (where 36 is the first quickbar slot, etc.).
- * `item` is a [prismarine-item](https://github.com/PrismarineJS/prismarine-item) instance specified with arbitrary metadata, nbtdata, etc.
-    If `item` is `null`, the item at the specified slot is deleted.
- * `callback(err)` (optional) is a callback which gets fired when the servers sets the slot
+ * `slot` es un número de casilla del inventario (donde 36 es la primera casilla, etc.).
+ * `item` es una instancia [prismarine-item](https://github.com/PrismarineJS/prismarine-item) con su metadata, nbtdata, etc.
+    Si `item` es `null`, el item en esa casilla será eliminado
+ * `callback(err)` (opcional) es un callback que es ejecutado cuando el servidor acepta la transacción o cuando falla al hacerlo
 
-If this method changes anything, you can be notified via `bot.inventory.on("updateSlot")`.
+Si este método cambia algo, se emitirá `bot.inventory.on("updateSlot")`
 
 #### bot.creative.flyTo(destination, [cb])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-Calls `startFlying()` and moves at a constant speed through 3d space in a straight line to the destination.
-`destination` is a `Vec3`, and often the `x` and `z` coordinates will end with `.5`.
-This operation will not work if there is an obstacle in the way,
-so it is advised to fly very short distances at a time.
+Ejecuta `startFlying()` y se mueve a una velocidad constante en un espacio tridimensional en línea recta hasta el destino.
+`destination` es un `Vec3`, y las coordenadas `x` y `z` a veces terminarán en `.5`.
+Está operación no funcionará si hay algún obstáculo en el camino,
+por eso es recomendable volar distancias cortas.
 
-When the bot arrives at the destination, `cb` is called.
+Cuando el bot llega al destino, `cb` es ejecutado.
 
-This method does not attempt any path finding.
-It is expected that a path finding implementation will use this method to move < 2 blocks at a time.
+Este método no va a buscar el camino automáticamente.
+Se espera que una implementación de path finding usará este método para moverse < 2 bloques a la vez.
 
-To resume normal physics, call `stopFlying()`.
+Para dejar de volar (volver a las físicas normales), se puede ejecutar `stopFlying()`.
 
 #### bot.creative.startFlying()
 
-Sets `bot.physics.gravity` to `0`.
-To resume normal physics, call `stopFlying()`.
+Cambia `bot.physics.gravity` a `0`.
+Para volver a las físicas normales, se puede ejecutar `stopFlying()`.
 
-This method is useful if you want to hover while digging the ground below you.
-It is not necessary to call this function before calling `flyTo()`.
+Este método es útil si quieres levitar mientras rompes el bloque debajo de tí.
+No es necesario ejecutar esta función antes de ejecutar `flyTo()`.
 
-Note that while flying, `bot.entity.velocity` will not be accurate.
+Nota: mientras vuelas, `bot.entity.velocity` no es preciso.
 
 #### bot.creative.stopFlying()
 
-Restores `bot.physics.gravity` to it's original value.
+Restablece `bot.physics.gravity` a su valor original.
