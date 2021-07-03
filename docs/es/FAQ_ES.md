@@ -1,6 +1,6 @@
 ## FAQ
 
-Este documento sobre preguntas frecuentes es para ayudar la gente para las cosas básicas
+Este documento sobre preguntas frecuentes es para ayudar la gente en cosas básicas
 
 ## Como ocultar errores?
 
@@ -64,7 +64,7 @@ Usando `bot.chat()`.
 bot.chat('/give @p diamond')
 ```
 
-### Es posible crear multiples bots y controlandolos separadamente?
+### Es posible crear multiples bots y controlarlos separadamente?
 
 Crea diferentes bots con createBot y haz diferentes cosas para cada uno, echa un vistazo a multiple.js
 
