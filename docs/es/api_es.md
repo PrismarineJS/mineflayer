@@ -1998,7 +1998,7 @@ Si se ejecuta dos veces antes de que la primera ejecución no haya terminado, la
  * `slot` es un número de casilla del inventario (donde 36 es la primera casilla, etc.).
  * `item` es una instancia [prismarine-item](https://github.com/PrismarineJS/prismarine-item) con su metadata, nbtdata, etc.
     Si `item` es `null`, el item en esa casilla será eliminado
- * `callback(err)` (opcional) es un callback que es ejecutado cuando el servidor acepta la transacción o cuando falla al hacerlo
+ * `callback(err)` (opcional) es un callback que es ejecutado cuando el servidor acepta la transacción o cuando falla al hacerlo.
 
 Si este método cambia algo, se emitirá `bot.inventory.on("updateSlot")`
 
