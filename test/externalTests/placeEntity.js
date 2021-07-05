@@ -13,6 +13,7 @@ module.exports = (version) => {
   function addTest (name, f) {
     tests[name] = bot => runTest(bot, f)
   }
+
   addTest('place crystal', async (bot) => {
     if (!mcData?.itemsByName?.end_crystal?.id) return // unsupported
     await bot.test.setBlock({ z: 1, relative: true, blockName: 'obsidian' })
