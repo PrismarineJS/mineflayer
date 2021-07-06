@@ -9,7 +9,7 @@
 
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 
-| 🇺🇸 [Anglais](README.md) | 🇷🇺 [Russe](README_RU.md) | 🇪🇸 [Espagnol](README_ES.md) | 🇫🇷 [Français](README_FR.md) | 🇹🇷 [Türkçe](tr/README_TR.md) |
+| 🇺🇸 [Anglais](../README.md) | 🇷🇺 [Russe](../ru/README_RU.md) | 🇪🇸 [Espagnol](../es/README_ES.md) | 🇫🇷 [Français](README_FR.md) | 🇹🇷 [Türkçe](../tr/README_TR.md) |
 |-------------------------|----------------------------|----------------------------|----------------------------| -------------------------- |
 
 Créé des robots Minecraft avec API stable, puissante et facilement maniable, [API](api.md).
