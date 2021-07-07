@@ -38,7 +38,7 @@
     "vec3": "^0.1.6"
   },
   "devDependencies": {
-    "@types/node": "^15.0.1",
+    "@types/node": "^16.0.1",
     "doctoc": "^2.0.0",
     "minecraft-wrap": "^1.2.1",
     "mineflayer": "file:.",
