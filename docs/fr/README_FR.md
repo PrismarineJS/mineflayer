@@ -76,16 +76,16 @@ Par exemple `version:"1.16.5"`.
 
 ### Echo Example
 ```js
-const mineflayer = require('mineflayer');
+const mineflayer = require('mineflayer')
 
 const bot = mineflayer.createBot({
   host: 'localhost', // optionel
-  port: 25565,       // optionel
+  port: 25565, // optionel
   username: 'email@example.com', // l'email et le mot de passe sont requis seulement pour les serveurs
-  password: '12345678',          // online-mode=true
-  version: false,                 // faux, corresponds pour la detection automatique(par défaut), met "1.8.8" par exemple si tu a besoin d'une version specifique
-  auth: 'mojang'      // optionel; par defaut utilise mojang, si vous utilisez un compte microsoft, preciser 'microsoft'
-});
+  password: '12345678', // online-mode=true
+  version: false, // faux, corresponds pour la detection automatique(par défaut), met "1.8.8" par exemple si tu a besoin d'une version specifique
+  auth: 'mojang' // optionel; par defaut utilise mojang, si vous utilisez un compte microsoft, preciser 'microsoft'
+})
 
 bot.on('chat', function (username, message) {
   if (username === bot.username) return
@@ -93,8 +93,8 @@ bot.on('chat', function (username, message) {
 })
 
 // erreur de code, ou raison de kick:
-bot.on('kicked', (reason, loggedIn) => console.log(reason, loggedIn));
-bot.on('error', err => console.log(err));
+bot.on('kicked', (reason, loggedIn) => console.log(reason, loggedIn))
+bot.on('error', err => console.log(err))
 ```
 
 ### Observer ce que fait votre robot en temp réel
