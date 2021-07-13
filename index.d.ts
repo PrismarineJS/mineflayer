@@ -340,6 +340,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   openAnvil: (anvil: Block) => Anvil
 
+  openContainer: (container: (Block | Entity)) => Window
+
   openVillager: (
     villager: Entity
   ) => Villager
