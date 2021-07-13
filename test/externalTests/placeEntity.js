@@ -1,5 +1,6 @@
 const assert = require('assert')
 const { Vec3 } = require('vec3')
+const { once } = require('events')
 
 module.exports = (version) => {
   const mcData = require('minecraft-data')(version)
@@ -30,6 +31,7 @@ module.exports = (version) => {
     const entity = bot.nearestEntity(o => o.name === name)
     assert(entity?.name === name)
     bot.attack(entity)
+    await once(bot, 'entityGone')
     await bot.test.setBlock({ z: 1, blockName: 'air', relative: true })
   })
 
@@ -52,6 +54,7 @@ module.exports = (version) => {
     assert(entity?.name === name)
     await placeBlocksForTest('air')
     bot.attack(entity)
+    await once(bot, 'entityGone')
   })
 
   addTest('place summon egg', async (bot) => {
@@ -74,6 +77,7 @@ module.exports = (version) => {
     const entity = bot.nearestEntity(o => o.name === name)
     assert(entity?.name === name)
     bot.chat(`/kill @e[type=${name}]`) // use /kill instead of bot.attack() because it takes more than one hit to kill
+    await once(bot, 'entityGone')
   })
 
   addTest('place armor stand', async (bot) => {
@@ -91,6 +95,7 @@ module.exports = (version) => {
     const entity = bot.nearestEntity(o => o.name === name)
     assert(entity?.name === name)
     bot.attack(entity)
+    await once(bot, 'entityGone')
   })
 
   return tests
