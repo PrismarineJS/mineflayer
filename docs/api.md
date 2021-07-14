@@ -1576,9 +1576,9 @@ Changes the text on the sign.
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
 
-Equips an item from your inventory.
+Equips an item from your inventory. If the argument `item` is of Instance `Item` equip will equip this specific item from its window slot. If the argument `item` is of type `number` equip will equip the first item found with that id searched by rising slot id (Hotbar is searched last. Armor, crafting, crafting result and off-hand slots are excluded).
 
- * `item` - `Item` instance. See `window.items()`.
+ * `item` - `Item` instance or `number` for item id. See `window.items()`.
  * `destination`
    - `"hand"` - `null` aliases to this
    - `"head"`
