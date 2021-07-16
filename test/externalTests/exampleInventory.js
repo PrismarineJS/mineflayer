@@ -10,12 +10,16 @@ const tests = [
     wantedMessage: 'equipped dirt'
   },
   {
+    command: 'list',
+    wantedMessage: 'stick x 7, iron_ore x 64, diamond_boots x 1, dirt x 64'
+  },
+  {
     command: 'equip hand dirt',
     wantedMessage: 'equipped dirt'
   },
   {
-    command: 'toss 32 dirt',
-    wantedMessage: 'tossed 32 x dirt'
+    command: 'toss 64 dirt',
+    wantedMessage: 'tossed 64 x dirt'
   },
   {
     command: 'craft 1 ladder',
@@ -55,7 +59,7 @@ module.exports = () => async (bot) => {
     bot.chat('/give inventory diamond_boots 1')
     await bot.test.wait(2000)
     if (mcData.isOlderThan('1.9')) {
-      tests.splice(tests.indexOf(tests.find(t => t.command.includes('off-hand'))), 1)
+      tests.splice(tests.indexOf(tests.find(t => t.command.includes('off-hand'))), 2) // Delete off-hand command and the command after it as they don't work in 1.9
     }
     const testFuncs = tests.map(test => makeTest(test.command, test.wantedMessage))
     for (const test of testFuncs) {
