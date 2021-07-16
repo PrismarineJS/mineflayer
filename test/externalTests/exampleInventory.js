@@ -6,6 +6,14 @@ const tests = [
     wantedMessage: 'dirt x 64, stick x 7, iron_ore x 64, diamond_boots x 1'
   },
   {
+    command: 'equip off-hand dirt',
+    wantedMessage: 'equipped dirt'
+  },
+  {
+    command: 'list',
+    wantedMessage: 'stick x 7, iron_ore x 64, diamond_boots x 1, dirt x 64'
+  },
+  {
     command: 'equip hand dirt',
     wantedMessage: 'equipped dirt'
   },
@@ -39,6 +47,7 @@ const tests = [
   }
 ]
 module.exports = () => async (bot) => {
+  const mcData = require('minecraft-data')(bot.version)
   await bot.test.runExample('examples/inventory.js', async (name, cb) => {
     assert.strictEqual(name, 'inventory')
     bot.chat('/op inventory') // to counteract spawn protection
@@ -49,6 +58,9 @@ module.exports = () => async (bot) => {
     bot.chat('/give inventory iron_ore 64')
     bot.chat('/give inventory diamond_boots 1')
     await bot.test.wait(2000)
+    if (mcData.isOlderThan('1.9')) {
+      tests.splice(tests.indexOf(tests.find(t => t.command.includes('off-hand'))), 2) // Delete off-hand command and the command after it as they don't work in 1.9
+    }
     const testFuncs = tests.map(test => makeTest(test.command, test.wantedMessage))
     for (const test of testFuncs) {
       await test()
