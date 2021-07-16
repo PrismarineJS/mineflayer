@@ -1,6 +1,6 @@
 const assert = require('assert')
 
-let tests = [
+const tests = [
   {
     command: 'list',
     wantedMessage: 'dirt x 64, stick x 7, iron_ore x 64, diamond_boots x 1'
