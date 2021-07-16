@@ -289,7 +289,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   placeEntity: (referenceBlock: Block, faceVector: Vec3) => Promise<Entity>
 
-  activateBlock: (block: Block, callback?: (err?: Error) => void) => Promise<void>
+  activateBlock: (block: Block, direction?: number, cursorPos?: Vec3, callback?: (err?: Error) => void) => Promise<void>
 
   activateEntity: (block: Entity, callback?: (err?: Error) => void) => Promise<void>
 
@@ -330,7 +330,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
     callback?: (err?: Error) => void
   ) => Promise<void>
 
-  openChest: (chest: Block | Entity) => Chest
+  openChest: (chest: Block | Entity, direction?: number, cursorPos?: Vec3) => Chest
 
   openFurnace: (furnace: Block) => Furnace
 
