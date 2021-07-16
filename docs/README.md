@@ -12,9 +12,9 @@
 | 🇺🇸 [English](README.md) | 🇷🇺 [Russian](ru/README_RU.md) | 🇪🇸 [Spanish](es/README_ES.md) | 🇫🇷 [French](fr/README_FR.md) | 🇹🇷 [Turkish](tr/README_TR.md) |
 |-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
 
-Create Minecraft bots with a powerful, stable, and high level JavaScript [API](api.md).
+Create Minecraft bots with a powerful, stable, and high level JavaScript [API](api.md), and also usable from Python.
 
-First time using node.js ? You may want to start with the [tutorial](tutorial.md)
+First time using node.js ? You may want to start with the [tutorial](tutorial.md). Know Python ? Checkout some [Python examples](https://github.com/PrismarineJS/mineflayer/tree/master/examples).
 
 ## Features
 
