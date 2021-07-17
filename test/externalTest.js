@@ -6,7 +6,24 @@ const commonTest = require('./externalTests/plugins/testCommon')
 const mc = require('minecraft-protocol')
 const fs = require('fs')
 const path = require('path')
+// prismarine-viewer setup
+const mineflayerViewer = require('prismarine-viewer').headless
+global.THREE = require('three')
+global.Worker = require('worker_threads').Worker
+const { createCanvas, ImageData } = require('node-canvas-webgl/lib')
 
+// Patch global scope to imitate browser environment.
+global.window = global
+global.THREE = THREE
+global.ImageData = ImageData
+global.document = {
+  createElement: (nodeName) => {
+    if (nodeName !== 'canvas') throw new Error(`Cannot create node ${nodeName}`)
+    const canvas = createCanvas(256, 256)
+    return canvas
+  }
+}
+// end prismarine-viewer setup
 // set this to false if you want to test without starting a server automatically
 const START_THE_SERVER = true
 // if you want to have time to look what's happening increase this (milliseconds)
@@ -23,7 +40,8 @@ const propOverrides = {
   gamemode: '1',
   'spawn-monsters': 'false',
   'generate-structures': 'false',
-  'enable-command-block': 'true'
+  'enable-command-block': 'true',
+  'use-native-transport': 'false' // java 16 throws errors without this, https://www.spigotmc.org/threads/unable-to-access-address-of-buffer.311602
 }
 
 const Wrap = require('minecraft-wrap').Wrap
@@ -59,6 +77,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
         console.log('starting bot')
         bot.once('login', () => {
+          mineflayerViewer(bot, { output: 'output.mp4', frames: -1, width: 512, height: 512 })
           wrap.writeServer('op flatbot\n')
           console.log('waiting a second...')
           // this wait is to get all the window updates out of the way before we start expecting exactly what we cause.

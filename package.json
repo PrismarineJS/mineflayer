@@ -5,7 +5,7 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "mocha_test": "mocha --reporter spec --exit",
+    "mocha_test": "mocha --reporter spec",
     "test": "npm run mocha_test",
     "pretest": "npm run lint",
     "lint": "standard && ts-standard *.d.ts && standard-markdown",
@@ -43,9 +43,11 @@
     "minecraft-wrap": "^1.2.1",
     "mineflayer": "file:.",
     "mocha": "^9.0.0",
+    "node-canvas-webgl": "^0.2.6",
+    "prismarine-viewer": "^1.19.3",
     "standard": "^16.0.1",
+    "standard-markdown": "^6.0.0",
     "ts-standard": "^10.0.0",
-    "typescript": "^4.3.2",
-    "standard-markdown": "^6.0.0"
+    "typescript": "^4.3.2"
   }
 }
