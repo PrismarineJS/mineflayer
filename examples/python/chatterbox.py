@@ -13,14 +13,14 @@
 # a few informations while you are in game.
 # ===========================================================================
 import sys, re
-from javascript import require, console, On, Once
+from javascript import require, On, Once
 
 mineflayer = require("mineflayer", "latest")
 Vec3 = require("vec3").Vec3
 
 print(sys.argv)
 if len(sys.argv) < 3 or len(sys.argv) > 6:
-    console.log("Usage : node chatterbot.js <host> <port> [<name>]")
+    print("Usage : node chatterbot.js <host> <port> [<name>]")
     exit(1)
 
 host = sys.argv[1]
