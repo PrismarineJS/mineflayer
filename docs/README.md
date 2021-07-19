@@ -8,13 +8,14 @@
 [![Issue Hunt](https://github.com/BoostIO/issuehunt-materials/blob/master/v1/issuehunt-shield-v1.svg)](https://issuehunt.io/r/PrismarineJS/mineflayer)
 
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb)
 
 | 🇺🇸 [English](README.md) | 🇷🇺 [Russian](ru/README_RU.md) | 🇪🇸 [Spanish](es/README_ES.md) | 🇫🇷 [French](fr/README_FR.md) | 🇹🇷 [Turkish](tr/README_TR.md) |
 |-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
 
-Create Minecraft bots with a powerful, stable, and high level JavaScript [API](api.md).
+Create Minecraft bots with a powerful, stable, and high level JavaScript [API](api.md), also usable from Python.
 
-First time using node.js ? You may want to start with the [tutorial](tutorial.md)
+First time using node.js ? You may want to start with the [tutorial](tutorial.md). Know Python ? Checkout some [Python examples](https://github.com/PrismarineJS/mineflayer/tree/master/examples/python) and try out [Mineflayer on Google Colab](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb).
 
 ## Features
 
