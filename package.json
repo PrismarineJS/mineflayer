@@ -46,6 +46,8 @@
     "standard": "^16.0.1",
     "ts-standard": "^10.0.0",
     "typescript": "^4.3.2",
-    "standard-markdown": "^6.0.0"
+    "standard-markdown": "^6.0.0",
+    "node-canvas-webgl": "^0.2.6",
+    "prismarine-viewer": "u9g/prismarine-viewer#patch-4"
   }
 }
