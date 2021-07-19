@@ -5,5 +5,9 @@
     },
     "files": [
       "index.d.ts"
-    ]
+    ],
+    "typedocOptions": {
+      "entryPoints": ["index.d.ts"],
+      "out": "typedocs"
+    }
 }
