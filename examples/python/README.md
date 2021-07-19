@@ -25,8 +25,8 @@ mineflayer = require('mineflayer')
 
 ### Examples
 
-* [gps](https://github.com/PrismarineJS/mineflayer/blob/py/examples/python/basic.py) (based on [js version](https://github.com/PrismarineJS/mineflayer/blob/py/examples/pathfinder/gps.js))
-* [chatterbot](https://github.com/extremeheat/mineflayer/blob/py/examples/python/chatterbox.py)  (based on [js version](https://github.com/PrismarineJS/mineflayer/blob/py/examples/chatterbox.js))
+* [gps](https://github.com/PrismarineJS/mineflayer/blob/master/examples/python/basic.py) (based on [js version](https://github.com/PrismarineJS/mineflayer/blob/master/examples/pathfinder/gps.js))
+* [chatterbot](https://github.com/PrismarineJS/mineflayer/blob/master/examples/python/chatterbox.py)  (based on [js version](https://github.com/PrismarineJS/mineflayer/blob/py/examples/chatterbox.js))
 
 ### See also
 * [javascript pip package docs](https://github.com/extremeheat/JSPyBridge/blob/master/docs/python.md)
