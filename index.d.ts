@@ -8,15 +8,49 @@ import { Recipe } from 'prismarine-recipe'
 import { Block } from 'prismarine-block'
 import { Entity } from 'prismarine-entity'
 
-export function createBot (options: BotOptions): Bot
+//todo grammer? full sentences? puncutation? capitalization?
 
+/**
+ * Create and return an instance of the class bot.
+ *
+ * @param options an object containing the optional properties
+ */
+export function createBot (options: BotOptions): Bot
 export interface BotOptions extends ClientOptions {
+  //todo use @default or @defaultValue https://github.com/microsoft/tsdoc/issues/27
+  /**
+   * Whether errors should be caught and logged
+   *
+   * @default `true`
+   */
   logErrors?: boolean
+  /**
+   * Whether errors should be hidden (even if logErrors is true)
+   *
+   * @default `true`
+   */
   hideErrors?: boolean
+  //todo
+  /**
+   * Whether to load internal plugins
+   * @defaut `true`
+   */
   loadInternalPlugins?: boolean
+  /**
+   * @see PluginOptions
+   *
+   * @default `{}` todo omit?
+   */
   plugins?: PluginOptions
+  //todo
+  /**
+   * @see chat
+   */
   chat?: ChatLevel
   colorsEnabled?: boolean
+  /**
+   * @default `far`
+   */
   viewDistance?: ViewDistance
   mainHand?: MainHands
   difficulty?: number
@@ -26,9 +60,10 @@ export interface BotOptions extends ClientOptions {
 }
 
 export type ChatLevel = 'enabled' | 'commandsOnly' | 'disabled'
+//todo find actual numbers for these
 export type ViewDistance = 'far' | 'normal' | 'short' | 'tiny'
 export type MainHands = 'left' | 'right'
-
+// see https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md#mineflayercreatebotoptions
 export interface PluginOptions {
   [plugin: string]: boolean | Plugin
 }
@@ -36,6 +71,15 @@ export interface PluginOptions {
 export type Plugin = (bot: Bot, options: BotOptions) => void
 
 interface BotEvents {
+  /**
+   * Emitted when a player chats publicly.
+   *
+   * @param username who said the message (compare with bot.username to ignore your own chat) //todo link bot.username?
+   * @param message stripped of all color and control characters
+   * @param translate chat message type. Null for most bukkit chat messages //todo more descriptive?
+   * @param jsonMsg unmodified JSON message from the server
+   * @param matches array of returned matches from regular expressions //todo null if
+   */
   chat: (
     username: string,
     message: string,
@@ -43,6 +87,15 @@ interface BotEvents {
     jsonMsg: ChatMessage,
     matches: string[] | null
   ) => void
+  /**
+   * Emitted when a player chats to you privately //todo with /tell or /whisper
+   *
+   * @param username who said the message
+   * @param message stripped of all color and control characters
+   * @param translate chat message type. Null for most bukkit chat messages
+   * @param jsonMsg unmodified JSON message from the server
+   * @param matches array of returned matches from regular expressions //todo null if ...
+   */
   whisper: (
     username: string,
     message: string,
@@ -50,23 +103,86 @@ interface BotEvents {
     jsonMsg: ChatMessage,
     matches: string[] | null
   ) => void
+  /**
+   * Emitted for every server message which appears on the Action Bar
+   *
+   * @param jsonMsg unmodified JSON message from the server
+   */
   actionBar: (jsonMsg: ChatMessage) => void
+  /**
+   * Emitted when an error occurs.
+   * @param err
+   */
   error: (err: Error) => void
+  /**
+   * Emitted for every server message, including chats.
+   * @param jsonMsg
+   * @param position
+   */
   message: (jsonMsg: ChatMessage, position: string) => void
+  /**
+   * Alias for the //todo @see message event but it calls .toString() on the message object to get a string for the message before emitting.
+   * @param message
+   * @param position
+   * @param jsonMsg
+   */
   messagestr: (message: string, position: string, jsonMsg: ChatMessage) => void
   unmatchedMessage: (stringMsg: string, jsonMsg: ChatMessage) => void
+  /**
+   * Fires when the index file has been loaded, you can load mcData and plugins here but it's better to wait for "spawn" event.
+   */
   inject_allowed: () => void
+  /**
+   * Fires after you successfully login to the server. You probably want to wait for the spawn event before doing anything though. //todo relevant https://github.com/PrismarineJS/mineflayer/issues/328
+   */
   login: () => void
+  /**
+   * Emitted once after you log in and spawn for the first time and then emitted when you respawn after death.
+   * This is usually the event that you want to listen to before doing anything on the server.
+   */
   spawn: () => void
+  /**
+   * Emitted when you change dimensions and just before you spawn. Usually you want to ignore this event and wait until the "spawn" event instead.
+   */
   respawn: () => void
+  /**
+   * Emitted when the server changes any of the game properties. //todo more descriptive
+   */
   game: () => void
+  /**
+   * Emitted when the server sends a title
+   * @param text
+   */
   title: (text: string) => void
+  /**
+   * Emitted when it starts or stops raining. If you join a server where it is already raining, this event will fire.
+   */
   rain: () => void
+  /**
+   * Emitted when the server sends a time update. See bot.time. //todo link bot.time
+   */
   time: () => void
+  /**
+   * Emitted when the bot is kicked from the server.
+   * @param reason chat message explaining why you were kicked
+   * @param loggedIn `true` if the client was kicked after successfuly logging in, or `false` if the kick occured in the login phase
+   */
   kicked: (reason: string, loggedIn: boolean) => void
+  /**
+   * Emitted when you are no longer connected to the server.
+   */
   end: () => void
+  /**
+   * Fires when you cannot spawn in your bed and your spawn point gets reset.
+   */
   spawnReset: () => void
+  /**
+   * Fires when you die.
+   */
   death: () => void
+  /**
+   * Fires when your hp or food change.
+   */
   health: () => void
   breath: () => void
   entitySwingArm: (entity: Entity) => void
@@ -86,10 +202,20 @@ interface BotEvents {
   entitySleep: (entity: Entity) => void
   entitySpawn: (entity: Entity) => void
   itemDrop: (entity: Entity) => void
+  /**
+   * Fires when an entity picks up an item.
+   * @param collector entity that picked up the item.
+   * @param collected the entity that was the item on the ground.
+   */
   playerCollect: (collector: Entity, collected: Entity) => void
   entityGone: (entity: Entity) => void
   entityMoved: (entity: Entity) => void
   entityDetach: (entity: Entity, vehicle: Entity) => void
+  /**
+   * An entity is attached to a vehicle, such as a mine cart or boat.
+   * @param entity the entity hitching a ride
+   * @param vehicle the entity that is the vehicle
+   */
   entityAttach: (entity: Entity, vehicle: Entity) => void
   entityUpdate: (entity: Entity) => void
   entityEffect: (entity: Entity, effect: Effect) => void
@@ -97,16 +223,47 @@ interface BotEvents {
   playerJoined: (player: Player) => void
   playerUpdated: (player: Player) => void
   playerLeft: (entity: Player) => void
+  /**
+   * Fires when a block updates. Both oldBlock and newBlock provided for comparison.
+   * It is better to use this event from bot.world instead of bot directly
+   * @param oldBlock //todo when is this null
+   * @param newBlock
+   */
   blockUpdate: (oldBlock: Block | null, newBlock: Block) => void
+  /**
+   * Fires for a specific point. Both oldBlock and newBlock provided for comparison.
+   * (It is better to use this event from bot.world instead of bot directly)
+   * @param oldBlock
+   * @param newBlock
+   */
   'blockUpdate:(x, y, z)': (oldBlock: Block | null, newBlock: Block) => void
   chunkColumnLoad: (entity: Vec3) => void
+  /**
+   * Fires when a chunk has updated.
+   * @param entity the coordinates to the corner of the chunk with the smallest x, y, and z values. //todo point or entity? https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md#chunkcolumnunload-point
+   */
   chunkColumnUnload: (entity: Vec3) => void
+  /**
+   * Fires when the client hears a named sound effect.Fires when the client hears a named sound effect.
+   * @param soundName name of the sound effect
+   * @param position a Vec3 instance where the sound originates
+   * @param volume floating point volume, 1.0 is 100%
+   * @param pitch integer pitch, 63 is 100%
+   */
   soundEffectHeard: (
     soundName: string,
     position: Vec3,
     volume: number,
     pitch: number
   ) => void
+  /**
+   * Fires when the client hears a hardcoded sound effect.
+   * @param soundId id of the sound effect
+   * @param soundCategory category of the sound effect
+   * @param position a Vec3 instance where the sound originates
+   * @param volume floating point volume, 1.0 is 100%
+   * @param pitch integer pitch, 63 is 100%
+   */
   hardcodedSoundEffectHeard: (
     soundId: number,
     soundCategory: number,
@@ -114,34 +271,145 @@ interface BotEvents {
     volume: number,
     pitch: number
   ) => void
+  /**
+   * Fires when a note block goes off somewherec.
+   * @param block a Block instance, the block that emitted the noise
+   * @param instrument @see Instrument //todo
+   * @param pitch the pitch of the note (between 0-24 inclusive where 0 is the lowest and 24 is the highest) //todo @link http://www.minecraftwiki.net/wiki/Note_Block
+   */
   noteHeard: (block: Block, instrument: Instrument, pitch: number) => void
   pistonMove: (block: Block, isPulling: number, direction: number) => void
+  /**
+   *
+   * @param block a Block instance, the block whose lid opened. The right block if it's a double chest
+   * @param isOpen number of players that have the chest open. 0 if it's closed
+   * //todo missing param https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md#chestlidmove-block-isopen-block2
+   */
   chestLidMove: (block: Block, isOpen: number) => void
+  /**
+   * Fires when the client observes a block in the process of being broken.
+   * @param block a Block instance, the block being broken
+   * @param destroyStage integer corresponding to the destroy progress (0-9)
+   */
   blockBreakProgressObserved: (block: Block, destroyStage: number) => void
+  /**
+   * Fires when the client observes a block stops being broken. This occurs whether the process was completed or aborted.
+   * @param block a Block instance, the block no longer being broken
+   */
   blockBreakProgressEnd: (block: Block) => void
+  /**
+   * @param block the block that no longer exists
+   */
   diggingCompleted: (block: Block) => void
+  /**
+   * @param block the block that still exists
+   */
   diggingAborted: (block: Block) => void
+  /**
+   * Fires when the bot moves. If you want the current position, use bot.entity.position and for normal moves if you want the previous position, use bot.entity.position.minus(bot.entity.velocity)
+   */
   move: () => void
+  /**
+   * Fires when the bot is force moved by the server (teleport, spawning, ...). If you want the current position, use bot.entity.position.
+   */
   forcedMove: () => void
+  /**
+   * Fires when you mount an entity such as a minecart. To get access to the entity, use bot.vehicle.
+
+   To mount an entity, use mount.
+   */
   mount: () => void
+  /**
+   * Fires when you dismount from an entity.
+   * @param vehicle
+   */
   dismount: (vehicle: Entity) => void
+  /**
+   * Fires when you begin using a workbench, chest, brewing stand, etc.
+   * @param vehicle
+   */
   windowOpen: (vehicle: Window) => void
+  /**
+   * Fires when you may no longer work with a workbench, chest, etc.
+   * @param vehicle
+   */
   windowClose: (vehicle: Window) => void
+  /**
+   * Fires when you sleep.
+   */
   sleep: () => void
+  /**
+   * Fires when you wake up.
+   */
   wake: () => void
+  /**
+   * Fires when bot.experience.* has updated.
+   */
   experience: () => void
+  /**
+   * Fires every tick if bot.physicsEnabled is set to true. //todo link
+   */
   physicsTick: () => void
   physicTick: () => void
+  /**
+   * Fires when a scoreboard is added.
+   * @param scoreboard
+   */
   scoreboardCreated: (scoreboard: ScoreBoard) => void
+  /**
+   * Fires when a scoreboard is deleted.
+   * @param scoreboard
+   */
   scoreboardDeleted: (scoreboard: ScoreBoard) => void
+  /**
+   * Fires when a scoreboard's title is updated.
+   * @param scoreboard
+   */
   scoreboardTitleChanged: (scoreboard: ScoreBoard) => void
+  /**
+   * Fires when the score of a item in a scoreboard is updated.
+   * @param scoreboard
+   * @param item
+   */
   scoreUpdated: (scoreboard: ScoreBoard, item: number) => void
+  /**
+   * Fires when the score of a item in a scoreboard is removed.
+   * @param scoreboard
+   * @param item
+   */
   scoreRemoved: (scoreboard: ScoreBoard, item: number) => void
+  /**
+   * Fires when the position of a scoreboard is updated.
+   * @param position
+   * @param scoreboard
+   */
   scoreboardPosition: (position: DisplaySlot, scoreboard: ScoreBoard) => void
+  /**
+   * Fires when new boss bar is created.
+   * @param bossBar
+   */
   bossBarCreated: (bossBar: BossBar) => void
+  /**
+   * Fires when new boss bar is deleted.
+   * @param bossBar
+   */
   bossBarDeleted: (bossBar: BossBar) => void
+  /**
+   * Fires when new boss bar is updated.
+   * @param bossBar
+   */
   bossBarUpdated: (bossBar: BossBar) => void
+  /**
+   * Emitted when the server sends a resource pack.
+   * @param url
+   * @param hash //todo more descriptive about format?
+   */
   resourcePack: (url: string, hash: string) => void
+  //todo https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md#weatherupdate
+  //todo https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md#breath
+  //todo https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md#blockplaced-oldblock-newblock
+  //todo https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md#helditemchanged-helditem
+  //todo https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md#chatname-matches
 }
 
 export interface Bot extends TypedEmitter<BotEvents> {
