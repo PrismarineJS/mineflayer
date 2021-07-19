@@ -10,7 +10,7 @@ Make sure you have Python 3.8 or newer installed and also Node.js 14 or newer. Y
 You can access mineflayer in Python in addition to any other JavaScript package by first installing the javascript pip package:
 
 ```sh
-pip install javascriot
+pip install javascript
 ```
 
 
