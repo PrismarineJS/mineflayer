@@ -40,5 +40,9 @@ jobs:
         java-package: jre
     - name: Install Dependencies
       run: npm install
+    - name: Install Prismarine-Viewer dependencies
+      run: |
+        sudo apt update
+        sudo apt-get install ffmpeg xvfb -y
     - name: Start Tests
       run: npm run mocha_test -- -g ${{ matrix.mcVersion }}
