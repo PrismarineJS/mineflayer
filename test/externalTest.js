@@ -3,6 +3,7 @@
 const assert = require('assert')
 const mineflayer = require('../')
 const commonTest = require('./externalTests/plugins/testCommon')
+const watcher = require('./externalTests/plugins/watcher')
 const mc = require('minecraft-protocol')
 const fs = require('fs')
 const path = require('path')
