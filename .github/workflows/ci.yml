@@ -48,7 +48,9 @@ jobs:
       run: xvfb-run -s "-ac -screen 0 1280x1024x24" npm run mocha_test -- -g ${{ matrix.mcVersion }}
       env:
         USE_PVIEWER_IN_TESTS: 'y'
-    - name: list output
-      run: |
-        rm -rf node_modules
-        ls -R
+    - name: rename video
+      run: mv output.mp4 ${{ matrix.mcVersion }}.mp4
+    - uses: actions/upload-artifact@v2
+      with:
+        name: videos
+        path: ${{ matrix.mcVersion }}.mp4
