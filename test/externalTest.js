@@ -99,10 +99,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
     beforeEach((done) => {
       console.log('reset state')
-      Object.values(bot.players)
-        .map(o => o.username)
-        .filter(o => o !== bot.username)
-        .forEach(username => bot.chat('/tp ' + username + ' 0 7 5 180 30'))
+      bot.chat('/tp watcher_bot 0 7 5 180 30')
       bot.test.resetState(done)
     })
 
