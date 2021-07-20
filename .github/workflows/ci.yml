@@ -46,3 +46,9 @@ jobs:
         sudo apt-get install ffmpeg xvfb -y
     - name: Start Tests
       run: npm run mocha_test -- -g ${{ matrix.mcVersion }}
+      env:
+        USE_PVIEWER_IN_TESTS: 'y'
+    - name: list output
+      run: |
+        rm -rf node_modules
+        ls -R
