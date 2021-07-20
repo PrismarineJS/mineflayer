@@ -47,6 +47,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
     this.timeout(10 * 60 * 1000)
     before((done) => {
       function begin () {
+        if (process.env.USE_PVIEWER_IN_TESTS === 'y') watcher(PORT)
+
         bot = mineflayer.createBot({
           username: 'flatbot',
           viewDistance: 'tiny',
