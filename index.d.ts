@@ -365,10 +365,12 @@ export interface Bot extends TypedEmitter<BotEvents> {
     end: number,
     window: Window,
     slot: any,
+    noWaiting?: boolean,
+    waitBetweenClicks?: number,
     cb?: (err?: Error) => void
   ) => Promise<void>
 
-  putAway: (slot: number, cb?: (err?: Error) => void) => Promise<void>
+  putAway: (slot: number, noWaiting?: boolean, waitBetweenClicks?: number, cb?: (err?: Error) => void) => Promise<void>
 
   closeWindow: (window: Window) => void
 
@@ -381,6 +383,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   moveSlotItem: (
     sourceSlot: number,
     destSlot: number,
+    waitBetweenClicks?: number,
     cb?: (err?: Error) => void
   ) => Promise<void>
 
