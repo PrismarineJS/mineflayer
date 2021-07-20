@@ -260,7 +260,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   updateSign: (block: Block, text: string) => void
 
   equip: (
-    item: Item,
+    item: Item | number,
     destination: EquipmentDestination | null,
     callback?: (error?: Error) => void
   ) => Promise<void>
