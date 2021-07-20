@@ -27,7 +27,7 @@ export interface BotOptions extends ClientOptions {
 }
 
 // There has to be a better way to do this
-export type supportedVersionsForBotOptions = 
+export type supportedVersionsForBotOptions =
 '1.8' | '1.8.1'| '1.8.2' | '1.8.3' | '1.8.4' | '1.8.5' | '1.8.6' | '1.8.7' | '1.8.8' | '1.8.9'
 | '1.9' | '1.9.1' | '1.9.2' | '1.9.3' | '1.9.4'
 | '1.10' | '1.10.1' | '1.10.2'
