@@ -1,6 +1,6 @@
 const mineflayer = require('mineflayer')
 const mineflayerViewer = require('prismarine-viewer').headless
-module.exports = () => {
+module.exports = port => {
   global.THREE = require('three')
   global.Worker = require('worker_threads').Worker
   const { createCanvas, ImageData } = require('node-canvas-webgl/lib')
@@ -18,7 +18,9 @@ module.exports = () => {
   }
 
   const bot = mineflayer.createBot({
-    username: 'watcher_bot'
+    username: 'watcher_bot',
+    host: 'localhost',
+    port
   })
 
   bot.once('spawn', () => {
