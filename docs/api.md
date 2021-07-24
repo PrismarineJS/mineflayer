@@ -1093,6 +1093,9 @@ Fires when your hp or food change.
 Fires when your oxygen level change.
 
 #### "entityAttributes" (entity)
+
+Fires when an attribute of an entity changes.
+
 #### "entitySwingArm" (entity)
 #### "entityHurt" (entity)
 #### "entityDead" (entity)
