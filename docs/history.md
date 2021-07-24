@@ -1,3 +1,9 @@
+## 3.9.0
+* Fix crash on blocks without registered blockId (@Furry)
+* Move when hit by an explsion (@u9g)
+* Add getExplosionDamages() function (@Karang)
+* doc of get explosion (@link-discord)
+
 ## 3.8.0
 * Improved index.d.ts (@DrMoraschi)
 * Added resource pack support (@kaffinpx)
