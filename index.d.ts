@@ -87,6 +87,7 @@ interface BotEvents {
   entitySpawn: (entity: Entity) => void
   itemDrop: (entity: Entity) => void
   playerCollect: (collector: Entity, collected: Entity) => void
+  entityAttributes: (entity: Entity) => void
   entityGone: (entity: Entity) => void
   entityMoved: (entity: Entity) => void
   entityDetach: (entity: Entity, vehicle: Entity) => void
