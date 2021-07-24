@@ -145,6 +145,7 @@
       - ["death"](#death)
       - ["health"](#health)
       - ["breath"](#breath)
+      - ["entityAttributes"](#entityattributes-entity)
       - ["entitySwingArm" (entity)](#entityswingarm-entity)
       - ["entityHurt" (entity)](#entityhurt-entity)
       - ["entityWake" (entity)](#entitywake-entity)
@@ -1091,6 +1092,7 @@ Fires when your hp or food change.
 
 Fires when your oxygen level change.
 
+#### "entityAttributes" (entity)
 #### "entitySwingArm" (entity)
 #### "entityHurt" (entity)
 #### "entityDead" (entity)
