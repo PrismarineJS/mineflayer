@@ -1896,6 +1896,8 @@ Transfer some kind of item from one range to an other. `options` is an object co
  * `metadata` : the metadata of the moved items
  * `sourceStart` and `sourceEnd` : the source range
  * `destStart` and `destEnd` : the dest Range
+ * `count` : the amount of items to transfer. Default: `1`
+ * `nbt` : nbt data of the item to transfer. Default: `nullish` (ignores nbt)
 
 #### bot.openBlock(block)
 
