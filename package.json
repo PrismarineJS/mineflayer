@@ -1,6 +1,6 @@
 {
   "name": "mineflayer",
-  "version": "3.7.0",
+  "version": "3.9.0",
   "description": "create minecraft bots with a stable, high level API",
   "main": "index.js",
   "types": "index.d.ts",
@@ -8,8 +8,8 @@
     "mocha_test": "mocha --reporter spec --exit",
     "test": "npm run mocha_test",
     "pretest": "npm run lint",
-    "lint": "standard && standard-markdown",
-    "fix": "standard --fix && standard-markdown --fix",
+    "lint": "standard && ts-standard *.d.ts && standard-markdown",
+    "fix": "standard --fix && ts-standard --fix *.d.ts && standard-markdown --fix",
     "prepublishOnly": "cp docs/README.md README.md"
   },
   "repository": {
@@ -38,12 +38,14 @@
     "vec3": "^0.1.6"
   },
   "devDependencies": {
-    "@types/node": "^15.0.1",
+    "@types/node": "^16.0.1",
     "doctoc": "^2.0.0",
     "minecraft-wrap": "^1.2.1",
     "mineflayer": "file:.",
-    "mocha": "^8.0.1",
+    "mocha": "^9.0.0",
     "standard": "^16.0.1",
+    "ts-standard": "^10.0.0",
+    "typescript": "^4.3.2",
     "standard-markdown": "^6.0.0"
   }
 }

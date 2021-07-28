@@ -163,6 +163,7 @@
       - ["death"](#death)
       - ["health"](#health)
       - ["breath"](#breath)
+      - ["entityAttributes"](#entityattributes-entity)
       - ["entitySwingArm" (entity)](#entityswingarm-entity)
       - ["entityHurt" (entity)](#entityhurt-entity)
       - ["entityDead" (entity)](#entitydead-entity)
@@ -263,6 +264,8 @@
       - [bot.wake([cb])](#botwakecb)
       - [bot.setControlState(control, state)](#botsetcontrolstatecontrol-state)
       - [bot.getControlState(control)](#botgetcontrolstatecontrol)
+      - [bot.getControlState(control)](#botgetcontrolstatecontrol-state)
+      - [bot.getExplosionDamages(entity, position, radius, [rawDamages])](#botgetexplosiondamages)
       - [bot.clearControlStates()](#botclearcontrolstates)
       - [bot.lookAt(point, [force], [callback])](#botlookatpoint-force-callback)
       - [bot.look(yaw, pitch, [force], [callback])](#botlookyaw-pitch-force-callback)
@@ -847,7 +850,7 @@ gradually up to 1. When the thunderstorm stops, this value gradually decreases b
 
 Each time `bot.thunderState` is changed, the "weatherUpdate" event is emitted.
 
-This is the same as `bot.rainState`, but for thunderstorms. 
+This is the same as `bot.rainState`, but for thunderstorms.
 For thunderstorms, both `bot.rainState` and `bot.thunderState` will change.
 
 #### bot.chatPatterns
@@ -958,8 +961,8 @@ This value is of type BigInt and is accurate even at very large values. (more th
 
 The total numbers of ticks since day 0.
 
-Because the Number limit of Javascript is at 2^51 - 1 bot.time.time becomes inaccurate higher than this limit and the use of bot.time.bigTime is recommended.  
-Realistically though you'll probably never need to use bot.time.bigTime as it will only reach 2^51 - 1 ticks naturally after ~14280821 real years.  
+Because the Number limit of Javascript is at 2^51 - 1 bot.time.time becomes inaccurate higher than this limit and the use of bot.time.bigTime is recommended.
+Realistically though you'll probably never need to use bot.time.bigTime as it will only reach 2^51 - 1 ticks naturally after ~14280821 real years.
 
 #### bot.time.timeOfDay
 
@@ -997,8 +1000,8 @@ This value is of type BigInt and is accurate even at very large values. (more th
 
 Age of the world, in ticks.
 
-Because the Number limit of Javascript is at 2^51 - 1 bot.time.age becomes inaccurate higher than this limit and the use of bot.time.bigAge is recommended.  
-Realistically though you'll probably never need to use bot.time.bigAge as it will only reach 2^51 - 1 ticks naturally after ~14280821 real years.  
+Because the Number limit of Javascript is at 2^51 - 1 bot.time.age becomes inaccurate higher than this limit and the use of bot.time.bigAge is recommended.
+Realistically though you'll probably never need to use bot.time.bigAge as it will only reach 2^51 - 1 ticks naturally after ~14280821 real years.
 
 #### bot.quickBarSlot
 
@@ -1167,6 +1170,10 @@ Fires when your hp or food change.
 #### "breath"
 
 Fires when your oxygen level change.
+
+#### "entityAttributes" (entity)
+
+Fires when an attribute of an entity changes.
 
 #### "entitySwingArm" (entity)
 #### "entityHurt" (entity)
@@ -1533,6 +1540,8 @@ the event will be called `"chat:name"`, with name being the name passed
   * `parse` - instead of returning the actual message that was matched, return the capture groups from the regex
   * `deprecated` - (**unstable**) used by bot.chatAddPattern to keep compatability, likely to be removed
 
+returns a number which can be used with bot.removeChatPattern() to only delete this pattern
+
 #### bot.addChatPatternSet(name, patterns, chatPatternOptions)
 
 make an event that is called every time all patterns havee been matched to messages,
@@ -1543,10 +1552,15 @@ the event will be called `"chat:name"`, with name being the name passed
   * `repeat` - defaults to true, whether to listen for this event after the first match
   * `parse` - instead of returning the actual message that was matched, return the capture groups from the regex
 
+returns a number which can be used with bot.removeChatPattern() to only delete this patternset
+
 #### bot.removeChatPattern(name)
 
-removes a chat pattern
-* `name` the name of the chat pattern
+removes a chat pattern(s)
+* `name` : string or number
+
+if name is a string, all patterns that have that name will be removed
+else if name is a number, only that exact pattern will be removed
 
 #### bot.awaitMessage(...args)
 
@@ -1635,6 +1649,15 @@ Returns true if a control state is toggled.
 
 Sets all controls to off.
 
+#### bot.getExplosionDamages(entity, position, radius, [rawDamages])
+
+Returns how much damage will be done to the entity in a radius around the position of the explosion.
+
+* `entity` - Entity instance
+* `position` - [Vec3](https://github.com/andrewrk/node-vec3) instance
+* `radius` - the explosion radius as a number
+* `rawDamages` - optional, if true it ignores armor in the calculation
+
 #### bot.lookAt(point, [force], [callback])
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
@@ -1667,9 +1690,9 @@ Changes the text on the sign.
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
 
-Equips an item from your inventory.
+Equips an item from your inventory. If the argument `item` is of Instance `Item` equip will equip this specific item from its window slot. If the argument `item` is of type `number` equip will equip the first item found with that id searched by rising slot id (Hotbar is searched last. Armor, crafting, crafting result and off-hand slots are excluded).
 
- * `item` - `Item` instance. See `window.items()`.
+ * `item` - `Item` instance or `number` for item id. See `window.items()`.
  * `destination`
    - `"hand"` - `null` aliases to this
    - `"head"`
@@ -1717,7 +1740,7 @@ dig any other blocks until the block has been broken, or you call
 
  * `block` - the block to start digging into
  * `forceLook` - (optional) if true, look at the block and start mining instantly. If false, the bot will slowly turn to the block to mine. Additionally, this can be assigned to 'ignore' to prevent the bot from moving it's head at all.
- * `digFace` - (optional) Default is 'auto' looks at the center of the block and mines the top face. Can also be a vec3 vector 
+ * `digFace` - (optional) Default is 'auto' looks at the center of the block and mines the top face. Can also be a vec3 vector
  of the face the bot should be looking at when digging the block. For example: ```vec3(0, 1, 0)``` when mining the top. Can also be 'raycast' raycast checks if there is a face visible by the bot and mines that face. Useful for servers with anti cheat.
  * `callback(err)` - (optional) called when the block is broken or you
    are interrupted.
@@ -1727,11 +1750,11 @@ dig any other blocks until the block has been broken, or you call
 #### bot.digTime(block)
 
 Tells you how long it will take to dig the block, in milliseconds.
-  
+
 #### bot.acceptResourcePack()
 
 Accepts resource pack.
-  
+
 #### bot.denyResourcePack()
 
 Denies resource pack.
@@ -1744,6 +1767,16 @@ This function also returns a `Promise`, with `void` as its argument upon complet
  * `faceVector` - one of the six cardinal directions, such as `new Vec3(0, 1, 0)` for the top face,
    indicating which face of the `referenceBlock` to place the block against.
  * `cb` will be called when the server confirms that the block has indeed been placed
+
+The new block will be placed at `referenceBlock.position.plus(faceVector)`.
+
+#### bot.placeEntity(referenceBlock, faceVector)
+
+This function also returns a `Promise`, with `Entity` as its argument upon completion.
+
+ * `referenceBlock` - the block you want to place the entity next to
+ * `faceVector` - one of the six cardinal directions, such as `new Vec3(0, 1, 0)` for the top face,
+   indicating which face of the `referenceBlock` to place the block against.
 
 The new block will be placed at `referenceBlock.position.plus(faceVector)`.
 
@@ -1809,11 +1842,12 @@ use shears.
 
 Attack a player or a mob.
 
-#### bot.swingArm([hand])
+#### bot.swingArm([hand], showHand)
 
 Play an arm swing animation.
 
  * `hand` can take `left` or `right` which is arm that is animated. Default: `right`
+ * `showHand` is a boolean whether to add the hand to the packet, Default: `true`
 
 #### bot.mount(entity)
 
@@ -1961,6 +1995,8 @@ Transfer some kind of item from one range to an other. `options` is an object co
  * `metadata` : the metadata of the moved items
  * `sourceStart` and `sourceEnd` : the source range
  * `destStart` and `destEnd` : the dest Range
+ * `count` : the amount of items to transfer. Default: `1`
+ * `nbt` : nbt data of the item to transfer. Default: `nullish` (ignores nbt)
 
 #### bot.openBlock(block)
 

@@ -145,6 +145,7 @@ connect: (client) => {
     })
   }
   ```
+  `socks` is declared with `const socks = require('socks').SocksClient` and uses [this](https://www.npmjs.com/package/socks) package.
   
 # Common Errors
 

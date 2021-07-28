@@ -1,3 +1,36 @@
+## 3.9.0
+* Fix crash on blocks without registered blockId (@Furry)
+* Move when hit by an explsion (@u9g)
+* Add getExplosionDamages() function (@Karang)
+* doc of get explosion (@link-discord)
+
+## 3.8.0
+* Improved index.d.ts (@DrMoraschi)
+* Added resource pack support (@kaffinpx)
+* Fixed bot.dig error (@MoneyMakingTornado)
+* Added timeout to #consume (@SeanmcCord)
+* Added example for resource pack (@u9g)
+* Improved workflow (@u9g)
+* Linted JS in md files (@u9g)
+* Added bot oxygen Level management (@kaffinpx)
+* Improved links (@satyamedh)
+* Improved links (@AwesomestCode)
+* Improved typing (@u9g)
+* Refactored chat.js (@u9g)
+* Expanded placeBlockWith Options to offhand (@aestetic)
+* Added anvil test (@u9g)
+* Added placeEntity() (@u9g)
+* Improved oxygen typings (@DrMoraschi)
+* Improved socket snippet (@iceTank)
+* Improved placeEntity (@u9g)
+* Renamed bot.quit to end (@u9g)
+* Updated Spanish readme (@DrMoraschi)
+* Added French Translations (@creeper09)
+* Corrected java version in gitpod (@rom)
+* Improved readme lint (@rom)
+* Added container and dropper to allowWindowTypes (@IceTank)
+
+
 ## 3.7.0
 * Add bot.removeChatPattern() (@BlueBurgersTDD)
 * Add events to typings (@DrMoraschi)
