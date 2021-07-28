@@ -263,5 +263,10 @@
     "name": "teamUsesChatComponents",
     "description": "teams use chatcomponents for formatting",
     "versions": ["1.13", "1.16.5"]
+  },
+  {
+    "name": "teamUsesScoreboard",
+    "description": "teams use scoreboard_team packet",
+    "versions": ["1.8", "1.8.9"]
   }
 ]
