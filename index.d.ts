@@ -139,11 +139,11 @@ interface BotEvents {
   scoreUpdated: (scoreboard: ScoreBoard, item: number) => void
   scoreRemoved: (scoreboard: ScoreBoard, item: number) => void
   scoreboardPosition: (position: DisplaySlot, scoreboard: ScoreBoard) => void
-  teamCreated: (team: Team) => void,
-  teamRemoved: (team: Team) => void,
-  teamUpdated: (team: Team) => void,
-  teamMemberAdded: (team: Team) => void,
-  teamMemberRemoved: (team: Team) => void,
+  teamCreated: (team: Team) => void
+  teamRemoved: (team: Team) => void
+  teamUpdated: (team: Team) => void
+  teamMemberAdded: (team: Team) => void
+  teamMemberRemoved: (team: Team) => void
   bossBarCreated: (bossBar: BossBar) => void
   bossBarDeleted: (bossBar: BossBar) => void
   bossBarUpdated: (bossBar: BossBar) => void
@@ -178,7 +178,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   isSleeping: boolean
   scoreboards: { [name: string]: ScoreBoard }
   scoreboard: { [slot in DisplaySlot]: ScoreBoard }
-  teamMap: { [name: string]: Team };
+  teamMap: { [name: string]: Team }
   controlState: ControlStateStatus
   creative: creativeMethods
   world: any
@@ -785,37 +785,37 @@ export class ScoreBoard {
 
   setTitle (title: string): void;
 
-  add(name: string, value: number, displayName: ChatMessage): ScoreBoardItem;
+  add (name: string, value: number, displayName: ChatMessage): ScoreBoardItem;
 
   remove (name: string): ScoreBoardItem;
 }
 
-export type ScoreBoardItem = {
-  name: string;
-  displayName: ChatMessage;
-  value: number;
-};
+export interface ScoreBoardItem {
+  name: string
+  displayName: ChatMessage
+  value: number
+}
 
 export class Team {
-  name: ChatMessage;
-  friendlyFire: number;
-  nameTagVisibility: string;
-  collisionRule: string;
-  color: string;
-  prefix: ChatMessage;
-  suffix: ChatMessage;
+  name: ChatMessage
+  friendlyFire: number
+  nameTagVisibility: string
+  collisionRule: string
+  color: string
+  prefix: ChatMessage
+  suffix: ChatMessage
 
-  constructor(packet: object);
+  constructor (packet: object);
 
-  parseMessage(value: string): ChatMessage;
+  parseMessage (value: string): ChatMessage;
 
-  add(name: string, value: number): void;
+  add (name: string, value: number): void;
 
-  remove(name: string): void;
+  remove (name: string): void;
 
-  update(packet: object): void;
+  update (packet: object): void;
 
-  displayName(member: string);
+  displayName (member: string);
 }
 
 export type DisplaySlot =
