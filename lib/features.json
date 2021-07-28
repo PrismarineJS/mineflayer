@@ -269,6 +269,7 @@
     "description": "teams use scoreboard_team packet",
     "versions": ["1.8", "1.8.9"]
   },
+  {
     "name": "enderCrystalNameEndsInErNoCaps",
     "description": "this is when the end_crystal's entity name is ender_crystal",
     "versions": ["1.11", "1.12.2"]
