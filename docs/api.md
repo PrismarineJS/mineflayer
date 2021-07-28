@@ -672,13 +672,19 @@ One of `always`, `pushOtherTeams`, `pushOwnTeam`
 
 #### Team.color
 
+Color (or formatting) name of team, e.g. `dark_green`, `red`, `underlined`
+
 #### Team.prefix
+
+A chat component containing team prefix
 
 #### Team.suffix
 
+A chat component containing team suffix
+
 #### Team.members
 
-Array of team members. Usernames for player and UUIDs for other entities.
+Array of team members. Usernames for players and UUIDs for other entities.
 
 ### mineflayer.BossBar
 

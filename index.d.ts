@@ -804,23 +804,25 @@ export type ScoreBoardItem = {
 };
 
 export class Team {
-  name: string;
+  name: ChatMessage;
   friendlyFire: number;
   nameTagVisibility: string;
   collisionRule: string;
-  // formatting
+  color: string;
   prefix: ChatMessage;
   suffix: ChatMessage;
 
-  constructor(packet: object, ChatMessage: ChatMessage);
+  constructor(packet: object);
 
-  parseMessage(value: string, ChatMessage: ChatMessage): ChatMessage;
+  parseMessage(value: string): ChatMessage;
 
   add(name: string, value: number): void;
 
   remove(name: string): void;
 
   update(packet: object): void;
+
+  displayName(member: string);
 }
 
 export type DisplaySlot =
