@@ -813,7 +813,7 @@ export class Team {
 
   remove (name: string): void;
 
-  update (packet: object): void;
+  update (name: string, friendlyFire: boolean, nameTagVisibility: string, collisionRule: string, formatting: number, prefix: string, suffix: string): void;
 
   displayName (member: string);
 }
