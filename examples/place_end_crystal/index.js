@@ -6,6 +6,7 @@
 const mineflayer = require('mineflayer')
 const pathfinder = require('mineflayer-pathfinder')
 const { Vec3 } = require('vec3')
+const AABB = require('prismarine-physics/lib/aabb')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node ansi.js <host> <port> [<name>] [<password>]')
@@ -52,9 +53,18 @@ bot.on('chat', async (ign, msg) => {
     matching: ['bedrock', 'obsidian'].map(blockName => mcData.blocksByName[blockName].id),
     useExtraInfo: block => {
       const hasAirAbove = bot.blockAt(block.position.offset(0, 1, 0)).name === 'air'
-      const botNotStandingOnBlock = block.position.xzDistanceTo(bot.entity.position) > 1
-      // TODO: Make sure no entity is intersecting the area that we are about to place an end crystal
-      return hasAirAbove && botNotStandingOnBlock
+      const botNotStandingOnBlock = block.position.xzDistanceTo(bot.entity.position) > 2
+      // do no intersecting entity check
+      const { x: aboveX, y: aboveY, z: aboveZ } = block.position.offset(0, 1, 0)
+      const blockBoundingBox = new AABB(aboveX, aboveY, aboveZ, aboveX + 1, aboveY + 2, aboveZ + 1)
+      const entityAABBs = Object.values(bot.entities).map(entity => {
+        // taken from taken from https://github.com/PrismarineJS/prismarine-physics/blob/d145e54a4bb8604300258badd7563f59f2101922/index.js#L92
+        const w = entity.height / 2
+        const { x, y, z } = entity.position
+        return new AABB(-w, 0, -w, w, entity.height, w).offset(x, y, z)
+      })
+      const hasIntersectingEntities = entityAABBs.filter(aabb => aabb.intersects(blockBoundingBox)).length === 0
+      return hasAirAbove && botNotStandingOnBlock && !hasIntersectingEntities
     }
   })
   if (!block) return bot.chat("Couldn't find bedrock or obsidian block that has air above it near myself.")
