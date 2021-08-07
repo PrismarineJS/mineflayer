@@ -1,0 +1,9 @@
+{
+  "name": "mineflayer-example",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "mineflayer-pathfinder": "^1.7.0"
+  },
+  "description": "A mineflayer example"
+}
