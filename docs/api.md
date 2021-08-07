@@ -45,7 +45,10 @@
       - [enchantmentTable.enchant(choice, [callback])](#enchantmenttableenchantchoice-callback)
       - [enchantmentTable.takeTargetItem([callback])](#enchantmenttabletaketargetitemcallback)
       - [enchantmentTable.putTargetItem(item, [callback])](#enchantmenttableputtargetitemitem-callback)
-    - [mineflayer.Villager](#mineflayervillager)
+      - [enchantmentTable.putLapis(item, [callback])](#enchantmenttableputlapisitem-callback)
+    - [mineflayer.anvil](#mineflayeranvil)
+      - [anvil.combine(itemOne, itemTwo[, name, callback])](#anvilcombineitemone-itemtwo-name-callback)
+      - [anvil.combine(item[, name, callback])](#anvilcombineitem-name-callback)
       - [villager "ready"](#villager-ready)
       - [villager.trades](#villagertrades)
       - [villager.trade(tradeIndex, [times], [cb])](#villagertradetradeindex-times-cb)
@@ -54,6 +57,15 @@
       - [ScoreBoard.title](#scoreboardtitle)
       - [ScoreBoard.itemsMap](#scoreboarditemsmap)
       - [ScoreBoard.items](#scoreboarditems)
+    - [mineflayer.Team](#mineflayerteam)
+      - [Team.name](#teamname)
+      - [Team.friendlyFire](#teamfriendlyfire)
+      - [Team.nameTagVisibility](#teamnametagvisibility)
+      - [Team.collisionRule](#teamcollisionrule)
+      - [Team.color](#teamcolor)
+      - [Team.prefix](#teamprefix)
+      - [Team.suffix](#teamsuffix)
+      - [Team.members](#teammembers)
     - [mineflayer.BossBar](#mineflayerbossbar)
       - [BossBar.title](#bossbartitle)
       - [BossBar.health](#bossbarhealth)
@@ -81,7 +93,7 @@
       - [bot.game.hardcore](#botgamehardcore)
       - [bot.game.maxPlayers](#botgamemaxplayers)
       - [bot.game.serverBrand](#botgameserverbrand)
-    - [bot.physicEnabled](#botphysicenabled)
+    - [bot.physicsEnabled](#botphysicsenabled)
     - [bot.player](#botplayer)
       - [bot.players](#botplayers)
       - [bot.isRaining](#botisraining)
@@ -108,6 +120,8 @@
       - [bot.foodSaturation](#botfoodsaturation)
       - [bot.oxygenLevel](#botoxygenlevel)
       - [bot.physics](#botphysics)
+      - [bot.simpleClick.leftMouse (slot)](#botsimpleclickleftmouse-slot)
+      - [bot.simpleClick.rightMouse (slot)](#botsimpleclickrightmouse-slot)
       - [bot.time.doDaylightCycle](#bottimedodaylightcycle)
       - [bot.time.bigTime](#bottimebigtime)
       - [bot.time.time](#bottimetime)
@@ -123,12 +137,16 @@
       - [bot.isSleeping](#botissleeping)
       - [bot.scoreboards](#botscoreboards)
       - [bot.scoreboard](#botscoreboard)
+      - [bot.teams](#botteams)
+      - [bot.teamMap](#botteammap)
       - [bot.controlState](#botcontrolstate)
     - [Events](#events)
       - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
       - ["whisper" (username, message, translate, jsonMsg, matches)](#whisper-username-message-translate-jsonmsg-matches)
       - ["actionBar" (jsonMsg)](#actionbar-jsonmsg)
       - ["message" (jsonMsg, position)](#message-jsonmsg-position)
+      - ["messagestr" (message, messagePosition, jsonMsg)](#messagestr-message-messageposition-jsonmsg)
+      - ["inject_allowed"](#inject_allowed)
       - ["login"](#login)
       - ["spawn"](#spawn)
       - ["respawn"](#respawn)
@@ -136,7 +154,7 @@
       - ["resourcePack" (url, hash)](#resourcepack-url-hash)
       - ["title"](#title)
       - ["rain"](#rain)
-      - ["weatherUpdate"](#weatherUpdate)
+      - ["weatherUpdate"](#weatherupdate)
       - ["time"](#time)
       - ["kicked" (reason, loggedIn)](#kicked-reason-loggedin)
       - ["end"](#end)
@@ -148,8 +166,15 @@
       - ["entityAttributes"](#entityattributes-entity)
       - ["entitySwingArm" (entity)](#entityswingarm-entity)
       - ["entityHurt" (entity)](#entityhurt-entity)
+      - ["entityDead" (entity)](#entitydead-entity)
+      - ["entityTaming" (entity)](#entitytaming-entity)
+      - ["entityTamed" (entity)](#entitytamed-entity)
+      - ["entityShakingOffWater" (entity)](#entityshakingoffwater-entity)
+      - ["entityEatingGrass" (entity)](#entityeatinggrass-entity)
       - ["entityWake" (entity)](#entitywake-entity)
       - ["entityEat" (entity)](#entityeat-entity)
+      - ["entityCriticalEffect" (entity)](#entitycriticaleffect-entity)
+      - ["entityMagicCriticalEffect" (entity)](#entitymagiccriticaleffect-entity)
       - ["entityCrouch" (entity)](#entitycrouch-entity)
       - ["entityUncrouch" (entity)](#entityuncrouch-entity)
       - ["entityEquip" (entity)](#entityequip-entity)
@@ -165,6 +190,7 @@
       - ["entityEffect" (entity, effect)](#entityeffect-entity-effect)
       - ["entityEffectEnd" (entity, effect)](#entityeffectend-entity-effect)
       - ["playerJoined" (player)](#playerjoined-player)
+      - ["playerUpdated" (player)](#playerupdated-player)
       - ["playerLeft" (player)](#playerleft-player)
       - ["blockUpdate" (oldBlock, newBlock)](#blockupdate-oldblock-newblock)
       - ["blockUpdate:(x, y, z)" (oldBlock, newBlock)](#blockupdatex-y-z-oldblock-newblock)
@@ -195,10 +221,17 @@
       - ["scoreUpdated" (scoreboard, item)](#scoreupdated-scoreboard-item)
       - ["scoreRemoved" (scoreboard, item)](#scoreremoved-scoreboard-item)
       - ["scoreboardPosition" (position, scoreboard)](#scoreboardposition-position-scoreboard)
+      - ["teamCreated" (team)](#teamcreated-team)
+      - ["teamRemoved" (team)](#teamremoved-team)
+      - ["teamUpdated" (team)](#teamupdated-team)
+      - ["teamMemberAdded" (team)](#teammemberadded-team)
+      - ["teamMemberRemoved" (team)](#teammemberremoved-team)
       - ["bossBarCreated" (bossBar)](#bossbarcreated-bossbar)
       - ["bossBarDeleted" (bossBar)](#bossbardeleted-bossbar)
       - ["bossBarUpdated" (bossBar)](#bossbarupdated-bossbar)
       - ["heldItemChanged" (heldItem)](#helditemchanged-helditem)
+      - ["physicsTick" ()](#physicstick-)
+      - ["chat:name" (matches)](#chatname-matches)
     - [Functions](#functions)
       - [bot.blockAt(point, extraInfos=true)](#botblockatpoint-extrainfostrue)
       - [bot.waitForChunksToLoad(cb)](#botwaitforchunkstoloadcb)
@@ -218,6 +251,10 @@
       - [bot.chat(message)](#botchatmessage)
       - [bot.whisper(username, message)](#botwhisperusername-message)
       - [bot.chatAddPattern(pattern, chatType, description)](#botchataddpatternpattern-chattype-description)
+      - [bot.addChatPattern(name, pattern, chatPatternOptions)](#botaddchatpatternname-pattern-chatpatternoptions)
+      - [bot.addChatPatternSet(name, patterns, chatPatternOptions)](#botaddchatpatternsetname-patterns-chatpatternoptions)
+      - [bot.removeChatPattern(name)](#botremovechatpatternname)
+      - [bot.awaitMessage(...args)](#botawaitmessageargs)
       - [bot.setSettings(options)](#botsetsettingsoptions)
       - [bot.loadPlugin(plugin)](#botloadpluginplugin)
       - [bot.loadPlugins(plugins)](#botloadpluginsplugins)
@@ -226,6 +263,7 @@
       - [bot.isABed(bedBlock)](#botisabedbedblock)
       - [bot.wake([cb])](#botwakecb)
       - [bot.setControlState(control, state)](#botsetcontrolstatecontrol-state)
+      - [bot.getControlState(control)](#botgetcontrolstatecontrol)
       - [bot.getControlState(control)](#botgetcontrolstatecontrol-state)
       - [bot.getExplosionDamages(entity, position, radius, [rawDamages])](#botgetexplosiondamages)
       - [bot.clearControlStates()](#botclearcontrolstates)
@@ -263,6 +301,7 @@
       - [bot.openFurnace(furnaceBlock)](#botopenfurnacefurnaceblock)
       - [bot.openDispenser(dispenserBlock)](#botopendispenserdispenserblock)
       - [bot.openEnchantmentTable(enchantmentTableBlock)](#botopenenchantmenttableenchantmenttableblock)
+      - [bot.openAnvil(anvilBlock)](#botopenanvilanvilblock)
       - [bot.openVillager(villagerEntity)](#botopenvillagervillagerentity)
       - [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottradevillagerinstance-tradeindex-times-cb)
       - [bot.setCommandBlock(pos, command, [options])](#botsetcommandblockpos-command-options)
@@ -270,8 +309,8 @@
       - [bot.waitForTicks(ticks)](#botwaitforticksticks)
     - [Lower level inventory methods](#lower-level-inventory-methods)
       - [bot.clickWindow(slot, mouseButton, mode, cb)](#botclickwindowslot-mousebutton-mode-cb)
-      - [bot.putSelectedItemRange(start, end, window, slot, cb)](#botputselecteditemrangestart-end-window-slot-cb)
-      - [bot.putAway(slot, cb)](#botputawayslot-cb)
+      - [bot.putSelectedItemRange(start, end, window, slot, noWaiting)](#botputselecteditemrangestart-end-window-slot-nowaiting)
+      - [bot.putAway(slot, noWaiting)](#botputawayslot-nowaiting)
       - [bot.closeWindow(window)](#botclosewindowwindow)
       - [bot.transfer(options, cb)](#bottransferoptions-cb)
       - [bot.openBlock(block)](#botopenblockblock)
@@ -618,6 +657,38 @@ An array with all sorted items in the scoreboard in it
 ]
 ```
 
+### mineflayer.Team
+
+#### Team.name
+
+Name of the team
+
+#### Team.friendlyFire
+
+#### Team.nameTagVisibility
+
+One of `always`, `hideForOtherTeams`, `hideForOwnTeam`
+
+#### Team.collisionRule
+
+One of `always`, `pushOtherTeams`, `pushOwnTeam`
+
+#### Team.color
+
+Color (or formatting) name of team, e.g. `dark_green`, `red`, `underlined`
+
+#### Team.prefix
+
+A chat component containing team prefix
+
+#### Team.suffix
+
+A chat component containing team suffix
+
+#### Team.members
+
+Array of team members. Usernames for players and UUIDs for other entities.
+
 ### mineflayer.BossBar
 
 #### BossBar.title
@@ -961,6 +1032,14 @@ All scoreboards known to the bot in an object scoreboard displaySlot -> scoreboa
  * `list` - scoreboard placed in list
  * `0-18` - slots defined in [protocol](https://wiki.vg/Protocol#Display_Scoreboard)
 
+#### bot.teams
+
+All teams known to the bot
+
+#### bot.teamMap
+
+Mapping of member to team. Uses usernames for players and UUIDs for entities.
+
 #### bot.controlState
 
 An object whose keys are the main control states: ['forward', 'back', 'left', 'right', 'jump', 'sprint', 'sneak'].
@@ -1291,6 +1370,26 @@ Fires when the score of a item in a scoreboard is removed.
 #### "scoreboardPosition" (position, scoreboard)
 
 Fires when the position of a scoreboard is updated.
+
+#### "teamCreated" (team)
+
+Fires when a team is added.
+
+#### "teamRemoved" (team)
+
+Fires when a team is removed.
+
+#### "teamUpdated" (team)
+
+Fires when a team is updated.
+
+#### "teamMemberAdded" (team)
+
+Fires when a team member or multiple members are added to a team.
+
+#### "teamMemberRemoved" (team)
+
+Fires when a team member or multiple members are removed from a team.
 
 #### "bossBarCreated" (bossBar)
 

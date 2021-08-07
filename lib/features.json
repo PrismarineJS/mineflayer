@@ -13,7 +13,7 @@
     "name": "blockMetadata",
     "description": "block metadata is encoded in a separate metadata",
     "versions": ["1.8", "1.12.2"]
-  }, 
+  },
   {
     "name": "blockStateId",
     "description": "block metadata is encoded as state id",
@@ -258,6 +258,16 @@
     "name": "lessCharsInChat",
     "description": "max chars in chat",
     "versions": ["1.8", "1.10.2"]
+  },
+  {
+    "name": "teamUsesChatComponents",
+    "description": "teams use chatcomponents for formatting",
+    "versions": ["1.13", "1.16.5"]
+  },
+  {
+    "name": "teamUsesScoreboard",
+    "description": "teams use scoreboard_team packet",
+    "versions": ["1.8", "1.8.9"]
   },
   {
     "name": "enderCrystalNameEndsInErNoCaps",
