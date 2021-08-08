@@ -1,0 +1,12 @@
+{
+  "name": "mineflayer-example",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "prismarine-viewer": "^1.19.2",
+    "node-canvas-webgl": "^0.2.6",
+    "three": "^0.126.1",
+    "mineflayer": "^3.6.0"
+  },
+  "description": "A mineflayer example"
+}

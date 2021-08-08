@@ -1,4 +1,4 @@
-const Vec3 = require('vec3')
+const { Vec3 } = require('vec3')
 const mineflayer = require('mineflayer')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
@@ -24,13 +24,11 @@ bot.on('inject_allowed', () => {
 function blockToSow () {
   return bot.findBlock({
     point: bot.entity.position,
-    matching: (block) => {
-      if (block && block.type === mcData.blocksByName.farmland.id) {
-        const blockAbove = bot.blockAt(block.position.offset(0, 1, 0))
-        return !blockAbove || blockAbove.type === 0
-      }
-
-      return false
+    matching: mcData.blocksByName.farmland.id,
+    maxDistance: 6,
+    useExtraInfo: (block) => {
+      const blockAbove = bot.blockAt(block.position.offset(0, 1, 0))
+      return !blockAbove || blockAbove.type === 0
     }
   })
 }
@@ -38,34 +36,37 @@ function blockToSow () {
 function blockToHarvest () {
   return bot.findBlock({
     point: bot.entity.position,
+    maxDistance: 6,
     matching: (block) => {
       return block && block.type === mcData.blocksByName.wheat.id && block.metadata === 7
     }
   })
 }
 
-function loop () {
+async function loop () {
   try {
-    const toHarvest = blockToHarvest()
-    if (toHarvest) {
-      return bot.dig(toHarvest, () => {
-        return setImmediate(loop)
-      })
+    while (1) {
+      const toHarvest = blockToHarvest()
+      if (toHarvest) {
+        await bot.dig(toHarvest)
+      } else {
+        break
+      }
     }
-
-    const toSow = blockToSow()
-    if (toSow) {
-      return bot.equip(mcData.itemsByName.wheat_seeds.id, 'hand', () => {
-        bot.placeBlock(toSow, new Vec3(0, 1, 0), () => {
-          setImmediate(loop)
-        })
-      })
+    while (1) {
+      const toSow = blockToSow()
+      if (toSow) {
+        await bot.equip(mcData.itemsByName.wheat_seeds.id, 'hand')
+        await bot.placeBlock(toSow, new Vec3(0, 1, 0))
+      } else {
+        break
+      }
     }
   } catch (e) {
     console.log(e)
   }
 
-  // None blocks to harvest or sow. Postpone next loop a bit
+  // No block to harvest or sow. Postpone next loop a bit
   setTimeout(loop, 1000)
 }
 

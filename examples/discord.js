@@ -1,9 +1,9 @@
 /*
- * This example is an a very simple way how to connect a discord bot with a mineflayer bot.
+ * This example is a very simple way how to connect a discord bot with a mineflayer bot.
  * For this example you will need discord.js installed. You can install with: npm install discord.js
  * Note that discord.js v12 or newer is required.
  * You need to do this before running this example:
- * - You need a discord token
+ * - You need to get a discord token
  * - You need to get the id of the channel you want to use
  */
 

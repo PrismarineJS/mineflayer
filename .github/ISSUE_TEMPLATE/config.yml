@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Github Discussions
+    url: https://github.com/PrismarineJS/mineflayer/discussions
+    about: Please make a post in our Github Discussions for questions and support requests.

@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+      "module": "commonjs",
+      "strictNullChecks": true
+    },
+    "files": [
+      "index.d.ts"
+    ]
+}

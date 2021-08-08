@@ -17,6 +17,7 @@ function inject (bot) {
   bot.test.sayEverywhere = sayEverywhere
   bot.test.clearInventory = callbackify(clearInventory)
   bot.test.becomeSurvival = callbackify(becomeSurvival)
+  bot.test.becomeCreative = callbackify(becomeCreative)
   bot.test.fly = callbackify(fly)
   bot.test.resetState = callbackify(resetState)
   bot.test.setInventorySlot = callbackify(setInventorySlot)
@@ -26,6 +27,19 @@ function inject (bot) {
   bot.test.wait = function (ms) {
     return new Promise((resolve) => { setTimeout(resolve, ms) })
   }
+
+  bot.test.awaitItemRecieved = callbackify(async (command) => {
+    const p = once(bot.inventory, 'updateSlot')
+    bot.chat(command)
+    await p // await getting the item
+  })
+  // setting offset to true makes x, y, & z relative using ~
+  bot.test.setBlock = callbackify(async ({ x = 0, y = 0, z = 0, relative, blockName }) => {
+    const p = bot.awaitMessage('Block placed', /Changed the block/)
+    const prefix = relative ? '~' : ''
+    bot.chat(`/setblock ${prefix}${x} ${prefix}${y} ${prefix}${z} ${blockName}`)
+    await p
+  })
 
   let grassName
   if (bot.supportFeature('itemsAreNotBlocks')) {
@@ -49,7 +63,7 @@ function inject (bot) {
   async function resetBlocksToSuperflat () {
     const groundY = 4
     for (let y = groundY + 4; y >= groundY - 1; y--) {
-      bot.test.sayEverywhere(`/fill ~-5 ${y} ~-5 ~5 ${y} ~5 ` + layerNames[y])
+      bot.chat(`/fill ~-5 ${y} ~-5 ~5 ${y} ~5 ` + layerNames[y])
     }
     await bot.test.wait(100)
   }

@@ -1,3 +1,93 @@
+## 3.9.0
+* Fix crash on blocks without registered blockId (@Furry)
+* Move when hit by an explsion (@u9g)
+* Add getExplosionDamages() function (@Karang)
+* doc of get explosion (@link-discord)
+
+## 3.8.0
+* Improved index.d.ts (@DrMoraschi)
+* Added resource pack support (@kaffinpx)
+* Fixed bot.dig error (@MoneyMakingTornado)
+* Added timeout to #consume (@SeanmcCord)
+* Added example for resource pack (@u9g)
+* Improved workflow (@u9g)
+* Linted JS in md files (@u9g)
+* Added bot oxygen Level management (@kaffinpx)
+* Improved links (@satyamedh)
+* Improved links (@AwesomestCode)
+* Improved typing (@u9g)
+* Refactored chat.js (@u9g)
+* Expanded placeBlockWith Options to offhand (@aestetic)
+* Added anvil test (@u9g)
+* Added placeEntity() (@u9g)
+* Improved oxygen typings (@DrMoraschi)
+* Improved socket snippet (@iceTank)
+* Improved placeEntity (@u9g)
+* Renamed bot.quit to end (@u9g)
+* Updated Spanish readme (@DrMoraschi)
+* Added French Translations (@creeper09)
+* Corrected java version in gitpod (@rom)
+* Improved readme lint (@rom)
+* Added container and dropper to allowWindowTypes (@IceTank)
+
+
+## 3.7.0
+* Add bot.removeChatPattern() (@BlueBurgersTDD)
+* Add events to typings (@DrMoraschi)
+* Add TR translation (@KaffinPX)
+* Create plugin example (@Zn10plays)
+* Revise readme (@IceTank)
+* Revise chat_parsing example comments (@U5B)
+* Revise raycast example (@IceTank)
+* allow passing nmpclient as an option in createbot (@u9g)
+* Add bot.awaitMessage() (@u9g)
+* Add modular example (@u9g)
+* Fix bug with chat patterns (@u9g)
+* Fix bug with game event (@u9g)
+
+## 3.6.0
+* add bot.addChatPattern() & bot.addChatPatternSet() & deprecate bot.chatAddPattern() (@U9G)
+
+## 3.5.0
+* Add common errors to FAQ (@U9G)
+* Move mosts of index.js to lib/loader.js (@U9G)
+* Improve packet_info handling (@Karang)
+* Add getControlState function (@Camezza)
+
+## 3.4.0
+* fix once leak in placeBlock (@Karang)
+* allow sleeping during rain/thunderstorms (@qrvd)
+* Change transaction apology packet to match vanilla client (@FeldrinH)
+
+## 3.3.3
+* fix world switch leak
+
+## 3.3.2
+* fix entity names
+
+## 3.3.1
+* fix stop digging (@Karang)
+
+## 3.3.0
+* trading fix (@validgem)
+* fix enchantments (@goncharovchik)
+* fix newListener and removeListener stacking on world change (@U5B)
+* add a 'messagestr' event (@U9G)
+* Add an option forceLook for place block similar to the digging one (@CyberPatrick)
+* Can see block add intersect match (@sefirosweb)
+* Add ability to use an anvil fully (@U9G)
+
+## 3.2.0
+* Fix position in getBlock()
+
+## 3.1.0
+* Fix typings of findBlock and findBlocks (@csorfab)
+* place block improvements (@Karang)
+* add face option to dig (@IceTank)
+* trading fixes (@validgem)
+* world events exposed by pworld (@u9g)
+* fix wait for ticks and expose physicsEnabled (@Karang)
+
 ## 3.0.0
 * added null or undefined check in inventory (@u9g)
 * Removed broken use of "this" in physics.js (@TheDudeFromCI)

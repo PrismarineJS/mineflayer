@@ -13,7 +13,7 @@ const START_THE_SERVER = true
 const WAIT_TIME_BEFORE_STARTING = 5000
 const TEST_TIMEOUT_MS = 60000
 
-const excludedTests = ['digEverything', 'book']
+const excludedTests = ['digEverything', 'book', 'anvil', 'placeEntity']
 
 const propOverrides = {
   'level-type': 'FLAT',
@@ -31,12 +31,7 @@ const download = require('minecraft-wrap').download
 
 const MC_SERVER_PATH = path.join(__dirname, 'server')
 
-const { firstVersion, lastVersion } = require('./common/parallel')
-mineflayer.testedVersions.forEach((supportedVersion, i) => {
-  if (!(i >= firstVersion && i <= lastVersion)) {
-    return
-  }
-
+for (const supportedVersion of mineflayer.testedVersions) {
   const PORT = Math.round(30000 + Math.random() * 20000)
   const mcData = require('minecraft-data')(supportedVersion)
   const version = mcData.version
@@ -145,4 +140,4 @@ mineflayer.testedVersions.forEach((supportedVersion, i) => {
         }
       })
   })
-})
+}

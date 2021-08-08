@@ -8,13 +8,14 @@
 [![Issue Hunt](https://github.com/BoostIO/issuehunt-materials/blob/master/v1/issuehunt-shield-v1.svg)](https://issuehunt.io/r/PrismarineJS/mineflayer)
 
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb)
 
-| 🇺🇸 [English](README.md) | 🇷🇺 [Russian](README_RU.md) | 🇪🇸 [Spanish](README_ES.md) |
-|-------------------------|----------------------------|----------------------------|
+| 🇺🇸 [English](README.md) | 🇷🇺 [Russian](ru/README_RU.md) | 🇪🇸 [Spanish](es/README_ES.md) | 🇫🇷 [French](fr/README_FR.md) | 🇹🇷 [Turkish](tr/README_TR.md) |
+|-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
 
-Create Minecraft bots with a powerful, stable, and high level JavaScript [API](api.md).
+Create Minecraft bots with a powerful, stable, and high level JavaScript [API](api.md), also usable from Python.
 
-First time using node.js ? You may want to start with the [tutorial](tutorial.md)
+First time using node.js ? You may want to start with the [tutorial](tutorial.md). Know Python ? Checkout some [Python examples](https://github.com/PrismarineJS/mineflayer/tree/master/examples/python) and try out [Mineflayer on Google Colab](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb).
 
 ## Features
 
@@ -70,30 +71,30 @@ If you want to learn more, more video tutorials are [there,](https://www.youtube
 
 **Getting Started**
 
-Without version specified, the version of the server will be guessed automatically, you can set a specific one using the version option.
-For example `version:"1.8"`.
+Without version specified, the version of the server will be guessed automatically.
+Without auth specified, the mojang auth style will be guessed.
 
 ### Echo Example
 ```js
 const mineflayer = require('mineflayer')
 
 const bot = mineflayer.createBot({
-  host: 'localhost', // optional
-  port: 25565,       // optional
-  username: 'email@example.com', // email and password are required only for
-  password: '12345678',          // online-mode=true servers
-  version: false,                 // false corresponds to auto version detection (that's the default), put for example "1.8.8" if you need a specific version
-  auth: 'mojang'      // optional; by default uses mojang, if using a microsoft account, set to 'microsoft'
+  host: 'localhost', // minecraft server ip
+  username: 'email@example.com', // minecraft username
+  password: '12345678' // minecraft password, comment out if you want to log into online-mode=false servers
+  // port: 25565,                // only set if you need a port that isn't 25565
+  // version: false,             // only set if you need a specific version or snapshot (ie: "1.8.9" or "1.16.5"), otherwise it's set automatically
+  // auth: 'mojang'              // only set if you need microsoft auth, then set this to 'microsoft'
 })
 
-bot.on('chat', function (username, message) {
+bot.on('chat', (username, message) => {
   if (username === bot.username) return
   bot.chat(message)
 })
 
 // Log errors and kick reasons:
-bot.on('kicked', (reason, loggedIn) => console.log(reason, loggedIn))
-bot.on('error', err => console.log(err))
+bot.on('kicked', console.log)
+bot.on('error', console.log)
 ```
 
 ### See what your bot is doing
@@ -101,9 +102,9 @@ bot.on('error', err => console.log(err))
 Thanks to [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer) project, it's possible to display in a browser window what your bot is doing.
 Just run `npm install prismarine-viewer` and add this to your bot:
 ```js
-const mineflayerViewer = require('prismarine-viewer').mineflayer
+const { mineflayer: mineflayerViewer } = require('prismarine-viewer')
 bot.once('spawn', () => {
-  mineflayerViewer(bot, { port: 3007, firstPerson: true })
+  mineflayerViewer(bot, { port: 3007, firstPerson: true }) // port is the minecraft server port, if first person is false, you get a bird's-eye view
 })
 ```
 And you'll get a *live* view looking like this:
@@ -114,12 +115,15 @@ And you'll get a *live* view looking like this:
 
 | example | description |
 |---|---|
-|[viewer](https://github.com/PrismarineJS/mineflayer/tree/master/examples/viewer) | display your bot world view in the browser |
-|[pathfinder](https://github.com/Karang/mineflayer-pathfinder/blob/master/examples/test.js) | make your bot go to any location automatically |
+|[viewer](https://github.com/PrismarineJS/mineflayer/tree/master/examples/viewer) | Display your bot world view in the browser |
+|[pathfinder](https://github.com/PrismarineJS/mineflayer/tree/master/examples/pathfinder) | Make your bot go to any location automatically |
 |[chest](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chest.js) | Use chests, furnaces, dispensers, enchantment tables |
 |[digger](https://github.com/PrismarineJS/mineflayer/blob/master/examples/digger.js) | Learn how to create a simple bot that is capable of digging the block |
-|[discord](https://github.com/PrismarineJS/mineflayer/blob/master/examples/discord.js) | connect a discord bot with a mineflayer bot |
+|[discord](https://github.com/PrismarineJS/mineflayer/blob/master/examples/discord.js) | Connect a discord bot with a mineflayer bot |
 |[jumper](https://github.com/PrismarineJS/mineflayer/blob/master/examples/jumper.js) | Learn how to move, jump, ride vehicles, attack nearby entities |
+|[ansi](https://github.com/PrismarineJS/mineflayer/blob/master/examples/ansi.js) | Display your bot's chat with all of the chat colors shown in your terminal |
+|[guard](https://github.com/PrismarineJS/mineflayer/blob/master/examples/guard.js) | Make a bot guard a defined area from nearby mobs |
+|[multiple-from-file](https://github.com/PrismarineJS/mineflayer/blob/master/examples/multiple_from_file.js) | Add a text file with accounts and have them all login |
 
 And many mores in the [examples](https://github.com/PrismarineJS/mineflayer/tree/master/examples) folder
 
@@ -190,8 +194,6 @@ The most updated and useful are :
 
  But also check out :
 
- * [navigate](https://github.com/andrewrk/mineflayer-navigate/) - get around
-   easily using A* pathfinding. [YouTube Demo](https://www.youtube.com/watch?v=O6lQdmRz8eE)
  * [radar](https://github.com/andrewrk/mineflayer-radar/) - web based radar
    interface using canvas and socket.io. [YouTube Demo](https://www.youtube.com/watch?v=FjDmAfcVulQ)
  * [blockfinder](https://github.com/Darthfett/mineflayer-blockFinder) - find blocks in the 3D world
@@ -201,6 +203,7 @@ The most updated and useful are :
  * [auto-auth](https://github.com/G07cha/MineflayerAutoAuth) - chat-based bot authentication
  * [Bloodhound](https://github.com/Nixes/mineflayer-bloodhound) - determine who and what is responsible for damage to another entity
  * [tps](https://github.com/SiebeDW/mineflayer-tps) - get the current tps (processed tps)
+ * [panorama](https://github.com/IceTank/mineflayer-panorama) - take Panorama Images of your world
 
 ## Projects Using Mineflayer
 
@@ -212,41 +215,25 @@ The most updated and useful are :
    the bot is up to using voxel.js
  * [JonnyD/Skynet](https://github.com/JonnyD/Skynet) -  log player activity onto an online API
  * [MinecraftChat](https://github.com/rom1504/MinecraftChat) (last open source version, built by AlexKvazos) -  Minecraft web based chat client <https://minecraftchat.net/>
- * [Cheese Bot](https://github.com/Minecheesecraft/Cheese-Bot) - Plugin based bot with a clean GUI. Made with Node-Webkit. http://bot.ezcha.net/
+ * [Cheese Bot](https://github.com/Minecheesecraft/Cheese-Bot) - Plugin based bot with a clean GUI. Made with Node-Webkit.
  * [Chaoscraft](https://github.com/schematical/chaoscraft) - Minecraft bot using genetic algorithms, see [its youtube videos](https://www.youtube.com/playlist?list=PLLkpLgU9B5xJ7Qy4kOyBJl5J6zsDIMceH)
  * [hexatester/minetelegram](https://github.com/hexatester/minetelegram) -  Minecraft - Telegram bridge, build on top of mineflayer & telegraf.
- * [ProZedd/mineflayer-printer](https://github.com/ProZedd/mineflayer-printer) - Prints minecraft schematics
+ * [PrismarineJS/mineflayer-builder](https://github.com/PrismarineJS/mineflayer-builder) - Prints minecraft schematics in survival, keeping orientation
  * [and hundreds more](https://github.com/PrismarineJS/mineflayer/network/dependents) - All the projects that github detected are using mineflayer
 
 
 ## Testing
-
-Some setup is required after first cloning the project but after that is done it's very easy to run them.
-
-### Setup
-
-In order to get all tests to run successfully you must first:
-
-1. create a new folder in which to store minecraft server jars
-2. set the MC_SERVER_JAR_DIR to this folder
-
-Example:
-
-1. `mkdir server_jars`
-2. `export MC_SERVER_JAR_DIR=/full/path/to/server_jars`
-
-Where the "/full/path/to/" is the fully qualified path name.
 
 ### Testing everything
 
 Simply run: `npm test`
 
 ### Testing specific version
-Run `npm test -g <version>`, where `<version>` is a minecraft version like `1.12`, `1.15.2`...
+Run `npm mocha_test -- -g <version>`, where `<version>` is a minecraft version like `1.12`, `1.15.2`...
 
 ### Testing specific test
-Run `npm test -g <test_name>`, where `<test_name>` is a name of the test like `bed`, `useChests`, `rayTrace`...
+Run `npm mocha_test -- -g <test_name>`, where `<test_name>` is a name of the test like `bed`, `useChests`, `rayTrace`...
 
-## Licence
+## License
 
-[MIT](LICENCE)
+[MIT](LICENSE)

@@ -8,8 +8,9 @@ module.exports = () => async (bot) => {
   const commandBlockPosText = commandBlockPos.toArray().join(' ')
 
   // Put and activate the command block
+  const p = once(bot.world, `blockUpdate:(${commandBlockPos.x}, ${commandBlockPos.y}, ${commandBlockPos.z})`)
   bot.test.sayEverywhere(`/setblock ${commandBlockPosText} minecraft:command_block`)
-  await bot.test.wait(100)
+  await p
   bot.setCommandBlock(commandBlockPos, command, false)
 
   const [message] = await once(bot, 'message')
