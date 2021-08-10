@@ -24,7 +24,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        mcVersion: ['1.8.8', '1.9.4', '1.10.2', '1.11.2', '1.12.2', '1.13.2', '1.14.4', '1.15.2', '1.16.5', '1.17.1']
+        javaVersion: [1.8]
+        mcVersion: ['1.8.8', '1.9.4', '1.10.2', '1.11.2', '1.12.2', '1.13.2', '1.14.4', '1.15.2', '1.16.5']
+        include:
+         - mcVersion: '1.17.1'
+           javaVersion: 15
       fail-fast: false
 
     steps:
@@ -36,7 +40,7 @@ jobs:
     - name: Setup Java JDK
       uses: actions/setup-java@v1.4.3
       with:
-        java-version: 1.8
+        java-version: ${{ matrix.javaVersion }}
         java-package: jre
     - name: Install Dependencies
       run: npm install
