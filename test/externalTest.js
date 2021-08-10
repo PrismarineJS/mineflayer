@@ -23,7 +23,8 @@ const propOverrides = {
   gamemode: '1',
   'spawn-monsters': 'false',
   'generate-structures': 'false',
-  'enable-command-block': 'true'
+  'enable-command-block': 'true',
+  'use-native-transport': 'false' // java 16 throws errors without this, https://www.spigotmc.org/threads/unable-to-access-address-of-buffer.311602
 }
 
 const Wrap = require('minecraft-wrap').Wrap
