@@ -298,12 +298,12 @@ for (const supportedVersion of mineflayer.testedVersions) {
         let serverClient = null
         bot.once('entitySpawn', (entity) => {
           if (bot.supportFeature('usesNewEntityDestroyFormat')) {
-            serverClient.write('entity_destroy', {
-              entityIds: [8]
-            })
-          } else {
             serverClient.write('destory_entity', {
               entityId: 8
+            })
+          } else {
+            serverClient.write('entity_destroy', {
+              entityIds: [8]
             })
           }
         })

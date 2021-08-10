@@ -125,13 +125,13 @@
     "versions": ["1.13", "1.17.1"]
   },
   {
-    "name": "effectAreNotPrefixed",
-    "description": "effect are not prefixed",
+    "name": "effectAreMinecraftPrefixed",
+    "description": "effect are prefixed by minecraft:",
     "versions": ["1.8", "1.12.2"]
   },
   {
-    "name": "effectAreMinecraftPrefixed",
-    "description": "effect are prefixed by minecraft:",
+    "name": "effectAreNotPrefixed",
+    "description": "effect are not prefixed",
     "versions": ["1.13", "1.17.1"]
   },
   {
