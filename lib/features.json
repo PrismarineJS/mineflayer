@@ -298,5 +298,10 @@
     "name": "entityNameLowerCaseNoUnderscore",
     "description": "this is when some entity names are lowercase and appended without underscores like 'armorstand' or 'endercrystal'",
     "versions": ["1.13", "1.13.2"]
+  },
+  {
+    "name": "transactionPacketExists",
+    "description": "this is when the description packet existed",
+    "versions": ["1.8", "1.16.5"]
   }
 ]
