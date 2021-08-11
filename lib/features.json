@@ -298,10 +298,5 @@
     "name": "entityNameLowerCaseNoUnderscore",
     "description": "this is when some entity names are lowercase and appended without underscores like 'armorstand' or 'endercrystal'",
     "versions": ["1.13", "1.13.2"]
-  },
-  {
-    "name": "usesNewEntityDestroyFormat",
-    "description": "entityId is now a single id instead of an array of ids",
-    "versions": ["1.17", "1.17.1"]
   }
 ]
