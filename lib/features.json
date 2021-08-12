@@ -303,5 +303,15 @@
     "name": "transactionPacketExists",
     "description": "this is when the description packet existed",
     "versions": ["1.8", "1.16.5"]
+  },
+  {
+    "name": "stateIdUsed",
+    "description": "starting in 1.17.1, actionId has been replaced with stateId",
+    "versions": ["1.17.1", "1.17.1"]
+  },
+  {
+    "name": "actionIdUsed",
+    "description": "pre 1.17, actionId is used",
+    "versions": ["1.8", "1.16.5"]
   }
 ]
