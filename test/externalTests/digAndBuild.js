@@ -5,7 +5,7 @@ module.exports = () => async (bot) => {
   const mcData = require('minecraft-data')(bot.version)
   const Item = require('prismarine-item')(bot.version)
 
-  await bot.test.setInventorySlot(36, new Item(mcData.blocksByName.dirt.id, 1, 0))
+  await bot.test.setInventorySlot(36, new Item(mcData.itemsByName.dirt.id, 1, 0))
   await bot.test.fly(new Vec3(0, 2, 0))
   await bot.test.placeBlock(36, bot.entity.position.plus(new Vec3(0, -2, 0)))
   await bot.test.clearInventory()
@@ -16,7 +16,7 @@ module.exports = () => async (bot) => {
   await bot.dig(bot.blockAt(bot.entity.position.plus(new Vec3(0, -1, 0))))
   // make sure we collected das dirt
   await bot.test.wait(1000)
-  assert(Item.equal(bot.inventory.slots[36], new Item(mcData.blocksByName.dirt.id, 1, 0)))
+  assert(Item.equal(bot.inventory.slots[36], new Item(mcData.itemsByName.dirt.id, 1, 0)))
   bot.test.sayEverywhere('dirt collect test: pass')
 
   async function waitForFall () {
