@@ -889,21 +889,21 @@ Same as from server.properties.
 
 These boolean Settings control if extra Skin Details on the own players' skin should be visible
 
-##### bot.settings.skinParts.showCape
+##### bot.settings.skinParts.showCape - boolean
 
 If you have a cape you can turn it off by setting this to false.
 
-##### bot.settings.skinParts.showJacket
+##### bot.settings.skinParts.showJacket - boolean
 
-##### bot.settings.skinParts.showLeftSleeve
+##### bot.settings.skinParts.showLeftSleeve - boolean
 
-##### bot.settings.skinParts.showRightSleeve
+##### bot.settings.skinParts.showRightSleeve - boolean
 
-##### bot.settings.skinParts.showLeftPants
+##### bot.settings.skinParts.showLeftPants - boolean
 
-##### bot.settings.skinParts.showRightPants
+##### bot.settings.skinParts.showRightPants - boolean
 
-##### bot.settings.skinParts.showHat
+##### bot.settings.skinParts.showHat - boolean
 
 
 #### bot.experience.level
