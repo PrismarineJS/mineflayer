@@ -1,3 +1,4 @@
+const { once } = require('events')
 const { Vec3 } = require('vec3')
 
 module.exports = () => async (bot) => {
@@ -49,4 +50,14 @@ module.exports = () => async (bot) => {
   await bot.test.setInventorySlot(36, new Item(populateBlockInventory.id, 1, 0))
   await bot.test.becomeSurvival()
   await craft(1, craftItem)
+  console.log('craft 1 done')
+  await bot.test.setBlock({ x: 1, y: 0, z: 0, relative: true, blockName: 'crafting_table' })
+  console.log('placed block')
+  bot.chat('/give @p iron_ingot 6')
+  await once(bot.inventory, 'updateSlot')
+  console.log('got iron')
+  const craftingTable = bot.findBlock({ matching: itemsByName.crafting_table.id })
+  console.log(`ready to craft, crafting table found? ${!!craftingTable}`)
+  await bot.craft(bot.recipesFor(itemsByName.crafting_table.id, null, null, craftingTable), 1, craftingTable)
+  console.log('craft 2 done')
 }
