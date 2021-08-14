@@ -53,11 +53,11 @@ module.exports = () => async (bot) => {
   console.log('craft 1 done')
   await bot.test.setBlock({ x: 1, y: 0, z: 0, relative: true, blockName: 'crafting_table' })
   console.log('placed block')
-  bot.chat('/give @p iron_ingot 6')
+  bot.chat('/give @p stick 7')
   await once(bot.inventory, 'updateSlot')
   console.log('got iron')
   const craftingTable = bot.findBlock({ matching: blocksByName.crafting_table.id })
   console.log(`ready to craft, crafting table found? ${!!craftingTable}`)
-  await bot.craft(bot.recipesFor(itemsByName.crafting_table.id, null, null, true), 1, craftingTable)
+  await bot.craft(bot.recipesFor(itemsByName.ladder.id, null, null, true)[0], 1, craftingTable)
   console.log('craft 2 done')
 }
