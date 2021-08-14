@@ -56,8 +56,8 @@ module.exports = () => async (bot) => {
   bot.chat('/give @p iron_ingot 6')
   await once(bot.inventory, 'updateSlot')
   console.log('got iron')
-  const craftingTable = bot.findBlock({ matching: itemsByName.crafting_table.id })
+  const craftingTable = bot.findBlock({ matching: blocksByName.crafting_table.id })
   console.log(`ready to craft, crafting table found? ${!!craftingTable}`)
-  await bot.craft(bot.recipesFor(itemsByName.crafting_table.id, null, null, craftingTable), 1, craftingTable)
+  await bot.craft(bot.recipesFor(itemsByName.crafting_table.id, null, null, true), 1, craftingTable)
   console.log('craft 2 done')
 }
