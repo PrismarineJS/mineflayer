@@ -272,7 +272,7 @@
   {
     "name": "teamUsesChatComponents",
     "description": "teams use chatcomponents for formatting",
-    "versions": ["1.13", "1.16.5"]
+    "versions": ["1.13", "1.17.1"]
   },
   {
     "name": "teamUsesScoreboard",

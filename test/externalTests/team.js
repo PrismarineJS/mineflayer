@@ -2,6 +2,7 @@ const assert = require('assert')
 const { once } = require('events')
 
 module.exports = () => async (bot) => {
+  const p = once(bot, 'teamMemberAdded')
   if (bot.supportFeature('teamUsesChatComponents')) {
     bot.test.sayEverywhere('/team add test "test"')
     bot.test.sayEverywhere('/team modify test color dark_green')
@@ -12,7 +13,7 @@ module.exports = () => async (bot) => {
     bot.test.sayEverywhere('/scoreboard teams join test')
   }
 
-  await once(bot, 'teamMemberAdded')
+  await p
 
   assert.notStrictEqual(bot.teams.test, undefined)
   assert.notStrictEqual(bot.teamMap[bot.username], undefined, 'teamMap is not undefined')

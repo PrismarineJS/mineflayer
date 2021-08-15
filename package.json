@@ -31,7 +31,7 @@
     "prismarine-item": "^1.6.0",
     "prismarine-physics": "^1.0.4",
     "prismarine-recipe": "^1.1.0",
-    "prismarine-windows": "^2.2.0",
+    "prismarine-windows": "github:nickelpro/prismarine-windows",
     "prismarine-world": "^3.6.0",
     "protodef": "^1.8.0",
     "typed-emitter": "^1.2.0",
@@ -44,8 +44,8 @@
     "mineflayer": "file:.",
     "mocha": "^9.0.0",
     "standard": "^16.0.1",
+    "standard-markdown": "^6.0.0",
     "ts-standard": "^10.0.0",
-    "typescript": "^4.3.2",
-    "standard-markdown": "^6.0.0"
+    "typescript": "^4.3.2"
   }
 }
