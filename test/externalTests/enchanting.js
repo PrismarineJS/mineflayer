@@ -1,5 +1,4 @@
 const assert = require('assert')
-const { once } = require('events')
 
 module.exports = () => async (bot) => {
   const mcData = require('minecraft-data')(bot.version)
@@ -52,9 +51,6 @@ module.exports = () => async (bot) => {
 
   const sword = enchantingTable.findInventoryItem(mcData.itemsByName.diamond_sword.id)
   await enchantingTable.putTargetItem(sword)
-  if (!enchantingTable.enchantments[0].level || !enchantingTable.enchantments[1].level || !enchantingTable.enchantments[2].level) {
-    await once(enchantingTable, 'ready')
-  }
 
   console.log('Table ready')
   await enchantingTable.enchant(enchantSlot)
