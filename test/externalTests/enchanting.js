@@ -1,5 +1,4 @@
 const assert = require('assert')
-const { once } = require('events')
 
 module.exports = () => async (bot) => {
   const mcData = require('minecraft-data')(bot.version)
