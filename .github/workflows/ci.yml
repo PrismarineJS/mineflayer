@@ -30,12 +30,17 @@ jobs:
       fail-fast: false
 
     steps:
-    - name: Setup Java JDK
-      uses: actions/setup-java@v1.4.3
-      with:
-        java-version: ${{ matrix.javaVersion }}
-        java-package: jre
-    - name: Install Dependencies
-      run: npm install
-    - name: Start Tests
-      run: npm run mocha_test -- -g ${{ matrix.mcVersion }}
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1.4.4
+        with:
+          node-version: 14.x
+      - name: Setup Java JDK
+        uses: actions/setup-java@v1.4.3
+        with:
+          java-version: ${{ matrix.javaVersion }}
+          java-package: jre
+      - name: Install Dependencies
+        run: npm install
+      - name: Start Tests
+        run: npm run mocha_test -- -g ${{ matrix.mcVersion }}
