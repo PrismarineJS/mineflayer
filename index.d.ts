@@ -666,6 +666,8 @@ export class Chest extends (EventEmitter as new () => TypedEmitter<StorageEvents
   count (itemType: number, metadata: number | null): number;
 
   items (): Item[];
+
+  containerItems (): Item[];
 }
 
 export class Furnace extends (EventEmitter as new () => TypedEmitter<FurnaceEvents>) {
