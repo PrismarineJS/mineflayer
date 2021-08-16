@@ -113,7 +113,6 @@ module.exports = () => async (bot) => {
   await depositBones(smallChestLocation, 1)
   await depositBones(largeChestLocations[0], 2)
 
-  await bot.test.wait(100) // wait for inventory to update
   assert(bot.inventory.items().length === 0)
 
   await withdrawBones(smallChestLocation, 1)
@@ -122,7 +121,6 @@ module.exports = () => async (bot) => {
   await depositBones(smallTrappedChestLocation, 1)
   await depositBones(largeTrappedChestLocations[0], 2)
 
-  await bot.test.wait(100) // wait for inventory to update
   assert(bot.inventory.items().length === 0)
 
   await withdrawBones(smallTrappedChestLocation, 1)
