@@ -20,8 +20,12 @@ module.exports = () => async (bot) => {
     await bot.test.wait(500)
   }
 
+  assert.ok(!bot.usingHeldItem)
   while (bot.food < 20) {
-    await bot.consume()
+    const consume = bot.consume()
+    assert.ok(bot.usingHeldItem)
+    await consume
+    assert.ok(!bot.usingHeldItem)
     await bot.test.wait(100)
   }
 }
