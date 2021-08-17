@@ -31,7 +31,7 @@
     "prismarine-item": "^1.6.0",
     "prismarine-physics": "^1.0.4",
     "prismarine-recipe": "^1.1.0",
-    "prismarine-windows": "github:nickelpro/prismarine-windows",
+    "prismarine-windows": "^2.3.0",
     "prismarine-world": "^3.6.0",
     "protodef": "^1.8.0",
     "typed-emitter": "^1.2.0",
