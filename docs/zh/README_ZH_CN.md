@@ -108,6 +108,7 @@ bot.on('error', console.log)
 const { mineflayer: mineflayerViewer } = require('prismarine-viewer')
 bot.once('spawn', () => {
   mineflayerViewer(bot, { port: 3007, firstPerson: true }) // port 是本地网页运行的端口 ，如果 firstPerson: false，那么将会显示鸟瞰图。
+})
 ```
 
 然后你会得到一个看起来像这样的*实时视图*：
