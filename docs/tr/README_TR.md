@@ -9,8 +9,8 @@
 
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 
-| 🇺🇸 [English](../README.md) | 🇷🇺 [Russian](../ru/README_RU.md) | 🇪🇸 [Spanish](../es/README_ES.md) | 🇫🇷 [French](../fr/README_FR.md) | 🇹🇷 [Turkish](../tr/README_TR.md) |
-|-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
+| 🇺🇸 [English](../README.md) | 🇷🇺 [Russian](../ru/README_RU.md) | 🇪🇸 [Spanish](../es/README_ES.md) | 🇫🇷 [French](../fr/README_FR.md) | 🇹🇷 [Turkish](../tr/README_TR.md) | 🇨🇳 [Chinese](../zh/README_ZH_CN.md) |
+|-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
 
 JavaScript ile güçlü, stabil ve üst seviye Minecraft botları oluşturabileceğiniz bir [API](api.md).
 

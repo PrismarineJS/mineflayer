@@ -10,8 +10,8 @@
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb)
 
-| 🇺🇸 [English](README.md) | 🇷🇺 [Russian](ru/README_RU.md) | 🇪🇸 [Spanish](es/README_ES.md) | 🇫🇷 [French](fr/README_FR.md) | 🇹🇷 [Turkish](tr/README_TR.md) |
-|-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
+| 🇺🇸 [English](README.md) | 🇷🇺 [Russian](ru/README_RU.md) | 🇪🇸 [Spanish](es/README_ES.md) | 🇫🇷 [French](fr/README_FR.md) | 🇹🇷 [Turkish](tr/README_TR.md) | 🇨🇳 [Chinese](zh/README_ZH_CN.md) |
+|-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
 
 Create Minecraft bots with a powerful, stable, and high level JavaScript [API](api.md), also usable from Python.
 
