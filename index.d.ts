@@ -23,6 +23,7 @@ export interface BotOptions extends ClientOptions {
   chatLengthLimit?: number
   physicsEnabled?: boolean
   client?: Client
+  brand?: string
 }
 
 export type ChatLevel = 'enabled' | 'commandsOnly' | 'disabled'
