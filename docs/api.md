@@ -86,6 +86,7 @@
       - [bot.username](#botusername)
       - [bot.spawnPoint](#botspawnpoint)
       - [bot.heldItem](#bothelditem)
+      - [bot.usingHeldItem](#botusinghelditem)
       - [bot.game.levelType](#botgameleveltype)
       - [bot.game.dimension](#botgamedimension)
       - [bot.game.difficulty](#botgamedifficulty)
@@ -105,13 +106,13 @@
       - [bot.settings.viewDistance](#botsettingsviewdistance)
       - [bot.settings.difficulty](#botsettingsdifficulty)
       - [bot.settings.skinParts](#botsettingsskinparts)
-        - [bot.settings.skinParts.showCape](#botsettingsskinpartsshowcape)
-        - [bot.settings.skinParts.showJacket](#botsettingsskinpartsshowjacket)
-        - [bot.settings.skinParts.showLeftSleeve](#botsettingsskinpartsshowleftsleeve)
-        - [bot.settings.skinParts.showRightSleeve](#botsettingsskinpartsshowrightsleeve)
-        - [bot.settings.skinParts.showLeftPants](#botsettingsskinpartsshowleftpants)
-        - [bot.settings.skinParts.showRightPants](#botsettingsskinpartsshowrightpants)
-        - [bot.settings.skinParts.showHat](#botsettingsskinpartsshowhat)
+        - [bot.settings.skinParts.showCape - boolean](#botsettingsskinpartsshowcape---boolean)
+        - [bot.settings.skinParts.showJacket - boolean](#botsettingsskinpartsshowjacket---boolean)
+        - [bot.settings.skinParts.showLeftSleeve - boolean](#botsettingsskinpartsshowleftsleeve---boolean)
+        - [bot.settings.skinParts.showRightSleeve - boolean](#botsettingsskinpartsshowrightsleeve---boolean)
+        - [bot.settings.skinParts.showLeftPants - boolean](#botsettingsskinpartsshowleftpants---boolean)
+        - [bot.settings.skinParts.showRightPants - boolean](#botsettingsskinpartsshowrightpants---boolean)
+        - [bot.settings.skinParts.showHat - boolean](#botsettingsskinpartsshowhat---boolean)
       - [bot.experience.level](#botexperiencelevel)
       - [bot.experience.points](#botexperiencepoints)
       - [bot.experience.progress](#botexperienceprogress)
@@ -163,7 +164,7 @@
       - ["death"](#death)
       - ["health"](#health)
       - ["breath"](#breath)
-      - ["entityAttributes"](#entityattributes-entity)
+      - ["entityAttributes" (entity)](#entityattributes-entity)
       - ["entitySwingArm" (entity)](#entityswingarm-entity)
       - ["entityHurt" (entity)](#entityhurt-entity)
       - ["entityDead" (entity)](#entitydead-entity)
@@ -264,9 +265,8 @@
       - [bot.wake([cb])](#botwakecb)
       - [bot.setControlState(control, state)](#botsetcontrolstatecontrol-state)
       - [bot.getControlState(control)](#botgetcontrolstatecontrol)
-      - [bot.getControlState(control)](#botgetcontrolstatecontrol-state)
-      - [bot.getExplosionDamages(entity, position, radius, [rawDamages])](#botgetexplosiondamages)
       - [bot.clearControlStates()](#botclearcontrolstates)
+      - [bot.getExplosionDamages(entity, position, radius, [rawDamages])](#botgetexplosiondamagesentity-position-radius-rawdamages)
       - [bot.lookAt(point, [force], [callback])](#botlookatpoint-force-callback)
       - [bot.look(yaw, pitch, [force], [callback])](#botlookyaw-pitch-force-callback)
       - [bot.updateSign(block, text)](#botupdatesignblock-text)
@@ -280,6 +280,7 @@
       - [bot.acceptResourcePack()](#botacceptresourcepack)
       - [bot.denyResourcePack()](#botdenyresourcepack)
       - [bot.placeBlock(referenceBlock, faceVector, cb)](#botplaceblockreferenceblock-facevector-cb)
+      - [bot.placeEntity(referenceBlock, faceVector)](#botplaceentityreferenceblock-facevector)
       - [bot.activateBlock(block, [callback])](#botactivateblockblock-callback)
       - [bot.activateEntity(entity, [callback])](#botactivateentityentity-callback)
       - [bot.activateEntityAt(entity, position, [callback])](#botactivateentityatentity-position-callback)
@@ -289,7 +290,7 @@
       - [bot.deactivateItem()](#botdeactivateitem)
       - [bot.useOn(targetEntity)](#botuseontargetentity)
       - [bot.attack(entity)](#botattackentity)
-      - [bot.swingArm([hand])](#botswingarmhand)
+      - [bot.swingArm([hand], showHand)](#botswingarmhand-showhand)
       - [bot.mount(entity)](#botmountentity)
       - [bot.dismount()](#botdismount)
       - [bot.moveVehicle(left,forward)](#botmovevehicleleftforward)
@@ -796,6 +797,10 @@ Coordinates to the main spawn point, where all compasses point to.
 #### bot.heldItem
 
 The item in the bot's hand, represented as a [prismarine-item](https://github.com/PrismarineJS/prismarine-item) instance specified with arbitrary metadata, nbtdata, etc.
+
+#### bot.usingHeldItem
+
+Whether the bot is using the item that it's holding, for example eating food or using a shield.
 
 #### bot.game.levelType
 
