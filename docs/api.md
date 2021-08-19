@@ -828,6 +828,8 @@ Bot's player object
 }
 ```
 
+A player's ping starts at 0, you might have to wait a bit for the server to send their actual ping.
+
 #### bot.players
 
 Map of username to people playing the game.
@@ -1488,6 +1490,11 @@ The same as bot.recipesFor except that it does not check wether the bot has enou
 #### bot.nearestEntity(match = (entity) => { return true })
 
 Return the nearest entity to the bot, matching the function (default to all entities). Return null if no entity is found.
+
+Example:
+```js
+const cow = bot.nearestEntity(entity => entity.name.toLowerCase() === 'cow') // we use .toLowercase() because in 1.8 cow was capitalized, for newer versions that can be ommitted
+```
 
 ### Methods
 
