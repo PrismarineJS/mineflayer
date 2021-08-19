@@ -1,3 +1,15 @@
+## 3.10.0
+* Add Chinese translations (@Nyaasu66)
+* Fix bot.equip failing with off-hand (@IceTank)
+* window.withdraw no longer will drop items if it takes too many items (@Zn10plays)
+* No longer have to await ready for enchanting (@u9g)
+* Remove polling, recursive calling, rechecks for bot.waitForChunksToLoad (@u9g)
+* Add crystal placing example (@u9g)
+* Fixes physicsEnabled check for knockback (@u9g)
+* Default swingArm to left hand (@u9g)
+* Add support for teams (@builder-247)
+* Add missing bot.transfer documentation (@IceTank)
+
 ## 3.9.0
 * Fix crash on blocks without registered blockId (@Furry)
 * Move when hit by an explsion (@u9g)
