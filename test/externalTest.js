@@ -12,7 +12,7 @@ const { getPort } = require('./common/util')
 // set this to false if you want to test without starting a server automatically
 const START_THE_SERVER = true
 // if you want to have time to look what's happening increase this (milliseconds)
-const WAIT_TIME_BEFORE_STARTING = 5000
+const WAIT_TIME_BEFORE_STARTING = 0
 const TEST_TIMEOUT_MS = 60000
 
 const excludedTests = ['digEverything', 'book', 'anvil', 'placeEntity']
@@ -65,8 +65,17 @@ for (const supportedVersion of mineflayer.testedVersions) {
         bot.test.port = PORT
 
         console.log('starting bot')
-        bot.once('login', () => {
+        bot.once('login', async () => {
           wrap.writeServer('op flatbot\n')
+          await new Promise((resolve, reject) => {
+            const listener = line => {
+              if (['Made flatbot a server operator', 'Opped flatbot'].some(x => line.includes(x))) {
+                resolve()
+                wrap.off('line', listener)
+              }
+            }
+            wrap.on('line', listener)
+          })
           console.log('waiting a second...')
           // this wait is to get all the window updates out of the way before we start expecting exactly what we cause.
           // there are probably other updates coming in that we want to get out of the way too, like health updates.
