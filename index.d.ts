@@ -337,15 +337,15 @@ export interface Bot extends TypedEmitter<BotEvents> {
     callback?: (err?: Error) => void
   ) => Promise<void>
 
-  openChest: (chest: Block | Entity) => Chest
+  openChest: (chest: Block | Entity) => Promise<ContainerWindow>
 
-  openFurnace: (furnace: Block) => Furnace
+  openFurnace: (furnace: Block) => Promise<Furnace>
 
-  openDispenser: (dispenser: Block) => Dispenser
+  openDispenser: (dispenser: Block) => Promise<ContainerWindow>
 
-  openEnchantmentTable: (enchantmentTable: Block) => EnchantmentTable
+  openEnchantmentTable: (enchantmentTable: Block) => Promise<EnchantmentTable>
 
-  openAnvil: (anvil: Block) => Anvil
+  openAnvil: (anvil: Block) => Promise<Anvil>
 
   openVillager: (
     villager: Entity
@@ -381,9 +381,9 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   transfer: (options: TransferOptions, cb?: (err?: Error) => void) => Promise<void>
 
-  openBlock: (block: Block, Class: new () => EventEmitter) => void
+  openBlock: (block: Block, Class: new () => EventEmitter) => Promise<void>
 
-  openEntity: (block: Entity, Class: new () => EventEmitter) => void
+  openEntity: (block: Entity, Class: new () => EventEmitter) => Promise<void>
 
   moveSlotItem: (
     sourceSlot: number,
@@ -641,6 +641,8 @@ interface FurnaceEvents extends StorageEvents {
 interface ConditionalStorageEvents extends StorageEvents {
   ready: () => void
 }
+
+type ContainerWindow = Anvil | Furnace | Chest | EnchantmentTable | Villager
 
 export class Chest extends (EventEmitter as new () => TypedEmitter<StorageEvents>) {
   window: object | /* prismarine-windows ChestWindow */ null
