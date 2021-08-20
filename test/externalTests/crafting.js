@@ -1,3 +1,4 @@
+const assert = require('assert')
 const { once } = require('events')
 const { Vec3 } = require('vec3')
 
@@ -47,13 +48,18 @@ module.exports = () => async (bot) => {
     }
   }
 
-  // await bot.test.setInventorySlot(36, new Item(populateBlockInventory.id, 1, 0))
-  // await bot.test.becomeSurvival()
-  // await craft(1, craftItem)
-  bot._client.on('set_slot', (data, meta) => console.log(meta.name, data))
+  await bot.test.setInventorySlot(36, new Item(populateBlockInventory.id, 1, 0))
+  await bot.test.becomeSurvival()
+  await craft(1, craftItem)
+  assert(bot.inventory.count(itemsByName[craftItem].id) > 0)
   await bot.test.setBlock({ x: 1, y: 0, z: 0, relative: true, blockName: 'crafting_table' })
   bot.chat('/give @p stick 7')
   await once(bot.inventory, 'updateSlot')
   const craftingTable = bot.findBlock({ matching: blocksByName.crafting_table.id })
   await bot.craft(bot.recipesFor(itemsByName.ladder.id, null, null, true)[0], 1, craftingTable)
+  assert(bot.inventory.count(itemsByName.ladder.id) > 0)
+  bot.chat('/give @p iron_ingot 6')
+  await once(bot.inventory, 'updateSlot')
+  await bot.craft(bot.recipesFor(itemsByName.iron_bars.id, null, null, true)[0], 1, craftingTable)
+  assert(bot.inventory.count(itemsByName.iron_bars.id) > 0)
 }
