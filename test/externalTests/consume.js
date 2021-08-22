@@ -5,7 +5,7 @@ module.exports = () => async (bot) => {
   const mcData = require('minecraft-data')(bot.version)
 
   await bot.test.setInventorySlot(36, new Item(mcData.itemsByName.bread.id, 5, 0))
-
+  await bot.test.becomeSurvival()
   // Cannot consume if bot.food === 20
   await assert.rejects(bot.consume, (err) => {
     assert.notStrictEqual(err, undefined)
