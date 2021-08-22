@@ -7,6 +7,7 @@ import { Window } from 'prismarine-windows'
 import { Recipe } from 'prismarine-recipe'
 import { Block } from 'prismarine-block'
 import { Entity } from 'prismarine-entity'
+import { ChatMessage } from 'prismarine-chat'
 
 export function createBot (options: BotOptions): Bot
 
@@ -452,38 +453,6 @@ export interface Player {
   gamemode: number
   ping: number
   entity: Entity
-}
-
-export class ChatMessage {
-  json: object
-  text?: string
-  translate?: string
-  with?: ChatMessage[]
-  extra?: ChatMessage[]
-  bold: boolean
-  italic: boolean
-  underlined: boolean
-  strikethrough: boolean
-  obfuscated: boolean
-  color: string
-  clickEvent: object
-  hoverEvent: object
-
-  constructor (message: ChatMessage);
-
-  parse (): void;
-
-  length (): number;
-
-  getText (idx: number, lang?: { [key: string]: string }): string;
-
-  toString (lang?: { [key: string]: string }): string;
-
-  valueOf (): string;
-
-  toMotd (lang?: { [key: string]: string }): string;
-
-  toAnsi (lang?: { [key: string]: string }): string;
 }
 
 export interface ChatPattern {
