@@ -1,37 +1,50 @@
-// All plugins are loaded with the bot.loadPlugin function, look at documentation for more info
-// https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md#botloadpluginplugin
-// Here is an example AFK plugin
+/*
+  Make a function that is exported, this will be the "inject function", which is called when loading the plugin into mineflayer.
+  You can load this plugin into mineflayer in three ways:
 
-// Each plugin should have a inject function
-// This is the function that will be put in bot.loadPlugin
-function inject (bot, option) {
-  // create a scope for you functions
+  1.
+  ```
+  bot.createBot({
+    plugins: [require('./plugin')]
+  })
+  ```
+
+  2.
+  ```
+  bot.createBot({
+    plugins: {
+      afk: require('./plugin')
+    }
+  })
+  ```
+
+  3.
+  ```
+  const bot = bot.createBot()
+  bot.loadPlugin(require('./plugin'))
+  ```
+*/
+module.exports = bot => {
+  /*
+    Inside the scope of this function, you should do anything you need to with the bot object, like add properties to it, like `bot.afk`,
+    this function will be called when this plugin is called during the login process
+  */
+  let rotater
+  let rotated = false
   bot.afk = {}
 
-  let afkInterval, rotation
-
-  // All your plugin functions should be in the scope other than the logic.
-  bot.afk.start = async () => {
-    afkInterval = setInterval(async () => {
-      if (rotation) {
-        await bot.look(0, 0)
-        rotation = false
-      } else {
-        await bot.look(Math.PI, 0)
-        rotation = true
-      }
-    }, 3000)
+  bot.afk.start = () => {
+    if (rotater) return
+    rotater = setInterval(rotate, 3000)
   }
 
   bot.afk.stop = () => {
-    if (afkInterval) {
-      clearInterval(afkInterval)
-    }
+    if (!rotater) return
+    clearInterval(rotater)
   }
-}
 
-// finally export the inject function
-
-module.exports = {
-  afk: inject
+  function rotate () {
+    bot.look(rotated ? 0 : Math.PI, 0)
+    rotated = !rotated
+  }
 }
