@@ -1,4 +1,4 @@
-module.exports = (bot, options) => {
+module.exports = bot => {
   let rotater
   let rotated = false
   bot.afk = {}
