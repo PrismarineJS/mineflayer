@@ -310,8 +310,8 @@
       - [bot.waitForTicks(ticks)](#botwaitforticksticks)
     - [Lower level inventory methods](#lower-level-inventory-methods)
       - [bot.clickWindow(slot, mouseButton, mode, cb)](#botclickwindowslot-mousebutton-mode-cb)
-      - [bot.putSelectedItemRange(start, end, window, slot, noWaiting)](#botputselecteditemrangestart-end-window-slot-nowaiting)
-      - [bot.putAway(slot, noWaiting)](#botputawayslot-nowaiting)
+      - [bot.putSelectedItemRange(start, end, window, slot)](#botputselecteditemrangestart-end-window-slot)
+      - [bot.putAway(slot)](#botputawayslot)
       - [bot.closeWindow(window)](#botclosewindowwindow)
       - [bot.transfer(options, cb)](#bottransferoptions-cb)
       - [bot.openBlock(block)](#botopenblockblock)
@@ -1756,7 +1756,7 @@ dig any other blocks until the block has been broken, or you call
  of the face the bot should be looking at when digging the block. For example: ```vec3(0, 1, 0)``` when mining the top. Can also be 'raycast' raycast checks if there is a face visible by the bot and mines that face. Useful for servers with anti cheat.
  * `callback(err)` - (optional) called when the block is broken or you
    are interrupted.
-  
+
 If you call bot.dig twice before the first dig is finished, you will get a fatal 'diggingAborted' error.
 
 #### bot.stopDigging()
@@ -1977,20 +1977,15 @@ This function also returns a `Promise`, with `void` as its argument upon complet
 
 Click on the current window. See details at https://wiki.vg/Protocol#Click_Window
 
-#### bot.putSelectedItemRange(start, end, window, slot, noWaiting)
+#### bot.putSelectedItemRange(start, end, window, slot)
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
 
 Put the item at `slot` in the specified range.
 
-`noWaiting` will not wait for items to be moved.
-Can be useful in case the client is supposed to simulate without feedback from the server.
-
-#### bot.putAway(slot, noWaiting)
+#### bot.putAway(slot)
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
-`noWaiting` calls putSelectedItemRange with `noWaiting` option: it will not wait for items to be moved.
-Can be useful in case the client is supposed to simulate without feedback from the server.
 
 Put the item at `slot` in the inventory.
 
