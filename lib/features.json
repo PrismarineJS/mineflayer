@@ -7,7 +7,7 @@
   {
     "name": "spawner",
     "description": "spawner is called spawner",
-    "versions": ["1.13", "1.16.5"]
+    "versions": ["1.13", "1.17.1"]
   },
   {
     "name": "blockMetadata",
@@ -17,12 +17,12 @@
   {
     "name": "blockStateId",
     "description": "block metadata is encoded as state id",
-    "versions": ["1.13", "1.16.5"]
+    "versions": ["1.13", "1.17.1"]
   },
   {
     "name": "creativeSleepNearMobs",
     "description": "can sleep near mobs in creative",
-    "versions": ["1.13", "1.16.5"]
+    "versions": ["1.13", "1.17.1"]
   },
   {
     "name": "fixedPointPosition",
@@ -32,7 +32,7 @@
   {
     "name": "doublePosition",
     "description": "Entity positions are represented with double",
-    "versions": ["1.9", "1.16.5"]
+    "versions": ["1.9", "1.17.1"]
   },
   {
     "name": "fixedPointDelta",
@@ -42,7 +42,7 @@
   {
     "name": "fixedPointDelta128",
     "description": "Delta of position are represented with fixed point numbers times 128",
-    "versions": ["1.9", "1.16.5"]
+    "versions": ["1.9", "1.17.1"]
   },
   {
     "name": "customChannelMCPrefixed",
@@ -50,9 +50,14 @@
     "versions": ["1.8", "1.12.2"]
   },
   {
-    "name": "customChannelNotPrefixed",
-    "description": "custom channel don't have a prefix",
-    "versions": ["1.13", "1.16.5"]
+    "name": "customChannelIdentifier",
+    "description": "custom channel is an identifier starting in minecraft namespace",
+    "versions": ["1.13", "1.17.1"]
+  },
+  {
+    "name": "dimensionDataIsAvailable",
+    "description": "dimensionData is available, providing an additional information about the current dimension",
+    "versions": ["1.17", "1.17.1"]
   },
   {
     "name": "useItemWithBlockPlace",
@@ -62,7 +67,7 @@
   {
     "name": "useItemWithOwnPacket",
     "description": "use item is done with its own packet",
-    "versions": ["1.9", "1.16.5"]
+    "versions": ["1.9", "1.17.1"]
   },
   {
     "name": "blockPlaceHasHeldItem",
@@ -82,7 +87,7 @@
   {
     "name": "blockPlaceHasInsideBlock",
     "description": "block_place packet has inside block",
-    "versions": ["1.14", "1.16.5"]
+    "versions": ["1.14", "1.17.1"]
   },
   {
     "name": "teleportUsesPositionPacket",
@@ -97,7 +102,7 @@
   {
     "name": "teleportUsesOwnPacket",
     "description": "teleport is done using its own packet",
-    "versions": ["1.9", "1.16.5"]
+    "versions": ["1.9", "1.17.1"]
   },
   {
     "name": "oneBlockForSeveralVariations",
@@ -107,7 +112,7 @@
   {
     "name": "blockSchemeIsFlat",
     "description": "all variations of a packet have their own id",
-    "versions": ["1.13", "1.16.5"]
+    "versions": ["1.13", "1.17.1"]
   },
   {
     "name": "tabCompleteHasNoToolTip",
@@ -117,17 +122,17 @@
   {
     "name": "tabCompleteHasAToolTip",
     "description": "tab complete has a tool tip",
-    "versions": ["1.13", "1.16.5"]
+    "versions": ["1.13", "1.17.1"]
   },
   {
     "name": "effectAreMinecraftPrefixed",
-    "description": "effect are not prefixed",
+    "description": "effect are prefixed by minecraft:",
     "versions": ["1.8", "1.12.2"]
   },
   {
     "name": "effectAreNotPrefixed",
-    "description": "effect are prefixed by minecraft:",
-    "versions": ["1.13", "1.16.5"]
+    "description": "effect are not prefixed",
+    "versions": ["1.13", "1.17.1"]
   },
   {
     "name": "itemsAreAlsoBlocks",
@@ -137,12 +142,12 @@
   {
     "name": "itemsAreNotBlocks",
     "description": "items are not block",
-    "versions": ["1.13", "1.16.5"]
+    "versions": ["1.13", "1.17.1"]
   },
   {
     "name": "fishingBobberCorrectlyNamed",
     "description": "the fishing hook entity is named fishing_bobber",
-    "versions": ["1.14", "1.16.5"]
+    "versions": ["1.14", "1.17.1"]
   },
   {
     "name": "editBookIsPluginChannel",
@@ -152,7 +157,7 @@
   {
     "name": "hasEditBookPacket",
     "description": "book editing is handled through a packet",
-    "versions": ["1.13", "1.16.5"]
+    "versions": ["1.13", "1.17.1"]
   },
   {
     "name": "clientUpdateBookIdWhenSign",
@@ -192,7 +197,12 @@
   {
     "name": "dimensionIsAWorld",
     "description": "description is a world name (string)",
-    "versions": ["1.16.2", "1.16.5"]
+    "versions": ["1.16.2", "1.17.1"]
+  },
+  {
+    "name": "dimensionDataIsAvailable",
+    "description": "dimensionData is available, describing additional dimension information",
+    "versions": ["1.17", "1.17.1"]
   },
   {
     "name": "doesntHaveChestType",
@@ -217,22 +227,22 @@
   {
     "name": "hasAttackCooldown",
     "description": "if there is a cooldown after attacks to deal full damage",
-    "versions": ["1.9", "1.16.5"]
+    "versions": ["1.9", "1.17.1"]
   },
   {
     "name": "usesLoginPacket",
     "description": "uses the login packet as defined in mcData",
-    "versions": ["1.16", "1.16.5"]
+    "versions": ["1.16", "1.17.1"]
   },
   {
     "name": "usesMultiblockSingleLong",
     "description": "in the multi_block_change packet is stored as a single number",
-    "versions": ["1.16.2", "1.16.5"]
+    "versions": ["1.16.2", "1.17.1"]
   },
   {
     "name": "usesMultiblock3DChunkCoords",
     "description": "in the multi_block_change packet, all 3 axis coords are defined",
-    "versions": ["1.16.2", "1.16.5"]
+    "versions": ["1.16.2", "1.17.1"]
   },
   {
     "name": "setBlockUsesMetadataNumber",
@@ -247,7 +257,7 @@
   {
     "name": "selectingTradeMovesItems",
     "description": "selecting a trade automatically puts the required items into trading slots",
-    "versions": ["1.14", "1.16.5"]
+    "versions": ["1.14", "1.17.1"]
   },
   {
     "name": "resourcePackUsesHash",
@@ -262,7 +272,7 @@
   {
     "name": "teamUsesChatComponents",
     "description": "teams use chatcomponents for formatting",
-    "versions": ["1.13", "1.16.5"]
+    "versions": ["1.13", "1.17.1"]
   },
   {
     "name": "teamUsesScoreboard",
@@ -277,7 +287,7 @@
   {
     "name": "enderCrystalNameNoCapsWithUnderscore",
     "description": "this is when the end_crystal's entity name is end_crystal",
-    "versions": ["1.14", "1.16.5"]
+    "versions": ["1.14", "1.17.1"]
   },
   {
     "name": "entityNameUpperCaseNoUnderscore",
@@ -288,5 +298,25 @@
     "name": "entityNameLowerCaseNoUnderscore",
     "description": "this is when some entity names are lowercase and appended without underscores like 'armorstand' or 'endercrystal'",
     "versions": ["1.13", "1.13.2"]
+  },
+  {
+    "name": "transactionPacketExists",
+    "description": "this is when the description packet existed",
+    "versions": ["1.8", "1.16.5"]
+  },
+  {
+    "name": "stateIdUsed",
+    "description": "starting in 1.17.1, actionId has been replaced with stateId",
+    "versions": ["1.17.1", "1.17.1"]
+  },
+  {
+    "name": "actionIdUsed",
+    "description": "pre 1.17, actionId is used",
+    "versions": ["1.8", "1.16.5"]
+  },
+  {
+    "name": "setSlotAsTransaction",
+    "description": "use setslot as transaction instead of just hoping it'll work",
+    "versions": ["1.17", "1.17.1"]
   }
 ]

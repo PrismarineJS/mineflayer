@@ -50,6 +50,7 @@ module.exports = () => async (bot) => {
   await enchantingTable.putLapis(lapis)
 
   const sword = enchantingTable.findInventoryItem(mcData.itemsByName.diamond_sword.id)
+
   await enchantingTable.putTargetItem(sword)
 
   console.log('Table ready')
