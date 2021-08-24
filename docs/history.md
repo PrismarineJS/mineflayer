@@ -1,3 +1,8 @@
+## 3.11.0
+* better chat, equipping and consuming errors (@u9g)
+* add bot.usingHeldItem (@mat1)
+* 1.17.1 support (mainly work from @nickelpro and @u9g, but also @Archengius @extremeheat @imharvol @willocn and @rom1504)
+
 ## 3.10.0
 * Add Chinese translations (@Nyaasu66)
 * Fix bot.equip failing with off-hand (@IceTank)
