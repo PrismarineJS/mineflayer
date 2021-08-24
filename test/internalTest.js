@@ -297,9 +297,15 @@ for (const supportedVersion of mineflayer.testedVersions) {
       it('sets players[player].entity to null upon despawn', (done) => {
         let serverClient = null
         bot.once('entitySpawn', (entity) => {
-          serverClient.write('entity_destroy', {
-            entityIds: [8]
-          })
+          if (mcData.protocol.play.toClient.types.packet[1][1].type[1].entity_destroy) {
+            serverClient.write('entity_destroy', {
+              entityIds: [8]
+            })
+          } else {
+            serverClient.write('destroy_entity', {
+              entityIds: 8
+            })
+          }
         })
         bot.once('entityGone', (entity) => {
           assert.strictEqual(bot.players[entity.username], undefined)
