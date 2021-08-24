@@ -62,4 +62,18 @@ module.exports = () => async (bot) => {
   await once(bot.inventory, 'updateSlot')
   await bot.craft(bot.recipesFor(itemsByName.iron_bars.id, null, null, true)[0], 1, craftingTable)
   assert(bot.inventory.count(itemsByName.iron_bars.id) > 0)
+  bot.chat('/give @p milk_bucket 3')
+  await Promise.all([
+    once(bot.inventory, 'updateSlot:36'),
+    once(bot.inventory, 'updateSlot:37'),
+    once(bot.inventory, 'updateSlot:38')
+  ])
+  bot.chat('/give @p sugar 2')
+  await once(bot.inventory, 'updateSlot')
+  bot.chat('/give @p egg 1')
+  await once(bot.inventory, 'updateSlot')
+  bot.chat('/give @p wheat 3')
+  await once(bot.inventory, 'updateSlot')
+  await bot.craft(bot.recipesFor(itemsByName.cake.id, null, null, true)[0], 1, craftingTable)
+  assert(bot.inventory.count(itemsByName.cake.id) > 0)
 }
