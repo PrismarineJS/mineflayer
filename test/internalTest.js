@@ -297,7 +297,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       it('sets players[player].entity to null upon despawn', (done) => {
         let serverClient = null
         bot.once('entitySpawn', (entity) => {
-          if (bot.version === '1.17') {
+          if (bot.version !== '1.17') {
             serverClient.write('entity_destroy', {
               entityIds: [8]
             })
