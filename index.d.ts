@@ -256,6 +256,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
   getControlState: (control: ControlState) => boolean
 
   clearControlStates: () => void
+  
+  getExplosionDamages(entity: Entity, position: Vec3, raidus: number, rawDamages?: boolean): number
 
   lookAt: (point: Vec3, force?: boolean, callback?: () => void) => Promise<void>
 
