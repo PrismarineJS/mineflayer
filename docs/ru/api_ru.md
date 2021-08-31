@@ -1292,7 +1292,7 @@ function somePlugin (bot, options) {
   bot.someFunction = someFunction
 }
 
-var bot = mineflayer.createBot({})
+const bot = mineflayer.createBot({})
 bot.loadPlugin(somePlugin)
 bot.once('login', () => {
   bot.someFunction() // Yay!
