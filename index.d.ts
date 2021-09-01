@@ -257,12 +257,13 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   clearControlStates: () => void
 
-  lookAt: (point: Vec3, force?: boolean, callback?: () => void) => Promise<void>
+  lookAt: (point: Vec3, force?: boolean, snapYaw?: boolean, callback?: () => void) => Promise<void>
 
   look: (
     yaw: number,
     pitch: number,
     force?: boolean,
+    snapYaw?: boolean,
     callback?: () => void
   ) => Promise<void>
 
