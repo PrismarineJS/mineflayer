@@ -30,12 +30,13 @@ export interface BotOptions extends ClientOptions {
 export type ChatLevel = 'enabled' | 'commandsOnly' | 'disabled'
 export type ViewDistance = 'far' | 'normal' | 'short' | 'tiny'
 export type MainHands = 'left' | 'right'
+export type SyncOrAsync = Promise<void> | void
 
 export interface PluginOptions {
   [plugin: string]: boolean | Plugin
 }
 
-export type Plugin = (bot: Bot, options: BotOptions) => void
+export type Plugin = (bot: Bot, options: BotOptions) => SyncOrAsync
 
 interface BotEvents {
   chat: (
@@ -44,112 +45,112 @@ interface BotEvents {
     translate: string | null,
     jsonMsg: ChatMessage,
     matches: string[] | null
-  ) => void
+  ) => SyncOrAsync
   whisper: (
     username: string,
     message: string,
     translate: string | null,
     jsonMsg: ChatMessage,
     matches: string[] | null
-  ) => void
-  actionBar: (jsonMsg: ChatMessage) => void
-  error: (err: Error) => void
-  message: (jsonMsg: ChatMessage, position: string) => void
-  messagestr: (message: string, position: string, jsonMsg: ChatMessage) => void
-  unmatchedMessage: (stringMsg: string, jsonMsg: ChatMessage) => void
-  inject_allowed: () => void
-  login: () => void
-  spawn: () => void
-  respawn: () => void
-  game: () => void
-  title: (text: string) => void
-  rain: () => void
-  time: () => void
-  kicked: (reason: string, loggedIn: boolean) => void
-  end: () => void
-  spawnReset: () => void
-  death: () => void
-  health: () => void
-  breath: () => void
-  entitySwingArm: (entity: Entity) => void
-  entityHurt: (entity: Entity) => void
-  entityDead: (entity: Entity) => void
-  entityTaming: (entity: Entity) => void
-  entityTamed: (entity: Entity) => void
-  entityShakingOffWater: (entity: Entity) => void
-  entityEatingGrass: (entity: Entity) => void
-  entityWake: (entity: Entity) => void
-  entityEat: (entity: Entity) => void
-  entityCriticalEffect: (entity: Entity) => void
-  entityMagicCriticalEffect: (entity: Entity) => void
-  entityCrouch: (entity: Entity) => void
-  entityUncrouch: (entity: Entity) => void
-  entityEquip: (entity: Entity) => void
-  entitySleep: (entity: Entity) => void
-  entitySpawn: (entity: Entity) => void
-  itemDrop: (entity: Entity) => void
-  playerCollect: (collector: Entity, collected: Entity) => void
-  entityAttributes: (entity: Entity) => void
-  entityGone: (entity: Entity) => void
-  entityMoved: (entity: Entity) => void
-  entityDetach: (entity: Entity, vehicle: Entity) => void
-  entityAttach: (entity: Entity, vehicle: Entity) => void
-  entityUpdate: (entity: Entity) => void
-  entityEffect: (entity: Entity, effect: Effect) => void
-  entityEffectEnd: (entity: Entity, effect: Effect) => void
-  playerJoined: (player: Player) => void
-  playerUpdated: (player: Player) => void
-  playerLeft: (entity: Player) => void
-  blockUpdate: (oldBlock: Block | null, newBlock: Block) => void
-  'blockUpdate:(x, y, z)': (oldBlock: Block | null, newBlock: Block) => void
-  chunkColumnLoad: (entity: Vec3) => void
-  chunkColumnUnload: (entity: Vec3) => void
+  ) => SyncOrAsync
+  actionBar: (jsonMsg: ChatMessage) => SyncOrAsync
+  error: (err: Error) => SyncOrAsync
+  message: (jsonMsg: ChatMessage, position: string) => SyncOrAsync
+  messagestr: (message: string, position: string, jsonMsg: ChatMessage) => SyncOrAsync
+  unmatchedMessage: (stringMsg: string, jsonMsg: ChatMessage) => SyncOrAsync
+  inject_allowed: () => SyncOrAsync
+  login: () => SyncOrAsync
+  spawn: () => SyncOrAsync
+  respawn: () => SyncOrAsync
+  game: () => SyncOrAsync
+  title: (text: string) => SyncOrAsync
+  rain: () => SyncOrAsync
+  time: () => SyncOrAsync
+  kicked: (reason: string, loggedIn: boolean) => SyncOrAsync
+  end: () => SyncOrAsync
+  spawnReset: () => SyncOrAsync
+  death: () => SyncOrAsync
+  health: () => SyncOrAsync
+  breath: () => SyncOrAsync
+  entitySwingArm: (entity: Entity) => SyncOrAsync
+  entityHurt: (entity: Entity) => SyncOrAsync
+  entityDead: (entity: Entity) => SyncOrAsync
+  entityTaming: (entity: Entity) => SyncOrAsync
+  entityTamed: (entity: Entity) => SyncOrAsync
+  entityShakingOffWater: (entity: Entity) => SyncOrAsync
+  entityEatingGrass: (entity: Entity) => SyncOrAsync
+  entityWake: (entity: Entity) => SyncOrAsync
+  entityEat: (entity: Entity) => SyncOrAsync
+  entityCriticalEffect: (entity: Entity) => SyncOrAsync
+  entityMagicCriticalEffect: (entity: Entity) => SyncOrAsync
+  entityCrouch: (entity: Entity) => SyncOrAsync
+  entityUncrouch: (entity: Entity) => SyncOrAsync
+  entityEquip: (entity: Entity) => SyncOrAsync
+  entitySleep: (entity: Entity) => SyncOrAsync
+  entitySpawn: (entity: Entity) => SyncOrAsync
+  itemDrop: (entity: Entity) => SyncOrAsync
+  playerCollect: (collector: Entity, collected: Entity) => SyncOrAsync
+  entityAttributes: (entity: Entity) => SyncOrAsync
+  entityGone: (entity: Entity) => SyncOrAsync
+  entityMoved: (entity: Entity) => SyncOrAsync
+  entityDetach: (entity: Entity, vehicle: Entity) => SyncOrAsync
+  entityAttach: (entity: Entity, vehicle: Entity) => SyncOrAsync
+  entityUpdate: (entity: Entity) => SyncOrAsync
+  entityEffect: (entity: Entity, effect: Effect) => SyncOrAsync
+  entityEffectEnd: (entity: Entity, effect: Effect) => SyncOrAsync
+  playerJoined: (player: Player) => SyncOrAsync
+  playerUpdated: (player: Player) => SyncOrAsync
+  playerLeft: (entity: Player) => SyncOrAsync
+  blockUpdate: (oldBlock: Block | null, newBlock: Block) => SyncOrAsync
+  'blockUpdate:(x, y, z)': (oldBlock: Block | null, newBlock: Block) => SyncOrAsync
+  chunkColumnLoad: (entity: Vec3) => SyncOrAsync
+  chunkColumnUnload: (entity: Vec3) => SyncOrAsync
   soundEffectHeard: (
     soundName: string,
     position: Vec3,
     volume: number,
     pitch: number
-  ) => void
+  ) => SyncOrAsync
   hardcodedSoundEffectHeard: (
     soundId: number,
     soundCategory: number,
     position: Vec3,
     volume: number,
     pitch: number
-  ) => void
-  noteHeard: (block: Block, instrument: Instrument, pitch: number) => void
-  pistonMove: (block: Block, isPulling: number, direction: number) => void
-  chestLidMove: (block: Block, isOpen: number) => void
-  blockBreakProgressObserved: (block: Block, destroyStage: number) => void
-  blockBreakProgressEnd: (block: Block) => void
-  diggingCompleted: (block: Block) => void
-  diggingAborted: (block: Block) => void
-  move: () => void
-  forcedMove: () => void
-  mount: () => void
-  dismount: (vehicle: Entity) => void
-  windowOpen: (vehicle: Window) => void
-  windowClose: (vehicle: Window) => void
-  sleep: () => void
-  wake: () => void
-  experience: () => void
-  physicsTick: () => void
-  physicTick: () => void
-  scoreboardCreated: (scoreboard: ScoreBoard) => void
-  scoreboardDeleted: (scoreboard: ScoreBoard) => void
-  scoreboardTitleChanged: (scoreboard: ScoreBoard) => void
-  scoreUpdated: (scoreboard: ScoreBoard, item: number) => void
-  scoreRemoved: (scoreboard: ScoreBoard, item: number) => void
-  scoreboardPosition: (position: DisplaySlot, scoreboard: ScoreBoard) => void
-  teamCreated: (team: Team) => void
-  teamRemoved: (team: Team) => void
-  teamUpdated: (team: Team) => void
-  teamMemberAdded: (team: Team) => void
-  teamMemberRemoved: (team: Team) => void
-  bossBarCreated: (bossBar: BossBar) => void
-  bossBarDeleted: (bossBar: BossBar) => void
-  bossBarUpdated: (bossBar: BossBar) => void
-  resourcePack: (url: string, hash: string) => void
+  ) => SyncOrAsync
+  noteHeard: (block: Block, instrument: Instrument, pitch: number) => SyncOrAsync
+  pistonMove: (block: Block, isPulling: number, direction: number) => SyncOrAsync
+  chestLidMove: (block: Block, isOpen: number) => SyncOrAsync
+  blockBreakProgressObserved: (block: Block, destroyStage: number) => SyncOrAsync
+  blockBreakProgressEnd: (block: Block) => SyncOrAsync
+  diggingCompleted: (block: Block) => SyncOrAsync
+  diggingAborted: (block: Block) => SyncOrAsync
+  move: () => SyncOrAsync
+  forcedMove: () => SyncOrAsync
+  mount: () => SyncOrAsync
+  dismount: (vehicle: Entity) => SyncOrAsync
+  windowOpen: (vehicle: Window) => SyncOrAsync
+  windowClose: (vehicle: Window) => SyncOrAsync
+  sleep: () => SyncOrAsync
+  wake: () => SyncOrAsync
+  experience: () => SyncOrAsync
+  physicsTick: () => SyncOrAsync
+  physicTick: () => SyncOrAsync
+  scoreboardCreated: (scoreboard: ScoreBoard) => SyncOrAsync
+  scoreboardDeleted: (scoreboard: ScoreBoard) => SyncOrAsync
+  scoreboardTitleChanged: (scoreboard: ScoreBoard) => SyncOrAsync
+  scoreUpdated: (scoreboard: ScoreBoard, item: number) => SyncOrAsync
+  scoreRemoved: (scoreboard: ScoreBoard, item: number) => SyncOrAsync
+  scoreboardPosition: (position: DisplaySlot, scoreboard: ScoreBoard) => SyncOrAsync
+  teamCreated: (team: Team) => SyncOrAsync
+  teamRemoved: (team: Team) => SyncOrAsync
+  teamUpdated: (team: Team) => SyncOrAsync
+  teamMemberAdded: (team: Team) => SyncOrAsync
+  teamMemberRemoved: (team: Team) => SyncOrAsync
+  bossBarCreated: (bossBar: BossBar) => SyncOrAsync
+  bossBarDeleted: (bossBar: BossBar) => SyncOrAsync
+  bossBarUpdated: (bossBar: BossBar) => SyncOrAsync
+  resourcePack: (url: string, hash: string) => SyncOrAsync
 }
 
 export interface Bot extends TypedEmitter<BotEvents> {
