@@ -8,20 +8,23 @@
  */
 
 if (process.argv.length < 6 || process.argv.length > 8) {
-  console.log('Usage : node discord.js <discord bot token> <channel id> <host> <port> [<name>] [<password>]');
-  process.exit(1);
+  console.log('Usage : node discord.js <discord bot token> <channel id> <host> <port> [<name>] [<password>]')
+  process.exit(1)
 }
 
 // Load discord.js
-const Discord = require('discord.js');
+const {
+  Client,
+  Intents
+} = require('discord.js')
 // Create Discord intentions, required in v13
-const intents = new Discord.Intents(['GUILDS', 'GUILD_MESSAGES']);
+const intents = new Intents(['GUILDS', 'GUILD_MESSAGES'])
 // Create Discord client
-const client = new Discord.Client({
+const client = new Client({
   intents: intents
-});
+})
 
-let channel = process.argv[3];
+let channel = process.argv[3]
 
 // Load mineflayer
 const mineflayer = require('mineflayer')
@@ -35,9 +38,9 @@ const bot = mineflayer.createBot({
 client.on('ready', () => {
   console.log(`The discord bot logged in! Username: ${client.user.username}!`)
   // Find the Discord channel messages will be sent to
-  channel = client.channels.cache.get(channel);
+  channel = client.channels.cache.get(channel)
   if (!channel) {
-    console.log(`I could not find the channel (${process.argv[3]})!\nUsage : node discord.js <discord bot token> <channel id> <host> <port> [<name>] [<password>]`);
+    console.log(`I could not find the channel (${process.argv[3]})!\nUsage : node discord.js <discord bot token> <channel id> <host> <port> [<name>] [<password>]`)
     process.exit(1)
   }
 })
