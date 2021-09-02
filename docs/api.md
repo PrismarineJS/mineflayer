@@ -1664,6 +1664,7 @@ Sets all controls to off.
 #### bot.getExplosionDamages(entity, position, radius, [rawDamages])
 
 Returns how much damage will be done to the entity in a radius around the position of the explosion.
+It will return `null` if the entity has no armor and rawDamages is not set to true, since the function can't calculate the damage with armor if there is no armor.
 
 * `entity` - Entity instance
 * `position` - [Vec3](https://github.com/andrewrk/node-vec3) instance
