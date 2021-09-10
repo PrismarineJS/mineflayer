@@ -318,5 +318,10 @@
     "name": "setSlotAsTransaction",
     "description": "use setslot as transaction instead of just hoping it'll work",
     "versions": ["1.17", "1.17.1"]
+  },
+  {
+    "name": "entityCollision",
+    "description": "entities can collide with each other",
+    "versions": ["1.9", "1.17.1"]
   }
 ]
