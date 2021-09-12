@@ -9,6 +9,7 @@ import { Block } from 'prismarine-block'
 import { Entity } from 'prismarine-entity'
 import { ChatMessage } from 'prismarine-chat'
 
+export function createBot (options: { client: Client } & Partial<BotOptions>): Bot
 export function createBot (options: BotOptions): Bot
 
 export interface BotOptions extends ClientOptions {
