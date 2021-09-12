@@ -11,8 +11,8 @@ global.Worker = require('worker_threads').Worker
 const THREE = require('three')
 const { createCanvas } = require('node-canvas-webgl/lib')
 const fs = require('fs').promises
-const Vec3 = require('vec3').Vec3
-const EventEmitter = require('events').EventEmitter
+const { Vec3 } = require('vec3')
+const { EventEmitter } = require('events')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node screenshot.js <host> <port> [<name>] [<password>]')
