@@ -341,11 +341,11 @@ export interface Bot extends TypedEmitter<BotEvents> {
     callback?: (err?: Error) => void
   ) => Promise<void>
 
-  openChest: (chest: Block | Entity) => Promise<ContainerWindow>
+  openChest: (chest: Block | Entity) => Promise<Chest>
 
   openFurnace: (furnace: Block) => Promise<Furnace>
 
-  openDispenser: (dispenser: Block) => Promise<ContainerWindow>
+  openDispenser: (dispenser: Block) => Promise<Dispenser>
 
   openEnchantmentTable: (enchantmentTable: Block) => Promise<EnchantmentTable>
 
@@ -613,8 +613,6 @@ interface FurnaceEvents extends StorageEvents {
 interface ConditionalStorageEvents extends StorageEvents {
   ready: () => void
 }
-
-type ContainerWindow = Anvil | Furnace | Chest | EnchantmentTable | Villager
 
 export class Chest extends (EventEmitter as new () => TypedEmitter<StorageEvents>) {
   window: object | /* prismarine-windows ChestWindow */ null
