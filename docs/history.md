@@ -1,3 +1,8 @@
+## 3.11.1
+* Get rid of nowaiting (@nickelpro)
+* update readme (@inthmafr)
+* Fix Typings (@link-discord, @IceTank, @u9g)
+
 ## 3.11.0
 * better chat, equipping and consuming errors (@u9g)
 * add bot.usingHeldItem (@mat1)
