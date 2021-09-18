@@ -162,7 +162,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   spawnPoint: Vec3
   game: GameState
   player: Player
-  players: { [username: string]: Player }
+  players: { [username: string]: Player | undefined }
   isRaining: boolean
   chatPatterns: ChatPattern[]
   settings: GameSettings
