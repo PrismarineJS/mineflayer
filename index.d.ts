@@ -455,7 +455,7 @@ export interface Player {
   displayName: ChatMessage
   gamemode: number
   ping: number
-  entity: Entity
+  entity: Entity | null
 }
 
 export interface ChatPattern {
