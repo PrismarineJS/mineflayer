@@ -318,5 +318,10 @@
     "name": "setSlotAsTransaction",
     "description": "use setslot as transaction instead of just hoping it'll work",
     "versions": ["1.17", "1.17.1"]
+  },
+  {
+    "name": "pingPacket",
+    "description": "ping instead of transaction in 1.17",
+    "versions": ["1.17", "1.17.1"]
   }
 ]
