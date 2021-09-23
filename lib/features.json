@@ -318,5 +318,10 @@
     "name": "setSlotAsTransaction",
     "description": "use setslot as transaction instead of just hoping it'll work",
     "versions": ["1.17", "1.17.1"]
+  },
+  {
+    "name": "craftingDoesSetSlot",
+    "description": "when crafting, the items used for crafting are taken using set_slots, client doesn't decide this",
+    "versions": ["1.17", "1.17.1"]
   }
 ]
