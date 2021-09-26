@@ -1,3 +1,7 @@
+## 3.11.2
+* Remove unnecessary and buggy inventory check in place block (@Karang)
+* Make all events allow async cb typings (@u9g)
+
 ## 3.11.1
 * Get rid of nowaiting (@nickelpro)
 * update readme (@inthmafr)
