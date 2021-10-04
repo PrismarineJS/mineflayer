@@ -31,7 +31,7 @@ async function shoot (target) {
   // allow enough time to charge the trident (10 ticks)
   await delay(950)
   const angle = bot.projectile.getAngle(bot.projectile.types.trident, bot.entity.position, target.position)
-  bot.look(angle.horizontal.x, angle.horizontal.y)
+  bot.look(angle.x, angle.y)
 
   // server needs some time to process head rotation (latency)
   await delay(50)
