@@ -1,0 +1,1 @@
+Stuff that has todo with the network, connections and chat parsing but not with "actual" gameplay. 
