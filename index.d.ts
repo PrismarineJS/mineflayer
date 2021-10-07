@@ -26,6 +26,7 @@ export interface BotOptions extends ClientOptions {
   physicsEnabled?: boolean
   client?: Client
   brand?: string
+  defaultChatPatterns: boolean
 }
 
 export type ChatLevel = 'enabled' | 'commandsOnly' | 'disabled'
