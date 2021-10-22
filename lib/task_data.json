@@ -1,0 +1,48 @@
+{
+  "tasks": {
+    "book_writeBook": "book_writeBook",
+    "craft_craft": "craft_craft",
+    "entities_attack": "entities_attack",
+    "entities_useOn": "entities_useOn",
+    "inventory_activateItem": "inventory_activateItem",
+    "inventory_clickWindow": "inventory_clickWindow",
+    "inventory_moveSlotItem": "inventory_moveSlotItem",
+    "inventory_putAway": "inventory_putAway",
+    "inventory_putSelectedItemRange": "inventory_putSelectedItemRange",
+    "inventory_transfer": "inventory_transfer",
+    "simple_inventory_equip": "simple_inventory_equip",
+    "simple_inventory_toss": "simple_inventory_toss",
+    "simple_inventory_tossStack": "simple_inventory_tossStack",
+    "simple_inventory_unequip": "simple_inventory_unequip",
+    "villager_trade": "villager_trade",
+    "digging_dig": "digging_dig",
+    "fishing_fish": "fishing_fish",
+    "inventory_consume": "inventory_consume",
+    "physics_look": "physics_look"
+  },
+  "compatibility": [
+    [
+      "book_writeBook",
+      "craft_craft",
+      "entities_attack",
+      "entities_useOn",
+      "inventory_activateItem",
+      "inventory_clickWindow",
+      "inventory_consume",
+      "inventory_moveSlotItem",
+      "inventory_putAway",
+      "inventory_putSelectedItemRange",
+      "inventory_transfer",
+      "simple_inventory_equip",
+      "simple_inventory_toss",
+      "simple_inventory_tossStack",
+      "simple_inventory_unequip",
+      "villager_trade"
+    ], [
+      "digging_dig",
+      "fishing_fish",
+      "inventory_consume",
+      "physics_look"
+    ]
+  ]
+}
