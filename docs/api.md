@@ -238,6 +238,7 @@
       - [bot.waitForChunksToLoad(cb)](#botwaitforchunkstoloadcb)
       - [bot.blockInSight(maxSteps, vectorLength)](#botblockinsightmaxsteps-vectorlength)
       - [bot.blockAtCursor(maxDistance=256)](#botblockatcursormaxdistance256)
+      - [bot.blockAtEntityCursor(entity=bot.entity, maxDistance=256)](#botblockatentitycursorentitybotentity-maxdistance256)
       - [bot.canSeeBlock(block)](#botcanseeblockblock)
       - [bot.findBlocks(options)](#botfindblocksoptions)
       - [bot.findBlock(options)](#botfindblockoptions)
@@ -1446,6 +1447,12 @@ Returns the block at which bot is looking at or `null`
 #### bot.blockAtCursor(maxDistance=256)
 
 Returns the block at which bot is looking at or `null`
+ * `maxDistance` - The maximum distance the block can be from the eye, defaults to 256.
+
+#### bot.blockAtEntityCursor(entity=bot.entity, maxDistance=256)
+
+Returns the block at which specific entity is looking at or `null`
+ * `entity` - Entity data as `Object`
  * `maxDistance` - The maximum distance the block can be from the eye, defaults to 256.
 
 #### bot.canSeeBlock(block)
