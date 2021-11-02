@@ -7,6 +7,8 @@ const mc = require('minecraft-protocol')
 const fs = require('fs')
 const path = require('path')
 
+const { getPort } = require('./common/util')
+
 // set this to false if you want to test without starting a server automatically
 const START_THE_SERVER = true
 // if you want to have time to look what's happening increase this (milliseconds)
@@ -23,7 +25,8 @@ const propOverrides = {
   gamemode: '1',
   'spawn-monsters': 'false',
   'generate-structures': 'false',
-  'enable-command-block': 'true'
+  'enable-command-block': 'true',
+  'use-native-transport': 'false' // java 16 throws errors without this, https://www.spigotmc.org/threads/unable-to-access-address-of-buffer.311602
 }
 
 const Wrap = require('minecraft-wrap').Wrap
@@ -32,7 +35,7 @@ const download = require('minecraft-wrap').download
 const MC_SERVER_PATH = path.join(__dirname, 'server')
 
 for (const supportedVersion of mineflayer.testedVersions) {
-  const PORT = Math.round(30000 + Math.random() * 20000)
+  let PORT = 25565
   const mcData = require('minecraft-data')(supportedVersion)
   const version = mcData.version
   const MC_SERVER_JAR_DIR = process.env.MC_SERVER_JAR_DIR || `${process.cwd()}/server_jars`
@@ -45,6 +48,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
   describe(`mineflayer_external ${version.minecraftVersion}`, function () {
     let bot
     this.timeout(10 * 60 * 1000)
+    before(async function () {
+      PORT = await getPort()
+      console.log(`Port chosen: ${PORT}`)
+    })
     before((done) => {
       function begin () {
         bot = mineflayer.createBot({

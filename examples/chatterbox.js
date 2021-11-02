@@ -13,7 +13,7 @@
  * a few informations while you are in game.
  */
 const mineflayer = require('mineflayer')
-const Vec3 = require('vec3').Vec3
+const { Vec3 } = require('vec3')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node chatterbot.js <host> <port> [<name>] [<password>]')

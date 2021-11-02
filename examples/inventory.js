@@ -43,7 +43,7 @@ bot.on('chat', async (username, message) => {
       // ex: toss diamond
       tossItem(command[1])
       break
-    case /^equip \w+ \w+$/.test(message):
+    case /^equip [\w-]+ \w+$/.test(message):
       // equip destination name
       // ex: equip hand diamond
       equipItem(command[2], command[1])
@@ -64,7 +64,11 @@ bot.on('chat', async (username, message) => {
   }
 })
 
-function sayItems (items = bot.inventory.items()) {
+function sayItems (items = null) {
+  if (!items) {
+    items = bot.inventory.items()
+    if (require('minecraft-data')(bot.version).isNewerOrEqualTo('1.9') && bot.inventory.slots[45]) items.push(bot.inventory.slots[45])
+  }
   const output = items.map(itemToString).join(', ')
   if (output) {
     bot.chat(output)
@@ -161,5 +165,7 @@ function itemToString (item) {
 }
 
 function itemByName (name) {
-  return bot.inventory.items().filter(item => item.name === name)[0]
+  const items = bot.inventory.items()
+  if (require('minecraft-data')(bot.version).isNewerOrEqualTo('1.9') && bot.inventory.slots[45]) items.push(bot.inventory.slots[45])
+  return items.filter(item => item.name === name)[0]
 }

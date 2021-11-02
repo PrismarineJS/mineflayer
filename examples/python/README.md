@@ -2,6 +2,8 @@
 
 * Checkout the tutorial on Google Colab 👉 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb)
 
+Thanks to [JSPyBridge](https://github.com/extremeheat/JSPyBridge), it is possible to use mineflayer in python!
+
 
 ### Install
 

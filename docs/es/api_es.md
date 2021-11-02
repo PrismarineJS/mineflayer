@@ -2,8 +2,6 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Tabla de contenidos**  *generado con [DocToc](https://github.com/thlorenz/doctoc)*
 
-Esta documentación no está mantenida oficialmente, si quiere ver las últimas novedades, por favor dirijase a la documentación original: [api](api.md)
-
 - [API](#api)
   - [Enums](#enums)
     - [minecraft-data](#minecraft-data)
@@ -14,7 +12,7 @@ Esta documentación no está mantenida oficialmente, si quiere ver las últimas 
     - [mcdata.instruments](#mcdatainstruments)
     - [mcdata.biomes](#mcdatabiomes)
     - [mcdata.entities](#mcdataentities)
-  - [Classes](#classes)
+  - [Clases](#clases)
     - [vec3](#vec3)
     - [mineflayer.Location](#mineflayerlocation)
     - [Entity](#entity)
@@ -47,7 +45,10 @@ Esta documentación no está mantenida oficialmente, si quiere ver las últimas 
       - [enchantmentTable.enchant(choice, [callback])](#enchantmenttableenchantchoice-callback)
       - [enchantmentTable.takeTargetItem([callback])](#enchantmenttabletaketargetitemcallback)
       - [enchantmentTable.putTargetItem(item, [callback])](#enchantmenttableputtargetitemitem-callback)
-    - [mineflayer.Villager](#mineflayervillager)
+      - [enchantmentTable.putLapis(item, [callback])](#enchantmenttableputlapisitem-callback)
+    - [mineflayer.anvil](#mineflayeranvil)
+      - [anvil.combine(itemOne, itemTwo[, name, callback])](#anvilcombineitemone-itemtwo-name-callback)
+      - [anvil.combine(item[, name, callback])](#anvilcombineitem-name-callback)
       - [villager "ready"](#villager-ready)
       - [villager.trades](#villagertrades)
       - [villager.trade(tradeIndex, [times], [cb])](#villagertradetradeindex-times-cb)
@@ -83,7 +84,7 @@ Esta documentación no está mantenida oficialmente, si quiere ver las últimas 
       - [bot.game.hardcore](#botgamehardcore)
       - [bot.game.maxPlayers](#botgamemaxplayers)
       - [bot.game.serverBrand](#botgameserverbrand)
-    - [bot.physicEnabled](#botphysicenabled)
+    - [bot.physicsEnabled](#botphysicsenabled)
     - [bot.player](#botplayer)
       - [bot.players](#botplayers)
       - [bot.isRaining](#botisraining)
@@ -110,6 +111,8 @@ Esta documentación no está mantenida oficialmente, si quiere ver las últimas 
       - [bot.foodSaturation](#botfoodsaturation)
       - [bot.oxygenLevel](#botoxygenlevel)
       - [bot.physics](#botphysics)
+      - [bot.simpleClick.leftMouse (slot)](#botsimpleclickleftmouse-slot)
+      - [bot.simpleClick.rightMouse (slot)](#botsimpleclickrightmouse-slot)
       - [bot.time.doDaylightCycle](#bottimedodaylightcycle)
       - [bot.time.bigTime](#bottimebigtime)
       - [bot.time.time](#bottimetime)
@@ -131,6 +134,8 @@ Esta documentación no está mantenida oficialmente, si quiere ver las últimas 
       - ["whisper" (username, message, translate, jsonMsg, matches)](#whisper-username-message-translate-jsonmsg-matches)
       - ["actionBar" (jsonMsg)](#actionbar-jsonmsg)
       - ["message" (jsonMsg, position)](#message-jsonmsg-position)
+      - ["messagestr" (message, messagePosition, jsonMsg)](#messagestr-message-messageposition-jsonmsg)
+      - ["inject_allowed"](#inject_allowed)
       - ["login"](#login)
       - ["spawn"](#spawn)
       - ["respawn"](#respawn)
@@ -138,7 +143,7 @@ Esta documentación no está mantenida oficialmente, si quiere ver las últimas 
       - ["resourcePack" (url, hash)](#resourcepack-url-hash)
       - ["title"](#title)
       - ["rain"](#rain)
-      - ["weatherUpdate"](#weatherUpdate)
+      - ["weatherUpdate"](#weatherupdate)
       - ["time"](#time)
       - ["kicked" (reason, loggedIn)](#kicked-reason-loggedin)
       - ["end"](#end)
@@ -149,8 +154,15 @@ Esta documentación no está mantenida oficialmente, si quiere ver las últimas 
       - ["breath"](#breath)
       - ["entitySwingArm" (entity)](#entityswingarm-entity)
       - ["entityHurt" (entity)](#entityhurt-entity)
+      - ["entityDead" (entity)](#entitydead-entity)
+      - ["entityTaming" (entity)](#entitytaming-entity)
+      - ["entityTamed" (entity)](#entitytamed-entity)
+      - ["entityShakingOffWater" (entity)](#entityshakingoffwater-entity)
+      - ["entityEatingGrass" (entity)](#entityeatinggrass-entity)
       - ["entityWake" (entity)](#entitywake-entity)
       - ["entityEat" (entity)](#entityeat-entity)
+      - ["entityCriticalEffect" (entity)](#entitycriticaleffect-entity)
+      - ["entityMagicCriticalEffect" (entity)](#entitymagiccriticaleffect-entity)
       - ["entityCrouch" (entity)](#entitycrouch-entity)
       - ["entityUncrouch" (entity)](#entityuncrouch-entity)
       - ["entityEquip" (entity)](#entityequip-entity)
@@ -166,6 +178,7 @@ Esta documentación no está mantenida oficialmente, si quiere ver las últimas 
       - ["entityEffect" (entity, effect)](#entityeffect-entity-effect)
       - ["entityEffectEnd" (entity, effect)](#entityeffectend-entity-effect)
       - ["playerJoined" (player)](#playerjoined-player)
+      - ["playerUpdated" (player)](#playerupdated-player)
       - ["playerLeft" (player)](#playerleft-player)
       - ["blockUpdate" (oldBlock, newBlock)](#blockupdate-oldblock-newblock)
       - ["blockUpdate:(x, y, z)" (oldBlock, newBlock)](#blockupdatex-y-z-oldblock-newblock)
@@ -200,6 +213,8 @@ Esta documentación no está mantenida oficialmente, si quiere ver las últimas 
       - ["bossBarDeleted" (bossBar)](#bossbardeleted-bossbar)
       - ["bossBarUpdated" (bossBar)](#bossbarupdated-bossbar)
       - ["heldItemChanged" (heldItem)](#helditemchanged-helditem)
+      - ["physicsTick" ()](#physicstick-)
+      - ["chat:name" (matches)](#chatname-matches)
     - [Functions](#functions)
       - [bot.blockAt(point, extraInfos=true)](#botblockatpoint-extrainfostrue)
       - [bot.waitForChunksToLoad(cb)](#botwaitforchunkstoloadcb)
@@ -219,6 +234,10 @@ Esta documentación no está mantenida oficialmente, si quiere ver las últimas 
       - [bot.chat(message)](#botchatmessage)
       - [bot.whisper(username, message)](#botwhisperusername-message)
       - [bot.chatAddPattern(pattern, chatType, description)](#botchataddpatternpattern-chattype-description)
+      - [bot.addChatPattern(name, pattern, chatPatternOptions)](#botaddchatpatternname-pattern-chatpatternoptions)
+      - [bot.addChatPatternSet(name, patterns, chatPatternOptions)](#botaddchatpatternsetname-patterns-chatpatternoptions)
+      - [bot.removeChatPattern(name)](#botremovechatpatternname)
+      - [bot.awaitMessage(...args)](#botawaitmessageargs)
       - [bot.setSettings(options)](#botsetsettingsoptions)
       - [bot.loadPlugin(plugin)](#botloadpluginplugin)
       - [bot.loadPlugins(plugins)](#botloadpluginsplugins)
@@ -227,7 +246,7 @@ Esta documentación no está mantenida oficialmente, si quiere ver las últimas 
       - [bot.isABed(bedBlock)](#botisabedbedblock)
       - [bot.wake([cb])](#botwakecb)
       - [bot.setControlState(control, state)](#botsetcontrolstatecontrol-state)
-      - [bot.getControlState(control)](#botgetcontrolstatecontrol-state)
+      - [bot.getControlState(control)](#botgetcontrolstatecontrol)
       - [bot.clearControlStates()](#botclearcontrolstates)
       - [bot.lookAt(point, [force], [callback])](#botlookatpoint-force-callback)
       - [bot.look(yaw, pitch, [force], [callback])](#botlookyaw-pitch-force-callback)
@@ -242,6 +261,7 @@ Esta documentación no está mantenida oficialmente, si quiere ver las últimas 
       - [bot.acceptResourcePack()](#botacceptresourcepack)
       - [bot.denyResourcePack()](#botdenyresourcepack)
       - [bot.placeBlock(referenceBlock, faceVector, cb)](#botplaceblockreferenceblock-facevector-cb)
+      - [bot.placeEntity(referenceBlock, faceVector)](#botplaceentityreferenceblock-facevector)
       - [bot.activateBlock(block, [callback])](#botactivateblockblock-callback)
       - [bot.activateEntity(entity, [callback])](#botactivateentityentity-callback)
       - [bot.activateEntityAt(entity, position, [callback])](#botactivateentityatentity-position-callback)
@@ -251,7 +271,7 @@ Esta documentación no está mantenida oficialmente, si quiere ver las últimas 
       - [bot.deactivateItem()](#botdeactivateitem)
       - [bot.useOn(targetEntity)](#botuseontargetentity)
       - [bot.attack(entity)](#botattackentity)
-      - [bot.swingArm([hand])](#botswingarmhand)
+      - [bot.swingArm([hand], showHand)](#botswingarmhand-showhand)
       - [bot.mount(entity)](#botmountentity)
       - [bot.dismount()](#botdismount)
       - [bot.moveVehicle(left,forward)](#botmovevehicleleftforward)
@@ -263,6 +283,7 @@ Esta documentación no está mantenida oficialmente, si quiere ver las últimas 
       - [bot.openFurnace(furnaceBlock)](#botopenfurnacefurnaceblock)
       - [bot.openDispenser(dispenserBlock)](#botopendispenserdispenserblock)
       - [bot.openEnchantmentTable(enchantmentTableBlock)](#botopenenchantmenttableenchantmenttableblock)
+      - [bot.openAnvil(anvilBlock)](#botopenanvilanvilblock)
       - [bot.openVillager(villagerEntity)](#botopenvillagervillagerentity)
       - [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottradevillagerinstance-tradeindex-times-cb)
       - [bot.setCommandBlock(pos, command, [options])](#botsetcommandblockpos-command-options)
@@ -270,8 +291,8 @@ Esta documentación no está mantenida oficialmente, si quiere ver las últimas 
       - [bot.waitForTicks(ticks)](#botwaitforticksticks)
     - [Lower level inventory methods](#lower-level-inventory-methods)
       - [bot.clickWindow(slot, mouseButton, mode, cb)](#botclickwindowslot-mousebutton-mode-cb)
-      - [bot.putSelectedItemRange(start, end, window, slot, cb)](#botputselecteditemrangestart-end-window-slot-cb)
-      - [bot.putAway(slot, cb)](#botputawayslot-cb)
+      - [bot.putSelectedItemRange(start, end, window, slot)](#botputselecteditemrangestart-end-window-slot)
+      - [bot.putAway(slot)](#botputawayslot)
       - [bot.closeWindow(window)](#botclosewindowwindow)
       - [bot.transfer(options, cb)](#bottransferoptions-cb)
       - [bot.openBlock(block)](#botopenblockblock)
@@ -671,7 +692,7 @@ Crea y devuelve una instancia de la clase Bot.
  * client : una instancia de node-minecraft-protocol, si no se especifíca, mineflayer creará su propio cliente. Esto sirve para usar mineflayer a través de un proxy de muchos clientes o para un cliente vanilla y un cliente mineflayer.
  * plugins : object : el valor predeterminado es {}
    - pluginName : false : no cargar el plugin interno con ese nombre ej. `pluginName`
-   - pluginName : true : carga el plugin interno con ese nombre ej. `pluginName` incluso si loadInternalPlugins está en false 
+   - pluginName : true : carga el plugin interno con ese nombre ej. `pluginName` incluso si loadInternalPlugins está en false
    - pluginName : función para introducir : carga un plugin de terceros (externo), anula el plugin interno con el mismo nombre ej. `pluginName`
  * physicsEnabled : el valor predeterminado es true, si el bot debería ser afectado por las físicas, puede modificarse mediante bot.physicsEnabled
  * [chat](#bot.settings.chat)
@@ -1914,20 +1935,15 @@ Hacer click en la ventana/interfaz actual, los detalles están en https://wiki.v
  * mouseButton - 0 para click izquierdo, y 1 para click derecho
  * mode - mineflayer solo tiene disponible el modo 0
 
-#### bot.putSelectedItemRange(start, end, window, slot, noWaiting)
+#### bot.putSelectedItemRange(start, end, window, slot)
 
 Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
 Mover el item en la casilla `slot` en un rango especificado
 
-Si `noWaiting` esta en true, el bot no esperará a que los items se hayan movido.
-Puede ser útil en caso que el cliente tiene que simular la acción sin una respuesta del servidor.
-
-#### bot.putAway(slot, noWaiting)
+#### bot.putAway(slot)
 
 Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
-`noWaiting` ejecuta putSelectedItemRanger con `noWaiting` en true.
-Puede ser útil en caso que el cliente tiene que simular la acción sin una respuesta del servidor.
 
 Mover el item a la casilla `slot` en el inventario.
 

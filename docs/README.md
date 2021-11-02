@@ -3,23 +3,20 @@
 [![NPM version](https://badge.fury.io/js/mineflayer.svg)](http://badge.fury.io/js/mineflayer)
 [![Build Status](https://github.com/PrismarineJS/mineflayer/workflows/CI/badge.svg)](https://github.com/PrismarineJS/mineflayer/actions?query=workflow%3A%22CI%22)
 [![Discord](https://img.shields.io/badge/chat-on%20discord-brightgreen.svg)](https://discord.gg/GsEFRM8)
-[![Gitter](https://img.shields.io/badge/chat-on%20gitter-brightgreen.svg)](https://gitter.im/PrismarineJS/general)
-[![Irc](https://img.shields.io/badge/chat-on%20irc-brightgreen.svg)](https://irc.gitter.im/)
 [![Issue Hunt](https://github.com/BoostIO/issuehunt-materials/blob/master/v1/issuehunt-shield-v1.svg)](https://issuehunt.io/r/PrismarineJS/mineflayer)
-
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb)
 
-| 🇺🇸 [English](README.md) | 🇷🇺 [Russian](ru/README_RU.md) | 🇪🇸 [Spanish](es/README_ES.md) | 🇫🇷 [French](fr/README_FR.md) | 🇹🇷 [Turkish](tr/README_TR.md) |
-|-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
+| <sub>EN</sub> [English](README.md) | <sub>RU</sub> [русский](ru/README_RU.md) | <sub>ES</sub> [Español](es/README_ES.md) | <sub>FR</sub> [Français](fr/README_FR.md) | <sub>TR</sub> [Türkçe](tr/README_TR.md) | <sub>ZH</sub> [中文](zh/README_ZH_CN.md) |
+|-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
 
 Create Minecraft bots with a powerful, stable, and high level JavaScript [API](api.md), also usable from Python.
 
-First time using node.js ? You may want to start with the [tutorial](tutorial.md). Know Python ? Checkout some [Python examples](https://github.com/PrismarineJS/mineflayer/tree/master/examples/python) and try out [Mineflayer on Google Colab](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb).
+First time using Node.js? You may want to start with the [tutorial](tutorial.md). Know Python? Checkout some [Python examples](https://github.com/PrismarineJS/mineflayer/tree/master/examples/python) and try out [Mineflayer on Google Colab](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb).
 
 ## Features
 
- * Supports Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15 and 1.16.
+ * Supports Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16 and 1.17.
  * Entity knowledge and tracking.
  * Block knowledge. You can query the world around you. Milliseconds to find any block.
  * Physics and movement - handle all bounding boxes
@@ -33,11 +30,11 @@ First time using node.js ? You may want to start with the [tutorial](tutorial.md
 
 ### Roadmap
 
- Checkout this page to see what are our current [projects](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects). 
+ Checkout [this page](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects) to see what our current projects are.
  
 ## Installation
 
-First install nodejs >= 14 from [nodejs.org](https://nodejs.org/) then:
+First install Node.js >= 14 from [nodejs.org](https://nodejs.org/) then:
 
 `npm install mineflayer`
 
@@ -45,7 +42,7 @@ First install nodejs >= 14 from [nodejs.org](https://nodejs.org/) then:
 
 | link | description |
 |---|---|
-|[tutorial](tutorial.md) | Begin with node.js and mineflayer |
+|[tutorial](tutorial.md) | Begin with Node.js and mineflayer |
 | [FAQ.md](FAQ.md) | Got a question ? go there first |
 | [api.md](api.md) [unstable_api.md](unstable_api.md) | The full API reference |
 | [history.md](history.md) | The changelog for mineflayer |
@@ -71,7 +68,7 @@ If you want to learn more, more video tutorials are [there,](https://www.youtube
 
 **Getting Started**
 
-Without version specified, the version of the server will be guessed automatically.
+Without a version specified, the version of the server will be guessed automatically.
 Without auth specified, the mojang auth style will be guessed.
 
 ### Echo Example
@@ -99,7 +96,7 @@ bot.on('error', console.log)
 
 ### See what your bot is doing
 
-Thanks to [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer) project, it's possible to display in a browser window what your bot is doing.
+Thanks to the [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer) project, it's possible to display in a browser window what your bot is doing.
 Just run `npm install prismarine-viewer` and add this to your bot:
 ```js
 const { mineflayer: mineflayerViewer } = require('prismarine-viewer')
@@ -118,7 +115,7 @@ And you'll get a *live* view looking like this:
 |[viewer](https://github.com/PrismarineJS/mineflayer/tree/master/examples/viewer) | Display your bot world view in the browser |
 |[pathfinder](https://github.com/PrismarineJS/mineflayer/tree/master/examples/pathfinder) | Make your bot go to any location automatically |
 |[chest](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chest.js) | Use chests, furnaces, dispensers, enchantment tables |
-|[digger](https://github.com/PrismarineJS/mineflayer/blob/master/examples/digger.js) | Learn how to create a simple bot that is capable of digging the block |
+|[digger](https://github.com/PrismarineJS/mineflayer/blob/master/examples/digger.js) | Learn how to create a simple bot that is capable of digging blocks |
 |[discord](https://github.com/PrismarineJS/mineflayer/blob/master/examples/discord.js) | Connect a discord bot with a mineflayer bot |
 |[jumper](https://github.com/PrismarineJS/mineflayer/blob/master/examples/jumper.js) | Learn how to move, jump, ride vehicles, attack nearby entities |
 |[ansi](https://github.com/PrismarineJS/mineflayer/blob/master/examples/ansi.js) | Display your bot's chat with all of the chat colors shown in your terminal |
@@ -182,12 +179,13 @@ The most updated and useful are :
  * [pathfinder](https://github.com/Karang/mineflayer-pathfinder) - advanced A* pathfinding with a lot of configurable features
  * [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer) - simple web chunk viewer
  * [web-inventory](https://github.com/ImHarvol/mineflayer-web-inventory) - web based inventory viewer
- * [statemachine](https://github.com/TheDudeFromCI/mineflayer-statemachine) - A state machine API for more complex bot behavors
- * [Armor Manager](https://github.com/G07cha/MineflayerArmorManager) - automatic armor managment
+ * [statemachine](https://github.com/TheDudeFromCI/mineflayer-statemachine) - A state machine API for more complex bot behaviors
+ * [Armor Manager](https://github.com/G07cha/MineflayerArmorManager) - automatic armor management
  * [Collect Block](https://github.com/TheDudeFromCI/mineflayer-collectblock) - Quick and simple block collection API.
  * [Dashboard](https://github.com/wvffle/mineflayer-dashboard) - Frontend dashboard for mineflayer bot
  * [PVP](https://github.com/TheDudeFromCI/mineflayer-pvp) - Easy API for basic PVP and PVE.
- * [auto-eat](https://github.com/LINKdiscordd/mineflayer-auto-eat) - Automatic eating of food.
+ * [Auto Eat](https://github.com/link-discord/mineflayer-auto-eat) - Automatic eating of food.
+ * [Auto Crystal](https://github.com/link-discord/mineflayer-autocrystal) - Automatic placing & breaking of end crystals.
  * [Tool](https://github.com/TheDudeFromCI/mineflayer-tool) - A utility for automatic tool/weapon selection with a high level API.
  * [Hawkeye](https://github.com/sefirosweb/minecraftHawkEye) - A utility for using auto-aim with bows.
 

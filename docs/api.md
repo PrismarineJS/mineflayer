@@ -45,7 +45,10 @@
       - [enchantmentTable.enchant(choice, [callback])](#enchantmenttableenchantchoice-callback)
       - [enchantmentTable.takeTargetItem([callback])](#enchantmenttabletaketargetitemcallback)
       - [enchantmentTable.putTargetItem(item, [callback])](#enchantmenttableputtargetitemitem-callback)
-    - [mineflayer.Villager](#mineflayervillager)
+      - [enchantmentTable.putLapis(item, [callback])](#enchantmenttableputlapisitem-callback)
+    - [mineflayer.anvil](#mineflayeranvil)
+      - [anvil.combine(itemOne, itemTwo[, name, callback])](#anvilcombineitemone-itemtwo-name-callback)
+      - [anvil.combine(item[, name, callback])](#anvilcombineitem-name-callback)
       - [villager "ready"](#villager-ready)
       - [villager.trades](#villagertrades)
       - [villager.trade(tradeIndex, [times], [cb])](#villagertradetradeindex-times-cb)
@@ -54,6 +57,15 @@
       - [ScoreBoard.title](#scoreboardtitle)
       - [ScoreBoard.itemsMap](#scoreboarditemsmap)
       - [ScoreBoard.items](#scoreboarditems)
+    - [mineflayer.Team](#mineflayerteam)
+      - [Team.name](#teamname)
+      - [Team.friendlyFire](#teamfriendlyfire)
+      - [Team.nameTagVisibility](#teamnametagvisibility)
+      - [Team.collisionRule](#teamcollisionrule)
+      - [Team.color](#teamcolor)
+      - [Team.prefix](#teamprefix)
+      - [Team.suffix](#teamsuffix)
+      - [Team.members](#teammembers)
     - [mineflayer.BossBar](#mineflayerbossbar)
       - [BossBar.title](#bossbartitle)
       - [BossBar.health](#bossbarhealth)
@@ -74,6 +86,7 @@
       - [bot.username](#botusername)
       - [bot.spawnPoint](#botspawnpoint)
       - [bot.heldItem](#bothelditem)
+      - [bot.usingHeldItem](#botusinghelditem)
       - [bot.game.levelType](#botgameleveltype)
       - [bot.game.dimension](#botgamedimension)
       - [bot.game.difficulty](#botgamedifficulty)
@@ -81,7 +94,7 @@
       - [bot.game.hardcore](#botgamehardcore)
       - [bot.game.maxPlayers](#botgamemaxplayers)
       - [bot.game.serverBrand](#botgameserverbrand)
-    - [bot.physicEnabled](#botphysicenabled)
+    - [bot.physicsEnabled](#botphysicsenabled)
     - [bot.player](#botplayer)
       - [bot.players](#botplayers)
       - [bot.isRaining](#botisraining)
@@ -93,13 +106,13 @@
       - [bot.settings.viewDistance](#botsettingsviewdistance)
       - [bot.settings.difficulty](#botsettingsdifficulty)
       - [bot.settings.skinParts](#botsettingsskinparts)
-        - [bot.settings.skinParts.showCape](#botsettingsskinpartsshowcape)
-        - [bot.settings.skinParts.showJacket](#botsettingsskinpartsshowjacket)
-        - [bot.settings.skinParts.showLeftSleeve](#botsettingsskinpartsshowleftsleeve)
-        - [bot.settings.skinParts.showRightSleeve](#botsettingsskinpartsshowrightsleeve)
-        - [bot.settings.skinParts.showLeftPants](#botsettingsskinpartsshowleftpants)
-        - [bot.settings.skinParts.showRightPants](#botsettingsskinpartsshowrightpants)
-        - [bot.settings.skinParts.showHat](#botsettingsskinpartsshowhat)
+        - [bot.settings.skinParts.showCape - boolean](#botsettingsskinpartsshowcape---boolean)
+        - [bot.settings.skinParts.showJacket - boolean](#botsettingsskinpartsshowjacket---boolean)
+        - [bot.settings.skinParts.showLeftSleeve - boolean](#botsettingsskinpartsshowleftsleeve---boolean)
+        - [bot.settings.skinParts.showRightSleeve - boolean](#botsettingsskinpartsshowrightsleeve---boolean)
+        - [bot.settings.skinParts.showLeftPants - boolean](#botsettingsskinpartsshowleftpants---boolean)
+        - [bot.settings.skinParts.showRightPants - boolean](#botsettingsskinpartsshowrightpants---boolean)
+        - [bot.settings.skinParts.showHat - boolean](#botsettingsskinpartsshowhat---boolean)
       - [bot.experience.level](#botexperiencelevel)
       - [bot.experience.points](#botexperiencepoints)
       - [bot.experience.progress](#botexperienceprogress)
@@ -108,6 +121,8 @@
       - [bot.foodSaturation](#botfoodsaturation)
       - [bot.oxygenLevel](#botoxygenlevel)
       - [bot.physics](#botphysics)
+      - [bot.simpleClick.leftMouse (slot)](#botsimpleclickleftmouse-slot)
+      - [bot.simpleClick.rightMouse (slot)](#botsimpleclickrightmouse-slot)
       - [bot.time.doDaylightCycle](#bottimedodaylightcycle)
       - [bot.time.bigTime](#bottimebigtime)
       - [bot.time.time](#bottimetime)
@@ -123,12 +138,16 @@
       - [bot.isSleeping](#botissleeping)
       - [bot.scoreboards](#botscoreboards)
       - [bot.scoreboard](#botscoreboard)
+      - [bot.teams](#botteams)
+      - [bot.teamMap](#botteammap)
       - [bot.controlState](#botcontrolstate)
     - [Events](#events)
       - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
       - ["whisper" (username, message, translate, jsonMsg, matches)](#whisper-username-message-translate-jsonmsg-matches)
       - ["actionBar" (jsonMsg)](#actionbar-jsonmsg)
       - ["message" (jsonMsg, position)](#message-jsonmsg-position)
+      - ["messagestr" (message, messagePosition, jsonMsg)](#messagestr-message-messageposition-jsonmsg)
+      - ["inject_allowed"](#inject_allowed)
       - ["login"](#login)
       - ["spawn"](#spawn)
       - ["respawn"](#respawn)
@@ -136,7 +155,7 @@
       - ["resourcePack" (url, hash)](#resourcepack-url-hash)
       - ["title"](#title)
       - ["rain"](#rain)
-      - ["weatherUpdate"](#weatherUpdate)
+      - ["weatherUpdate"](#weatherupdate)
       - ["time"](#time)
       - ["kicked" (reason, loggedIn)](#kicked-reason-loggedin)
       - ["end"](#end)
@@ -145,11 +164,18 @@
       - ["death"](#death)
       - ["health"](#health)
       - ["breath"](#breath)
-      - ["entityAttributes"](#entityattributes-entity)
+      - ["entityAttributes" (entity)](#entityattributes-entity)
       - ["entitySwingArm" (entity)](#entityswingarm-entity)
       - ["entityHurt" (entity)](#entityhurt-entity)
+      - ["entityDead" (entity)](#entitydead-entity)
+      - ["entityTaming" (entity)](#entitytaming-entity)
+      - ["entityTamed" (entity)](#entitytamed-entity)
+      - ["entityShakingOffWater" (entity)](#entityshakingoffwater-entity)
+      - ["entityEatingGrass" (entity)](#entityeatinggrass-entity)
       - ["entityWake" (entity)](#entitywake-entity)
       - ["entityEat" (entity)](#entityeat-entity)
+      - ["entityCriticalEffect" (entity)](#entitycriticaleffect-entity)
+      - ["entityMagicCriticalEffect" (entity)](#entitymagiccriticaleffect-entity)
       - ["entityCrouch" (entity)](#entitycrouch-entity)
       - ["entityUncrouch" (entity)](#entityuncrouch-entity)
       - ["entityEquip" (entity)](#entityequip-entity)
@@ -165,6 +191,7 @@
       - ["entityEffect" (entity, effect)](#entityeffect-entity-effect)
       - ["entityEffectEnd" (entity, effect)](#entityeffectend-entity-effect)
       - ["playerJoined" (player)](#playerjoined-player)
+      - ["playerUpdated" (player)](#playerupdated-player)
       - ["playerLeft" (player)](#playerleft-player)
       - ["blockUpdate" (oldBlock, newBlock)](#blockupdate-oldblock-newblock)
       - ["blockUpdate:(x, y, z)" (oldBlock, newBlock)](#blockupdatex-y-z-oldblock-newblock)
@@ -195,16 +222,24 @@
       - ["scoreUpdated" (scoreboard, item)](#scoreupdated-scoreboard-item)
       - ["scoreRemoved" (scoreboard, item)](#scoreremoved-scoreboard-item)
       - ["scoreboardPosition" (position, scoreboard)](#scoreboardposition-position-scoreboard)
+      - ["teamCreated" (team)](#teamcreated-team)
+      - ["teamRemoved" (team)](#teamremoved-team)
+      - ["teamUpdated" (team)](#teamupdated-team)
+      - ["teamMemberAdded" (team)](#teammemberadded-team)
+      - ["teamMemberRemoved" (team)](#teammemberremoved-team)
       - ["bossBarCreated" (bossBar)](#bossbarcreated-bossbar)
       - ["bossBarDeleted" (bossBar)](#bossbardeleted-bossbar)
       - ["bossBarUpdated" (bossBar)](#bossbarupdated-bossbar)
       - ["heldItemChanged" (heldItem)](#helditemchanged-helditem)
+      - ["physicsTick" ()](#physicstick-)
+      - ["chat:name" (matches)](#chatname-matches)
     - [Functions](#functions)
       - [bot.blockAt(point, extraInfos=true)](#botblockatpoint-extrainfostrue)
       - [bot.waitForChunksToLoad(cb)](#botwaitforchunkstoloadcb)
       - [bot.blockInSight(maxSteps, vectorLength)](#botblockinsightmaxsteps-vectorlength)
       - [bot.blockAtCursor(maxDistance=256)](#botblockatcursormaxdistance256)
       - [bot.entityAtCursor(maxDistance = 3.5)](#botentityatcursormaxdistance35)
+      - [bot.blockAtEntityCursor(entity=bot.entity, maxDistance=256)](#botblockatentitycursorentitybotentity-maxdistance256)
       - [bot.canSeeBlock(block)](#botcanseeblockblock)
       - [bot.findBlocks(options)](#botfindblocksoptions)
       - [bot.findBlock(options)](#botfindblockoptions)
@@ -219,6 +254,10 @@
       - [bot.chat(message)](#botchatmessage)
       - [bot.whisper(username, message)](#botwhisperusername-message)
       - [bot.chatAddPattern(pattern, chatType, description)](#botchataddpatternpattern-chattype-description)
+      - [bot.addChatPattern(name, pattern, chatPatternOptions)](#botaddchatpatternname-pattern-chatpatternoptions)
+      - [bot.addChatPatternSet(name, patterns, chatPatternOptions)](#botaddchatpatternsetname-patterns-chatpatternoptions)
+      - [bot.removeChatPattern(name)](#botremovechatpatternname)
+      - [bot.awaitMessage(...args)](#botawaitmessageargs)
       - [bot.setSettings(options)](#botsetsettingsoptions)
       - [bot.loadPlugin(plugin)](#botloadpluginplugin)
       - [bot.loadPlugins(plugins)](#botloadpluginsplugins)
@@ -227,9 +266,9 @@
       - [bot.isABed(bedBlock)](#botisabedbedblock)
       - [bot.wake([cb])](#botwakecb)
       - [bot.setControlState(control, state)](#botsetcontrolstatecontrol-state)
-      - [bot.getControlState(control)](#botgetcontrolstatecontrol-state)
-      - [bot.getExplosionDamages(entity, position, radius, [rawDamages])](#botgetexplosiondamages)
+      - [bot.getControlState(control)](#botgetcontrolstatecontrol)
       - [bot.clearControlStates()](#botclearcontrolstates)
+      - [bot.getExplosionDamages(entity, position, radius, [rawDamages])](#botgetexplosiondamagesentity-position-radius-rawdamages)
       - [bot.lookAt(point, [force], [callback])](#botlookatpoint-force-callback)
       - [bot.look(yaw, pitch, [force], [callback])](#botlookyaw-pitch-force-callback)
       - [bot.updateSign(block, text)](#botupdatesignblock-text)
@@ -243,6 +282,7 @@
       - [bot.acceptResourcePack()](#botacceptresourcepack)
       - [bot.denyResourcePack()](#botdenyresourcepack)
       - [bot.placeBlock(referenceBlock, faceVector, cb)](#botplaceblockreferenceblock-facevector-cb)
+      - [bot.placeEntity(referenceBlock, faceVector)](#botplaceentityreferenceblock-facevector)
       - [bot.activateBlock(block, [callback])](#botactivateblockblock-callback)
       - [bot.activateEntity(entity, [callback])](#botactivateentityentity-callback)
       - [bot.activateEntityAt(entity, position, [callback])](#botactivateentityatentity-position-callback)
@@ -252,7 +292,7 @@
       - [bot.deactivateItem()](#botdeactivateitem)
       - [bot.useOn(targetEntity)](#botuseontargetentity)
       - [bot.attack(entity)](#botattackentity)
-      - [bot.swingArm([hand])](#botswingarmhand)
+      - [bot.swingArm([hand], showHand)](#botswingarmhand-showhand)
       - [bot.mount(entity)](#botmountentity)
       - [bot.dismount()](#botdismount)
       - [bot.moveVehicle(left,forward)](#botmovevehicleleftforward)
@@ -264,6 +304,7 @@
       - [bot.openFurnace(furnaceBlock)](#botopenfurnacefurnaceblock)
       - [bot.openDispenser(dispenserBlock)](#botopendispenserdispenserblock)
       - [bot.openEnchantmentTable(enchantmentTableBlock)](#botopenenchantmenttableenchantmenttableblock)
+      - [bot.openAnvil(anvilBlock)](#botopenanvilanvilblock)
       - [bot.openVillager(villagerEntity)](#botopenvillagervillagerentity)
       - [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottradevillagerinstance-tradeindex-times-cb)
       - [bot.setCommandBlock(pos, command, [options])](#botsetcommandblockpos-command-options)
@@ -271,8 +312,8 @@
       - [bot.waitForTicks(ticks)](#botwaitforticksticks)
     - [Lower level inventory methods](#lower-level-inventory-methods)
       - [bot.clickWindow(slot, mouseButton, mode, cb)](#botclickwindowslot-mousebutton-mode-cb)
-      - [bot.putSelectedItemRange(start, end, window, slot, cb)](#botputselecteditemrangestart-end-window-slot-cb)
-      - [bot.putAway(slot, cb)](#botputawayslot-cb)
+      - [bot.putSelectedItemRange(start, end, window, slot)](#botputselecteditemrangestart-end-window-slot)
+      - [bot.putAway(slot)](#botputawayslot)
       - [bot.closeWindow(window)](#botclosewindowwindow)
       - [bot.transfer(options, cb)](#bottransferoptions-cb)
       - [bot.openBlock(block)](#botopenblockblock)
@@ -619,6 +660,38 @@ An array with all sorted items in the scoreboard in it
 ]
 ```
 
+### mineflayer.Team
+
+#### Team.name
+
+Name of the team
+
+#### Team.friendlyFire
+
+#### Team.nameTagVisibility
+
+One of `always`, `hideForOtherTeams`, `hideForOwnTeam`
+
+#### Team.collisionRule
+
+One of `always`, `pushOtherTeams`, `pushOwnTeam`
+
+#### Team.color
+
+Color (or formatting) name of team, e.g. `dark_green`, `red`, `underlined`
+
+#### Team.prefix
+
+A chat component containing team prefix
+
+#### Team.suffix
+
+A chat component containing team suffix
+
+#### Team.members
+
+Array of team members. Usernames for players and UUIDs for other entities.
+
 ### mineflayer.BossBar
 
 #### BossBar.title
@@ -727,6 +800,10 @@ Coordinates to the main spawn point, where all compasses point to.
 
 The item in the bot's hand, represented as a [prismarine-item](https://github.com/PrismarineJS/prismarine-item) instance specified with arbitrary metadata, nbtdata, etc.
 
+#### bot.usingHeldItem
+
+Whether the bot is using the item that it's holding, for example eating food or using a shield.
+
 #### bot.game.levelType
 
 #### bot.game.dimension
@@ -757,6 +834,8 @@ Bot's player object
   entity: entity // null if you are too far away
 }
 ```
+
+A player's ping starts at 0, you might have to wait a bit for the server to send their actual ping.
 
 #### bot.players
 
@@ -819,21 +898,21 @@ Same as from server.properties.
 
 These boolean Settings control if extra Skin Details on the own players' skin should be visible
 
-##### bot.settings.skinParts.showCape
+##### bot.settings.skinParts.showCape - boolean
 
 If you have a cape you can turn it off by setting this to false.
 
-##### bot.settings.skinParts.showJacket
+##### bot.settings.skinParts.showJacket - boolean
 
-##### bot.settings.skinParts.showLeftSleeve
+##### bot.settings.skinParts.showLeftSleeve - boolean
 
-##### bot.settings.skinParts.showRightSleeve
+##### bot.settings.skinParts.showRightSleeve - boolean
 
-##### bot.settings.skinParts.showLeftPants
+##### bot.settings.skinParts.showLeftPants - boolean
 
-##### bot.settings.skinParts.showRightPants
+##### bot.settings.skinParts.showRightPants - boolean
 
-##### bot.settings.skinParts.showHat
+##### bot.settings.skinParts.showHat - boolean
 
 
 #### bot.experience.level
@@ -961,6 +1040,14 @@ All scoreboards known to the bot in an object scoreboard displaySlot -> scoreboa
  * `sidebar` - scoreboard placed in sidebar
  * `list` - scoreboard placed in list
  * `0-18` - slots defined in [protocol](https://wiki.vg/Protocol#Display_Scoreboard)
+
+#### bot.teams
+
+All teams known to the bot
+
+#### bot.teamMap
+
+Mapping of member to team. Uses usernames for players and UUIDs for entities.
 
 #### bot.controlState
 
@@ -1293,6 +1380,26 @@ Fires when the score of a item in a scoreboard is removed.
 
 Fires when the position of a scoreboard is updated.
 
+#### "teamCreated" (team)
+
+Fires when a team is added.
+
+#### "teamRemoved" (team)
+
+Fires when a team is removed.
+
+#### "teamUpdated" (team)
+
+Fires when a team is updated.
+
+#### "teamMemberAdded" (team)
+
+Fires when a team member or multiple members are added to a team.
+
+#### "teamMemberRemoved" (team)
+
+Fires when a team member or multiple members are removed from a team.
+
 #### "bossBarCreated" (bossBar)
 
 Fires when new boss bar is created.
@@ -1348,6 +1455,12 @@ Returns the block at which bot is looking at or `null`
 Returns the entity at which bot is looking at or `null`
  * `maxDistance` - The maximum distance the entity can be from the eye, defaults to 3.5.
 
+#### bot.blockAtEntityCursor(entity=bot.entity, maxDistance=256)
+
+Returns the block at which specific entity is looking at or `null`
+ * `entity` - Entity data as `Object`
+ * `maxDistance` - The maximum distance the block can be from the eye, defaults to 256.
+
 #### bot.canSeeBlock(block)
 
 Returns true or false depending on whether the bot can see the specified `block`.
@@ -1395,6 +1508,11 @@ The same as bot.recipesFor except that it does not check wether the bot has enou
 #### bot.nearestEntity(match = (entity) => { return true })
 
 Return the nearest entity to the bot, matching the function (default to all entities). Return null if no entity is found.
+
+Example:
+```js
+const cow = bot.nearestEntity(entity => entity.name.toLowerCase() === 'cow') // we use .toLowercase() because in 1.8 cow was capitalized, for newer versions that can be ommitted
+```
 
 ### Methods
 
@@ -1559,6 +1677,7 @@ Sets all controls to off.
 #### bot.getExplosionDamages(entity, position, radius, [rawDamages])
 
 Returns how much damage will be done to the entity in a radius around the position of the explosion.
+It will return `null` if the entity has no armor and rawDamages is not set to true, since the function can't calculate the damage with armor if there is no armor.
 
 * `entity` - Entity instance
 * `position` - [Vec3](https://github.com/andrewrk/node-vec3) instance
@@ -1646,11 +1765,13 @@ dig any other blocks until the block has been broken, or you call
 `bot.stopDigging()`.
 
  * `block` - the block to start digging into
- * `forceLook` - (optional) if true, look at the block and start mining instantly. If false, the bot will slowly turn to the block to mine. Additionally, this can be assigned to 'ignore' to prevent the bot from moving it's head at all.
+ * `forceLook` - (optional) if true, look at the block and start mining instantly. If false, the bot will slowly turn to the block to mine. Additionally, this can be assigned to 'ignore' to prevent the bot from moving it's head at all. Also, this can be assigned to 'raycast' to raycast from the bots head to place where the bot is looking.
  * `digFace` - (optional) Default is 'auto' looks at the center of the block and mines the top face. Can also be a vec3 vector
  of the face the bot should be looking at when digging the block. For example: ```vec3(0, 1, 0)``` when mining the top. Can also be 'raycast' raycast checks if there is a face visible by the bot and mines that face. Useful for servers with anti cheat.
  * `callback(err)` - (optional) called when the block is broken or you
    are interrupted.
+
+If you call bot.dig twice before the first dig is finished, you will get a fatal 'diggingAborted' error.
 
 #### bot.stopDigging()
 
@@ -1870,20 +1991,15 @@ This function also returns a `Promise`, with `void` as its argument upon complet
 
 Click on the current window. See details at https://wiki.vg/Protocol#Click_Window
 
-#### bot.putSelectedItemRange(start, end, window, slot, noWaiting)
+#### bot.putSelectedItemRange(start, end, window, slot)
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
 
 Put the item at `slot` in the specified range.
 
-`noWaiting` will not wait for items to be moved.
-Can be useful in case the client is supposed to simulate without feedback from the server.
-
-#### bot.putAway(slot, noWaiting)
+#### bot.putAway(slot)
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
-`noWaiting` calls putSelectedItemRange with `noWaiting` option: it will not wait for items to be moved.
-Can be useful in case the client is supposed to simulate without feedback from the server.
 
 Put the item at `slot` in the inventory.
 

@@ -7,7 +7,9 @@ import { Window } from 'prismarine-windows'
 import { Recipe } from 'prismarine-recipe'
 import { Block } from 'prismarine-block'
 import { Entity } from 'prismarine-entity'
+import { ChatMessage } from 'prismarine-chat'
 
+export function createBot (options: { client: Client } & Partial<BotOptions>): Bot
 export function createBot (options: BotOptions): Bot
 
 export interface BotOptions extends ClientOptions {
@@ -23,6 +25,7 @@ export interface BotOptions extends ClientOptions {
   chatLengthLimit?: number
   physicsEnabled?: boolean
   client?: Client
+  brand?: string
 }
 
 export type ChatLevel = 'enabled' | 'commandsOnly' | 'disabled'
@@ -42,107 +45,111 @@ interface BotEvents {
     translate: string | null,
     jsonMsg: ChatMessage,
     matches: string[] | null
-  ) => void
+  ) => Promise<void> | void
   whisper: (
     username: string,
     message: string,
     translate: string | null,
     jsonMsg: ChatMessage,
     matches: string[] | null
-  ) => void
-  actionBar: (jsonMsg: ChatMessage) => void
-  error: (err: Error) => void
-  message: (jsonMsg: ChatMessage, position: string) => void
-  messagestr: (message: string, position: string, jsonMsg: ChatMessage) => void
-  unmatchedMessage: (stringMsg: string, jsonMsg: ChatMessage) => void
-  inject_allowed: () => void
-  login: () => void
-  spawn: () => void
-  respawn: () => void
-  game: () => void
-  title: (text: string) => void
-  rain: () => void
-  time: () => void
-  kicked: (reason: string, loggedIn: boolean) => void
-  end: () => void
-  spawnReset: () => void
-  death: () => void
-  health: () => void
-  breath: () => void
-  entitySwingArm: (entity: Entity) => void
-  entityHurt: (entity: Entity) => void
-  entityDead: (entity: Entity) => void
-  entityTaming: (entity: Entity) => void
-  entityTamed: (entity: Entity) => void
-  entityShakingOffWater: (entity: Entity) => void
-  entityEatingGrass: (entity: Entity) => void
-  entityWake: (entity: Entity) => void
-  entityEat: (entity: Entity) => void
-  entityCriticalEffect: (entity: Entity) => void
-  entityMagicCriticalEffect: (entity: Entity) => void
-  entityCrouch: (entity: Entity) => void
-  entityUncrouch: (entity: Entity) => void
-  entityEquip: (entity: Entity) => void
-  entitySleep: (entity: Entity) => void
-  entitySpawn: (entity: Entity) => void
-  itemDrop: (entity: Entity) => void
-  playerCollect: (collector: Entity, collected: Entity) => void
-  entityAttributes: (entity: Entity) => void
-  entityGone: (entity: Entity) => void
-  entityMoved: (entity: Entity) => void
-  entityDetach: (entity: Entity, vehicle: Entity) => void
-  entityAttach: (entity: Entity, vehicle: Entity) => void
-  entityUpdate: (entity: Entity) => void
-  entityEffect: (entity: Entity, effect: Effect) => void
-  entityEffectEnd: (entity: Entity, effect: Effect) => void
-  playerJoined: (player: Player) => void
-  playerUpdated: (player: Player) => void
-  playerLeft: (entity: Player) => void
-  blockUpdate: (oldBlock: Block | null, newBlock: Block) => void
-  'blockUpdate:(x, y, z)': (oldBlock: Block | null, newBlock: Block) => void
-  chunkColumnLoad: (entity: Vec3) => void
-  chunkColumnUnload: (entity: Vec3) => void
+  ) => Promise<void> | void
+  actionBar: (jsonMsg: ChatMessage) => Promise<void> | void
+  error: (err: Error) => Promise<void> | void
+  message: (jsonMsg: ChatMessage, position: string) => Promise<void> | void
+  messagestr: (message: string, position: string, jsonMsg: ChatMessage) => Promise<void> | void
+  unmatchedMessage: (stringMsg: string, jsonMsg: ChatMessage) => Promise<void> | void
+  inject_allowed: () => Promise<void> | void
+  login: () => Promise<void> | void
+  spawn: () => Promise<void> | void
+  respawn: () => Promise<void> | void
+  game: () => Promise<void> | void
+  title: (text: string) => Promise<void> | void
+  rain: () => Promise<void> | void
+  time: () => Promise<void> | void
+  kicked: (reason: string, loggedIn: boolean) => Promise<void> | void
+  end: () => Promise<void> | void
+  spawnReset: () => Promise<void> | void
+  death: () => Promise<void> | void
+  health: () => Promise<void> | void
+  breath: () => Promise<void> | void
+  entitySwingArm: (entity: Entity) => Promise<void> | void
+  entityHurt: (entity: Entity) => Promise<void> | void
+  entityDead: (entity: Entity) => Promise<void> | void
+  entityTaming: (entity: Entity) => Promise<void> | void
+  entityTamed: (entity: Entity) => Promise<void> | void
+  entityShakingOffWater: (entity: Entity) => Promise<void> | void
+  entityEatingGrass: (entity: Entity) => Promise<void> | void
+  entityWake: (entity: Entity) => Promise<void> | void
+  entityEat: (entity: Entity) => Promise<void> | void
+  entityCriticalEffect: (entity: Entity) => Promise<void> | void
+  entityMagicCriticalEffect: (entity: Entity) => Promise<void> | void
+  entityCrouch: (entity: Entity) => Promise<void> | void
+  entityUncrouch: (entity: Entity) => Promise<void> | void
+  entityEquip: (entity: Entity) => Promise<void> | void
+  entitySleep: (entity: Entity) => Promise<void> | void
+  entitySpawn: (entity: Entity) => Promise<void> | void
+  itemDrop: (entity: Entity) => Promise<void> | void
+  playerCollect: (collector: Entity, collected: Entity) => Promise<void> | void
+  entityAttributes: (entity: Entity) => Promise<void> | void
+  entityGone: (entity: Entity) => Promise<void> | void
+  entityMoved: (entity: Entity) => Promise<void> | void
+  entityDetach: (entity: Entity, vehicle: Entity) => Promise<void> | void
+  entityAttach: (entity: Entity, vehicle: Entity) => Promise<void> | void
+  entityUpdate: (entity: Entity) => Promise<void> | void
+  entityEffect: (entity: Entity, effect: Effect) => Promise<void> | void
+  entityEffectEnd: (entity: Entity, effect: Effect) => Promise<void> | void
+  playerJoined: (player: Player) => Promise<void> | void
+  playerUpdated: (player: Player) => Promise<void> | void
+  playerLeft: (entity: Player) => Promise<void> | void
+  blockUpdate: (oldBlock: Block | null, newBlock: Block) => Promise<void> | void
+  'blockUpdate:(x, y, z)': (oldBlock: Block | null, newBlock: Block) => Promise<void> | void
+  chunkColumnLoad: (entity: Vec3) => Promise<void> | void
+  chunkColumnUnload: (entity: Vec3) => Promise<void> | void
   soundEffectHeard: (
     soundName: string,
     position: Vec3,
     volume: number,
     pitch: number
-  ) => void
+  ) => Promise<void> | void
   hardcodedSoundEffectHeard: (
     soundId: number,
     soundCategory: number,
     position: Vec3,
     volume: number,
     pitch: number
-  ) => void
-  noteHeard: (block: Block, instrument: Instrument, pitch: number) => void
-  pistonMove: (block: Block, isPulling: number, direction: number) => void
-  chestLidMove: (block: Block, isOpen: number) => void
-  blockBreakProgressObserved: (block: Block, destroyStage: number) => void
-  blockBreakProgressEnd: (block: Block) => void
-  diggingCompleted: (block: Block) => void
-  diggingAborted: (block: Block) => void
-  move: () => void
-  forcedMove: () => void
-  mount: () => void
-  dismount: (vehicle: Entity) => void
-  windowOpen: (vehicle: Window) => void
-  windowClose: (vehicle: Window) => void
-  sleep: () => void
-  wake: () => void
-  experience: () => void
-  physicsTick: () => void
-  physicTick: () => void
-  scoreboardCreated: (scoreboard: ScoreBoard) => void
-  scoreboardDeleted: (scoreboard: ScoreBoard) => void
-  scoreboardTitleChanged: (scoreboard: ScoreBoard) => void
-  scoreUpdated: (scoreboard: ScoreBoard, item: number) => void
-  scoreRemoved: (scoreboard: ScoreBoard, item: number) => void
-  scoreboardPosition: (position: DisplaySlot, scoreboard: ScoreBoard) => void
-  bossBarCreated: (bossBar: BossBar) => void
-  bossBarDeleted: (bossBar: BossBar) => void
-  bossBarUpdated: (bossBar: BossBar) => void
-  resourcePack: (url: string, hash: string) => void
+  ) => Promise<void> | void
+  noteHeard: (block: Block, instrument: Instrument, pitch: number) => Promise<void> | void
+  pistonMove: (block: Block, isPulling: number, direction: number) => Promise<void> | void
+  chestLidMove: (block: Block, isOpen: number) => Promise<void> | void
+  blockBreakProgressObserved: (block: Block, destroyStage: number) => Promise<void> | void
+  blockBreakProgressEnd: (block: Block) => Promise<void> | void
+  diggingCompleted: (block: Block) => Promise<void> | void
+  diggingAborted: (block: Block) => Promise<void> | void
+  move: () => Promise<void> | void
+  forcedMove: () => Promise<void> | void
+  mount: () => Promise<void> | void
+  dismount: (vehicle: Entity) => Promise<void> | void
+  windowOpen: (vehicle: Window) => Promise<void> | void
+  windowClose: (vehicle: Window) => Promise<void> | void
+  sleep: () => Promise<void> | void
+  wake: () => Promise<void> | void
+  experience: () => Promise<void> | void
+  physicsTick: () => Promise<void> | void
+  physicTick: () => Promise<void> | void
+  scoreboardCreated: (scoreboard: ScoreBoard) => Promise<void> | void
+  scoreboardDeleted: (scoreboard: ScoreBoard) => Promise<void> | void
+  scoreboardTitleChanged: (scoreboard: ScoreBoard) => Promise<void> | void
+  scoreUpdated: (scoreboard: ScoreBoard, item: number) => Promise<void> | void
+  scoreRemoved: (scoreboard: ScoreBoard, item: number) => Promise<void> | void
+  scoreboardPosition: (position: DisplaySlot, scoreboard: ScoreBoard) => Promise<void> | void
+  teamCreated: (team: Team) => Promise<void> | void
+  teamRemoved: (team: Team) => Promise<void> | void
+  teamUpdated: (team: Team) => Promise<void> | void
+  teamMemberAdded: (team: Team) => Promise<void> | void
+  teamMemberRemoved: (team: Team) => Promise<void> | void
+  bossBarDeleted: (bossBar: BossBar) => Promise<void> | void
+  bossBarUpdated: (bossBar: BossBar) => Promise<void> | void
+  resourcePack: (url: string, hash: string) => Promise<void> | void
 }
 
 export interface Bot extends TypedEmitter<BotEvents> {
@@ -173,6 +180,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   isSleeping: boolean
   scoreboards: { [name: string]: ScoreBoard }
   scoreboard: { [slot in DisplaySlot]: ScoreBoard }
+  teamMap: { [name: string]: Team }
   controlState: ControlStateStatus
   creative: creativeMethods
   world: any
@@ -249,6 +257,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   clearControlStates: () => void
 
+  getExplosionDamages: (targetEntity: Entity, position: Vec3, radius: number, rawDamages?: boolean) => number | null
+
   lookAt: (point: Vec3, force?: boolean, callback?: () => void) => Promise<void>
 
   look: (
@@ -296,9 +306,9 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   activateEntityAt: (block: Entity, position: Vec3, callback?: (err?: Error) => void) => Promise<void>
 
-  consume: (callback: (err?: Error) => void) => Promise<void>
+  consume: (callback?: (err?: Error) => void) => Promise<void>
 
-  fish: (callback: (err?: Error) => void) => Promise<void>
+  fish: (callback?: (err?: Error) => void) => Promise<void>
 
   activateItem: (offhand?: boolean) => void
 
@@ -331,15 +341,15 @@ export interface Bot extends TypedEmitter<BotEvents> {
     callback?: (err?: Error) => void
   ) => Promise<void>
 
-  openChest: (chest: Block | Entity) => Chest
+  openChest: (chest: Block | Entity) => Promise<Chest>
 
-  openFurnace: (furnace: Block) => Furnace
+  openFurnace: (furnace: Block) => Promise<Furnace>
 
-  openDispenser: (dispenser: Block) => Dispenser
+  openDispenser: (dispenser: Block) => Promise<Dispenser>
 
-  openEnchantmentTable: (enchantmentTable: Block) => EnchantmentTable
+  openEnchantmentTable: (enchantmentTable: Block) => Promise<EnchantmentTable>
 
-  openAnvil: (anvil: Block) => Anvil
+  openAnvil: (anvil: Block) => Promise<Anvil>
 
   openVillager: (
     villager: Entity
@@ -375,9 +385,9 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   transfer: (options: TransferOptions, cb?: (err?: Error) => void) => Promise<void>
 
-  openBlock: (block: Block, Class: new () => EventEmitter) => void
+  openBlock: (block: Block, Class: new () => EventEmitter) => Promise<void>
 
-  openEntity: (block: Entity, Class: new () => EventEmitter) => void
+  openEntity: (block: Entity, Class: new () => EventEmitter) => Promise<void>
 
   moveSlotItem: (
     sourceSlot: number,
@@ -446,38 +456,6 @@ export interface Player {
   gamemode: number
   ping: number
   entity: Entity
-}
-
-export class ChatMessage {
-  json: object
-  text?: string
-  translate?: string
-  with?: ChatMessage[]
-  extra?: ChatMessage[]
-  bold: boolean
-  italic: boolean
-  underlined: boolean
-  strikethrough: boolean
-  obfuscated: boolean
-  color: string
-  clickEvent: object
-  hoverEvent: object
-
-  constructor (message: ChatMessage);
-
-  parse (): void;
-
-  length (): number;
-
-  getText (idx: number, lang?: { [key: string]: string }): string;
-
-  toString (lang?: { [key: string]: string }): string;
-
-  valueOf (): string;
-
-  toMotd (lang?: { [key: string]: string }): string;
-
-  toAnsi (lang?: { [key: string]: string }): string;
 }
 
 export interface ChatPattern {
@@ -779,14 +757,37 @@ export class ScoreBoard {
 
   setTitle (title: string): void;
 
-  add (name: string, value: number): ScoreBoardItem;
+  add (name: string, value: number, displayName: ChatMessage): ScoreBoardItem;
 
   remove (name: string): ScoreBoardItem;
 }
 
 export interface ScoreBoardItem {
   name: string
+  displayName: ChatMessage
   value: number
+}
+
+export class Team {
+  name: ChatMessage
+  friendlyFire: number
+  nameTagVisibility: string
+  collisionRule: string
+  color: string
+  prefix: ChatMessage
+  suffix: ChatMessage
+
+  constructor (packet: object);
+
+  parseMessage (value: string): ChatMessage;
+
+  add (name: string, value: number): void;
+
+  remove (name: string): void;
+
+  update (name: string, friendlyFire: boolean, nameTagVisibility: string, collisionRule: string, formatting: number, prefix: string, suffix: string): void;
+
+  displayName (member: string);
 }
 
 export type DisplaySlot =
