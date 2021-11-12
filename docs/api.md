@@ -757,6 +757,7 @@ Create and return an instance of the class bot.
  * [difficulty](#bot.settings.difficulty)
  * [skinParts](#bot.settings.skinParts)
  * chatLengthLimit : the maximum amount of characters that can be sent in a single message. If this is not set, it will be 100 in < 1.11 and 256 in >= 1.11.
+ * defaultChatPatterns: defaults to true, set to false to not add the patterns such as chat and whisper
 
 ### Properties
 
