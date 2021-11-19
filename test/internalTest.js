@@ -217,6 +217,41 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
     describe('entities', () => {
+      it('entity id changes on login', (done) => {
+        let loginPacket
+        server.on('login', (client) => {
+          if (bot.supportFeature('usesLoginPacket')) {
+            loginPacket = mcData.loginPacket
+          } else {
+            loginPacket = {
+              entityId: 0,
+              levelType: 'fogetaboutit',
+              gameMode: 0,
+              previousGameMode: 255,
+              worldNames: ['minecraft:overworld'],
+              dimension: 0,
+              worldName: 'minecraft:overworld',
+              hashedSeed: [0, 0],
+              difficulty: 0,
+              maxPlayers: 20,
+              reducedDebugInfo: 1,
+              enableRespawnScreen: true
+            }
+          }
+          loginPacket.entityId = 0 // Default login packet in minecraft-data 1.16.5 is 1, so set it to 0
+          client.write('login', loginPacket)
+          bot.once('login', () => {
+            assert.ok(bot.entity.id === 0)
+            loginPacket.entityId = 42
+            bot.once('login', () => {
+              assert.ok(bot.entity.id === 42)
+              done()
+            })
+            client.write('login', loginPacket)
+          })
+        })
+      })
+
       it('player displayName', (done) => {
         server.on('login', (client) => {
           bot.on('entitySpawn', (entity) => {
