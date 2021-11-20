@@ -216,12 +216,111 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
     })
+    describe('world', () => {
+      const pos = vec3(1, 65, 1)
+      const goldId = 41
+      it('switchWorld respawn', (done) => {
+        let loginPacket
+        let respawnPacket
+        if (bot.supportFeature('usesLoginPacket')) {
+          loginPacket = mcData.loginPacket
+          loginPacket.worldName = 'minecraft:overworld'
+          loginPacket.hashedSeed = [0, 0]
+          loginPacket.entityId = 0
+          respawnPacket = {
+            dimension: loginPacket.dimension,
+            worldName: 'minecraft:overworld',
+            hashedSeed: [0, 0],
+            gamemode: 0,
+            previousGamemode: 255,
+            isDebug: false,
+            isFlat: false,
+            copyMetadata: true
+          }
+        } else {
+          respawnPacket = {
+            dimension: 0,
+            hashedSeed: [0, 0],
+            gamemode: 0,
+            levelType: 'default'
+          }
+          loginPacket = {
+            entityId: 0,
+            levelType: 'fogetaboutit',
+            gameMode: 0,
+            previousGameMode: 255,
+            worldNames: ['minecraft:overworld', 'minecraft:nether', 'minecraft:the_end'],
+            dimension: 0,
+            worldName: 'minecraft:overworld',
+            hashedSeed: [0, 0],
+            difficulty: 0,
+            maxPlayers: 20,
+            reducedDebugInfo: 1,
+            enableRespawnScreen: true
+          }
+        }
+        const chunk = new Chunk()
+        chunk.setBlockType(pos, goldId)
+        const chunkPacket = {
+          x: 0,
+          z: 0,
+          groundUp: true,
+          biomes: chunk.dumpBiomes !== undefined ? chunk.dumpBiomes() : undefined,
+          heightmaps: {
+            type: 'compound',
+            name: '',
+            value: {
+              MOTION_BLOCKING: { type: 'longArray', value: new Array(36).fill([0, 0]) }
+            }
+          }, // send fake heightmap
+          bitMap: chunk.getMask(),
+          chunkData: chunk.dump(),
+          blockEntities: []
+        }
+        const positionPacket = {
+          x: 1.5,
+          y: 80,
+          z: 1.5,
+          pitch: 0,
+          yaw: 0,
+          flags: 0,
+          teleportId: 0
+        }
+        server.on('login', async (client) => {
+          bot.once('respawn', () => {
+            assert.ok(bot.world.getColumn(0, 0) !== undefined)
+            bot.once('respawn', () => {
+              assert.ok(bot.world.getColumn(0, 0) === undefined)
+              done()
+            })
+            respawnPacket.worldName = 'minecraft:nether'
+            if (bot.supportFeature('usesLoginPacket')) {
+              respawnPacket.dimension.name = 'e'
+            } else {
+              respawnPacket.dimension = 1
+            }
+            client.write('respawn', respawnPacket)
+          })
+          await client.write('login', loginPacket)
+          await client.write('map_chunk', chunkPacket)
+          await client.write('position', positionPacket)
+          await client.write('update_health', {
+            health: 20,
+            food: 20,
+            foodSaturation: 0
+          })
+          await bot.waitForTicks(1)
+          await client.write('respawn', respawnPacket)
+        })
+      })
+    })
     describe('entities', () => {
       it('entity id changes on login', (done) => {
         let loginPacket
         server.on('login', (client) => {
           if (bot.supportFeature('usesLoginPacket')) {
             loginPacket = mcData.loginPacket
+            loginPacket.entityId = 0 // Default login packet in minecraft-data 1.16.5 is 1, so set it to 0
           } else {
             loginPacket = {
               entityId: 0,
@@ -238,7 +337,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
               enableRespawnScreen: true
             }
           }
-          loginPacket.entityId = 0 // Default login packet in minecraft-data 1.16.5 is 1, so set it to 0
           client.write('login', loginPacket)
           bot.once('login', () => {
             assert.ok(bot.entity.id === 0)
