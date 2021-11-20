@@ -216,6 +216,28 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
     })
+    describe('game', () => {
+      it('responds to ping / transaction packets', (done) => { // only on 1.17
+        server.on('login', async (client) => {
+          if (bot.supportFeature('transactionPacketExists')) {
+            const transactionPacket = { windowId: 0, action: 42, accepted: false }
+            client.once('transaction', (data, meta) => {
+              assert.ok(meta.name === 'transaction')
+              assert.ok(data.action === 42)
+              assert.ok(data.accepted === true)
+              done()
+            })
+            client.write('transaction', transactionPacket)
+          } else {
+            client.once('pong', (data) => {
+              assert(data.id === 42)
+              done()
+            })
+            client.write('ping', { id: 42 })
+          }
+        })
+      })
+    })
     describe('entities', () => {
       it('player displayName', (done) => {
         server.on('login', (client) => {
