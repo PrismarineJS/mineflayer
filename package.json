@@ -46,7 +46,7 @@
     "mocha": "^9.1.2",
     "standard": "^16.0.4",
     "standard-markdown": "^7.1.0",
-    "ts-standard": "^10.0.0",
+    "ts-standard": "^11.0.0",
     "typescript": "^4.4.3"
   }
 }
