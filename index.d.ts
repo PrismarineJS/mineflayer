@@ -201,7 +201,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   blockInSight: (maxSteps: number, vectorLength: number) => Block | null
 
   blockAtCursor: (maxDistance?: number, matcher?: Function) => Block | null
-  blockAtEntityCursor: (entity?:  entity, maxDistance?: number, matcher?: Function) => Block | null
+  blockAtEntityCursor: (entity?: entity, maxDistance?: number, matcher?: Function) => Block | null
 
   canSeeBlock: (block: Block) => boolean
 
@@ -833,7 +833,7 @@ export class BossBar {
   );
 }
 
-export var supportedVersions: string[]
-export var testedVersions: string[]
+export let supportedVersions: string[]
+export let testedVersions: string[]
 
 export function supportFeature (feature: string, version: string): boolean
