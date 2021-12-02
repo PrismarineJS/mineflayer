@@ -130,8 +130,8 @@ interface BotEvents {
   forcedMove: () => Promise<void> | void
   mount: () => Promise<void> | void
   dismount: (vehicle: Entity) => Promise<void> | void
-  windowOpen: (vehicle: Window) => Promise<void> | void
-  windowClose: (vehicle: Window) => Promise<void> | void
+  windowOpen: (window: Window) => Promise<void> | void
+  windowClose: (window: Window) => Promise<void> | void
   sleep: () => Promise<void> | void
   wake: () => Promise<void> | void
   experience: () => Promise<void> | void
