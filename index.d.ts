@@ -354,7 +354,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   openVillager: (
     villager: Entity
-  ) => Villager
+  ) => Promise<Villager>
 
   trade: (
     villagerInstance: Villager,
