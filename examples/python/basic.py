@@ -21,7 +21,7 @@ def handle(*args):
   movements = pathfinder.Movements(bot, mcData)
 
   @On(bot, 'chat')
-  def handleMsg(sender, message, *args):
+  def handleMsg(this, sender, message, *args):
     print("Got message", sender, message)
     if sender and (sender != BOT_USERNAME):
       bot.chat('Hi, you said ' + message)

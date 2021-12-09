@@ -26,6 +26,7 @@ export interface BotOptions extends ClientOptions {
   physicsEnabled?: boolean
   client?: Client
   brand?: string
+  defaultChatPatterns: boolean
 }
 
 export type ChatLevel = 'enabled' | 'commandsOnly' | 'disabled'
@@ -353,7 +354,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   openVillager: (
     villager: Entity
-  ) => Villager
+  ) => Promise<Villager>
 
   trade: (
     villagerInstance: Villager,
