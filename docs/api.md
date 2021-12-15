@@ -290,7 +290,7 @@
       - [bot.activateItem(offHand=false)](#botactivateitemoffhandfalse)
       - [bot.deactivateItem()](#botdeactivateitem)
       - [bot.useOn(targetEntity)](#botuseontargetentity)
-      - [bot.attack(entity)](#botattackentity)
+      - [bot.attack(entity, swing = true)](#botattackentity-swing--true)
       - [bot.swingArm([hand], showHand)](#botswingarmhand-showhand)
       - [bot.mount(entity)](#botmountentity)
       - [bot.dismount()](#botdismount)
@@ -1861,9 +1861,12 @@ Deactivates the currently held item. This is how you release an arrow, stop eati
 Use the currently held item on an `Entity` instance. This is how you apply a saddle and
 use shears.
 
-#### bot.attack(entity)
+#### bot.attack(entity, swing = true)
 
 Attack a player or a mob.
+
+ * `entity` is a type of entity. To get a specific entity use [bot.nearestEntity()](#botnearestentitymatch--entity---return-true-) or [bot.entities](#botentities).
+ * `swing` Default `true`. If false the bot does not swing is arm when attacking.
 
 #### bot.swingArm([hand], showHand)
 
