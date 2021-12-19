@@ -26,7 +26,7 @@ export interface BotOptions extends ClientOptions {
   physicsEnabled?: boolean
   client?: Client
   brand?: string
-  defaultChatPatterns: boolean
+  defaultChatPatterns?: boolean
 }
 
 export type ChatLevel = 'enabled' | 'commandsOnly' | 'disabled'
@@ -130,8 +130,8 @@ interface BotEvents {
   forcedMove: () => Promise<void> | void
   mount: () => Promise<void> | void
   dismount: (vehicle: Entity) => Promise<void> | void
-  windowOpen: (vehicle: Window) => Promise<void> | void
-  windowClose: (vehicle: Window) => Promise<void> | void
+  windowOpen: (window: Window) => Promise<void> | void
+  windowClose: (window: Window) => Promise<void> | void
   sleep: () => Promise<void> | void
   wake: () => Promise<void> | void
   experience: () => Promise<void> | void
@@ -201,6 +201,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   blockInSight: (maxSteps: number, vectorLength: number) => Block | null
 
   blockAtCursor: (maxDistance?: number, matcher?: Function) => Block | null
+  blockAtEntityCursor: (entity?: entity, maxDistance?: number, matcher?: Function) => Block | null
 
   canSeeBlock: (block: Block) => boolean
 
@@ -832,7 +833,7 @@ export class BossBar {
   );
 }
 
-export var supportedVersions: string[]
-export var testedVersions: string[]
+export let supportedVersions: string[]
+export let testedVersions: string[]
 
 export function supportFeature (feature: string, version: string): boolean
