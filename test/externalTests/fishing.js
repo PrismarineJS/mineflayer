@@ -14,7 +14,7 @@ module.exports = () => async (bot) => {
           resolve()
         }
       }
-      
+
       bot.on('playerCollect', onPlayerCollect)
     })
   }
