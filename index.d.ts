@@ -849,7 +849,7 @@ export class Task {
   cancel: () => void
 }
 
-export var supportedVersions: string[]
-export var testedVersions: string[]
+export let supportedVersions: string[]
+export let testedVersions: string[]
 
 export function supportFeature (feature: string, version: string): boolean
