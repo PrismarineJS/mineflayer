@@ -68,7 +68,7 @@ interface BotEvents {
   rain: () => Promise<void> | void
   time: () => Promise<void> | void
   kicked: (reason: string, loggedIn: boolean) => Promise<void> | void
-  end: () => Promise<void> | void
+  end: (reason: string) => Promise<void> | void
   spawnReset: () => Promise<void> | void
   death: () => Promise<void> | void
   health: () => Promise<void> | void
@@ -194,7 +194,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   supportFeature: (feature: string) => boolean
 
-  end: () => void
+  end: (reason?: string) => void
 
   blockAt: (point: Vec3) => Block | null
 
