@@ -190,6 +190,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   currentWindow: Window | null
   simpleClick: simpleClick
   tablist: Tablist
+  tasks: { currentTasks: Task, taskUpdate: EventEmitter }
 
   connect: (options: BotOptions) => void
 
@@ -410,6 +411,14 @@ export interface Bot extends TypedEmitter<BotEvents> {
   acceptResourcePack: () => void
 
   denyResourcePack: () => void
+
+  taskCompatibleWithRunningTask: (taskIdentifier: string) => { status: false, task: never } | { status: true, task: Task }
+
+  createCompatibleTask: (taskIdentifier: string) => Task
+
+  waitForTaskCompatibility: (taskIdentifier: string) => Promise<void>
+
+  removeTask: () => void
 }
 
 export interface simpleClick {
@@ -831,7 +840,16 @@ export class BossBar {
   );
 }
 
-export let supportedVersions: string[]
-export let testedVersions: string[]
+export class Task {
+  taskIdentifier: string
+  promise: Promise<any>
+  done: boolean
+
+  finish: () => void
+  cancel: () => void
+}
+
+export var supportedVersions: string[]
+export var testedVersions: string[]
 
 export function supportFeature (feature: string, version: string): boolean
