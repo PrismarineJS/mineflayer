@@ -158,7 +158,7 @@
       - ["weatherUpdate"](#weatherupdate)
       - ["time"](#time)
       - ["kicked" (reason, loggedIn)](#kicked-reason-loggedin)
-      - ["end"](#end)
+      - ["end" (reason)](#end-reason)
       - ["error" (err)](#error-err)
       - ["spawnReset"](#spawnreset)
       - ["death"](#death)
@@ -247,7 +247,7 @@
       - [bot.recipesAll(itemType, metadata, craftingTable)](#botrecipesallitemtype-metadata-craftingtable)
       - [bot.nearestEntity(match = (entity) => { return true })](#botnearestentitymatch--entity---return-true-)
     - [Methods](#methods)
-      - [bot.end()](#botend)
+      - [bot.end(reason)](#botendreason)
       - [bot.quit(reason)](#botquitreason)
       - [bot.tabComplete(str, cb, [assumeCommand], [sendBlockInSight])](#bottabcompletestr-cb-assumecommand-sendblockinsight)
       - [bot.chat(message)](#botchatmessage)
@@ -1156,9 +1156,10 @@ is a chat message explaining why you were kicked. `loggedIn`
 is `true` if the client was kicked after successfully logging in,
 or `false` if the kick occurred in the login phase.
 
-#### "end"
+#### "end" (reason)
 
 Emitted when you are no longer connected to the server.
+`reason` is a string explaining why the client was ended. Defaults to SocketClosed.
 
 #### "error" (err)
 
@@ -1511,7 +1512,7 @@ const cow = bot.nearestEntity(entity => entity.name.toLowerCase() === 'cow') // 
 
 ### Methods
 
-#### bot.end()
+#### bot.end(reason)
 
 End the connection with the server.
 
