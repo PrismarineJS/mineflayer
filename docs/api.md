@@ -1515,6 +1515,7 @@ const cow = bot.nearestEntity(entity => entity.name.toLowerCase() === 'cow') // 
 #### bot.end(reason)
 
 End the connection with the server.
+* `reason` - Optional string that states the reason of the end.
 
 #### bot.quit(reason)
 
