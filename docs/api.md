@@ -1159,7 +1159,7 @@ or `false` if the kick occurred in the login phase.
 #### "end" (reason)
 
 Emitted when you are no longer connected to the server.
-`reason` is a string explaining why the client was ended. Defaults to SocketClosed.
+`reason` is a string explaining why the client was disconnected. (defaults to 'socketClosed')
 
 #### "error" (err)
 
