@@ -31,7 +31,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
     afterEach((done) => {
-      bot.on('end', done)
+      bot.on('end', () => {
+        done()
+      })
       server.close()
     })
     it('chat', (done) => {
