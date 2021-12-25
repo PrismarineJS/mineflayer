@@ -26,7 +26,7 @@ export interface BotOptions extends ClientOptions {
   physicsEnabled?: boolean
   client?: Client
   brand?: string
-  defaultChatPatterns: boolean
+  defaultChatPatterns?: boolean
 }
 
 export type ChatLevel = 'enabled' | 'commandsOnly' | 'disabled'
@@ -68,7 +68,7 @@ interface BotEvents {
   rain: () => Promise<void> | void
   time: () => Promise<void> | void
   kicked: (reason: string, loggedIn: boolean) => Promise<void> | void
-  end: () => Promise<void> | void
+  end: (reason: string) => Promise<void> | void
   spawnReset: () => Promise<void> | void
   death: () => Promise<void> | void
   health: () => Promise<void> | void
@@ -130,8 +130,8 @@ interface BotEvents {
   forcedMove: () => Promise<void> | void
   mount: () => Promise<void> | void
   dismount: (vehicle: Entity) => Promise<void> | void
-  windowOpen: (vehicle: Window) => Promise<void> | void
-  windowClose: (vehicle: Window) => Promise<void> | void
+  windowOpen: (window: Window) => Promise<void> | void
+  windowClose: (window: Window) => Promise<void> | void
   sleep: () => Promise<void> | void
   wake: () => Promise<void> | void
   experience: () => Promise<void> | void
@@ -194,13 +194,14 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   supportFeature: (feature: string) => boolean
 
-  end: () => void
+  end: (reason?: string) => void
 
   blockAt: (point: Vec3) => Block | null
 
   blockInSight: (maxSteps: number, vectorLength: number) => Block | null
 
   blockAtCursor: (maxDistance?: number, matcher?: Function) => Block | null
+  blockAtEntityCursor: (entity?: entity, maxDistance?: number, matcher?: Function) => Block | null
 
   canSeeBlock: (block: Block) => boolean
 
@@ -354,7 +355,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   openVillager: (
     villager: Entity
-  ) => Villager
+  ) => Promise<Villager>
 
   trade: (
     villagerInstance: Villager,
@@ -832,7 +833,7 @@ export class BossBar {
   );
 }
 
-export var supportedVersions: string[]
-export var testedVersions: string[]
+export let supportedVersions: string[]
+export let testedVersions: string[]
 
 export function supportFeature (feature: string, version: string): boolean

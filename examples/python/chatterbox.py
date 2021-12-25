@@ -13,7 +13,7 @@
 # a few informations while you are in game.
 # ===========================================================================
 import sys, re
-from javascript import require, On, Once
+from javascript import require, On, Once, console
 
 mineflayer = require("mineflayer", "latest")
 Vec3 = require("vec3").Vec3
