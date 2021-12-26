@@ -204,6 +204,7 @@ The most updated and useful are :
  * [Bloodhound](https://github.com/Nixes/mineflayer-bloodhound) - determine who and what is responsible for damage to another entity
  * [tps](https://github.com/SiebeDW/mineflayer-tps) - get the current tps (processed tps)
  * [panorama](https://github.com/IceTank/mineflayer-panorama) - take Panorama Images of your world
+ * [player-death-event](https://github.com/tuanzisama/mineflayer-death-event) - emit player death event in Mineflayer.
 
 ## Projects Using Mineflayer
 
