@@ -1,3 +1,9 @@
+## 3.13.0
+
+* compute scoreboard displayName dynamically (@U9G)
+* SkinsRestorer fix (@U5B)
+* Fix bot not swinging arm on block place (@IceTank)
+
 ## 3.12.0
 
 * Bypass anticheats that detect sensitivity (@mat-1)
