@@ -1,3 +1,8 @@
+## 3.13.1
+
+* Fix bug with force lastSentPitch in bot.look (@KadaverBrutalo10)
+* Fix typo harming type safety (@Eagle-Anne)
+
 ## 3.13.0
 
 * compute scoreboard displayName dynamically (@U9G)
