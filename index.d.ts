@@ -343,6 +343,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
     callback?: (err?: Error) => void
   ) => Promise<void>
 
+  openContainer: (chest: Block | Entity) => Promise<Chest | Furnace | Dispenser>
+
   openChest: (chest: Block | Entity) => Promise<Chest>
 
   openFurnace: (furnace: Block) => Promise<Furnace>
