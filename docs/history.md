@@ -1,3 +1,8 @@
+## 3.14.0
+
+* Make prismarine-entity versioned (@u9g)
+* fix(typings): Added OpenContainer (@SaubereSache)
+
 ## 3.13.1
 
 * Fix bug with force lastSentPitch in bot.look (@KadaverBrutalo10)
