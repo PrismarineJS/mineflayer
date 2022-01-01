@@ -27,7 +27,7 @@ bot.on('spawn', () => {
 function attackPlayer (username) {
   const player = bot.players[username]
   if (!player || !player.entity) {
-    bot.chat(`I can't see you`)
+    bot.chat('I can\'t see you')
   } else {
     bot.chat(`Attacking ${player.username}`)
     bot.attack(player.entity)
@@ -35,12 +35,11 @@ function attackPlayer (username) {
 }
 
 function attackEntity () {
-  const entity = bot.nearestEntity(entity => entity.type === 'mob')
+  const entity = bot.nearestEntity()
   if (!entity) {
-    bot.chat(`No nearby entities`)
+    bot.chat('No nearby entities')
   } else {
     bot.chat(`Attacking ${entity.name ?? entity.username}`)
     bot.attack(entity)
   }
 }
-
