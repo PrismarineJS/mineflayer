@@ -26,7 +26,7 @@ bot.on('spawn', () => {
 
 function attackPlayer (username) {
   const player = bot.players[username]
-  if (!player.entity) {
+  if (!player || !player.entity) {
     bot.chat(`I can't see you`)
   } else {
     bot.chat(`Attacking ${player.username}`)
@@ -39,7 +39,7 @@ function attackEntity () {
   if (!entity) {
     bot.chat(`No nearby entities`)
   } else {
-    bot.chat(`Attacking ${entity.displayName}`)
+    bot.chat(`Attacking ${entity.name ?? entity.username}`)
     bot.attack(entity)
   }
 }
