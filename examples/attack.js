@@ -1,6 +1,6 @@
 /*
  *
- * A bot that attacks the player that sends a message
+ * A bot that attacks the player that sends a message or the nearest entity (excluding players)
  *
  */
 const mineflayer = require('mineflayer')
@@ -19,12 +19,28 @@ const bot = mineflayer.createBot({
 
 bot.on('spawn', () => {
   bot.on('chat', (username, message) => {
-    if (message !== 'attack me') return
-    const player = bot.players[username]
-    if (!player.entity) {
-      bot.chat(`I can't see you`)
-    } else {
-      bot.attack(player.entity)
-    }
+    if (message === 'attack me') attackPlayer(username)
+    else if (message === 'attack') attackEntity()
   })
 })
+
+function attackPlayer (username) {
+  const player = bot.players[username]
+  if (!player.entity) {
+    bot.chat(`I can't see you`)
+  } else {
+    bot.chat(`Attacking ${player.username}`)
+    bot.attack(player.entity)
+  }
+}
+
+function attackEntity () {
+  const entity = bot.nearestEntity(entity => entity.type === 'mob')
+  if (!entity) {
+    bot.chat(`No nearby entities`)
+  } else {
+    bot.chat(`Attacking ${entity.displayName}`)
+    bot.attack(entity)
+  }
+}
+
