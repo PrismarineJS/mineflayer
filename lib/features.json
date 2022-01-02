@@ -320,7 +320,7 @@
     "versions": ["1.17", "1.17.1"]
   },
   {
-    "name": "armAnimationBefore",
+    "name": "armAnimationBeforeUse",
     "description": "arm animation packet sent before use entity packet",
     "versions": ["1.8", "1.8.9"]
   }
