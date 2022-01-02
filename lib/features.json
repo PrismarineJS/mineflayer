@@ -318,5 +318,10 @@
     "name": "setSlotAsTransaction",
     "description": "use setslot as transaction instead of just hoping it'll work",
     "versions": ["1.17", "1.17.1"]
+  },
+  {
+    "name": "armAnimationBeforeUse",
+    "description": "arm animation packet sent before use entity packet",
+    "versions": ["1.8", "1.8.9"]
   }
 ]
