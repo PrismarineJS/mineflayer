@@ -1,3 +1,7 @@
+## 3.14.1
+
+* Fix arm_animation and use_entity (@amorashi)
+
 ## 3.14.0
 
 * Make prismarine-entity versioned (@u9g)
