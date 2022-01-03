@@ -742,13 +742,18 @@ export class Villager extends (EventEmitter as new () => TypedEmitter<Conditiona
 }
 
 export interface VillagerTrade {
-  firstInput: Item
-  output: Item
-  hasSecondItem: boolean
-  secondaryInput: Item | null
-  disabled: boolean
-  tooluses: number
-  maxTradeuses: number
+  inputItem1: Item
+  outputItem: Item
+  inputItem2: Item | null
+  hasItem2: boolean
+  tradeDisabled: boolean
+  nbTradeUses: number
+  maximumNbTradeUses: number
+  xp?: number
+  specialPrice?: number
+  priceMultiplier?: number
+  demand?: number
+  realPrice?: number
 }
 
 export class ScoreBoard {
