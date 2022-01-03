@@ -556,6 +556,7 @@ export interface FindBlockOptions {
   maxDistance?: number
   count?: number
   useExtraInfo?: boolean
+	sort?: boolean
 }
 
 export type EquipmentDestination = 'hand' | 'head' | 'torso' | 'legs' | 'feet' | 'off-hand'
