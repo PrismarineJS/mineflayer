@@ -124,28 +124,28 @@ function getLore (item) {
 在对象的选项中 `mineflayer.createBot(options)`,从选项对象中删除你的 `host` 选项,声明以下变量 `PROXY_IP, PROXY_PORT, PROXY_USERNAME, PROXY_PASSWORD, MC_SERVER_IP, MC_SERVER_PORT` 并将其添加到选项对象中:
 ```js
 connect: (client) => {
-    socks.createConnection({
-      proxy: {
-        host: PROXY_IP,
-        port: PROXY_PORT,
-        type: 5,
-        userId: PROXY_USERNAME,
-        password: PROXY_PASSWORD
-      },
-      command: 'connect',
-      destination: {
-        host: MC_SERVER_IP,
-        port: MC_SERVER_PORT
-      }
-    }, (err, info) => {
-      if (err) {
-        console.log(err)
-        return
-      }
-      client.setSocket(info.socket)
-      client.emit('connect')
-    })
-  }
+  socks.createConnection({
+    proxy: {
+      host: PROXY_IP,
+      port: PROXY_PORT,
+      type: 5,
+      userId: PROXY_USERNAME,
+      password: PROXY_PASSWORD
+    },
+    command: 'connect',
+    destination: {
+      host: MC_SERVER_IP,
+      port: MC_SERVER_PORT
+    }
+  }, (err, info) => {
+    if (err) {
+      console.log(err)
+      return
+    }
+    client.setSocket(info.socket)
+    client.emit('connect')
+  })
+}
 ```
   `socks` 用 `const socks = require('socks').SocksClient` 声明 使用的是[这个](https://www.npmjs.com/package/socks) 包.
 
