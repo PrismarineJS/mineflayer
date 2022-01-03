@@ -1472,6 +1472,7 @@ Finds the closest blocks from the given point.
       - **function** - Creates two stage maching, if block passes `matching` function it is passed further to `useExtraInfo` with additional info
    - `maxDistance` - The furthest distance for the search, defaults to 16.
    - `count` - Number of blocks to find before returning the search. Default to 1. Can return less if not enough blocks are found exploring the whole area.
+   - `sort` - Whether to sort the resulting blocks by their distance to the bot. Default is `true`
 
 Returns an array (possibly empty) with the found block coordinates (not the blocks). The array is sorted (closest first)
 
