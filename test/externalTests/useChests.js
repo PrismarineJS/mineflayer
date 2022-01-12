@@ -6,12 +6,14 @@ module.exports = () => async (bot) => {
   const mcData = require('minecraft-data')(bot.version)
   const Item = require('prismarine-item')(bot.version)
 
-  const smallChestLocation = new Vec3(0, 4, -1)
-  const largeChestLocations = [new Vec3(0, 4, 1), new Vec3(1, 4, 1)]
-  const smallTrappedChestLocation = new Vec3(1, 4, 0)
+  bot.test.groundY = bot.supportFeature('tallWorld') ? -60 : 4
+
+  const smallChestLocation = new Vec3(0, bot.test.groundY, -1)
+  const largeChestLocations = [new Vec3(0, bot.test.groundY, 1), new Vec3(1, bot.test.groundY, 1)]
+  const smallTrappedChestLocation = new Vec3(1, bot.test.groundY, 0)
   const largeTrappedChestLocations = [
-    new Vec3(-1, 4, 1),
-    new Vec3(-1, 4, 0)
+    new Vec3(-1, bot.test.groundY, 1),
+    new Vec3(-1, bot.test.groundY, 0)
   ]
   const chestSlot = 36
   const trappedChestSlot = 37
