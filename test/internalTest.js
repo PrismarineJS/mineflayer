@@ -79,7 +79,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
           return loginPacket
         }
-        bot.on('error', e => console.log(e))
         done()
       })
     })
@@ -159,7 +158,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       server.on('login', (client) => {
         client.write('login', bot.test.generateLoginPacket())
         const chunk = new Chunk()
-        // chunk.setBlockType(pos, goldId)
+        chunk.setBlockType(pos, goldId)
         client.write('map_chunk', generateChunkPacket(chunk))
       })
     })
