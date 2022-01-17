@@ -35,7 +35,7 @@
     "prismarine-windows": "^2.4.2",
     "prismarine-world": "^3.6.0",
     "protodef": "^1.14.0",
-    "typed-emitter": "^1.3.1",
+    "typed-emitter": "^2.0.0",
     "vec3": "^0.1.7"
   },
   "devDependencies": {
