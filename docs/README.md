@@ -230,10 +230,14 @@ The most updated and useful are :
 Simply run: `npm test`
 
 ### Testing specific version
-Run `npm mocha_test -- -g <version>`, where `<version>` is a minecraft version like `1.12`, `1.15.2`...
+Run `npm run mocha_test -- -g <version>`, where `<version>` is a minecraft version like `1.12`, `1.15.2`...
 
 ### Testing specific test
-Run `npm mocha_test -- -g <test_name>`, where `<test_name>` is a name of the test like `bed`, `useChests`, `rayTrace`...
+Run `npm run mocha_test -- -g <test_name>`, where `<test_name>` is a name of the test like `bed`, `useChests`, `rayTrace`...
+
+### Example
+
+`npm run mocha_test -- -g "1.18.*BlockFinder"` to run the block finder test for 1.18
 
 ## License
 
