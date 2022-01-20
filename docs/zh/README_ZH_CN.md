@@ -19,7 +19,7 @@
 
 ## 特点
 
-* 支持版本：Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15 and 1.16
+* 支持版本：Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15 1.16 1.17
 * 实体感知与追踪
 * 方块感知，你可以在几毫秒内查找到bot周围的任何方块
 * 物理和运动引擎 - 支持所有的碰撞箱
@@ -31,9 +31,9 @@
 * 激活方块和使用物品
 * 输入输出聊天信息
 
-### 路标
+### 路线图
 
-点击这个页面，看看目前我们有哪些 [实用项目](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects).
+ [点这里](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects) 看看目前我们有哪些实用的项目
 
 ## 安装
 
@@ -85,8 +85,8 @@ const bot = mineflayer.createBot({
   username: 'email@example.com', // minecraft 用户名
   password: '12345678' // minecraft 密码, 如果你玩的是不需要正版验证的服务器，请注释掉。
   // port: 25565,                // 默认使用25565，如果你的服务器端口不是这个请取消注释并填写。
-  // version: false,             // 当你需要指定使用一个版本或快照时，请取消注释并手动填写（如："1.8.9 " 或 "1.16.5"），否则会自动设置。
-  // auth: 'mojang'              // 当你需要使用微软账号登录时，请取消注释，然后将值设置为 'microsoft'，否则会自动设置为 'mojang'。
+  // version: false,             // 如果需要指定使用一个版本或快照时，请取消注释并手动填写（如："1.8.9 " 或 "1.16.5"），否则会自动设置。
+  // auth: 'mojang'              // 如果需要使用微软账号登录时，请取消注释，然后将值设置为 'microsoft'，否则会自动设置为 'mojang'。
 })
 
 bot.on('chat', (username, message) => {
