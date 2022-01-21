@@ -56,6 +56,14 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
         bot.test = {}
 
+        bot.test.buildChunk = () => {
+          if (bot.supportFeature('tallWorld')) {
+            return new Chunk({ minY: -64, worldHeight: 384 })
+          } else {
+            return new Chunk()
+          }
+        }
+
         bot.test.generateLoginPacket = () => {
           let loginPacket
           if (bot.supportFeature('usesLoginPacket')) {
@@ -157,7 +165,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
       server.on('login', (client) => {
         client.write('login', bot.test.generateLoginPacket())
-        const chunk = new Chunk()
+        const chunk = bot.test.buildChunk()
         chunk.setBlockType(pos, goldId)
         client.write('map_chunk', generateChunkPacket(chunk))
       })
@@ -185,7 +193,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
         server.on('login', (client) => {
           client.write('login', bot.test.generateLoginPacket())
-          const chunk = new Chunk()
+          const chunk = bot.test.buildChunk()
 
           chunk.setBlockType(pos, goldId)
           client.write('map_chunk', generateChunkPacket(chunk))
@@ -230,7 +238,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             levelType: 'default'
           }
         }
-        const chunk = new Chunk()
+        const chunk = bot.test.buildChunk()
         chunk.setBlockType(pos, goldId)
         const chunkPacket = generateChunkPacket(chunk)
         const positionPacket = {
@@ -598,7 +606,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         const loginPacket = bot.test.generateLoginPacket()
         client.write('login', loginPacket)
 
-        const chunk = new Chunk()
+        const chunk = bot.test.buildChunk()
 
         for (const bed in beds) {
           chunk.setBlockType(beds[bed].head, bedId)
