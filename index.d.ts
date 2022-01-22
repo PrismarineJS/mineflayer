@@ -332,8 +332,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   craft: (
     recipe: Recipe,
-    count: number | null,
-    craftingTable: Block,
+    count?: number,
+    craftingTable?: Block,
     callback?: () => void
   ) => Promise<void>
 
