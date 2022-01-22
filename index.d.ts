@@ -796,7 +796,7 @@ export class Team {
 
   update (name: string, friendlyFire: boolean, nameTagVisibility: string, collisionRule: string, formatting: number, prefix: string, suffix: string): void;
 
-  displayName (member: string);
+  displayName (member: string): ChatMessage;
 }
 
 export type DisplaySlot =
