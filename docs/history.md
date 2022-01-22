@@ -1,3 +1,7 @@
+## 3.15.0
+
+* Supports 1.18
+
 ## 3.14.1
 
 * Fix arm_animation and use_entity (@amorashi)
