@@ -16,7 +16,7 @@ First time using Node.js? You may want to start with the [tutorial](tutorial.md)
 
 ## Features
 
- * Supports Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16 and 1.17.
+ * Supports Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17 and 1.18.
  * Entity knowledge and tracking.
  * Block knowledge. You can query the world around you. Milliseconds to find any block.
  * Physics and movement - handle all bounding boxes
@@ -230,10 +230,14 @@ The most updated and useful are :
 Simply run: `npm test`
 
 ### Testing specific version
-Run `npm mocha_test -- -g <version>`, where `<version>` is a minecraft version like `1.12`, `1.15.2`...
+Run `npm run mocha_test -- -g <version>`, where `<version>` is a minecraft version like `1.12`, `1.15.2`...
 
 ### Testing specific test
-Run `npm mocha_test -- -g <test_name>`, where `<test_name>` is a name of the test like `bed`, `useChests`, `rayTrace`...
+Run `npm run mocha_test -- -g <test_name>`, where `<test_name>` is a name of the test like `bed`, `useChests`, `rayTrace`...
+
+### Example
+
+`npm run mocha_test -- -g "1.18.1.*BlockFinder"` to run the block finder test for 1.18.1
 
 ## License
 

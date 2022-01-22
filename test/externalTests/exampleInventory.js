@@ -52,7 +52,7 @@ module.exports = () => async (bot) => {
     assert.strictEqual(name, 'inventory')
     bot.chat('/op inventory') // to counteract spawn protection
     bot.chat('/clear inventory')
-    bot.chat('/setblock 52 4 0 crafting_table') // to make stone bricks stairs
+    bot.chat(`/setblock 52 ${bot.test.groundY} 0 crafting_table`) // to make stone bricks stairs
     bot.chat('/give inventory dirt 64')
     bot.chat('/give inventory stick 7')
     bot.chat('/give inventory iron_ore 64')
@@ -67,7 +67,7 @@ module.exports = () => async (bot) => {
       await bot.test.wait(100)
     }
     // cleanup
-    bot.chat('/setblock 52 4 0 air')
+    bot.chat(`/setblock 52 ${bot.test.groundY} 0 air`)
     cb()
 
     function makeTest (inStr, outStr) {

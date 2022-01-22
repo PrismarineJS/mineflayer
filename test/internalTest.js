@@ -10,6 +10,33 @@ for (const supportedVersion of mineflayer.testedVersions) {
   const version = mcData.version
   const Chunk = require('prismarine-chunk')(supportedVersion)
 
+  function generateChunkPacket (chunk) {
+    const lights = chunk.dumpLight()
+    return {
+      x: 0,
+      z: 0,
+      groundUp: true,
+      biomes: chunk.dumpBiomes !== undefined ? chunk.dumpBiomes() : undefined,
+      heightmaps: {
+        type: 'compound',
+        name: '',
+        value: {
+          MOTION_BLOCKING: { type: 'longArray', value: new Array(36).fill([0, 0]) }
+        }
+      }, // send fake heightmap
+      bitMap: chunk.getMask(),
+      chunkData: chunk.dump(),
+      blockEntities: [],
+      trustEdges: false,
+      skyLightMask: lights?.skyLightMask,
+      blockLightMask: lights?.blockLightMask,
+      emptySkyLightMask: lights?.emptySkyLightMask,
+      emptyBlockLightMask: lights?.emptyBlockLightMask,
+      skyLight: lights?.skyLight,
+      blockLight: lights?.blockLight
+    }
+  }
+
   describe(`mineflayer_internal ${version.minecraftVersion}`, function () {
     this.timeout(10 * 1000)
     let bot
@@ -27,6 +54,39 @@ for (const supportedVersion of mineflayer.testedVersions) {
           version: supportedVersion,
           port: 25567
         })
+        bot.test = {}
+
+        bot.test.buildChunk = () => {
+          if (bot.supportFeature('tallWorld')) {
+            return new Chunk({ minY: -64, worldHeight: 384 })
+          } else {
+            return new Chunk()
+          }
+        }
+
+        bot.test.generateLoginPacket = () => {
+          let loginPacket
+          if (bot.supportFeature('usesLoginPacket')) {
+            loginPacket = mcData.loginPacket
+            loginPacket.entityId = 0 // Default login packet in minecraft-data 1.16.5 is 1, so set it to 0
+          } else {
+            loginPacket = {
+              entityId: 0,
+              levelType: 'fogetaboutit',
+              gameMode: 0,
+              previousGameMode: 255,
+              worldNames: ['minecraft:overworld'],
+              dimension: 0,
+              worldName: 'minecraft:overworld',
+              hashedSeed: [0, 0],
+              difficulty: 0,
+              maxPlayers: 20,
+              reducedDebugInfo: 1,
+              enableRespawnScreen: true
+            }
+          }
+          return loginPacket
+        }
         done()
       })
     })
@@ -104,46 +164,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
         done()
       })
       server.on('login', (client) => {
-        let loginPacket
-        if (bot.supportFeature('usesLoginPacket')) {
-          loginPacket = mcData.loginPacket
-        } else {
-          loginPacket = {
-            entityId: 0,
-            levelType: 'fogetaboutit',
-            gameMode: 0,
-            previousGameMode: 255,
-            worldNames: ['minecraft:overworld'],
-            dimension: 0,
-            worldName: 'minecraft:overworld',
-            hashedSeed: [0, 0],
-            difficulty: 0,
-            maxPlayers: 20,
-            reducedDebugInfo: 1,
-            enableRespawnScreen: true
-          }
-        }
-
-        client.write('login', loginPacket)
-        const chunk = new Chunk()
-
+        client.write('login', bot.test.generateLoginPacket())
+        const chunk = bot.test.buildChunk()
         chunk.setBlockType(pos, goldId)
-        client.write('map_chunk', {
-          x: 0,
-          z: 0,
-          groundUp: true,
-          biomes: chunk.dumpBiomes !== undefined ? chunk.dumpBiomes() : undefined,
-          heightmaps: {
-            type: 'compound',
-            name: '',
-            value: {
-              MOTION_BLOCKING: { type: 'longArray', value: new Array(36).fill([0, 0]) }
-            }
-          }, // send fake heightmap
-          bitMap: chunk.getMask(),
-          chunkData: chunk.dump(),
-          blockEntities: []
-        })
+        client.write('map_chunk', generateChunkPacket(chunk))
       })
     })
 
@@ -168,45 +192,11 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
         })
         server.on('login', (client) => {
-          let loginPacket
-          if (bot.supportFeature('usesLoginPacket')) {
-            loginPacket = mcData.loginPacket
-          } else {
-            loginPacket = {
-              entityId: 0,
-              levelType: 'fogetaboutit',
-              gameMode: 0,
-              previousGameMode: 255,
-              worldNames: ['minecraft:overworld'],
-              dimension: 0,
-              worldName: 'minecraft:overworld',
-              hashedSeed: [0, 0],
-              difficulty: 0,
-              maxPlayers: 20,
-              reducedDebugInfo: 1,
-              enableRespawnScreen: true
-            }
-          }
-          client.write('login', loginPacket)
-          const chunk = new Chunk()
+          client.write('login', bot.test.generateLoginPacket())
+          const chunk = bot.test.buildChunk()
 
           chunk.setBlockType(pos, goldId)
-          client.write('map_chunk', {
-            x: 0,
-            z: 0,
-            groundUp: true,
-            biomes: chunk.dumpBiomes !== undefined ? chunk.dumpBiomes() : undefined,
-            heightmaps: {
-              type: 'compound',
-              name: '',
-              value: {
-                MOTION_BLOCKING: { type: 'longArray', value: new Array(36).fill([0, 0]) }
-              }
-            }, // send fake heightmap
-            bitMap: chunk.getMask(),
-            chunkData: chunk.dump(),
-            blockEntities: []
-          })
+          client.write('map_chunk', generateChunkPacket(chunk))
           client.write('position', {
             x: 1.5,
             y: 80,
@@ -224,10 +214,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
       const pos = vec3(1, 65, 1)
       const goldId = 41
       it('switchWorld respawn', (done) => {
-        let loginPacket
+        const loginPacket = bot.test.generateLoginPacket()
         let respawnPacket
         if (bot.supportFeature('usesLoginPacket')) {
-          loginPacket = mcData.loginPacket
           loginPacket.worldName = 'minecraft:overworld'
           loginPacket.hashedSeed = [0, 0]
           loginPacket.entityId = 0
@@ -248,39 +237,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
             gamemode: 0,
             levelType: 'default'
           }
-          loginPacket = {
-            entityId: 0,
-            levelType: 'fogetaboutit',
-            gameMode: 0,
-            previousGameMode: 255,
-            worldNames: ['minecraft:overworld', 'minecraft:nether', 'minecraft:the_end'],
-            dimension: 0,
-            worldName: 'minecraft:overworld',
-            hashedSeed: [0, 0],
-            difficulty: 0,
-            maxPlayers: 20,
-            reducedDebugInfo: 1,
-            enableRespawnScreen: true
-          }
         }
-        const chunk = new Chunk()
+        const chunk = bot.test.buildChunk()
         chunk.setBlockType(pos, goldId)
-        const chunkPacket = {
-          x: 0,
-          z: 0,
-          groundUp: true,
-          biomes: chunk.dumpBiomes !== undefined ? chunk.dumpBiomes() : undefined,
-          heightmaps: {
-            type: 'compound',
-            name: '',
-            value: {
-              MOTION_BLOCKING: { type: 'longArray', value: new Array(36).fill([0, 0]) }
-            }
-          }, // send fake heightmap
-          bitMap: chunk.getMask(),
-          chunkData: chunk.dump(),
-          blockEntities: []
-        }
+        const chunkPacket = generateChunkPacket(chunk)
         const positionPacket = {
           x: 1.5,
           y: 80,
@@ -344,26 +304,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
     describe('entities', () => {
       it('entity id changes on login', (done) => {
-        let loginPacket
+        const loginPacket = bot.test.generateLoginPacket()
         server.on('login', (client) => {
           if (bot.supportFeature('usesLoginPacket')) {
-            loginPacket = mcData.loginPacket
             loginPacket.entityId = 0 // Default login packet in minecraft-data 1.16.5 is 1, so set it to 0
-          } else {
-            loginPacket = {
-              entityId: 0,
-              levelType: 'fogetaboutit',
-              gameMode: 0,
-              previousGameMode: 255,
-              worldNames: ['minecraft:overworld'],
-              dimension: 0,
-              worldName: 'minecraft:overworld',
-              hashedSeed: [0, 0],
-              difficulty: 0,
-              maxPlayers: 20,
-              reducedDebugInfo: 1,
-              enableRespawnScreen: true
-            }
           }
           client.write('login', loginPacket)
           bot.once('login', () => {
@@ -659,28 +603,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
       server.once('login', (client) => {
         bot.time.timeOfDay = 18000
-        let loginPacket
-        if (bot.supportFeature('usesLoginPacket')) {
-          loginPacket = mcData.loginPacket
-        } else {
-          loginPacket = {
-            entityId: 0,
-            levelType: 'fogetaboutit',
-            gameMode: 0,
-            previousGameMode: 255,
-            worldNames: ['minecraft:overworld'],
-            dimension: 0,
-            worldName: 'minecraft:overworld',
-            hashedSeed: [0, 0],
-            difficulty: 0,
-            maxPlayers: 20,
-            reducedDebugInfo: 1,
-            enableRespawnScreen: true
-          }
-        }
+        const loginPacket = bot.test.generateLoginPacket()
         client.write('login', loginPacket)
 
-        const chunk = new Chunk()
+        const chunk = bot.test.buildChunk()
 
         for (const bed in beds) {
           chunk.setBlockType(beds[bed].head, bedId)
@@ -739,22 +665,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           metadata: []
         })
 
-        client.write('map_chunk', {
-          x: 0,
-          z: 0,
-          groundUp: true,
-          biomes: chunk.dumpBiomes !== undefined ? chunk.dumpBiomes() : undefined,
-          heightmaps: {
-            type: 'compound',
-            name: '',
-            value: {
-              MOTION_BLOCKING: { type: 'longArray', value: new Array(36).fill([0, 0]) }
-            }
-          }, // send fake heightmap
-          bitMap: chunk.getMask(),
-          chunkData: chunk.dump(),
-          blockEntities: []
-        })
+        client.write('map_chunk', generateChunkPacket(chunk))
       })
     })
 

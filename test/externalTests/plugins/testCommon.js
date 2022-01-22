@@ -14,6 +14,7 @@ function inject (bot) {
   const Item = require('prismarine-item')(bot.version)
 
   bot.test = {}
+  bot.test.groundY = bot.supportFeature('tallWorld') ? -60 : 4
   bot.test.sayEverywhere = sayEverywhere
   bot.test.clearInventory = callbackify(clearInventory)
   bot.test.becomeSurvival = callbackify(becomeSurvival)
@@ -68,7 +69,8 @@ function inject (bot) {
   async function resetBlocksToSuperflat () {
     const groundY = 4
     for (let y = groundY + 4; y >= groundY - 1; y--) {
-      bot.chat(`/fill ~-5 ${y} ~-5 ~5 ${y} ~5 ` + layerNames[y])
+      const realY = y + bot.test.groundY - 4
+      bot.chat(`/fill ~-5 ${realY} ~-5 ~5 ${realY} ~5 ` + layerNames[y])
     }
     await bot.test.wait(100)
   }
@@ -85,7 +87,7 @@ function inject (bot) {
     await becomeCreative()
     await clearInventory()
     bot.creative.startFlying()
-    await teleport(new Vec3(0, 4, 0))
+    await teleport(new Vec3(0, bot.test.groundY, 0))
     await bot.waitForChunksToLoad()
     await resetBlocksToSuperflat()
     await sleep(1000)
@@ -197,7 +199,7 @@ function inject (bot) {
         checkCondition: message => message.json.translate === 'multiplayer.player.joined'
       })
       childBotName = message.json.with[0].insertion
-      bot.chat(`/tp ${childBotName} 50 4 0`)
+      bot.chat(`/tp ${childBotName} 50 ${bot.test.groundY} 0`)
       setTimeout(() => {
         bot.chat('loaded')
       }, 5000)

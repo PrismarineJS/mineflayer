@@ -818,6 +818,14 @@ Whether the bot is using the item that it's holding, for example eating food or 
 
 #### bot.game.serverBrand
 
+#### bot.game.minY
+
+minimum y of the world
+
+#### bot.game.height
+
+world height
+
 ### bot.physicsEnabled
 
 Enable physics, default true.
