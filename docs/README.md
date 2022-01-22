@@ -237,7 +237,7 @@ Run `npm run mocha_test -- -g <test_name>`, where `<test_name>` is a name of the
 
 ### Example
 
-`npm run mocha_test -- -g "1.18.*BlockFinder"` to run the block finder test for 1.18
+`npm run mocha_test -- -g "1.18.1.*BlockFinder"` to run the block finder test for 1.18.1
 
 ## License
 
