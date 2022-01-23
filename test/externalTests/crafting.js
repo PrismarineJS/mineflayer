@@ -55,4 +55,13 @@ module.exports = () => async (bot) => {
   await once(bot.inventory, 'updateSlot')
   const craftingTable = bot.findBlock({ matching: blocksByName.crafting_table.id })
   await bot.craft(bot.recipesFor(itemsByName.ladder.id, null, null, true)[0], 1, craftingTable)
+
+  bot.chat('/give @p milk_bucket 3')
+  bot.chat('/give @p wheat 3')
+  bot.chat('/give @p sugar 2')
+  bot.chat('/give @p egg 1')
+  await once(bot.inventory, 'updateSlot')
+  await bot.craft(bot.recipesAll(itemsByName["cake"].id, null, true)[0], 1, craftingTable)
+  if(bot.inventory.count(itemsByName.bucket.id, null) !== 3)
+    throw new Error("CraftCake: empty buckets missing in inventory after crafting")
 }
