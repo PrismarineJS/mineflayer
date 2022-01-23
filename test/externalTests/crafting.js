@@ -54,14 +54,31 @@ module.exports = () => async (bot) => {
   bot.chat('/give @p stick 21')
   await once(bot.inventory, 'updateSlot')
   const craftingTable = bot.findBlock({ matching: blocksByName.crafting_table.id })
-  await bot.craft(bot.recipesFor(itemsByName.ladder.id, null, null, true)[0], 9, craftingTable)
-  if (bot.inventory.count(itemsByName.ladder.id, null) !== 9) { throw new Error('CraftLadder: count mismatch') }
 
-  bot.chat('/give @p milk_bucket 6')
+  const recipe = bot.recipesFor(itemsByName.ladder.id, null, null, true)[0]
+  await bot.craft(recipe, recipe.result.count * 3, craftingTable)
+  await bot.waitForTicks(5)
+
+  const count = bot.inventory.count(itemsByName.ladder.id, null)
+  if (count !== recipe.result.count * 3) { throw new Error('CraftLadder: count mismatch') }
+
+  // Some Minecraft versions don't support giving multiple milk buckets???
+  for (let i = 0; i < 6; i++) {
+    bot.chat('/give @p milk_bucket')
+  }
   bot.chat('/give @p wheat 6')
   bot.chat('/give @p sugar 4')
   bot.chat('/give @p egg 2')
-  await once(bot.inventory, 'updateSlot')
+
+  while (true) {
+    await bot.waitForTicks(1)
+    if (bot.inventory.count(itemsByName.milk_bucket.id, null) === 6 &&
+        bot.inventory.count(itemsByName.wheat.id, null) === 6 &&
+        bot.inventory.count(itemsByName.sugar.id, null) === 4 &&
+        bot.inventory.count(itemsByName.egg.id, null) === 2) { break }
+  }
+
   await bot.craft(bot.recipesAll(itemsByName.cake.id, null, true)[0], 2, craftingTable)
+  await bot.waitForTicks(5)
   if (bot.inventory.count(itemsByName.bucket.id, null) !== 6) { throw new Error('CraftCake: empty buckets missing in inventory after crafting') }
 }
