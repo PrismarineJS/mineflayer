@@ -51,17 +51,17 @@ module.exports = () => async (bot) => {
   await bot.test.becomeSurvival()
   await craft(1, craftItem)
   await bot.test.setBlock({ x: 1, y: 0, z: 0, relative: true, blockName: 'crafting_table' })
-  bot.chat('/give @p stick 7')
+  bot.chat('/give @p stick 21')
   await once(bot.inventory, 'updateSlot')
   const craftingTable = bot.findBlock({ matching: blocksByName.crafting_table.id })
-  await bot.craft(bot.recipesFor(itemsByName.ladder.id, null, null, true)[0], 1, craftingTable)
+  await bot.craft(bot.recipesFor(itemsByName.ladder.id, null, null, true)[0], 9, craftingTable)
+  if (bot.inventory.count(itemsByName.ladder.id, null) !== 9) { throw new Error('CraftLadder: count mismatch') }
 
-  bot.chat('/give @p milk_bucket 3')
-  bot.chat('/give @p wheat 3')
-  bot.chat('/give @p sugar 2')
-  bot.chat('/give @p egg 1')
+  bot.chat('/give @p milk_bucket 6')
+  bot.chat('/give @p wheat 6')
+  bot.chat('/give @p sugar 4')
+  bot.chat('/give @p egg 2')
   await once(bot.inventory, 'updateSlot')
-  await bot.craft(bot.recipesAll(itemsByName["cake"].id, null, true)[0], 1, craftingTable)
-  if(bot.inventory.count(itemsByName.bucket.id, null) !== 3)
-    throw new Error("CraftCake: empty buckets missing in inventory after crafting")
+  await bot.craft(bot.recipesAll(itemsByName.cake.id, null, true)[0], 2, craftingTable)
+  if (bot.inventory.count(itemsByName.bucket.id, null) !== 6) { throw new Error('CraftCake: empty buckets missing in inventory after crafting') }
 }
