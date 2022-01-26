@@ -10,27 +10,26 @@
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb)
 
-| <sub>EN</sub> [英语](../README.md) | <sub>RU</sub> [俄语](../ru/README_RU.md) | <sub>ES</sub> [西班牙语](../es/README_ES.md) | <sub>FR</sub> [法语](../fr/README_FR.md) | <sub>TR</sub> [土耳其语](../tr/README_TR.md) | <sub>ZH</sub> [中文](README_ZH_CN.md) |
+| <sub>EN</sub> [English](README.md) | <sub>RU</sub> [русский](ru/README_RU.md) | <sub>ES</sub> [Español](es/README_ES.md) | <sub>FR</sub> [Français](fr/README_FR.md) | <sub>TR</sub> [Türkçe](tr/README_TR.md) | <sub>ZH</sub> [中文](zh/README_ZH_CN.md) |
 |-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
 
 使用强大、稳定、高级的JavaScript [API](../api.md) 来开发Minecraft机器人，同时支持 Python。
 
-第一次使用 node.js ？你可以先看看 [使用教程](../tutorial.md) 。了解过 Python？这里有一些 [Python实例](https://github.com/PrismarineJS/mineflayer/tree/master/examples/python)，可以 [在谷歌Colab中运行Mineflayer](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb) 来体验一下。
+第一次使用 node.js ？你可以先看看 [使用教程](../tutorial.md) 。了解过 Python？这里有一些 [Python实例](https://github.com/PrismarineJS/mineflayer/tree/master/examples/python)，同时你也可以 [在谷歌Colab中运行Mineflayer](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb) 来体验一下。
 
 ## 特点
 
-* 支持版本：Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15 1.16 1.17
-* 实体感知与追踪
-* 方块感知，你可以在几毫秒内查找到bot周围的任何方块
-* 物理和运动引擎 - 支持所有的碰撞箱
-* 攻击实体，使用运载工具
-* 背包管理
-* 使用工作台、箱子、酿造台、附魔台
-* 挖掘和建造
-* 各种各样的的信息接口，比如查看bot的血量和是否下雨
-* 激活方块和使用物品
-* 输入输出聊天信息
-
+ * 支持版本：Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15 1.16 1.17,1.18 
+ * 实体感知与追踪
+ * 方块感知，你可以在几毫秒内查找到bot周围的任何方块
+ * 物理和运动引擎 - 支持所有的碰撞箱
+ * 攻击实体，使用交通工具
+ * 背包管理
+ * 使用工作台、箱子、酿造台、附魔台
+ * 挖掘和建造
+ * 各种各样的的信息接口，比如查看你的血量或是否下雨
+ * 激活方块和使用物品
+ * 进行聊天
 ### 路线图
 
  [点这里](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects) 看看目前我们有哪些实用的项目
@@ -178,7 +177,7 @@ node your_script.js
 
 ## 第三方插件
 
-Mineflayer 是可插拔的；任何人都可以创建一个插件，在 Mineflayer 之上添加更高级别的 API。
+Mineflayer 支持插件；任何人都可以创建一个插件，在 Mineflayer 之上添加更高级别的 API。
 
 最新和最有用的有：
 
@@ -191,8 +190,12 @@ Mineflayer 是可插拔的；任何人都可以创建一个插件，在 Mineflay
 * [Dashboard](https://github.com/wvffle/mineflayer-dashboard) - mineflayer bot 的前端仪表板
 * [PVP](https://github.com/TheDudeFromCI/mineflayer-pvp) - 用于基本 PVP 和 PVE 的简单 API
 * [auto-eat](https://github.com/LINKdiscordd/mineflayer-auto-eat) - 自动进食
-* [Tool](https://github.com/TheDudeFromCI/mineflayer-tool) - 具有高级 API 的自动工具/武器选择实用程序
-* [Hawkeye](https://github.com/sefirosweb/minecraftHawkEye) - 使用弓箭自动瞄准的实用程序
+ * [Auto Crystal](https://github.com/link-discord/mineflayer-autocrystal) - 自动放置和破碎结
+ * [Tool](https://github.com/TheDudeFromCI/mineflayer-tool) - 一个具有高级API的工具/武器自动选择工具的工具
+ * [Hawkeye](https://github.com/sefirosweb/minecraftHawkEye) - 一个使用自动瞄准弓的工具
+ * [GUI](https://github.com/firejoust/mineflayer-GUI) - 简化了嵌套箱子GUI窗口的导航和管理
+ * [Projectile](https://github.com/firejoust/mineflayer-projectile) - 以投射物为基础的战斗的可配置插件
+
 
  也可以看看这些 :
 
@@ -203,13 +206,14 @@ Mineflayer 是可插拔的；任何人都可以创建一个插件，在 Mineflay
 * [Bloodhound](https://github.com/Nixes/mineflayer-bloodhound) - 确定谁和什么对另一个实体的损害负责
 * [tps](https://github.com/SiebeDW/mineflayer-tps) - 获取当前的 tps（已处理的 tps）
 * [panorama](https://github.com/IceTank/mineflayer-panorama) - 拍摄您的世界的全景图像
+ * [player-death-event](https://github.com/tuanzisama/mineflayer-death-event) - 在Mineflayer里监听玩家死亡事件
 
 ## 正在使用 Mineflayer 的项目
 
 * [rom1504/rbot](https://github.com/rom1504/rbot)
-  * [YouTube - building a spiral staircase](https://www.youtube.com/watch?v=UM1ZV5200S0)
-  * [YouTube - replicating a building](https://www.youtube.com/watch?v=0cQxg9uDnzA)
-* [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot)
+  * [YouTube - 建造旋转楼梯](https://www.youtube.com/watch?v=UM1ZV5200S0)
+  * [YouTube - 复制一个建筑](https://www.youtube.com/watch?v=0cQxg9uDnzA)
+* [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot) - 完成一些简单指令
 * [vogonistic/voxel](https://github.com/vogonistic/mineflayer-voxel) - 使用 voxel.js 可视化机器人正在做什么
 * [JonnyD/Skynet](https://github.com/JonnyD/Skynet) -  将玩家活动记录到在线 API 上
 * [MinecraftChat](https://github.com/rom1504/MinecraftChat) （最后一个开源版本，由 AlexKvazos 构建）——基于 Minecraft 网络的聊天客户端 <https://minecraftchat.net/>
@@ -233,6 +237,9 @@ Mineflayer 是可插拔的；任何人都可以创建一个插件，在 Mineflay
 
 运行 `npm mocha_test -- -g <test_name>`，其中 `<test_name>` 是测试名称，例如 `bed`, `useChests`, `rayTrace`...
 
+### 示例
+
+`npm run mocha_test -- -g "1.18.1.*BlockFinder"` 进行1.18.1寻路测试
 ## 许可证
 
 [MIT](../LICENSE)
