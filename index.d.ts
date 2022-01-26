@@ -189,6 +189,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   heldItem: Item | null
   currentWindow: Window | null
   simpleClick: simpleClick
+  tablist: Tablist
 
   connect: (options: BotOptions) => void
 
@@ -425,6 +426,11 @@ export interface Bot extends TypedEmitter<BotEvents> {
 export interface simpleClick {
   leftMouse: (slot: number) => Promise<void>
   rightMouse: (slot: number) => Promise<void>
+}
+
+export interface Tablist {
+  header: ChatMessage
+  footer: ChatMessage
 }
 
 export interface chatPatternOptions {
