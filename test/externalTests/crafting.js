@@ -1,84 +1,105 @@
-const { once } = require('events')
-const { Vec3 } = require('vec3')
+const assert = require('assert')
 
 module.exports = () => async (bot) => {
-  const { blocksByName, itemsByName, findItemOrBlockByName } = require('minecraft-data')(bot.version)
+  const {
+    blocksByName,
+    itemsByName,
+    findItemOrBlockById
+  } = require('minecraft-data')(bot.version)
   const Item = require('prismarine-item')(bot.version)
 
-  let populateBlockInventory
-  let craftItem
-  if (bot.supportFeature('oneBlockForSeveralVariations')) {
-    populateBlockInventory = blocksByName.log
-    craftItem = 'planks'
-  } else if (bot.supportFeature('blockSchemeIsFlat')) {
-    populateBlockInventory = itemsByName.birch_log
-    craftItem = 'birch_planks'
-  }
-
   function findCraftingTable () {
-    const cursor = new Vec3(0, 0, 0)
-    for (cursor.x = bot.entity.position.x - 4; cursor.x < bot.entity.position.x + 4; cursor.x++) {
-      for (cursor.y = bot.entity.position.y - 4; cursor.y < bot.entity.position.y + 4; cursor.y++) {
-        for (cursor.z = bot.entity.position.z - 4; cursor.z < bot.entity.position.z + 4; cursor.z++) {
-          const block = bot.blockAt(cursor)
-          if (block.type === blocksByName.crafting_table.id) return block
-        }
+    return bot.findBlock({
+      matching: blocksByName.crafting_table.id,
+      maxDistance: 4.5
+    })
+  }
+
+  async function fetchIngredients (recipe, iterations) {
+    await bot.test.becomeCreative()
+    await bot.test.clearInventory()
+
+    let entries
+    if (!recipe.inShape) {
+      entries = recipe.ingredients
+        .filter(entry => entry.count < 0)
+        .map(entry => { return { id: entry.id, count: Math.abs(entry.count) } })
+    } else { entries = extractItemsCountFromShape(recipe.inShape) }
+
+    for (const entry of entries) {
+      const item = findItemOrBlockById(entry.id)
+      let remaining = entry.count * iterations
+      while (remaining > 0) {
+        const count = remaining > item.stackSize ? item.stackSize : remaining
+        const emptySlotId = bot.inventory.firstEmptyInventorySlot(false)
+
+        await bot.test.setInventorySlot(emptySlotId, new Item(item.id, count, null))
+        remaining -= count
       }
+    }
+
+    await bot.test.becomeSurvival()
+  }
+
+  function assertRecipeResult (recipe, iterations) {
+    const actualResultCount = bot.inventory.count(recipe.result.id, null)
+    const expectedResultCount = recipe.result.count * iterations
+    if (actualResultCount !== expectedResultCount) { throw new Error(`Craft ${findItemOrBlockById(recipe.result.id).name}: Mismatched result count. Expected ${expectedResultCount} Actual ${actualResultCount}`) }
+
+    if (!recipe.outShape) { return }
+
+    for (const entry of extractItemsCountFromShape(recipe.outShape)) {
+      const actualCount = bot.inventory.count(entry.id, null)
+      const expectedCount = entry.count * iterations
+
+      if (actualResultCount !== expectedResultCount) { throw new Error(`Craft ${findItemOrBlockById(recipe.result.id).name}: Mismatched out shape count. Expected ${actualCount} Actual ${expectedCount}`) }
     }
   }
 
-  async function craft (amount, name) {
-    const item = findItemOrBlockByName(name)
-    const craftingTable = findCraftingTable()
-    const wbText = craftingTable ? 'with a crafting table, ' : 'without a crafting table, '
-    if (item == null) {
-      bot.test.sayEverywhere(`${wbText}unknown item: ${name}`)
-      throw new Error(`${wbText}unknown item: ${name}`)
-    } else {
-      const recipes = bot.recipesFor(item.id, null, 1, craftingTable) // doesn't check if it's possible to do it amount times
-      if (recipes.length) {
-        bot.test.sayEverywhere(`${wbText}I can make ${item.name}`)
-        await bot.craft(recipes[0], amount, craftingTable)
-        bot.test.sayEverywhere(`did the recipe for ${item.name} ${amount} times`)
-      } else {
-        bot.test.sayEverywhere(`${wbText}I can't make ${item.name}`)
-        throw new Error(`${wbText}I can't make ${item.name}`)
+  function extractItemsCountFromShape (shape) {
+    const outItemsMap = new Map()
+    for (let rowIndex = 0; rowIndex < shape.length; rowIndex++) {
+      const row = shape[rowIndex]
+      for (const entry of row) {
+        if (entry.id === -1) { continue }
+        outItemsMap.set(entry.id, (outItemsMap.get(entry.id) ?? 0) + entry.count)
       }
     }
+
+    const result = []
+    for (const [key, value] of outItemsMap.entries()) {
+      result.push({
+        id: key,
+        count: value
+      })
+    }
+
+    return result
   }
 
-  await bot.test.setInventorySlot(36, new Item(populateBlockInventory.id, 1, 0))
-  await bot.test.becomeSurvival()
-  await craft(1, craftItem)
+  const itemsToCraft = [
+    { name: bot.supportFeature('blockSchemeIsFlat') ? 'birch_planks' : 'planks', iterations: 1 },
+    { name: 'crafting_table', iterations: 1 },
+    { name: 'stick', iterations: 9 },
+    { name: 'ladder', iterations: 3 },
+    { name: 'cake', iterations: 3 },
+    { name: 'enchanting_table', iterations: 1 },
+    { name: 'diamond_pickaxe', iterations: 2 },
+    { name: 'iron_door', iterations: 2 },
+    { name: 'diamond_block', iterations: 2 }
+  ]
+
   await bot.test.setBlock({ x: 1, y: 0, z: 0, relative: true, blockName: 'crafting_table' })
-  bot.chat('/give @p stick 21')
-  await once(bot.inventory, 'updateSlot')
-  const craftingTable = bot.findBlock({ matching: blocksByName.crafting_table.id })
+  const craftingTable = findCraftingTable()
 
-  const recipe = bot.recipesFor(itemsByName.ladder.id, null, null, true)[0]
-  await bot.craft(recipe, recipe.result.count * 3, craftingTable)
-  await bot.waitForTicks(5)
+  for (const entry of itemsToCraft) {
+    console.log('Starting to craft', entry.name, entry.iterations)
+    const recipe = bot.recipesAll(itemsByName[entry.name].id, null, true)[0]
+    assert.ok(recipe)
 
-  const count = bot.inventory.count(itemsByName.ladder.id, null)
-  if (count !== recipe.result.count * 3) { throw new Error('CraftLadder: count mismatch') }
-
-  // Some Minecraft versions don't support giving multiple milk buckets???
-  for (let i = 0; i < 6; i++) {
-    bot.chat('/give @p milk_bucket')
+    await fetchIngredients(recipe, entry.iterations)
+    await bot.craft(recipe, entry.iterations, craftingTable)
+    assertRecipeResult(recipe, entry.iterations)
+    console.log('Finished crafting', entry.name, entry.iterations)
   }
-  bot.chat('/give @p wheat 6')
-  bot.chat('/give @p sugar 4')
-  bot.chat('/give @p egg 2')
-
-  while (true) {
-    await bot.waitForTicks(1)
-    if (bot.inventory.count(itemsByName.milk_bucket.id, null) === 6 &&
-        bot.inventory.count(itemsByName.wheat.id, null) === 6 &&
-        bot.inventory.count(itemsByName.sugar.id, null) === 4 &&
-        bot.inventory.count(itemsByName.egg.id, null) === 2) { break }
-  }
-
-  await bot.craft(bot.recipesAll(itemsByName.cake.id, null, true)[0], 2, craftingTable)
-  await bot.waitForTicks(5)
-  if (bot.inventory.count(itemsByName.bucket.id, null) !== 6) { throw new Error('CraftCake: empty buckets missing in inventory after crafting') }
 }
