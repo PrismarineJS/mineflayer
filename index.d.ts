@@ -39,7 +39,7 @@ export interface PluginOptions {
 
 export type Plugin = (bot: Bot, options: BotOptions) => void
 
-interface BotEvents {
+type BotEvents = {
   chat: (
     username: string,
     message: string,
@@ -610,17 +610,17 @@ export class Painting {
   constructor (id: number, position: Vec3, name: string, direction: Vec3);
 }
 
-interface StorageEvents {
+type StorageEvents = {
   open: () => void
   close: () => void
   updateSlot: (oldItem: Item | null, newItem: Item) => void
 }
 
-interface FurnaceEvents extends StorageEvents {
+type FurnaceEvents = StorageEvents & {
   update: () => void
 }
 
-interface ConditionalStorageEvents extends StorageEvents {
+type ConditionalStorageEvents = StorageEvents & {
   ready: () => void
 }
 
