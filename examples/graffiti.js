@@ -4,8 +4,8 @@
  * Learn how easy it is to interact with signs and paintings in this example.
  *
  * You can send commands to this bot using chat messages, the bot will
- * reply by telling you the name of the nearest painting or the text written on
- * the nearest sign, and you can also update signs with custom messages!
+ * reply by telling you the text written on the nearest sign, and you can also
+ * update signs with custom messages!
  *
  * To update a sign simply send a message in this format: write [your message]
  */
@@ -32,7 +32,7 @@ bot.on('chat', (username, message) => {
   if (username === bot.username) return
   switch (true) {
     case /^watch$/.test(message):
-      watchPaintingOrSign()
+      watchSign()
       break
     case /^write .+$/.test(message):
       // write message
@@ -42,19 +42,12 @@ bot.on('chat', (username, message) => {
   }
 })
 
-function watchPaintingOrSign () {
-  const paintingBlock = bot.findBlock({
-    matching (block) {
-      return !!block.painting
-    }
-  })
+function watchSign () {
   const signBlock = bot.findBlock({
     matching: ['painting', 'sign'].map(name => mcData.blocksByName[name].id)
   })
   if (signBlock) {
     bot.chat(`The sign says: ${signBlock.signText}`)
-  } else if (paintingBlock) {
-    bot.chat(`The painting is: ${paintingBlock.painting.name}`)
   } else {
     bot.chat('There are no signs or paintings near me')
   }
