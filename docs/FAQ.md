@@ -119,7 +119,7 @@ Note that the order in which plugins are loaded is dynamic, so you should never 
 
 ### How can I use a socks5 proxy?
 
-In the options object for `mineflayer.createBot(options)`, remove your `host` option from the options object, have the following variables declared `PROXY_IP, PROXY_PORT, PROXY_USERNAME, PROXY_PASSWORD, MC_SERVER_IP, MC_SERVER_PORT` and add this to your options object:
+In the options object for `mineflayer.createBot(options)`, remove your `host` option from the options object, have the following variables declared `PROXY_IP, PROXY_PORT, PROXY_USERNAME, PROXY_PASSWORD, MC_SERVER_ADDRESS, MC_SERVER_PORT` and add this to your options object:
 ```js
 connect: (client) => {
     socks.createConnection({
@@ -132,7 +132,7 @@ connect: (client) => {
       },
       command: 'connect',
       destination: {
-        host: MC_SERVER_IP,
+        host: MC_SERVER_ADDRESS,
         port: MC_SERVER_PORT
       }
     }, (err, info) => {
@@ -146,6 +146,7 @@ connect: (client) => {
   }
   ```
   `socks` is declared with `const socks = require('socks').SocksClient` and uses [this](https://www.npmjs.com/package/socks) package.
+  Some servers might reject the connection. If that happens try adding `fakeHost: MC_SERVER_ADDRESS` to your createBot options.
   
 # Common Errors
 
