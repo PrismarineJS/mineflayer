@@ -2,20 +2,9 @@
 
 This Frequently Asked Question document is meant to help people for the most common things.
 
-### Can I use Java Microsoft Accounts?
+### I get an error when trying to login with a microsoft account.
 
-Yes.
-To use microsoft auth with mineflayer, add the key `auth: 'microsoft'` to your `mineflayer.createBot()`. Example:
-```js
-const bot = mineflayer.createBot({
-  host: 'localhost',
-  port: 25565,
-  username: 'email@example.com',
-  password: '12345678',
-  auth: 'microsoft'
-})
-```
-You might get an error about that account not owning Minecraft, or an error about invalid login credentials. If that happens remove the password field from the `createBot` options and try again.
+When using the option `auth: 'microsoft'`, try removing the password field in the `createBot` options. And try again.
 
 ### How to hide errors ?
 
