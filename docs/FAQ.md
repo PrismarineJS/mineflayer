@@ -4,7 +4,10 @@ This Frequently Asked Question document is meant to help people for the most com
 
 ### I get an error when trying to login with a microsoft account.
 
-When using the option `auth: 'microsoft'`, try removing the password field in the `createBot` options. And try again.
+Make sure the email you entered into the username option in createBot can be used to login to `minecraft.net` using the 'Login with Microsoft' button.
+Make sure you have the option `auth: 'microsoft'` in your createBot options. 
+
+When you get an error that says something about invalid credentials or 'Does this account own Minecraft?' try removing the password field in the `createBot` options and try again.
 
 ### How to hide errors ?
 
