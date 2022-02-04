@@ -414,11 +414,11 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   taskCompatibleWithRunningTask: (taskIdentifier: string) => { status: false, task: never } | { status: true, task: Task }
 
-  createCompatibleTask: (taskIdentifier: string) => Task
+  taskCreateCompatible: (taskIdentifier: string) => Task
 
-  waitForTaskCompatibility: (taskIdentifier: string) => Promise<void>
+  taskWaitCompatibility: (taskIdentifier: string) => Promise<void>
 
-  removeTask: () => void
+  taskRemove: () => void
 }
 
 export interface simpleClick {
