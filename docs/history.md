@@ -1,3 +1,7 @@
+## 3.16.0
+
+* Use prismarine-chunk for block entities
+
 ## 3.15.0
 
 * Supports 1.18
