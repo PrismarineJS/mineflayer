@@ -14,7 +14,7 @@ module.exports = () => async (bot) => {
   await bot.lookAt(position.offset(0, -3, 0), true)
 
   block = bot.blockAtCursor()
-  const relBlock = bot.blockAt(position.offset(0, -1, 0))
+  const relBlock = bot.world.getBlock(position.offset(0, -1, 0))
   relBlock.face = BlockFace.TOP
 
   assert.deepStrictEqual(block.position, relBlock.position)

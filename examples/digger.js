@@ -61,7 +61,7 @@ function dig () {
   if (bot.targetDigBlock) {
     bot.chat(`already digging ${bot.targetDigBlock.name}`)
   } else {
-    target = bot.blockAt(bot.entity.position.offset(0, -1, 0))
+    target = bot.world.getBlock(bot.entity.position.offset(0, -1, 0))
     if (target && bot.canDigBlock(target)) {
       bot.chat(`starting to dig ${target.name}`)
       bot.dig(target, onDiggingCompleted)
@@ -80,7 +80,7 @@ function dig () {
 }
 
 function build () {
-  const referenceBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
+  const referenceBlock = bot.world.getBlock(bot.entity.position.offset(0, -1, 0))
   const jumpY = Math.floor(bot.entity.position.y) + 1.0
   bot.setControlState('jump', true)
   bot.on('move', placeIfHighEnough)

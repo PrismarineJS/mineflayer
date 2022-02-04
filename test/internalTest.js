@@ -160,7 +160,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       bot.on('chunkColumnLoad', (columnPoint) => {
         assert.strictEqual(columnPoint.x, 0)
         assert.strictEqual(columnPoint.z, 0)
-        assert.strictEqual(bot.blockAt(pos).type, goldId)
+        assert.strictEqual(bot.world.getBlock(pos).type, goldId)
         done()
       })
       server.on('login', (client) => {
@@ -582,7 +582,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
       bot.once('chunkColumnLoad', (columnPoint) => {
         for (const bed in beds) {
-          const bedBock = bot.blockAt(beds[bed].foot)
+          const bedBock = bot.world.getBlock(beds[bed].foot)
           const bedBockMetadata = bot.parseBedMetadata(bedBock)
           assert.strictEqual(bedBockMetadata.facing, beds[bed].facing, 'The facing property seems to be wrong')
           assert.strictEqual(bedBockMetadata.part, false, 'The part property seems to be wrong') // Is the foot

@@ -38,7 +38,7 @@ module.exports = () => async (bot) => {
   }
 
   async function depositBones (chestLocation, count) {
-    const chest = await bot.openChest(bot.blockAt(chestLocation))
+    const chest = await bot.openChest(bot.world.getBlock(chestLocation))
     assert(chest.containerItems().length === 0)
     assert(chest.items().length > 0)
     const name = 'bone'
@@ -52,7 +52,7 @@ module.exports = () => async (bot) => {
   }
 
   async function withdrawBones (chestLocation, count) {
-    const chest = await bot.openChest(bot.blockAt(chestLocation))
+    const chest = await bot.openChest(bot.world.getBlock(chestLocation))
     const name = 'bone'
     const item = itemByName(chest.containerItems(), name)
     if (!item) {
@@ -79,12 +79,12 @@ module.exports = () => async (bot) => {
   await bot.test.placeBlock(trappedChestSlot, largeTrappedChestLocations[1])
   await bot.test.placeBlock(trappedChestSlot, smallTrappedChestLocation)
 
-  assert.strictEqual(bot.blockAt(largeChestLocations[0]).type, chestBlockId)
-  assert.strictEqual(bot.blockAt(largeChestLocations[1]).type, chestBlockId)
-  assert.strictEqual(bot.blockAt(smallChestLocation).type, chestBlockId)
-  assert.strictEqual(bot.blockAt(largeTrappedChestLocations[0]).type, trappedChestBlockId)
-  assert.strictEqual(bot.blockAt(largeTrappedChestLocations[1]).type, trappedChestBlockId)
-  assert.strictEqual(bot.blockAt(smallTrappedChestLocation).type, trappedChestBlockId)
+  assert.strictEqual(bot.world.getBlock(largeChestLocations[0]).type, chestBlockId)
+  assert.strictEqual(bot.world.getBlock(largeChestLocations[1]).type, chestBlockId)
+  assert.strictEqual(bot.world.getBlock(smallChestLocation).type, chestBlockId)
+  assert.strictEqual(bot.world.getBlock(largeTrappedChestLocations[0]).type, trappedChestBlockId)
+  assert.strictEqual(bot.world.getBlock(largeTrappedChestLocations[1]).type, trappedChestBlockId)
+  assert.strictEqual(bot.world.getBlock(smallTrappedChestLocation).type, trappedChestBlockId)
 
   // Test that "chestLidMove" is emitted only once when opening a double chest
   let emitted = false
@@ -109,7 +109,7 @@ module.exports = () => async (bot) => {
       chest.close()
     }
   }
-  const chest = await bot.openChest(bot.blockAt(largeChestLocations[0]))
+  const chest = await bot.openChest(bot.world.getBlock(largeChestLocations[0]))
   await once(chest, 'close')
 
   await depositBones(smallChestLocation, 1)

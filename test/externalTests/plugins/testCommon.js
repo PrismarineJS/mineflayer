@@ -37,7 +37,7 @@ function inject (bot) {
   // setting relative to true makes x, y, & z relative using ~
   bot.test.setBlock = callbackify(async ({ x = 0, y = 0, z = 0, relative, blockName }) => {
     const { x: _x, y: _y, z: _z } = relative ? bot.entity.position.floored().offset(x, y, z) : { x, y, z }
-    const block = bot.blockAt(new Vec3(_x, _y, _z))
+    const block = bot.world.getBlock(new Vec3(_x, _y, _z))
     if (block.name === blockName) {
       return
     }
@@ -78,7 +78,7 @@ function inject (bot) {
   async function placeBlock (slot, position) {
     bot.setQuickBarSlot(slot - 36)
     // always place the block on the top of the block below it, i guess.
-    const referenceBlock = bot.blockAt(position.plus(new Vec3(0, -1, 0)))
+    const referenceBlock = bot.world.getBlock(position.plus(new Vec3(0, -1, 0)))
     return bot.placeBlock(referenceBlock, new Vec3(0, 1, 0))
   }
 

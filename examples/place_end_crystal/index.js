@@ -52,7 +52,7 @@ bot.on('chat', async (ign, msg) => {
     point: findBlocksNearPoint,
     matching: ['bedrock', 'obsidian'].map(blockName => mcData.blocksByName[blockName].id),
     useExtraInfo: block => {
-      const hasAirAbove = bot.blockAt(block.position.offset(0, 1, 0)).name === 'air'
+      const hasAirAbove = bot.world.getBlock(block.position.offset(0, 1, 0)).name === 'air'
       const botNotStandingOnBlock = block.position.xzDistanceTo(bot.entity.position) > 2
       // do no intersecting entity check
       const { x: aboveX, y: aboveY, z: aboveZ } = block.position.offset(0, 1, 0)

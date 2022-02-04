@@ -4,7 +4,7 @@ const Vec3 = require('vec3')
 module.exports = () => async (bot) => {
   const mcData = require('minecraft-data')(bot.version)
   const Item = require('prismarine-item')(bot.version)
-  const lowerBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
+  const lowerBlock = bot.world.getBlock(bot.entity.position.offset(0, -1, 0))
 
   let signItem = null
   for (const name in mcData.itemsByName) {
@@ -14,12 +14,12 @@ module.exports = () => async (bot) => {
 
   const p = new Promise((resolve, reject) => {
     bot._client.on('open_sign_entity', (packet) => {
-      const sign = bot.blockAt(new Vec3(packet.location))
+      const sign = bot.world.getBlock(new Vec3(packet.location))
       bot.updateSign(sign, '1\n2\n3\n')
 
       setTimeout(() => {
         // Get updated sign
-        const sign = bot.blockAt(bot.entity.position)
+        const sign = bot.world.getBlock(bot.entity.position)
 
         assert.strictEqual(sign.signText, '1\n2\n3\n')
 

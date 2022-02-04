@@ -58,7 +58,7 @@ bot.on('chat', (username, message) => {
   }
 
   function canSee (pos) {
-    const block = bot.blockAt(pos)
+    const block = bot.world.getBlock(pos)
     const r = bot.canSeeBlock(block)
     if (r) {
       bot.chat(`I can see the block of ${block.displayName} at ${pos}`)
@@ -92,7 +92,7 @@ bot.on('chat', (username, message) => {
   }
 
   function sayBlockUnder () {
-    const block = bot.blockAt(bot.players[username].entity.position.offset(0, -1, 0))
+    const block = bot.world.getBlock(bot.players[username].entity.position.offset(0, -1, 0))
     bot.chat(`Block under you is ${block.displayName} in the ${block.biome.name} biome`)
     console.log(block)
   }

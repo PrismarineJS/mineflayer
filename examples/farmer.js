@@ -27,7 +27,7 @@ function blockToSow () {
     matching: mcData.blocksByName.farmland.id,
     maxDistance: 6,
     useExtraInfo: (block) => {
-      const blockAbove = bot.blockAt(block.position.offset(0, 1, 0))
+      const blockAbove = bot.world.getBlock(block.position.offset(0, 1, 0))
       return !blockAbove || blockAbove.type === 0
     }
   })

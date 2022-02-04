@@ -23,14 +23,14 @@ module.exports = () => async (bot) => {
   await once(bot, 'time')
   await bot.test.wait(1000)
 
-  console.log(bot.time.timeOfDay, bot.blockAt(bedPos1).name, bot.blockAt(bedPos2).name)
+  console.log(bot.time.timeOfDay, bot.world.getBlock(bedPos1).name, bot.world.getBlock(bedPos2).name)
   assert(bot.time.timeOfDay >= midnight)
-  assert(bot.blockAt(bedPos1).name.endsWith('bed'))
-  assert(bot.blockAt(bedPos2).name.endsWith('bed'))
+  assert(bot.world.getBlock(bedPos1).name.endsWith('bed'))
+  assert(bot.world.getBlock(bedPos2).name.endsWith('bed'))
 
   // Sleep
   assert(!bot.isSleeping)
-  await bot.sleep(bot.blockAt(bedPos1))
+  await bot.sleep(bot.world.getBlock(bedPos1))
   await once(bot, 'sleep')
 
   // Wake

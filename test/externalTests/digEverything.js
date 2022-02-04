@@ -77,7 +77,7 @@ async function digSomething (blockId, bot) {
   await bot.test.setInventorySlot(36, new Item(mcData.itemsByName.diamond_pickaxe.id, 1, 0))
   await bot.test.becomeSurvival()
   // we are bare handed
-  await bot.dig(bot.blockAt(bot.entity.position.plus(new Vec3(1, 0, 0))))
+  await bot.dig(bot.world.getBlock(bot.entity.position.plus(new Vec3(1, 0, 0))))
   // make sure that block is gone
-  assert.strictEqual(bot.blockAt(bot.entity.position.plus(new Vec3(1, 0, 0))).type, 0)
+  assert.strictEqual(bot.world.getBlock(bot.entity.position.plus(new Vec3(1, 0, 0))).type, 0)
 }

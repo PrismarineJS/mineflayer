@@ -17,13 +17,13 @@ module.exports = () => async (bot) => {
   await bot.test.setInventorySlot(37, new Item(porkchopId, porkchopInputCount))
   await bot.test.setInventorySlot(38, new Item(coalId, coalInputCount)) // Get coal
   if (bot.supportFeature('itemsAreAlsoBlocks')) {
-    assert.strictEqual(bot.blockAt(furnacePos).type, mcData.itemsByName.furnace.id)
+    assert.strictEqual(bot.world.getBlock(furnacePos).type, mcData.itemsByName.furnace.id)
   } else {
-    assert.strictEqual(bot.blockAt(furnacePos).type, mcData.blocksByName.furnace.id)
+    assert.strictEqual(bot.world.getBlock(furnacePos).type, mcData.blocksByName.furnace.id)
   }
 
   // Put inputs
-  const furnace = await bot.openFurnace(bot.blockAt(furnacePos))
+  const furnace = await bot.openFurnace(bot.world.getBlock(furnacePos))
   assert.strictEqual(furnace.inputItem(), furnace.slots[0])
   assert.strictEqual(furnace.fuelItem(), furnace.slots[1])
   assert.strictEqual(furnace.outputItem(), furnace.slots[2])

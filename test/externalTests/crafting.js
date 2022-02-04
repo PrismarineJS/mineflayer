@@ -20,7 +20,7 @@ module.exports = () => async (bot) => {
     for (cursor.x = bot.entity.position.x - 4; cursor.x < bot.entity.position.x + 4; cursor.x++) {
       for (cursor.y = bot.entity.position.y - 4; cursor.y < bot.entity.position.y + 4; cursor.y++) {
         for (cursor.z = bot.entity.position.z - 4; cursor.z < bot.entity.position.z + 4; cursor.z++) {
-          const block = bot.blockAt(cursor)
+          const block = bot.world.getBlock(cursor)
           if (block.type === blocksByName.crafting_table.id) return block
         }
       }

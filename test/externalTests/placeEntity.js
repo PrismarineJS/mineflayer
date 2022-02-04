@@ -18,7 +18,7 @@ module.exports = (version) => {
     if (!mcData?.itemsByName?.end_crystal?.id) return // unsupported
     await bot.test.setBlock({ z: 1, relative: true, blockName: 'obsidian' })
     await bot.test.awaitItemRecieved(`/give ${bot.username} end_crystal`)
-    const crystal = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
+    const crystal = await bot.placeEntity(bot.world.getBlock(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
     assert(crystal !== null)
     let name = 'EnderCrystal'
     if (bot.supportFeature('enderCrystalNameEndsInErNoCaps')) {
@@ -47,7 +47,7 @@ module.exports = (version) => {
 
     await placeBlocksForTest('water')
     await bot.test.awaitItemRecieved(`/give ${bot.username} ${mcData?.itemsByName?.oak_boat ? 'oak_boat' : 'boat'}`)
-    const boat = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, -1, -2)), new Vec3(0, -1, 0))
+    const boat = await bot.placeEntity(bot.world.getBlock(bot.entity.position.offset(0, -1, -2)), new Vec3(0, -1, 0))
     assert(boat !== null)
     const name = bot.supportFeature('entityNameUpperCaseNoUnderscore') ? 'Boat' : 'boat'
     const entity = bot.nearestEntity(o => o.name === name)
@@ -71,7 +71,7 @@ module.exports = (version) => {
       command = '/give @p zombie_spawn_egg 1' // >1.12
     }
     await bot.test.awaitItemRecieved(command)
-    const zombie = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
+    const zombie = await bot.placeEntity(bot.world.getBlock(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
     assert(zombie !== null)
     const name = bot.supportFeature('entityNameUpperCaseNoUnderscore') ? 'Zombie' : 'zombie'
     const entity = bot.nearestEntity(o => o.name === name)
@@ -82,7 +82,7 @@ module.exports = (version) => {
 
   addTest('place armor stand', async (bot) => {
     await bot.test.awaitItemRecieved(`/give ${bot.username} armor_stand`)
-    const armorStand = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
+    const armorStand = await bot.placeEntity(bot.world.getBlock(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
     assert(armorStand !== null)
     let name
     if (bot.supportFeature('entityNameUpperCaseNoUnderscore')) {

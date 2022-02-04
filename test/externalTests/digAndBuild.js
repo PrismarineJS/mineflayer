@@ -13,7 +13,7 @@ module.exports = () => async (bot) => {
   await waitForFall()
   await bot.test.becomeSurvival()
   // we are bare handed
-  await bot.dig(bot.blockAt(bot.entity.position.plus(new Vec3(0, -1, 0))))
+  await bot.dig(bot.world.getBlock(bot.entity.position.plus(new Vec3(0, -1, 0))))
   // make sure we collected das dirt
   await bot.test.wait(1000)
   assert(Item.equal(bot.inventory.slots[36], new Item(mcData.itemsByName.dirt.id, 1, 0)))
