@@ -15,7 +15,7 @@
  */
 const mineflayer = require('mineflayer')
 const { Vec3 } = require('vec3')
-const { on } = require('events')
+const { onceWithCleanup } = require('../lib/promise_utils')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node graffiti.js <host> <port> [<name>] [<password>]')
@@ -86,25 +86,22 @@ async function placeSign (message) {
     return
   }
 
-  const signEditPromise = (async () => {
-    // Wait for the right event to fire that indicates that we have opened our sign gui
-    // If we update the sign text before this event fires the server might reject the sign text
-    for await (const event of on(bot._client, 'packet')) {
-      const [data, meta] = event
-      if (meta.name !== 'tile_entity_data') continue
+  // Wait for the right event to fire that indicates that we have opened our sign gui
+  // If we update the sign text before this event fires the server might reject the sign text
+  const signGuiOpen = onceWithCleanup(bot, 'signOpen', {
+    timeout: 5000,
+    checkCondition: (data) => {
       const { x, y, z } = data.location
-      // Also check the events location. Other people might also place signs at the same time
-      if (new Vec3(x, y, z).toString() !== freeBlock.position.offset(0, 1, 0).toString()) continue
-      break
+      return new Vec3(x, y, z).distanceTo(freeBlock.position.offset(0, 1, 0)) === 0
     }
-    bot.updateSign(bot.blockAt(freeBlock.position.offset(0, 1, 0)), message.split(' ').slice(1).join(' '))
-  })()
+  })
 
   try {
     // Start both tasks at once: Block placement and listening for the sign gui opening.
     // Then wait for both actions to finish
     const placeBlockProm = bot.placeBlock(freeBlock, new Vec3(0, 1, 0))
-    await Promise.allSettled([placeBlockProm, signEditPromise])
+    await Promise.allSettled([placeBlockProm, signGuiOpen])
+    bot.updateSign(bot.blockAt(freeBlock.position.offset(0, 1, 0)), message.split(' ').slice(1).join(' '))
   } catch (err) {
     console.error(err)
     bot.chat('Block placement failed')

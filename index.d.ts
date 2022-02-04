@@ -151,6 +151,7 @@ interface BotEvents {
   bossBarDeleted: (bossBar: BossBar) => Promise<void> | void
   bossBarUpdated: (bossBar: BossBar) => Promise<void> | void
   resourcePack: (url: string, hash: string) => Promise<void> | void
+  signOpen: (data: { location: Vec3 }) => Promise<void> | void
 }
 
 export interface Bot extends TypedEmitter<BotEvents> {

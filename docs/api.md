@@ -1456,6 +1456,10 @@ Fires every tick if bot.physicsEnabled is set to true.
 
 Fires when the all of a chat pattern's regexs have matches
 
+#### "signOpen" (data)
+
+Fires when a sign gui opens. Data has on property `location` with the coordiantes off the sign the gui was oppened for.
+
 ### Functions
 
 #### bot.blockAt(point, extraInfos=true)
