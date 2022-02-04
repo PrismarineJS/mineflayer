@@ -328,5 +328,10 @@
     "name": "tallWorld",
     "description": "world starts at -64 and ends at 384",
     "versions": ["1.18", "1.18.1"]
+  },
+  {
+    "name": "sendStringifiedSignText",
+    "description": "sign text send when updating signs is send as stringified strings",
+    "versions": ["1.8", "1.8.9"]
   }
 ]
