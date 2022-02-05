@@ -333,5 +333,10 @@
     "name": "craftingResultSlotUpdate",
     "description": "server updates content of result slot in crafting area. previously, this had to be set manually",
     "versions": ["1.12", "1.18.1"]
+  },
+  {
+    "name": "sendStringifiedSignText",
+    "description": "sign text send when updating signs is send as stringified strings",
+    "versions": ["1.8", "1.8.9"]
   }
 ]

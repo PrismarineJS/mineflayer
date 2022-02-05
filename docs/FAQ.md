@@ -2,6 +2,13 @@
 
 This Frequently Asked Question document is meant to help people for the most common things.
 
+### I get an error when trying to login with a microsoft account.
+
+Make sure the email you entered into the username option in createBot can be used to login to `minecraft.net` using the 'Login with Microsoft' button.
+Make sure you have the option `auth: 'microsoft'` in your createBot options. 
+
+When you get an error that says something about invalid credentials or 'Does this account own Minecraft?' try removing the password field in the `createBot` options and try again.
+
 ### How to hide errors ?
 
 Use `hideErrors: true` in createBot options
@@ -119,7 +126,7 @@ Note that the order in which plugins are loaded is dynamic, so you should never 
 
 ### How can I use a socks5 proxy?
 
-In the options object for `mineflayer.createBot(options)`, remove your `host` option from the options object, have the following variables declared `PROXY_IP, PROXY_PORT, PROXY_USERNAME, PROXY_PASSWORD, MC_SERVER_IP, MC_SERVER_PORT` and add this to your options object:
+In the options object for `mineflayer.createBot(options)`, remove your `host` option from the options object, have the following variables declared `PROXY_IP, PROXY_PORT, PROXY_USERNAME, PROXY_PASSWORD, MC_SERVER_ADDRESS, MC_SERVER_PORT` and add this to your options object:
 ```js
 connect: (client) => {
     socks.createConnection({
@@ -132,7 +139,7 @@ connect: (client) => {
       },
       command: 'connect',
       destination: {
-        host: MC_SERVER_IP,
+        host: MC_SERVER_ADDRESS,
         port: MC_SERVER_PORT
       }
     }, (err, info) => {
@@ -146,6 +153,7 @@ connect: (client) => {
   }
   ```
   `socks` is declared with `const socks = require('socks').SocksClient` and uses [this](https://www.npmjs.com/package/socks) package.
+  Some servers might reject the connection. If that happens try adding `fakeHost: MC_SERVER_ADDRESS` to your createBot options.
   
 # Common Errors
 
