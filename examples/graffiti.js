@@ -9,13 +9,12 @@
  *
  * Commands:
  * write [message] - Update the nearest sign with a given message. May not work on some servers.
- *                   Use place for placing and updating signs instead
+ *                   Use place for placing and updating signs instead.
  *
- * place [message] - Place a sign from the bots inventory into the world and update the signs text.
+ * place [message] - Place a sign from the bots inventory into the world and updates the sign's text.
  */
 const mineflayer = require('mineflayer')
 const { Vec3 } = require('vec3')
-const { onceWithCleanup } = require('../lib/promise_utils')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node graffiti.js <host> <port> [<name>] [<password>]')
@@ -62,50 +61,58 @@ function watchSign () {
 }
 
 async function placeSign (message) {
+  message = message.split(' ').slice(1).join(' ') // Remove the first word. ie place
+  // Split the message along its 15 char line limit
+  const messageArr = []
+  for (let i = 0; i < 4; i++) {
+    if (message.length > 15) {
+      messageArr.push(message.substring(0, 15).trim())
+      message = message.slice(15)
+    } else {
+      messageArr.push(message)
+      break
+    }
+  }
+  message = messageArr.join('\n')
+
   const signItem = bot.inventory.items().find(i => i.name.includes('sign'))
   if (!signItem) {
     bot.chat('Give me a sign first!')
     return
   }
   await bot.equip(signItem, 'hand')
+
   // Look for solid blocs first
-  const freeBlocks = bot.findBlocks({
+  const solidBlocks = bot.findBlocks({
     matching: (block) => {
       return block.boundingBox === 'block'
     },
     maxDistance: 4,
     count: 100
   })
+
   // Then filter for blocks that have an air gap above them
-  const freeBlock = bot.blockAt(freeBlocks.find((pos) => {
+  const placeOnPos = solidBlocks.find((pos) => {
     const block = bot.blockAt(pos.offset(0, 1, 0))
     return block && block.boundingBox === 'empty' && block.name.includes('air')
-  }))
-  if (!freeBlock) {
-    bot.chat('No free block to place a sign on')
-    return
-  }
-
-  // Wait for the right event to fire that indicates that we have opened our sign gui
-  // If we update the sign text before this event fires the server might reject the sign text
-  const signGuiOpen = onceWithCleanup(bot, 'signOpen', {
-    timeout: 5000,
-    checkCondition: (data) => {
-      const { x, y, z } = data.location
-      return new Vec3(x, y, z).distanceTo(freeBlock.position.offset(0, 1, 0)) === 0
-    }
   })
-
-  try {
-    // Start both tasks at once: Block placement and listening for the sign gui opening.
-    // Then wait for both actions to finish
-    const placeBlockProm = bot.placeBlock(freeBlock, new Vec3(0, 1, 0))
-    await Promise.allSettled([placeBlockProm, signGuiOpen])
-    bot.updateSign(bot.blockAt(freeBlock.position.offset(0, 1, 0)), message.split(' ').slice(1).join(' '))
-  } catch (err) {
-    console.error(err)
-    bot.chat('Block placement failed')
-    return
+  const directions = [new Vec3(1, 0, 0), new Vec3(0, 0, 1), new Vec3(-1, 0, 0), new Vec3(0, 0, -1)]
+  let placementDir = null
+  const placeAgainstPos = solidBlocks.find((pos) => {
+    for (const dir of directions) {
+      const tmp = bot.blockAt(pos.plus(dir))
+      if (tmp?.name.includes('air')) {
+        placementDir = dir
+        return true
+      }
+    }
+    return false
+  })
+  if (!placeOnPos && !placeAgainstPos) return bot.chat('No block found to place a sign in')
+  if (placeOnPos) {
+    await bot.placeSign(placeOnPos.offset(0, 1, 0), message, { writeDelay: 1000 })
+  } else {
+    await bot.placeSign(placeAgainstPos.plus(placementDir), message, { writeDelay: 1000 })
   }
 
   bot.chat('Sign placed and updated')

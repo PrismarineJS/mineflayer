@@ -239,6 +239,7 @@
       - ["heldItemChanged" (heldItem)](#helditemchanged-helditem)
       - ["physicsTick" ()](#physicstick-)
       - ["chat:name" (matches)](#chatname-matches)
+      - ["signOpen" (data)](#signopen-data)
     - [Functions](#functions)
       - [bot.blockAt(point, extraInfos=true)](#botblockatpoint-extrainfostrue)
       - [bot.waitForChunksToLoad()](#botwaitforchunkstoload)
@@ -278,6 +279,7 @@
       - [bot.lookAt(point, [force])](#botlookatpoint-force)
       - [bot.look(yaw, pitch, [force])](#botlookyaw-pitch-force)
       - [bot.updateSign(block, text)](#botupdatesignblock-text)
+      - [bot.placeSign(pos, text, options = {})](#botplacesignpos-text-options--)
       - [bot.equip(item, destination)](#botequipitem-destination)
       - [bot.unequip(destination)](#botunequipdestination)
       - [bot.tossStack(item)](#bottossstackitem)
@@ -1742,6 +1744,16 @@ Set the direction your head is facing.
 #### bot.updateSign(block, text)
 
 Changes the text on the sign.
+
+#### bot.placeSign(pos, text, options = {})
+
+Places and writes to a sign. 
+
+ * `pos` - A `Vec3` instance in what block the sign should be placed. Can be a block above a solid block or a block next to a solid block.
+ * `text` - A `string` to write on the sign. Can have newlines for wirting in different lines.
+ * `options` - Optional `Object` with optional properties
+   * `sneak` - `boolean`. Default to `false``.
+   * `writeDelay` - `number` Delay in ms. Default to `0` (no delay). Anti cheat migh prevent to bot from writing to the sign to fast. Use this option when signs appear empty. 
 
 #### bot.equip(item, destination)
 

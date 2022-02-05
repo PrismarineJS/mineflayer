@@ -273,6 +273,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   updateSign: (block: Block, text: string) => void
 
+  placeSign: (pos: Vec3, text: string, options: { sneak?: boolean, writeDelay?: number }) => Promise<void>
+
   equip: (
     item: Item | number,
     destination: EquipmentDestination | null
