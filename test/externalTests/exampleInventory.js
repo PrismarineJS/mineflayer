@@ -48,7 +48,7 @@ const tests = [
 ]
 module.exports = () => async (bot) => {
   const mcData = require('minecraft-data')(bot.version)
-  await bot.test.runExample('examples/inventory.js', async (name, cb) => {
+  await bot.test.runExample('examples/inventory.js', async (name) => {
     assert.strictEqual(name, 'inventory')
     bot.chat('/op inventory') // to counteract spawn protection
     bot.chat('/clear inventory')
@@ -68,7 +68,6 @@ module.exports = () => async (bot) => {
     }
     // cleanup
     bot.chat(`/setblock 52 ${bot.test.groundY} 0 air`)
-    cb()
 
     function makeTest (inStr, outStr) {
       return () => bot.test.tellAndListen(name, inStr, makeListener(outStr))

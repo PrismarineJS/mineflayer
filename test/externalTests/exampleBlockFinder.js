@@ -1,7 +1,7 @@
 const assert = require('assert')
 
 module.exports = () => async (bot) => {
-  await bot.test.runExample('examples/blockfinder.js', async (name, cb) => {
+  await bot.test.runExample('examples/blockfinder.js', async (name) => {
     assert.strictEqual(name, 'finder')
     await bot.test.wait(2000)
     await bot.test.tellAndListen(name, 'find dirt', (message) => {
@@ -11,6 +11,5 @@ module.exports = () => async (bot) => {
       }
       return true // stop listening
     })
-    cb()
   })
 }

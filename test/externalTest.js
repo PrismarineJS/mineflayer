@@ -101,9 +101,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
       } else begin()
     })
 
-    beforeEach((done) => {
+    beforeEach(async () => {
       console.log('reset state')
-      bot.test.resetState(done)
+      await bot.test.resetState()
     })
 
     after((done) => {
