@@ -588,13 +588,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
           assert.strictEqual(bedBockMetadata.part, false, 'The part property seems to be wrong') // Is the foot
 
           if (beds[bed].throws) {
-            bot.sleep(bedBock, (err) => {
-              assert.strictEqual(err, beds[bed].error)
-            })
+            bot.sleep(bedBock).catch(err => assert.strictEqual(err, beds[bed].error))
           } else {
-            bot.sleep(bedBock, (err) => {
-              assert.ifError(err)
-            })
+            bot.sleep(bedBock).catch(err => assert.ifError(err))
           }
         }
 
