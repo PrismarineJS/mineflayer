@@ -1,3 +1,7 @@
+## 3.18.0
+
+* remove callbacks from types and docs
+
 ## 3.17.0
 
 * callback are now depreciated with mineflayer. Any use of them will print a warning
