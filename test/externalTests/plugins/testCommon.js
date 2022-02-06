@@ -4,8 +4,7 @@ const { spawn } = require('child_process')
 const { once } = require('events')
 const process = require('process')
 const assert = require('assert')
-const util = require('util')
-const { callbackify, sleep, onceWithCleanup, withTimeout } = require('../../../lib/promise_utils')
+const { sleep, onceWithCleanup, withTimeout } = require('../../../lib/promise_utils')
 
 module.exports = inject
 
@@ -16,26 +15,26 @@ function inject (bot) {
   bot.test = {}
   bot.test.groundY = bot.supportFeature('tallWorld') ? -60 : 4
   bot.test.sayEverywhere = sayEverywhere
-  bot.test.clearInventory = callbackify(clearInventory)
-  bot.test.becomeSurvival = callbackify(becomeSurvival)
-  bot.test.becomeCreative = callbackify(becomeCreative)
-  bot.test.fly = callbackify(fly)
-  bot.test.resetState = callbackify(resetState)
-  bot.test.setInventorySlot = callbackify(setInventorySlot)
-  bot.test.placeBlock = callbackify(placeBlock)
-  bot.test.runExample = callbackify(runExample)
-  bot.test.tellAndListen = callbackify(tellAndListen)
+  bot.test.clearInventory = clearInventory
+  bot.test.becomeSurvival = becomeSurvival
+  bot.test.becomeCreative = becomeCreative
+  bot.test.fly = fly
+  bot.test.resetState = resetState
+  bot.test.setInventorySlot = setInventorySlot
+  bot.test.placeBlock = placeBlock
+  bot.test.runExample = runExample
+  bot.test.tellAndListen = tellAndListen
   bot.test.wait = function (ms) {
     return new Promise((resolve) => { setTimeout(resolve, ms) })
   }
 
-  bot.test.awaitItemRecieved = callbackify(async (command) => {
+  bot.test.awaitItemRecieved = async (command) => {
     const p = once(bot.inventory, 'updateSlot')
     bot.chat(command)
     await p // await getting the item
-  })
+  }
   // setting relative to true makes x, y, & z relative using ~
-  bot.test.setBlock = callbackify(async ({ x = 0, y = 0, z = 0, relative, blockName }) => {
+  bot.test.setBlock = async ({ x = 0, y = 0, z = 0, relative, blockName }) => {
     const { x: _x, y: _y, z: _z } = relative ? bot.entity.position.floored().offset(x, y, z) : { x, y, z }
     const block = bot.blockAt(new Vec3(_x, _y, _z))
     if (block.name === blockName) {
@@ -45,7 +44,7 @@ function inject (bot) {
     const prefix = relative ? '~' : ''
     bot.chat(`/setblock ${prefix}${x} ${prefix}${y} ${prefix}${z} ${blockName}`)
     await p
-  })
+  }
 
   let grassName
   if (bot.supportFeature('itemsAreNotBlocks')) {
@@ -189,9 +188,6 @@ function inject (bot) {
   }
 
   async function runExample (file, run) {
-    // TODO: remove this once all examples have been converted to promises
-    run = util.promisify(run)
-
     let childBotName
 
     const detectChildJoin = async () => {

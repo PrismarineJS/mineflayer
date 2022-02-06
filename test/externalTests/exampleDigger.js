@@ -1,7 +1,7 @@
 const assert = require('assert')
 
 module.exports = () => async (bot) => {
-  await bot.test.runExample('examples/digger.js', async (name, cb) => {
+  await bot.test.runExample('examples/digger.js', async (name) => {
     assert.strictEqual(name, 'digger')
     bot.chat('/op digger') // to counteract spawn protection
     bot.chat('/give digger dirt 64')
@@ -26,6 +26,5 @@ module.exports = () => async (bot) => {
       }
       return true // stop listening
     })
-    cb()
   })
 }
