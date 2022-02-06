@@ -197,10 +197,6 @@ The most updated and useful are :
 
  * [radar](https://github.com/andrewrk/mineflayer-radar/) - web based radar
    interface using canvas and socket.io. [YouTube Demo](https://www.youtube.com/watch?v=FjDmAfcVulQ)
- * [blockfinder](https://github.com/Darthfett/mineflayer-blockFinder) - find blocks in the 3D world
- * [scaffold](https://github.com/andrewrk/mineflayer-scaffold) - get to
-   a target destination even if you have to build or break blocks to do so.
-   [YouTube Demo](http://youtu.be/jkg6psMUSE0)
  * [auto-auth](https://github.com/G07cha/MineflayerAutoAuth) - chat-based bot authentication
  * [Bloodhound](https://github.com/Nixes/mineflayer-bloodhound) - determine who and what is responsible for damage to another entity
  * [tps](https://github.com/SiebeDW/mineflayer-tps) - get the current tps (processed tps)
