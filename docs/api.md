@@ -20,18 +20,18 @@
     - [Biome](#biome)
     - [Item](#item)
     - [windows.Window (base class)](#windowswindow-base-class)
-      - [window.deposit(itemType, metadata, count, [callback])](#windowdeposititemtype-metadata-count-callback)
-      - [window.withdraw(itemType, metadata, count, [callback])](#windowwithdrawitemtype-metadata-count-callback)
+      - [window.deposit(itemType, metadata, count)](#windowdeposititemtype-metadata-count)
+      - [window.withdraw(itemType, metadata, count)](#windowwithdrawitemtype-metadata-count)
       - [window.close()](#windowclose)
     - [Recipe](#recipe)
     - [mineflayer.Container](#mineflayercontainer)
     - [mineflayer.Furnace](#mineflayerfurnace)
       - [furnace "update"](#furnace-update)
-      - [furnace.takeInput([callback])](#furnacetakeinputcallback)
-      - [furnace.takeFuel([callback])](#furnacetakefuelcallback)
-      - [furnace.takeOutput([callback])](#furnacetakeoutputcallback)
-      - [furnace.putInput(itemType, metadata, count, [cb])](#furnaceputinputitemtype-metadata-count-cb)
-      - [furnace.putFuel(itemType, metadata, count, [cb])](#furnaceputfuelitemtype-metadata-count-cb)
+      - [furnace.takeInput()](#furnacetakeinput)
+      - [furnace.takeFuel()](#furnacetakefuel)
+      - [furnace.takeOutput()](#furnacetakeoutput)
+      - [furnace.putInput(itemType, metadata, count)](#furnaceputinputitemtype-metadata-count)
+      - [furnace.putFuel(itemType, metadata, count)](#furnaceputfuelitemtype-metadata-count)
       - [furnace.inputItem()](#furnaceinputitem)
       - [furnace.fuelItem()](#furnacefuelitem)
       - [furnace.outputItem()](#furnaceoutputitem)
@@ -42,16 +42,16 @@
       - [enchantmentTable.targetItem()](#enchantmenttabletargetitem)
       - [enchantmentTable.xpseed](#enchantmenttablexpseed)
       - [enchantmentTable.enchantments](#enchantmenttableenchantments)
-      - [enchantmentTable.enchant(choice, [callback])](#enchantmenttableenchantchoice-callback)
-      - [enchantmentTable.takeTargetItem([callback])](#enchantmenttabletaketargetitemcallback)
-      - [enchantmentTable.putTargetItem(item, [callback])](#enchantmenttableputtargetitemitem-callback)
-      - [enchantmentTable.putLapis(item, [callback])](#enchantmenttableputlapisitem-callback)
+      - [enchantmentTable.enchant(choice)](#enchantmenttableenchantchoice)
+      - [enchantmentTable.takeTargetItem()](#enchantmenttabletaketargetitem)
+      - [enchantmentTable.putTargetItem(item)](#enchantmenttableputtargetitemitem)
+      - [enchantmentTable.putLapis(item)](#enchantmenttableputlapisitem)
     - [mineflayer.anvil](#mineflayeranvil)
-      - [anvil.combine(itemOne, itemTwo[, name, callback])](#anvilcombineitemone-itemtwo-name-callback)
-      - [anvil.combine(item[, name, callback])](#anvilcombineitem-name-callback)
+      - [anvil.combine(itemOne, itemTwo[, name])](#anvilcombineitemone-itemtwo-name)
+      - [anvil.combine(item[, name])](#anvilcombineitem-name)
       - [villager "ready"](#villager-ready)
       - [villager.trades](#villagertrades)
-      - [villager.trade(tradeIndex, [times], [cb])](#villagertradetradeindex-times-cb)
+      - [villager.trade(tradeIndex, [times])](#villagertradetradeindex-times)
     - [mineflayer.ScoreBoard](#mineflayerscoreboard)
       - [ScoreBoard.name](#scoreboardname)
       - [ScoreBoard.title](#scoreboardtitle)
@@ -235,7 +235,7 @@
       - ["chat:name" (matches)](#chatname-matches)
     - [Functions](#functions)
       - [bot.blockAt(point, extraInfos=true)](#botblockatpoint-extrainfostrue)
-      - [bot.waitForChunksToLoad(cb)](#botwaitforchunkstoloadcb)
+      - [bot.waitForChunksToLoad()](#botwaitforchunkstoload)
       - [bot.blockInSight(maxSteps, vectorLength)](#botblockinsightmaxsteps-vectorlength)
       - [bot.blockAtCursor(maxDistance=256)](#botblockatcursormaxdistance256)
       - [bot.blockAtEntityCursor(entity=bot.entity, maxDistance=256)](#botblockatentitycursorentitybotentity-maxdistance256)
@@ -249,7 +249,7 @@
     - [Methods](#methods)
       - [bot.end(reason)](#botendreason)
       - [bot.quit(reason)](#botquitreason)
-      - [bot.tabComplete(str, cb, [assumeCommand], [sendBlockInSight])](#bottabcompletestr-cb-assumecommand-sendblockinsight)
+      - [bot.tabComplete(str, [assumeCommand], [sendBlockInSight])](#bottabcompletestr-assumecommand-sendblockinsight)
       - [bot.chat(message)](#botchatmessage)
       - [bot.whisper(username, message)](#botwhisperusername-message)
       - [bot.chatAddPattern(pattern, chatType, description)](#botchataddpatternpattern-chattype-description)
@@ -261,32 +261,32 @@
       - [bot.loadPlugin(plugin)](#botloadpluginplugin)
       - [bot.loadPlugins(plugins)](#botloadpluginsplugins)
       - [bot.hasPlugin(plugin)](#bothaspluginplugin)
-      - [bot.sleep(bedBlock, [cb])](#botsleepbedblock-cb)
+      - [bot.sleep(bedBlock)](#botsleepbedblock)
       - [bot.isABed(bedBlock)](#botisabedbedblock)
-      - [bot.wake([cb])](#botwakecb)
+      - [bot.wake()](#botwake)
       - [bot.setControlState(control, state)](#botsetcontrolstatecontrol-state)
       - [bot.getControlState(control)](#botgetcontrolstatecontrol)
       - [bot.clearControlStates()](#botclearcontrolstates)
       - [bot.getExplosionDamages(entity, position, radius, [rawDamages])](#botgetexplosiondamagesentity-position-radius-rawdamages)
-      - [bot.lookAt(point, [force], [callback])](#botlookatpoint-force-callback)
-      - [bot.look(yaw, pitch, [force], [callback])](#botlookyaw-pitch-force-callback)
+      - [bot.lookAt(point, [force])](#botlookatpoint-force)
+      - [bot.look(yaw, pitch, [force])](#botlookyaw-pitch-force)
       - [bot.updateSign(block, text)](#botupdatesignblock-text)
-      - [bot.equip(item, destination, [callback])](#botequipitem-destination-callback)
-      - [bot.unequip(destination, [callback])](#botunequipdestination-callback)
-      - [bot.tossStack(item, [callback])](#bottossstackitem-callback)
-      - [bot.toss(itemType, metadata, count, [callback])](#bottossitemtype-metadata-count-callback)
-      - [bot.dig(block, [forceLook = true], [digFace], [callback])](#botdigblock-forcelook--true-digface-callback)
+      - [bot.equip(item, destination)](#botequipitem-destination)
+      - [bot.unequip(destination)](#botunequipdestination)
+      - [bot.tossStack(item)](#bottossstackitem)
+      - [bot.toss(itemType, metadata, count)](#bottossitemtype-metadata-count)
+      - [bot.dig(block, [forceLook = true], [digFace])](#botdigblock-forcelook--true-digface)
       - [bot.stopDigging()](#botstopdigging)
       - [bot.digTime(block)](#botdigtimeblock)
       - [bot.acceptResourcePack()](#botacceptresourcepack)
       - [bot.denyResourcePack()](#botdenyresourcepack)
-      - [bot.placeBlock(referenceBlock, faceVector, cb)](#botplaceblockreferenceblock-facevector-cb)
+      - [bot.placeBlock(referenceBlock, faceVector)](#botplaceblockreferenceblock-facevector)
       - [bot.placeEntity(referenceBlock, faceVector)](#botplaceentityreferenceblock-facevector)
-      - [bot.activateBlock(block, [callback])](#botactivateblockblock-callback)
-      - [bot.activateEntity(entity, [callback])](#botactivateentityentity-callback)
-      - [bot.activateEntityAt(entity, position, [callback])](#botactivateentityatentity-position-callback)
-      - [bot.consume(callback)](#botconsumecallback)
-      - [bot.fish(callback)](#botfishcallback)
+      - [bot.activateBlock(block)](#botactivateblockblock)
+      - [bot.activateEntity(entity)](#botactivateentityentity)
+      - [bot.activateEntityAt(entity, position)](#botactivateentityatentity-position)
+      - [bot.consume()](#botconsume)
+      - [bot.fish()](#botfish)
       - [bot.activateItem(offHand=false)](#botactivateitemoffhandfalse)
       - [bot.deactivateItem()](#botdeactivateitem)
       - [bot.useOn(targetEntity)](#botuseontargetentity)
@@ -296,8 +296,8 @@
       - [bot.dismount()](#botdismount)
       - [bot.moveVehicle(left,forward)](#botmovevehicleleftforward)
       - [bot.setQuickBarSlot(slot)](#botsetquickbarslotslot)
-      - [bot.craft(recipe, count, craftingTable, [callback])](#botcraftrecipe-count-craftingtable-callback)
-      - [bot.writeBook(slot, pages, [callback])](#botwritebookslot-pages-callback)
+      - [bot.craft(recipe, count, craftingTable)](#botcraftrecipe-count-craftingtable)
+      - [bot.writeBook(slot, pages)](#botwritebookslot-pages)
       - [bot.openContainer(containerBlock or containerEntity)](#botopencontainercontainerblock-or-containerentity)
       - [bot.openChest(chestBlock or minecartchestEntity)](#botopenchestchestblock-or-minecartchestentity)
       - [bot.openFurnace(furnaceBlock)](#botopenfurnacefurnaceblock)
@@ -305,24 +305,24 @@
       - [bot.openEnchantmentTable(enchantmentTableBlock)](#botopenenchantmenttableenchantmenttableblock)
       - [bot.openAnvil(anvilBlock)](#botopenanvilanvilblock)
       - [bot.openVillager(villagerEntity)](#botopenvillagervillagerentity)
-      - [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottradevillagerinstance-tradeindex-times-cb)
+      - [bot.trade(villagerInstance, tradeIndex, [times])](#bottradevillagerinstance-tradeindex-times)
       - [bot.setCommandBlock(pos, command, [options])](#botsetcommandblockpos-command-options)
       - [bot.supportFeature(name)](#botsupportfeaturename)
       - [bot.waitForTicks(ticks)](#botwaitforticksticks)
     - [Lower level inventory methods](#lower-level-inventory-methods)
-      - [bot.clickWindow(slot, mouseButton, mode, cb)](#botclickwindowslot-mousebutton-mode-cb)
+      - [bot.clickWindow(slot, mouseButton, mode)](#botclickwindowslot-mousebutton-mode)
       - [bot.putSelectedItemRange(start, end, window, slot)](#botputselecteditemrangestart-end-window-slot)
       - [bot.putAway(slot)](#botputawayslot)
       - [bot.closeWindow(window)](#botclosewindowwindow)
-      - [bot.transfer(options, cb)](#bottransferoptions-cb)
+      - [bot.transfer(options)](#bottransferoptions)
       - [bot.openBlock(block)](#botopenblockblock)
       - [bot.openEntity(entity)](#botopenentityentity)
-      - [bot.moveSlotItem(sourceSlot, destSlot, cb)](#botmoveslotitemsourceslot-destslot-cb)
+      - [bot.moveSlotItem(sourceSlot, destSlot)](#botmoveslotitemsourceslot-destslot)
       - [bot.updateHeldItem()](#botupdatehelditem)
       - [bot.getEquipmentDestSlot(destination)](#botgetequipmentdestslotdestination)
     - [bot.creative](#botcreative)
-      - [bot.creative.setInventorySlot(slot, item, [callback])](#botcreativesetinventoryslotslot-item-callback)
-      - [bot.creative.flyTo(destination, [cb])](#botcreativeflytodestination-cb)
+      - [bot.creative.setInventorySlot(slot, item)](#botcreativesetinventoryslotslot-item)
+      - [bot.creative.flyTo(destination)](#botcreativeflytodestination)
       - [bot.creative.startFlying()](#botcreativestartflying)
       - [bot.creative.stopFlying()](#botcreativestopflying)
 
@@ -418,23 +418,21 @@ See [prismarine-item](https://github.com/PrismarineJS/prismarine-item)
 
 See [prismarine-windows](https://github.com/PrismarineJS/prismarine-windows)
 
-#### window.deposit(itemType, metadata, count, [callback])
+#### window.deposit(itemType, metadata, count)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when done depositing.
 
  * `itemType` - numerical item id
  * `metadata` - numerical value. `null` means match anything.
  * `count` - how many to deposit. `null` is an alias to 1.
- * `callback(err)` - (optional) - called when done depositing
 
-#### window.withdraw(itemType, metadata, count, [callback])
+#### window.withdraw(itemType, metadata, count)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when done withdrawing.
 
  * `itemType` - numerical item id
  * `metadata` - numerical value. `null` means match anything.
  * `count` - how many to withdraw. `null` is an alias to 1.
- * `callback(err)` - (optional) - called when done withdrawing
 
 #### window.close()
 
@@ -456,31 +454,28 @@ See `bot.openFurnace(furnaceBlock)`.
 
 Fires when `furnace.fuel` and/or `furnace.progress` update.
 
-#### furnace.takeInput([callback])
+#### furnace.takeInput()
 
-This function also returns a `Promise`, with `item` as its argument upon completion.
+This function returns a `Promise`, with `item` as its argument upon completion.
 
- * `callback(err, item)`
 
-#### furnace.takeFuel([callback])
+#### furnace.takeFuel()
 
-This function also returns a `Promise`, with `item` as its argument upon completion.
+This function returns a `Promise`, with `item` as its argument upon completion.
 
- * `callback(err, item)`
 
-#### furnace.takeOutput([callback])
+#### furnace.takeOutput()
 
-This function also returns a `Promise`, with `item` as its argument upon completion.
+This function returns a `Promise`, with `item` as its argument upon completion.
 
- * `callback(err, item)`
 
-#### furnace.putInput(itemType, metadata, count, [cb])
+#### furnace.putInput(itemType, metadata, count)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
-#### furnace.putFuel(itemType, metadata, count, [cb])
+#### furnace.putFuel(itemType, metadata, count)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 #### furnace.inputItem()
 
@@ -542,47 +537,41 @@ Looks like:
 ]
 ```
 
-#### enchantmentTable.enchant(choice, [callback])
+#### enchantmentTable.enchant(choice)
 
-This function also returns a `Promise`, with `item` as its argument upon completion.
+This function returns a `Promise`, with `item` as its argument when the item has been enchanted.
 
  * `choice` - [0-2], the index of the enchantment you want to pick.
- * `callback(err, item)` - (optional) called when the item has been enchanted
 
-#### enchantmentTable.takeTargetItem([callback])
+#### enchantmentTable.takeTargetItem()
 
-This function also returns a `Promise`, with `item` as its argument upon completion.
+This function returns a `Promise`, with `item` as its argument upon completion.
 
- * `callback(err, item)`
 
-#### enchantmentTable.putTargetItem(item, [callback])
+#### enchantmentTable.putTargetItem(item)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
- * `callback(err)`
 
-#### enchantmentTable.putLapis(item, [callback])
+#### enchantmentTable.putLapis(item)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
- * `callback(err)`
 
 ### mineflayer.anvil
 
 Extends windows.Window for anvils
 See `bot.openAnvil(anvilBlock)`.
 
-#### anvil.combine(itemOne, itemTwo[, name, callback])
+#### anvil.combine(itemOne, itemTwo[, name])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
- * `callback(err)` - in order to use callback, pass an empty string ('') for name
 
-#### anvil.combine(item[, name, callback])
+#### anvil.combine(item[, name])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
- * `callback(err)`
 
 #### villager "ready"
 
@@ -626,8 +615,8 @@ Looks like:
 ]
 ```
 
-#### villager.trade(tradeIndex, [times], [cb])
-Is the same as [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottradevillagerinstance-tradeindex-times-cb)
+#### villager.trade(tradeIndex, [times])
+Is the same as [bot.trade(villagerInstance, tradeIndex, [times])](#bottradevillagerinstance-tradeindex-times)
 
 ### mineflayer.ScoreBoard
 
@@ -1440,11 +1429,9 @@ Fires when the all of a chat pattern's regexs have matches
 Returns the block at `point` or `null` if that point is not loaded. If `extraInfos` set to true, also returns informations about signs, paintings and block entities (slower).
 See `Block`.
 
-#### bot.waitForChunksToLoad(cb)
+#### bot.waitForChunksToLoad()
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
-
-The cb gets called when many chunks have loaded.
+This function returns a `Promise`, with `void` as its argument when many chunks have loaded.
 
 #### bot.blockInSight(maxSteps, vectorLength)
 
@@ -1529,14 +1516,12 @@ End the connection with the server.
 
 Gracefully disconnect from the server with the given reason (defaults to 'disconnect.quitting').
 
-#### bot.tabComplete(str, cb, [assumeCommand], [sendBlockInSight])
+#### bot.tabComplete(str, [assumeCommand], [sendBlockInSight])
 
-This function also returns a `Promise`, with `matches` as its argument upon completion.
+This function returns a `Promise`, with `matches` as its argument upon completion.
 
 Requests chat completion from the server.
  * `str` - String to complete.
- * `callback(matches)`
-   - `matches` - Array of matching strings.
  * `assumeCommand` - Field sent to server, defaults to false.
  * `sendBlockInSight` - Field sent to server, defaults to true. Set this option to false if you want more performance.
 
@@ -1644,21 +1629,21 @@ Injects plugins see `bot.loadPlugin`.
 
 Checks if the given plugin is loaded (or scheduled to be loaded) on this bot.
 
-#### bot.sleep(bedBlock, [cb])
+#### bot.sleep(bedBlock)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
-Sleep in a bed. `bedBlock` should be a `Block` instance which is a bed. `cb` can have an err parameter if the bot cannot sleep.
+Sleep in a bed. `bedBlock` should be a `Block` instance which is a bed. 
 
 #### bot.isABed(bedBlock)
 
 Return true if `bedBlock` is a bed
 
-#### bot.wake([cb])
+#### bot.wake()
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
-Get out of bed. `cb` can have an err parameter if the bot cannot wake up.
+Get out of bed. 
 
 #### bot.setControlState(control, state)
 
@@ -1689,17 +1674,16 @@ It will return `null` if the entity has no armor and rawDamages is not set to tr
 * `radius` - the explosion radius as a number
 * `rawDamages` - optional, if true it ignores armor in the calculation
 
-#### bot.lookAt(point, [force], [callback])
+#### bot.lookAt(point, [force])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when you are looking at `point`.
 
  * `point` [Vec3](https://github.com/andrewrk/node-vec3) instance - tilts your head so that it is directly facing this point.
  * `force` - See `force` in `bot.look`
- * `callback()` optional, called when you are looking at `point`
 
-#### bot.look(yaw, pitch, [force], [callback])
+#### bot.look(yaw, pitch, [force])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument called when you are looking at `yaw` and `pitch`.
 
 Set the direction your head is facing.
 
@@ -1711,15 +1695,14 @@ Set the direction your head is facing.
    Specify this to true if you need the server to know exactly where you
    are looking, such as for dropping items or shooting arrows. This is not
    needed for client-side calculation such as walking direction.
- * `callback()` optional, called when you are looking at `yaw` and `pitch`
 
 #### bot.updateSign(block, text)
 
 Changes the text on the sign.
 
-#### bot.equip(item, destination, [callback])
+#### bot.equip(item, destination)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when you have successfully equipped the item or when you learn that you have failed to equip the item.
 
 Equips an item from your inventory. If the argument `item` is of Instance `Item` equip will equip this specific item from its window slot. If the argument `item` is of type `number` equip will equip the first item found with that id searched by rising slot id (Hotbar is searched last. Armor, crafting, crafting result and off-hand slots are excluded).
 
@@ -1731,36 +1714,32 @@ Equips an item from your inventory. If the argument `item` is of Instance `Item`
    - `"legs"`
    - `"feet"`
    - `"off-hand"` - when available
- * `callback(error)` - optional. called when you have successfully equipped
-   the item or when you learn that you have failed to equip the item.
 
-#### bot.unequip(destination, [callback])
+#### bot.unequip(destination)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 Remove an article of equipment.
 
-#### bot.tossStack(item, [callback])
+#### bot.tossStack(item)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when tossing is done.
 
  * `item` - the stack of items you wish to toss
- * `callback(error)` - optional, called when tossing is done. if error is
    truthy, you were not able to complete the toss.
 
-#### bot.toss(itemType, metadata, count, [callback])
+#### bot.toss(itemType, metadata, count)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument once tossing is complete.
 
  * `itemType` - numerical id of the item you wish to toss
  * `metadata` - metadata of the item you wish to toss. Use `null`
    to match any metadata
  * `count` - how many you want to toss. `null` is an alias for `1`.
- * `callback(err)` - (optional) called once tossing is complete
 
-#### bot.dig(block, [forceLook = true], [digFace], [callback])
+#### bot.dig(block, [forceLook = true], [digFace])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when the block is broken or you are interrupted.
 
 Begin digging into `block` with the currently equipped item.
 See also "diggingCompleted" and "diggingAborted" events.
@@ -1773,8 +1752,6 @@ dig any other blocks until the block has been broken, or you call
  * `forceLook` - (optional) if true, look at the block and start mining instantly. If false, the bot will slowly turn to the block to mine. Additionally, this can be assigned to 'ignore' to prevent the bot from moving it's head at all. Also, this can be assigned to 'raycast' to raycast from the bots head to place where the bot is looking.
  * `digFace` - (optional) Default is 'auto' looks at the center of the block and mines the top face. Can also be a vec3 vector
  of the face the bot should be looking at when digging the block. For example: ```vec3(0, 1, 0)``` when mining the top. Can also be 'raycast' raycast checks if there is a face visible by the bot and mines that face. Useful for servers with anti cheat.
- * `callback(err)` - (optional) called when the block is broken or you
-   are interrupted.
 
 If you call bot.dig twice before the first dig is finished, you will get a fatal 'diggingAborted' error.
 
@@ -1792,20 +1769,19 @@ Accepts resource pack.
 
 Denies resource pack.
 
-#### bot.placeBlock(referenceBlock, faceVector, cb)
+#### bot.placeBlock(referenceBlock, faceVector)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when the server confirms that the block has indeed been placed.
 
  * `referenceBlock` - the block you want to place a new block next to
  * `faceVector` - one of the six cardinal directions, such as `new Vec3(0, 1, 0)` for the top face,
    indicating which face of the `referenceBlock` to place the block against.
- * `cb` will be called when the server confirms that the block has indeed been placed
 
 The new block will be placed at `referenceBlock.position.plus(faceVector)`.
 
 #### bot.placeEntity(referenceBlock, faceVector)
 
-This function also returns a `Promise`, with `Entity` as its argument upon completion.
+This function returns a `Promise`, with `Entity` as its argument upon completion.
 
  * `referenceBlock` - the block you want to place the entity next to
  * `faceVector` - one of the six cardinal directions, such as `new Vec3(0, 1, 0)` for the top face,
@@ -1813,49 +1789,44 @@ This function also returns a `Promise`, with `Entity` as its argument upon compl
 
 The new block will be placed at `referenceBlock.position.plus(faceVector)`.
 
-#### bot.activateBlock(block, [callback])
+#### bot.activateBlock(block)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 Punch a note block, open a door, etc.
 
  * `block` - the block to activate
- * `callback(err)` - (optional) called when the block has been activated
 
-#### bot.activateEntity(entity, [callback])
+#### bot.activateEntity(entity)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 Activate an entity, useful for villager for example.
 
  * `entity` - the entity to activate
- * `callback(err)` - (optional) called when the entity has been activated
 
-#### bot.activateEntityAt(entity, position, [callback])
+#### bot.activateEntityAt(entity, position)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 Activate an entity at the given position, useful for armor stands.
 
  * `entity` - the entity to activate
  * `position` - the world position to click at
- * `callback(err)` - (optional) called when the entity has been activated
 
-#### bot.consume(callback)
+#### bot.consume()
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when consume ends.
 
 Eat / drink currently held item
 
- * `callback(error)` - called when consume ends
 
-#### bot.fish(callback)
+#### bot.fish()
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when fishing ends.
 
 Use fishing rod
 
- * `callback(error)` - called when fishing ends
 
 #### bot.activateItem(offHand=false)
 
@@ -1906,9 +1877,9 @@ All the direction are relative to where the bot is looking at
 
  * `slot` - 0-8 the quick bar slot to select.
 
-#### bot.craft(recipe, count, craftingTable, [callback])
+#### bot.craft(recipe, count, craftingTable)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when the crafting is complete and your inventory is updated.
 
  * `recipe` - A `Recipe` instance. See `bot.recipesFor`.
  * `count` - How many times you wish to perform the operation.
@@ -1917,16 +1888,13 @@ This function also returns a `Promise`, with `void` as its argument upon complet
  * `craftingTable` - A `Block` instance, the crafting table you wish to
    use. If the recipe does not require a crafting table, you may use
    `null` for this argument.
- * `callback` - (optional) Called when the crafting is complete and your
-   inventory is updated.
 
-#### bot.writeBook(slot, pages, [callback])
+#### bot.writeBook(slot, pages)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when the writing was successfully or an error occurred.
 
  * `slot` is in inventory window coordinates (where 36 is the first quickbar slot, etc.).
  * `pages` is an array of strings represents the pages.
- * `callback(error)` - optional. called when the writing was successfully or an error occurred.
 
 #### bot.openContainer(containerBlock or containerEntity)
 
@@ -1958,9 +1926,9 @@ Returns a promise on an `anvil` instance which represents the anvil you are open
 Returns a promise on a `Villager` instance which represents the trading window you are opening.
 You can listen to the `ready` event on this `Villager` to know when it's ready
 
-#### bot.trade(villagerInstance, tradeIndex, [times], [cb])
+#### bot.trade(villagerInstance, tradeIndex, [times])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 Uses the open `villagerInstance` to trade.
 
@@ -1993,21 +1961,21 @@ This is a promise-based function that waits for a given number of in-game ticks 
 
 These are lower level methods for the inventory, they can be useful sometimes but prefer the inventory methods presented above if you can.
 
-#### bot.clickWindow(slot, mouseButton, mode, cb)
+#### bot.clickWindow(slot, mouseButton, mode)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 Click on the current window. See details at https://wiki.vg/Protocol#Click_Window
 
 #### bot.putSelectedItemRange(start, end, window, slot)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 Put the item at `slot` in the specified range.
 
 #### bot.putAway(slot)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 Put the item at `slot` in the inventory.
 
@@ -2015,9 +1983,9 @@ Put the item at `slot` in the inventory.
 
 Close the `window`.
 
-#### bot.transfer(options, cb)
+#### bot.transfer(options)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 Transfer some kind of item from one range to an other. `options` is an object containing :
 
@@ -2041,9 +2009,9 @@ Open an entity with an inventory, for example a villager, returns a promise on t
 
  * `entity` is the entity the bot will open
 
-#### bot.moveSlotItem(sourceSlot, destSlot, cb)
+#### bot.moveSlotItem(sourceSlot, destSlot)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 Move an item from `sourceSlot` to `destSlot` in the current window.
 
@@ -2069,30 +2037,26 @@ This collection of apis is useful in creative mode.
 Detecting and changing gamemodes is not implemented here,
 but it is assumed and often required that the bot be in creative mode for these features to work.
 
-#### bot.creative.setInventorySlot(slot, item, [callback])
+#### bot.creative.setInventorySlot(slot, item)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when gets fired when the servers sets the slot.
 
 Gives the bot the specified item in the specified inventory slot.
-If called twice on the same slot before first callback exceeds, first callback will have an error parameter
 
  * `slot` is in inventory window coordinates (where 36 is the first quickbar slot, etc.).
  * `item` is a [prismarine-item](https://github.com/PrismarineJS/prismarine-item) instance specified with arbitrary metadata, nbtdata, etc.
     If `item` is `null`, the item at the specified slot is deleted.
- * `callback(err)` (optional) is a callback which gets fired when the servers sets the slot
 
 If this method changes anything, you can be notified via `bot.inventory.on("updateSlot")`.
 
-#### bot.creative.flyTo(destination, [cb])
+#### bot.creative.flyTo(destination)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when the bot arrives at the destination.
 
 Calls `startFlying()` and moves at a constant speed through 3d space in a straight line to the destination.
 `destination` is a `Vec3`, and often the `x` and `z` coordinates will end with `.5`.
 This operation will not work if there is an obstacle in the way,
 so it is advised to fly very short distances at a time.
-
-When the bot arrives at the destination, `cb` is called.
 
 This method does not attempt any path finding.
 It is expected that a path finding implementation will use this method to move < 2 blocks at a time.
