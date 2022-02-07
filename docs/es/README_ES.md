@@ -17,7 +17,7 @@ Crea bots para Minecraft con una API de JavaScript potente, estable y de alto ni
 
 ## Características
 
- * Soporta Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15 y 1.16.
+ * Soporta Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17 y 1.18.
  * Rastreo e información de entidades.
  * Información sobre bloques. Puedes solicitar información de todo lo que te rodea. Encuentra bloques en milisegundos
  * Físicas y movimientos básicos - maneja todos los cuadros de colisión
@@ -34,6 +34,7 @@ Crea bots para Minecraft con una API de JavaScript potente, estable y de alto ni
 Echa un vistazo a nuestros [proyectos actuales](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects)
 
 ## Instalación
+Primero instala Node.js >= 14 desde [nodejs.org](https://nodejs.org/)
 
 `npm install mineflayer`
 
@@ -66,10 +67,9 @@ Si quieres aprender más, puedes mirar [aquí, ](https://www.youtube.com/playlis
 
 **Empezando**
 
-Sin especificar una versión, la versión del servidor se detectará automáticamente, puedes configurar una versión específica utilizando la opción de versión.
-Por ejemplo `version:" 1.8 "`.
+Si no se especifica una versión, la versión del servidor se detectará automáticamente. Si no se especifica ningún tipo de autenticación, se utilizará el login de Mojang automáticamente. 
 
-### Ejemplo
+### Ejemplo: echo
 ```js
 const mineflayer = require('mineflayer')
 
@@ -92,7 +92,7 @@ bot.on('kicked', (reason, loggedIn) => console.log(reason, loggedIn))
 bot.on('error', err => console.log(err))
 ```
 
-### Mira lo que tu bot hace
+### Mira lo que hace tu bot
 
 Gracias al proyecto [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer), puedes ver en una pestaña del navegador qué está haciendo tu bot.
 Solo tienes que ejecutar `npm install prismarine-viewer` y añadir lo siguiente a tu bot:
@@ -124,7 +124,7 @@ Más ejemplos en la carpeta de [ejemplos](https://github.com/PrismarineJS/minefl
 
 ### Módulos
 
-La mayoría del desarrollo se esta produciendo dentro de pequeños módulos npm que son usados por mineflayer
+La mayoría del desarrollo se está produciendo dentro de pequeños módulos npm que son usados por mineflayer
 
 #### The Node Way&trade;
 
