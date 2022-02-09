@@ -220,38 +220,36 @@ async function watchFurnace () {
       bot.removeListener('chat', onChat)
     }
 
-    function putInFurnace (where, name, amount) {
+    async function putInFurnace (where, name, amount) {
       const item = itemByName(furnace.items(), name)
       if (item) {
         const fn = {
           input: furnace.putInput,
           fuel: furnace.putFuel
         }[where]
-        fn.call(furnace, item.type, null, amount, (err) => {
-          if (err) {
-            bot.chat(`unable to put ${amount} ${item.name}`)
-          } else {
-            bot.chat(`put ${amount} ${item.name}`)
-          }
-        })
+        try {
+          await fn.call(furnace, item.type, null, amount)
+          bot.chat(`put ${amount} ${item.name}`)
+        } catch (err) {
+          bot.chat(`unable to put ${amount} ${item.name}`)
+        }
       } else {
         bot.chat(`unknown item ${name}`)
       }
     }
 
-    function takeFromFurnace (what) {
+    async function takeFromFurnace (what) {
       const fn = {
         input: furnace.takeInput,
         fuel: furnace.takeFuel,
         output: furnace.takeOutput
       }[what]
-      fn.call(furnace, (err, item) => {
-        if (err) {
-          bot.chat(`unable to take ${item.name}`)
-        } else {
-          bot.chat(`took ${item.name}`)
-        }
-      })
+      try {
+        const item = await fn.call(furnace)
+        bot.chat(`took ${item.name}`)
+      } catch (err) {
+        bot.chat('unable to take')
+      }
     }
   }
 }

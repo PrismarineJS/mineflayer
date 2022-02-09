@@ -7,7 +7,7 @@ module.exports = () => async (bot) => {
   const item1 = new Item(1, 1, 0)
   const item2 = new Item(2, 1, 0)
 
-  const cb = bot.creative.setInventorySlot(SLOT, item2)
+  const promise = bot.creative.setInventorySlot(SLOT, item2)
 
   try {
     bot.creative.setInventorySlot(SLOT, item1)
@@ -16,7 +16,7 @@ module.exports = () => async (bot) => {
     assert.ok(bot.inventory.slots[SLOT] == null)
   }
 
-  await cb
+  await promise
   assert.ok(bot.inventory.slots[SLOT] != null)
   assert.ok(bot.inventory.slots[SLOT].type === item2.type)
 }

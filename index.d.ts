@@ -229,7 +229,6 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   tabComplete: (
     str: string,
-    cb: (matches: string[]) => void,
     assumeCommand?: boolean,
     sendBlockInSight?: boolean
   ) => Promise<string[]>
@@ -248,11 +247,11 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   hasPlugin: (plugin: Plugin) => boolean
 
-  sleep: (bedBlock: Block, cb?: (err?: Error) => void) => Promise<void>
+  sleep: (bedBlock: Block) => Promise<void>
 
   isABed: (bedBlock: Block) => void
 
-  wake: (cb?: (err?: Error) => void) => Promise<void>
+  wake: () => Promise<void>
 
   setControlState: (control: ControlState, state: boolean) => void
 
@@ -262,38 +261,34 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   getExplosionDamages: (targetEntity: Entity, position: Vec3, radius: number, rawDamages?: boolean) => number | null
 
-  lookAt: (point: Vec3, force?: boolean, callback?: () => void) => Promise<void>
+  lookAt: (point: Vec3, force?: boolean) => Promise<void>
 
   look: (
     yaw: number,
     pitch: number,
-    force?: boolean,
-    callback?: () => void
+    force?: boolean
   ) => Promise<void>
 
   updateSign: (block: Block, text: string) => void
 
   equip: (
     item: Item | number,
-    destination: EquipmentDestination | null,
-    callback?: (error?: Error) => void
+    destination: EquipmentDestination | null
   ) => Promise<void>
 
   unequip: (
-    destination: EquipmentDestination | null,
-    callback?: () => void
+    destination: EquipmentDestination | null
   ) => Promise<void>
 
-  tossStack: (item: Item, callback?: (error?: Error) => void) => Promise<void>
+  tossStack: (item: Item) => Promise<void>
 
   toss: (
     itemType: number,
     metadata: number | null,
-    count: number | null,
-    callback?: (err?: Error) => void
+    count: number | null
   ) => Promise<void>
 
-  dig: ((block: Block, forceLook?: boolean | 'ignore', callback?: (err?: Error) => void) => Promise<void>) & ((block: Block, forceLook: boolean | 'ignore', digFace: 'auto' | Vec3 | 'raycast', callback?: (err?: Error) => void) => Promise<void>)
+  dig: ((block: Block, forceLook?: boolean | 'ignore') => Promise<void>) & ((block: Block, forceLook: boolean | 'ignore', digFace: 'auto' | Vec3 | 'raycast') => Promise<void>)
 
   stopDigging: () => void
 
@@ -303,15 +298,15 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   placeEntity: (referenceBlock: Block, faceVector: Vec3) => Promise<Entity>
 
-  activateBlock: (block: Block, callback?: (err?: Error) => void) => Promise<void>
+  activateBlock: (block: Block) => Promise<void>
 
-  activateEntity: (block: Entity, callback?: (err?: Error) => void) => Promise<void>
+  activateEntity: (block: Entity) => Promise<void>
 
-  activateEntityAt: (block: Entity, position: Vec3, callback?: (err?: Error) => void) => Promise<void>
+  activateEntityAt: (block: Entity, position: Vec3) => Promise<void>
 
-  consume: (callback?: (err?: Error) => void) => Promise<void>
+  consume: () => Promise<void>
 
-  fish: (callback?: (err?: Error) => void) => Promise<void>
+  fish: () => Promise<void>
 
   activateItem: (offhand?: boolean) => void
 
@@ -340,8 +335,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   writeBook: (
     slot: number,
-    pages: string[],
-    callback?: (err?: Error) => void
+    pages: string[]
   ) => Promise<void>
 
   openContainer: (chest: Block | Entity) => Promise<Chest | Furnace | Dispenser>
@@ -363,8 +357,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   trade: (
     villagerInstance: Villager,
     tradeIndex: string | number,
-    times?: number,
-    cb?: (err?: Error) => void
+    times?: number
   ) => Promise<void>
 
   setCommandBlock: (pos: Vec3, command: string, trackOutput: boolean) => void
@@ -372,23 +365,21 @@ export interface Bot extends TypedEmitter<BotEvents> {
   clickWindow: (
     slot: number,
     mouseButton: number,
-    mode: number,
-    cb?: (err?: Error) => void
+    mode: number
   ) => Promise<void>
 
   putSelectedItemRange: (
     start: number,
     end: number,
     window: Window,
-    slot: any,
-    cb?: (err?: Error) => void
+    slot: any
   ) => Promise<void>
 
-  putAway: (slot: number, cb?: (err?: Error) => void) => Promise<void>
+  putAway: (slot: number) => Promise<void>
 
   closeWindow: (window: Window) => void
 
-  transfer: (options: TransferOptions, cb?: (err?: Error) => void) => Promise<void>
+  transfer: (options: TransferOptions) => Promise<void>
 
   openBlock: (block: Block, Class: new () => EventEmitter) => Promise<void>
 
@@ -396,15 +387,14 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   moveSlotItem: (
     sourceSlot: number,
-    destSlot: number,
-    cb?: (err?: Error) => void
+    destSlot: number
   ) => Promise<void>
 
   updateHeldItem: () => void
 
   getEquipmentDestSlot: (destination: string) => number
 
-  waitForChunksToLoad: (cb?: (err?: Error) => void) => Promise<void>
+  waitForChunksToLoad: () => Promise<void>
 
   nearestEntity: (filter?: (entity: Entity) => boolean) => Entity | null
 
@@ -579,11 +569,10 @@ export interface TransferOptions {
 export interface creativeMethods {
   setInventorySlot: (
     slot: number,
-    item: Item | null,
-    callback?: (error?: Error) => void
+    item: Item | null
   ) => Promise<void>
 
-  flyTo: (destination: Vec3, cb?: () => void) => Promise<void>
+  flyTo: (destination: Vec3) => Promise<void>
 
   startFlying: () => void
 
@@ -634,15 +623,13 @@ export class Chest extends (EventEmitter as new () => TypedEmitter<StorageEvents
   deposit (
     itemType: number,
     metadata: number | null,
-    count: number | null,
-    cb?: (err?: Error) => void
+    count: number | null
   ): Promise<void>;
 
   withdraw (
     itemType: number,
     metadata: number | null,
-    count: number | null,
-    cb?: (err?: Error) => void
+    count: number | null
   ): Promise<void>;
 
   count (itemType: number, metadata: number | null): number;
@@ -658,24 +645,22 @@ export class Furnace extends (EventEmitter as new () => TypedEmitter<FurnaceEven
 
   close (): void;
 
-  takeInput (cb: (err: Error | null, item: Item) => void): Promise<Item>;
+  takeInput (): Promise<Item>;
 
-  takeFuel (cb: (err: Error | null, item: Item) => void): Promise<Item>;
+  takeFuel (): Promise<Item>;
 
-  takeOutput (cb: (err: Error | null, item: Item) => void): Promise<Item>;
+  takeOutput (): Promise<Item>;
 
   putInput (
     itemType: number,
     metadata: number | null,
-    count: number,
-    cb?: (err?: Error) => void
+    count: number
   ): Promise<void>;
 
   putFuel (
     itemType: number,
     metadata: number | null,
-    count: number,
-    cb?: (err?: Error) => void
+    count: number
   ): Promise<void>;
 
   inputItem (): Item;
@@ -693,15 +678,13 @@ export class Dispenser extends (EventEmitter as new () => TypedEmitter<StorageEv
   deposit (
     itemType: number,
     metadata: number | null,
-    count: number | null,
-    cb?: (err?: Error) => void
+    count: number | null
   ): Promise<void>;
 
   withdraw (
     itemType: number,
     metadata: number | null,
-    count: number | null,
-    cb?: (err?: Error) => void
+    count: number | null
   ): Promise<void>;
 
   count (itemType: number, metadata: number | null): number;
@@ -719,15 +702,14 @@ export class EnchantmentTable extends (EventEmitter as new () => TypedEmitter<Co
   targetItem (): Item;
 
   enchant (
-    choice: string | number,
-    cb?: (err: Error | null, item: Item) => void
+    choice: string | number
   ): Promise<Item>;
 
-  takeTargetItem (cb?: (err: Error | null, item: Item) => void): Promise<Item>;
+  takeTargetItem (): Promise<Item>;
 
-  putTargetItem (item: Item, cb?: (err: Error | null) => void): Promise<Item>;
+  putTargetItem (item: Item): Promise<Item>;
 
-  putLapis (item: Item, cb?: (err: Error | null) => void): Promise<Item>;
+  putLapis (item: Item): Promise<Item>;
 }
 
 export class Anvil {

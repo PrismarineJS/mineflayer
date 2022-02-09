@@ -13,7 +13,7 @@ const { getPort } = require('./common/util')
 const START_THE_SERVER = true
 // if you want to have time to look what's happening increase this (milliseconds)
 const WAIT_TIME_BEFORE_STARTING = 5000
-const TEST_TIMEOUT_MS = 60000
+const TEST_TIMEOUT_MS = 90000
 
 const excludedTests = ['digEverything', 'book', 'anvil', 'placeEntity']
 
@@ -101,9 +101,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
       } else begin()
     })
 
-    beforeEach((done) => {
+    beforeEach(async () => {
       console.log('reset state')
-      bot.test.resetState(done)
+      await bot.test.resetState()
     })
 
     after((done) => {
