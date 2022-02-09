@@ -64,7 +64,11 @@ interface BotEvents {
   spawn: () => Promise<void> | void
   respawn: () => Promise<void> | void
   game: () => Promise<void> | void
-  title: (text: string) => Promise<void> | void
+  title: (text: string, jsonMsg: ChatMessage) => Promise<void> | void
+  subtitle: (jsonMsg: ChatMessage) => Promise<void> | void
+  titleTimes: (fadeIn: number, stay: number, fadeOut: number) => Promise<void> | void
+  titleClear: () => Promise<void> | void
+  titleReset: () => Promise<void> | void
   rain: () => Promise<void> | void
   time: () => Promise<void> | void
   kicked: (reason: string, loggedIn: boolean) => Promise<void> | void
