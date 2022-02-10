@@ -154,6 +154,10 @@
       - ["game"](#game)
       - ["resourcePack" (url, hash)](#resourcepack-url-hash)
       - ["title"](#title)
+      - ["subtitle"](#subtitle)
+      - ["titleTimes"](#titletimes)
+      - ["titleClear"](#titleclear)
+      - ["titleReset"](#titlereset)
       - ["rain"](#rain)
       - ["weatherUpdate"](#weatherupdate)
       - ["time"](#time)
@@ -1131,6 +1135,25 @@ Emitted when the server sends a resource pack.
 Emitted when the server sends a title
 
  * `text` - title's text
+ * `jsonMsg` - unmodified JSON message from the server
+
+#### "subtitle"
+
+Emitted when the server sends a subtitle
+
+ * `jsonMsg` - unmodified JSON message from the server
+
+#### "titleTimes" (fadeIn, stay, fadeOut)
+
+Emitted when the title time settings (fadeIn, stay, fadeOut) are set
+
+#### "titleClear"
+
+Emitted when the titles are cleared
+
+#### "titleReset"
+
+Emitted when the title time settings (fadeIn, stay, fadeOut) are reseted
 
 #### "rain"
 
