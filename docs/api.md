@@ -745,6 +745,8 @@ Create and return an instance of the class bot.
  * [viewDistance](#bot.settings.viewDistance)
  * [difficulty](#bot.settings.difficulty)
  * [skinParts](#bot.settings.skinParts)
+ * [enableTextFiltering](#bot.settings.enableTextFiltering)
+ * [enableServerListing](#bot.settings.enableServerListing)
  * chatLengthLimit : the maximum amount of characters that can be sent in a single message. If this is not set, it will be 100 in < 1.11 and 256 in >= 1.11.
  * defaultChatPatterns: defaults to true, set to false to not add the patterns such as chat and whisper
 
@@ -881,6 +883,7 @@ Default true, whether or not you receive color codes in chats from the server.
 
 #### bot.settings.viewDistance
 
+Can be a string listed below or a postive number.
 Choices:
  * `far` (default)
  * `normal`
@@ -911,7 +914,10 @@ If you have a cape you can turn it off by setting this to false.
 
 ##### bot.settings.skinParts.showHat - boolean
 
-
+#### bot.settings.enableTextFiltering - boolean
+Unused, defaults to false in Notchian (Vanilla) client.
+#### bot.settings.enableServerListing - boolean
+This setting is sent to the server to determine whether the player should show up in server listings
 #### bot.experience.level
 
 #### bot.experience.points
