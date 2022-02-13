@@ -20,8 +20,8 @@
     - [Biome](#biome)
     - [Item](#item)
     - [windows.Window (base class)](#windowswindow-base-class)
-      - [window.deposit(itemType, metadata, count)](#windowdeposititemtype-metadata-count)
-      - [window.withdraw(itemType, metadata, count)](#windowwithdrawitemtype-metadata-count)
+      - [window.deposit(itemType, metadata, count, nbt)](#windowdeposititemtype-metadata-count-nbt)
+      - [window.withdraw(itemType, metadata, count, nbt)](#windowwithdrawitemtype-metadata-count-nbt)
       - [window.close()](#windowclose)
     - [Recipe](#recipe)
     - [mineflayer.Container](#mineflayercontainer)
@@ -94,6 +94,8 @@
       - [bot.game.hardcore](#botgamehardcore)
       - [bot.game.maxPlayers](#botgamemaxplayers)
       - [bot.game.serverBrand](#botgameserverbrand)
+      - [bot.game.minY](#botgameminy)
+      - [bot.game.height](#botgameheight)
     - [bot.physicsEnabled](#botphysicsenabled)
     - [bot.player](#botplayer)
       - [bot.players](#botplayers)
@@ -113,6 +115,8 @@
         - [bot.settings.skinParts.showLeftPants - boolean](#botsettingsskinpartsshowleftpants---boolean)
         - [bot.settings.skinParts.showRightPants - boolean](#botsettingsskinpartsshowrightpants---boolean)
         - [bot.settings.skinParts.showHat - boolean](#botsettingsskinpartsshowhat---boolean)
+      - [bot.settings.enableTextFiltering - boolean](#botsettingsenabletextfiltering---boolean)
+      - [bot.settings.enableServerListing - boolean](#botsettingsenableserverlisting---boolean)
       - [bot.experience.level](#botexperiencelevel)
       - [bot.experience.points](#botexperiencepoints)
       - [bot.experience.progress](#botexperienceprogress)
@@ -418,21 +422,23 @@ See [prismarine-item](https://github.com/PrismarineJS/prismarine-item)
 
 See [prismarine-windows](https://github.com/PrismarineJS/prismarine-windows)
 
-#### window.deposit(itemType, metadata, count)
+#### window.deposit(itemType, metadata, count, nbt)
 
 This function returns a `Promise`, with `void` as its argument when done depositing.
 
  * `itemType` - numerical item id
  * `metadata` - numerical value. `null` means match anything.
  * `count` - how many to deposit. `null` is an alias to 1.
+ * `nbt` - match nbt data. `null` is do not match nbt.
 
-#### window.withdraw(itemType, metadata, count)
+#### window.withdraw(itemType, metadata, count, nbt)
 
-This function returns a `Promise`, with `void` as its argument when done withdrawing.
+This function returns a `Promise`, with `void` as its argument when done withdrawing. Throws and error if the bot has no free room in its inventory.
 
  * `itemType` - numerical item id
  * `metadata` - numerical value. `null` means match anything.
  * `count` - how many to withdraw. `null` is an alias to 1.
+ * `nbt` - match nbt data. `null` is do not match nbt.
 
 #### window.close()
 
