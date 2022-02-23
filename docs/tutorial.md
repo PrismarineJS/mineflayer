@@ -459,7 +459,7 @@ Incorect approach ❌:
 const plankRecipe = bot.recipesFor(5)[0] // Get the first recipe for item id 5, which is oak planks.
 bot.craft(plankRecipe, 1) // ❌ start crafting oak planks.
 
-const stickRecipe = bot.recipesFor(280)[0] // Get the first recipe for item id 5, which is sticks.
+const stickRecipe = bot.recipesFor(280)[0] // Get the first recipe for item id 280, which is sticks.
 bot.craft(stickRecipe, 1) // ❌ start crafting sticks.
 ```
 
