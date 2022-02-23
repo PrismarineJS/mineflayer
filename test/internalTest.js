@@ -4,6 +4,7 @@ const mineflayer = require('../')
 const vec3 = require('vec3')
 const mc = require('minecraft-protocol')
 const assert = require('assert')
+const { performance } = require('perf_hooks')
 
 for (const supportedVersion of mineflayer.testedVersions) {
   const mcData = require('minecraft-data')(supportedVersion)
@@ -173,7 +174,276 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
     describe('physics', () => {
       const pos = vec3(1, 65, 1)
+      const pos2 = vec3(2, 65, 1)
       const goldId = 41
+      it('position_look should be sent every 1000ms if we are looking around', (done) => {
+        let fail = 0
+        let success = 0
+        const basePosition = {
+          x: 1.5,
+          y: 66,
+          z: 1.5,
+          pitch: 0,
+          yaw: 0,
+          flags: 0,
+          teleportId: 0
+        }
+        server.on('login', async (client) => {
+          await client.write('login', bot.test.generateLoginPacket())
+          const chunk = await bot.test.buildChunk()
+
+          await chunk.setBlockType(pos, goldId)
+          await chunk.setBlockType(pos2, goldId)
+          await client.write('map_chunk', generateChunkPacket(chunk))
+          await client.write('position', basePosition)
+          await bot.waitForTicks(1) // get inital packets out of the way
+          client.on('packet', (data, meta) => {
+            const packetName = meta.name
+            // console.log(packetName)
+            switch (packetName) {
+              case 'position':
+                fail++
+                if (fail === 1) startLookLoop()
+                if (fail < 4) break // 3 tries
+                assert.fail('position packet sent, when nodding')
+                break
+              case 'position_look':
+                success++
+                if (success < 3) break // 3 tries
+                done()
+                break
+              case 'look':
+                break
+            }
+          })
+        })
+        function startLookLoop () {
+          // head snap up and down wheeee
+          let state = false
+          let pi = Math.PI / 2
+          bot.on('physicsTick', async () => {
+            if (state === false) {
+              state = true
+            } else {
+              pi = -pi
+              state = false
+            }
+            await bot.look(0, pi, true)
+          })
+        }
+      })
+      it('absolute position & relative position (velocity)', (done) => {
+        server.on('login', async (client) => {
+          await client.write('login', bot.test.generateLoginPacket())
+          const chunk = await bot.test.buildChunk()
+
+          await chunk.setBlockType(pos, goldId)
+          await chunk.setBlockType(pos2, goldId)
+          await client.write('map_chunk', generateChunkPacket(chunk))
+          let check = true
+          let absolute = true
+          const basePosition = {
+            x: 1.5,
+            y: 66,
+            z: 1.5,
+            pitch: 0,
+            yaw: 0,
+            flags: 0,
+            teleportId: 0
+          }
+          client.on('packet', (data, meta) => {
+            const packetName = meta.name
+            switch (packetName) {
+              case 'teleport_confirm': {
+                assert.ok(basePosition.teleportId === data.teleportId)
+                break
+              }
+              case 'position_look': {
+                if (!check) return
+                if (absolute) {
+                  assert.ok(bot.entity.velocity.y === 0)
+                } else {
+                  assert.ok(bot.entity.velocity.y !== 0)
+                }
+                assert.ok(basePosition.x === data.x)
+                assert.ok(basePosition.y === data.y)
+                assert.ok(basePosition.z === data.z)
+                assert.ok(basePosition.yaw === data.yaw)
+                assert.ok(basePosition.pitch === data.pitch)
+                check = false
+                break
+              }
+              default:
+                break
+            }
+          })
+          // Absolute Position Tests
+          // absolute position test
+          check = true
+          await client.write('position', basePosition)
+          await bot.waitForTicks(5)
+          // absolute position test 2
+          check = true
+          basePosition.x = 2.5
+          basePosition.teleportId = 1
+          await bot.waitForTicks(1)
+          await client.write('position', basePosition)
+          await bot.waitForTicks(2)
+          // absolute position test 3
+          check = true
+          basePosition.x = 1.5
+          basePosition.teleportId = 2
+          await bot.waitForTicks(1)
+          await client.write('position', basePosition)
+          await bot.waitForTicks(2)
+
+          // Relative Position Tests
+          const relativePosition = {
+            x: 1,
+            y: 0,
+            z: 0,
+            pitch: 0,
+            yaw: 0,
+            flags: 31,
+            teleportId: 3
+          }
+          absolute = false
+          // relative position test 1
+          check = true
+          basePosition.x = 2.5
+          basePosition.teleportId = 3
+          relativePosition.x = 1
+          relativePosition.teleportId = 3
+          await bot.waitForTicks(1)
+          await client.write('position', relativePosition)
+          await bot.waitForTicks(2)
+          // relative position test 2
+          check = true
+          basePosition.x = 1.5
+          basePosition.teleportId = 4
+          relativePosition.x = -1
+          relativePosition.teleportId = 4
+          await bot.waitForTicks(1)
+          await client.write('position', relativePosition)
+          await bot.waitForTicks(2)
+          // relative position test 3
+          check = true
+          basePosition.x = 2.5
+          basePosition.teleportId = 5
+          relativePosition.x = 1
+          relativePosition.teleportId = 5
+          await bot.waitForTicks(1)
+          await client.write('position', relativePosition)
+          await bot.waitForTicks(2)
+          done()
+        })
+      })
+      it('position is sent every 1000ms', (done) => {
+        let previousNow
+        let passed = 0
+        bot.once('forcedMove', () => {
+          previousNow = performance.now()
+          bot.on('move', () => {
+            const now = performance.now()
+            const value = (Math.round((now - previousNow) / 50) * 50)
+            assert.ok(value <= 1000)
+            previousNow = now
+            passed++
+            if (passed > 3) done() // 3 tries
+          })
+        })
+        server.on('login', async (client) => {
+          await client.write('login', bot.test.generateLoginPacket())
+          const chunk = await bot.test.buildChunk()
+
+          await chunk.setBlockType(pos, goldId)
+          await client.write('map_chunk', generateChunkPacket(chunk))
+          await client.write('position', {
+            x: 1.5,
+            y: 66,
+            z: 1.5,
+            pitch: 0,
+            yaw: 0,
+            flags: 0,
+            teleportId: 0
+          })
+        })
+      })
+      it('falling check (position is sent every 50ms)', (done) => {
+        // this can fail randomly when the setInterval is 50ms
+        let previousNow
+        let landed = false
+        bot.on('move', () => {
+          if (bot.entity.position.y <= pos.y + 1) {
+            landed = true
+            done()
+          }
+          if (landed) return
+          if (!previousNow) previousNow = performance.now()
+          const now = performance.now()
+          const value = (Math.round((now - previousNow) / 50) * 50)
+          assert.ok(value <= 50)
+          previousNow = now
+        })
+        server.on('login', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          const chunk = bot.test.buildChunk()
+
+          chunk.setBlockType(pos, goldId)
+          client.write('map_chunk', generateChunkPacket(chunk))
+          client.write('position', {
+            x: 1.5,
+            y: 80,
+            z: 1.5,
+            pitch: 0,
+            yaw: 0,
+            flags: 0,
+            teleportId: 0
+          })
+        })
+      })
+      it('send position packets for 20 ticks after death', (done) => {
+        let deadTick = 1
+        bot.on('move', () => {
+          if (!bot.isAlive) deadTick++
+          if (bot.isAlive) deadTick = 1
+          assert.ok(deadTick <= 20)
+        })
+        bot.on('move', async () => {
+          // assert.ok doesn't work in async functions
+          if (deadTick === 20) {
+            await bot.waitForTicks(21)
+            done()
+          }
+        })
+        server.on('login', async (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          const chunk = await bot.test.buildChunk()
+
+          await chunk.setBlockType(pos, goldId)
+          await client.write('map_chunk', generateChunkPacket(chunk))
+          await client.write('position', {
+            x: 1.5,
+            y: 2000,
+            z: 1.5,
+            pitch: 0,
+            yaw: 0,
+            flags: 0,
+            teleportId: 0
+          })
+          await client.write('update_health', {
+            health: 20,
+            food: 20,
+            foodSaturation: 20
+          })
+          await bot.waitForTicks(1)
+          await client.write('update_health', {
+            health: 0,
+            food: 20,
+            foodSaturation: 20
+          })
+        })
+      })
       it('gravity + land on solid block + jump', (done) => {
         let y = 80
         let landed = false
