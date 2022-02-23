@@ -128,7 +128,21 @@ Note that the order in which plugins are loaded is dynamic, so you should never 
 
 In the options object for `mineflayer.createBot(options)`, remove your `host` option from the options object, have the following variables declared `PROXY_IP, PROXY_PORT, PROXY_USERNAME, PROXY_PASSWORD, MC_SERVER_ADDRESS, MC_SERVER_PORT` and add this to your options object:
 ```js
-connect: (client) => {
+const mineflayer = require('mineflayer')
+
+const PROXY_IP = 'MY_PROXY.com'
+const PROXY_PORT = 9999
+const PROXY_USERNAME = 'MY_USERNAME'
+const PROXY_PASSWORD = 'MY_PASSWORD'
+const MC_SERVER_ADDRESS = 'MC_SERVER.com'
+const MC_SERVER_PORT = 25565
+
+const bot = mineflayer.createBot({
+  host: MC_SERVER_ADDRESS,
+  port: MC_SERVER_PORT,
+  fakeHost: MC_SERVER_ADDRESS,
+  username: 'bot',
+  connect: (client) => {
     socks.createConnection({
       proxy: {
         host: PROXY_IP,
@@ -151,9 +165,9 @@ connect: (client) => {
       client.emit('connect')
     })
   }
-  ```
-  `socks` is declared with `const socks = require('socks').SocksClient` and uses [this](https://www.npmjs.com/package/socks) package.
-  Some servers might reject the connection. If that happens try adding `fakeHost: MC_SERVER_ADDRESS` to your createBot options.
+})
+``` 
+`socks` is declared with `const socks = require('socks').SocksClient` and uses [this](https://www.npmjs.com/package/socks) package.
   
 # Common Errors
 
