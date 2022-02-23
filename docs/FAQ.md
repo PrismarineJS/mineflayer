@@ -173,3 +173,21 @@ Update your node version.
 
 Check that spawn protection isn't stopping the bot from it's action
 
+### `[WARNING] You are looking for {bot}.? too early, bot hasn't spawned yet.`
+
+You probably have code like this now:
+
+```js
+const bot = mineflayer.createBot()
+console.log(bot.entities)
+```
+
+The problem is that bot.entities is not loaded yet. To fix this problem, put your code in an event handler. Look [here](https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md#events), If you want your code to run when the bot logs in, use the `spawn` event like so:
+
+```js
+const bot = mineflayer.createBot()
+bot.once('spawn', () => {
+  console.log(bot.entities)
+})
+```
+
