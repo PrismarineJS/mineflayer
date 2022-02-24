@@ -283,17 +283,17 @@ for (const supportedVersion of mineflayer.testedVersions) {
           await client.write('position', basePosition)
           await bot.waitForTicks(5)
           // absolute position test 2
-          check = true
           basePosition.x = 2.5
           basePosition.teleportId = 1
           await bot.waitForTicks(1)
+          check = true
           await client.write('position', basePosition)
           await bot.waitForTicks(2)
           // absolute position test 3
-          check = true
           basePosition.x = 1.5
           basePosition.teleportId = 2
           await bot.waitForTicks(1)
+          check = true
           await client.write('position', basePosition)
           await bot.waitForTicks(2)
 
@@ -309,30 +309,30 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
           absolute = false
           // relative position test 1
-          check = true
           basePosition.x = 2.5
           basePosition.teleportId = 3
           relativePosition.x = 1
           relativePosition.teleportId = 3
           await bot.waitForTicks(1)
+          check = true
           await client.write('position', relativePosition)
           await bot.waitForTicks(2)
           // relative position test 2
-          check = true
           basePosition.x = 1.5
           basePosition.teleportId = 4
           relativePosition.x = -1
           relativePosition.teleportId = 4
           await bot.waitForTicks(1)
+          check = true
           await client.write('position', relativePosition)
           await bot.waitForTicks(2)
           // relative position test 3
-          check = true
           basePosition.x = 2.5
           basePosition.teleportId = 5
           relativePosition.x = 1
           relativePosition.teleportId = 5
           await bot.waitForTicks(1)
+          check = true
           await client.write('position', relativePosition)
           await bot.waitForTicks(2)
           done()
