@@ -155,6 +155,18 @@ connect: (client) => {
   `socks` is declared with `const socks = require('socks').SocksClient` and uses [this](https://www.npmjs.com/package/socks) package.
   Some servers might reject the connection. If that happens try adding `fakeHost: MC_SERVER_ADDRESS` to your createBot options.
   
+### How do I use thealtening account token in mineflayer?
+  
+In the options object for `mineflayer.createBot(options)`, add two more options `authServer` and `sessionServer`. Then set the `username` to the thealtening token, and set the `password` to anything, for exmaple: 
+```js
+const bot = mineflayer.createBot({
+  authServer: 'http://authserver.thealtening.com',
+  sessionServer: 'http://sessionserver.thealtening.com',
+  username: 'TOKEN',
+  password: 'anypass',
+})
+```
+  
 # Common Errors
 
 ### `UnhandledPromiseRejectionWarning: Error: Failed to read asymmetric key`
