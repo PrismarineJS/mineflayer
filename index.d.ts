@@ -197,7 +197,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   end: (reason?: string) => void
 
-  blockAt: (point: Vec3) => Block | null
+  blockAt: (point: Vec3, extraInfos?: boolean) => Block | null
 
   blockInSight: (maxSteps: number, vectorLength: number) => Block | null
 
