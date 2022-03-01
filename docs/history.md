@@ -1,3 +1,8 @@
+## 4.1.0
+
+* 1.18.2 support
+* Add nbt option to withdraw and deposit
+
 ## 4.0.0
 
 * useEntity maintains sneak state
