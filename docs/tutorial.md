@@ -434,11 +434,13 @@ Not only bot object, [`Chest`](http://mineflayer.prismarine.js.org/#/api?id=mine
 A [promise](https://nodejs.dev/learn/understanding-javascript-promises) is a function that you can use the `await` variable to wait on until it's job is complete. (you can omit the await to not wait for results)
 
 ```js
-try {
-  await bot.consume()
-  console.log('Finished consuming')
-} catch (err) {
-  console.log(error)
+async function consume (bot) {
+  try {
+    await bot.consume()
+    console.log('Finished consuming')
+  } catch (err) {
+    console.log(error)
+  }
 }
 ```
 
@@ -454,23 +456,27 @@ Below is an example of a bot that will craft oak logs into oak planks and then i
 Incorect approach ❌:
 
 ```js
-const mcData = require('minecraft-data')(bot.version)
-const plankRecipe = bot.recipesFor(mcData.itemsByName.oak_planks.id ?? mcData.itemsByName.planks.id)[0] // Get the first recipe for oak planks
-bot.craft(plankRecipe, 1) // ❌ start crafting oak planks.
+function craft (bot) {
+  const mcData = require('minecraft-data')(bot.version)
+  const plankRecipe = bot.recipesFor(mcData.itemsByName.oak_planks.id ?? mcData.itemsByName.planks.id)[0] // Get the first recipe for oak planks
+  bot.craft(plankRecipe, 1) // ❌ start crafting oak planks.
 
-const stickRecipe = bot.recipesFor(mcData.itemsByName.sticks.id)[0] // Get the first recipe for sticks
-bot.craft(stickRecipe, 1) // ❌ start crafting sticks.
+  const stickRecipe = bot.recipesFor(mcData.itemsByName.sticks.id)[0] // Get the first recipe for sticks
+  bot.craft(stickRecipe, 1) // ❌ start crafting sticks.
+}
 ```
 
 Correct approach with promises ✔️:
 
 ```js
-const mcData = require('minecraft-data')(bot.version)
-const plankRecipe = bot.recipesFor(mcData.itemsByName.oak_planks.id ?? mcData.itemsByName.planks.id)[0]
-await bot.craft(plankRecipe, 1, null)
-const stickRecipe = bot.recipesFor(mcData.itemsByName.sticks.id)[0]
-await bot.craft(stickRecipe, 1, null)
-bot.chat('Crafting Sticks finished')
+async function craft (bot) {
+  const mcData = require('minecraft-data')(bot.version)
+  const plankRecipe = bot.recipesFor(mcData.itemsByName.oak_planks.id ?? mcData.itemsByName.planks.id)[0]
+  await bot.craft(plankRecipe, 1, null)
+  const stickRecipe = bot.recipesFor(mcData.itemsByName.sticks.id)[0]
+  await bot.craft(stickRecipe, 1, null)
+  bot.chat('Crafting Sticks finished')
+}
 ```
 
 The reason the incorrect approach is wrong is because when `bot.craft()` is called, the code will continue below while the bot is crafting.  
