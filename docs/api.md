@@ -1859,7 +1859,7 @@ use shears.
 Attack a player or a mob.
 
  * `entity` is a type of entity. To get a specific entity use [bot.nearestEntity()](#botnearestentitymatch--entity---return-true-) or [bot.entities](#botentities).
- * `swing` Default `true`. If false the bot does not swing is arm when attacking.
+ * `swing` Default `true`. If false the bot does not swing its arm when attacking.
 
 #### bot.swingArm([hand], showHand)
 
