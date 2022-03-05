@@ -17,7 +17,7 @@
     - [Logging in](#logging-in)
   - [Passing along functions](#passing-along-functions)
   - [Listening for an event](#listening-for-an-event)
-  - [Callbacks](#callbacks)
+  - [Promises](#promises)
     - [Correct and incorrect approach](#correct-and-incorrect-approach)
 - [Advanced](#advanced)
   - [Asynchronousy](#asynchronousy)
@@ -430,18 +430,18 @@ To remove specific listener you can use `bot.removeListener()` method.
 
 Not only bot object, [`Chest`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerchest), [`Furnace`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerfurnace), [`Dispenser`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerdispenser), [`EnchantmentTable`](http://mineflayer.prismarine.js.org/#/api?id=mineflayerenchantmenttable), [`Villager`](http://mineflayer.prismarine.js.org/#/api?id=mineflayervillager) object also have their own events!
 
-### Callbacks
-A [callback](https://en.wikipedia.org/wiki/Callback_(computer_programming)) is a function that you can give to another function, that is expected to be *called back*, generally when that function ends.  
-In Mineflayer, callbacks are often used to handle errors.
+### Promises
+A [promise](https://nodejs.dev/learn/understanding-javascript-promises) is a function that you can use the `await` variable to wait on until it's job is complete. (you can omit the await to not wait for results)
 
 ```js
-bot.consume((error) => {
-  if (error) { // This checks if an error occurred.
-    console.log(error)
-  } else {
+async function consume (bot) {
+  try {
+    await bot.consume()
     console.log('Finished consuming')
+  } catch (err) {
+    console.log(error)
   }
-})
+}
 ```
 
 The above code will try to consume what the bot is currently holding.  
@@ -456,90 +456,39 @@ Below is an example of a bot that will craft oak logs into oak planks and then i
 Incorect approach ❌:
 
 ```js
-const plankRecipe = bot.recipesFor(5)[0] // Get the first recipe for item id 5, which is oak planks.
-bot.craft(plankRecipe, 1) // ❌ start crafting oak planks.
+function craft (bot) {
+  const mcData = require('minecraft-data')(bot.version)
+  const plankRecipe = bot.recipesFor(mcData.itemsByName.oak_planks.id ?? mcData.itemsByName.planks.id)[0] // Get the first recipe for oak planks
+  bot.craft(plankRecipe, 1) // ❌ start crafting oak planks.
 
-const stickRecipe = bot.recipesFor(280)[0] // Get the first recipe for item id 5, which is sticks.
-bot.craft(stickRecipe, 1) // ❌ start crafting sticks.
+  const stickRecipe = bot.recipesFor(mcData.itemsByName.sticks.id)[0] // Get the first recipe for sticks
+  bot.craft(stickRecipe, 1) // ❌ start crafting sticks.
+}
 ```
 
-Correct approach with callbacks ✔️:
+Correct approach with promises ✔️:
 
 ```js
-const plankRecipe = bot.recipesFor(5)[0]
-
-bot.craft(plankRecipe, 1, null, (error) => {
-  // After bot.craft(plankRecipe, ...) is finished, this callback is called and we continue. ✔️
-  if (error) { // Check if an error happened.
-    console.log(error)
-  } else {
-    const stickRecipe = bot.recipesFor(280)[0]
-
-    bot.craft(stickRecipe, 1, null, (error) => {
-      // After bot.craft(stickRecipe, ...) is finished, this callback is called and we continue. ✔️
-      if (error) { // Check if an error happened.
-        console.log(error)
-      } else {
-        bot.chat('Crafting Sticks finished')
-      }
-    })
-  }
-})
+async function craft (bot) {
+  const mcData = require('minecraft-data')(bot.version)
+  const plankRecipe = bot.recipesFor(mcData.itemsByName.oak_planks.id ?? mcData.itemsByName.planks.id)[0]
+  await bot.craft(plankRecipe, 1, null)
+  const stickRecipe = bot.recipesFor(mcData.itemsByName.sticks.id)[0]
+  await bot.craft(stickRecipe, 1, null)
+  bot.chat('Crafting Sticks finished')
+}
 ```
 
 The reason the incorrect approach is wrong is because when `bot.craft()` is called, the code will continue below while the bot is crafting.  
 By the time the code reaches the second `bot.craft()`, the first probably hasn't finished yet, which means the wanted resource is not available yet.  
-Using callbacks can fix this because they will only be called after the `bot.craft()` is finished.
+Using promises can fix this because they will only be called after the `bot.craft()` is finished.
 
-More on the [bot.craft()](https://mineflayer.prismarine.js.org/#/api?id=botcraftrecipe-count-craftingtable-callback) method.
+More on the [bot.craft()](https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md#botcraftrecipe-count-craftingtable) method.
 
 ## Advanced
 
 The following concepts aren't necessary to create a Mineflayer bot, but they can be useful to understand and create more advanced bots.  
 We assume you have understood the [Basics](#basics) tutorial.
-
-### Asynchronousy
-In Javascript, asynchronousy is an important concept.  
-By default, Javascript will run everything line by line, and only go to the next line if the current line is done. This is called blocking.  
-However, sometimes you have to do something that takes a relatively long time, and you don't want your whole program to block and wait for it to finish.  
-
-Interacting with the filesystem is often done using asynchronousy, because reading and writing large files can take a long time.  
-
-```js
-const myPromise = new Promise((resolve, reject) => {
-  setTimeout(() => {
-    resolve('Success!') // Yay! Everything went well!
-  }, 1000)
-})
-
-myPromise.then((successMessage) => {
-  console.log(successMessage)
-})
-
-myPromise.catch((error) => {
-  console.log(error)
-})
-```
-
-The above codes uses what is called a Promise. A promise promises it will eventually complete.  
-The function given you a promise always has 2 parameters, a `resolve` function and a `reject` function.  
-If the promise is successful, it will call the `resolve` function, otherwise it will call the `reject` function.  
-The above code uses a `setTimeout`, which calls the given function after the set amount of milliseconds, 1000 in this case.  
-You can then tell the promise what it should do when it succeeds with `.then(function)` or when it fails with `.catch(function)`
-
-The `.then` and `.catch` function can also be chained together with the promise to simplify the code.
-
-```js
-const myPromise = new Promise((resolve, reject) => {
-  setTimeout(() => {
-    resolve('Success!') // Yay! Everything went well!
-  }, 1000)
-}).then((successMessage) => {
-  console.log(successMessage)
-}).catch((error) => {
-  console.log(error)
-})
-```
 
 ### Loop over an object
 
