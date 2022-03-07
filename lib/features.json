@@ -326,7 +326,7 @@
   },
   {
     "name": "tallWorld",
-    "description": "world starts at -64 and ends at 384",
+    "description": "world has infinite height in both directions",
     "versions": ["1.18", "1.18.2"]
   },
   {
