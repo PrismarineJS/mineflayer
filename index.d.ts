@@ -294,7 +294,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   digTime: (block: Block) => number
 
-  placeBlock: (referenceBlock: Block, faceVector: Vec3, cb?: () => void) => Promise<void>
+  placeBlock: (referenceBlock: Block, faceVector: Vec3) => Promise<void>
 
   placeEntity: (referenceBlock: Block, faceVector: Vec3) => Promise<Entity>
 
