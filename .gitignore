@@ -9,3 +9,4 @@ server_jars/
 test/server_*
 .vscode
 .DS_Store
+launcher_accounts.json

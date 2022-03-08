@@ -5,6 +5,7 @@ const vec3 = require('vec3')
 const mc = require('minecraft-protocol')
 const assert = require('assert')
 const { performance } = require('perf_hooks')
+const { sleep } = require('../lib/promise_utils')
 
 for (const supportedVersion of mineflayer.testedVersions) {
   const mcData = require('minecraft-data')(supportedVersion)
@@ -176,6 +177,39 @@ for (const supportedVersion of mineflayer.testedVersions) {
       const pos = vec3(1, 65, 1)
       const pos2 = vec3(2, 65, 1)
       const goldId = 41
+      it('no physics if there is no chunk', (done) => {
+        let fail = 0
+        const basePosition = {
+          x: 1.5,
+          y: 66,
+          z: 1.5,
+          pitch: 0,
+          yaw: 0,
+          flags: 0,
+          teleportId: 0
+        }
+        server.on('login', async (client) => {
+          await client.write('login', bot.test.generateLoginPacket())
+          await client.write('position', basePosition)
+          client.on('packet', (data, meta) => {
+            const packetName = meta.name
+            switch (packetName) {
+              case 'position':
+                fail++
+                break
+              case 'position_look':
+                fail++
+                break
+              case 'look':
+                fail++
+                break
+            }
+            if (fail > 1) assert.fail('position packet sent')
+          })
+          await sleep(2000)
+          done()
+        })
+      })
       it('position_look should be sent every 1000ms if we are looking around', (done) => {
         let fail = 0
         let success = 0
