@@ -119,9 +119,15 @@ function inject (bot) {
   }
 
   async function clearInventory () {
-    bot.chat('/clear')
-    // We don't care if its success of failure (it fails if the inventory was empty already)
-    await once(bot, 'message')
+    const msgProm = onceWithCleanup(bot, 'message', { checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success' })
+    bot.chat('/give @a stone 1')
+    await onceWithCleanup(bot.inventory, 'updateSlot', { checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
+    const inventoryClearedProm = Promise.all(bot.inventory.slots.filter(item => item)
+      .map(item => onceWithCleanup(bot.inventory, `updateSlot:${item.slot}`, { checkCondition: (oldItem, newItem) => newItem === null })))
+    bot.chat('/clear') // don't rely on the message (as it'll come to early), wait for the result of /clear instead
+    await msgProm // wait for the message so it doesn't leak into chat tests
+    await inventoryClearedProm
+    assert.strictEqual(bot.inventory.slots.filter(i => i).length, 0)
   }
 
   // you need to be in creative mode for this to work
