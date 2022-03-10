@@ -94,10 +94,21 @@ module.exports = () => {
     bot.chat('hello')
     await once(bot, 'chat:hello')
     bot.removeChatPattern(patternIndex)
+    let listener
     await new Promise((resolve, reject) => {
-      setTimeout(() => resolve(), 5000)
-      bot.on('chat:hello', () => reject(new Error("Hello event shouldn't work after removing it")))
+      listener = (msg) => {
+        console.log('reacting to msg: ')
+        console.log(msg)
+        reject(new Error("Hello event shouldn't work after removing it"))
+      }
+      bot.on('chat:hello', listener)
+      bot.once('message', () => {
+        // wait half a second to make sure we aren't going to react to the msg
+        setTimeout(() => resolve(), 500)
+      })
+      bot.chat('hello')
     })
+    bot.off('chat:hello', listener)
   })
 
   return tests
