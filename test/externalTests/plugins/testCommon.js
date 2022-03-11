@@ -10,7 +10,6 @@ module.exports = inject
 
 function inject (bot) {
   console.log(bot.version)
-  const Item = require('prismarine-item')(bot.version)
 
   bot.test = {}
   bot.test.groundY = bot.supportFeature('tallWorld') ? -60 : 4
@@ -133,14 +132,6 @@ function inject (bot) {
   // you need to be in creative mode for this to work
   async function setInventorySlot (targetSlot, item) {
     assert(item === null || item.name !== 'unknown', `item should not be unknown ${JSON.stringify(item)}`)
-    // TODO FIX
-    if (Item.equal(bot.inventory.slots[targetSlot], item)) {
-      // console.log('placing')
-      // console.log(bot.inventory.slots[targetSlot])
-      // already good to go
-      return
-    }
-
     return bot.creative.setInventorySlot(targetSlot, item)
   }
 

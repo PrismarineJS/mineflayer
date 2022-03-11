@@ -8,6 +8,10 @@ module.exports = () => async (bot) => {
   await bot.test.becomeSurvival()
   // Cannot consume if bot.food === 20
   await assert.rejects(bot.consume, (err) => {
+    if (!err) {
+      // log the conditions that made this not throw
+      console.log({ a: bot.game.gameMode !== 'creative', b: !['potion', 'milk_bucket', 'enchanted_golden_apple', 'golden_apple'].includes(bot.heldItem.name), c: bot.food === 20 })
+    }
     assert.notStrictEqual(err, undefined)
     return true
   })
