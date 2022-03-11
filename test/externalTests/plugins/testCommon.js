@@ -102,42 +102,20 @@ function inject (bot) {
     return setCreativeMode(false)
   }
 
+  const gameModeChangedMessages = ['commands.gamemode.success.self', 'gameMode.changed']
+
   async function setCreativeMode (value) {
+    const getGM = val => val ? 'creative' : 'survival'
     // this function behaves the same whether we start in creative mode or not.
     // also, creative mode is always allowed for ops, even if server.properties says force-gamemode=true in survival mode.
+    let i = 0
+    const msgProm = onceWithCleanup(bot, 'message', { checkCondition: msg => gameModeChangedMessages.includes(msg.translate) && i++ > 0 && bot.game.gameMode === getGM(value) })
 
-    const onMessage = (jsonMsg) => {
-      // console.log(jsonMsg)
-      switch (jsonMsg.translate) {
-        case 'commands.gamemode.success.self':
-        case 'gameMode.changed':
-          return true
-        case 'commands.generic.permission':
-          sayEverywhere('ERROR: I need to be an op (allow cheats).')
-        // at this point we just wait forever.
-        // the intention is that someone ops us while we're sitting here, then you kill and restart the test.
-      }
-      // console.log("I didn't expect this message:", jsonMsg);
-      return false
-    }
-
-    const waitForMessage = async () => {
-      try {
-        await onceWithCleanup(bot, 'message', {
-          checkCondition: onMessage,
-          timeout: 10000
-        })
-      } catch (_) {
-        // For whatever reason, timeout = success, and there is no other failure condition in this promise,
-        // so we can safely eat this exception.
-      }
-    }
-
-    const messagePromise = waitForMessage()
-
-    bot.chat(`/gamemode ${value ? 'creative' : 'survival'}`)
-
-    return messagePromise
+    // do it three times to ensure that we get feedback
+    bot.chat(`/gamemode ${getGM(value)}`)
+    bot.chat(`/gamemode ${getGM(!value)}`)
+    bot.chat(`/gamemode ${getGM(value)}`)
+    return msgProm
   }
 
   async function clearInventory () {
