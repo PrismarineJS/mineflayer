@@ -10,7 +10,6 @@ module.exports = inject
 
 function inject (bot) {
   console.log(bot.version)
-  const Item = require('prismarine-item')(bot.version)
 
   bot.test = {}
   bot.test.groundY = bot.supportFeature('tallWorld') ? -60 : 4
@@ -102,61 +101,37 @@ function inject (bot) {
     return setCreativeMode(false)
   }
 
+  const gameModeChangedMessages = ['commands.gamemode.success.self', 'gameMode.changed']
+
   async function setCreativeMode (value) {
+    const getGM = val => val ? 'creative' : 'survival'
     // this function behaves the same whether we start in creative mode or not.
     // also, creative mode is always allowed for ops, even if server.properties says force-gamemode=true in survival mode.
+    let i = 0
+    const msgProm = onceWithCleanup(bot, 'message', { checkCondition: msg => gameModeChangedMessages.includes(msg.translate) && i++ > 0 && bot.game.gameMode === getGM(value) })
 
-    const onMessage = (jsonMsg) => {
-      // console.log(jsonMsg)
-      switch (jsonMsg.translate) {
-        case 'commands.gamemode.success.self':
-        case 'gameMode.changed':
-          return true
-        case 'commands.generic.permission':
-          sayEverywhere('ERROR: I need to be an op (allow cheats).')
-        // at this point we just wait forever.
-        // the intention is that someone ops us while we're sitting here, then you kill and restart the test.
-      }
-      // console.log("I didn't expect this message:", jsonMsg);
-      return false
-    }
-
-    const waitForMessage = async () => {
-      try {
-        await onceWithCleanup(bot, 'message', {
-          checkCondition: onMessage,
-          timeout: 10000
-        })
-      } catch (_) {
-        // For whatever reason, timeout = success, and there is no other failure condition in this promise,
-        // so we can safely eat this exception.
-      }
-    }
-
-    const messagePromise = waitForMessage()
-
-    bot.chat(`/gamemode ${value ? 'creative' : 'survival'}`)
-
-    return messagePromise
+    // do it three times to ensure that we get feedback
+    bot.chat(`/gamemode ${getGM(value)}`)
+    bot.chat(`/gamemode ${getGM(!value)}`)
+    bot.chat(`/gamemode ${getGM(value)}`)
+    return msgProm
   }
 
   async function clearInventory () {
-    bot.chat('/clear')
-    // We don't care if its success of failure (it fails if the inventory was empty already)
-    await once(bot, 'message')
+    const msgProm = onceWithCleanup(bot, 'message', { checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success' })
+    bot.chat('/give @a stone 1')
+    await onceWithCleanup(bot.inventory, 'updateSlot', { checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
+    const inventoryClearedProm = Promise.all(bot.inventory.slots.filter(item => item)
+      .map(item => onceWithCleanup(bot.inventory, `updateSlot:${item.slot}`, { checkCondition: (oldItem, newItem) => newItem === null })))
+    bot.chat('/clear') // don't rely on the message (as it'll come to early), wait for the result of /clear instead
+    await msgProm // wait for the message so it doesn't leak into chat tests
+    await inventoryClearedProm
+    assert.strictEqual(bot.inventory.slots.filter(i => i).length, 0)
   }
 
   // you need to be in creative mode for this to work
   async function setInventorySlot (targetSlot, item) {
     assert(item === null || item.name !== 'unknown', `item should not be unknown ${JSON.stringify(item)}`)
-    // TODO FIX
-    if (Item.equal(bot.inventory.slots[targetSlot], item)) {
-      // console.log('placing')
-      // console.log(bot.inventory.slots[targetSlot])
-      // already good to go
-      return
-    }
-
     return bot.creative.setInventorySlot(targetSlot, item)
   }
 
