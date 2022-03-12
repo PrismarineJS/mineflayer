@@ -66,7 +66,6 @@ module.exports = (version) => {
 }
 
 async function digSomething (blockId, bot) {
-  const mcData = require('minecraft-data')(bot.version)
   const Item = require('prismarine-item')(bot.version)
 
   await bot.test.setInventorySlot(36, new Item(blockId, 1, 0))
@@ -74,7 +73,7 @@ async function digSomething (blockId, bot) {
   // TODO: find a better way than this bot.test.wait(200)
   await bot.test.wait(200)
   await bot.test.clearInventory()
-  await bot.test.setInventorySlot(36, new Item(mcData.itemsByName.diamond_pickaxe.id, 1, 0))
+  await bot.test.setInventorySlot(36, new Item(bot.registry.itemsByName.diamond_pickaxe.id, 1, 0))
   await bot.test.becomeSurvival()
   // we are bare handed
   await bot.dig(bot.blockAt(bot.entity.position.plus(new Vec3(1, 0, 0))))

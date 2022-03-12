@@ -5,7 +5,7 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "mocha_test": "mocha --reporter spec --exit",
+    "mocha_test": "mocha --reporter spec --bail --exit",
     "test": "npm run mocha_test",
     "pretest": "npm run lint",
     "lint": "standard && ts-standard *.d.ts && standard-markdown",
@@ -32,6 +32,7 @@
     "prismarine-nbt": "^2.0.0",
     "prismarine-physics": "^1.3.1",
     "prismarine-recipe": "^1.1.0",
+    "prismarine-registry": "^1.0.0",
     "prismarine-windows": "^2.4.2",
     "prismarine-world": "^3.6.0",
     "protodef": "^1.14.0",

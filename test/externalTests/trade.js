@@ -2,10 +2,9 @@ const assert = require('assert')
 const { once } = require('events')
 
 module.exports = () => async (bot) => {
-  const mcData = require('minecraft-data')(bot.version)
   const Item = require('prismarine-item')(bot.version)
 
-  const villagerType = mcData.entitiesByName.villager ? 'villager' : 'Villager'
+  const villagerType = bot.registry.entitiesByName.villager ? 'villager' : 'Villager'
   const testFluctuations = bot.supportFeature('selectingTradeMovesItems')
   const summonCommand = bot.supportFeature('indexesVillagerRecipes')
     ? `/summon ${villagerType} ~ ~1 ~ {NoAI:1, Offers:{Recipes:[0:{maxUses:7,buy:{id:"minecraft:emerald",Count:2},sell:{id:"minecraft:pumpkin_pie",Count:2},uses: 1},1:{maxUses:7,buy:{id:"minecraft:emerald",Count:2},buyB:{id:"minecraft:pumpkin_pie",Count:2},sell:{id:"minecraft:wheat",Count:2}, uses:1}]}}`
@@ -14,7 +13,7 @@ module.exports = () => async (bot) => {
   const commandBlockPos = bot.entity.position.offset(0.5, 0, 0.5)
   const redstoneBlockPos = commandBlockPos.offset(1, 0, 0)
 
-  await bot.test.setInventorySlot(36, new Item(mcData.itemsByName.emerald.id, 64, 0))
+  await bot.test.setInventorySlot(36, new Item(bot.registry.itemsByName.emerald.id, 64, 0))
 
   // A command block is needed to spawn the villager due to the chat's character limit in some versions
   bot.test.sayEverywhere(`/setblock ${commandBlockPos.toArray().join(' ')} command_block`)
@@ -49,7 +48,7 @@ module.exports = () => async (bot) => {
     assert.strictEqual(buy.count, 2)
 
     const printCountInv = function (item) {
-      return `${bot.currentWindow.count(mcData.itemsByName[item.name].id)}x ${item.displayName}`
+      return `${bot.currentWindow.count(bot.registry.itemsByName[item.name].id)}x ${item.displayName}`
     }
     const printCountTrade = function (item) {
       return `${item.count}x ${item.displayName}`
@@ -59,12 +58,12 @@ module.exports = () => async (bot) => {
 
     await bot.trade(villager, index, 6)
     if (index === 0) {
-      assert.strictEqual(bot.currentWindow.count(mcData.itemsByName.emerald.id), testFluctuations ? 64 - 24 : 64 - 12)
-      assert.strictEqual(bot.currentWindow.count(mcData.itemsByName.pumpkin_pie.id), 12)
+      assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.emerald.id), testFluctuations ? 64 - 24 : 64 - 12)
+      assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.pumpkin_pie.id), 12)
     } else {
-      assert.strictEqual(bot.currentWindow.count(mcData.itemsByName.emerald.id), testFluctuations ? 64 - 36 : 64 - 24)
-      assert.strictEqual(bot.currentWindow.count(mcData.itemsByName.pumpkin_pie.id), 0)
-      assert.strictEqual(bot.currentWindow.count(mcData.itemsByName.wheat.id), 12)
+      assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.emerald.id), testFluctuations ? 64 - 36 : 64 - 24)
+      assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.pumpkin_pie.id), 0)
+      assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.wheat.id), 12)
     }
   }
 

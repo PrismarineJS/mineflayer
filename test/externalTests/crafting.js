@@ -2,7 +2,7 @@ const { once } = require('events')
 const { Vec3 } = require('vec3')
 
 module.exports = () => async (bot) => {
-  const { blocksByName, itemsByName, findItemOrBlockByName } = require('minecraft-data')(bot.version)
+  const { blocksByName, itemsByName, findItemOrBlockByName } = bot.registry
   const Item = require('prismarine-item')(bot.version)
 
   let populateBlockInventory

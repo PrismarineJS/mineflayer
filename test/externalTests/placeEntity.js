@@ -3,7 +3,6 @@ const { Vec3 } = require('vec3')
 const { once } = require('events')
 
 module.exports = (version) => {
-  const mcData = require('minecraft-data')(version)
   async function runTest (bot, testFunction) {
     await testFunction(bot)
   }
@@ -15,7 +14,7 @@ module.exports = (version) => {
   }
 
   addTest('place crystal', async (bot) => {
-    if (!mcData?.itemsByName?.end_crystal?.id) return // unsupported
+    if (!bot.registry.itemsByName.end_crystal) return // unsupported
     await bot.test.setBlock({ z: 1, relative: true, blockName: 'obsidian' })
     await bot.test.awaitItemRecieved(`/give ${bot.username} end_crystal`)
     const crystal = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
@@ -46,7 +45,7 @@ module.exports = (version) => {
     }
 
     await placeBlocksForTest('water')
-    await bot.test.awaitItemRecieved(`/give ${bot.username} ${mcData?.itemsByName?.oak_boat ? 'oak_boat' : 'boat'}`)
+    await bot.test.awaitItemRecieved(`/give ${bot.username} ${bot.registry.oak_boat ? 'oak_boat' : 'boat'}`)
     const boat = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, -1, -2)), new Vec3(0, -1, 0))
     assert(boat !== null)
     const name = bot.supportFeature('entityNameUpperCaseNoUnderscore') ? 'Boat' : 'boat'
@@ -59,13 +58,13 @@ module.exports = (version) => {
 
   addTest('place summon egg', async (bot) => {
     let command
-    if (mcData.isOlderThan('1.9')) {
+    if (bot.registry.isOlderThan('1.9')) {
       command = '/give @p spawn_egg 1 54' // 1.8
-    } else if (mcData.isOlderThan('1.11')) {
+    } else if (bot.registry.isOlderThan('1.11')) {
       command = '/give @p spawn_egg 1 0 {EntityTag:{id:Zombie}}' // 1.9 / 1.10
-    } else if (mcData.isOlderThan('1.12')) {
+    } else if (bot.registry.isOlderThan('1.12')) {
       command = '/give @p spawn_egg 1 0 {EntityTag:{id:minecraft:zombie}}' // 1.11
-    } else if (mcData.isOlderThan('1.13')) {
+    } else if (bot.registry.isOlderThan('1.13')) {
       command = '/give @p spawn_egg 1 0 {EntityTag:{id:zombie}}' // 1.12
     } else {
       command = '/give @p zombie_spawn_egg 1' // >1.12
