@@ -78,6 +78,7 @@
   - [Bot](#bot)
     - [mineflayer.createBot(options)](#mineflayercreatebotoptions)
     - [Properties](#properties)
+      - [bot.registry](#botregistry)
       - [bot.world](#botworld)
         - [world "blockUpdate" (oldBlock, newBlock)](#world-blockupdate-oldblock-newblock)
         - [world "blockUpdate:(x, y, z)" (oldBlock, newBlock)](#world-blockupdatex-y-z-oldblock-newblock)
@@ -757,6 +758,10 @@ Create and return an instance of the class bot.
  * defaultChatPatterns: defaults to true, set to false to not add the patterns such as chat and whisper
 
 ### Properties
+
+#### bot.registry
+
+Instance of minecraft-data used by the bot. Pass this to constructors that expect an instance of minecraft-data, such as prismarine-block.
 
 #### bot.world
 
