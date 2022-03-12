@@ -1,4 +1,5 @@
 const assert = require('assert')
+const wait = require('util').promisify(setTimeout)
 const SLOT = 36
 
 module.exports = () => async (bot) => {
@@ -16,13 +17,28 @@ module.exports = () => async (bot) => {
     assert.ok(bot.inventory.slots[SLOT] == null)
   }
 
+  // setting a slot once works
   await promise
   assert.ok(bot.inventory.slots[SLOT] != null)
   assert.ok(bot.inventory.slots[SLOT].type === item2.type)
+  // set the same item in the same slot again to ensure we don't hang
+  const returnValue = await Promise.race([
+    bot.creative.setInventorySlot(SLOT, item2),
+    (async () => {
+      await wait(5000) // after 5 seconds just fail the test
+      return 'Setting the same item in the same slot took too long'
+    })()
+  ])
+  if (typeof returnValue === 'string') {
+    throw new Error(returnValue)
+  }
+  // setting that same slot again works
   await bot.creative.setInventorySlot(SLOT, new Item(3, 1, 0))
   assert.strictEqual(bot.inventory.slots[SLOT].type, 3)
+  // and again works
   await bot.creative.setInventorySlot(SLOT, new Item(4, 1, 0))
   assert.strictEqual(bot.inventory.slots[SLOT].type, 4)
+  // setting a slot to null
   await bot.creative.setInventorySlot(SLOT, null)
   assert.strictEqual(bot.inventory.slots[SLOT], null)
   // clear slot
