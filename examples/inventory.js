@@ -129,7 +129,7 @@ async function craftItem (name, amount) {
   amount = parseInt(amount, 10)
   const mcData = require('minecraft-data')(bot.version)
 
-  const item = mcData.findItemOrBlockByName(name)
+  const item = mcData.itemsByName[name]
   const craftingTableID = mcData.blocksByName.crafting_table.id
 
   const craftingTable = bot.findBlock({
