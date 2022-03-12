@@ -19,4 +19,10 @@ module.exports = () => async (bot) => {
   await promise
   assert.ok(bot.inventory.slots[SLOT] != null)
   assert.ok(bot.inventory.slots[SLOT].type === item2.type)
+  await bot.creative.setInventorySlot(SLOT, new Item(3, 1, 0))
+  assert.strictEqual(bot.inventory.slots[SLOT].type, 3)
+  await bot.creative.setInventorySlot(SLOT, new Item(4, 1, 0))
+  assert.strictEqual(bot.inventory.slots[SLOT].type, 4)
+  await bot.creative.setInventorySlot(SLOT, null)
+  assert.strictEqual(bot.inventory.slots[SLOT], null)
 }
