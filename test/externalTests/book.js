@@ -1,7 +1,6 @@
 const assert = require('assert')
 
 module.exports = () => async (bot) => {
-  const mcData = require('minecraft-data')(bot.version)
   const Item = require('prismarine-item')(bot.version)
 
   const pages = [
@@ -14,7 +13,7 @@ module.exports = () => async (bot) => {
     .map((word, i) => `§${(i % 13 + 1).toString(16)}${i % 2 ? '§l' : ''}${word}`)
     .join(' '))
 
-  await bot.test.setInventorySlot(30, new Item(mcData.itemsByName.writable_book.id, 1, 0))
+  await bot.test.setInventorySlot(30, new Item(bot.registry.itemsByName.writable_book.id, 1, 0))
 
   await bot.writeBook(30, pages)
   let book = bot.inventory.slots[30]
@@ -22,7 +21,7 @@ module.exports = () => async (bot) => {
 
   await bot.signBook(30, pages, bot.username, 'My Very First Book')
   book = bot.inventory.slots[30]
-  assert.strictEqual(book.type, mcData.itemsByName.written_book.id)
+  assert.strictEqual(book.type, bot.registry.itemsByName.written_book.id)
   assert.strictEqual(book.nbt.value.author.value, bot.username)
   assert.strictEqual(book.nbt.value.title.value, 'My Very First Book')
 }

@@ -1,9 +1,8 @@
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.version)
-  const mcData = require('minecraft-data')(bot.version)
 
   bot.test.sayEverywhere('/fill ~-5 ~-1 ~-5 ~5 ~-1 ~5 water')
-  await bot.test.setInventorySlot(36, new Item(mcData.itemsByName.fishing_rod.id, 1, 0))
+  await bot.test.setInventorySlot(36, new Item(bot.registry.itemsByName.fishing_rod.id, 1, 0))
   await bot.lookAt(bot.entity.position) // dont force the position
   bot.fish()
 
