@@ -14,7 +14,7 @@ const START_THE_SERVER = true
 // if you want to have time to look what's happening increase this (milliseconds)
 const TEST_TIMEOUT_MS = 90000
 
-const excludedTests = ['digEverything', 'book', 'anvil', 'placeEntity']
+const excludedTests = ['digEverything', 'book', 'placeEntity']
 
 const propOverrides = {
   'level-type': 'FLAT',
@@ -66,6 +66,16 @@ for (const supportedVersion of mineflayer.testedVersions) {
         console.log('starting bot')
         bot.once('spawn', () => {
           wrap.writeServer('op flatbot\n')
+          // const listener = msg => {
+          //   if (msg === '<U9G> rdy') {
+          //     bot.off('messagestr', listener)
+          //     done()
+          //   }
+          //   if (msg === 'U9G joined the game') {
+          //     wrap.writeServer('op U9G\n')
+          //   }
+          // }
+          // bot.on('messagestr', listener)
           bot.once('messagestr', msg => {
             if (msg === '[Server: Made flatbot a server operator]' || msg === '[Server: Opped flatbot]') {
               done()
