@@ -152,9 +152,7 @@ module.exports = () => {
     assert(anvil.slots[3] !== null)
     assert.strictEqual(anvil.slots[3].repairCost, 1)
     assert.deepStrictEqual(anvil.slots[3].enchants, [{ name: 'sharpness', lvl: 5 }, { name: 'unbreaking', lvl: 3 }])
-    // FIXME:
-    // assert.strictEqual(anvil.slots[3].customName, renameName('lol'))
-    assert.strictEqual(anvil.slots[3].customName, 'lol')
+    assert.strictEqual(anvil.slots[3].customName, renameName('lol'))
     await anvil.close()
     assert.strictEqual(bot.currentWindow, null)
     await bot.test.wait(1000) // why are we waiting
