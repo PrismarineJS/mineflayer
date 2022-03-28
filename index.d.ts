@@ -571,6 +571,10 @@ export interface creativeMethods {
     item: Item | null
   ) => Promise<void>
 
+  clearSlot: (slot: number) => Promise<void>
+
+  clearInventory: () => Promise<void>
+
   flyTo: (destination: Vec3) => Promise<void>
 
   startFlying: () => void

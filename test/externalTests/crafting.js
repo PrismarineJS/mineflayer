@@ -2,7 +2,7 @@ const { once } = require('events')
 const { Vec3 } = require('vec3')
 
 module.exports = () => async (bot) => {
-  const { blocksByName, itemsByName, findItemOrBlockByName } = require('minecraft-data')(bot.version)
+  const { blocksByName, itemsByName } = bot.registry
   const Item = require('prismarine-item')(bot.version)
 
   let populateBlockInventory
@@ -28,7 +28,7 @@ module.exports = () => async (bot) => {
   }
 
   async function craft (amount, name) {
-    const item = findItemOrBlockByName(name)
+    const item = itemsByName[name]
     const craftingTable = findCraftingTable()
     const wbText = craftingTable ? 'with a crafting table, ' : 'without a crafting table, '
     if (item == null) {

@@ -78,7 +78,7 @@ module.exports = () => async (bot) => {
 function makeListener (wantedMessage) {
   return (message) => {
     if (!message.startsWith(wantedMessage)) {
-      assert.fail(`Unexpected message: ${message}`) // error
+      assert.fail(`Unexpected message: ${message}, wanted ${wantedMessage}`) // error
     }
     return true // stop listening
   }

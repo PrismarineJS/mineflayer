@@ -1,3 +1,13 @@
+## 4.2.0
+
+* add missing extraInfos argument to Bot.blockAt function (@dumbasPL)
+* Emit window close event AFTER updating the inventory (@imharvol)
+* Move supportFeature to mcdata (@U9G)
+* Update lib/ and test/ to use prismarine-registry (@extremeheat)
+* only open chests with openContainer (@U9G)
+* Add bot.creative.clearSlot and bot.creative.clearInventory (@U9G)
+* remove transaction warning
+
 ## 4.1.0
 
 * 1.18.2 support

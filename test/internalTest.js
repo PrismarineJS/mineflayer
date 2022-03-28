@@ -129,7 +129,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         done()
       })
       // Versions prior to 1.11 have capital first letter
-      const entities = mcData.entitiesByName
+      const entities = bot.registry.entitiesByName
       const creeperId = entities.creeper ? entities.creeper.id : entities.Creeper.id
       server.on('login', (client) => {
         client.write('spawn_entity_living', {
@@ -158,7 +158,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
     })
     it('blockAt', (done) => {
       const pos = vec3(1, 65, 1)
-      const goldId = mcData.blocksByName.gold_block.id
+      const goldId = bot.registry.blocksByName.gold_block.id
       bot.on('chunkColumnLoad', (columnPoint) => {
         assert.strictEqual(columnPoint.x, 0)
         assert.strictEqual(columnPoint.z, 0)
@@ -775,7 +775,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           })
 
           // Versions prior to 1.11 have capital first letter
-          const entities = mcData.entitiesByName
+          const entities = bot.registry.entitiesByName
           const creeperId = entities.creeper ? entities.creeper.id : entities.Creeper.id
           client.write('spawn_entity_living', {
             entityId: 8, // random
@@ -822,7 +822,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           if (['1.8', '1.9', '1.10', '1.11', '1.12'].includes(bot.majorVersion)) {
             entityType = 2
           } else {
-            entityType = mcData.entitiesArray.find(e => e.name.toLowerCase() === 'item' || e.name.toLowerCase() === 'item_stack').id
+            entityType = bot.registry.entitiesArray.find(e => e.name.toLowerCase() === 'item' || e.name.toLowerCase() === 'item_stack').id
           }
           client.write('spawn_entity', {
             entityId: 16,
@@ -863,8 +863,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
     })
 
     it('bed', (done) => {
-      const blocks = mcData.blocksByName
-      const entities = mcData.entitiesByName
+      const blocks = bot.registry.blocksByName
+      const entities = bot.registry.entitiesByName
 
       const playerPos = vec3(10, 0, 0)
       const zombiePos = vec3(0, 0, 0)

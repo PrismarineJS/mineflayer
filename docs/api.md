@@ -78,6 +78,7 @@
   - [Bot](#bot)
     - [mineflayer.createBot(options)](#mineflayercreatebotoptions)
     - [Properties](#properties)
+      - [bot.registry](#botregistry)
       - [bot.world](#botworld)
         - [world "blockUpdate" (oldBlock, newBlock)](#world-blockupdate-oldblock-newblock)
         - [world "blockUpdate:(x, y, z)" (oldBlock, newBlock)](#world-blockupdatex-y-z-oldblock-newblock)
@@ -757,6 +758,10 @@ Create and return an instance of the class bot.
  * defaultChatPatterns: defaults to true, set to false to not add the patterns such as chat and whisper
 
 ### Properties
+
+#### bot.registry
+
+Instance of minecraft-data used by the bot. Pass this to constructors that expect an instance of minecraft-data, such as prismarine-block.
 
 #### bot.world
 
@@ -2051,7 +2056,7 @@ but it is assumed and often required that the bot be in creative mode for these 
 
 #### bot.creative.setInventorySlot(slot, item)
 
-This function returns a `Promise`, with `void` as its argument when gets fired when the servers sets the slot.
+This function returns a `Promise`, with `void` as its argument when gets fired when the server sets the slot.
 
 Gives the bot the specified item in the specified inventory slot.
 
@@ -2060,6 +2065,18 @@ Gives the bot the specified item in the specified inventory slot.
     If `item` is `null`, the item at the specified slot is deleted.
 
 If this method changes anything, you can be notified via `bot.inventory.on("updateSlot")`.
+
+#### bot.creative.clearSlot(slot)
+
+This function returns a `Promise`, with `void` as its argument when gets fired when the server clears the slot.
+
+Makes the sets the item in the slot given to null.
+
+ * `slot` is in inventory window coordinates (where 36 is the first quickbar slot, etc.).
+
+#### bot.creative.clearInventory()
+
+This function returns a `Promise`, with `void` as its argument when gets fired when the server clears the slot.
 
 #### bot.creative.flyTo(destination)
 
