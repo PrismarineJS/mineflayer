@@ -403,39 +403,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
           })
         })
       })
-      it('falling check (position is sent every 50ms)', (done) => {
-        // this can fail randomly when the setInterval is 50ms
-        let previousNow
-        let landed = false
-        bot.on('move', () => {
-          if (bot.entity.position.y <= pos.y + 1) {
-            landed = true
-            done()
-          }
-          if (landed) return
-          if (!previousNow) previousNow = performance.now()
-          const now = performance.now()
-          const value = (Math.round((now - previousNow) / 50) * 50)
-          assert.ok(value <= 50)
-          previousNow = now
-        })
-        server.on('login', (client) => {
-          client.write('login', bot.test.generateLoginPacket())
-          const chunk = bot.test.buildChunk()
-
-          chunk.setBlockType(pos, goldId)
-          client.write('map_chunk', generateChunkPacket(chunk))
-          client.write('position', {
-            x: 1.5,
-            y: 80,
-            z: 1.5,
-            pitch: 0,
-            yaw: 0,
-            flags: 0,
-            teleportId: 0
-          })
-        })
-      })
       it('send position packets for 20 ticks after death', (done) => {
         let deadTick = 1
         bot.on('move', () => {
