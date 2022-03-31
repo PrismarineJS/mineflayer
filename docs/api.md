@@ -251,6 +251,13 @@
       - [bot.recipesFor(itemType, metadata, minResultCount, craftingTable)](#botrecipesforitemtype-metadata-minresultcount-craftingtable)
       - [bot.recipesAll(itemType, metadata, craftingTable)](#botrecipesallitemtype-metadata-craftingtable)
       - [bot.nearestEntity(match = (entity) => { return true })](#botnearestentitymatch--entity---return-true-)
+    - [Task API](#task-api)
+      - [bot.taskCompatible(taskIdentifier)](#bottaskcompatibletaskidentifier)
+      - [bot.taskCreateCompatible(taskIdentifier)](#bottaskcreatecompatibletaskidentifier)
+      - [bot.taskWaitCompatibility(taskIdentifier)](#bottaskwaitcompatibilitytaskidentifier)
+      - [bot.taskRemove(Task)](#bottaskremovetask)
+      - [bot.tasks.currentTasks](#bottaskscurrenttasks)
+      - [bot.tasks.taskUpdate](#bottaskstaskupdate)
     - [Methods](#methods)
       - [bot.end(reason)](#botendreason)
       - [bot.quit(reason)](#botquitreason)
@@ -1521,6 +1528,37 @@ Example:
 ```js
 const cow = bot.nearestEntity(entity => entity.name.toLowerCase() === 'cow') // we use .toLowercase() because in 1.8 cow was capitalized, for newer versions that can be ommitted
 ```
+
+### Task API
+Most mineflayer function have a task attached to them. Task are used to keep track if a given action is compatible with currently running functions. 
+For instance: Equiping an item is not compatible with tossing an item. This is because both actions require the use off the cursor to move items in the inventory. Calling both functions at the same time could mess up what both functions expect the inventory to do.
+
+#### bot.taskCompatible(taskIdentifier)
+Check if a given task is compatible with currently running tasks.
+* `Returns` - An object containing `{ status: boolean, task?: Task }` 
+  * `status` - Boolean. If the given task identifier is compatible
+  * `task` - Undefined if status is true. The first tasks running that is incompatible.
+* `taskIdentifier` - A string task identifier 
+
+#### bot.taskCreateCompatible(taskIdentifier)
+Create and start a new task with the given identifier. Throws an error if the given task identifier is incompatible with currently running tasks.
+* `Returns` - A Task object off the created Task
+* `taskIdentifier` - A string task identifier
+
+#### bot.taskWaitCompatibility(taskIdentifier)
+Wait until a give task identifier is compatible with currently running tasks. Then creates a new Task like `bot.taskCreateCompatible` and resolves the promise.
+* `Returns` - A promise with Task
+* `taskIdentifier` - A string task identifier
+
+#### bot.taskRemove(Task)
+Remove a task.
+* `Task` - An active Task class instance.
+
+#### bot.tasks.currentTasks
+A Array of currently running tasks
+
+#### bot.tasks.taskUpdate
+An instance off EventEmitter that emits `update` whenever a task finishes.
 
 ### Methods
 

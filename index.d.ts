@@ -412,13 +412,31 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   denyResourcePack: () => void
 
-  taskCompatibleWithRunningTask: (taskIdentifier: string) => { status: false, task: never } | { status: true, task: Task }
+  /**
+   * Check if a task is compatible with currently running tasks
+   */
+  taskCompatible: (taskIdentifier: string) => { status: false, task: never } | { status: true, task: Task }
 
+  /**
+   * Create a new task or throw an error if the task is not compatible with currently running tasks
+   * @throws {Error|ErrorTaskAlreadyRunning|ErrorTaskConflict}
+   */
   taskCreateCompatible: (taskIdentifier: string) => Task
 
+  /**
+   * Wait until a task is compatible with currently running tasks
+   */
   taskWaitCompatibility: (taskIdentifier: string) => Promise<void>
 
-  taskRemove: () => void
+  taskRemove: (task: Task) => void
+}
+
+declare class ErrorTaskConflict extends Error {
+  name: 'Task Conflict'
+}
+
+declare class ErrorTaskAlreadyRunning extends Error {
+  name: 'Task Already Running'
 }
 
 export interface simpleClick {
