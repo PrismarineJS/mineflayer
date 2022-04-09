@@ -841,7 +841,8 @@ Bot's player object
   displayName: { toString: Function }, // ChatMessage object.
   gamemode: 0,
   ping: 28,
-  entity: entity // null if you are too far away
+  entity: entity, // null if you are too far away
+  nameOnTablist: Function // returns a ChatMessage object or null of what that player's name would be on the tablist
 }
 ```
 
