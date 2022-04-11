@@ -4,7 +4,6 @@ const mineflayer = require('../')
 const vec3 = require('vec3')
 const mc = require('minecraft-protocol')
 const assert = require('assert')
-const { performance } = require('perf_hooks')
 const { sleep } = require('../lib/promise_utils')
 
 for (const supportedVersion of mineflayer.testedVersions) {
