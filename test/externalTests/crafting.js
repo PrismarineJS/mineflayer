@@ -55,4 +55,18 @@ module.exports = () => async (bot) => {
   await once(bot.inventory, 'updateSlot')
   const craftingTable = bot.findBlock({ matching: blocksByName.crafting_table.id })
   await bot.craft(bot.recipesFor(itemsByName.ladder.id, null, null, true)[0], 1, craftingTable)
+
+  // Manually crafting by clicking on the crafting result slot
+  await bot.test.becomeCreative()
+  await bot.test.setInventorySlot(36, new Item(populateBlockInventory.id, 1, 0))
+  await bot.test.becomeSurvival()
+  await bot.transfer({
+    itemType: populateBlockInventory.id,
+    count: 1,
+    sourceStart: bot.inventory.inventoryStart,
+    sourceEnd: bot.inventory.inventoryEnd,
+    destStart: 1, // crafting slot
+    destEnd: 2
+  })
+  await bot.clickWindow(0, 0, 0) // Click the resulting item (should be planks)
 }
