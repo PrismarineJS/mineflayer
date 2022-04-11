@@ -828,11 +828,11 @@ minimum y of the world
 
 world height
 
-### bot.physicsEnabled
+#### bot.physicsEnabled
 
 Enable physics, default true.
 
-### bot.player
+#### bot.player
 
 Bot's player object
 ```js
@@ -850,6 +850,17 @@ A player's ping starts at 0, you might have to wait a bit for the server to send
 #### bot.players
 
 Map of username to people playing the game.
+
+#### bot.tablist
+
+bot's tablist object has two keys, `header` and `footer`.
+
+```js
+{
+  header: { toString: Function }, // ChatMessage object.
+  footer: { toString: Function } // ChatMessage object.
+}
+```
 
 #### bot.isRaining
 
