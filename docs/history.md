@@ -1,3 +1,9 @@
+## 4.3.0
+
+* Cache 'positionUpdateSentEveryTick' feature lookup (@IceTank)
+* Remove old teams from bot.teamMap (@U9G)
+* mcdata 3.0.0
+
 ## 4.2.0
 
 * add missing extraInfos argument to Bot.blockAt function (@dumbasPL)
