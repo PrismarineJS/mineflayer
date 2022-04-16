@@ -97,9 +97,10 @@
       - [bot.game.serverBrand](#botgameserverbrand)
       - [bot.game.minY](#botgameminy)
       - [bot.game.height](#botgameheight)
-    - [bot.physicsEnabled](#botphysicsenabled)
-    - [bot.player](#botplayer)
+      - [bot.physicsEnabled](#botphysicsenabled)
+      - [bot.player](#botplayer)
       - [bot.players](#botplayers)
+      - [bot.tablist](#bottablist)
       - [bot.isRaining](#botisraining)
       - [bot.rainState](#botrainstate)
       - [bot.thunderState](#botthunderstate)
@@ -327,6 +328,8 @@
       - [bot.getEquipmentDestSlot(destination)](#botgetequipmentdestslotdestination)
     - [bot.creative](#botcreative)
       - [bot.creative.setInventorySlot(slot, item)](#botcreativesetinventoryslotslot-item)
+      - [bot.creative.clearSlot(slot)](#botcreativeclearslotslot)
+      - [bot.creative.clearInventory()](#botcreativeclearinventory)
       - [bot.creative.flyTo(destination)](#botcreativeflytodestination)
       - [bot.creative.startFlying()](#botcreativestartflying)
       - [bot.creative.stopFlying()](#botcreativestopflying)
@@ -2017,11 +2020,11 @@ This function returns a `Promise`, with `void` as its argument upon completion.
 
 Transfer some kind of item from one range to an other. `options` is an object containing :
 
- * `window` : the window where the item will be moved
+ * `window` : Optional. the window where the item will be moved
  * `itemType` : the type of the moved items
- * `metadata` : the metadata of the moved items
- * `sourceStart` and `sourceEnd` : the source range
- * `destStart` and `destEnd` : the dest Range
+ * `metadata` : Optional. the metadata of the moved items
+ * `sourceStart` and `sourceEnd` : the source range. `sourceEnd` is optional and will default to `sourceStart` + 1
+ * `destStart` and `destEnd` : the dest Range. `destEnd` is optional and will default to `destStart` + 1
  * `count` : the amount of items to transfer. Default: `1`
  * `nbt` : nbt data of the item to transfer. Default: `nullish` (ignores nbt)
 
