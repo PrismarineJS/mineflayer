@@ -455,7 +455,7 @@ export interface Player {
   gamemode: number
   ping: number
   entity: Entity
-  nameOnTablist: () => ChatMessage | null
+  readonly nameOnTablist: ChatMessage | null
 }
 
 export interface ChatPattern {
