@@ -64,7 +64,10 @@ interface BotEvents {
   spawn: () => Promise<void> | void
   respawn: () => Promise<void> | void
   game: () => Promise<void> | void
+  /** @deprecated */
   title: (text: string) => Promise<void> | void
+  titlemsg: (msg: ChatMessage) => Promise<void> | void
+  subtitlemsg: (msg: ChatMessage) => Promise<void> | void
   rain: () => Promise<void> | void
   time: () => Promise<void> | void
   kicked: (reason: string, loggedIn: boolean) => Promise<void> | void

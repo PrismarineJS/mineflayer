@@ -160,6 +160,8 @@
       - ["game"](#game)
       - ["resourcePack" (url, hash)](#resourcepack-url-hash)
       - ["title"](#title)
+      - ["titlemsg" (msg)](#titlemsg-msg)
+      - ["subtitlemsg" (msg)](#subtitlemsg-msg)
       - ["rain"](#rain)
       - ["weatherUpdate"](#weatherupdate)
       - ["time"](#time)
@@ -1159,9 +1161,23 @@ Emitted when the server sends a resource pack.
 
 #### "title"
 
+**Deprecated**, prefer see "titlemsg" event.
+
 Emitted when the server sends a title
 
  * `text` - title's text
+
+#### "titlemsg" (msg)
+
+Emitted when the server sends a title
+
+ * `msg` - title's msg
+
+#### "subtitlemsg" (msg)
+
+Emitted when the server sends a title
+
+ * `msg` - subtitle's msg
 
 #### "rain"
 
