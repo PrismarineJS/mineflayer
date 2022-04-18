@@ -303,7 +303,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   activateEntity: (block: Entity) => Promise<void>
 
   activateEntityAt: (block: Entity, position: Vec3) => Promise<void>
-  
+
   activateEntityWithOptions: (block: Entity, position: Vec3, mouse: 0 | 1) => Promise<void>
 
   consume: () => Promise<void>
