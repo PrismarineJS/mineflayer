@@ -238,4 +238,4 @@ Run `npm run mocha_test -- -g <test_name>`, where `<test_name>` is a name of the
 
 ## License
 
-[MIT](LICENSE)
+[MIT](/LICENSE)
