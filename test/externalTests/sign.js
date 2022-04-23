@@ -36,13 +36,6 @@ module.exports = (version) => {
 
           assert.strictEqual(sign.signText, '1\n2\n3\n')
 
-          if (sign.blockEntity && sign.blockEntity.Text1) {
-            assert.strictEqual(sign.blockEntity.Text1.toString(), '1')
-            assert.strictEqual(sign.blockEntity.Text2.toString(), '2')
-            assert.strictEqual(sign.blockEntity.Text3.toString(), '3')
-            assert.strictEqual(sign.blockEntity.Text4.toString(), '')
-          }
-
           if (sign.blockEntity) {
             // Check block update
             bot.activateBlock(sign)
@@ -85,13 +78,6 @@ module.exports = (version) => {
     const sign = bot.blockAt(placeOnPos.offset(0, 1, 0))
 
     assert.strictEqual(sign.signText, '1\n2\n3\n')
-
-    if (sign.blockEntity && sign.blockEntity.Text1) {
-      assert.strictEqual(sign.blockEntity.Text1.toString(), '1')
-      assert.strictEqual(sign.blockEntity.Text2.toString(), '2')
-      assert.strictEqual(sign.blockEntity.Text3.toString(), '3')
-      assert.strictEqual(sign.blockEntity.Text4.toString(), '')
-    }
 
     if (sign.blockEntity) {
       // Check block update
