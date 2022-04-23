@@ -27,7 +27,7 @@ module.exports = (version) => {
     await bot.test.setInventorySlot(36, new Item(signItem.id, 1, 0))
     const p = new Promise((resolve) => {
       bot.on('signOpen', (packet) => {
-        const sign = bot.blockAt(new Vec3(packet.location))
+        const sign = bot.blockAt(new Vec3(packet.position))
         bot.updateSign(sign, '1\n2\n3\n')
 
         setTimeout(() => {
