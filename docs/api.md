@@ -279,7 +279,7 @@
       - [bot.lookAt(point, [force])](#botlookatpoint-force)
       - [bot.look(yaw, pitch, [force])](#botlookyaw-pitch-force)
       - [bot.updateSign(block, text)](#botupdatesignblock-text)
-      - [bot.placeSign(pos, text, options = {})](#botplacesignpos-text-options--)
+      - [bot.placeSign(referenceBlock, direction, text, options = {})](#botplacesignreferenceblock-direction-text-options--)
       - [bot.equip(item, destination)](#botequipitem-destination)
       - [bot.unequip(destination)](#botunequipdestination)
       - [bot.tossStack(item)](#bottossstackitem)
@@ -1745,12 +1745,16 @@ Set the direction your head is facing.
 
 Changes the text on the sign.
 
-#### bot.placeSign(pos, text, options = {})
+* `block` - A `Block` instance.
+* `text` - A `string` or array off `string` to write on the sign. Can have newlines for wirting in different lines if the `text` argument is a string. If an array is provided each array entry is used for the sign text.
 
-Places and writes to a sign. 
+#### bot.placeSign(referenceBlock, direction, text, options = {})
 
- * `pos` - A `Vec3` instance in what block the sign should be placed. Can be a block above a solid block or a block next to a solid block.
- * `text` - A `string` to write on the sign. Can have newlines for wirting in different lines.
+Place and write to a sign. 
+
+ * `referenceBlock` - A `Block` instance on what block the sign should be placed.
+ * `direction` - A `Vec3` instance in which direction the sign should face.
+ * `text` - A `string` or array off `string` to write on the sign. Can have newlines for wirting in different lines if the `text` argument is a string. If an array is provided each array entry is used for the sign text.
  * `options` - Optional `Object` with optional properties
    * `sneak` - `boolean`. Default to `false``.
    * `writeDelay` - `number` Delay in ms. Default to `0` (no delay). Anti cheat migh prevent to bot from writing to the sign to fast. Use this option when signs appear empty. 

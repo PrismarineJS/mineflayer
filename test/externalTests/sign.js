@@ -51,10 +51,10 @@ module.exports = (version) => {
     return p
   })
 
-  addTest('place and update sign', /** @param {import('mineflayer').Bot} bot */ async (bot) => {
+  addTest('place and update sign by string', /** @param {import('mineflayer').Bot} bot */ async (bot) => {
     await bot.test.setInventorySlot(36, new Item(signItem.id, 1, 0))
 
-    // Basically the graffiti example
+    // Basically the sign example
     // Look for solid blocs first
     const solidBlocks = bot.findBlocks({
       matching: (block) => {
@@ -70,7 +70,8 @@ module.exports = (version) => {
       return block && block.boundingBox === 'empty' && block.name.includes('air')
     })
     assert.ok(placeOnPos)
-    await bot.placeSign(placeOnPos.offset(0, 1, 0), '1\n2\n3\n')
+    const refBlock = bot.blockAt(placeOnPos)
+    await bot.placeSign(refBlock, new Vec3(0, 1, 0), '1\n2\n3\n')
     console.info('Placed sign at ' + placeOnPos.offset(0, 1, 0).toString())
     await bot.test.wait(500)
 

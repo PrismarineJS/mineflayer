@@ -15,6 +15,7 @@
  * place [message] - Place a sign from the bots inventory into the world and updates the sign's text.
  */
 const mineflayer = require('mineflayer')
+const { Vec3 } = require('vec3')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node sign.js <host> <port> [<name>] [<password>]')
@@ -85,9 +86,9 @@ async function placeSign (message) {
     return
   }
 
-  // Place a sign on the block we are standing on
+  // Place a sign on the block we are standing on facing up
   try {
-    await bot.placeSign(standingIn.position, message, { writeDelay: 1000 })
+    await bot.placeSign(standingIn, new Vec3(0, 1, 0), message, { writeDelay: 1000 })
   } catch (err) {
     bot.chat('Failed to place the sign')
     return

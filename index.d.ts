@@ -271,9 +271,9 @@ export interface Bot extends TypedEmitter<BotEvents> {
     force?: boolean
   ) => Promise<void>
 
-  updateSign: (block: Block, text: string) => void
+  updateSign: (block: Block, text: string | string[]) => void
 
-  placeSign: (pos: Vec3, text: string, options: { sneak?: boolean, writeDelay?: number, forceLook?: boolean }) => Promise<void>
+  placeSign: (referenceBlock: Block, direction: Vec3, text: string | string[], options: { sneak?: boolean, writeDelay?: number, forceLook?: boolean }) => Promise<void>
 
   equip: (
     item: Item | number,
