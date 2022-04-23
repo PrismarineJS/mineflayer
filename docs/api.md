@@ -239,7 +239,7 @@
       - ["heldItemChanged" (heldItem)](#helditemchanged-helditem)
       - ["physicsTick" ()](#physicstick-)
       - ["chat:name" (matches)](#chatname-matches)
-      - ["signOpen" (data)](#signopen-data)
+      - ["signOpen" (position)](#signopen-position)
     - [Functions](#functions)
       - [bot.blockAt(point, extraInfos=true)](#botblockatpoint-extrainfostrue)
       - [bot.waitForChunksToLoad()](#botwaitforchunkstoload)
@@ -1458,9 +1458,9 @@ Fires every tick if bot.physicsEnabled is set to true.
 
 Fires when the all of a chat pattern's regexs have matches
 
-#### "signOpen" (data)
+#### "signOpen" (position)
 
-Fires when a sign gui opens. Data has on property `location` with the coordiantes off the sign the gui was oppened for.
+Fires when a sign gui opens. Data has on property `position` with the coordiantes off the sign the gui was oppened for.
 
 ### Functions
 
