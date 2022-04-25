@@ -190,7 +190,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   currentWindow: Window | null
   simpleClick: simpleClick
   tablist: Tablist
-  tasks: { currentTasks: Task, taskUpdate: EventEmitter }
+  actions: { currentActions: Action, actionUpdate: EventEmitter }
 
   connect: (options: BotOptions) => void
 
@@ -413,30 +413,30 @@ export interface Bot extends TypedEmitter<BotEvents> {
   denyResourcePack: () => void
 
   /**
-   * Check if a task is compatible with currently running tasks
+   * Check if a action is compatible with currently running actions
    */
-  taskCompatible: (taskIdentifier: string) => { status: false, task: never } | { status: true, task: Task }
+  actionCompatible: (actionIdentifier: string) => { status: false, action: never } | { status: true, action: Action }
 
   /**
-   * Create a new task or throw an error if the task is not compatible with currently running tasks
-   * @throws {Error|ErrorTaskAlreadyRunning|ErrorTaskConflict}
+   * Create a new action or throw an error if the action is not compatible with currently running actions
+   * @throws {Error|ErrorActionAlreadyRunning|ErrorActionConflict}
    */
-  taskCreateCompatible: (taskIdentifier: string) => Task
+  actionCreateCompatible: (actionIdentifier: string) => Action
 
   /**
-   * Wait until a task is compatible with currently running tasks
+   * Wait until a action is compatible with currently running actions
    */
-  taskWaitCompatibility: (taskIdentifier: string) => Promise<void>
+  actionWaitCompatibility: (actionIdentifier: string) => Promise<void>
 
-  taskRemove: (task: Task) => void
+  actionRemove: (action: Action) => void
 }
 
-declare class ErrorTaskConflict extends Error {
-  name: 'Task Conflict'
+declare class ErrorActionConflict extends Error {
+  name: 'Action Conflict'
 }
 
-declare class ErrorTaskAlreadyRunning extends Error {
-  name: 'Task Already Running'
+declare class ErrorActionAlreadyRunning extends Error {
+  name: 'Action Already Running'
 }
 
 export interface simpleClick {
@@ -858,8 +858,8 @@ export class BossBar {
   );
 }
 
-export class Task {
-  taskIdentifier: string
+export class Action {
+  actionIdentifier: string
   promise: Promise<any>
   done: boolean
 

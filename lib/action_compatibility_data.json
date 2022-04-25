@@ -1,5 +1,5 @@
 {
-  "tasks": {
+  "actions": {
     "book_writeBook": "book_writeBook",
     "craft_craft": "craft_craft",
     "entities_attack": "entities_attack",
