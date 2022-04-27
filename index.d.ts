@@ -298,7 +298,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   placeEntity: (referenceBlock: Block, faceVector: Vec3) => Promise<Entity>
 
-  activateBlock: (block: Block, direction?: number, cursorPos?: Vec3) => Promise<void>
+  activateBlock: (block: Block, direction?: Vec3, cursorPos?: Vec3) => Promise<void>
 
   activateEntity: (block: Entity) => Promise<void>
 
@@ -337,7 +337,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
     pages: string[]
   ) => Promise<void>
 
-  openContainer: (chest: Block | Entity) => Promise<Chest | Furnace | Dispenser>
+  openContainer: (chest: Block | Entity, direction?: Vec3, cursorPos?: Vec3) => Promise<Chest | Furnace | Dispenser>
 
   openChest: (chest: Block | Entity, direction?: number, cursorPos?: Vec3) => Promise<Chest>
 
@@ -380,7 +380,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   transfer: (options: TransferOptions) => Promise<void>
 
-  openBlock: (block: Block, Class: new () => EventEmitter) => Promise<void>
+  openBlock: (block: Block, direction?: Vec3, cursorPos?: Vec3) => Promise<void>
 
   openEntity: (block: Entity, Class: new () => EventEmitter) => Promise<void>
 
