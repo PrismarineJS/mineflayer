@@ -858,7 +858,12 @@ export class BossBar {
   );
 }
 
-export class Action {
+export interface ActionData {
+  actions: Record<string,string>
+  compatibility: String[][]
+}
+
+interface Action {
   actionIdentifier: string
   promise: Promise<any>
   done: boolean
