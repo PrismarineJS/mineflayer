@@ -1827,8 +1827,8 @@ This function returns a `Promise`, with `void` as its argument upon completion.
 Punch a note block, open a door, etc.
 
  * `block` - the block to activate
- * `direction` Optional defaults to `new Vec3(0, 1, 0)` (up). A vector off the direction the container block should be interacted with. Dose nothing when a container entity is targeted.
- * `cursorPos` Optional defaults to `new Vec3(0.5, 0.5, 0.5)` (block center). The curos position when opening the block instance. This is send with the activate block packet. Dose nothing when a container entity is targeted.
+ * `direction` Optional defaults to `new Vec3(0, 1, 0)` (up). A vector off the direction the container block should be interacted with. Does nothing when a container entity is targeted.
+ * `cursorPos` Optional defaults to `new Vec3(0.5, 0.5, 0.5)` (block center). The curos position when opening the block instance. This is send with the activate block packet. Does nothing when a container entity is targeted.
 
 #### bot.activateEntity(entity)
 
@@ -1933,8 +1933,8 @@ This function returns a `Promise`, with `void` as its argument when the writing 
 Opens a block container or entity.
 
  * `containerBlock` or `containerEntity` The block instance to open or the entity to open.
- * `direction` Optional defaults to `new Vec3(0, 1, 0)` (up). A vector off the direction the container block should be interacted with. Dose nothing when a container entity is targeted.
- * `cursorPos` Optional defaults to `new Vec3(0.5, 0.5, 0.5)` (block center). The curos position when opening the block instance. This is send with the activate block packet. Dose nothing when a container entity is targeted.
+ * `direction` Optional defaults to `new Vec3(0, 1, 0)` (up). A vector off the direction the container block should be interacted with. Does nothing when a container entity is targeted.
+ * `cursorPos` Optional defaults to `new Vec3(0.5, 0.5, 0.5)` (block center). The curos position when opening the block instance. This is send with the activate block packet. Does nothing when a container entity is targeted.
 
 Returns a promise on a `Container` instance which represents the container you are opening.
 
@@ -2040,8 +2040,8 @@ Transfer some kind of item from one range to an other. `options` is an object co
 Open a block, for example a chest, returns a promise on the opening `Window`.
 
  * `block` is the block the bot will open.
- * `direction` Optional defaults to `new Vec3(0, 1, 0)` (up). A vector off the direction the container block should be interacted with. Dose nothing when a container entity is targeted.
- * `cursorPos` Optional defaults to `new Vec3(0.5, 0.5, 0.5)` (block center). The curos position when opening the block instance. This is send with the activate block packet. Dose nothing when a container entity is targeted.
+ * `direction` Optional defaults to `new Vec3(0, 1, 0)` (up). A vector off the direction the container block should be interacted with. Does nothing when a container entity is targeted.
+ * `cursorPos` Optional defaults to `new Vec3(0.5, 0.5, 0.5)` (block center). The curos position when opening the block instance. This is send with the activate block packet. Does nothing when a container entity is targeted.
 
 #### bot.openEntity(entity)
 
