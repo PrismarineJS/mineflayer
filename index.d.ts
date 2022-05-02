@@ -206,6 +206,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   canSeeBlock: (block: Block) => boolean
 
+  canSeeEntity: (entity: Entity, vectorLength?: number) => boolean
+
   findBlock: (options: FindBlockOptions) => Block | null
 
   findBlocks: (options: FindBlockOptions) => Vec3[]
