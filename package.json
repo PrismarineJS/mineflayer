@@ -8,8 +8,8 @@
     "mocha_test": "mocha --reporter spec --exit",
     "test": "npm run mocha_test",
     "pretest": "npm run lint",
-    "lint": "standard && ts-standard *.d.ts && standard-markdown",
-    "fix": "standard --fix && ts-standard --fix *.d.ts && standard-markdown --fix",
+    "lint": "standard && standard-markdown",
+    "fix": "standard --fix && standard-markdown --fix",
     "prepublishOnly": "cp docs/README.md README.md"
   },
   "repository": {
