@@ -1995,8 +1995,12 @@ These are lower level methods for the inventory, they can be useful sometimes bu
 #### bot.clickWindow(slot, mouseButton, mode)
 
 This function returns a `Promise`, with `void` as its argument upon completion.
+  
+The only valid mode option at the moment is 0. Shift clicking or mouse draging is not implemented.
 
 Click on the current window. See details at https://wiki.vg/Protocol#Click_Window
+
+Prefer using bot.simpleClick.*
 
 #### bot.putSelectedItemRange(start, end, window, slot)
 
