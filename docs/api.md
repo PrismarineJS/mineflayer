@@ -2000,6 +2000,8 @@ The only valid mode option at the moment is 0. Shift clicking or mouse draging i
 
 Click on the current window. See details at https://wiki.vg/Protocol#Click_Window
 
+Prefer using bot.simpleClick.*
+
 #### bot.putSelectedItemRange(start, end, window, slot)
 
 This function returns a `Promise`, with `void` as its argument upon completion.
