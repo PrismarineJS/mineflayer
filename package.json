@@ -8,8 +8,8 @@
     "mocha_test": "mocha --reporter spec --exit",
     "test": "npm run mocha_test",
     "pretest": "npm run lint",
-    "lint": "standard && ts-standard *.d.ts && standard-markdown",
-    "fix": "standard --fix && ts-standard --fix *.d.ts && standard-markdown --fix",
+    "lint": "standard && standard-markdown",
+    "fix": "standard --fix && standard-markdown --fix",
     "prepublishOnly": "cp docs/README.md README.md"
   },
   "repository": {
@@ -45,9 +45,8 @@
     "minecraft-wrap": "^1.3.0",
     "mineflayer": "file:.",
     "mocha": "^10.0.0",
-    "standard": "^16.0.4",
+    "standard": "^17.0.0",
     "standard-markdown": "^7.1.0",
-    "ts-standard": "^11.0.0",
     "typescript": "^4.4.3"
   }
 }

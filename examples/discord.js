@@ -21,7 +21,7 @@ const {
 const intents = new Intents(['GUILDS', 'GUILD_MESSAGES'])
 // Create Discord client
 const client = new Client({
-  intents: intents
+  intents
 })
 
 let channel = process.argv[3]
