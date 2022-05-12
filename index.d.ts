@@ -249,7 +249,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   sleep: (bedBlock: Block) => Promise<void>
 
-  isABed: (bedBlock: Block) => void
+  isABed: (bedBlock: Block) => boolean
 
   wake: () => Promise<void>
 
