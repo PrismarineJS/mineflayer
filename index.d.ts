@@ -444,7 +444,7 @@ export type LevelType =
   | 'customized'
   | 'buffet'
   | 'default_1_1'
-export type GameMode = 'survival' | 'creative' | 'adventure'
+export type GameMode = 'survival' | 'creative' | 'adventure' | 'spectator'
 export type Dimension = 'minecraft:nether' | 'minecraft:overworld' | 'minecraft:end'
 export type Difficulty = 'peaceful' | 'easy' | 'normal' | 'hard'
 
