@@ -1321,19 +1321,21 @@ Fires when a note block goes off somewhere.
 * `isOpen`: number of players that have the chest open. 0 if it's closed
 * `block2`: a Block instance, the other half of the block whose lid opened. null if it's not a double chest
 
-#### "blockBreakProgressObserved" (block, destroyStage)
+#### "blockBreakProgressObserved" (block, destroyStage, entity)
 
 Fires when the client observes a block in the process of being broken.
 
  * `block`: a Block instance, the block being broken
  * `destroyStage`: integer corresponding to the destroy progress (0-9)
+ * `entity`: the entity which is breaking the block.
 
-#### "blockBreakProgressEnd" (block)
+#### "blockBreakProgressEnd" (block, entity)
 
 Fires when the client observes a block stops being broken.
 This occurs whether the process was completed or aborted.
 
  * `block`: a Block instance, the block no longer being broken
+ * `entity`: the entity which has stopped breaking the block
 
 #### "diggingCompleted" (block)
 
