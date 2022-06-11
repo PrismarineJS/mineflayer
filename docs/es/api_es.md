@@ -423,7 +423,7 @@ Mira [prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe)
 ### mineflayer.Container
 
 Extiende windows.Window para cofres, dispensadores, etc...
-Mira `bot.openChest(chestBlock o minecartchestEntity)`.
+Mira `bot.openContainer(chestBlock o minecartchestEntity)`.
 
 ### mineflayer.Furnace
 
