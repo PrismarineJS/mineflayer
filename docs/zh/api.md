@@ -446,7 +446,7 @@ See [prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe)
 ### mineflayer.Container
 
 Extends windows.Window for chests, dispensers, etc...
-See `bot.openChest(chestBlock or minecartchestEntity)`.
+See `bot.openContainer(chestBlock or minecartchestEntity)`.
 
 ### mineflayer.Furnace
 
