@@ -31,7 +31,6 @@ module.exports = () => async (bot) => {
   // Sleep
   assert(!bot.isSleeping)
   await bot.sleep(bot.blockAt(bedPos1))
-  await once(bot, 'sleep')
 
   // Wake
   assert(bot.isSleeping)
