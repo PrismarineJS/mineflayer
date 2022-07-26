@@ -126,7 +126,7 @@ interface BotEvents {
   blockBreakProgressEnd: (block: Block) => Promise<void> | void
   diggingCompleted: (block: Block) => Promise<void> | void
   diggingAborted: (block: Block) => Promise<void> | void
-  move: () => Promise<void> | void
+  move: (position: Vec3) => Promise<void> | void
   forcedMove: () => Promise<void> | void
   mount: () => Promise<void> | void
   dismount: (vehicle: Entity) => Promise<void> | void
