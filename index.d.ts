@@ -165,6 +165,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   player: Player
   players: { [username: string]: Player }
   isRaining: boolean
+  thunderState: number
   chatPatterns: ChatPattern[]
   settings: GameSettings
   experience: Experience
