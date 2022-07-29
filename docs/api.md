@@ -262,7 +262,7 @@
       - [bot.addChatPattern(name, pattern, chatPatternOptions)](#botaddchatpatternname-pattern-chatpatternoptions)
       - [bot.addChatPatternSet(name, patterns, chatPatternOptions)](#botaddchatpatternsetname-patterns-chatpatternoptions)
       - [bot.removeChatPattern(name)](#botremovechatpatternname)
-      - [bot.awaitMessage(...args)](#botawaitmessageargs)
+      - [bot.awaitMessage(awaitMessageTimeoutTime, ...args)](#botawaitmessageawaitmessagetimeouttime-args)
       - [bot.setSettings(options)](#botsetsettingsoptions)
       - [bot.loadPlugin(plugin)](#botloadpluginplugin)
       - [bot.loadPlugins(plugins)](#botloadpluginsplugins)
@@ -1608,20 +1608,18 @@ removes a chat pattern(s)
 if name is a string, all patterns that have that name will be removed
 else if name is a number, only that exact pattern will be removed
 
-#### bot.awaitMessage(...args)
+#### bot.awaitMessage(awaitMessageTimeoutTime, ...args)
 
-promise that is resolved when one of the messages passed as an arg is resolved
+promise that is resolved when one of the messages passed as an arg is resolved or rejected when no messages passed as an arg is resolved (Use .then().catch())
 
 Example:
 
 ```js
-async function wait () {
-  await bot.awaitMessage('<flatbot> hello world') // resolves on "hello world" in chat by flatbot
-  await bot.awaitMessage(['<flatbot> hello', '<flatbot> world']) // resolves on "hello" or "world" in chat by flatbot
-  await bot.awaitMessage(['<flatbot> hello', '<flatbot> world'], ['<flatbot> im', '<flatbot> batman']) // resolves on "hello" or "world" or "im" or "batman" in chat by flatbot
-  await bot.awaitMessage('<flatbot> hello', '<flatbot> world') // resolves on "hello" or "world" in chat by flatbot
-  await bot.awaitMessage(/<flatbot> (.+)/) // resolves on first message matching the regex
-}
+await bot.awaitMessage(5000, '<flatbot> hello world').then(msg => console.log(msg)).catch(err => console.log(err)) // resolves on "hello world" in chat by flatbot or rejected after 5000 milliseconds/5 seconds
+await bot.awaitMessage(5000, ['<flatbot> hello', '<flatbot> world']).then(msg => console.log(msg)).catch(err => console.log(err)) // resolves on "hello" or "world" in chat by flatbot or rejected after 5000 milliseconds/5 seconds
+await bot.awaitMessage(5000, ['<flatbot> hello', '<flatbot> world'], ['<flatbot> im', '<flatbot> batman']).then(msg => console.log(msg)).catch(err => console.log(err)) // resolves on "hello" or "world" or "im" or "batman" in chat by flatbot or rejected after 5000 milliseconds/5 seconds
+await bot.awaitMessage(5000, '<flatbot> hello', '<flatbot> world').then(msg => console.log(msg)).catch(err => console.log(err)) // resolves on "hello" or "world" in chat by flatbot or rejected after 5000 milliseconds/5 seconds
+await bot.awaitMessage(5000, /<flatbot> (.+)/).then(msg => console.log(msg)).catch(err => console.log(err)) // resolves on first message matching the regex or rejected after 5000 milliseconds/5 seconds
 ```
 
 #### bot.setSettings(options)
