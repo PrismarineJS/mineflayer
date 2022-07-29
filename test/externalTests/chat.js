@@ -88,10 +88,14 @@ module.exports = () => {
     bot.chat('world')
     await p4
     // tests if message not found in set time
-    bot.awaitMessage(5000, '<flatbot> hello').then(msg => console.log(msg)).catch(err => console.log(err))
-    bot.awaitMessage(5000, ['<flatbot> hello', '<flatbot> world']).then(msg => console.log(msg)).catch(err => console.log(err))
-    bot.awaitMessage(5000, /<.+> hello/).then(msg => console.log(msg)).catch(err => console.log(err))
-    bot.awaitMessage(5000, [/<.+> hello/, /<.+> world/]).then(msg => console.log(msg)).catch(err => console.log(err))
+    const p5 = bot.awaitMessage(5000, '<flatbot> hello').then(msg => console.log(msg)).catch(err => console.log(err))
+    await p5
+    const p6 = bot.awaitMessage(5000, ['<flatbot> hello', '<flatbot> world']).then(msg => console.log(msg)).catch(err => console.log(err))
+    await p6
+    const p7 = bot.awaitMessage(5000, /<.+> hello/).then(msg => console.log(msg)).catch(err => console.log(err))
+    await p7
+    const p8 = bot.awaitMessage(5000, [/<.+> hello/, /<.+> world/]).then(msg => console.log(msg)).catch(err => console.log(err))
+    await p8
   })
 
   addTest('test removechatpattern with a number input', async (bot) => {
