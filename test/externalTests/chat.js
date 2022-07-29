@@ -75,14 +75,18 @@ module.exports = () => {
 
   addTest('test awaitMessage', async (bot) => {
     // tests if message is found in set time
-    bot.awaitMessage(5000, '<flatbot> hello').then(msg => console.log(msg)).catch(err => console.log(err))
+    const p1 = bot.awaitMessage(5000, '<flatbot> hello').then(msg => console.log(msg)).catch(err => console.log(err))
     bot.chat('hello')
-    bot.awaitMessage(5000, ['<flatbot> hello', '<flatbot> world']).then(msg => console.log(msg)).catch(err => console.log(err))
+    await p1
+    const p2 = bot.awaitMessage(5000, ['<flatbot> hello', '<flatbot> world']).then(msg => console.log(msg)).catch(err => console.log(err))
     bot.chat('world')
-    bot.awaitMessage(5000, /<.+> hello/).then(msg => console.log(msg)).catch(err => console.log(err))
+    await p2
+    const p3 = bot.awaitMessage(5000, /<.+> hello/).then(msg => console.log(msg)).catch(err => console.log(err))
     bot.chat('hello')
-    bot.awaitMessage(5000, [/<.+> hello/, /<.+> world/]).then(msg => console.log(msg)).catch(err => console.log(err))
+    await p3
+    const p4 = bot.awaitMessage(5000, [/<.+> hello/, /<.+> world/]).then(msg => console.log(msg)).catch(err => console.log(err))
     bot.chat('world')
+    await p4
     // tests if message not found in set time
     bot.awaitMessage(5000, '<flatbot> hello').then(msg => console.log(msg)).catch(err => console.log(err))
     bot.awaitMessage(5000, ['<flatbot> hello', '<flatbot> world']).then(msg => console.log(msg)).catch(err => console.log(err))
