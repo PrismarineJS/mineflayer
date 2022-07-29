@@ -1615,11 +1615,11 @@ promise that is resolved when one of the messages passed as an arg is resolved o
 Example:
 
 ```js
-await bot.awaitMessage(5000, '<flatbot> hello world').then(msg => console.log(msg)).catch(err => console.log(err)) // resolves on "hello world" in chat by flatbot or rejected after 5000 milliseconds/5 seconds
-await bot.awaitMessage(5000, ['<flatbot> hello', '<flatbot> world']).then(msg => console.log(msg)).catch(err => console.log(err)) // resolves on "hello" or "world" in chat by flatbot or rejected after 5000 milliseconds/5 seconds
-await bot.awaitMessage(5000, ['<flatbot> hello', '<flatbot> world'], ['<flatbot> im', '<flatbot> batman']).then(msg => console.log(msg)).catch(err => console.log(err)) // resolves on "hello" or "world" or "im" or "batman" in chat by flatbot or rejected after 5000 milliseconds/5 seconds
-await bot.awaitMessage(5000, '<flatbot> hello', '<flatbot> world').then(msg => console.log(msg)).catch(err => console.log(err)) // resolves on "hello" or "world" in chat by flatbot or rejected after 5000 milliseconds/5 seconds
-await bot.awaitMessage(5000, /<flatbot> (.+)/).then(msg => console.log(msg)).catch(err => console.log(err)) // resolves on first message matching the regex or rejected after 5000 milliseconds/5 seconds
+bot.awaitMessage(5000, '<flatbot> hello world').then(msg => console.log(msg)).catch(err => console.log(err)) // resolves on "hello world" in chat by flatbot or rejected after 5000 milliseconds/5 seconds
+bot.awaitMessage(5000, ['<flatbot> hello', '<flatbot> world']).then(msg => console.log(msg)).catch(err => console.log(err)) // resolves on "hello" or "world" in chat by flatbot or rejected after 5000 milliseconds/5 seconds
+bot.awaitMessage(5000, ['<flatbot> hello', '<flatbot> world'], ['<flatbot> im', '<flatbot> batman']).then(msg => console.log(msg)).catch(err => console.log(err)) // resolves on "hello" or "world" or "im" or "batman" in chat by flatbot or rejected after 5000 milliseconds/5 seconds
+bot.awaitMessage(5000, '<flatbot> hello', '<flatbot> world').then(msg => console.log(msg)).catch(err => console.log(err)) // resolves on "hello" or "world" in chat by flatbot or rejected after 5000 milliseconds/5 seconds
+bot.awaitMessage(5000, /<flatbot> (.+)/).then(msg => console.log(msg)).catch(err => console.log(err)) // resolves on first message matching the regex or rejected after 5000 milliseconds/5 seconds
 ```
 
 #### bot.setSettings(options)
