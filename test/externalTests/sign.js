@@ -21,12 +21,12 @@ module.exports = (version) => {
   }
   assert.notStrictEqual(signItem, null)
 
-  addTest('update sign', /** @param {import('mineflayer').Bot} bot */ async (bot) => {
+  addTest('update sign by string', /** @param {import('mineflayer').Bot} bot */ async (bot) => {
     const lowerBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
     await bot.lookAt(lowerBlock.position, true)
     await bot.test.setInventorySlot(36, new Item(signItem.id, 1, 0))
     const p = new Promise((resolve) => {
-      bot.on('signOpen', (packet) => {
+      bot.once('signOpen', (packet) => {
         const sign = bot.blockAt(new Vec3(packet.position))
         bot.updateSign(sign, '1\n2\n3\n')
 
@@ -72,6 +72,42 @@ module.exports = (version) => {
     assert.ok(placeOnPos)
     const refBlock = bot.blockAt(placeOnPos)
     await bot.placeSign(refBlock, new Vec3(0, 1, 0), '1\n2\n3\n')
+    console.info('Placed sign at ' + placeOnPos.offset(0, 1, 0).toString())
+    await bot.test.wait(500)
+
+    // Get updated sign
+    const sign = bot.blockAt(placeOnPos.offset(0, 1, 0))
+
+    assert.strictEqual(sign.signText, '1\n2\n3\n')
+
+    if (sign.blockEntity) {
+      // Check block update
+      bot.activateBlock(sign)
+      assert.notStrictEqual(sign.blockEntity, undefined)
+    }
+  })
+
+  addTest('place and update sign by array', /** @param {import('mineflayer').Bot} bot */ async (bot) => {
+    await bot.test.setInventorySlot(36, new Item(signItem.id, 1, 0))
+
+    // Basically the sign example
+    // Look for solid blocs first
+    const solidBlocks = bot.findBlocks({
+      matching: (block) => {
+        return block.boundingBox === 'block'
+      },
+      maxDistance: 4,
+      count: 100
+    })
+
+    // Then filter for blocks that have an air gap above them
+    const placeOnPos = solidBlocks.find((pos) => {
+      const block = bot.blockAt(pos.offset(0, 1, 0))
+      return block && block.boundingBox === 'empty' && block.name.includes('air')
+    })
+    assert.ok(placeOnPos)
+    const refBlock = bot.blockAt(placeOnPos)
+    await bot.placeSign(refBlock, new Vec3(0, 1, 0), ['1', '2', '3'])
     console.info('Placed sign at ' + placeOnPos.offset(0, 1, 0).toString())
     await bot.test.wait(500)
 
