@@ -288,7 +288,7 @@
       - [bot.denyResourcePack()](#botdenyresourcepack)
       - [bot.placeBlock(referenceBlock, faceVector)](#botplaceblockreferenceblock-facevector)
       - [bot.placeEntity(referenceBlock, faceVector)](#botplaceentityreferenceblock-facevector)
-      - [bot.activateBlock(block)](#botactivateblockblock)
+      - [bot.activateBlock(block, direction?: Vec3, cursorPos?: Vec3)](#botactivateblockblock-direction-vec3-cursorpos-vec3)
       - [bot.activateEntity(entity)](#botactivateentityentity)
       - [bot.activateEntityAt(entity, position)](#botactivateentityatentity-position)
       - [bot.consume()](#botconsume)
@@ -304,8 +304,8 @@
       - [bot.setQuickBarSlot(slot)](#botsetquickbarslotslot)
       - [bot.craft(recipe, count, craftingTable)](#botcraftrecipe-count-craftingtable)
       - [bot.writeBook(slot, pages)](#botwritebookslot-pages)
-      - [bot.openContainer(containerBlock or containerEntity)](#botopencontainercontainerblock-or-containerentity)
-      - [bot.openChest(chestBlock or minecartchestEntity)](#botopenchestchestblock-or-minecartchestentity)
+      - [bot.openContainer(containerBlock or containerEntity, direction?, cursorPos?)](#botopencontainercontainerblock-or-containerentity-direction-cursorpos)
+      - [bot.openChest(chestBlock or minecartchestEntity, direction?, cursorPos?)](#botopenchestchestblock-or-minecartchestentity-direction-cursorpos)
       - [bot.openFurnace(furnaceBlock)](#botopenfurnacefurnaceblock)
       - [bot.openDispenser(dispenserBlock)](#botopendispenserdispenserblock)
       - [bot.openEnchantmentTable(enchantmentTableBlock)](#botopenenchantmenttableenchantmenttableblock)
@@ -321,7 +321,7 @@
       - [bot.putAway(slot)](#botputawayslot)
       - [bot.closeWindow(window)](#botclosewindowwindow)
       - [bot.transfer(options)](#bottransferoptions)
-      - [bot.openBlock(block)](#botopenblockblock)
+      - [bot.openBlock(block, direction?: Vec3, cursorPos?: Vec3)](#botopenblockblock-direction-vec3-cursorpos-vec3)
       - [bot.openEntity(entity)](#botopenentityentity)
       - [bot.moveSlotItem(sourceSlot, destSlot)](#botmoveslotitemsourceslot-destslot)
       - [bot.updateHeldItem()](#botupdatehelditem)
@@ -1822,13 +1822,15 @@ This function returns a `Promise`, with `Entity` as its argument upon completion
 
 The new block will be placed at `referenceBlock.position.plus(faceVector)`.
 
-#### bot.activateBlock(block)
+#### bot.activateBlock(block, direction?: Vec3, cursorPos?: Vec3)
 
 This function returns a `Promise`, with `void` as its argument upon completion.
 
 Punch a note block, open a door, etc.
 
  * `block` - the block to activate
+ * `direction` Optional defaults to `new Vec3(0, 1, 0)` (up). A vector off the direction the container block should be interacted with. Does nothing when a container entity is targeted.
+ * `cursorPos` Optional defaults to `new Vec3(0.5, 0.5, 0.5)` (block center). The curos position when opening the block instance. This is send with the activate block packet. Does nothing when a container entity is targeted.
 
 #### bot.activateEntity(entity)
 
@@ -1929,11 +1931,16 @@ This function returns a `Promise`, with `void` as its argument when the writing 
  * `slot` is in inventory window coordinates (where 36 is the first quickbar slot, etc.).
  * `pages` is an array of strings represents the pages.
 
-#### bot.openContainer(containerBlock or containerEntity)
+#### bot.openContainer(containerBlock or containerEntity, direction?, cursorPos?)
+Opens a block container or entity.
+
+ * `containerBlock` or `containerEntity` The block instance to open or the entity to open.
+ * `direction` Optional defaults to `new Vec3(0, 1, 0)` (up). A vector off the direction the container block should be interacted with. Does nothing when a container entity is targeted.
+ * `cursorPos` Optional defaults to `new Vec3(0.5, 0.5, 0.5)` (block center). The curos position when opening the block instance. This is send with the activate block packet. Does nothing when a container entity is targeted.
 
 Returns a promise on a `Container` instance which represents the container you are opening.
 
-#### bot.openChest(chestBlock or minecartchestEntity)
+#### bot.openChest(chestBlock or minecartchestEntity, direction?, cursorPos?)
 
 Deprecated. Same as `openContainer`
 
@@ -2034,11 +2041,13 @@ Transfer some kind of item from one range to an other. `options` is an object co
  * `count` : the amount of items to transfer. Default: `1`
  * `nbt` : nbt data of the item to transfer. Default: `nullish` (ignores nbt)
 
-#### bot.openBlock(block)
+#### bot.openBlock(block, direction?: Vec3, cursorPos?: Vec3)
 
 Open a block, for example a chest, returns a promise on the opening `Window`.
 
- * `block` is the block the bot will open
+ * `block` is the block the bot will open.
+ * `direction` Optional defaults to `new Vec3(0, 1, 0)` (up). A vector off the direction the container block should be interacted with. Does nothing when a container entity is targeted.
+ * `cursorPos` Optional defaults to `new Vec3(0.5, 0.5, 0.5)` (block center). The curos position when opening the block instance. This is send with the activate block packet. Does nothing when a container entity is targeted.
 
 #### bot.openEntity(entity)
 
