@@ -64,11 +64,9 @@ function readSign () {
 }
 
 async function placeSign (message) {
-  message = message.split(' ').slice(1).join(' ') // Remove the first word. ie place
-  // Split the message along its 15 char line limit
-  const lines = message.match(/(.{1,15})/g)
-
-  message = lines.join('\n')
+  let lines = message.split(' ').slice(1) // Remove the first word. ie place
+  // Trim line length to 15 characters max
+  lines = lines.map(l => l.substring(0, 15))
 
   // Equip the sign item
   const signItem = bot.inventory.items().find(i => i.name.includes('sign'))
@@ -88,12 +86,12 @@ async function placeSign (message) {
 
   // Place a sign on the block we are standing on facing up
   try {
-    await bot.placeSign(standingIn, new Vec3(0, 1, 0), message, { writeDelay: 1000 })
+    await bot.placeSign(standingIn, new Vec3(0, 1, 0), lines, { writeDelay: 1000 })
   } catch (err) {
     bot.chat('Failed to place the sign')
     return
   }
-  bot.chat('Sign placed and updated')
+  bot.chat('Sign placed')
 }
 
 function updateSign (message) {
