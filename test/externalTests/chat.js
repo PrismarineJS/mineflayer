@@ -102,10 +102,10 @@ module.exports = () => {
     const p4 = bot.findMessage(3000, [/<.+> hello/, /<.+> world/])
     bot.chat('world')
     await p4
-    await bot.awaitMessage(3000, '<flatbot> hello')
-    await bot.awaitMessage(3000, ['<flatbot> hello', '<flatbot> world'])
-    await bot.awaitMessage(3000, /<.+> hello/)
-    await bot.awaitMessage(3000, [/<.+> hello/, /<.+> world/])
+    await bot.findMessage(3000, '<flatbot> hello')
+    await bot.findMessage(3000, ['<flatbot> hello', '<flatbot> world'])
+    await bot.findMessage(3000, /<.+> hello/)
+    await bot.findMessage(3000, [/<.+> hello/, /<.+> world/])
   })
 
   addTest('test removechatpattern with a number input', async (bot) => {
