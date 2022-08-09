@@ -264,6 +264,7 @@
       - [bot.addChatPatternSet(name, patterns, chatPatternOptions)](#botaddchatpatternsetname-patterns-chatpatternoptions)
       - [bot.removeChatPattern(name)](#botremovechatpatternname)
       - [bot.awaitMessage(...args)](#botawaitmessageargs)
+      - [bot.findMessage(findMessageTimeout, ...args)](#botfindmessagefindmessagetimeout-args)
       - [bot.setSettings(options)](#botsetsettingsoptions)
       - [bot.loadPlugin(plugin)](#botloadpluginplugin)
       - [bot.loadPlugins(plugins)](#botloadpluginsplugins)
@@ -1630,6 +1631,54 @@ async function wait () {
   await bot.awaitMessage('<flatbot> hello', '<flatbot> world') // resolves on "hello" or "world" in chat by flatbot
   await bot.awaitMessage(/<flatbot> (.+)/) // resolves on first message matching the regex
 }
+```
+
+#### bot.findMessage(findMessageTimeout, ..args)
+
+promise that is resolved when one of the messages passed as an args is resolved or when the timer ends. 
+
+returns false when timer ends or return the message matched.
+
+this is an async method. (means it doesnt block any function/code below it unless you use await)
+
+Example:
+
+```js
+bot.findMessage(3000, '<flatbot> hello world').then(findMessageResult => {
+  if (findMessageResult === false) {
+    console.log('No message matched in between the given time!')
+  } else {
+    console.log(findMessageResult)
+  }
+}) // resolves on "hello world" in chat by flatbot or when timer ends
+bot.findMessage(3000, ['<flatbot> hello', '<flatbot> world']).then(findMessageResult => {
+  if (findMessageResult === false) {
+    console.log('No message matched in between the given time!')
+  } else {
+    console.log(findMessageResult)
+  }
+}) // resolves on "hello" or "world" in chat by flatbot or when timer ends
+bot.findMessage(3000, ['<flatbot> hello', '<flatbot> world'], ['<flatbot> im', '<flatbot> batman']).then(findMessageResult => {
+  if (findMessageResult === false) {
+    console.log('No message matched in between the given time!')
+  } else {
+    console.log(findMessageResult)
+  }
+}) // resolves on "hello" or "world" or "im" or "batman" in chat by flatbot or when timer ends
+bot.findMessage(3000, '<flatbot> hello', '<flatbot> world').then(findMessageResult => {
+  if (findMessageResult === false) {
+    console.log('No message matched in between the given time!')
+  } else {
+    console.log(findMessageResult)
+  }
+}) // resolves on "hello" or "world" in chat by flatbot or when timer ends
+bot.findMessage(3000, /<flatbot> (.+)/).then(findMessageResult => {
+  if (findMessageResult === false) {
+    console.log('No message matched in between the given time!')
+  } else {
+    console.log(findMessageResult)
+  }
+}) // resolves on first message matching the regex or when timer ends
 ```
 
 #### bot.setSettings(options)
