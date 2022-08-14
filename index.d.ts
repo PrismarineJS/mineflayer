@@ -381,9 +381,9 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   transfer: (options: TransferOptions) => Promise<void>
 
-  openBlock: (block: Block, direction?: Vec3, cursorPos?: Vec3) => Promise<void>
+  openBlock: (block: Block, direction?: Vec3, cursorPos?: Vec3) => Promise<Window>
 
-  openEntity: (block: Entity, Class: new () => EventEmitter) => Promise<void>
+  openEntity: (block: Entity, Class: new () => EventEmitter) => Promise<Window>
 
   moveSlotItem: (
     sourceSlot: number,
