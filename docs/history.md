@@ -1,3 +1,23 @@
+## 4.4.0
+
+* Fix chatterbox example not getting dropped item
+* Fix 404d link to license [#2601](https://github.com/PrismarineJS/mineflayer/pull/2601)
+* Add bot.clickWindow mode disclaimer [#2595](https://github.com/PrismarineJS/mineflayer/pull/2595)
+* Add spectator to GameMode types [#2627](https://github.com/PrismarineJS/mineflayer/pull/2627)
+* Update types for isABed [#2628](https://github.com/PrismarineJS/mineflayer/pull/2628)
+* Replace openChest with openContainer in docs and examples [#2656](https://github.com/PrismarineJS/mineflayer/pull/2656)
+* Add ender chests as a chest type [#2642](https://github.com/PrismarineJS/mineflayer/pull/2642)
+* Added method to wait until sleep function is in reality sleeping [#2617](https://github.com/PrismarineJS/mineflayer/pull/2617)
+* Added type on move event [#2712](https://github.com/PrismarineJS/mineflayer/pull/2712)
+* Added thunderState type [#2711](https://github.com/PrismarineJS/mineflayer/pull/2711)
+* Fix type error on chest open [#2684](https://github.com/PrismarineJS/mineflayer/pull/2684)
+* Add support for repeating and chain command blocks. [#2669](https://github.com/PrismarineJS/mineflayer/pull/2669)
+* Add player object to blockBreakProgressEnd & observed. [#2647](https://github.com/PrismarineJS/mineflayer/pull/2647)
+* Add entity to blockBreakProgress [#2648](https://github.com/PrismarineJS/mineflayer/pull/2648)
+* Add direction support to activateBlock, openBlock [#2039](https://github.com/PrismarineJS/mineflayer/pull/2039)
+* Add entityAtCursor function [#2077](https://github.com/PrismarineJS/mineflayer/pull/2077)
+* Fix regex dos [#2350](https://github.com/PrismarineJS/mineflayer/pull/2350)
+
 ## 4.3.0
 
 * Cache 'positionUpdateSentEveryTick' feature lookup (@IceTank)
