@@ -338,7 +338,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
     pages: string[]
   ) => Promise<void>
 
-  openContainer: (chest: Block | Entity, direction?: Vec3, cursorPos?: Vec3) => Promise<Chest | Furnace | Dispenser>
+  openContainer: (chest: Block | Entity, direction?: Vec3, cursorPos?: Vec3) => Promise<Chest | Dispenser>
 
   openChest: (chest: Block | Entity, direction?: number, cursorPos?: Vec3) => Promise<Chest>
 
