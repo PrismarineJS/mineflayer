@@ -338,7 +338,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
     pages: string[]
   ) => Promise<void>
 
-  openContainer: (chest: Block | Entity, direction?: Vec3, cursorPos?: Vec3) => Promise<Chest | Furnace | Dispenser>
+  openContainer: (chest: Block | Entity, direction?: Vec3, cursorPos?: Vec3) => Promise<Chest | Dispenser>
 
   openChest: (chest: Block | Entity, direction?: number, cursorPos?: Vec3) => Promise<Chest>
 
@@ -639,6 +639,8 @@ export class Chest extends (EventEmitter as new () => TypedEmitter<StorageEvents
   count (itemType: number, metadata: number | null): number;
 
   items (): Item[];
+
+  containerItems (): Item[];
 }
 
 export class Furnace extends (EventEmitter as new () => TypedEmitter<FurnaceEvents>) {
@@ -672,6 +674,10 @@ export class Furnace extends (EventEmitter as new () => TypedEmitter<FurnaceEven
   fuelItem (): Item;
 
   outputItem (): Item;
+
+  items (): Item[];
+
+  containerItems (): Item[];
 }
 
 export class Dispenser extends (EventEmitter as new () => TypedEmitter<StorageEvents>) {
@@ -694,6 +700,8 @@ export class Dispenser extends (EventEmitter as new () => TypedEmitter<StorageEv
   count (itemType: number, metadata: number | null): number;
 
   items (): Item[];
+
+  containerItems (): Item[];
 }
 
 export class EnchantmentTable extends (EventEmitter as new () => TypedEmitter<ConditionalStorageEvents>) {
