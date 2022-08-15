@@ -619,6 +619,7 @@ interface ConditionalStorageEvents extends StorageEvents {
 
 export class Chest extends (EventEmitter as new () => TypedEmitter<StorageEvents>) {
   window: object | /* prismarine-windows ChestWindow */ null
+  slots: Array<Item>;
 
   constructor ();
 
@@ -646,6 +647,7 @@ export class Chest extends (EventEmitter as new () => TypedEmitter<StorageEvents
 export class Furnace extends (EventEmitter as new () => TypedEmitter<FurnaceEvents>) {
   fuel: number
   progress: number
+  slots: Array<Item>;
 
   constructor ();
 
@@ -682,6 +684,8 @@ export class Furnace extends (EventEmitter as new () => TypedEmitter<FurnaceEven
 
 export class Dispenser extends (EventEmitter as new () => TypedEmitter<StorageEvents>) {
   constructor ();
+
+  slots: Array<Item>;
 
   close (): void;
 
