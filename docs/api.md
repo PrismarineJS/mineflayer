@@ -150,9 +150,9 @@
     - [Events](#events)
       - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
       - ["whisper" (username, message, translate, jsonMsg, matches)](#whisper-username-message-translate-jsonmsg-matches)
-      - ["actionBar" (jsonMsg)](#actionbar-jsonmsg)
-      - ["message" (jsonMsg, position)](#message-jsonmsg-position)
-      - ["messagestr" (message, messagePosition, jsonMsg)](#messagestr-message-messageposition-jsonmsg)
+      - ["actionBar" (jsonMsg, verified)](#actionbar-jsonmsg-verified)
+      - ["message" (jsonMsg, position, verified)](#message-jsonmsg-position-verified)
+      - ["messagestr" (message, messagePosition, jsonMsg, verified)](#messagestr-message-messageposition-jsonmsg-verified)
       - ["inject_allowed"](#inject_allowed)
       - ["login"](#login)
       - ["spawn"](#spawn)
@@ -209,8 +209,8 @@
       - ["noteHeard" (block, instrument, pitch)](#noteheard-block-instrument-pitch)
       - ["pistonMove" (block, isPulling, direction)](#pistonmove-block-ispulling-direction)
       - ["chestLidMove" (block, isOpen, block2)](#chestlidmove-block-isopen-block2)
-      - ["blockBreakProgressObserved" (block, destroyStage)](#blockbreakprogressobserved-block-destroystage)
-      - ["blockBreakProgressEnd" (block)](#blockbreakprogressend-block)
+      - ["blockBreakProgressObserved" (block, destroyStage, entity)](#blockbreakprogressobserved-block-destroystage-entity)
+      - ["blockBreakProgressEnd" (block, entity)](#blockbreakprogressend-block-entity)
       - ["diggingCompleted" (block)](#diggingcompleted-block)
       - ["diggingAborted" (block)](#diggingaborted-block)
       - ["move"](#move)
@@ -244,7 +244,7 @@
       - [bot.waitForChunksToLoad()](#botwaitforchunkstoload)
       - [bot.blockInSight(maxSteps, vectorLength)](#botblockinsightmaxsteps-vectorlength)
       - [bot.blockAtCursor(maxDistance=256)](#botblockatcursormaxdistance256)
-      - [bot.entityAtCursor(maxDistance = 3.5)](#botentityatcursormaxdistance35)
+      - [bot.entityAtCursor(maxDistance=3.5)](#botentityatcursormaxdistance35)
       - [bot.blockAtEntityCursor(entity=bot.entity, maxDistance=256)](#botblockatentitycursorentitybotentity-maxdistance256)
       - [bot.canSeeBlock(block)](#botcanseeblockblock)
       - [bot.findBlocks(options)](#botfindblocksoptions)
@@ -1106,13 +1106,14 @@ Only emitted when a player chats to you privately.
  * `jsonMsg` - unmodified JSON message from the server
  * `matches` - array of returned matches from regular expressions. May be null
 
-#### "actionBar" (jsonMsg)
+#### "actionBar" (jsonMsg, verified)
 
 Emitted for every server message which appears on the Action Bar.
 
  * `jsonMsg` - unmodified JSON message from the server
+ * `verified` -> null if non signed, true if signed and correct, false if signed and incorrect
 
-#### "message" (jsonMsg, position)
+#### "message" (jsonMsg, position, verified)
 
 Emitted for every server message, including chats.
 
@@ -1123,9 +1124,13 @@ Emitted for every server message, including chats.
    * system
    * game_info
 
-#### "messagestr" (message, messagePosition, jsonMsg)
+ * `verified` -> null if non signed, true if signed and correct, false if signed and incorrect
+
+#### "messagestr" (message, messagePosition, jsonMsg, verified)
 
 Alias for the "message" event but it calls .toString() on the message object to get a string for the message before emitting.
+
+ * `verified` -> null if non signed, true if signed and correct, false if signed and incorrect
 
 #### "inject_allowed"
 Fires when the index file has been loaded, you can load mcData and plugins here but it's better to wait for "spawn" event.
