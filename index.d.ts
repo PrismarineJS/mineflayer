@@ -301,9 +301,9 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   activateBlock: (block: Block, direction?: Vec3, cursorPos?: Vec3) => Promise<void>
 
-  activateEntity: (block: Entity) => Promise<void>
+  activateEntity: (entity: Entity) => Promise<void>
 
-  activateEntityAt: (block: Entity, position: Vec3) => Promise<void>
+  activateEntityAt: (entity: Entity, position: Vec3) => Promise<void>
 
   consume: () => Promise<void>
 
