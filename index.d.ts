@@ -8,6 +8,7 @@ import { Recipe } from 'prismarine-recipe'
 import { Block } from 'prismarine-block'
 import { Entity } from 'prismarine-entity'
 import { ChatMessage } from 'prismarine-chat'
+import { MinecraftJavaCertificates } from 'prismarine-auth'
 
 export function createBot (options: { client: Client } & Partial<BotOptions>): Bot
 export function createBot (options: BotOptions): Bot
@@ -191,6 +192,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   currentWindow: Window | null
   simpleClick: simpleClick
   tablist: Tablist
+  profileKeys: MinecraftJavaCertificates['profileKeys']
 
   connect: (options: BotOptions) => void
 
@@ -456,7 +458,10 @@ export interface Player {
   gamemode: number
   ping: number
   entity: Entity
-}
+  profileKeys?: {
+    publicKey: Buffer
+    signature: Buffer
+  }
 
 export interface ChatPattern {
   pattern: RegExp

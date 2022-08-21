@@ -832,6 +832,10 @@ minimum y of the world
 
 world height
 
+#### bot.profileKeys
+
+If in online mode, holds a player's chat signing keys obtained from Mojang.
+
 #### bot.physicsEnabled
 
 Enable physics, default true.
