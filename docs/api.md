@@ -1988,10 +1988,11 @@ Example `options` argument:
   trackOutput: true,
   conditional: false,
   alwaysActive: true
+  checkblock: true
 }
 ```
 options.mode can have 3 values: 0 (SEQUENCE), 1 (AUTO), 2 (REDSTONE)
-All options attributes are false by default, except mode which is 2 (as to replicate the default command block in Minecraft).
+All options attributes are false by default, except mode which is 2 (as to replicate the default command block in Minecraft) and checkblock which is true (to verify that there is a command block at those coordinates).
 
 #### bot.supportFeature(name)
 
