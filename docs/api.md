@@ -1987,7 +1987,7 @@ Example `options` argument:
   mode: 2,
   trackOutput: true,
   conditional: false,
-  alwaysActive: true
+  alwaysActive: true,
   checkblock: true
 }
 ```
