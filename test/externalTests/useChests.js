@@ -38,7 +38,7 @@ module.exports = () => async (bot) => {
   }
 
   async function depositBones (chestLocation, count) {
-    const chest = await bot.openChest(bot.blockAt(chestLocation))
+    const chest = await bot.openContainer(bot.blockAt(chestLocation))
     assert(chest.containerItems().length === 0)
     assert(chest.items().length > 0)
     const name = 'bone'
@@ -52,7 +52,7 @@ module.exports = () => async (bot) => {
   }
 
   async function withdrawBones (chestLocation, count) {
-    const chest = await bot.openChest(bot.blockAt(chestLocation))
+    const chest = await bot.openContainer(bot.blockAt(chestLocation))
     const name = 'bone'
     const item = itemByName(chest.containerItems(), name)
     if (!item) {
@@ -109,7 +109,7 @@ module.exports = () => async (bot) => {
       chest.close()
     }
   }
-  const chest = await bot.openChest(bot.blockAt(largeChestLocations[0]))
+  const chest = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
   await once(chest, 'close')
 
   await depositBones(smallChestLocation, 1)

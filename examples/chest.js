@@ -103,7 +103,7 @@ async function watchChest (minecart, blocks = []) {
       return
     }
   }
-  const chest = await bot.openChest(chestToOpen)
+  const chest = await bot.openContainer(chestToOpen)
   sayItems(chest.containerItems())
   chest.on('updateSlot', (slot, oldItem, newItem) => {
     bot.chat(`chest update: ${itemToString(oldItem)} -> ${itemToString(newItem)} (slot: ${slot})`)

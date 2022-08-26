@@ -168,9 +168,8 @@ bot.on('playerLeft', (player) => {
   bot.chat(`Bye ${player.username}`)
 })
 bot.on('playerCollect', (collector, collected) => {
-  if (collector.type === 'player' && collected.type === 'object') {
-    const rawItem = collected.metadata[10]
-    const item = mineflayer.Item.fromNotch(rawItem)
+  if (collector.type === 'player') {
+    const item = collected.getDroppedItem()
     bot.chat(`${collector.username !== bot.username ? ("I'm so jealous. " + collector.username) : 'I '} collected ${item.count} ${item.displayName}`)
   }
 })

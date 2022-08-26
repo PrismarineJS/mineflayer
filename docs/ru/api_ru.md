@@ -368,7 +368,7 @@
 ### mineflayer.Chest
 
 Предоставляет сеанс взаимодействия с сундуками ( Открытие и закрытие )
-Смотрите `bot.openChest(chestBlock or minecartchestEntity)`.
+Смотрите `bot.openContainer(chestBlock or minecartchestEntity)`.
 
 #### chest.window
 
@@ -1490,7 +1490,7 @@ bot.once('login', () => {
 
 #### bot.openChest(chestBlock or minecartchestEntity)
 
-Открывает сундук
+Устарело.Открывает сундук. Такой же как "openContainer"
 
 #### bot.openFurnace(furnaceBlock)
 

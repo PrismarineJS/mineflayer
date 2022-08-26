@@ -126,7 +126,7 @@ interface BotEvents {
   blockBreakProgressEnd: (block: Block) => Promise<void> | void
   diggingCompleted: (block: Block) => Promise<void> | void
   diggingAborted: (block: Block) => Promise<void> | void
-  move: () => Promise<void> | void
+  move: (position: Vec3) => Promise<void> | void
   forcedMove: () => Promise<void> | void
   mount: () => Promise<void> | void
   dismount: (vehicle: Entity) => Promise<void> | void
@@ -165,6 +165,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   player: Player
   players: { [username: string]: Player }
   isRaining: boolean
+  thunderState: number
   chatPatterns: ChatPattern[]
   settings: GameSettings
   experience: Experience
@@ -249,7 +250,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   sleep: (bedBlock: Block) => Promise<void>
 
-  isABed: (bedBlock: Block) => void
+  isABed: (bedBlock: Block) => boolean
 
   wake: () => Promise<void>
 
@@ -298,11 +299,11 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   placeEntity: (referenceBlock: Block, faceVector: Vec3) => Promise<Entity>
 
-  activateBlock: (block: Block) => Promise<void>
+  activateBlock: (block: Block, direction?: Vec3, cursorPos?: Vec3) => Promise<void>
 
-  activateEntity: (block: Entity) => Promise<void>
+  activateEntity: (entity: Entity) => Promise<void>
 
-  activateEntityAt: (block: Entity, position: Vec3) => Promise<void>
+  activateEntityAt: (entity: Entity, position: Vec3) => Promise<void>
 
   consume: () => Promise<void>
 
@@ -337,9 +338,9 @@ export interface Bot extends TypedEmitter<BotEvents> {
     pages: string[]
   ) => Promise<void>
 
-  openContainer: (chest: Block | Entity) => Promise<Chest | Furnace | Dispenser>
+  openContainer: (chest: Block | Entity, direction?: Vec3, cursorPos?: Vec3) => Promise<Chest | Furnace | Dispenser>
 
-  openChest: (chest: Block | Entity) => Promise<Chest>
+  openChest: (chest: Block | Entity, direction?: number, cursorPos?: Vec3) => Promise<Chest>
 
   openFurnace: (furnace: Block) => Promise<Furnace>
 
@@ -380,9 +381,9 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   transfer: (options: TransferOptions) => Promise<void>
 
-  openBlock: (block: Block, Class: new () => EventEmitter) => Promise<void>
+  openBlock: (block: Block, direction?: Vec3, cursorPos?: Vec3) => Promise<Window>
 
-  openEntity: (block: Entity, Class: new () => EventEmitter) => Promise<void>
+  openEntity: (block: Entity, Class: new () => EventEmitter) => Promise<Window>
 
   moveSlotItem: (
     sourceSlot: number,
@@ -444,7 +445,7 @@ export type LevelType =
   | 'customized'
   | 'buffet'
   | 'default_1_1'
-export type GameMode = 'survival' | 'creative' | 'adventure'
+export type GameMode = 'survival' | 'creative' | 'adventure' | 'spectator'
 export type Dimension = 'minecraft:nether' | 'minecraft:overworld' | 'minecraft:end'
 export type Difficulty = 'peaceful' | 'easy' | 'normal' | 'hard'
 
