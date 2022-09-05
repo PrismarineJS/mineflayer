@@ -1,3 +1,23 @@
+## 4.4.0
+
+* Fix chatterbox example not getting dropped item (@u9g) [commit](https://github.com/PrismarineJS/mineflayer/commit/f860eac01a0418f4a3de749482d8cab681acc48a)
+* Fix 404d link to license (@BalaM314) [#2601](https://github.com/PrismarineJS/mineflayer/pull/2601)
+* Add bot.clickWindow mode disclaimer (@IceTank) [#2595](https://github.com/PrismarineJS/mineflayer/pull/2595)
+* Add spectator to GameMode types (@IceTank) [#2627](https://github.com/PrismarineJS/mineflayer/pull/2627)
+* Update types for isABed (@amoraschi) [#2628](https://github.com/PrismarineJS/mineflayer/pull/2628)
+* Replace openChest with openContainer in docs and examples (@slightly-imperfect) [#2656](https://github.com/PrismarineJS/mineflayer/pull/2656)
+* Add ender chests as a chest type (@RoseChilds) [#2642](https://github.com/PrismarineJS/mineflayer/pull/2642)
+* Added method to wait until sleep function is in reality sleeping (@sefirosweb) [#2617](https://github.com/PrismarineJS/mineflayer/pull/2617)
+* Added type on move event (@sefirosweb) [#2712](https://github.com/PrismarineJS/mineflayer/pull/2712)
+* Added thunderState type (@sefirosweb) [#2711](https://github.com/PrismarineJS/mineflayer/pull/2711)
+* Fix type error on chest open (@IceTank) [#2684](https://github.com/PrismarineJS/mineflayer/pull/2684)
+* Add support for repeating and chain command blocks. (@mirkokral) [#2669](https://github.com/PrismarineJS/mineflayer/pull/2669)
+* Add player object to blockBreakProgressEnd & observed. (@JackCrispy) [#2647](https://github.com/PrismarineJS/mineflayer/pull/2647)
+* Add entity to blockBreakProgress (@JackCrispy ) [#2648](https://github.com/PrismarineJS/mineflayer/pull/2648)
+* Add direction support to activateBlock, openBlock (@IceTank) [#2039](https://github.com/PrismarineJS/mineflayer/pull/2039)
+* Add entityAtCursor function (@O-of) [#2077](https://github.com/PrismarineJS/mineflayer/pull/2077)
+* Fix regex dos (@IceTank) [#2350](https://github.com/PrismarineJS/mineflayer/pull/2350)
+
 ## 4.3.0
 
 * Cache 'positionUpdateSentEveryTick' feature lookup (@IceTank)

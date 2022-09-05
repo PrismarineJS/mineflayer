@@ -301,9 +301,9 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   activateBlock: (block: Block, direction?: Vec3, cursorPos?: Vec3) => Promise<void>
 
-  activateEntity: (block: Entity) => Promise<void>
+  activateEntity: (entity: Entity) => Promise<void>
 
-  activateEntityAt: (block: Entity, position: Vec3) => Promise<void>
+  activateEntityAt: (entity: Entity, position: Vec3) => Promise<void>
 
   consume: () => Promise<void>
 
@@ -381,9 +381,9 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   transfer: (options: TransferOptions) => Promise<void>
 
-  openBlock: (block: Block, direction?: Vec3, cursorPos?: Vec3) => Promise<void>
+  openBlock: (block: Block, direction?: Vec3, cursorPos?: Vec3) => Promise<Window>
 
-  openEntity: (block: Entity, Class: new () => EventEmitter) => Promise<void>
+  openEntity: (block: Entity, Class: new () => EventEmitter) => Promise<Window>
 
   moveSlotItem: (
     sourceSlot: number,
