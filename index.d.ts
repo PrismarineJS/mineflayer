@@ -338,7 +338,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
     pages: string[]
   ) => Promise<void>
 
-  openContainer: (chest: Block | Entity, direction?: Vec3, cursorPos?: Vec3) => Promise<Chest | Furnace | Dispenser>
+  openContainer: (chest: Block | Entity, direction?: Vec3, cursorPos?: Vec3) => Promise<Chest | Dispenser>
 
   openChest: (chest: Block | Entity, direction?: number, cursorPos?: Vec3) => Promise<Chest>
 
@@ -617,9 +617,7 @@ interface ConditionalStorageEvents extends StorageEvents {
   ready: () => void
 }
 
-export class Chest extends (EventEmitter as new () => TypedEmitter<StorageEvents>) {
-  window: object | /* prismarine-windows ChestWindow */ null
-
+export class Chest extends Window<StorageEvents> {
   constructor ();
 
   close (): void;
@@ -635,13 +633,9 @@ export class Chest extends (EventEmitter as new () => TypedEmitter<StorageEvents
     metadata: number | null,
     count: number | null
   ): Promise<void>;
-
-  count (itemType: number, metadata: number | null): number;
-
-  items (): Item[];
 }
 
-export class Furnace extends (EventEmitter as new () => TypedEmitter<FurnaceEvents>) {
+export class Furnace extends Window<FurnaceEvents> {
   fuel: number
   progress: number
 
@@ -674,7 +668,7 @@ export class Furnace extends (EventEmitter as new () => TypedEmitter<FurnaceEven
   outputItem (): Item;
 }
 
-export class Dispenser extends (EventEmitter as new () => TypedEmitter<StorageEvents>) {
+export class Dispenser extends Window<StorageEvents> {
   constructor ();
 
   close (): void;
@@ -690,13 +684,9 @@ export class Dispenser extends (EventEmitter as new () => TypedEmitter<StorageEv
     metadata: number | null,
     count: number | null
   ): Promise<void>;
-
-  count (itemType: number, metadata: number | null): number;
-
-  items (): Item[];
 }
 
-export class EnchantmentTable extends (EventEmitter as new () => TypedEmitter<ConditionalStorageEvents>) {
+export class EnchantmentTable extends Window<ConditionalStorageEvents> {
   enchantments: Enchantment[]
 
   constructor ();
@@ -725,7 +715,7 @@ export interface Enchantment {
   level: number
 }
 
-export class Villager extends (EventEmitter as new () => TypedEmitter<ConditionalStorageEvents>) {
+export class Villager extends Window<ConditionalStorageEvents> {
   trades: VillagerTrade[]
 
   constructor ();
