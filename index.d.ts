@@ -301,9 +301,9 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   activateBlock: (block: Block, direction?: Vec3, cursorPos?: Vec3) => Promise<void>
 
-  activateEntity: (block: Entity) => Promise<void>
+  activateEntity: (entity: Entity) => Promise<void>
 
-  activateEntityAt: (block: Entity, position: Vec3) => Promise<void>
+  activateEntityAt: (entity: Entity, position: Vec3) => Promise<void>
 
   consume: () => Promise<void>
 
@@ -338,7 +338,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
     pages: string[]
   ) => Promise<void>
 
-  openContainer: (chest: Block | Entity, direction?: Vec3, cursorPos?: Vec3) => Promise<Chest | Furnace | Dispenser>
+  openContainer: (chest: Block | Entity, direction?: Vec3, cursorPos?: Vec3) => Promise<Chest | Dispenser>
 
   openChest: (chest: Block | Entity, direction?: number, cursorPos?: Vec3) => Promise<Chest>
 
@@ -381,9 +381,9 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   transfer: (options: TransferOptions) => Promise<void>
 
-  openBlock: (block: Block, direction?: Vec3, cursorPos?: Vec3) => Promise<void>
+  openBlock: (block: Block, direction?: Vec3, cursorPos?: Vec3) => Promise<Window>
 
-  openEntity: (block: Entity, Class: new () => EventEmitter) => Promise<void>
+  openEntity: (block: Entity, Class: new () => EventEmitter) => Promise<Window>
 
   moveSlotItem: (
     sourceSlot: number,
@@ -446,7 +446,7 @@ export type LevelType =
   | 'buffet'
   | 'default_1_1'
 export type GameMode = 'survival' | 'creative' | 'adventure' | 'spectator'
-export type Dimension = 'minecraft:nether' | 'minecraft:overworld' | 'minecraft:end'
+export type Dimension = 'minecraft:the_nether' | 'minecraft:overworld' | 'minecraft:the_end'
 export type Difficulty = 'peaceful' | 'easy' | 'normal' | 'hard'
 
 export interface Player {
@@ -620,9 +620,7 @@ interface ConditionalStorageEvents extends StorageEvents {
   ready: () => void
 }
 
-export class Chest extends (EventEmitter as new () => TypedEmitter<StorageEvents>) {
-  window: object | /* prismarine-windows ChestWindow */ null
-
+export class Chest extends Window<StorageEvents> {
   constructor ();
 
   close (): void;
@@ -638,13 +636,9 @@ export class Chest extends (EventEmitter as new () => TypedEmitter<StorageEvents
     metadata: number | null,
     count: number | null
   ): Promise<void>;
-
-  count (itemType: number, metadata: number | null): number;
-
-  items (): Item[];
 }
 
-export class Furnace extends (EventEmitter as new () => TypedEmitter<FurnaceEvents>) {
+export class Furnace extends Window<FurnaceEvents> {
   fuel: number
   progress: number
 
@@ -677,7 +671,7 @@ export class Furnace extends (EventEmitter as new () => TypedEmitter<FurnaceEven
   outputItem (): Item;
 }
 
-export class Dispenser extends (EventEmitter as new () => TypedEmitter<StorageEvents>) {
+export class Dispenser extends Window<StorageEvents> {
   constructor ();
 
   close (): void;
@@ -693,13 +687,9 @@ export class Dispenser extends (EventEmitter as new () => TypedEmitter<StorageEv
     metadata: number | null,
     count: number | null
   ): Promise<void>;
-
-  count (itemType: number, metadata: number | null): number;
-
-  items (): Item[];
 }
 
-export class EnchantmentTable extends (EventEmitter as new () => TypedEmitter<ConditionalStorageEvents>) {
+export class EnchantmentTable extends Window<ConditionalStorageEvents> {
   enchantments: Enchantment[]
 
   constructor ();
@@ -728,7 +718,7 @@ export interface Enchantment {
   level: number
 }
 
-export class Villager extends (EventEmitter as new () => TypedEmitter<ConditionalStorageEvents>) {
+export class Villager extends Window<ConditionalStorageEvents> {
   trades: VillagerTrade[]
 
   constructor ();
