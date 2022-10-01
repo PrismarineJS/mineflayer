@@ -73,7 +73,7 @@ module.exports = () => {
     bot.off('chat:test', listener)
   })
 
-  addTest('test old awaitMessage', async (bot) => {
+  addTest('test awaitMessage', async (bot) => {
     const p1 = bot.awaitMessage('<flatbot> hello')
     bot.chat('hello')
     await p1
@@ -84,21 +84,6 @@ module.exports = () => {
     bot.chat('hello')
     await p3
     const p4 = bot.awaitMessage([/<.+> hello/, /<.+> world/])
-    bot.chat('world')
-    await p4
-  })
-
-  addTest('test new awaitMessage2', async (bot) => {
-    const p1 = bot.awaitMessage2({ senderName: bot.username, containing: 'hello' })
-    bot.chat('hello')
-    await p1
-    const p2 = bot.awaitMessage2({ senderName: bot.username, containing: ['hello', 'world'], legacyMessageRegex: /(<.+>) (.*)/ })
-    bot.chat('world')
-    await p2
-    const p3 = bot.awaitMessage2({ senderName: bot.username, containing: /hello/, legacyMessageRegex: /(<.+>) (.*)/ })
-    bot.chat('hello')
-    await p3
-    const p4 = bot.awaitMessage2({ senderName: bot.username, containing: [/hello/, /world/] })
     bot.chat('world')
     await p4
   })
