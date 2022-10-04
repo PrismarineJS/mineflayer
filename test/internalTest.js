@@ -244,7 +244,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           loginPacket.entityId = 0
           respawnPacket = {
             // 1.19+ the `dimension` filed is a string in respawn packet and undefined in login packet, in previous versions it's same NBT data in login/respawn
-            dimension: bot.supportFeature('dimensionDataInCodec') ? 'minecraft:overworld' : loginPacket.worldName,
+            dimension: bot.supportFeature('dimensionDataInCodec') ? 'minecraft:overworld' : loginPacket.dimension,
             worldName: loginPacket.worldName,
             hashedSeed: loginPacket.hashedSeed,
             gamemode: 0,
