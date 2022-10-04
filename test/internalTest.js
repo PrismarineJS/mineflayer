@@ -243,14 +243,22 @@ for (const supportedVersion of mineflayer.testedVersions) {
           loginPacket.hashedSeed = [0, 0]
           loginPacket.entityId = 0
           respawnPacket = {
-            dimension: loginPacket.dimension,
-            worldName: 'minecraft:overworld',
-            hashedSeed: [0, 0],
+            dimension: 'minecraft:overworld',
+            worldName: loginPacket.worldName,
+            hashedSeed: loginPacket.hashedSeed,
             gamemode: 0,
             previousGamemode: 255,
             isDebug: false,
             isFlat: false,
-            copyMetadata: true
+            copyMetadata: true,
+            death: {
+              dimensionName: '',
+              location: {
+                x: 0,
+                y: 0,
+                z: 0
+              }
+            }
           }
         } else {
           respawnPacket = {
