@@ -152,9 +152,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
       const entities = bot.registry.entitiesByName
       const creeperId = entities.creeper ? entities.creeper.id : entities.Creeper.id
       server.on('login', (client) => {
-        client.write('spawn_entity_living', {
+        client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
           entityId: 8, // random
           entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
+          objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
           type: creeperId,
           x: 10,
           y: 11,
@@ -504,9 +505,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
           // Versions prior to 1.11 have capital first letter
           const entities = bot.registry.entitiesByName
           const creeperId = entities.creeper ? entities.creeper.id : entities.Creeper.id
-          client.write('spawn_entity_living', {
+          client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
             entityId: 8, // random
             entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
+            objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
             type: creeperId,
             x: 10,
             y: 11,
@@ -560,6 +562,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             z: 0,
             pitch: 0,
             yaw: 0,
+            headPitch: 0,
             objectData: 1,
             velocityX: 0,
             velocityY: 0,
@@ -676,9 +679,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
           teleportId: 1
         })
 
-        client.write('spawn_entity_living', {
+        client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
           entityId: 8,
           entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
+          objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
           type: zombieId,
           x: zombiePos.x,
           y: zombiePos.y,
