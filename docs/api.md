@@ -151,8 +151,8 @@
       - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
       - ["whisper" (username, message, translate, jsonMsg, matches)](#whisper-username-message-translate-jsonmsg-matches)
       - ["actionBar" (jsonMsg, verified)](#actionbar-jsonmsg-verified)
-      - ["message" (jsonMsg, position, verified)](#message-jsonmsg-position-verified)
-      - ["messagestr" (message, messagePosition, jsonMsg, verified)](#messagestr-message-messageposition-jsonmsg-verified)
+      - ["message" (jsonMsg, position, sender, verified)](#message-jsonmsg-position-sender-verified)
+      - ["messagestr" (message, messagePosition, jsonMsg, sender, verified)](#messagestr-message-messageposition-jsonmsg-sender-verified)
       - ["inject_allowed"](#inject_allowed)
       - ["login"](#login)
       - ["spawn"](#spawn)
@@ -1113,7 +1113,7 @@ Emitted for every server message which appears on the Action Bar.
  * `jsonMsg` - unmodified JSON message from the server
  * `verified` -> null if non signed, true if signed and correct, false if signed and incorrect
 
-#### "message" (jsonMsg, position, verified)
+#### "message" (jsonMsg, position, sender, verified)
 
 Emitted for every server message, including chats.
 
@@ -1124,11 +1124,15 @@ Emitted for every server message, including chats.
    * system
    * game_info
 
+ * `sender` - UUID of sender if known (1.16+), else null
+
  * `verified` -> null if non signed, true if signed and correct, false if signed and incorrect
 
-#### "messagestr" (message, messagePosition, jsonMsg, verified)
+#### "messagestr" (message, messagePosition, jsonMsg, sender, verified)
 
 Alias for the "message" event but it calls .toString() on the message object to get a string for the message before emitting.
+
+ * `sender` - UUID of sender if known (1.16+), else null
 
  * `verified` -> null if non signed, true if signed and correct, false if signed and incorrect
 
