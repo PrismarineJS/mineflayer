@@ -35,8 +35,8 @@ const MC_SERVER_PATH = path.join(__dirname, 'server')
 
 for (const supportedVersion of mineflayer.testedVersions) {
   let PORT = 25565
-  const mcData = require('minecraft-data')(supportedVersion)
-  const version = mcData.version
+  const registry = require('prismarine-registry')(supportedVersion)
+  const version = registry.version
   const MC_SERVER_JAR_DIR = process.env.MC_SERVER_JAR_DIR || `${process.cwd()}/server_jars`
   const MC_SERVER_JAR = `${MC_SERVER_JAR_DIR}/minecraft_server.${version.minecraftVersion}.jar`
   const wrap = new Wrap(MC_SERVER_JAR, `${MC_SERVER_PATH}_${supportedVersion}`)

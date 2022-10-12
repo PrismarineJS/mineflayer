@@ -6,8 +6,8 @@ const mc = require('minecraft-protocol')
 const assert = require('assert')
 
 for (const supportedVersion of mineflayer.testedVersions) {
-  const mcData = require('minecraft-data')(supportedVersion)
-  const version = mcData.version
+  const registry = require('prismarine-registry')(supportedVersion)
+  const version = registry.version
   const Chunk = require('prismarine-chunk')(supportedVersion)
   const hasSignedChat = mcData.supportFeature('signedChat')
 
@@ -68,7 +68,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         bot.test.generateLoginPacket = () => {
           let loginPacket
           if (bot.supportFeature('usesLoginPacket')) {
-            loginPacket = mcData.loginPacket
+            loginPacket = registry.loginPacket
             loginPacket.entityId = 0 // Default login packet in minecraft-data 1.16.5 is 1, so set it to 0
           } else {
             loginPacket = {
