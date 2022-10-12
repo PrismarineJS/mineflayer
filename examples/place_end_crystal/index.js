@@ -22,14 +22,7 @@ const bot = mineflayer.createBot({
 
 const MAX_DIST_FROM_BLOCK_TO_PLACE = 4
 
-let mcData = null
-bot.once('spawn', () => {
-  mcData = require('minecraft-data')(bot.version)
-})
-
 bot.on('chat', async (ign, msg) => {
-  if (!mcData) mcData = require('minecraft-data')(bot.version)
-
   // solve where the bot will place the crystal near
   let findBlocksNearPoint = null
   if (msg === 'place crystal near bot') {
@@ -44,13 +37,13 @@ bot.on('chat', async (ign, msg) => {
   }
 
   // find end crystal(s) in inventory
-  const item = bot.inventory.findInventoryItem(mcData.itemsByName.end_crystal.id)
+  const item = bot.inventory.findInventoryItem(bot.registry.itemsByName.end_crystal.id)
   if (!item) bot.chat("I don't have any ender crystals")
 
   // find the crystal
   const block = bot.findBlock({
     point: findBlocksNearPoint,
-    matching: ['bedrock', 'obsidian'].map(blockName => mcData.blocksByName[blockName].id),
+    matching: ['bedrock', 'obsidian'].map(blockName => bot.registry.blocksByName[blockName].id),
     useExtraInfo: block => {
       const hasAirAbove = bot.blockAt(block.position.offset(0, 1, 0)).name === 'air'
       const botNotStandingOnBlock = block.position.xzDistanceTo(bot.entity.position) > 2
