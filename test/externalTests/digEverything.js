@@ -48,12 +48,12 @@ const excludedBlocks = [
 ]
 
 module.exports = (version) => {
-  const mcData = require('minecraft-data')(version)
+  const registry = require('prismarine-registry')(version)
 
   const funcs = {}
-  for (const id in mcData.blocks) {
-    if (mcData.blocks[id] !== undefined) {
-      const block = mcData.blocks[id]
+  for (const id in registry.blocks) {
+    if (registry.blocks[id] !== undefined) {
+      const block = registry.blocks[id]
       if (block.diggable && excludedBlocks.indexOf(block.name) === -1) {
         funcs[block.name] = (blockId => async (bot) => {
           await digSomething(blockId, bot)

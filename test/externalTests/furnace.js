@@ -1,25 +1,24 @@
 const assert = require('assert')
 
 module.exports = () => async (bot) => {
-  const mcData = require('minecraft-data')(bot.version)
   const Item = require('prismarine-item')(bot.version)
 
   const furnacePos = bot.entity.position.offset(2, 0, 0).floored()
-  const coalId = mcData.itemsByName.coal.id
-  const porkchopId = mcData.itemsByName.porkchop.id
-  const cookedPorkchopId = mcData.itemsByName.cooked_porkchop.id
+  const coalId = bot.registry.itemsByName.coal.id
+  const porkchopId = bot.registry.itemsByName.porkchop.id
+  const cookedPorkchopId = bot.registry.itemsByName.cooked_porkchop.id
   const coalInputCount = 2
   const porkchopInputCount = 2
 
   // Test setup
-  await bot.test.setInventorySlot(36, new Item(mcData.itemsByName.furnace.id, 1))
+  await bot.test.setInventorySlot(36, new Item(bot.registry.itemsByName.furnace.id, 1))
   await bot.test.placeBlock(36, furnacePos)
   await bot.test.setInventorySlot(37, new Item(porkchopId, porkchopInputCount))
   await bot.test.setInventorySlot(38, new Item(coalId, coalInputCount)) // Get coal
   if (bot.supportFeature('itemsAreAlsoBlocks')) {
-    assert.strictEqual(bot.blockAt(furnacePos).type, mcData.itemsByName.furnace.id)
+    assert.strictEqual(bot.blockAt(furnacePos).type, bot.registry.itemsByName.furnace.id)
   } else {
-    assert.strictEqual(bot.blockAt(furnacePos).type, mcData.blocksByName.furnace.id)
+    assert.strictEqual(bot.blockAt(furnacePos).type, bot.registry.blocksByName.furnace.id)
   }
 
   // Put inputs
