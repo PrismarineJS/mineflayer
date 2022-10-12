@@ -104,7 +104,6 @@ function build () {
 }
 
 async function equipDirt () {
-  const mcData = require('minecraft-data')(bot.version)
   let itemsByName
   if (bot.supportFeature('itemsAreNotBlocks')) {
     itemsByName = 'itemsByName'
@@ -112,7 +111,7 @@ async function equipDirt () {
     itemsByName = 'blocksByName'
   }
   try {
-    await bot.equip(mcData[itemsByName].dirt.id, 'hand')
+    await bot.equip(bot.registry[itemsByName].dirt.id, 'hand')
     bot.chat('equipped dirt')
   } catch (err) {
     bot.chat(`unable to equip dirt: ${err.message}`)
