@@ -34,7 +34,7 @@ bot = mineflayer.createBot({
     "port": port
 })
 
-Item = require("prismarine-item")(bot.version)
+Item = require("prismarine-item")(bot.registry)
 
 
 @On(bot, "chat")

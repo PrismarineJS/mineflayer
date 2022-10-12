@@ -54,7 +54,7 @@ function getLore (item) {
   if (item.nbt == null) return message
 
   const nbt = require('prismarine-nbt')
-  const ChatMessage = require('prismarine-chat')(bot.version)
+  const ChatMessage = require('prismarine-chat')(bot.registry)
 
   const data = nbt.simplify(item.nbt)
   const display = data.display

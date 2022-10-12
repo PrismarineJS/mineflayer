@@ -2,10 +2,8 @@ const assert = require('assert')
 const { once } = require('events')
 
 module.exports = () => async (bot) => {
-  const mcData = require('minecraft-data')(bot.version)
-
   const midnight = 18000
-  const bedItem = mcData.itemsArray.find(item => item.name.endsWith('bed'))
+  const bedItem = bot.registry.itemsArray.find(item => item.name.endsWith('bed'))
   const bedPos1 = bot.entity.position.offset(2, 0, 0).floored()
   const bedPos2 = bedPos1.offset(0, 0, 1)
 
