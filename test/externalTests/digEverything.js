@@ -66,7 +66,7 @@ module.exports = (version) => {
 }
 
 async function digSomething (blockId, bot) {
-  const Item = require('prismarine-item')(bot.version)
+  const Item = require('prismarine-item')(bot.registry)
 
   await bot.test.setInventorySlot(36, new Item(blockId, 1, 0))
   await bot.test.placeBlock(36, bot.entity.position.plus(new Vec3(1, 0, 0)))

@@ -3,7 +3,7 @@ const wait = require('util').promisify(setTimeout)
 const SLOT = 36
 
 module.exports = () => async (bot) => {
-  const Item = require('prismarine-item')(bot.version)
+  const Item = require('prismarine-item')(bot.registry)
 
   const item1 = new Item(1, 1, 0)
   const item2 = new Item(2, 1, 0)

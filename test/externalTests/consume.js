@@ -1,7 +1,7 @@
 const assert = require('assert')
 
 module.exports = () => async (bot) => {
-  const Item = require('prismarine-item')(bot.version)
+  const Item = require('prismarine-item')(bot.registry)
 
   await bot.test.setInventorySlot(36, new Item(bot.registry.itemsByName.bread.id, 5, 0))
   await bot.test.becomeSurvival()

@@ -3,7 +3,7 @@ const { once } = require('events')
 
 module.exports = () => {
   async function runTest (bot, testFunction) {
-    const Item = require('prismarine-item')(bot.version)
+    const Item = require('prismarine-item')(bot.registry)
     const renameCost = () => bot.registry.isNewerOrEqualTo('1.8.9') ? 0 : 1 // weird quirk of anvils
     const renameName = (name) => bot.registry.isOlderThan('1.13.2') ? name : JSON.stringify({ text: name }) // weird quirk of anvils
     await bot.test.becomeCreative()

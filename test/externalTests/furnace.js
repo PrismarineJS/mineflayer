@@ -1,7 +1,7 @@
 const assert = require('assert')
 
 module.exports = () => async (bot) => {
-  const Item = require('prismarine-item')(bot.version)
+  const Item = require('prismarine-item')(bot.registry)
 
   const furnacePos = bot.entity.position.offset(2, 0, 0).floored()
   const coalId = bot.registry.itemsByName.coal.id
