@@ -9,7 +9,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
   const registry = require('prismarine-registry')(supportedVersion)
   const version = registry.version
   const Chunk = require('prismarine-chunk')(supportedVersion)
-  const hasSignedChat = mcData.supportFeature('signedChat')
+  const hasSignedChat = registry.supportFeature('signedChat')
 
   function generateChunkPacket (chunk) {
     const lights = chunk.dumpLight()
