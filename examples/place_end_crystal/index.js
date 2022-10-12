@@ -23,7 +23,6 @@ const bot = mineflayer.createBot({
 const MAX_DIST_FROM_BLOCK_TO_PLACE = 4
 
 bot.on('chat', async (ign, msg) => {
-
   // solve where the bot will place the crystal near
   let findBlocksNearPoint = null
   if (msg === 'place crystal near bot') {

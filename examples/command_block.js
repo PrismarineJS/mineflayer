@@ -16,7 +16,6 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
-
 bot.on('chat', (username, message) => {
   if (username === bot.username) return
   const command = message.split(' ')
