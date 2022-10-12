@@ -25,27 +25,52 @@ module.exports = () => async (bot) => {
   assert(entity.name === villagerType)
 
   const villager = await bot.openVillager(entity)
-  for (const [index, trade] of villager.trades.entries()) {
-    const sell1 = trade.inputItem1
-    const sell2 = trade.inputItem2
-    const buy = trade.outputItem
 
-    assert.notStrictEqual(sell1, null)
-    assert.notStrictEqual(buy, null)
+  // Handle trade #1 -- takes 2x emerald and returns 2x pumpkin_pie
+  {
+    const trade = villager.trades[0]
+    assert.strictEqual(trade.inputs.length, 1, 'Expected single input from villager on first trade')
+    verifyTrade(trade)
+
+    const [input] = trade.inputs
+    assert.strictEqual(input.name, 'emerald')
+    assert.strictEqual(input.count, 2)
+
+    const [output] = trade.outputs
+    assert.strictEqual(output.name, 'pumpkin_pie')
+    assert.strictEqual(output.count, 2)
+
+    await bot.trade(villager, 0, 6)
+    assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.emerald.id), testFluctuations ? 64 - 24 : 64 - 12)
+    assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.pumpkin_pie.id), 12)
+  }
+
+  // Handle trade #2 -- takes [2x emerald, 2x pumpkin_pie] and returns 2x wheat
+  {
+    const trade = villager.trades[1]
+    assert.strictEqual(trade.inputs.length, 2, 'Expected two inputs from villager on second trade')
+    verifyTrade(trade)
+
+    const [input1, input2] = trade.inputs
+    assert.strictEqual(input1.name, 'emerald')
+    assert.strictEqual(input1.count, 2)
+    assert.strictEqual(input2.name, 'pumpkin_pie')
+    assert.strictEqual(input2.count, 2)
+
+    const [output] = trade.outputs
+    assert.strictEqual(output.name, 'wheat')
+    assert.strictEqual(output.count, 2)
+
+    await bot.trade(villager, 1, 6)
+    assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.emerald.id), testFluctuations ? 64 - 36 : 64 - 24)
+    assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.pumpkin_pie.id), 0)
+    assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.wheat.id), 12)
+  }
+
+  function verifyTrade (trade) {
     assert.strictEqual(trade.nbTradeUses, 1)
     assert.strictEqual(trade.maximumNbTradeUses, 7)
     assert.strictEqual(trade.tradeDisabled, false)
-
-    if (index === 0) {
-      assert(trade.inputItem2 === null || (trade.inputItem2.type === undefined && trade.inputItem2.count === undefined)) // In some versions it returns null in others it returns an empty Item instance
-    } else {
-      assert.strictEqual(sell2.count, 2)
-      assert.strictEqual(sell2.name, 'pumpkin_pie')
-    }
-    assert.strictEqual(sell1.name, 'emerald')
-    assert.strictEqual(sell1.count, 2)
-    assert.strictEqual(buy.name, index ? 'wheat' : 'pumpkin_pie')
-    assert.strictEqual(buy.count, 2)
 
     const printCountInv = function (item) {
       return `${bot.currentWindow.count(bot.registry.itemsByName[item.name].id)}x ${item.displayName}`
@@ -53,18 +78,9 @@ module.exports = () => async (bot) => {
     const printCountTrade = function (item) {
       return `${item.count}x ${item.displayName}`
     }
-    bot.test.sayEverywhere(`I have ${printCountInv(sell1)} ${trade.hasItem2 ? 'and ' + printCountInv(sell2) : ''}`)
-    bot.test.sayEverywhere(`I can trade ${printCountTrade(sell1)} ${trade.hasItem2 ? 'and ' + printCountTrade(sell2) : ''} for ${printCountTrade(buy)}`)
 
-    await bot.trade(villager, index, 6)
-    if (index === 0) {
-      assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.emerald.id), testFluctuations ? 64 - 24 : 64 - 12)
-      assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.pumpkin_pie.id), 12)
-    } else {
-      assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.emerald.id), testFluctuations ? 64 - 36 : 64 - 24)
-      assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.pumpkin_pie.id), 0)
-      assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.wheat.id), 12)
-    }
+    bot.test.sayEverywhere(`I have ${printCountInv(trade.inputItem1)} ${trade.hasItem2 ? 'and ' + printCountInv(trade.inputItem2) : ''}`)
+    bot.test.sayEverywhere(`I can trade ${printCountTrade(trade.inputItem1)} ${trade.hasItem2 ? 'and ' + printCountTrade(trade.inputItem2) : ''} for ${printCountTrade(trade.outputItem)}`)
   }
 
   assert.rejects(bot.trade(villager, 1, 1)) // Shouldn't be able, the trade is blocked!

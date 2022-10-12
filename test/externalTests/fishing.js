@@ -8,7 +8,7 @@ module.exports = () => async (bot) => {
 
   return new Promise((resolve, reject) => {
     function onPlayerCollect (collector, collected) {
-      if (collected.type === 'object') {
+      if (collected.name.toLowerCase() === 'item' || collected.type === 'object') {
         bot.test.sayEverywhere('I caught: ' + collected.displayName)
         bot.removeListener('playerCollect', onPlayerCollect)
         resolve()

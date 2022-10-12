@@ -456,7 +456,10 @@ export interface Player {
   gamemode: number
   ping: number
   entity: Entity
-}
+  profileKeys?: {
+    publicKey: Buffer
+    signature: Buffer
+  }
 
 export interface ChatPattern {
   pattern: RegExp

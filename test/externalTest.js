@@ -51,7 +51,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
       PORT = await getPort()
       console.log(`Port chosen: ${PORT}`)
     })
-    before((done) => {
+    before(function (done) {
+      this.timeout(1000 * 60)
       function begin () {
         bot = mineflayer.createBot({
           username: 'flatbot',

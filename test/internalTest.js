@@ -9,6 +9,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
   const registry = require('prismarine-registry')(supportedVersion)
   const version = registry.version
   const Chunk = require('prismarine-chunk')(supportedVersion)
+  const hasSignedChat = registry.supportFeature('signedChat')
 
   function generateChunkPacket (chunk) {
     const lights = chunk.dumpLight()
@@ -103,19 +104,40 @@ for (const supportedVersion of mineflayer.testedVersions) {
         bot.chat('hi')
       })
       server.on('login', (client) => {
-        const message = JSON.stringify({
-          translate: 'chat.type.text',
-          with: [{
-            text: 'gary'
-          },
-          'hello'
-          ]
-        })
-        client.write('chat', { message, position: 0, sender: '0' })
-        client.on('chat', (packet) => {
-          assert.strictEqual(packet.message, 'hi')
+        client.write('login', bot.test.generateLoginPacket())
+        const message = hasSignedChat
+          ? JSON.stringify({ text: 'hello' })
+          : JSON.stringify({
+            translate: 'chat.type.text',
+            with: [{
+              text: 'gary'
+            },
+            'hello'
+            ]
+          })
+
+        if (hasSignedChat) {
+          client.write('player_chat', {
+            signedChatContent: '',
+            unsignedChatContent: message,
+            type: 0,
+            senderUuid: 'd3527a0b-bc03-45d5-a878-2aafdd8c8a43', // random
+            senderName: JSON.stringify({ text: 'gary' }),
+            senderTeam: undefined,
+            timestamp: Date.now(),
+            salt: 0n,
+            signature: Buffer.alloc(0)
+          })
+        } else {
+          client.write('chat', { message, position: 0, sender: '0' })
+        }
+        function onChat (packet) {
+          const msg = packet.message || packet.unsignedChatContent || packet.signedChatContent
+          assert.strictEqual(msg, 'hi')
           done()
-        })
+        }
+        client.on('chat_message', onChat)
+        client.on('chat', onChat)
       })
     })
     it('entity effects', (done) => {
@@ -130,9 +152,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
       const entities = bot.registry.entitiesByName
       const creeperId = entities.creeper ? entities.creeper.id : entities.Creeper.id
       server.on('login', (client) => {
-        client.write('spawn_entity_living', {
+        client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
           entityId: 8, // random
           entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
+          objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
           type: creeperId,
           x: 10,
           y: 11,
@@ -221,14 +244,23 @@ for (const supportedVersion of mineflayer.testedVersions) {
           loginPacket.hashedSeed = [0, 0]
           loginPacket.entityId = 0
           respawnPacket = {
-            dimension: loginPacket.dimension,
-            worldName: 'minecraft:overworld',
-            hashedSeed: [0, 0],
+            // 1.19+ the `dimension` filed is a string in respawn packet and undefined in login packet, in previous versions it's same NBT data in login/respawn
+            dimension: bot.supportFeature('dimensionDataInCodec') ? 'minecraft:overworld' : loginPacket.dimension,
+            worldName: loginPacket.worldName,
+            hashedSeed: loginPacket.hashedSeed,
             gamemode: 0,
             previousGamemode: 255,
             isDebug: false,
             isFlat: false,
-            copyMetadata: true
+            copyMetadata: true,
+            death: {
+              dimensionName: '',
+              location: {
+                x: 0,
+                y: 0,
+                z: 0
+              }
+            }
           }
         } else {
           respawnPacket = {
@@ -473,9 +505,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
           // Versions prior to 1.11 have capital first letter
           const entities = bot.registry.entitiesByName
           const creeperId = entities.creeper ? entities.creeper.id : entities.Creeper.id
-          client.write('spawn_entity_living', {
+          client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
             entityId: 8, // random
             entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
+            objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
             type: creeperId,
             x: 10,
             y: 11,
@@ -529,6 +562,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             z: 0,
             pitch: 0,
             yaw: 0,
+            headPitch: 0,
             objectData: 1,
             velocityX: 0,
             velocityY: 0,
@@ -645,9 +679,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
           teleportId: 1
         })
 
-        client.write('spawn_entity_living', {
+        client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
           entityId: 8,
           entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
+          objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
           type: zombieId,
           x: zombiePos.x,
           y: zombiePos.y,
