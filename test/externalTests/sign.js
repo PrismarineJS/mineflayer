@@ -2,13 +2,12 @@ const assert = require('assert')
 const Vec3 = require('vec3')
 
 module.exports = () => async (bot) => {
-  const mcData = require('minecraft-data')(bot.version)
-  const Item = require('prismarine-item')(bot.version)
+  const Item = require('prismarine-item')(bot.registry)
   const lowerBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
 
   let signItem = null
-  for (const name in mcData.itemsByName) {
-    if (name.includes('sign')) signItem = mcData.itemsByName[name]
+  for (const name in bot.registry.itemsByName) {
+    if (name.includes('sign')) signItem = bot.registry.itemsByName[name]
   }
   assert.notStrictEqual(signItem, null)
 

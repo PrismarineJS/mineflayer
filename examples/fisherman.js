@@ -12,11 +12,6 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
-let mcData
-bot.on('inject_allowed', () => {
-  mcData = require('minecraft-data')(bot.version)
-})
-
 // To fish we have to give bot the fishing rod and teleport bot to the water
 // /give fisherman fishing_rod 1
 // /teleport fisherman ~ ~ ~
@@ -50,7 +45,7 @@ function onCollect (player, entity) {
 async function startFishing () {
   bot.chat('Fishing')
   try {
-    await bot.equip(mcData.itemsByName.fishing_rod.id, 'hand')
+    await bot.equip(bot.registry.itemsByName.fishing_rod.id, 'hand')
   } catch (err) {
     return bot.chat(err.message)
   }
@@ -78,7 +73,7 @@ async function eat () {
   stopFishing()
 
   try {
-    await bot.equip(mcData.itemsByName.fish.id, 'hand')
+    await bot.equip(bot.registry.itemsByName.fish.id, 'hand')
   } catch (err) {
     return bot.chat(err.message)
   }

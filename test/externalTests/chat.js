@@ -74,7 +74,6 @@ module.exports = () => {
   })
 
   addTest('test awaitMessage', async (bot) => {
-    // let resolves = 0
     const p1 = bot.awaitMessage('<flatbot> hello')
     bot.chat('hello')
     await p1

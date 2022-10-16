@@ -16,18 +16,13 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
-let mcData
-bot.once('inject_allowed', () => {
-  mcData = require('minecraft-data')(bot.version)
-})
-
 bot.on('chat', (username, message) => {
   if (username === bot.username) return
   const command = message.split(' ')
   switch (true) {
     case /^setCommandBlock (.+)$/.test(message): {
       const commandBlock = bot.findBlock({
-        matching: mcData.blocksByName.command_block.id
+        matching: bot.registry.blocksByName.command_block.id
       })
       bot.setCommandBlock(commandBlock.position, command[1], false)
       break

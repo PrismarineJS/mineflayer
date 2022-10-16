@@ -25,10 +25,6 @@ const bot = mineflayer.createBot({
   username: process.argv[4] ? process.argv[4] : 'trader',
   password: process.argv[5]
 })
-let mcData
-bot.once('inject_allowed', () => {
-  mcData = require('minecraft-data')(bot.version)
-})
 
 bot.on('chat', (username, message) => {
   if (username === bot.username) return
@@ -50,7 +46,7 @@ bot.on('chat', (username, message) => {
 })
 
 function showVillagers () {
-  const villagers = Object.keys(bot.entities).map(id => bot.entities[id]).filter(e => e.entityType === mcData.entitiesByName.villager.id)
+  const villagers = Object.keys(bot.entities).map(id => bot.entities[id]).filter(e => e.entityType === bot.registry.entitiesByName.villager.id)
   const closeVillagersId = villagers.filter(e => bot.entity.position.distanceTo(e.position) < 3).map(e => e.id)
   bot.chat(`found ${villagers.length} villagers`)
   bot.chat(`villager(s) you can trade with: ${closeVillagersId.join(', ')}`)
@@ -69,7 +65,7 @@ async function showTrades (id) {
     case !e:
       bot.chat(`cant find entity with id ${id}`)
       break
-    case e.entityType !== mcData.entitiesByName.villager.id:
+    case e.entityType !== bot.registry.entitiesByName.villager.id:
       bot.chat('entity is not a villager')
       break
     case bot.entity.position.distanceTo(e.position) > 3:
@@ -91,7 +87,7 @@ async function trade (id, index, count) {
     case !e:
       bot.chat(`cant find entity with id ${id}`)
       break
-    case e.entityType !== mcData.entitiesByName.villager.id:
+    case e.entityType !== bot.registry.entitiesByName.villager.id:
       bot.chat('entity is not a villager')
       break
     case bot.entity.position.distanceTo(e.position) > 3:
@@ -168,7 +164,7 @@ function stringifyItem (item) {
       text += ` enchanted with ${(ench || StoredEnchantments).value.value.map((e) => {
         const lvl = e.lvl.value
         const id = e.id.value
-        return mcData.enchantments[id].displayName + ' ' + lvl
+        return bot.registry.enchantments[id].displayName + ' ' + lvl
       }).join(' ')}`
     }
   }

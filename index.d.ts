@@ -177,7 +177,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   physicsEnabled: boolean
   time: Time
   quickBarSlot: number
-  inventory: Window
+  inventory: Window<StorageEvents>
   targetDigBlock: Block
   isSleeping: boolean
   scoreboards: { [name: string]: ScoreBoard }
@@ -338,7 +338,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
     pages: string[]
   ) => Promise<void>
 
-  openContainer: (chest: Block | Entity, direction?: Vec3, cursorPos?: Vec3) => Promise<Chest | Furnace | Dispenser>
+  openContainer: (chest: Block | Entity, direction?: Vec3, cursorPos?: Vec3) => Promise<Chest | Dispenser>
 
   openChest: (chest: Block | Entity, direction?: number, cursorPos?: Vec3) => Promise<Chest>
 
@@ -448,7 +448,7 @@ export type LevelType =
   | 'buffet'
   | 'default_1_1'
 export type GameMode = 'survival' | 'creative' | 'adventure' | 'spectator'
-export type Dimension = 'minecraft:nether' | 'minecraft:overworld' | 'minecraft:end'
+export type Dimension = 'minecraft:the_nether' | 'minecraft:overworld' | 'minecraft:the_end'
 export type Difficulty = 'peaceful' | 'easy' | 'normal' | 'hard'
 
 export interface Player {
@@ -458,7 +458,10 @@ export interface Player {
   gamemode: number
   ping: number
   entity: Entity
-}
+  profileKeys?: {
+    publicKey: Buffer
+    signature: Buffer
+  }
 
 export interface ChatPattern {
   pattern: RegExp
@@ -608,7 +611,7 @@ export class Painting {
 interface StorageEvents {
   open: () => void
   close: () => void
-  updateSlot: (oldItem: Item | null, newItem: Item) => void
+  updateSlot: (oldItem: Item | null, newItem: Item | null) => void
 }
 
 interface FurnaceEvents extends StorageEvents {
@@ -619,9 +622,7 @@ interface ConditionalStorageEvents extends StorageEvents {
   ready: () => void
 }
 
-export class Chest extends (EventEmitter as new () => TypedEmitter<StorageEvents>) {
-  window: object | /* prismarine-windows ChestWindow */ null
-
+export class Chest extends Window<StorageEvents> {
   constructor ();
 
   close (): void;
@@ -637,13 +638,9 @@ export class Chest extends (EventEmitter as new () => TypedEmitter<StorageEvents
     metadata: number | null,
     count: number | null
   ): Promise<void>;
-
-  count (itemType: number, metadata: number | null): number;
-
-  items (): Item[];
 }
 
-export class Furnace extends (EventEmitter as new () => TypedEmitter<FurnaceEvents>) {
+export class Furnace extends Window<FurnaceEvents> {
   fuel: number
   progress: number
 
@@ -676,7 +673,7 @@ export class Furnace extends (EventEmitter as new () => TypedEmitter<FurnaceEven
   outputItem (): Item;
 }
 
-export class Dispenser extends (EventEmitter as new () => TypedEmitter<StorageEvents>) {
+export class Dispenser extends Window<StorageEvents> {
   constructor ();
 
   close (): void;
@@ -692,13 +689,9 @@ export class Dispenser extends (EventEmitter as new () => TypedEmitter<StorageEv
     metadata: number | null,
     count: number | null
   ): Promise<void>;
-
-  count (itemType: number, metadata: number | null): number;
-
-  items (): Item[];
 }
 
-export class EnchantmentTable extends (EventEmitter as new () => TypedEmitter<ConditionalStorageEvents>) {
+export class EnchantmentTable extends Window<ConditionalStorageEvents> {
   enchantments: Enchantment[]
 
   constructor ();
@@ -727,7 +720,7 @@ export interface Enchantment {
   level: number
 }
 
-export class Villager extends (EventEmitter as new () => TypedEmitter<ConditionalStorageEvents>) {
+export class Villager extends Window<ConditionalStorageEvents> {
   trades: VillagerTrade[]
 
   constructor ();

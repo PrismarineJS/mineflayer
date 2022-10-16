@@ -1,3 +1,11 @@
+## 4.5.0
+
+* 1.19 support (@extremeheat @rom1504 @FCKJohni @Shorent)
+* refactoring examples to use bot.registry (@Epirito)
+* Added barrel and coloured shulker boxes to openable windows (@lazydancer)
+* types: Fix return type for openBlock and openEntity (@sefirosweb)
+* Update activateEntity and activateEntityAt types (@amoraschi)
+
 ## 4.4.0
 
 * Fix chatterbox example not getting dropped item (@u9g) [commit](https://github.com/PrismarineJS/mineflayer/commit/f860eac01a0418f4a3de749482d8cab681acc48a)
