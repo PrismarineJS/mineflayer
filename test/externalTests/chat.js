@@ -88,23 +88,23 @@ module.exports = () => {
     await p4
   })
 
-  addTest('test findMessage', async (bot) => {
-    const p1 = bot.findMessage(3000, '<flatbot> hello')
+  addTest('test onMessage', async (bot) => {
+    const p1 = bot.onMessage(3000, '<flatbot> hello')
     bot.chat('hello')
     await p1
-    const p2 = bot.findMessage(3000, ['<flatbot> hello', '<flatbot> world'])
+    const p2 = bot.onMessage(3000, ['<flatbot> hello', '<flatbot> world'])
     bot.chat('world')
     await p2
-    const p3 = bot.findMessage(3000, /<.+> hello/)
+    const p3 = bot.onMessage(3000, /<.+> hello/)
     bot.chat('hello')
     await p3
-    const p4 = bot.findMessage(3000, [/<.+> hello/, /<.+> world/])
+    const p4 = bot.onMessage(3000, [/<.+> hello/, /<.+> world/])
     bot.chat('world')
     await p4
-    await bot.findMessage(3000, '<flatbot> hello')
-    await bot.findMessage(3000, ['<flatbot> hello', '<flatbot> world'])
-    await bot.findMessage(3000, /<.+> hello/)
-    await bot.findMessage(3000, [/<.+> hello/, /<.+> world/])
+    await bot.onMessage(3000, '<flatbot> hello')
+    await bot.onMessage(3000, ['<flatbot> hello', '<flatbot> world'])
+    await bot.onMessage(3000, /<.+> hello/)
+    await bot.onMessage(3000, [/<.+> hello/, /<.+> world/])
   })
 
   addTest('test removechatpattern with a number input', async (bot) => {
