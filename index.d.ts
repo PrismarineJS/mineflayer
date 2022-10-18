@@ -462,6 +462,7 @@ export interface Player {
     publicKey: Buffer
     signature: Buffer
   }
+}
 
 export interface ChatPattern {
   pattern: RegExp
