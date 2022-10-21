@@ -82,7 +82,7 @@
       - [Particle.position](#particleposition)
       - [Particle.offset](#particleoffset)
       - [Particle.speed](#particlespeed)
-      - [Particle.particles](#particleparticles)
+      - [Particle.count](#particlecount)
       - [Particle.data](#particledata)
   - [Bot](#bot)
     - [mineflayer.createBot(options)](#mineflayercreatebotoptions)
