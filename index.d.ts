@@ -833,7 +833,7 @@ export interface Particle {
     forceRender: boolean
     position: Vec3
     offset: Vec3
-    particleData: number
+    speed: number
     particles: number
     data: Object | undefined
 }

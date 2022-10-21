@@ -81,7 +81,7 @@
       - [Particle.forceRender](#particleforcerender)
       - [Particle.position](#particleposition)
       - [Particle.offset](#particleoffset)
-      - [Particle.particleData](#particleparticledata)
+      - [Particle.speed](#particlespeed)
       - [Particle.particles](#particleparticles)
       - [Particle.data](#particledata)
   - [Bot](#bot)
@@ -757,9 +757,9 @@ Vec3 instance of where the particle was created
 
 Vec3 instance of the particle's offset
 
-#### Particle.particleData
+#### Particle.speed
 
-Extra particle data, normally speed
+Particle speed in a random direction
 
 #### Particle.particles
 
