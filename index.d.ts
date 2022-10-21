@@ -827,15 +827,16 @@ export class BossBar {
   );
 }
 
-export interface Particle {
+export class Particle {
     id: number
     name: string
-    forceRender: boolean
+    longDistanceRender: boolean
     position: Vec3
     offset: Vec3
     speed: number
     count: number
     data: Object | undefined
+    static fromNetwork(packet: Object): Particle
 }
 
 export let supportedVersions: string[]
