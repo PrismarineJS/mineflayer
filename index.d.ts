@@ -827,7 +827,7 @@ export class BossBar {
   );
 }
 
-export class Particle {
+export interface Particle {
     id: number
     name: string
     longDistance: boolean
