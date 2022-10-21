@@ -78,7 +78,7 @@
     - [mineflayer.Particle](#mineflayerparticle)
       - [Particle.id](#particleid)
       - [Particle.name](#particlename)
-      - [Particle.longDistance](#particlelongdistance)
+      - [Particle.forceRender](#particleforcerender)
       - [Particle.position](#particleposition)
       - [Particle.offset](#particleoffset)
       - [Particle.particleData](#particleparticledata)
@@ -745,9 +745,9 @@ Particle ID, as defined in the [protocol](https://wiki.vg/Protocol#Particle)
 
 Particle Name, as defined in the [protocol](https://wiki.vg/Protocol#Particle)
 
-#### Particle.longDistance
+#### Particle.forceRender
 
-Determines whether or not to increase the particle distance
+Determines whether or not to force the rendering of a particle despite client particle settings and increases maximum view distance from 256 to 65536
 
 #### Particle.position
 

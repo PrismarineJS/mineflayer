@@ -830,7 +830,7 @@ export class BossBar {
 export interface Particle {
     id: number
     name: string
-    longDistance: boolean
+    forceRender: boolean
     position: Vec3
     offset: Vec3
     particleData: number
