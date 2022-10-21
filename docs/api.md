@@ -761,7 +761,7 @@ Vec3 instance of the particle's offset
 
 Particle speed in a random direction
 
-#### Particle.particles
+#### Particle.count
 
 Amount of particles created
 

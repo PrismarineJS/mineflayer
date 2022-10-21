@@ -834,7 +834,7 @@ export interface Particle {
     position: Vec3
     offset: Vec3
     speed: number
-    particles: number
+    count: number
     data: Object | undefined
 }
 
