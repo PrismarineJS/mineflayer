@@ -75,6 +75,15 @@
       - [BossBar.isDragonBar](#bossbarisdragonbar)
       - [BossBar.createFog](#bossbarcreatefog)
       - [BossBar.color](#bossbarcolor)
+    - [mineflayer.Particle](#mineflayerparticle)
+      - [Particle.id](#particleid)
+      - [Particle.name](#particlename)
+      - [Particle.longDistance](#particlelongdistance)
+      - [Particle.position](#particleposition)
+      - [Particle.offset](#particleoffset)
+      - [Particle.particleData](#particleparticledata)
+      - [Particle.particles](#particleparticles)
+      - [Particle.data](#particledata)
   - [Bot](#bot)
     - [mineflayer.createBot(options)](#mineflayercreatebotoptions)
     - [Properties](#properties)
@@ -239,6 +248,7 @@
       - ["heldItemChanged" (heldItem)](#helditemchanged-helditem)
       - ["physicsTick" ()](#physicstick-)
       - ["chat:name" (matches)](#chatname-matches)
+      - ["particle"](#particle)
     - [Functions](#functions)
       - [bot.blockAt(point, extraInfos=true)](#botblockatpoint-extrainfostrue)
       - [bot.waitForChunksToLoad()](#botwaitforchunkstoload)
@@ -724,6 +734,40 @@ Determines whether or not boss bar creates fog
 #### BossBar.color
 
 Determines what color the boss bar color is, one of `pink`, `blue`, `red`, `green`, `yellow`, `purple`, `white`
+
+### mineflayer.Particle
+
+#### Particle.id
+
+Particle ID, as defined in the [protocol](https://wiki.vg/Protocol#Particle)
+
+#### Particle.name
+
+Particle Name, as defined in the [protocol](https://wiki.vg/Protocol#Particle)
+
+#### Particle.longDistance
+
+Determines whether or not to increase the particle distance
+
+#### Particle.position
+
+Vec3 instance of where the particle was created
+
+#### Particle.offset
+
+Vec3 instance of the particle's offset
+
+#### Particle.particleData
+
+Extra particle data, normally speed
+
+#### Particle.particles
+
+Amount of particles created
+
+#### Particle.data
+
+An object of variable particle data if required otherwise null, as defined in the [protocol](https://wiki.vg/Protocol#Particle)
 
 ## Bot
 
@@ -1464,6 +1508,10 @@ Fires every tick if bot.physicsEnabled is set to true.
 #### "chat:name" (matches)
 
 Fires when the all of a chat pattern's regexs have matches
+
+#### "particle"
+
+Fires when a particle is created
 
 ### Functions
 
