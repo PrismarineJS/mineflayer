@@ -78,12 +78,12 @@
     - [mineflayer.Particle](#mineflayerparticle)
       - [Particle.id](#particleid)
       - [Particle.name](#particlename)
-      - [Particle.longDistanceRender](#particlelongdistancerender)
       - [Particle.position](#particleposition)
       - [Particle.offset](#particleoffset)
-      - [Particle.speed](#particlespeed)
+      - [Particle.longDistanceRender](#particlelongdistancerender)
       - [Particle.count](#particlecount)
-      - [Particle.data](#particledata)
+      - [Particle.movementSpeed](#particlemovementspeed)
+    - [Particle-specific properties](#particle-specific-properties)
   - [Bot](#bot)
     - [mineflayer.createBot(options)](#mineflayercreatebotoptions)
     - [Properties](#properties)
@@ -745,10 +745,6 @@ Particle ID, as defined in the [protocol](https://wiki.vg/Protocol#Particle)
 
 Particle Name, as defined in the [protocol](https://wiki.vg/Protocol#Particle)
 
-#### Particle.longDistanceRender
-
-Determines whether or not to force the rendering of a particle despite client particle settings and increases maximum view distance from 256 to 65536
-
 #### Particle.position
 
 Vec3 instance of where the particle was created
@@ -757,17 +753,21 @@ Vec3 instance of where the particle was created
 
 Vec3 instance of the particle's offset
 
-#### Particle.speed
+#### Particle.longDistanceRender
 
-Particle speed in a random direction
+Determines whether or not to force the rendering of a particle despite client particle settings and increases maximum view distance from 256 to 65536
 
 #### Particle.count
 
 Amount of particles created
 
-#### Particle.data
+#### Particle.movementSpeed
 
-An object of variable particle data if required otherwise null, as defined in the [protocol](https://wiki.vg/Protocol#Particle)
+Particle speed in a random direction
+
+### Particle-specific properties
+
+Certain particles also contain additional properties as defined in the [protocol](https://wiki.vg/Protocol#Particle)
 
 ## Bot
 
