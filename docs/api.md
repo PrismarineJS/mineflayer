@@ -83,7 +83,6 @@
       - [Particle.longDistanceRender](#particlelongdistancerender)
       - [Particle.count](#particlecount)
       - [Particle.movementSpeed](#particlemovementspeed)
-    - [Particle-specific properties](#particle-specific-properties)
   - [Bot](#bot)
     - [mineflayer.createBot(options)](#mineflayercreatebotoptions)
     - [Properties](#properties)
@@ -764,10 +763,6 @@ Amount of particles created
 #### Particle.movementSpeed
 
 Particle speed in a random direction
-
-### Particle-specific properties
-
-Certain particles also contain additional properties as defined in the [protocol](https://wiki.vg/Protocol#Particle)
 
 ## Bot
 
