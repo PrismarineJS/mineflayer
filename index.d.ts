@@ -830,13 +830,21 @@ export class BossBar {
 export class Particle {
     id: number
     name: string
-    longDistanceRender: boolean
     position: Vec3
     offset: Vec3
-    speed: number
     count: number
-    data: Object | undefined
+    movementSpeed: number
+    longDistanceRender: boolean
     static fromNetwork(packet: Object): Particle
+
+    constructor (
+        id: number,
+        position: Vec3,
+        offset: Vec3,
+        count?: number,
+        movementSpeed?: number,
+        longDistanceRender?: boolean
+    );
 }
 
 export let supportedVersions: string[]
