@@ -721,5 +721,38 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
     })
+
+    it('particles', (done) => {
+      bot.on('particle', (particle) => {
+        assert.strictEqual(particle.id, 0)
+        assert.strictEqual(particle.name, bot.registry.particles[0].name)
+        assert.strictEqual(particle.position.x, 32)
+        assert.strictEqual(particle.position.y, 64)
+        assert.strictEqual(particle.position.z, 32)
+        assert.strictEqual(particle.offset.x, 5)
+        assert.strictEqual(particle.offset.y, 5)
+        assert.strictEqual(particle.offset.z, 5)
+        assert.strictEqual(particle.count, 100)
+        assert.strictEqual(particle.movementSpeed, 0.5)
+        assert.strictEqual(particle.longDistanceRender, true)
+
+        done()
+      })
+
+      server.on('login', (client) => {
+        client.write('world_particles', {
+          particleId: 0,
+          x: 32,
+          y: 64,
+          z: 32,
+          offsetX: 5,
+          offsetY: 5,
+          offsetZ: 5,
+          particles: 100,
+          particleData: 0.5,
+          longDistance: true
+        })
+      })
+    })
   })
 }
