@@ -1,3 +1,7 @@
+## 4.5.1
+
+* Fixed syntax error in TypeScript definitions (@JungleDome) [commit](https://github.com/PrismarineJS/mineflayer/commit/2c6a4036d84bedb5f349ea5a82d743e344c34224)
+
 ## 4.5.0
 
 * 1.19 support (@extremeheat @rom1504 @FCKJohni @Shorent)
