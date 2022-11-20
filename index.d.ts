@@ -30,7 +30,7 @@ export interface BotOptions extends ClientOptions {
 }
 
 export type ChatLevel = 'enabled' | 'commandsOnly' | 'disabled'
-export type ViewDistance = 'far' | 'normal' | 'short' | 'tiny'
+export type ViewDistance = 'far' | 'normal' | 'short' | 'tiny' | number
 export type MainHands = 'left' | 'right'
 
 export interface PluginOptions {
