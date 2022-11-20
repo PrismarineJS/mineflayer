@@ -151,6 +151,7 @@ interface BotEvents {
   bossBarDeleted: (bossBar: BossBar) => Promise<void> | void
   bossBarUpdated: (bossBar: BossBar) => Promise<void> | void
   resourcePack: (url: string, hash: string) => Promise<void> | void
+  particle: (particle: Particle) => Promise<void> | void
 }
 
 export interface Bot extends TypedEmitter<BotEvents> {
@@ -824,6 +825,26 @@ export class BossBar {
     color: number,
     flags: number
   );
+}
+
+export class Particle {
+    id: number
+    name: string
+    position: Vec3
+    offset: Vec3
+    count: number
+    movementSpeed: number
+    longDistanceRender: boolean
+    static fromNetwork(packet: Object): Particle
+
+    constructor (
+        id: number,
+        position: Vec3,
+        offset: Vec3,
+        count?: number,
+        movementSpeed?: number,
+        longDistanceRender?: boolean
+    );
 }
 
 export let supportedVersions: string[]
