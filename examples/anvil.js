@@ -18,7 +18,7 @@
 const mineflayer = require('mineflayer')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node use_anvil.js <host> <port> [<name>] [<password>]')
+  console.log('Usage : node anvil.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 

@@ -6,12 +6,7 @@ const pathfinder = require('mineflayer-pathfinder').pathfinder
 const collectBlock = require('mineflayer-collectblock').plugin
 
 if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node collector.js <host> <port> [<name>] [<password>]')
-  process.exit(1)
-}
-
-if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node collectBlock.js <host> <port> [<name>] [<password>]')
+  console.log('Usage : node collectblock.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 
