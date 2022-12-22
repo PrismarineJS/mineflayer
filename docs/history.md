@@ -1,3 +1,14 @@
+4.6.0
+
+* Fix unhandled promise rejection in onceWithCleanup (@IceTank) [#2833](https://github.com/PrismarineJS/mineflayer/pull/2833)
+* Extend every window that is opened with mineflayer specific window functions (@IceTank) [#2768][https://github.com/PrismarineJS/mineflayer/pull/2768]
+* Fix example command line usage messages (@maximmasiutin) [#2853](https://github.com/PrismarineJS/mineflayer/pull/2853)
+* Update README_ES.md (@PanIntegralus) [#2803](https://github.com/PrismarineJS/mineflayer/pull/2803)
+* Fix block face position target when digging (@WhoTho) [#2801](https://github.com/PrismarineJS/mineflayer/pull/2801)
+* Add a native mineflayer event for particles (@NyxaYu) [#2813](https://github.com/PrismarineJS/mineflayer/pull/2813)
+* Fix viewDistance type (@Nciklol) [#2824](Fix viewDistance type (#2824) ) 
+* Add French FAQ (@AugustinMauroy) [#2817](https://github.com/PrismarineJS/mineflayer/pull/2817)
+
 ## 4.5.1
 
 * Fixed syntax error in TypeScript definitions (@JungleDome) [commit](https://github.com/PrismarineJS/mineflayer/commit/2c6a4036d84bedb5f349ea5a82d743e344c34224)
