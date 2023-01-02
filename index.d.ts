@@ -8,6 +8,7 @@ import { Recipe } from 'prismarine-recipe'
 import { Block } from 'prismarine-block'
 import { Entity } from 'prismarine-entity'
 import { ChatMessage } from 'prismarine-chat'
+import { Registry } from 'prismarine-registry'
 
 export function createBot (options: { client: Client } & Partial<BotOptions>): Bot
 export function createBot (options: BotOptions): Bot
@@ -192,6 +193,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   currentWindow: Window | null
   simpleClick: simpleClick
   tablist: Tablist
+  registry: Registry
 
   connect: (options: BotOptions) => void
 
