@@ -189,8 +189,9 @@ The most updated and useful are :
  * [Auto Crystal](https://github.com/link-discord/mineflayer-autocrystal) - Automatic placing & breaking of end crystals.
  * [Tool](https://github.com/TheDudeFromCI/mineflayer-tool) - A utility for automatic tool/weapon selection with a high level API.
  * [Hawkeye](https://github.com/sefirosweb/minecraftHawkEye) - A utility for using auto-aim with bows.
- * [GUI](https://github.com/firejoust/mineflayer-GUI) - Eased navigation & management of nested chest-GUI windows
- * [Projectile](https://github.com/firejoust/mineflayer-projectile) - Configurable tool for projectile based combat
+ * [GUI](https://github.com/firejoust/mineflayer-GUI) - Interact with nested GUI windows using async/await
+ * [Projectile](https://github.com/firejoust/mineflayer-projectile) - Get the required launch angle for projectiles
+* [Movement](https://github.com/firejoust/mineflayer-movement) - Smooth and realistic player movement, best suited for PvP
 
 
  But also check out :
