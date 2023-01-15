@@ -23,14 +23,14 @@ jobs:
     strategy:
       matrix:
         javaVersion: [1.8]
-        mcVersion: ['1.8.8', '1.9.4', '1.10.2', '1.11.2', '1.12.2', '1.13.2', '1.14.4', '1.15.2', '1.16.5', '1.19.2']
+        mcVersion: ['1.8.8', '1.9.4', '1.10.2', '1.11.2', '1.12.2', '1.13.2', '1.14.4', '1.15.2', '1.16.5']
         include:
          - javaVersion: 16
            mcVersion: '1.17.1'
          - javaVersion: 17
            mcVersion: '1.18.2'
          - javaVersion: 17
-           mcVersion: '1.19'
+           mcVersion: ['1.19', '1.19.2']
       fail-fast: false
 
     steps:
