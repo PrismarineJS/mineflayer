@@ -117,7 +117,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           })
 
         if (hasSignedChat) {
-          if(registry.supportFeature('chainedChatWithHashing')) {
+          if (registry.supportFeature('chainedChatWithHashing')) {
             const uuid = 'd3527a0b-bc03-45d5-a878-2aafdd8c8a43' // random
 
             // Declare player info so client can resolve sender name
@@ -135,20 +135,20 @@ for (const supportedVersion of mineflayer.testedVersions) {
             })
 
             client.write('named_entity_spawn', {
-                entityId: 0,
-                playerUUID: uuid,
-                x: 0,
-                y: 0,
-                z: 0,
-                yaw: 0,
-                pitch: 0
+              entityId: 0,
+              playerUUID: uuid,
+              x: 0,
+              y: 0,
+              z: 0,
+              yaw: 0,
+              pitch: 0
             })
 
             client.write('player_chat', {
               plainMessage: 'hello',
               filterType: 0,
               type: 0,
-              networkName: "",
+              networkName: '',
               previousMessages: [],
               senderUuid: uuid,
               timestamp: Date.now(),
