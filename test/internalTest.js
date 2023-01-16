@@ -117,17 +117,57 @@ for (const supportedVersion of mineflayer.testedVersions) {
           })
 
         if (hasSignedChat) {
-          client.write('player_chat', {
-            signedChatContent: '',
-            unsignedChatContent: message,
-            type: 0,
-            senderUuid: 'd3527a0b-bc03-45d5-a878-2aafdd8c8a43', // random
-            senderName: JSON.stringify({ text: 'gary' }),
-            senderTeam: undefined,
-            timestamp: Date.now(),
-            salt: 0n,
-            signature: Buffer.alloc(0)
-          })
+          if(registry.supportFeature('chainedChatWithHashing')) {
+            const uuid = 'd3527a0b-bc03-45d5-a878-2aafdd8c8a43' // random
+
+            // Declare player info so client can resolve sender name
+            client.write('player_info', {
+              action: 0,
+              data: [
+                {
+                  UUID: uuid,
+                  name: 'gary',
+                  properties: [],
+                  gamemode: 0,
+                  ping: 0
+                }
+              ]
+            })
+
+            client.write('named_entity_spawn', {
+                entityId: 0,
+                playerUUID: uuid,
+                x: 0,
+                y: 0,
+                z: 0,
+                yaw: 0,
+                pitch: 0
+            })
+
+            client.write('player_chat', {
+              plainMessage: 'hello',
+              filterType: 0,
+              type: 0,
+              networkName: "",
+              previousMessages: [],
+              senderUuid: uuid,
+              timestamp: Date.now(),
+              salt: 0n,
+              signature: Buffer.alloc(0)
+            })
+          } else {
+            client.write('player_chat', {
+              signedChatContent: '',
+              unsignedChatContent: message,
+              type: 0,
+              senderUuid: 'd3527a0b-bc03-45d5-a878-2aafdd8c8a43', // random
+              senderName: JSON.stringify({ text: 'gary' }),
+              senderTeam: undefined,
+              timestamp: Date.now(),
+              salt: 0n,
+              signature: Buffer.alloc(0)
+            })
+          }
         } else {
           client.write('chat', { message, position: 0, sender: '0' })
         }
