@@ -1156,9 +1156,8 @@ Emitted for every server message which appears on the Action Bar.
 
 Emitted for every server message, including chats.
 
- * `jsonMsg` - unmodified JSON message from the server. Might additionally have the following properties:
-   * unsigned - Unsigned message content. Only present in 1.19.2+, and only when the server allows insecure chat or the server modified the chat message without the user's signature
-   * plainMessage - Original message as plain text. Only present in 1.19.2+
+ * `jsonMsg` - [ChatMessage](https://github.com/PrismarineJS/prismarine-chat) object containing the formatted chat message. Might additionally have the following properties:
+   * unsigned - Unsigned ChatMessage object. Only present in 1.19.2+, and only when the server allows insecure chat and the server modified the chat message without the user's signature
 
  * `position` - (>= 1.8.1): position of Chat message can be
    * chat
@@ -1171,7 +1170,7 @@ Emitted for every server message, including chats.
 
 #### "messagestr" (message, messagePosition, jsonMsg, sender, verified)
 
-Alias for the "message" event but it calls .toString() on the message object to get a string for the message before emitting.
+Alias for the "message" event but it calls .toString() on the prismarine-message object to get a string for the message before emitting.
 
  * `sender` - UUID of sender if known (1.16+), else null
 
