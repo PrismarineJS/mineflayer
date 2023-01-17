@@ -981,6 +981,8 @@ If you have a cape you can turn it off by setting this to false.
 
 #### bot.settings.enableTextFiltering - boolean
 Unused, defaults to false in Notchian (Vanilla) client.
+### bot.settings.allowInsecureChat - boolean
+Whether to parse unsigned chat contents. Setting this to false will strip formatting from server-modified messages.
 #### bot.settings.enableServerListing - boolean
 This setting is sent to the server to determine whether the player should show up in server listings
 #### bot.experience.level
