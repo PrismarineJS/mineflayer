@@ -1156,7 +1156,9 @@ Emitted for every server message which appears on the Action Bar.
 
 Emitted for every server message, including chats.
 
- * `jsonMsg` - unmodified JSON message from the server
+ * `jsonMsg` - unmodified JSON message from the server. Might additionally have the following properties:
+   * unsigned - Unsigned message content. Only present in 1.19.2+, and only when the server allows insecure chat or the server modified the chat message without the user's signature
+   * plainMessage - Original message as plain text. Only present in 1.19.2+
 
  * `position` - (>= 1.8.1): position of Chat message can be
    * chat
