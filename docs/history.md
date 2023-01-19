@@ -1,4 +1,8 @@
-4.6.0
+## 4.7.0
+
+* 1.19.2 support (@frej4189)
+
+## 4.6.0
 
 * Fix unhandled promise rejection in onceWithCleanup (@IceTank) [#2833](https://github.com/PrismarineJS/mineflayer/pull/2833)
 * Extend every window that is opened with mineflayer specific window functions (@IceTank) [#2768][https://github.com/PrismarineJS/mineflayer/pull/2768]
