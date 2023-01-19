@@ -14,7 +14,7 @@
 
 Создавайте ботов Minecraft с помощью мощного, стабильного и высокоуровневого JavaScript [API](api.md), также можете использовать Python
 
-Первый раз используете Node.js? Начните с [этого](tutorial.md). Любите гонять змею? Зацените [Python примеры](https://github.com/PrismarineJS/mineflayer/tree/master/examples/python) и попробуйте колабнуться в [Mineflayer в Google коллабе](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb).
+Первый раз используете Node.js? Начните с [этого](tutorial.md). Любите гонять змею? Зацените [Python примеры](https://github.com/PrismarineJS/mineflayer/tree/master/examples/python) и попробуйте колабнуться в [Mineflayer Google коллабе](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb).
 
 ## Возможности
 
