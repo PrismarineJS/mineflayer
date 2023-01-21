@@ -33,6 +33,8 @@ jobs:
            mcVersion: '1.19'
          - javaVersion: 17
            mcVersion: '1.19.2'
+         - javaVersion: 17
+           mcVersion: '1.19.3'
       fail-fast: false
 
     steps:
