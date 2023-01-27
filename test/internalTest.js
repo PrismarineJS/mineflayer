@@ -148,7 +148,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
               plainMessage: 'hello',
               filterType: 0,
               type: 0,
-              networkName: '',
+              networkName: JSON.stringify({ text: 'gary' }),
               previousMessages: [],
               senderUuid: uuid,
               timestamp: Date.now(),
