@@ -117,33 +117,21 @@ for (const supportedVersion of mineflayer.testedVersions) {
           })
 
         if (hasSignedChat) {
-          if (registry.supportFeature('chainedChatWithHashing')) {
-            const uuid = 'd3527a0b-bc03-45d5-a878-2aafdd8c8a43' // random
+          const uuid = 'd3527a0b-bc03-45d5-a878-2aafdd8c8a43' // random
 
-            // Declare player info so client can resolve sender name
-            client.write('player_info', {
-              action: 0,
-              data: [
-                {
-                  UUID: uuid,
-                  name: 'gary',
-                  properties: [],
-                  gamemode: 0,
-                  ping: 0
-                }
-              ]
+          if (registry.supportFeature('useChatSessions')) {
+            client.write('player_chat', {
+              plainMessage: 'hello',
+              filterType: 0,
+              type: 0,
+              networkName: JSON.stringify({ text: 'gary' }),
+              previousMessages: [],
+              senderUuid: uuid,
+              timestamp: Date.now(),
+              index: 0,
+              salt: 0n
             })
-
-            client.write('named_entity_spawn', {
-              entityId: 0,
-              playerUUID: uuid,
-              x: 0,
-              y: 0,
-              z: 0,
-              yaw: 0,
-              pitch: 0
-            })
-
+          } else if (registry.supportFeature('chainedChatWithHashing')) {
             client.write('player_chat', {
               plainMessage: 'hello',
               filterType: 0,
@@ -160,7 +148,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
               signedChatContent: '',
               unsignedChatContent: message,
               type: 0,
-              senderUuid: 'd3527a0b-bc03-45d5-a878-2aafdd8c8a43', // random
+              senderUuid: uuid,
               senderName: JSON.stringify({ text: 'gary' }),
               senderTeam: undefined,
               timestamp: Date.now(),
@@ -399,30 +387,97 @@ for (const supportedVersion of mineflayer.testedVersions) {
           bot.on('entitySpawn', (entity) => {
             const player = bot.players[entity.username]
             assert.strictEqual(entity.username, player.displayName.toString())
-            client.write('player_info', {
-              id: 56,
-              state: 'play',
-              action: 3,
-              length: 1,
-              data: [{
-                UUID: '1-2-3-4',
-                name: 'bot5',
-                propertiesLength: 0,
-                properties: [],
-                gamemode: 0,
-                ping: 0,
-                hasDisplayName: true,
-                displayName: '{"text":"wvffle"}'
-              }]
-            })
+            if(registry.supportFeature('playerInfoActionIsBitfield')) {
+              client.write('player_info', {
+                action: 53,
+                data: [{
+                  uuid: '1-2-3-4',
+                  player: {
+                    name: 'bot5',
+                    properties: []
+                  },
+                  gamemode: 0,
+                  latency: 0,
+                  displayName: '{"text":"wvffle"}'
+                }]
+              })
+            } else {
+              client.write('player_info', {
+                id: 56,
+                state: 'play',
+                action: 3,
+                length: 1,
+                data: [{
+                  UUID: '1-2-3-4',
+                  name: 'bot5',
+                  propertiesLength: 0,
+                  properties: [],
+                  gamemode: 0,
+                  ping: 0,
+                  hasDisplayName: true,
+                  displayName: '{"text":"wvffle"}'
+                }]
+              })
+            }
           })
 
           bot.once('playerUpdated', (player) => {
             assert.strictEqual('wvffle', player.displayName.toString())
+            if(registry.supportFeature('playerInfoActionIsBitfield')) {
+              client.write('player_info', {
+                action: 53,
+                data: [{
+                  uuid: '1-2-3-4',
+                  player: {
+                    name: 'bot5',
+                    properties: []
+                  },
+                  gamemode: 0,
+                  latency: 0
+                }]
+              })
+            } else {
+              client.write('player_info', {
+                id: 56,
+                state: 'play',
+                action: 3,
+                length: 1,
+                data: [{
+                  UUID: '1-2-3-4',
+                  name: 'bot5',
+                  propertiesLength: 0,
+                  properties: [],
+                  gamemode: 0,
+                  ping: 0,
+                  hasDisplayName: false
+                }]
+              })
+            }
+
+            bot.once('playerUpdated', (player) => {
+              assert.strictEqual(player.entity.username, player.displayName.toString())
+              done()
+            })
+          })
+
+          if(registry.supportFeature('playerInfoActionIsBitfield')) {
+            client.write('player_info', {
+              action: 53,
+              data: [{
+                uuid: '1-2-3-4',
+                player: {
+                  name: 'bot5',
+                  properties: []
+                },
+                gamemode: 0,
+                latency: 0
+              }]
+            })
+          } else {
             client.write('player_info', {
               id: 56,
               state: 'play',
-              action: 3,
+              action: 0,
               length: 1,
               data: [{
                 UUID: '1-2-3-4',
@@ -434,28 +489,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
                 hasDisplayName: false
               }]
             })
-
-            bot.once('playerUpdated', (player) => {
-              assert.strictEqual(player.entity.username, player.displayName.toString())
-              done()
-            })
-          })
-
-          client.write('player_info', {
-            id: 56,
-            state: 'play',
-            action: 0,
-            length: 1,
-            data: [{
-              UUID: '1-2-3-4',
-              name: 'bot5',
-              propertiesLength: 0,
-              properties: [],
-              gamemode: 0,
-              ping: 0,
-              hasDisplayName: false
-            }]
-          })
+          }
 
           client.write('named_entity_spawn', {
             entityId: 56,
@@ -491,21 +525,36 @@ for (const supportedVersion of mineflayer.testedVersions) {
         server.on('login', (client) => {
           serverClient = client
 
-          client.write('player_info', {
-            id: 56,
-            state: 'play',
-            action: 0,
-            length: 1,
-            data: [{
-              UUID: '1-2-3-4',
-              name: 'bot5',
-              propertiesLength: 0,
-              properties: [],
-              gamemode: 0,
-              ping: 0,
-              hasDisplayName: false
-            }]
-          })
+          if(registry.supportFeature('playerInfoActionIsBitfield')) {
+            client.write('player_info', {
+              action: 53,
+              data: [{
+                uuid: '1-2-3-4',
+                player: {
+                  name: 'bot5',
+                  properties: []
+                },
+                gamemode: 0,
+                latency: 0
+              }]
+            })
+          } else {
+            client.write('player_info', {
+              id: 56,
+              state: 'play',
+              action: 0,
+              length: 1,
+              data: [{
+                UUID: '1-2-3-4',
+                name: 'bot5',
+                propertiesLength: 0,
+                properties: [],
+                gamemode: 0,
+                ping: 0,
+                hasDisplayName: false
+              }]
+            })
+          }
 
           client.write('named_entity_spawn', {
             entityId: 56,
@@ -627,6 +676,11 @@ for (const supportedVersion of mineflayer.testedVersions) {
             metadataPacket.metadata[0].value.itemId = itemData.itemId
             metadataPacket.metadata[0].value.present = true
           }
+
+          if(bot.supportFeature('entityMetadataHasLong')) {
+            metadataPacket.metadata[0].type = 7;
+          }
+
           client.write('entity_metadata', metadataPacket)
         })
       })
