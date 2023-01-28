@@ -567,6 +567,7 @@ export interface TransferOptions {
   window: Window
   itemType: number
   metadata: number | null
+  count?: number,
   sourceStart: number
   sourceEnd: number
   destStart: number
