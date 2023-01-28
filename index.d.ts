@@ -411,6 +411,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   awaitMessage: (...args: string[] | RegExp[]) => Promise<string>
 
+  onMessage: (findMessageTimeout: number, ...args: string[] | RegExp[]) => Promise<string|false>
+
   acceptResourcePack: () => void
 
   denyResourcePack: () => void
