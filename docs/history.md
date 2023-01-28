@@ -1,3 +1,9 @@
+## 4.8.0
+
+* Update chat parsing (@frej4189)
+* Fix message event not including chat position (@frej4189)
+* 1.19.3  (@frej4189)
+
 ## 4.7.0
 
 * 1.19.2 support (@frej4189)
