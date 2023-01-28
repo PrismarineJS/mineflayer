@@ -387,7 +387,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           bot.on('entitySpawn', (entity) => {
             const player = bot.players[entity.username]
             assert.strictEqual(entity.username, player.displayName.toString())
-            if(registry.supportFeature('playerInfoActionIsBitfield')) {
+            if (registry.supportFeature('playerInfoActionIsBitfield')) {
               client.write('player_info', {
                 action: 53,
                 data: [{
@@ -423,7 +423,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
           bot.once('playerUpdated', (player) => {
             assert.strictEqual('wvffle', player.displayName.toString())
-            if(registry.supportFeature('playerInfoActionIsBitfield')) {
+            if (registry.supportFeature('playerInfoActionIsBitfield')) {
               client.write('player_info', {
                 action: 53,
                 data: [{
@@ -460,7 +460,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             })
           })
 
-          if(registry.supportFeature('playerInfoActionIsBitfield')) {
+          if (registry.supportFeature('playerInfoActionIsBitfield')) {
             client.write('player_info', {
               action: 53,
               data: [{
@@ -525,7 +525,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         server.on('login', (client) => {
           serverClient = client
 
-          if(registry.supportFeature('playerInfoActionIsBitfield')) {
+          if (registry.supportFeature('playerInfoActionIsBitfield')) {
             client.write('player_info', {
               action: 53,
               data: [{
@@ -677,8 +677,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
             metadataPacket.metadata[0].value.present = true
           }
 
-          if(bot.supportFeature('entityMetadataHasLong')) {
-            metadataPacket.metadata[0].type = 7;
+          if (bot.supportFeature('entityMetadataHasLong')) {
+            metadataPacket.metadata[0].type = 7
           }
 
           client.write('entity_metadata', metadataPacket)
