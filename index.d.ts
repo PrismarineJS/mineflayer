@@ -336,6 +336,14 @@ export interface Bot extends TypedEmitter<BotEvents> {
     craftingTable?: Block
   ) => Promise<void>
 
+  craftBatch: (
+    recipe: Array<{
+      recipe: Recipe,
+      count: number,
+    }>,
+    craftingTable?: Block
+  ) => Promise<void>
+
   writeBook: (
     slot: number,
     pages: string[]

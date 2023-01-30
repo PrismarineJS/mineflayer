@@ -1841,16 +1841,27 @@ Todas las direcciones son relativas a donde está mirando el bot
 
  * `slot` - puede ser de 0 a 8, la casilla de la barra de acceso rápido
 
-#### bot.craft(recipe, count, craftingTable, [callback])
+#### bot.craft(recipe, count, craftingTable)
 
-Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
+Esta función devuelve una `Promise`, tipo `void`.
 
  * `recipe` - Una instancia `Recipe`. Mira `bot.recipesFor`.
  * `count` - Cuantas veces quieres repetir la acción.
    Si quieres craftear `8` palos con tablas de madera, pondrías
    `count` a `2`. `null` significa `1`.
  * `craftingTable` - Una instancia de `Block`, la mesa de crafteo que quieres usar. Si el crafteo no necesita una mesa, este argumento se puede dejar como `null`.
- * `callback` - (opcional) Ejecutado cuando el bot ha terminado de craftear y el inventario ha sido actualizado.
+ 
+#### bot.craftBatch([{recipe, count}], craftingTable)
+
+Esta función devuelve una `Promise`, tipo `void`.
+Es usado para crear multiples items en 1 sola llamada, para usarlo debes envíar una array de objectos que contengan la receta `recipe` y la cantidad `count`
+
+ * `recipe` - Una instancia `Recipe`. Mira `bot.recipesFor`.
+ * `count` - Cuantas veces quieres repetir la acción.
+   Si quieres craftear `8` palos con tablas de madera, pondrías
+   `count` a `2`.
+ * `craftingTable` - Una instancia de `Block`, la mesa de crafteo que quieres usar. Si el crafteo no necesita una mesa, este argumento se puede dejar como `null`.
+
 
 #### bot.writeBook(slot, pages, [callback])
 

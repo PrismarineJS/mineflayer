@@ -1473,14 +1473,22 @@ bot.once('login', () => {
 
  * `slot` - выбрать слот ( 0 - 8 )
 
-#### bot.craft(recipe, count, craftingTable, [callback])
+#### bot.craft(recipe, count, craftingTable)
 
  * `recipe` - рецепт крафта. Смотрите `bot.recipesFor`.
  * `count` - количество предмета крафта
    Если вы хотите скрафтить 8 досок в палки,  вы должны установить
    `count` в `2`. `null` является 1
  * `craftingTable` - блок верстака, при указании null предмет крафтится в вашем инвентаре
- * `callback` - (необязательно) Вызыватся если крафт завершен успешно
+
+ #### bot.craft([{recipe, count}], craftingTable)
+
+ * `recipe` - рецепт крафта. Смотрите `bot.recipesFor`.
+ * `count` - количество предмета крафта
+   Если вы хотите скрафтить 8 досок в палки,  вы должны установить
+   `count` в `2`. `null` является 1
+ * `craftingTable` - блок верстака, при указании null предмет крафтится в вашем инвентаре
+
 
 #### bot.writeBook(slot, pages, [callback])
 

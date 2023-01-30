@@ -1983,6 +1983,20 @@ This function returns a `Promise`, with `void` as its argument when the crafting
    use. If the recipe does not require a crafting table, you may use
    `null` for this argument.
 
+#### bot.craftBatch([{recipe, count}], craftingTable)
+
+This function returns a `Promise`, with `void` as its argument when the crafting is complete and your inventory is updated.
+
+Used to create multiple items in 1 request, to use send an array of items with recipe and count
+
+ * `recipe` - A `Recipe` instance. See `bot.recipesFor`.
+ * `count` - How many times you wish to perform the operation.
+   If you want to craft planks into `8` sticks, you would set
+   `count` to `2`.
+ * `craftingTable` - A `Block` instance, the crafting table you wish to
+   use. If the recipe does not require a crafting table, you may use
+   `null` for this argument.
+
 #### bot.writeBook(slot, pages)
 
 This function returns a `Promise`, with `void` as its argument when the writing was successfully or an error occurred.
