@@ -40,7 +40,7 @@ export interface PluginOptions {
 
 export type Plugin = (bot: Bot, options: BotOptions) => void
 
-interface BotEvents {
+type BotEvents = {
   chat: (
     username: string,
     message: string,

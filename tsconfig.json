@@ -1,7 +1,8 @@
 {
     "compilerOptions": {
       "module": "commonjs",
-      "strictNullChecks": true
+      "strictNullChecks": true,
+      "esModuleInterop": true
     },
     "files": [
       "index.d.ts"
