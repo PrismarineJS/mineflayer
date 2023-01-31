@@ -9,11 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@master
+      uses: actions/checkout@v3
     - name: Set up Node.js
-      uses: actions/setup-node@master
+      uses: actions/setup-node@v3
       with:
-        node-version: 14.0.0
+        node-version: 14
+        check-latest: true
     - id: publish
       uses: JS-DevTools/npm-publish@v1
       with:
@@ -21,12 +22,12 @@ jobs:
     - name: Create Release
       if: steps.publish.outputs.type != 'none'
       id: create_release
-      uses: actions/create-release@v1
+      uses: softprops/action-gh-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ steps.publish.outputs.version }}
-        release_name: Release ${{ steps.publish.outputs.version }}
+        name: Release ${{ steps.publish.outputs.version }}
         body: ${{ steps.publish.outputs.version }}
         draft: false
         prerelease: false
