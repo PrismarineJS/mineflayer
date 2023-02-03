@@ -1,5 +1,4 @@
 const mineflayer = require('mineflayer')
-const perform = require('../performance')
 
 const bot = mineflayer.createBot({
   host: process.argv[2] ? process.argv[2] : 'localhost',
@@ -22,36 +21,81 @@ bot.on('spawn', function () {
   bot.chat(`/give ${bot.username} minecraft:oak_log 64`)
 
   bot.on('windowOpen', () => {
-    perform.end('Windows opened at')
+    console.log('Windows opened')
   })
   bot.on('windowClose', () => {
-    perform.end('Closed windows at')
+    console.log('Closed windows')
   })
 
   console.log('Spawned')
   setTimeout(() => {
     console.log('Start')
-    perform.start()
     const craftingTableID = mcData.blocksByName.crafting_table.id
     const craftingTable = bot.findBlock({
       matching: craftingTableID,
       maxDistance: 3
     })
 
-    const plankRecipe = bot.recipesFor(mcData.itemsByName.oak_planks.id)
+    const plankRecipe = bot.recipesFor(mcData.itemsByName.oak_planks.id)[0]
 
-    const recipes = [{
-      recipe: plankRecipe[0],
-      count: 1
-    },
-    {
-      recipe: plankRecipe[0],
-      count: 2
-    },
-    {
-      recipe: plankRecipe[0],
-      count: 3
-    }]
+    const recipes = [
+      {
+        recipe: plankRecipe,
+        count: 2
+      },
+      {
+        recipe: plankRecipe,
+        count: 2
+      },
+      {
+        recipe: plankRecipe,
+        count: 2
+      },
+      {
+        recipe: plankRecipe,
+        count: 2
+      },
+      {
+        recipe: plankRecipe,
+        count: 2
+      },
+      {
+        recipe: plankRecipe,
+        count: 2
+      },
+      {
+        recipe: plankRecipe,
+        count: 2
+      },
+      {
+        recipe: plankRecipe,
+        count: 2
+      },
+      {
+        recipe: plankRecipe,
+        count: 2
+      },
+      {
+        recipe: plankRecipe,
+        count: 2
+      },
+      {
+        recipe: plankRecipe,
+        count: 2
+      },
+      {
+        recipe: plankRecipe,
+        count: 2
+      },
+      {
+        recipe: plankRecipe,
+        count: 2
+      },
+      {
+        recipe: plankRecipe,
+        count: 2
+      }
+    ]
 
     bot.craftBatch(recipes, craftingTable)
       .then(() => {
