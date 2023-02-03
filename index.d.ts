@@ -122,7 +122,7 @@ interface BotEvents {
   ) => Promise<void> | void
   noteHeard: (block: Block, instrument: Instrument, pitch: number) => Promise<void> | void
   pistonMove: (block: Block, isPulling: number, direction: number) => Promise<void> | void
-  chestLidMove: (block: Block, isOpen: number) => Promise<void> | void
+  chestLidMove: (block: Block, isOpen: number, block2: Block | null) => Promise<void> | void
   blockBreakProgressObserved: (block: Block, destroyStage: number) => Promise<void> | void
   blockBreakProgressEnd: (block: Block) => Promise<void> | void
   diggingCompleted: (block: Block) => Promise<void> | void
