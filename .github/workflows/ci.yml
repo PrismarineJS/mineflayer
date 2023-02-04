@@ -6,7 +6,7 @@ on:
       - master
   pull_request:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 * * * *"
 
 jobs:
   Lint:
@@ -56,4 +56,4 @@ jobs:
         run: npm run mocha_test -- -g ${{ matrix.mcVersion }}
 
     env:
-      RUN_EXCLUDED_TESTS: ${{ github.event.schedule == '0 0 * * *' }}
+      RUN_EXCLUDED_TESTS: ${{ github.event.schedule == '0 * * * *' }}
