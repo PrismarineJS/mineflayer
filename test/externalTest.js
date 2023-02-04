@@ -14,6 +14,7 @@ const START_THE_SERVER = true
 // if you want to have time to look what's happening increase this (milliseconds)
 const TEST_TIMEOUT_MS = 90000
 
+const runExcludedTests = process.env.RUN_EXCLUDED_TESTS === '1' || process.env.RUN_EXCLUDED_TESTS === 'true'
 const excludedTests = ['digEverything', 'book', 'anvil', 'placeEntity']
 
 const propOverrides = {
@@ -135,7 +136,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             testFunction(bot, done).then(res => done()).catch(e => done(e))
           }
         }
-        if (excludedTests.indexOf(test) === -1) {
+        if (runExcludedTests || excludedTests.indexOf(test) === -1) {
           if (typeof testFunctions === 'object') {
             for (const testFunctionName in testFunctions) {
               if (testFunctions[testFunctionName] !== undefined) {
