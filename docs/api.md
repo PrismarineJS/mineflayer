@@ -258,6 +258,7 @@
       - [bot.canSeeBlock(block)](#botcanseeblockblock)
       - [bot.findBlocks(options)](#botfindblocksoptions)
       - [bot.findBlock(options)](#botfindblockoptions)
+      - [bot.findChests(options)](#botfindchestssoptions)
       - [bot.canDigBlock(block)](#botcandigblockblock)
       - [bot.recipesFor(itemType, metadata, minResultCount, craftingTable)](#botrecipesforitemtype-metadata-minresultcount-craftingtable)
       - [bot.recipesAll(itemType, metadata, craftingTable)](#botrecipesallitemtype-metadata-craftingtable)
@@ -1565,6 +1566,19 @@ Returns an array (possibly empty) with the found block coordinates (not the bloc
 #### bot.findBlock(options)
 
 Alias for `bot.blockAt(bot.findBlocks(options)[0])`. Return a single block or `null`.
+
+#### bot.findChests(options)
+
+Finds the closest chests from the given point.
+ * `options` - Options for the search:
+   - `point` - The start position of the search (center). Default is the bot position.
+   - `useExtraInfo` - To preserve backward compatibility can result in two behavior depending on the type
+      - **boolean** - Provide your `matching` function more data - noticeably slower aproach
+      - **function** - Creates two stage maching, if block passes `matching` function it is passed further to `useExtraInfo` with additional info
+   - `maxDistance` - The furthest distance for the search, defaults to 16.
+   - `count` - Number of blocks to find before returning the search. Default to 1. Can return less if not enough blocks are found exploring the whole area.
+
+Returns an array (possibly empty) with the found chest coordinates (not the blocks). The array is sorted (closest first)
 
 #### bot.canDigBlock(block)
 
