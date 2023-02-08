@@ -44,16 +44,14 @@ module.exports = () => async (bot) => {
 
   bot.test.sayEverywhere('/setblock ~ ~ ~ portal')
   await once(bot, 'spawn')
-  bot.test.sayEverywhere('/setblock 0 10 0 dirt')
-  bot.test.sayEverywhere('/fill 0 11 0 0 13 0 air')
-  bot.test.sayEverywhere('/tp 0 11 0')
-  await once(bot.world, 'blockUpdate:(0, 10, 0)')
-  console.log('Updated world')
+  bot.test.sayEverywhere('/tp 0 128 0')
+
+  await once(bot, 'forcedMove')
+  await bot.waitForChunksToLoad()
+
   const lowerBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
   await bot.lookAt(lowerBlock.position, true)
-  console.log('Looked at block')
   await bot.test.setInventorySlot(36, new Item(signItem.id, 1, 0))
-  console.log('Inventory')
   await bot.placeBlock(lowerBlock, new Vec3(0, 1, 0))
   return p
 }
