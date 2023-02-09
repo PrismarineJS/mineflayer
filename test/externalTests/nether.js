@@ -37,11 +37,13 @@ module.exports = () => async (bot) => {
         }
 
         bot.test.sayEverywhere('/setblock ~ ~ ~ portal')
+        bot.test.sayEverywhere('/setblock ~ ~ ~ nether_portal')
         once(bot, 'spawn').then(resolve)
       }, 500)
     })
   })
 
+  bot.test.sayEverywhere('/setblock ~ ~ ~ nether_portal')
   bot.test.sayEverywhere('/setblock ~ ~ ~ portal')
   await once(bot, 'spawn')
   bot.test.sayEverywhere('/tp 0 128 0')
