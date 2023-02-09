@@ -1,3 +1,10 @@
+## 4.8.1
+
+* Fix client crashing when player_remove contains unknown player (@frej4189)
+* Fix type (@sefirosweb)
+* Improve crafting stacks (@sefirosweb)
+* add example for using the node:readline module (@Jovan-04)
+
 ## 4.8.0
 
 * Update chat parsing (@frej4189)
