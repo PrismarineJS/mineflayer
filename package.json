@@ -26,7 +26,7 @@
     "prismarine-biome": "^1.1.1",
     "prismarine-block": "^1.13.1",
     "prismarine-chat": "^1.7.1",
-    "prismarine-chunk": "^1.32.0",
+    "prismarine-chunk": "github:frej4189/prismarine-chunk#fix-skylight",
     "prismarine-entity": "^2.2.0",
     "prismarine-item": "^1.12.1",
     "prismarine-nbt": "^2.0.0",
