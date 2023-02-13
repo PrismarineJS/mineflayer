@@ -123,7 +123,7 @@ And you'll get a *live* view looking like this:
 |[guard](https://github.com/PrismarineJS/mineflayer/blob/master/examples/guard.js) | Make a bot guard a defined area from nearby mobs |
 |[multiple-from-file](https://github.com/PrismarineJS/mineflayer/blob/master/examples/multiple_from_file.js) | Add a text file with accounts and have them all login |
 
-And many mores in the [examples](https://github.com/PrismarineJS/mineflayer/tree/master/examples) folder
+And many more in the [examples](https://github.com/PrismarineJS/mineflayer/tree/master/examples) folder.
 
 ### Modules
 
