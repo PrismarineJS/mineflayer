@@ -1,10 +1,10 @@
-/* 
+/*
  * simple example for using the built-in brewing stand methods
  * give the bot 3 water bottles, nether wart, a ghast tear, and blaze powder for fuel
  * place a brewing stand near the bot, then type 'open' in chat to have the bot open the brewing stand
  * type 'brew' in chat, then the bot will brew a potion of regeneration
  * type 'info' at any time, and the bot will log info about the brewing stand to the console
- * 
+ *
  * made by Jovan04 2/15/2023
  */
 
@@ -23,7 +23,6 @@ const bot = mineflayer.createBot({
   username: process.argv[4] || 'brewer',
   auth: process.argv[5] || 'offline'
 })
-
 
 bot.once('spawn', () => {
   console.log(`bot joined the game with username ${bot.username}`)
@@ -53,11 +52,11 @@ bot.on('chat', async (username, message) => {
     }
 
     console.log(`fuel: ${stand.fuel}; progress: ${stand.progress}; seconds: ${stand.progressSeconds}.`)
-    console.log(`fuelItem:`)
+    console.log('fuelItem:')
     console.log(stand.fuelItem())
-    console.log(`ingredient:`)
+    console.log('ingredient:')
     console.log(stand.ingredientItem())
-    console.log(`potions:`)
+    console.log('potions:')
     console.log(stand.potions())
   }
 
@@ -74,7 +73,7 @@ bot.on('chat', async (username, message) => {
     await stand.putFuel(bot.registry.itemsByName['blaze_powder'].id, null, 1)
     await stand.putIngredient(bot.registry.itemsByName['nether_wart'].id, null, 1)
     await once(stand, 'brewingStopped')
-    await stand.putIngredient(bot.registry.itemsByName['ghast_tear'].id, null, 1) 
+    await stand.putIngredient(bot.registry.itemsByName['ghast_tear'].id, null, 1)
     await once(stand, 'brewingStopped')
     await stand.takePotions()
   }
