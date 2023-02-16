@@ -33,8 +33,8 @@ bot.on('chat', async (username, message) => {
 
   if (message === 'open') {
     const standBlock = bot.findBlock({
-      maxDistance: 4,
-      matching: bot.registry.blocksByName['brewing_stand'].id
+      maxDistance: 6,
+      matching: bot.registry.blocksByName.brewing_stand.id
     })
 
     if (!standBlock) {
@@ -53,7 +53,7 @@ bot.on('chat', async (username, message) => {
 
     console.log(`fuel: ${stand.fuel}; progress: ${stand.progress}; seconds: ${stand.progressSeconds}.`)
     console.log('fuelItem:')
-    console.log(stand.fuelItem())
+    console.log(stand.fuelItem()) // comment this line out if mc version < 1.9
     console.log('ingredient:')
     console.log(stand.ingredientItem())
     console.log('potions:')
@@ -66,14 +66,14 @@ bot.on('chat', async (username, message) => {
       return
     }
 
-    await stand.putPotion(0, bot.registry.itemsByName['potion'].id, null, 1)
-    await stand.putPotion(1, bot.registry.itemsByName['potion'].id, null, 1)
-    await stand.putPotion(2, bot.registry.itemsByName['potion'].id, null, 1)
+    await stand.putPotion(0, bot.registry.itemsByName.potion.id, null, 1)
+    await stand.putPotion(1, bot.registry.itemsByName.potion.id, null, 1)
+    await stand.putPotion(2, bot.registry.itemsByName.potion.id, null, 1)
 
-    await stand.putFuel(bot.registry.itemsByName['blaze_powder'].id, null, 1)
-    await stand.putIngredient(bot.registry.itemsByName['nether_wart'].id, null, 1)
+    await stand.putFuel(bot.registry.itemsByName.blaze_powder.id, null, 1) // comment this line out if mc version < 1.9
+    await stand.putIngredient(bot.registry.itemsByName.nether_wart.id, null, 1)
     await once(stand, 'brewingStopped')
-    await stand.putIngredient(bot.registry.itemsByName['ghast_tear'].id, null, 1)
+    await stand.putIngredient(bot.registry.itemsByName.ghast_tear.id, null, 1)
     await once(stand, 'brewingStopped')
     await stand.takePotions()
   }
