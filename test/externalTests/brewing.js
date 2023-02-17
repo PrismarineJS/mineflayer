@@ -60,7 +60,7 @@ module.exports = () => async (bot) => {
 
   const pot = await brewingStand.takePotion(0)
 
-  if (bot.registry.isNewerOrEqualTo('1.8')) {
+  if (bot.registry.isNewerOrEqualTo('1.9')) {
     assert.strictEqual(pot.nbt.value.Potion.value, 'minecraft:regeneration')
   } else {
     assert.strictEqual(pot.metadata, 8193)
