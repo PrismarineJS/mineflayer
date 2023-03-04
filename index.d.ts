@@ -449,7 +449,7 @@ export type LevelType =
   | 'buffet'
   | 'default_1_1'
 export type GameMode = 'survival' | 'creative' | 'adventure' | 'spectator'
-export type Dimension = 'minecraft:the_nether' | 'minecraft:overworld' | 'minecraft:the_end'
+export type Dimension = 'the_nether' | 'overworld' | 'the_end'
 export type Difficulty = 'peaceful' | 'easy' | 'normal' | 'hard'
 
 export interface Player {
