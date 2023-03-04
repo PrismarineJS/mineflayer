@@ -75,6 +75,14 @@
       - [BossBar.isDragonBar](#bossbarisdragonbar)
       - [BossBar.createFog](#bossbarcreatefog)
       - [BossBar.color](#bossbarcolor)
+    - [mineflayer.Particle](#mineflayerparticle)
+      - [Particle.id](#particleid)
+      - [Particle.name](#particlename)
+      - [Particle.position](#particleposition)
+      - [Particle.offset](#particleoffset)
+      - [Particle.longDistanceRender](#particlelongdistancerender)
+      - [Particle.count](#particlecount)
+      - [Particle.movementSpeed](#particlemovementspeed)
   - [Bot](#bot)
     - [mineflayer.createBot(options)](#mineflayercreatebotoptions)
     - [Properties](#properties)
@@ -150,9 +158,9 @@
     - [Events](#events)
       - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
       - ["whisper" (username, message, translate, jsonMsg, matches)](#whisper-username-message-translate-jsonmsg-matches)
-      - ["actionBar" (jsonMsg)](#actionbar-jsonmsg)
-      - ["message" (jsonMsg, position)](#message-jsonmsg-position)
-      - ["messagestr" (message, messagePosition, jsonMsg)](#messagestr-message-messageposition-jsonmsg)
+      - ["actionBar" (jsonMsg, verified)](#actionbar-jsonmsg-verified)
+      - ["message" (jsonMsg, position, sender, verified)](#message-jsonmsg-position-sender-verified)
+      - ["messagestr" (message, messagePosition, jsonMsg, sender, verified)](#messagestr-message-messageposition-jsonmsg-sender-verified)
       - ["inject_allowed"](#inject_allowed)
       - ["login"](#login)
       - ["spawn"](#spawn)
@@ -209,8 +217,8 @@
       - ["noteHeard" (block, instrument, pitch)](#noteheard-block-instrument-pitch)
       - ["pistonMove" (block, isPulling, direction)](#pistonmove-block-ispulling-direction)
       - ["chestLidMove" (block, isOpen, block2)](#chestlidmove-block-isopen-block2)
-      - ["blockBreakProgressObserved" (block, destroyStage)](#blockbreakprogressobserved-block-destroystage)
-      - ["blockBreakProgressEnd" (block)](#blockbreakprogressend-block)
+      - ["blockBreakProgressObserved" (block, destroyStage, entity)](#blockbreakprogressobserved-block-destroystage-entity)
+      - ["blockBreakProgressEnd" (block, entity)](#blockbreakprogressend-block-entity)
       - ["diggingCompleted" (block)](#diggingcompleted-block)
       - ["diggingAborted" (block)](#diggingaborted-block)
       - ["move"](#move)
@@ -239,11 +247,13 @@
       - ["heldItemChanged" (heldItem)](#helditemchanged-helditem)
       - ["physicsTick" ()](#physicstick-)
       - ["chat:name" (matches)](#chatname-matches)
+      - ["particle"](#particle)
     - [Functions](#functions)
       - [bot.blockAt(point, extraInfos=true)](#botblockatpoint-extrainfostrue)
       - [bot.waitForChunksToLoad()](#botwaitforchunkstoload)
       - [bot.blockInSight(maxSteps, vectorLength)](#botblockinsightmaxsteps-vectorlength)
       - [bot.blockAtCursor(maxDistance=256)](#botblockatcursormaxdistance256)
+      - [bot.entityAtCursor(maxDistance=3.5)](#botentityatcursormaxdistance35)
       - [bot.blockAtEntityCursor(entity=bot.entity, maxDistance=256)](#botblockatentitycursorentitybotentity-maxdistance256)
       - [bot.canSeeBlock(block)](#botcanseeblockblock)
       - [bot.findBlocks(options)](#botfindblocksoptions)
@@ -288,7 +298,7 @@
       - [bot.denyResourcePack()](#botdenyresourcepack)
       - [bot.placeBlock(referenceBlock, faceVector)](#botplaceblockreferenceblock-facevector)
       - [bot.placeEntity(referenceBlock, faceVector)](#botplaceentityreferenceblock-facevector)
-      - [bot.activateBlock(block)](#botactivateblockblock)
+      - [bot.activateBlock(block, direction?: Vec3, cursorPos?: Vec3)](#botactivateblockblock-direction-vec3-cursorpos-vec3)
       - [bot.activateEntity(entity)](#botactivateentityentity)
       - [bot.activateEntityAt(entity, position)](#botactivateentityatentity-position)
       - [bot.consume()](#botconsume)
@@ -304,8 +314,8 @@
       - [bot.setQuickBarSlot(slot)](#botsetquickbarslotslot)
       - [bot.craft(recipe, count, craftingTable)](#botcraftrecipe-count-craftingtable)
       - [bot.writeBook(slot, pages)](#botwritebookslot-pages)
-      - [bot.openContainer(containerBlock or containerEntity)](#botopencontainercontainerblock-or-containerentity)
-      - [bot.openChest(chestBlock or minecartchestEntity)](#botopenchestchestblock-or-minecartchestentity)
+      - [bot.openContainer(containerBlock or containerEntity, direction?, cursorPos?)](#botopencontainercontainerblock-or-containerentity-direction-cursorpos)
+      - [bot.openChest(chestBlock or minecartchestEntity, direction?, cursorPos?)](#botopenchestchestblock-or-minecartchestentity-direction-cursorpos)
       - [bot.openFurnace(furnaceBlock)](#botopenfurnacefurnaceblock)
       - [bot.openDispenser(dispenserBlock)](#botopendispenserdispenserblock)
       - [bot.openEnchantmentTable(enchantmentTableBlock)](#botopenenchantmenttableenchantmenttableblock)
@@ -321,7 +331,7 @@
       - [bot.putAway(slot)](#botputawayslot)
       - [bot.closeWindow(window)](#botclosewindowwindow)
       - [bot.transfer(options)](#bottransferoptions)
-      - [bot.openBlock(block)](#botopenblockblock)
+      - [bot.openBlock(block, direction?: Vec3, cursorPos?: Vec3)](#botopenblockblock-direction-vec3-cursorpos-vec3)
       - [bot.openEntity(entity)](#botopenentityentity)
       - [bot.moveSlotItem(sourceSlot, destSlot)](#botmoveslotitemsourceslot-destslot)
       - [bot.updateHeldItem()](#botupdatehelditem)
@@ -453,7 +463,7 @@ See [prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe)
 ### mineflayer.Container
 
 Extends windows.Window for chests, dispensers, etc...
-See `bot.openChest(chestBlock or minecartchestEntity)`.
+See `bot.openContainer(chestBlock or minecartchestEntity)`.
 
 ### mineflayer.Furnace
 
@@ -723,6 +733,36 @@ Determines whether or not boss bar creates fog
 #### BossBar.color
 
 Determines what color the boss bar color is, one of `pink`, `blue`, `red`, `green`, `yellow`, `purple`, `white`
+
+### mineflayer.Particle
+
+#### Particle.id
+
+Particle ID, as defined in the [protocol](https://wiki.vg/Protocol#Particle)
+
+#### Particle.name
+
+Particle Name, as defined in the [protocol](https://wiki.vg/Protocol#Particle)
+
+#### Particle.position
+
+Vec3 instance of where the particle was created
+
+#### Particle.offset
+
+Vec3 instance of the particle's offset
+
+#### Particle.longDistanceRender
+
+Determines whether or not to force the rendering of a particle despite client particle settings and increases maximum view distance from 256 to 65536
+
+#### Particle.count
+
+Amount of particles created
+
+#### Particle.movementSpeed
+
+Particle speed in a random direction
 
 ## Bot
 
@@ -1105,26 +1145,36 @@ Only emitted when a player chats to you privately.
  * `jsonMsg` - unmodified JSON message from the server
  * `matches` - array of returned matches from regular expressions. May be null
 
-#### "actionBar" (jsonMsg)
+#### "actionBar" (jsonMsg, verified)
 
 Emitted for every server message which appears on the Action Bar.
 
  * `jsonMsg` - unmodified JSON message from the server
+ * `verified` -> null if non signed, true if signed and correct, false if signed and incorrect
 
-#### "message" (jsonMsg, position)
+#### "message" (jsonMsg, position, sender, verified)
 
 Emitted for every server message, including chats.
 
- * `jsonMsg` - unmodified JSON message from the server
+ * `jsonMsg` - [ChatMessage](https://github.com/PrismarineJS/prismarine-chat) object containing the formatted chat message. Might additionally have the following properties:
+   * unsigned - Unsigned ChatMessage object. Only present in 1.19.2+, and only when the server allows insecure chat and the server modified the chat message without the user's signature
 
  * `position` - (>= 1.8.1): position of Chat message can be
    * chat
    * system
    * game_info
 
-#### "messagestr" (message, messagePosition, jsonMsg)
+ * `sender` - UUID of sender if known (1.16+), else null
 
-Alias for the "message" event but it calls .toString() on the message object to get a string for the message before emitting.
+ * `verified` -> null if non signed, true if signed and correct, false if signed and incorrect
+
+#### "messagestr" (message, messagePosition, jsonMsg, sender, verified)
+
+Alias for the "message" event but it calls .toString() on the prismarine-message object to get a string for the message before emitting.
+
+ * `sender` - UUID of sender if known (1.16+), else null
+
+ * `verified` -> null if non signed, true if signed and correct, false if signed and incorrect
 
 #### "inject_allowed"
 Fires when the index file has been loaded, you can load mcData and plugins here but it's better to wait for "spawn" event.
@@ -1321,19 +1371,21 @@ Fires when a note block goes off somewhere.
 * `isOpen`: number of players that have the chest open. 0 if it's closed
 * `block2`: a Block instance, the other half of the block whose lid opened. null if it's not a double chest
 
-#### "blockBreakProgressObserved" (block, destroyStage)
+#### "blockBreakProgressObserved" (block, destroyStage, entity)
 
 Fires when the client observes a block in the process of being broken.
 
  * `block`: a Block instance, the block being broken
  * `destroyStage`: integer corresponding to the destroy progress (0-9)
+ * `entity`: the entity which is breaking the block.
 
-#### "blockBreakProgressEnd" (block)
+#### "blockBreakProgressEnd" (block, entity)
 
 Fires when the client observes a block stops being broken.
 This occurs whether the process was completed or aborted.
 
  * `block`: a Block instance, the block no longer being broken
+ * `entity`: the entity which has stopped breaking the block
 
 #### "diggingCompleted" (block)
 
@@ -1453,6 +1505,10 @@ Fires every tick if bot.physicsEnabled is set to true.
 
 Fires when the all of a chat pattern's regexs have matches
 
+#### "particle"
+
+Fires when a particle is created
+
 ### Functions
 
 #### bot.blockAt(point, extraInfos=true)
@@ -1476,6 +1532,11 @@ Returns the block at which bot is looking at or `null`
 
 Returns the block at which bot is looking at or `null`
  * `maxDistance` - The maximum distance the block can be from the eye, defaults to 256.
+
+#### bot.entityAtCursor(maxDistance=3.5)
+
+Returns the entity at which bot is looking at or `null`
+ * `maxDistance` - The maximum distance the entity can be from the eye, defaults to 3.5.
 
 #### bot.blockAtEntityCursor(entity=bot.entity, maxDistance=256)
 
@@ -1820,13 +1881,15 @@ This function returns a `Promise`, with `Entity` as its argument upon completion
 
 The new block will be placed at `referenceBlock.position.plus(faceVector)`.
 
-#### bot.activateBlock(block)
+#### bot.activateBlock(block, direction?: Vec3, cursorPos?: Vec3)
 
 This function returns a `Promise`, with `void` as its argument upon completion.
 
 Punch a note block, open a door, etc.
 
  * `block` - the block to activate
+ * `direction` Optional defaults to `new Vec3(0, 1, 0)` (up). A vector off the direction the container block should be interacted with. Does nothing when a container entity is targeted.
+ * `cursorPos` Optional defaults to `new Vec3(0.5, 0.5, 0.5)` (block center). The curos position when opening the block instance. This is send with the activate block packet. Does nothing when a container entity is targeted.
 
 #### bot.activateEntity(entity)
 
@@ -1927,11 +1990,16 @@ This function returns a `Promise`, with `void` as its argument when the writing 
  * `slot` is in inventory window coordinates (where 36 is the first quickbar slot, etc.).
  * `pages` is an array of strings represents the pages.
 
-#### bot.openContainer(containerBlock or containerEntity)
+#### bot.openContainer(containerBlock or containerEntity, direction?, cursorPos?)
+Opens a block container or entity.
+
+ * `containerBlock` or `containerEntity` The block instance to open or the entity to open.
+ * `direction` Optional defaults to `new Vec3(0, 1, 0)` (up). A vector off the direction the container block should be interacted with. Does nothing when a container entity is targeted.
+ * `cursorPos` Optional defaults to `new Vec3(0.5, 0.5, 0.5)` (block center). The curos position when opening the block instance. This is send with the activate block packet. Does nothing when a container entity is targeted.
 
 Returns a promise on a `Container` instance which represents the container you are opening.
 
-#### bot.openChest(chestBlock or minecartchestEntity)
+#### bot.openChest(chestBlock or minecartchestEntity, direction?, cursorPos?)
 
 Deprecated. Same as `openContainer`
 
@@ -2032,11 +2100,13 @@ Transfer some kind of item from one range to an other. `options` is an object co
  * `count` : the amount of items to transfer. Default: `1`
  * `nbt` : nbt data of the item to transfer. Default: `nullish` (ignores nbt)
 
-#### bot.openBlock(block)
+#### bot.openBlock(block, direction?: Vec3, cursorPos?: Vec3)
 
 Open a block, for example a chest, returns a promise on the opening `Window`.
 
- * `block` is the block the bot will open
+ * `block` is the block the bot will open.
+ * `direction` Optional defaults to `new Vec3(0, 1, 0)` (up). A vector off the direction the container block should be interacted with. Does nothing when a container entity is targeted.
+ * `cursorPos` Optional defaults to `new Vec3(0.5, 0.5, 0.5)` (block center). The curos position when opening the block instance. This is send with the activate block packet. Does nothing when a container entity is targeted.
 
 #### bot.openEntity(entity)
 

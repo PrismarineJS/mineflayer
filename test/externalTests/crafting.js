@@ -3,7 +3,7 @@ const { Vec3 } = require('vec3')
 
 module.exports = () => async (bot) => {
   const { blocksByName, itemsByName } = bot.registry
-  const Item = require('prismarine-item')(bot.version)
+  const Item = require('prismarine-item')(bot.registry)
 
   let populateBlockInventory
   let craftItem
