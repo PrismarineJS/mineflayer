@@ -16,6 +16,7 @@
     - [vec3](#vec3)
     - [mineflayer.Location](#mineflayerlocation)
     - [Entity](#entity)
+      - [Player Skin Data](#player-skin-data)
     - [Block](#block)
     - [Biome](#biome)
     - [Item](#item)
@@ -404,6 +405,18 @@ properties.
 Entities represent players, mobs, and objects. They are emitted
 in many events, and you can access your own entity with `bot.entity`.
 See [prismarine-entity](https://github.com/PrismarineJS/prismarine-entity)
+
+#### Player Skin Data
+
+The skin data is stored in the `skinData` property of the player object, if present.
+
+```js
+// player.skinData
+{
+  url: 'http://textures.minecraft.net/texture/...',
+  model: 'slim' // or 'classic'
+}
+```
 
 ### Block
 

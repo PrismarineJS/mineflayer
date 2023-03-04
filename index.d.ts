@@ -460,10 +460,16 @@ export interface Player {
   gamemode: number
   ping: number
   entity: Entity
+  skinData: SkinData | undefined
   profileKeys?: {
     publicKey: Buffer
     signature: Buffer
   }
+}
+
+export interface SkinData {
+  url: string
+  model: string | null
 }
 
 export interface ChatPattern {
