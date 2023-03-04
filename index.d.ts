@@ -190,6 +190,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   world: any
   _client: Client
   heldItem: Item | null
+  usingHeldItem: boolean
   currentWindow: Window | null
   simpleClick: simpleClick
   tablist: Tablist
