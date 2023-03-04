@@ -1,3 +1,81 @@
+## 4.8.1
+
+* Fix client crashing when player_remove contains unknown player (@frej4189)
+* Improve look and fix bug slow craft (@sefirosweb)
+* Fix player entity being unset when player is updated (@frej4189)
+* Fix type (@sefirosweb)
+* Improve crafting stacks (@sefirosweb)
+* add example for using the node:readline module (@Jovan-04)
+
+## 4.8.0
+
+* Update chat parsing (@frej4189)
+* Fix message event not including chat position (@frej4189)
+* 1.19.3  (@frej4189)
+
+## 4.7.0
+
+* 1.19.2 support (@frej4189)
+
+## 4.6.0
+
+* Fix unhandled promise rejection in onceWithCleanup (@IceTank) [#2833](https://github.com/PrismarineJS/mineflayer/pull/2833)
+* Extend every window that is opened with mineflayer specific window functions (@IceTank) [#2768][https://github.com/PrismarineJS/mineflayer/pull/2768]
+* Fix example command line usage messages (@maximmasiutin) [#2853](https://github.com/PrismarineJS/mineflayer/pull/2853)
+* Update README_ES.md (@PanIntegralus) [#2803](https://github.com/PrismarineJS/mineflayer/pull/2803)
+* Fix block face position target when digging (@WhoTho) [#2801](https://github.com/PrismarineJS/mineflayer/pull/2801)
+* Add a native mineflayer event for particles (@NyxaYu) [#2813](https://github.com/PrismarineJS/mineflayer/pull/2813)
+* Fix viewDistance type (@Nciklol) [#2824](Fix viewDistance type (#2824) ) 
+* Add French FAQ (@AugustinMauroy) [#2817](https://github.com/PrismarineJS/mineflayer/pull/2817)
+
+## 4.5.1
+
+* Fixed syntax error in TypeScript definitions (@JungleDome) [commit](https://github.com/PrismarineJS/mineflayer/commit/2c6a4036d84bedb5f349ea5a82d743e344c34224)
+
+## 4.5.0
+
+* 1.19 support (@extremeheat @rom1504 @FCKJohni @Shorent)
+* refactoring examples to use bot.registry (@Epirito)
+* Added barrel and coloured shulker boxes to openable windows (@lazydancer)
+* types: Fix return type for openBlock and openEntity (@sefirosweb)
+* Update activateEntity and activateEntityAt types (@amoraschi)
+
+## 4.4.0
+
+* Fix chatterbox example not getting dropped item (@u9g) [commit](https://github.com/PrismarineJS/mineflayer/commit/f860eac01a0418f4a3de749482d8cab681acc48a)
+* Fix 404d link to license (@BalaM314) [#2601](https://github.com/PrismarineJS/mineflayer/pull/2601)
+* Add bot.clickWindow mode disclaimer (@IceTank) [#2595](https://github.com/PrismarineJS/mineflayer/pull/2595)
+* Add spectator to GameMode types (@IceTank) [#2627](https://github.com/PrismarineJS/mineflayer/pull/2627)
+* Update types for isABed (@amoraschi) [#2628](https://github.com/PrismarineJS/mineflayer/pull/2628)
+* Replace openChest with openContainer in docs and examples (@slightly-imperfect) [#2656](https://github.com/PrismarineJS/mineflayer/pull/2656)
+* Add ender chests as a chest type (@RoseChilds) [#2642](https://github.com/PrismarineJS/mineflayer/pull/2642)
+* Added method to wait until sleep function is in reality sleeping (@sefirosweb) [#2617](https://github.com/PrismarineJS/mineflayer/pull/2617)
+* Added type on move event (@sefirosweb) [#2712](https://github.com/PrismarineJS/mineflayer/pull/2712)
+* Added thunderState type (@sefirosweb) [#2711](https://github.com/PrismarineJS/mineflayer/pull/2711)
+* Fix type error on chest open (@IceTank) [#2684](https://github.com/PrismarineJS/mineflayer/pull/2684)
+* Add support for repeating and chain command blocks. (@mirkokral) [#2669](https://github.com/PrismarineJS/mineflayer/pull/2669)
+* Add player object to blockBreakProgressEnd & observed. (@JackCrispy) [#2647](https://github.com/PrismarineJS/mineflayer/pull/2647)
+* Add entity to blockBreakProgress (@JackCrispy ) [#2648](https://github.com/PrismarineJS/mineflayer/pull/2648)
+* Add direction support to activateBlock, openBlock (@IceTank) [#2039](https://github.com/PrismarineJS/mineflayer/pull/2039)
+* Add entityAtCursor function (@O-of) [#2077](https://github.com/PrismarineJS/mineflayer/pull/2077)
+* Fix regex dos (@IceTank) [#2350](https://github.com/PrismarineJS/mineflayer/pull/2350)
+
+## 4.3.0
+
+* Cache 'positionUpdateSentEveryTick' feature lookup (@IceTank)
+* Remove old teams from bot.teamMap (@U9G)
+* mcdata 3.0.0
+
+## 4.2.0
+
+* add missing extraInfos argument to Bot.blockAt function (@dumbasPL)
+* Emit window close event AFTER updating the inventory (@imharvol)
+* Move supportFeature to mcdata (@U9G)
+* Update lib/ and test/ to use prismarine-registry (@extremeheat)
+* only open chests with openContainer (@U9G)
+* Add bot.creative.clearSlot and bot.creative.clearInventory (@U9G)
+* remove transaction warning
+
 ## 4.1.0
 
 * 1.18.2 support

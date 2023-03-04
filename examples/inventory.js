@@ -67,7 +67,7 @@ bot.on('chat', async (username, message) => {
 function sayItems (items = null) {
   if (!items) {
     items = bot.inventory.items()
-    if (require('minecraft-data')(bot.version).isNewerOrEqualTo('1.9') && bot.inventory.slots[45]) items.push(bot.inventory.slots[45])
+    if (bot.registry.isNewerOrEqualTo('1.9') && bot.inventory.slots[45]) items.push(bot.inventory.slots[45])
   }
   const output = items.map(itemToString).join(', ')
   if (output) {
@@ -127,10 +127,8 @@ function useEquippedItem () {
 
 async function craftItem (name, amount) {
   amount = parseInt(amount, 10)
-  const mcData = require('minecraft-data')(bot.version)
-
-  const item = mcData.itemsByName[name]
-  const craftingTableID = mcData.blocksByName.crafting_table.id
+  const item = bot.registry.itemsByName[name]
+  const craftingTableID = bot.registry.blocksByName.crafting_table.id
 
   const craftingTable = bot.findBlock({
     matching: craftingTableID
@@ -164,6 +162,6 @@ function itemToString (item) {
 
 function itemByName (name) {
   const items = bot.inventory.items()
-  if (require('minecraft-data')(bot.version).isNewerOrEqualTo('1.9') && bot.inventory.slots[45]) items.push(bot.inventory.slots[45])
+  if (bot.registry.isNewerOrEqualTo('1.9') && bot.inventory.slots[45]) items.push(bot.inventory.slots[45])
   return items.filter(item => item.name === name)[0]
 }

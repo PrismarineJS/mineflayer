@@ -25,10 +25,6 @@ const bot = mineflayer.createBot({
   username: process.argv[4] ? process.argv[4] : 'trader',
   password: process.argv[5]
 })
-let mcData
-bot.once('inject_allowed', () => {
-  mcData = require('minecraft-data')(bot.version)
-})
 
 bot.on('chat', (username, message) => {
   if (username === bot.username) return
@@ -50,7 +46,7 @@ bot.on('chat', (username, message) => {
 })
 
 function showVillagers () {
-  const villagers = Object.keys(bot.entities).map(id => bot.entities[id]).filter(e => e.entityType === mcData.entitiesByName.villager.id)
+  const villagers = Object.keys(bot.entities).map(id => bot.entities[id]).filter(e => e.entityType === bot.registry.entitiesByName.villager.id)
   const closeVillagersId = villagers.filter(e => bot.entity.position.distanceTo(e.position) < 3).map(e => e.id)
   bot.chat(`found ${villagers.length} villagers`)
   bot.chat(`villager(s) you can trade with: ${closeVillagersId.join(', ')}`)
@@ -69,7 +65,7 @@ async function showTrades (id) {
     case !e:
       bot.chat(`cant find entity with id ${id}`)
       break
-    case e.entityType !== mcData.entitiesByName.villager.id:
+    case e.entityType !== bot.registry.entitiesByName.villager.id:
       bot.chat('entity is not a villager')
       break
     case bot.entity.position.distanceTo(e.position) > 3:
@@ -91,7 +87,7 @@ async function trade (id, index, count) {
     case !e:
       bot.chat(`cant find entity with id ${id}`)
       break
-    case e.entityType !== mcData.entitiesByName.villager.id:
+    case e.entityType !== bot.registry.entitiesByName.villager.id:
       bot.chat('entity is not a villager')
       break
     case bot.entity.position.distanceTo(e.position) > 3:
@@ -100,7 +96,7 @@ async function trade (id, index, count) {
     default: {
       const villager = await bot.openVillager(e)
       const trade = villager.trades[index - 1]
-      count = count || trade.maxTradeuses - trade.tooluses
+      count = count || trade.maximumNbTradeUses - trade.nbTradeUses
       switch (true) {
         case !trade:
           villager.close()
@@ -110,11 +106,11 @@ async function trade (id, index, count) {
           villager.close()
           bot.chat('trade is disabled')
           break
-        case trade.maxTradeuses - trade.tooluses < count:
+        case trade.maximumNbTradeUses - trade.nbTradeUses < count:
           villager.close()
           bot.chat('cant trade that often')
           break
-        case !hasResources(villager.window, trade, count):
+        case !hasResources(villager.slots, trade, count):
           villager.close()
           bot.chat('dont have the resources to do that trade')
           break
@@ -124,7 +120,7 @@ async function trade (id, index, count) {
             await bot.trade(villager, index - 1, count)
             bot.chat(`traded ${count} times`)
           } catch (err) {
-            bot.chat('an error acured while tyring to trade')
+            bot.chat('an error occurred while trying to trade')
             console.log(err)
           }
           villager.close()
@@ -133,23 +129,29 @@ async function trade (id, index, count) {
   }
 
   function hasResources (window, trade, count) {
-    const first = enough(trade.firstInput, count)
-    const second = !trade.hasSecondItem || enough(trade.secondaryInput, count)
+    const first = enough(trade.inputItem1, count)
+    const second = !trade.inputItem2 || enough(trade.inputItem2, count)
     return first && second
 
     function enough (item, count) {
-      return window.count(item.type, item.metadata) >= item.count * count
+      let c = 0
+      window.forEach((element) => {
+        if (element && element.type === item.type && element.metadata === item.metadata) {
+          c += element.count
+        }
+      })
+      return c >= item.count * count
     }
   }
 }
 
 function stringifyTrades (trades) {
   return trades.map((trade) => {
-    let text = stringifyItem(trade.firstInput)
-    if (trade.secondaryInput) text += ` & ${stringifyItem(trade.secondaryInput)}`
+    let text = stringifyItem(trade.inputItem1)
+    if (trade.inputItem2) text += ` & ${stringifyItem(trade.inputItem2)}`
     if (trade.disabled) text += ' x '; else text += ' » '
-    text += stringifyItem(trade.output)
-    return `(${trade.tooluses}/${trade.maxTradeuses}) ${text}`
+    text += stringifyItem(trade.outputItem)
+    return `(${trade.nbTradeUses}/${trade.maximumNbTradeUses}) ${text}`
   })
 }
 
@@ -162,13 +164,13 @@ function stringifyItem (item) {
     const Potion = item.nbt.value.Potion
     const display = item.nbt.value.display
 
-    if (Potion) text += ` of ${Potion.value.replace(/_/g, ' ').split(':')[1] || 'unknow type'}`
+    if (Potion) text += ` of ${Potion.value.replace(/_/g, ' ').split(':')[1] || 'unknown type'}`
     if (display) text += ` named ${display.value.Name.value}`
     if (ench || StoredEnchantments) {
       text += ` enchanted with ${(ench || StoredEnchantments).value.value.map((e) => {
         const lvl = e.lvl.value
         const id = e.id.value
-        return mcData.enchantments[id].displayName + ' ' + lvl
+        return bot.registry.enchantments[id].displayName + ' ' + lvl
       }).join(' ')}`
     }
   }
