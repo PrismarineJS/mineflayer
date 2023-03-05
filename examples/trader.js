@@ -96,7 +96,7 @@ async function trade (id, index, count) {
     default: {
       const villager = await bot.openVillager(e)
       const trade = villager.trades[index - 1]
-      count = count || trade.maxTradeuses - trade.tooluses
+      count = count || trade.maximumNbTradeUses - trade.nbTradeUses
       switch (true) {
         case !trade:
           villager.close()
@@ -106,11 +106,11 @@ async function trade (id, index, count) {
           villager.close()
           bot.chat('trade is disabled')
           break
-        case trade.maxTradeuses - trade.tooluses < count:
+        case trade.maximumNbTradeUses - trade.nbTradeUses < count:
           villager.close()
           bot.chat('cant trade that often')
           break
-        case !hasResources(villager.window, trade, count):
+        case !hasResources(villager.slots, trade, count):
           villager.close()
           bot.chat('dont have the resources to do that trade')
           break
@@ -120,7 +120,7 @@ async function trade (id, index, count) {
             await bot.trade(villager, index - 1, count)
             bot.chat(`traded ${count} times`)
           } catch (err) {
-            bot.chat('an error acured while tyring to trade')
+            bot.chat('an error occurred while trying to trade')
             console.log(err)
           }
           villager.close()
@@ -129,23 +129,29 @@ async function trade (id, index, count) {
   }
 
   function hasResources (window, trade, count) {
-    const first = enough(trade.firstInput, count)
-    const second = !trade.hasSecondItem || enough(trade.secondaryInput, count)
+    const first = enough(trade.inputItem1, count)
+    const second = !trade.inputItem2 || enough(trade.inputItem2, count)
     return first && second
 
     function enough (item, count) {
-      return window.count(item.type, item.metadata) >= item.count * count
+      let c = 0
+      window.forEach((element) => {
+        if (element && element.type === item.type && element.metadata === item.metadata) {
+          c += element.count
+        }
+      })
+      return c >= item.count * count
     }
   }
 }
 
 function stringifyTrades (trades) {
   return trades.map((trade) => {
-    let text = stringifyItem(trade.firstInput)
-    if (trade.secondaryInput) text += ` & ${stringifyItem(trade.secondaryInput)}`
+    let text = stringifyItem(trade.inputItem1)
+    if (trade.inputItem2) text += ` & ${stringifyItem(trade.inputItem2)}`
     if (trade.disabled) text += ' x '; else text += ' » '
-    text += stringifyItem(trade.output)
-    return `(${trade.tooluses}/${trade.maxTradeuses}) ${text}`
+    text += stringifyItem(trade.outputItem)
+    return `(${trade.nbTradeUses}/${trade.maximumNbTradeUses}) ${text}`
   })
 }
 
@@ -158,7 +164,7 @@ function stringifyItem (item) {
     const Potion = item.nbt.value.Potion
     const display = item.nbt.value.display
 
-    if (Potion) text += ` of ${Potion.value.replace(/_/g, ' ').split(':')[1] || 'unknow type'}`
+    if (Potion) text += ` of ${Potion.value.replace(/_/g, ' ').split(':')[1] || 'unknown type'}`
     if (display) text += ` named ${display.value.Name.value}`
     if (ench || StoredEnchantments) {
       text += ` enchanted with ${(ench || StoredEnchantments).value.value.map((e) => {
