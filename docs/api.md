@@ -813,13 +813,13 @@ A sync representation of the world. Check the doc at http://github.com/Prismarin
 ##### world "blockUpdate" (oldBlock, newBlock)
 
 Fires when a block updates. Both `oldBlock` and `newBlock` provided for
-comparison. All listeners receive null for `oldBlock` and `newBlock` when the world is unloaded. 
+comparison.
 `oldBlock` may be `null` with normal block updates.
 
 ##### world "blockUpdate:(x, y, z)" (oldBlock, newBlock)
 
 Fires for a specific point. Both `oldBlock` and `newBlock` provided for
-comparison. All listeners receive null for `oldBlock` and `newBlock` when the world is unloaded.
+comparison. All listeners receive null for `oldBlock` and `newBlock` and get automatically removed when the world is unloaded.
 `oldBlock` may be `null` with normal block updates.
 
 
