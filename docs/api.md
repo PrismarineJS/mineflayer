@@ -866,7 +866,7 @@ Whether the bot is using the item that it's holding, for example eating food or 
 
 #### bot.game.dimension
 
-The bot's current dimension, such as `overworld, `the_end` or `the_nether`.
+The bot's current dimension, such as `overworld`, `the_end` or `the_nether`.
 
 #### bot.game.difficulty
 
