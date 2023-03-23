@@ -1,9 +1,0 @@
-- Getting Started
-  - [Introduction](/)
-  - [API](api.md)
-  - [FAQ](FAQ.md)
-  - [Demos](demos.md)
-  - [Tutorial](tutorial.md)
-  - [Unstable API](unstable_api.md)
-  - [Contribute](CONTRIBUTING.md)
-  - [History](history.md)

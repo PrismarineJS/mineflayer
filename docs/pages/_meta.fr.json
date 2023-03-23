@@ -1,0 +1,11 @@
+{
+    "index":{
+        "type": "page",
+        "display": "hidden",
+        "title": "Mineflayer"
+    },
+    "docs": {
+        "type": "page",
+        "title": "Documentation"
+    }
+}

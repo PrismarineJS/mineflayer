@@ -1,334 +1,4 @@
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
-
-- [API](#api)
-  - [Enums](#enums)
-    - [minecraft-data](#minecraft-data)
-    - [mcdata.blocks](#mcdatablocks)
-    - [mcdata.items](#mcdataitems)
-    - [mcdata.materials](#mcdatamaterials)
-    - [mcdata.recipes](#mcdatarecipes)
-    - [mcdata.instruments](#mcdatainstruments)
-    - [mcdata.biomes](#mcdatabiomes)
-    - [mcdata.entities](#mcdataentities)
-  - [Classes](#classes)
-    - [vec3](#vec3)
-    - [mineflayer.Location](#mineflayerlocation)
-    - [Entity](#entity)
-    - [Block](#block)
-    - [Biome](#biome)
-    - [Item](#item)
-    - [windows.Window (base class)](#windowswindow-base-class)
-      - [window.deposit(itemType, metadata, count, [callback])](#windowdeposititemtype-metadata-count-callback)
-      - [window.withdraw(itemType, metadata, count, [callback])](#windowwithdrawitemtype-metadata-count-callback)
-      - [window.close()](#windowclose)
-    - [Recipe](#recipe)
-    - [mineflayer.Container](#mineflayercontainer)
-    - [mineflayer.Furnace](#mineflayerfurnace)
-      - [furnace "update"](#furnace-update)
-      - [furnace.takeInput([callback])](#furnacetakeinputcallback)
-      - [furnace.takeFuel([callback])](#furnacetakefuelcallback)
-      - [furnace.takeOutput([callback])](#furnacetakeoutputcallback)
-      - [furnace.putInput(itemType, metadata, count, [cb])](#furnaceputinputitemtype-metadata-count-cb)
-      - [furnace.putFuel(itemType, metadata, count, [cb])](#furnaceputfuelitemtype-metadata-count-cb)
-      - [furnace.inputItem()](#furnaceinputitem)
-      - [furnace.fuelItem()](#furnacefuelitem)
-      - [furnace.outputItem()](#furnaceoutputitem)
-      - [furnace.fuel](#furnacefuel)
-      - [furnace.progress](#furnaceprogress)
-    - [mineflayer.EnchantmentTable](#mineflayerenchantmenttable)
-      - [enchantmentTable "ready"](#enchantmenttable-ready)
-      - [enchantmentTable.targetItem()](#enchantmenttabletargetitem)
-      - [enchantmentTable.xpseed](#enchantmenttablexpseed)
-      - [enchantmentTable.enchantments](#enchantmenttableenchantments)
-      - [enchantmentTable.enchant(choice, [callback])](#enchantmenttableenchantchoice-callback)
-      - [enchantmentTable.takeTargetItem([callback])](#enchantmenttabletaketargetitemcallback)
-      - [enchantmentTable.putTargetItem(item, [callback])](#enchantmenttableputtargetitemitem-callback)
-      - [enchantmentTable.putLapis(item, [callback])](#enchantmenttableputlapisitem-callback)
-    - [mineflayer.anvil](#mineflayeranvil)
-      - [anvil.combine(itemOne, itemTwo[, name, callback])](#anvilcombineitemone-itemtwo-name-callback)
-      - [anvil.combine(item[, name, callback])](#anvilcombineitem-name-callback)
-      - [villager "ready"](#villager-ready)
-      - [villager.trades](#villagertrades)
-      - [villager.trade(tradeIndex, [times], [cb])](#villagertradetradeindex-times-cb)
-    - [mineflayer.ScoreBoard](#mineflayerscoreboard)
-      - [ScoreBoard.name](#scoreboardname)
-      - [ScoreBoard.title](#scoreboardtitle)
-      - [ScoreBoard.itemsMap](#scoreboarditemsmap)
-      - [ScoreBoard.items](#scoreboarditems)
-    - [mineflayer.Team](#mineflayerteam)
-      - [Team.name](#teamname)
-      - [Team.friendlyFire](#teamfriendlyfire)
-      - [Team.nameTagVisibility](#teamnametagvisibility)
-      - [Team.collisionRule](#teamcollisionrule)
-      - [Team.color](#teamcolor)
-      - [Team.prefix](#teamprefix)
-      - [Team.suffix](#teamsuffix)
-      - [Team.members](#teammembers)
-    - [mineflayer.BossBar](#mineflayerbossbar)
-      - [BossBar.title](#bossbartitle)
-      - [BossBar.health](#bossbarhealth)
-      - [BossBar.dividers](#bossbardividers)
-      - [BossBar.entityUUID](#bossbarentityuuid)
-      - [BossBar.shouldDarkenSky](#bossbarshoulddarkensky)
-      - [BossBar.isDragonBar](#bossbarisdragonbar)
-      - [BossBar.createFog](#bossbarcreatefog)
-      - [BossBar.color](#bossbarcolor)
-  - [Bot](#bot)
-    - [mineflayer.createBot(options)](#mineflayercreatebotoptions)
-    - [Properties](#properties)
-      - [bot.world](#botworld)
-        - [world "blockUpdate" (oldBlock, newBlock)](#world-blockupdate-oldblock-newblock)
-        - [world "blockUpdate:(x, y, z)" (oldBlock, newBlock)](#world-blockupdatex-y-z-oldblock-newblock)
-      - [bot.entity](#botentity)
-      - [bot.entities](#botentities)
-      - [bot.username](#botusername)
-      - [bot.spawnPoint](#botspawnpoint)
-      - [bot.heldItem](#bothelditem)
-      - [bot.usingHeldItem](#botusinghelditem)
-      - [bot.game.levelType](#botgameleveltype)
-      - [bot.game.dimension](#botgamedimension)
-      - [bot.game.difficulty](#botgamedifficulty)
-      - [bot.game.gameMode](#botgamegamemode)
-      - [bot.game.hardcore](#botgamehardcore)
-      - [bot.game.maxPlayers](#botgamemaxplayers)
-      - [bot.game.serverBrand](#botgameserverbrand)
-    - [bot.physicsEnabled](#botphysicsenabled)
-    - [bot.player](#botplayer)
-      - [bot.players](#botplayers)
-      - [bot.isRaining](#botisraining)
-      - [bot.rainState](#botrainstate)
-      - [bot.thunderState](#botthunderstate)
-      - [bot.chatPatterns](#botchatpatterns)
-      - [bot.settings.chat](#botsettingschat)
-      - [bot.settings.colorsEnabled](#botsettingscolorsenabled)
-      - [bot.settings.viewDistance](#botsettingsviewdistance)
-      - [bot.settings.difficulty](#botsettingsdifficulty)
-      - [bot.settings.skinParts](#botsettingsskinparts)
-        - [bot.settings.skinParts.showCape - boolean](#botsettingsskinpartsshowcape---boolean)
-        - [bot.settings.skinParts.showJacket - boolean](#botsettingsskinpartsshowjacket---boolean)
-        - [bot.settings.skinParts.showLeftSleeve - boolean](#botsettingsskinpartsshowleftsleeve---boolean)
-        - [bot.settings.skinParts.showRightSleeve - boolean](#botsettingsskinpartsshowrightsleeve---boolean)
-        - [bot.settings.skinParts.showLeftPants - boolean](#botsettingsskinpartsshowleftpants---boolean)
-        - [bot.settings.skinParts.showRightPants - boolean](#botsettingsskinpartsshowrightpants---boolean)
-        - [bot.settings.skinParts.showHat - boolean](#botsettingsskinpartsshowhat---boolean)
-      - [bot.experience.level](#botexperiencelevel)
-      - [bot.experience.points](#botexperiencepoints)
-      - [bot.experience.progress](#botexperienceprogress)
-      - [bot.health](#bothealth)
-      - [bot.food](#botfood)
-      - [bot.foodSaturation](#botfoodsaturation)
-      - [bot.oxygenLevel](#botoxygenlevel)
-      - [bot.physics](#botphysics)
-      - [bot.simpleClick.leftMouse (slot)](#botsimpleclickleftmouse-slot)
-      - [bot.simpleClick.rightMouse (slot)](#botsimpleclickrightmouse-slot)
-      - [bot.time.doDaylightCycle](#bottimedodaylightcycle)
-      - [bot.time.bigTime](#bottimebigtime)
-      - [bot.time.time](#bottimetime)
-      - [bot.time.timeOfDay](#bottimetimeofday)
-      - [bot.time.day](#bottimeday)
-      - [bot.time.isDay](#bottimeisday)
-      - [bot.time.moonPhase](#bottimemoonphase)
-      - [bot.time.bigAge](#bottimebigage)
-      - [bot.time.age](#bottimeage)
-      - [bot.quickBarSlot](#botquickbarslot)
-      - [bot.inventory](#botinventory)
-      - [bot.targetDigBlock](#bottargetdigblock)
-      - [bot.isSleeping](#botissleeping)
-      - [bot.scoreboards](#botscoreboards)
-      - [bot.scoreboard](#botscoreboard)
-      - [bot.teams](#botteams)
-      - [bot.teamMap](#botteammap)
-      - [bot.controlState](#botcontrolstate)
-    - [Events](#events)
-      - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
-      - ["whisper" (username, message, translate, jsonMsg, matches)](#whisper-username-message-translate-jsonmsg-matches)
-      - ["actionBar" (jsonMsg)](#actionbar-jsonmsg)
-      - ["message" (jsonMsg, position)](#message-jsonmsg-position)
-      - ["messagestr" (message, messagePosition, jsonMsg)](#messagestr-message-messageposition-jsonmsg)
-      - ["inject_allowed"](#inject_allowed)
-      - ["login"](#login)
-      - ["spawn"](#spawn)
-      - ["respawn"](#respawn)
-      - ["game"](#game)
-      - ["resourcePack" (url, hash)](#resourcepack-url-hash)
-      - ["title"](#title)
-      - ["rain"](#rain)
-      - ["weatherUpdate"](#weatherupdate)
-      - ["time"](#time)
-      - ["kicked" (reason, loggedIn)](#kicked-reason-loggedin)
-      - ["end" (reason)](#end-reason)
-      - ["error" (err)](#error-err)
-      - ["spawnReset"](#spawnreset)
-      - ["death"](#death)
-      - ["health"](#health)
-      - ["breath"](#breath)
-      - ["entityAttributes" (entity)](#entityattributes-entity)
-      - ["entitySwingArm" (entity)](#entityswingarm-entity)
-      - ["entityHurt" (entity)](#entityhurt-entity)
-      - ["entityDead" (entity)](#entitydead-entity)
-      - ["entityTaming" (entity)](#entitytaming-entity)
-      - ["entityTamed" (entity)](#entitytamed-entity)
-      - ["entityShakingOffWater" (entity)](#entityshakingoffwater-entity)
-      - ["entityEatingGrass" (entity)](#entityeatinggrass-entity)
-      - ["entityWake" (entity)](#entitywake-entity)
-      - ["entityEat" (entity)](#entityeat-entity)
-      - ["entityCriticalEffect" (entity)](#entitycriticaleffect-entity)
-      - ["entityMagicCriticalEffect" (entity)](#entitymagiccriticaleffect-entity)
-      - ["entityCrouch" (entity)](#entitycrouch-entity)
-      - ["entityUncrouch" (entity)](#entityuncrouch-entity)
-      - ["entityEquip" (entity)](#entityequip-entity)
-      - ["entitySleep" (entity)](#entitysleep-entity)
-      - ["entitySpawn" (entity)](#entityspawn-entity)
-      - ["itemDrop" (entity)](#itemdrop-entity)
-      - ["playerCollect" (collector, collected)](#playercollect-collector-collected)
-      - ["entityGone" (entity)](#entitygone-entity)
-      - ["entityMoved" (entity)](#entitymoved-entity)
-      - ["entityDetach" (entity, vehicle)](#entitydetach-entity-vehicle)
-      - ["entityAttach" (entity, vehicle)](#entityattach-entity-vehicle)
-      - ["entityUpdate" (entity)](#entityupdate-entity)
-      - ["entityEffect" (entity, effect)](#entityeffect-entity-effect)
-      - ["entityEffectEnd" (entity, effect)](#entityeffectend-entity-effect)
-      - ["playerJoined" (player)](#playerjoined-player)
-      - ["playerUpdated" (player)](#playerupdated-player)
-      - ["playerLeft" (player)](#playerleft-player)
-      - ["blockUpdate" (oldBlock, newBlock)](#blockupdate-oldblock-newblock)
-      - ["blockUpdate:(x, y, z)" (oldBlock, newBlock)](#blockupdatex-y-z-oldblock-newblock)
-      - ["blockPlaced" (oldBlock, newBlock)](#blockplaced-oldblock-newblock)
-      - ["chunkColumnLoad" (point)](#chunkcolumnload-point)
-      - ["chunkColumnUnload" (point)](#chunkcolumnunload-point)
-      - ["soundEffectHeard" (soundName, position, volume, pitch)](#soundeffectheard-soundname-position-volume-pitch)
-      - ["hardcodedSoundEffectHeard" (soundId, soundCategory, position, volume, pitch)](#hardcodedsoundeffectheard-soundid-soundcategory-position-volume-pitch)
-      - ["noteHeard" (block, instrument, pitch)](#noteheard-block-instrument-pitch)
-      - ["pistonMove" (block, isPulling, direction)](#pistonmove-block-ispulling-direction)
-      - ["chestLidMove" (block, isOpen, block2)](#chestlidmove-block-isopen-block2)
-      - ["blockBreakProgressObserved" (block, destroyStage)](#blockbreakprogressobserved-block-destroystage)
-      - ["blockBreakProgressEnd" (block)](#blockbreakprogressend-block)
-      - ["diggingCompleted" (block)](#diggingcompleted-block)
-      - ["diggingAborted" (block)](#diggingaborted-block)
-      - ["move"](#move)
-      - ["forcedMove"](#forcedmove)
-      - ["mount"](#mount)
-      - ["dismount" (vehicle)](#dismount-vehicle)
-      - ["windowOpen" (window)](#windowopen-window)
-      - ["windowClose" (window)](#windowclose-window)
-      - ["sleep"](#sleep)
-      - ["wake"](#wake)
-      - ["experience"](#experience)
-      - ["scoreboardCreated" (scoreboard)](#scoreboardcreated-scoreboard)
-      - ["scoreboardDeleted" (scoreboard)](#scoreboarddeleted-scoreboard)
-      - ["scoreboardTitleChanged" (scoreboard)](#scoreboardtitlechanged-scoreboard)
-      - ["scoreUpdated" (scoreboard, item)](#scoreupdated-scoreboard-item)
-      - ["scoreRemoved" (scoreboard, item)](#scoreremoved-scoreboard-item)
-      - ["scoreboardPosition" (position, scoreboard)](#scoreboardposition-position-scoreboard)
-      - ["teamCreated" (team)](#teamcreated-team)
-      - ["teamRemoved" (team)](#teamremoved-team)
-      - ["teamUpdated" (team)](#teamupdated-team)
-      - ["teamMemberAdded" (team)](#teammemberadded-team)
-      - ["teamMemberRemoved" (team)](#teammemberremoved-team)
-      - ["bossBarCreated" (bossBar)](#bossbarcreated-bossbar)
-      - ["bossBarDeleted" (bossBar)](#bossbardeleted-bossbar)
-      - ["bossBarUpdated" (bossBar)](#bossbarupdated-bossbar)
-      - ["heldItemChanged" (heldItem)](#helditemchanged-helditem)
-      - ["physicsTick" ()](#physicstick-)
-      - ["chat:name" (matches)](#chatname-matches)
-    - [Functions](#functions)
-      - [bot.blockAt(point, extraInfos=true)](#botblockatpoint-extrainfostrue)
-      - [bot.waitForChunksToLoad(cb)](#botwaitforchunkstoloadcb)
-      - [bot.blockInSight(maxSteps, vectorLength)](#botblockinsightmaxsteps-vectorlength)
-      - [bot.blockAtCursor(maxDistance=256)](#botblockatcursormaxdistance256)
-      - [bot.blockAtEntityCursor(entity=bot.entity, maxDistance=256)](#botblockatentitycursorentitybotentity-maxdistance256)
-      - [bot.canSeeBlock(block)](#botcanseeblockblock)
-      - [bot.findBlocks(options)](#botfindblocksoptions)
-      - [bot.findBlock(options)](#botfindblockoptions)
-      - [bot.canDigBlock(block)](#botcandigblockblock)
-      - [bot.recipesFor(itemType, metadata, minResultCount, craftingTable)](#botrecipesforitemtype-metadata-minresultcount-craftingtable)
-      - [bot.recipesAll(itemType, metadata, craftingTable)](#botrecipesallitemtype-metadata-craftingtable)
-      - [bot.nearestEntity(match = (entity) => { return true })](#botnearestentitymatch--entity---return-true-)
-    - [Methods](#methods)
-      - [bot.end(reason)](#botendreason)
-      - [bot.quit(reason)](#botquitreason)
-      - [bot.tabComplete(str, cb, [assumeCommand], [sendBlockInSight])](#bottabcompletestr-cb-assumecommand-sendblockinsight)
-      - [bot.chat(message)](#botchatmessage)
-      - [bot.whisper(username, message)](#botwhisperusername-message)
-      - [bot.chatAddPattern(pattern, chatType, description)](#botchataddpatternpattern-chattype-description)
-      - [bot.addChatPattern(name, pattern, chatPatternOptions)](#botaddchatpatternname-pattern-chatpatternoptions)
-      - [bot.addChatPatternSet(name, patterns, chatPatternOptions)](#botaddchatpatternsetname-patterns-chatpatternoptions)
-      - [bot.removeChatPattern(name)](#botremovechatpatternname)
-      - [bot.awaitMessage(...args)](#botawaitmessageargs)
-      - [bot.setSettings(options)](#botsetsettingsoptions)
-      - [bot.loadPlugin(plugin)](#botloadpluginplugin)
-      - [bot.loadPlugins(plugins)](#botloadpluginsplugins)
-      - [bot.hasPlugin(plugin)](#bothaspluginplugin)
-      - [bot.sleep(bedBlock, [cb])](#botsleepbedblock-cb)
-      - [bot.isABed(bedBlock)](#botisabedbedblock)
-      - [bot.wake([cb])](#botwakecb)
-      - [bot.setControlState(control, state)](#botsetcontrolstatecontrol-state)
-      - [bot.getControlState(control)](#botgetcontrolstatecontrol)
-      - [bot.clearControlStates()](#botclearcontrolstates)
-      - [bot.getExplosionDamages(entity, position, radius, [rawDamages])](#botgetexplosiondamagesentity-position-radius-rawdamages)
-      - [bot.lookAt(point, [force], [callback])](#botlookatpoint-force-callback)
-      - [bot.look(yaw, pitch, [force], [callback])](#botlookyaw-pitch-force-callback)
-      - [bot.updateSign(block, text)](#botupdatesignblock-text)
-      - [bot.equip(item, destination, [callback])](#botequipitem-destination-callback)
-      - [bot.unequip(destination, [callback])](#botunequipdestination-callback)
-      - [bot.tossStack(item, [callback])](#bottossstackitem-callback)
-      - [bot.toss(itemType, metadata, count, [callback])](#bottossitemtype-metadata-count-callback)
-      - [bot.dig(block, [forceLook = true], [digFace], [callback])](#botdigblock-forcelook--true-digface-callback)
-      - [bot.stopDigging()](#botstopdigging)
-      - [bot.digTime(block)](#botdigtimeblock)
-      - [bot.acceptResourcePack()](#botacceptresourcepack)
-      - [bot.denyResourcePack()](#botdenyresourcepack)
-      - [bot.placeBlock(referenceBlock, faceVector, cb)](#botplaceblockreferenceblock-facevector-cb)
-      - [bot.placeEntity(referenceBlock, faceVector)](#botplaceentityreferenceblock-facevector)
-      - [bot.activateBlock(block, [callback])](#botactivateblockblock-callback)
-      - [bot.activateEntity(entity, [callback])](#botactivateentityentity-callback)
-      - [bot.activateEntityAt(entity, position, [callback])](#botactivateentityatentity-position-callback)
-      - [bot.consume(callback)](#botconsumecallback)
-      - [bot.fish(callback)](#botfishcallback)
-      - [bot.activateItem(offHand=false)](#botactivateitemoffhandfalse)
-      - [bot.deactivateItem()](#botdeactivateitem)
-      - [bot.useOn(targetEntity)](#botuseontargetentity)
-      - [bot.attack(entity, swing = true)](#botattackentity-swing--true)
-      - [bot.swingArm([hand], showHand)](#botswingarmhand-showhand)
-      - [bot.mount(entity)](#botmountentity)
-      - [bot.dismount()](#botdismount)
-      - [bot.moveVehicle(left,forward)](#botmovevehicleleftforward)
-      - [bot.setQuickBarSlot(slot)](#botsetquickbarslotslot)
-      - [bot.craft(recipe, count, craftingTable, [callback])](#botcraftrecipe-count-craftingtable-callback)
-      - [bot.writeBook(slot, pages, [callback])](#botwritebookslot-pages-callback)
-      - [bot.openContainer(containerBlock or containerEntity)](#botopencontainercontainerblock-or-containerentity)
-      - [bot.openChest(chestBlock or minecartchestEntity)](#botopenchestchestblock-or-minecartchestentity)
-      - [bot.openFurnace(furnaceBlock)](#botopenfurnacefurnaceblock)
-      - [bot.openDispenser(dispenserBlock)](#botopendispenserdispenserblock)
-      - [bot.openEnchantmentTable(enchantmentTableBlock)](#botopenenchantmenttableenchantmenttableblock)
-      - [bot.openAnvil(anvilBlock)](#botopenanvilanvilblock)
-      - [bot.openVillager(villagerEntity)](#botopenvillagervillagerentity)
-      - [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottradevillagerinstance-tradeindex-times-cb)
-      - [bot.setCommandBlock(pos, command, [options])](#botsetcommandblockpos-command-options)
-      - [bot.supportFeature(name)](#botsupportfeaturename)
-      - [bot.waitForTicks(ticks)](#botwaitforticksticks)
-    - [Lower level inventory methods](#lower-level-inventory-methods)
-      - [bot.clickWindow(slot, mouseButton, mode, cb)](#botclickwindowslot-mousebutton-mode-cb)
-      - [bot.putSelectedItemRange(start, end, window, slot)](#botputselecteditemrangestart-end-window-slot)
-      - [bot.putAway(slot)](#botputawayslot)
-      - [bot.closeWindow(window)](#botclosewindowwindow)
-      - [bot.transfer(options, cb)](#bottransferoptions-cb)
-      - [bot.openBlock(block)](#botopenblockblock)
-      - [bot.openEntity(entity)](#botopenentityentity)
-      - [bot.moveSlotItem(sourceSlot, destSlot, cb)](#botmoveslotitemsourceslot-destslot-cb)
-      - [bot.updateHeldItem()](#botupdatehelditem)
-      - [bot.getEquipmentDestSlot(destination)](#botgetequipmentdestslotdestination)
-    - [bot.creative](#botcreative)
-      - [bot.creative.setInventorySlot(slot, item, [callback])](#botcreativesetinventoryslotslot-item-callback)
-      - [bot.creative.flyTo(destination, [cb])](#botcreativeflytodestination-cb)
-      - [bot.creative.startFlying()](#botcreativestartflying)
-      - [bot.creative.stopFlying()](#botcreativestopflying)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-# API
+# API Documentation
 
 ## Enums
 
@@ -383,10 +53,21 @@ properties.
 
 ### Entity
 
-实体表示玩家、怪物和对象.
+Entities represent players, mobs, and objects. They are emitted
+in many events, and you can access your own entity with `bot.entity`.
+See [prismarine-entity](https://github.com/PrismarineJS/prismarine-entity)
 
-它们在许多事件中被触发, 您可以使用 `bot.entity`.访问自己的实体
-见 [prismarine-entity](https://github.com/PrismarineJS/prismarine-entity)
+#### Player Skin Data
+
+The skin data is stored in the `skinData` property of the player object, if present.
+
+```js
+// player.skinData
+{
+  url: 'http://textures.minecraft.net/texture/...',
+  model: 'slim' // or 'classic'
+}
+```
 
 ### Block
 
@@ -419,23 +100,23 @@ See [prismarine-item](https://github.com/PrismarineJS/prismarine-item)
 
 See [prismarine-windows](https://github.com/PrismarineJS/prismarine-windows)
 
-#### window.deposit(itemType, metadata, count, [callback])
+#### window.deposit(itemType, metadata, count, nbt)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when done depositing.
 
  * `itemType` - numerical item id
  * `metadata` - numerical value. `null` means match anything.
  * `count` - how many to deposit. `null` is an alias to 1.
- * `callback(err)` - (optional) - called when done depositing
+ * `nbt` - match nbt data. `null` is do not match nbt.
 
-#### window.withdraw(itemType, metadata, count, [callback])
+#### window.withdraw(itemType, metadata, count, nbt)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when done withdrawing. Throws and error if the bot has no free room in its inventory.
 
  * `itemType` - numerical item id
  * `metadata` - numerical value. `null` means match anything.
  * `count` - how many to withdraw. `null` is an alias to 1.
- * `callback(err)` - (optional) - called when done withdrawing
+ * `nbt` - match nbt data. `null` is do not match nbt.
 
 #### window.close()
 
@@ -457,31 +138,28 @@ See `bot.openFurnace(furnaceBlock)`.
 
 Fires when `furnace.fuel` and/or `furnace.progress` update.
 
-#### furnace.takeInput([callback])
+#### furnace.takeInput()
 
-This function also returns a `Promise`, with `item` as its argument upon completion.
+This function returns a `Promise`, with `item` as its argument upon completion.
 
- * `callback(err, item)`
 
-#### furnace.takeFuel([callback])
+#### furnace.takeFuel()
 
-This function also returns a `Promise`, with `item` as its argument upon completion.
+This function returns a `Promise`, with `item` as its argument upon completion.
 
- * `callback(err, item)`
 
-#### furnace.takeOutput([callback])
+#### furnace.takeOutput()
 
-This function also returns a `Promise`, with `item` as its argument upon completion.
+This function returns a `Promise`, with `item` as its argument upon completion.
 
- * `callback(err, item)`
 
-#### furnace.putInput(itemType, metadata, count, [cb])
+#### furnace.putInput(itemType, metadata, count)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
-#### furnace.putFuel(itemType, metadata, count, [cb])
+#### furnace.putFuel(itemType, metadata, count)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 #### furnace.inputItem()
 
@@ -543,47 +221,41 @@ Looks like:
 ]
 ```
 
-#### enchantmentTable.enchant(choice, [callback])
+#### enchantmentTable.enchant(choice)
 
-This function also returns a `Promise`, with `item` as its argument upon completion.
+This function returns a `Promise`, with `item` as its argument when the item has been enchanted.
 
  * `choice` - [0-2], the index of the enchantment you want to pick.
- * `callback(err, item)` - (optional) called when the item has been enchanted
 
-#### enchantmentTable.takeTargetItem([callback])
+#### enchantmentTable.takeTargetItem()
 
-This function also returns a `Promise`, with `item` as its argument upon completion.
+This function returns a `Promise`, with `item` as its argument upon completion.
 
- * `callback(err, item)`
 
-#### enchantmentTable.putTargetItem(item, [callback])
+#### enchantmentTable.putTargetItem(item)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
- * `callback(err)`
 
-#### enchantmentTable.putLapis(item, [callback])
+#### enchantmentTable.putLapis(item)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
- * `callback(err)`
 
 ### mineflayer.anvil
 
 Extends windows.Window for anvils
 See `bot.openAnvil(anvilBlock)`.
 
-#### anvil.combine(itemOne, itemTwo[, name, callback])
+#### anvil.combine(itemOne, itemTwo[, name])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
- * `callback(err)` - in order to use callback, pass an empty string ('') for name
 
-#### anvil.combine(item[, name, callback])
+#### anvil.combine(item[, name])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
- * `callback(err)`
 
 #### villager "ready"
 
@@ -627,22 +299,22 @@ Looks like:
 ]
 ```
 
-#### villager.trade(tradeIndex, [times], [cb])
-Is the same as [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottradevillagerinstance-tradeindex-times-cb)
+#### villager.trade(tradeIndex, [times])
+Is the same as [bot.trade(villagerInstance, tradeIndex, [times])](#bottradevillagerinstance-tradeindex-times)
 
 ### mineflayer.ScoreBoard
 
 #### ScoreBoard.name
 
-记分牌的名称
+Name of the scoreboard.
 
 #### ScoreBoard.title
 
-记分牌的标题 (does not always equal the name)
+The title of the scoreboard (does not always equal the name)
 
 #### ScoreBoard.itemsMap
 
-记分板中包含所有项目的对象
+An object with all items in the scoreboard in it
 ```js
 {
   wvffle: { name: 'wvffle', value: 3 },
@@ -652,7 +324,7 @@ Is the same as [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottrad
 
 #### ScoreBoard.items
 
-记分板中包含所有已排序项的数组
+An array with all sorted items in the scoreboard in it
 ```js
 [
   { name: 'dzikoysk', value: 6 },
@@ -664,29 +336,29 @@ Is the same as [bot.trade(villagerInstance, tradeIndex, [times], [cb])](#bottrad
 
 #### Team.name
 
-队伍名称
+Name of the team
 
 #### Team.friendlyFire
 
 #### Team.nameTagVisibility
 
-`always`, `hideForOtherTeams`, `hideForOwnTeam` 其中一个
+One of `always`, `hideForOtherTeams`, `hideForOwnTeam`
 
 #### Team.collisionRule
 
- `always`, `pushOtherTeams`, `pushOwnTeam ` 其中一个
+One of `always`, `pushOtherTeams`, `pushOwnTeam`
 
 #### Team.color
 
-Color (or formatting) name of team, 如 `dark_green`, `red`, `underlined`
+Color (or formatting) name of team, e.g. `dark_green`, `red`, `underlined`
 
 #### Team.prefix
 
-一个聊天组件，包含队伍前缀
+A chat component containing team prefix
 
 #### Team.suffix
 
-一个聊天组件，包含队伍后缀
+A chat component containing team suffix
 
 #### Team.members
 
@@ -696,11 +368,11 @@ Array of team members. Usernames for players and UUIDs for other entities.
 
 #### BossBar.title
 
-boss 栏标题,  ChatMessage 有例子
+Title of boss bar, instance of ChatMessage
 
 #### BossBar.health
 
-boss 生命百分比, 从`0` 到`1`
+Percent of boss health, from `0` to `1`
 
 #### BossBar.dividers
 
@@ -708,7 +380,7 @@ Number of boss bar dividers, one of `0`, `6`, `10`, `12`, `20`
 
 #### BossBar.entityUUID
 
-Boss 栏实体 uuid
+Boss bar entity uuid
 
 #### BossBar.shouldDarkenSky
 
@@ -724,87 +396,122 @@ Determines whether or not boss bar creates fog
 
 #### BossBar.color
 
-Determines what color the boss bar color is,  `pink`, `blue`, `red`, `green`, `yellow`, `purple`, `white `之中的一个
+Determines what color the boss bar color is, one of `pink`, `blue`, `red`, `green`, `yellow`, `purple`, `white`
+
+### mineflayer.Particle
+
+#### Particle.id
+
+Particle ID, as defined in the [protocol](https://wiki.vg/Protocol#Particle)
+
+#### Particle.name
+
+Particle Name, as defined in the [protocol](https://wiki.vg/Protocol#Particle)
+
+#### Particle.position
+
+Vec3 instance of where the particle was created
+
+#### Particle.offset
+
+Vec3 instance of the particle's offset
+
+#### Particle.longDistanceRender
+
+Determines whether or not to force the rendering of a particle despite client particle settings and increases maximum view distance from 256 to 65536
+
+#### Particle.count
+
+Amount of particles created
+
+#### Particle.movementSpeed
+
+Particle speed in a random direction
 
 ## Bot
 
 ### mineflayer.createBot(options)
 
-创建并返回bot类的实例。
-`options` 是包含可选属性的对象 :
-
- * username : 用户名，默认为 'Player'
- * port : 端口，默认为 25565
- * password : 可以省略 (如果token也被省略，那么它将尝试以离线模式连接)
- * host : 默认为 localhost
- * version : 默认为自动猜测服务器的版本。值示例：“1.12.2”
- * auth : 默认为“mojang”，也可以是“microsoft”
- * clientToken : 如果给定密码，则生成
- * accessToken : 如果给定密码，则生成
- * logErrors : 默认情况下为true，捕获错误并记录它们
- * hideErrors : 默认情况下为true，不记录错误（即使logErrors为true）
- * keepAlive : 发送保持活动的数据包：默认为true
- * checkTimeoutInterval : 默认 `30*1000` (30s), 检查是否在此期间收到keepalive，否则断开连接。
- * loadInternalPlugins : 默认为true
- * storageBuilder : 可选功能,将version和worldName作为参数，并返回与prismarine-provider-anvil具有相同API的某个对象的实例 ，将被用来保存世界
- * client : node-minecraft-protocol 实例, 如果未指定，mineflayer将创建自己的客户端.这可用于通过许多客户端的代理或普通客户端和mineflayer客户端来启用mineflayer
- * plugins : object : 默认为{}
+Create and return an instance of the class bot.
+`options` is an object containing the optional properties :
+ * username : default to 'Player'
+ * port : default to 25565
+ * password : can be omitted (if the tokens are also omitted then it tries to connect in offline mode)
+ * host : default to localhost
+ * version : default to automatically guessing the version of the server. Example of value : "1.12.2"
+ * auth : default to 'mojang', can also be 'microsoft'
+ * clientToken : generated if a password is given
+ * accessToken : generated if a password is given
+ * logErrors : true by default, catch errors and log them
+ * hideErrors : true by default, do not log errors (even if logErrors is true)
+ * keepAlive : send keep alive packets : default to true
+ * checkTimeoutInterval : default to `30*1000` (30s), check if keepalive received at that period, disconnect otherwise.
+ * loadInternalPlugins : defaults to true
+ * storageBuilder : an optional function, takes as argument version and worldName and return an instance of something with the same API as prismarine-provider-anvil. Will be used to save the world.
+ * client : an instance of node-minecraft-protocol, if not specified, mineflayer makes it's own client. This can be used to enable using mineflayer through a proxy of many clients or a vanilla client and a mineflayer client.
+ * plugins : object : defaults to {}
    - pluginName : false : don't load internal plugin with given name ie. `pluginName`
-   - pluginName : true : load internal plugin with given name ie. `pluginName` 即使loadInternalplugins设置为false
-   - pluginName : 外部插件注入函数: 加载外部插件, overrides internal plugin with given name ie. `pluginName`
- * physicsEnabled : 默认为true, 机器人应该受到物理的影响吗？ 以后可以通过 bot.physicsEnabled 修改
+   - pluginName : true : load internal plugin with given name ie. `pluginName` even though loadInternalplugins is set to false
+   - pluginName : external plugin inject function : loads external plugin, overrides internal plugin with given name ie. `pluginName`
+ * physicsEnabled : true by default, should the bot be affected by physics? can later be modified via bot.physicsEnabled
  * [chat](#bot.settings.chat)
  * [colorsEnabled](#bot.settings.colorsEnabled)
  * [viewDistance](#bot.settings.viewDistance)
  * [difficulty](#bot.settings.difficulty)
  * [skinParts](#bot.settings.skinParts)
- * chatLengthLimit : 单个消息中可以发送的最大字符数. 如果没有设置， 那么游戏版本在 < 1.11 为100  在 >= 1.11 为256
- * defaultChatPatterns: 默认为true, 设置为false不添加聊天和私信等模式
+ * [enableTextFiltering](#bot.settings.enableTextFiltering)
+ * [enableServerListing](#bot.settings.enableServerListing)
+ * chatLengthLimit : the maximum amount of characters that can be sent in a single message. If this is not set, it will be 100 in < 1.11 and 256 in >= 1.11.
+ * defaultChatPatterns: defaults to true, set to false to not add the patterns such as chat and whisper
 
 ### Properties
 
+#### bot.registry
+
+Instance of minecraft-data used by the bot. Pass this to constructors that expect an instance of minecraft-data, such as prismarine-block.
+
 #### bot.world
 
-A sync representation of the world. 查看以下位置的文档： http://github.com/PrismarineJS/prismarine-world
+A sync representation of the world. Check the doc at http://github.com/PrismarineJS/prismarine-world
 
 ##### world "blockUpdate" (oldBlock, newBlock)
 
-当方块更新时触发. Both `oldBlock` and `newBlock` provided for
+Fires when a block updates. Both `oldBlock` and `newBlock` provided for
 comparison.
 
-注意 `oldBlock` 可能是 `null`.
+Note that `oldBlock` may be `null`.
 
 ##### world "blockUpdate:(x, y, z)" (oldBlock, newBlock)
 
 Fires for a specific point. Both `oldBlock` and `newBlock` provided for
 comparison.
 
-注意:  `oldBlock` 可能为 `null`
+Note that `oldBlock` may be `null`.
 
 
 #### bot.entity
 
-Bot自己的实体. 见 `Entity`.
+Your own entity. See `Entity`.
 
 #### bot.entities
 
-所有附近的实体。 This object is a map of entityId to entity.
+All nearby entities. This object is a map of entityId to entity.
 
 #### bot.username
 
-机器人自己的名字
+Use this to find out your own name.
 
 #### bot.spawnPoint
 
-到主出生点的坐标, 所有指南针指向的地方。
+Coordinates to the main spawn point, where all compasses point to.
 
 #### bot.heldItem
 
-机器人手中的物品, represented as a [prismarine-item](https://github.com/PrismarineJS/prismarine-item) instance specified with arbitrary metadata, nbtdata, etc.
+The item in the bot's hand, represented as a [prismarine-item](https://github.com/PrismarineJS/prismarine-item) instance specified with arbitrary metadata, nbtdata, etc.
 
 #### bot.usingHeldItem
 
-机器人是否正在使用其持有的物品，例如吃食物或使用盾牌。
+Whether the bot is using the item that it's holding, for example eating food or using a shield.
 
 #### bot.game.levelType
 
@@ -820,36 +527,55 @@ Bot自己的实体. 见 `Entity`.
 
 #### bot.game.serverBrand
 
-### bot.physicsEnabled
+#### bot.game.minY
 
-启用物理，默认为true。
+minimum y of the world
 
-### bot.player
+#### bot.game.height
 
-机器人的玩家对象
+world height
+
+#### bot.physicsEnabled
+
+Enable physics, default true.
+
+#### bot.player
+
+Bot's player object
 ```js
 {
   username: 'player',
   displayName: { toString: Function }, // ChatMessage object.
   gamemode: 0,
   ping: 28,
-  entity: entity // 如果距离太远，则为空
+  entity: entity // null if you are too far away
 }
 ```
 
-一个玩家的ping值从0开始,您可能需要等待服务器发送实际的ping
+A player's ping starts at 0, you might have to wait a bit for the server to send their actual ping.
 
 #### bot.players
 
 Map of username to people playing the game.
 
+#### bot.tablist
+
+bot's tablist object has two keys, `header` and `footer`.
+
+```js
+{
+  header: { toString: Function }, // ChatMessage object.
+  footer: { toString: Function } // ChatMessage object.
+}
+```
+
 #### bot.isRaining
 
 #### bot.rainState
 
-指示当前降雨量的数字。不下雨的时候，这个
-将等于0。 当开始下雨时，该值将增加
-逐渐上升到1。当雨停时，该值逐渐减小回0。
+A number indicating the current rain level. When it isn't raining, this
+will be equal to 0. When it starts to rain, this value will increase
+gradually up to 1. When it stops raining, this value gradually decreases back to 0.
 
 Each time `bot.rainState` is changed, the "weatherUpdate" event is emitted.
 
@@ -874,20 +600,21 @@ This is an array of pattern objects, of the following format:
 
 #### bot.settings.chat
 
-选项:
+Choices:
 
- * `enabled` (默认)
+ * `enabled` (default)
  * `commandsOnly`
  * `disabled`
 
 #### bot.settings.colorsEnabled
 
-默认为true，无论您是否从服务器接收聊天中的颜色代码。
+Default true, whether or not you receive color codes in chats from the server.
 
 #### bot.settings.viewDistance
 
-选项:
- * `far` (默认)
+Can be a string listed below or a postive number.
+Choices:
+ * `far` (default)
  * `normal`
  * `short`
  * `tiny`
@@ -898,11 +625,11 @@ Same as from server.properties.
 
 #### bot.settings.skinParts
 
-这些boolean设置控制玩家皮肤上的额外皮肤细节是否可见
+These boolean Settings control if extra Skin Details on the own players' skin should be visible
 
 ##### bot.settings.skinParts.showCape - boolean
 
-如果您有披风，可以将其设置为false来关闭它
+If you have a cape you can turn it off by setting this to false.
 
 ##### bot.settings.skinParts.showJacket - boolean
 
@@ -916,12 +643,15 @@ Same as from server.properties.
 
 ##### bot.settings.skinParts.showHat - boolean
 
-
+#### bot.settings.enableTextFiltering - boolean
+Unused, defaults to false in Notchian (Vanilla) client.
+#### bot.settings.enableServerListing - boolean
+This setting is sent to the server to determine whether the player should show up in server listings
 #### bot.experience.level
 
 #### bot.experience.points
 
-总经验点数
+Total experience points.
 
 #### bot.experience.progress
 
@@ -929,11 +659,11 @@ Between 0 and 1 - amount to get to the next level.
 
 #### bot.health
 
-[0,20]范围内的数字，表示半颗心的数量。
+Number in the range [0, 20] representing the number of half-hearts.
 
 #### bot.food
 
- [0, 20] 范围内的数字，表示半个鸡腿的数量。
+Number in the range [0, 20] representing the number of half-turkey-legs.
 
 #### bot.foodSaturation
 
@@ -947,8 +677,8 @@ Number in the range [0, 20] respresenting the number of water-icons known as oxy
 
 #### bot.physics
 
-编辑这些数字以调整重力、跳跃速度、终点速度等。
-这样做的风险由你自己承担。
+Edit these numbers to tweak gravity, jump speed, terminal velocity, etc.
+Do this at your own risk.
 
 #### bot.simpleClick.leftMouse (slot)
 
@@ -977,7 +707,7 @@ Realistically though you'll probably never need to use bot.time.bigTime as it wi
 
 #### bot.time.timeOfDay
 
-一天中的时间，单位为Tick
+Time of the day, in ticks.
 
 Time is based on ticks, where 20 ticks happen every second. There are 24000
 ticks in a day, making Minecraft days exactly 20 minutes long.
@@ -987,7 +717,7 @@ is noon, 12000 is sunset, and 18000 is midnight.
 
 #### bot.time.day
 
-世界中的一天
+Day of the world.
 
 #### bot.time.isDay
 
@@ -997,15 +727,15 @@ Based on whether the current time of day is between 13000 and 23000 ticks.
 
 #### bot.time.moonPhase
 
-月相
+Phase of the moon.
 
-0-7，其中0表示满月
+0-7 where 0 is full moon.
 
 #### bot.time.bigAge
 
-世界的年龄以tick为单位
+Age of the world, in ticks.
 
-此值为BigInt类型，即使在非常大的值下也准确。 (more than 2^51 - 1 ticks)
+This value is of type BigInt and is accurate even at very large values. (more than 2^51 - 1 ticks)
 
 #### bot.time.age
 
@@ -1016,7 +746,7 @@ Realistically though you'll probably never need to use bot.time.bigAge as it wil
 
 #### bot.quickBarSlot
 
-选择了哪个物品栏位 (0 - 8)
+Which quick bar slot is selected (0 - 8).
 
 #### bot.inventory
 
@@ -1045,7 +775,7 @@ All scoreboards known to the bot in an object scoreboard displaySlot -> scoreboa
 
 #### bot.teams
 
-机器人已知的所有队伍
+All teams known to the bot
 
 #### bot.teamMap
 
@@ -1061,7 +791,7 @@ Setting values for this object internally calls [bot.setControlState](#botsetcon
 
 #### "chat" (username, message, translate, jsonMsg, matches)
 
-仅在玩家公开聊天时触发
+Only emitted when a player chats publicly.
 
  * `username` - who said the message (compare with `bot.username` to ignore your own chat)
  * `message` - stripped of all color and control characters
@@ -1071,71 +801,86 @@ Setting values for this object internally calls [bot.setControlState](#botsetcon
 
 #### "whisper" (username, message, translate, jsonMsg, matches)
 
-仅当玩家私下与您聊天时触发
+Only emitted when a player chats to you privately.
 
- * `username` - 谁发的消息
- * `message` - 去除所有颜色和控制字符
- * `translate` - 聊天信息类型. 大多数bukkit聊天信息为空
- * `jsonMsg` - 来自服务器的未修改的JSON消息
- * `matches` - 返回从正则表达式的匹配项数组。可能为空
+ * `username` - who said the message
+ * `message` - stripped of all color and control characters
+ * `translate` - chat message type. Null for most bukkit chat messages
+ * `jsonMsg` - unmodified JSON message from the server
+ * `matches` - array of returned matches from regular expressions. May be null
 
-#### "actionBar" (jsonMsg)
+#### "actionBar" (jsonMsg, verified)
 
 Emitted for every server message which appears on the Action Bar.
 
- * `jsonMsg` - 来自服务器的未修改的JSON消息
+ * `jsonMsg` - unmodified JSON message from the server
+ * `verified` -> null if non signed, true if signed and correct, false if signed and incorrect
 
-#### "message" (jsonMsg, position)
+#### "message" (jsonMsg, position, sender, verified)
 
 Emitted for every server message, including chats.
 
- * `jsonMsg` - unmodified JSON message from the server
+ * `jsonMsg` - [ChatMessage](https://github.com/PrismarineJS/prismarine-chat) object containing the formatted chat message. Might additionally have the following properties:
+   * unsigned - Unsigned ChatMessage object. Only present in 1.19.2+, and only when the server allows insecure chat and the server modified the chat message without the user's signature
 
- * `position` - (>= 1.8.1): 聊天信息的position可以是
+ * `position` - (>= 1.8.1): position of Chat message can be
    * chat
    * system
    * game_info
 
-#### "messagestr" (message, messagePosition, jsonMsg)
+ * `sender` - UUID of sender if known (1.16+), else null
 
-`message`事件的别名，但它调用消息对象上的toString()，以在发出前获取消息的字符串。
+ * `verified` -> null if non signed, true if signed and correct, false if signed and incorrect
+
+#### "messagestr" (message, messagePosition, jsonMsg, sender, verified)
+
+Alias for the "message" event but it calls .toString() on the prismarine-message object to get a string for the message before emitting.
+
+ * `sender` - UUID of sender if known (1.16+), else null
+
+ * `verified` -> null if non signed, true if signed and correct, false if signed and incorrect
 
 #### "inject_allowed"
-加载索引文件后触发，您可以在此处加载mcData和插件，但最好等待`spawn`事件。
+Fires when the index file has been loaded, you can load mcData and plugins here but it's better to wait for "spawn" event.
 
 #### "login"
 
-成功登录到服务器后触发。
-在做任何事情之前 您可能要等待"spawn"事件。
+Fires after you successfully login to the server.
+You probably want to wait for the `spawn` event
+before doing anything though.
 
 #### "spawn"
 
-在您首次登录和出生后触发一次然后在你死后重生时触发。
+Emitted once after you log in and spawn for the first time
+and then emitted when you respawn after death.
 
-这通常是您想要监听的事件在服务器上执行任何操作之前.
+This is usually the event that you want to listen to
+before doing anything on the server.
 
 #### "respawn"
 
-在改变维度时和出生之前触发。
-一般忽略此事件并等待"spawn"事件。
+Emitted when you change dimensions and just before you spawn.
+Usually you want to ignore this event and wait until the "spawn"
+event instead.
 
 #### "game"
 
-服务器更改任何游戏属性时触发。
+Emitted when the server changes any of the game properties.
 
 #### "resourcePack" (url, hash)
 
-当服务器发送资源包时触发
+Emitted when the server sends a resource pack.
 
 #### "title"
 
-当服务器发送标题时触发
+Emitted when the server sends a title
 
- * `text` - 标题文本
+ * `text` - title's text
 
 #### "rain"
 
-开始或停止下雨时触发. 如果你加入已在下雨的服务器上，将触发此事件。
+Emitted when it starts or stops raining. If you join a
+server where it is already raining, this event will fire.
 
 #### "weatherUpdate"
 
@@ -1144,72 +889,54 @@ If you join a server where it is already raining, this event will fire.
 
 #### "time"
 
-当服务器发送时间更新时触发. 见 `bot.time`
+Emitted when the server sends a time update. See `bot.time`.
 
 #### "kicked" (reason, loggedIn)
 
-当bot从服务器被踢出时触发
-
- `reason`是一条解释你被踢的原因的聊天信息. 
-
-`loggedIn`
- 如果客户端在成功登录后被踢出则为`true`
-如果kick发生在登录阶段则为 `false` 
+Emitted when the bot is kicked from the server. `reason`
+is a chat message explaining why you were kicked. `loggedIn`
+is `true` if the client was kicked after successfully logging in,
+or `false` if the kick occurred in the login phase.
 
 #### "end" (reason)
 
-当您不再连接到服务器时触发
-`reason` 是一个字符串，用于解释客户端断开连接的原因。 (默认为 'socketClosed')
+Emitted when you are no longer connected to the server.
+`reason` is a string explaining why the client was disconnected. (defaults to 'socketClosed')
 
 #### "error" (err)
 
-发生错误时触发
+Emitted when an error occurs.
 
 #### "spawnReset"
 
-当你不能在床上出生并且出生点重置时触发
+Fires when you cannot spawn in your bed and your spawn point gets reset.
 
 #### "death"
 
-当你死亡时触发
+Fires when you die.
 
 #### "health"
 
-当你的血量或饥饿发生变化时触发
+Fires when your hp or food change.
 
 #### "breath"
 
-当你的氧气水平改变时触发
+Fires when your oxygen level change.
 
 #### "entityAttributes" (entity)
 
-当实体的属性更改时触发
+Fires when an attribute of an entity changes.
 
 #### "entitySwingArm" (entity)
 #### "entityHurt" (entity)
-
-实体被攻击（指被攻击不是受到伤害
-
 #### "entityDead" (entity)
 #### "entityTaming" (entity)
 #### "entityTamed" (entity)
 #### "entityShakingOffWater" (entity)
 #### "entityEatingGrass" (entity)
-
-实体吃草
-
 #### "entityWake" (entity)
-
-实体睡醒
-
 #### "entityEat" (entity)
-
-实体进食
-
 #### "entityCriticalEffect" (entity)
-
-实体暴击效果
-
 #### "entityMagicCriticalEffect" (entity)
 #### "entityCrouch" (entity)
 #### "entityUncrouch" (entity)
@@ -1219,73 +946,64 @@ If you join a server where it is already raining, this event will fire.
 #### "itemDrop" (entity)
 #### "playerCollect" (collector, collected)
 
-某实体拾取一个物品
+An entity picked up an item.
 
- * `collector` - 拾取物品的实体
- * `collected` - 地面上的物品所在的实体
+ * `collector` - entity that picked up the item.
+ * `collected` - the entity that was the item on the ground.
 
 #### "entityGone" (entity)
 #### "entityMoved" (entity)
-
-已移动的实体
-
 #### "entityDetach" (entity, vehicle)
 #### "entityAttach" (entity, vehicle)
 
-实体乘骑在交通工具上, 例如矿车和船
+An entity is attached to a vehicle, such as a mine cart
+or boat.
 
- * `entity` - 搭便车的实体
- * `vehicle` - 作为车辆的实体
+ * `entity` - the entity hitching a ride
+ * `vehicle` - the entity that is the vehicle
 
 #### "entityUpdate" (entity)
 #### "entityEffect" (entity, effect)
-
-实体获得buff效果
-
 #### "entityEffectEnd" (entity, effect)
 #### "playerJoined" (player)
-
-玩家加入游戏后触发
-
 #### "playerUpdated" (player)
 #### "playerLeft" (player)
-
-玩家离开游戏触发
 
 #### "blockUpdate" (oldBlock, newBlock)
 
 (It is better to use this event from bot.world instead of bot directly) Fires when a block updates. Both `oldBlock` and `newBlock` provided for
 comparison.
 
-注意:  `oldBlock` 可能为 `null`
+Note that `oldBlock` may be `null`.
 
 #### "blockUpdate:(x, y, z)" (oldBlock, newBlock)
 
 (It is better to use this event from bot.world instead of bot directly) Fires for a specific point. Both `oldBlock` and `newBlock` provided for
 comparison.
 
-注意:  `oldBlock` 可能为 `null`
+Note that `oldBlock` may be `null`.
 
 #### "blockPlaced" (oldBlock, newBlock)
 
-当机器人放置方块时触发. Both `oldBlock` and `newBlock` provided for
+Fires when bot places block. Both `oldBlock` and `newBlock` provided for
 comparison.
 
-注意:  `oldBlock` 可能为 `null`
+Note that `oldBlock` may be `null`.
 
 #### "chunkColumnLoad" (point)
 #### "chunkColumnUnload" (point)
 
-当区块已更新时触发. `point` is the coordinates to the corner of the chunk with the smallest x, y, and z values.
+Fires when a chunk has updated. `point` is the coordinates to the corner
+of the chunk with the smallest x, y, and z values.
 
 #### "soundEffectHeard" (soundName, position, volume, pitch)
 
-当客户端听到指定的音效时触发
+Fires when the client hears a named sound effect.
 
- * `soundName`: 音效名称
- * `position`:  Vec3 实例，声音从哪里发出（译者注：vec3即 x,y,z坐标
- * `volume`: 浮点数音量, 1.0 为100%
- * `pitch`: 整数音高，63为100%
+ * `soundName`: name of the sound effect
+ * `position`: a Vec3 instance where the sound originates
+ * `volume`: floating point volume, 1.0 is 100%
+ * `pitch`: integer pitch, 63 is 100%
 
 #### "hardcodedSoundEffectHeard" (soundId, soundCategory, position, volume, pitch)
 
@@ -1299,7 +1017,7 @@ comparison.
 
 #### "noteHeard" (block, instrument, pitch)
 
-当一个音符块在某处响起时触发
+Fires when a note block goes off somewhere.
 
  * `block`: a Block instance, the block that emitted the noise
  * `instrument`:
@@ -1317,32 +1035,34 @@ comparison.
 * `isOpen`: number of players that have the chest open. 0 if it's closed
 * `block2`: a Block instance, the other half of the block whose lid opened. null if it's not a double chest
 
-#### "blockBreakProgressObserved" (block, destroyStage)
+#### "blockBreakProgressObserved" (block, destroyStage, entity)
 
 Fires when the client observes a block in the process of being broken.
 
  * `block`: a Block instance, the block being broken
  * `destroyStage`: integer corresponding to the destroy progress (0-9)
+ * `entity`: the entity which is breaking the block.
 
-#### "blockBreakProgressEnd" (block)
+#### "blockBreakProgressEnd" (block, entity)
 
 Fires when the client observes a block stops being broken.
 This occurs whether the process was completed or aborted.
 
  * `block`: a Block instance, the block no longer being broken
+ * `entity`: the entity which has stopped breaking the block
 
 #### "diggingCompleted" (block)
 
- * `block` - 方块不再存在
+ * `block` - the block that no longer exists
 
 #### "diggingAborted" (block)
 
- * `block` - 方块仍然存在
+ * `block` - the block that still exists
 
 #### "move"
 
-当机器人移动时触发. 如果需要当前位置，请使用
-`bot.entity.position` 对于正常移动，如果您想要上一个位置，请使用
+Fires when the bot moves. If you want the current position, use
+`bot.entity.position` and for normal moves if you want the previous position, use
 `bot.entity.position.minus(bot.entity.velocity)`.
 
 #### "forcedMove"
@@ -1352,15 +1072,14 @@ Fires when the bot is force moved by the server (teleport, spawning, ...). If yo
 
 #### "mount"
 
-乘骑实体（如矿车）时触发
+Fires when you mount an entity such as a minecart. To get access
+to the entity, use `bot.vehicle`.
 
-要访问实体，请使用 `bot.vehicle`.
-
-要乘骑实体, 请使用 `mount`.
+To mount an entity, use `mount`.
 
 #### "dismount" (vehicle)
 
-实体从坐骑上下马时触发
+Fires when you dismount from an entity.
 
 #### "windowOpen" (window)
 
@@ -1372,27 +1091,27 @@ Fires when you may no longer work with a workbench, chest, etc.
 
 #### "sleep"
 
-睡觉时触发
+Fires when you sleep.
 
 #### "wake"
 
-当你醒来的时候触发
+Fires when you wake up.
 
 #### "experience"
 
-当 `bot.experience.*` 经验点数变化时触发
+Fires when `bot.experience.*` has updated.
 
 #### "scoreboardCreated" (scoreboard)
 
-记分牌被添加时触发
+Fires when a scoreboard is added.
 
 #### "scoreboardDeleted" (scoreboard)
 
-记分板被删除时触发
+Fires when a scoreboard is deleted.
 
 #### "scoreboardTitleChanged" (scoreboard)
 
-当记分牌标题更新时触发
+Fires when a scoreboard's title is updated.
 
 #### "scoreUpdated" (scoreboard, item)
 
@@ -1408,15 +1127,15 @@ Fires when the position of a scoreboard is updated.
 
 #### "teamCreated" (team)
 
-添加队伍时触发
+Fires when a team is added.
 
 #### "teamRemoved" (team)
 
-队伍被移除触发
+Fires when a team is removed.
 
 #### "teamUpdated" (team)
 
-更新队伍触发
+Fires when a team is updated.
 
 #### "teamMemberAdded" (team)
 
@@ -1428,27 +1147,31 @@ Fires when a team member or multiple members are removed from a team.
 
 #### "bossBarCreated" (bossBar)
 
-新boss栏创建时触发
+Fires when new boss bar is created.
 
 #### "bossBarDeleted" (bossBar)
 
-新boss栏删除时激发。
+Fires when new boss bar is deleted.
 
 #### "bossBarUpdated" (bossBar)
 
-更新新boss栏时触发
+Fires when new boss bar is updated.
 
 #### "heldItemChanged" (heldItem)
 
-手持物品变动时触发
+Fires when the held item is changed.
 
 #### "physicsTick" ()
 
-如果 bot.physicsEnabled 设为true则每tick触发一次
+Fires every tick if bot.physicsEnabled is set to true.
 
 #### "chat:name" (matches)
 
 Fires when the all of a chat pattern's regexs have matches
+
+#### "particle"
+
+Fires when a particle is created
 
 ### Functions
 
@@ -1457,11 +1180,9 @@ Fires when the all of a chat pattern's regexs have matches
 Returns the block at `point` or `null` if that point is not loaded. If `extraInfos` set to true, also returns informations about signs, paintings and block entities (slower).
 See `Block`.
 
-#### bot.waitForChunksToLoad(cb)
+#### bot.waitForChunksToLoad()
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
-
-The cb gets called when many chunks have loaded.
+This function returns a `Promise`, with `void` as its argument when many chunks have loaded.
 
 #### bot.blockInSight(maxSteps, vectorLength)
 
@@ -1475,6 +1196,11 @@ Returns the block at which bot is looking at or `null`
 
 Returns the block at which bot is looking at or `null`
  * `maxDistance` - The maximum distance the block can be from the eye, defaults to 256.
+
+#### bot.entityAtCursor(maxDistance=3.5)
+
+Returns the entity at which bot is looking at or `null`
+ * `maxDistance` - The maximum distance the entity can be from the eye, defaults to 3.5.
 
 #### bot.blockAtEntityCursor(entity=bot.entity, maxDistance=256)
 
@@ -1530,9 +1256,9 @@ The same as bot.recipesFor except that it does not check wether the bot has enou
 
 Return the nearest entity to the bot, matching the function (default to all entities). Return null if no entity is found.
 
-示例:
+Example:
 ```js
-const cow = bot.nearestEntity(entity => entity.name.toLowerCase() === 'cow') // 我们使用 .toLowercase() 因为在1.8版本中，cow是大写的，这样可以适用于新版本
+const cow = bot.nearestEntity(entity => entity.name.toLowerCase() === 'cow') // we use .toLowercase() because in 1.8 cow was capitalized, for newer versions that can be ommitted
 ```
 
 ### Methods
@@ -1546,14 +1272,12 @@ End the connection with the server.
 
 Gracefully disconnect from the server with the given reason (defaults to 'disconnect.quitting').
 
-#### bot.tabComplete(str, cb, [assumeCommand], [sendBlockInSight])
+#### bot.tabComplete(str, [assumeCommand], [sendBlockInSight])
 
-This function also returns a `Promise`, with `matches` as its argument upon completion.
+This function returns a `Promise`, with `matches` as its argument upon completion.
 
 Requests chat completion from the server.
  * `str` - String to complete.
- * `callback(matches)`
-   - `matches` - Array of matching strings.
  * `assumeCommand` - Field sent to server, defaults to false.
  * `sendBlockInSight` - Field sent to server, defaults to true. Set this option to false if you want more performance.
 
@@ -1661,21 +1385,21 @@ Injects plugins see `bot.loadPlugin`.
 
 Checks if the given plugin is loaded (or scheduled to be loaded) on this bot.
 
-#### bot.sleep(bedBlock, [cb])
+#### bot.sleep(bedBlock)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
-Sleep in a bed. `bedBlock` should be a `Block` instance which is a bed. `cb` can have an err parameter if the bot cannot sleep.
+Sleep in a bed. `bedBlock` should be a `Block` instance which is a bed. 
 
 #### bot.isABed(bedBlock)
 
 Return true if `bedBlock` is a bed
 
-#### bot.wake([cb])
+#### bot.wake()
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
-Get out of bed. `cb` can have an err parameter if the bot cannot wake up.
+Get out of bed. 
 
 #### bot.setControlState(control, state)
 
@@ -1706,17 +1430,16 @@ It will return `null` if the entity has no armor and rawDamages is not set to tr
 * `radius` - the explosion radius as a number
 * `rawDamages` - optional, if true it ignores armor in the calculation
 
-#### bot.lookAt(point, [force], [callback])
+#### bot.lookAt(point, [force])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when you are looking at `point`.
 
  * `point` [Vec3](https://github.com/andrewrk/node-vec3) instance - tilts your head so that it is directly facing this point.
  * `force` - See `force` in `bot.look`
- * `callback()` optional, called when you are looking at `point`
 
-#### bot.look(yaw, pitch, [force], [callback])
+#### bot.look(yaw, pitch, [force])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument called when you are looking at `yaw` and `pitch`.
 
 Set the direction your head is facing.
 
@@ -1728,15 +1451,14 @@ Set the direction your head is facing.
    Specify this to true if you need the server to know exactly where you
    are looking, such as for dropping items or shooting arrows. This is not
    needed for client-side calculation such as walking direction.
- * `callback()` optional, called when you are looking at `yaw` and `pitch`
 
 #### bot.updateSign(block, text)
 
 Changes the text on the sign.
 
-#### bot.equip(item, destination, [callback])
+#### bot.equip(item, destination)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when you have successfully equipped the item or when you learn that you have failed to equip the item.
 
 Equips an item from your inventory. If the argument `item` is of Instance `Item` equip will equip this specific item from its window slot. If the argument `item` is of type `number` equip will equip the first item found with that id searched by rising slot id (Hotbar is searched last. Armor, crafting, crafting result and off-hand slots are excluded).
 
@@ -1748,36 +1470,32 @@ Equips an item from your inventory. If the argument `item` is of Instance `Item`
    - `"legs"`
    - `"feet"`
    - `"off-hand"` - when available
- * `callback(error)` - optional. called when you have successfully equipped
-   the item or when you learn that you have failed to equip the item.
 
-#### bot.unequip(destination, [callback])
+#### bot.unequip(destination)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 Remove an article of equipment.
 
-#### bot.tossStack(item, [callback])
+#### bot.tossStack(item)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when tossing is done.
 
  * `item` - the stack of items you wish to toss
- * `callback(error)` - optional, called when tossing is done. if error is
    truthy, you were not able to complete the toss.
 
-#### bot.toss(itemType, metadata, count, [callback])
+#### bot.toss(itemType, metadata, count)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument once tossing is complete.
 
  * `itemType` - numerical id of the item you wish to toss
  * `metadata` - metadata of the item you wish to toss. Use `null`
    to match any metadata
  * `count` - how many you want to toss. `null` is an alias for `1`.
- * `callback(err)` - (optional) called once tossing is complete
 
-#### bot.dig(block, [forceLook = true], [digFace], [callback])
+#### bot.dig(block, [forceLook = true], [digFace])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when the block is broken or you are interrupted.
 
 Begin digging into `block` with the currently equipped item.
 See also "diggingCompleted" and "diggingAborted" events.
@@ -1790,8 +1508,6 @@ dig any other blocks until the block has been broken, or you call
  * `forceLook` - (optional) if true, look at the block and start mining instantly. If false, the bot will slowly turn to the block to mine. Additionally, this can be assigned to 'ignore' to prevent the bot from moving it's head at all. Also, this can be assigned to 'raycast' to raycast from the bots head to place where the bot is looking.
  * `digFace` - (optional) Default is 'auto' looks at the center of the block and mines the top face. Can also be a vec3 vector
  of the face the bot should be looking at when digging the block. For example: ```vec3(0, 1, 0)``` when mining the top. Can also be 'raycast' raycast checks if there is a face visible by the bot and mines that face. Useful for servers with anti cheat.
- * `callback(err)` - (optional) called when the block is broken or you
-   are interrupted.
 
 If you call bot.dig twice before the first dig is finished, you will get a fatal 'diggingAborted' error.
 
@@ -1809,20 +1525,19 @@ Accepts resource pack.
 
 Denies resource pack.
 
-#### bot.placeBlock(referenceBlock, faceVector, cb)
+#### bot.placeBlock(referenceBlock, faceVector)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when the server confirms that the block has indeed been placed.
 
  * `referenceBlock` - the block you want to place a new block next to
  * `faceVector` - one of the six cardinal directions, such as `new Vec3(0, 1, 0)` for the top face,
    indicating which face of the `referenceBlock` to place the block against.
- * `cb` will be called when the server confirms that the block has indeed been placed
 
 The new block will be placed at `referenceBlock.position.plus(faceVector)`.
 
 #### bot.placeEntity(referenceBlock, faceVector)
 
-This function also returns a `Promise`, with `Entity` as its argument upon completion.
+This function returns a `Promise`, with `Entity` as its argument upon completion.
 
  * `referenceBlock` - the block you want to place the entity next to
  * `faceVector` - one of the six cardinal directions, such as `new Vec3(0, 1, 0)` for the top face,
@@ -1830,49 +1545,46 @@ This function also returns a `Promise`, with `Entity` as its argument upon compl
 
 The new block will be placed at `referenceBlock.position.plus(faceVector)`.
 
-#### bot.activateBlock(block, [callback])
+#### bot.activateBlock(block, direction?: Vec3, cursorPos?: Vec3)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 Punch a note block, open a door, etc.
 
  * `block` - the block to activate
- * `callback(err)` - (optional) called when the block has been activated
+ * `direction` Optional defaults to `new Vec3(0, 1, 0)` (up). A vector off the direction the container block should be interacted with. Does nothing when a container entity is targeted.
+ * `cursorPos` Optional defaults to `new Vec3(0.5, 0.5, 0.5)` (block center). The curos position when opening the block instance. This is send with the activate block packet. Does nothing when a container entity is targeted.
 
-#### bot.activateEntity(entity, [callback])
+#### bot.activateEntity(entity)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 Activate an entity, useful for villager for example.
 
  * `entity` - the entity to activate
- * `callback(err)` - (optional) called when the entity has been activated
 
-#### bot.activateEntityAt(entity, position, [callback])
+#### bot.activateEntityAt(entity, position)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 Activate an entity at the given position, useful for armor stands.
 
  * `entity` - the entity to activate
  * `position` - the world position to click at
- * `callback(err)` - (optional) called when the entity has been activated
 
-#### bot.consume(callback)
+#### bot.consume()
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when consume ends.
 
 Eat / drink currently held item
 
- * `callback(error)` - called when consume ends
 
-#### bot.fish(callback)
+#### bot.fish()
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when fishing ends.
 
 Use fishing rod
 
- * `callback(error)` - called when fishing ends
 
 #### bot.activateItem(offHand=false)
 
@@ -1893,13 +1605,13 @@ use shears.
 Attack a player or a mob.
 
  * `entity` is a type of entity. To get a specific entity use [bot.nearestEntity()](#botnearestentitymatch--entity---return-true-) or [bot.entities](#botentities).
- * `swing` Default `true`. If false the bot does not swing is arm when attacking.
+ * `swing` Default to `true`. If false the bot does not swing its arm when attacking.
 
 #### bot.swingArm([hand], showHand)
 
 Play an arm swing animation.
 
- * `hand` can take `left` or `right` which is arm that is animated. Default: `right`
+ * `hand` can take `left` or `right` which is the arm that is animated. Default: `right`
  * `showHand` is a boolean whether to add the hand to the packet, Default: `true`
 
 #### bot.mount(entity)
@@ -1923,9 +1635,9 @@ All the direction are relative to where the bot is looking at
 
  * `slot` - 0-8 the quick bar slot to select.
 
-#### bot.craft(recipe, count, craftingTable, [callback])
+#### bot.craft(recipe, count, craftingTable)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when the crafting is complete and your inventory is updated.
 
  * `recipe` - A `Recipe` instance. See `bot.recipesFor`.
  * `count` - How many times you wish to perform the operation.
@@ -1934,22 +1646,24 @@ This function also returns a `Promise`, with `void` as its argument upon complet
  * `craftingTable` - A `Block` instance, the crafting table you wish to
    use. If the recipe does not require a crafting table, you may use
    `null` for this argument.
- * `callback` - (optional) Called when the crafting is complete and your
-   inventory is updated.
 
-#### bot.writeBook(slot, pages, [callback])
+#### bot.writeBook(slot, pages)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when the writing was successfully or an error occurred.
 
  * `slot` is in inventory window coordinates (where 36 is the first quickbar slot, etc.).
  * `pages` is an array of strings represents the pages.
- * `callback(error)` - optional. called when the writing was successfully or an error occurred.
 
-#### bot.openContainer(containerBlock or containerEntity)
+#### bot.openContainer(containerBlock or containerEntity, direction?, cursorPos?)
+Opens a block container or entity.
+
+ * `containerBlock` or `containerEntity` The block instance to open or the entity to open.
+ * `direction` Optional defaults to `new Vec3(0, 1, 0)` (up). A vector off the direction the container block should be interacted with. Does nothing when a container entity is targeted.
+ * `cursorPos` Optional defaults to `new Vec3(0.5, 0.5, 0.5)` (block center). The curos position when opening the block instance. This is send with the activate block packet. Does nothing when a container entity is targeted.
 
 Returns a promise on a `Container` instance which represents the container you are opening.
 
-#### bot.openChest(chestBlock or minecartchestEntity)
+#### bot.openChest(chestBlock or minecartchestEntity, direction?, cursorPos?)
 
 Deprecated. Same as `openContainer`
 
@@ -1975,9 +1689,9 @@ Returns a promise on an `anvil` instance which represents the anvil you are open
 Returns a promise on a `Villager` instance which represents the trading window you are opening.
 You can listen to the `ready` event on this `Villager` to know when it's ready
 
-#### bot.trade(villagerInstance, tradeIndex, [times], [cb])
+#### bot.trade(villagerInstance, tradeIndex, [times])
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 Uses the open `villagerInstance` to trade.
 
@@ -1985,7 +1699,6 @@ Uses the open `villagerInstance` to trade.
 
 Set a command block's properties at `pos`.
 Example `options` argument:
-
 ```js
 {
   mode: 2,
@@ -2011,21 +1724,25 @@ This is a promise-based function that waits for a given number of in-game ticks 
 
 These are lower level methods for the inventory, they can be useful sometimes but prefer the inventory methods presented above if you can.
 
-#### bot.clickWindow(slot, mouseButton, mode, cb)
+#### bot.clickWindow(slot, mouseButton, mode)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
+  
+The only valid mode option at the moment is 0. Shift clicking or mouse draging is not implemented.
 
 Click on the current window. See details at https://wiki.vg/Protocol#Click_Window
 
+Prefer using bot.simpleClick.*
+
 #### bot.putSelectedItemRange(start, end, window, slot)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 Put the item at `slot` in the specified range.
 
 #### bot.putAway(slot)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 Put the item at `slot` in the inventory.
 
@@ -2033,25 +1750,27 @@ Put the item at `slot` in the inventory.
 
 Close the `window`.
 
-#### bot.transfer(options, cb)
+#### bot.transfer(options)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 Transfer some kind of item from one range to an other. `options` is an object containing :
 
- * `window` : the window where the item will be moved
+ * `window` : Optional. the window where the item will be moved
  * `itemType` : the type of the moved items
- * `metadata` : the metadata of the moved items
- * `sourceStart` and `sourceEnd` : the source range
- * `destStart` and `destEnd` : the dest Range
+ * `metadata` : Optional. the metadata of the moved items
+ * `sourceStart` and `sourceEnd` : the source range. `sourceEnd` is optional and will default to `sourceStart` + 1
+ * `destStart` and `destEnd` : the dest Range. `destEnd` is optional and will default to `destStart` + 1
  * `count` : the amount of items to transfer. Default: `1`
  * `nbt` : nbt data of the item to transfer. Default: `nullish` (ignores nbt)
 
-#### bot.openBlock(block)
+#### bot.openBlock(block, direction?: Vec3, cursorPos?: Vec3)
 
 Open a block, for example a chest, returns a promise on the opening `Window`.
 
- * `block` is the block the bot will open
+ * `block` is the block the bot will open.
+ * `direction` Optional defaults to `new Vec3(0, 1, 0)` (up). A vector off the direction the container block should be interacted with. Does nothing when a container entity is targeted.
+ * `cursorPos` Optional defaults to `new Vec3(0.5, 0.5, 0.5)` (block center). The curos position when opening the block instance. This is send with the activate block packet. Does nothing when a container entity is targeted.
 
 #### bot.openEntity(entity)
 
@@ -2059,9 +1778,9 @@ Open an entity with an inventory, for example a villager, returns a promise on t
 
  * `entity` is the entity the bot will open
 
-#### bot.moveSlotItem(sourceSlot, destSlot, cb)
+#### bot.moveSlotItem(sourceSlot, destSlot)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument upon completion.
 
 Move an item from `sourceSlot` to `destSlot` in the current window.
 
@@ -2087,30 +1806,38 @@ This collection of apis is useful in creative mode.
 Detecting and changing gamemodes is not implemented here,
 but it is assumed and often required that the bot be in creative mode for these features to work.
 
-#### bot.creative.setInventorySlot(slot, item, [callback])
+#### bot.creative.setInventorySlot(slot, item)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when gets fired when the server sets the slot.
 
 Gives the bot the specified item in the specified inventory slot.
-If called twice on the same slot before first callback exceeds, first callback will have an error parameter
 
  * `slot` is in inventory window coordinates (where 36 is the first quickbar slot, etc.).
  * `item` is a [prismarine-item](https://github.com/PrismarineJS/prismarine-item) instance specified with arbitrary metadata, nbtdata, etc.
     If `item` is `null`, the item at the specified slot is deleted.
- * `callback(err)` (optional) is a callback which gets fired when the servers sets the slot
 
 If this method changes anything, you can be notified via `bot.inventory.on("updateSlot")`.
 
-#### bot.creative.flyTo(destination, [cb])
+#### bot.creative.clearSlot(slot)
 
-This function also returns a `Promise`, with `void` as its argument upon completion.
+This function returns a `Promise`, with `void` as its argument when gets fired when the server clears the slot.
+
+Makes the sets the item in the slot given to null.
+
+ * `slot` is in inventory window coordinates (where 36 is the first quickbar slot, etc.).
+
+#### bot.creative.clearInventory()
+
+This function returns a `Promise`, with `void` as its argument when gets fired when the server clears the slot.
+
+#### bot.creative.flyTo(destination)
+
+This function returns a `Promise`, with `void` as its argument when the bot arrives at the destination.
 
 Calls `startFlying()` and moves at a constant speed through 3d space in a straight line to the destination.
 `destination` is a `Vec3`, and often the `x` and `z` coordinates will end with `.5`.
 This operation will not work if there is an obstacle in the way,
 so it is advised to fly very short distances at a time.
-
-When the bot arrives at the destination, `cb` is called.
 
 This method does not attempt any path finding.
 It is expected that a path finding implementation will use this method to move < 2 blocks at a time.

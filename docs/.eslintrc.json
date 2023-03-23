@@ -1,0 +1,29 @@
+{
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "next/next/no-img-element": "off",
+    "@next/next/no-img-element": "off",
+    "semi": ["error", "always"],
+    "quotes": ["error", "single"],
+    "eol-last": ["error", "always"],
+    "import/order": [
+      "error",
+      {
+        "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
+        "pathGroups": [
+          {
+            "pattern": "react",
+            "group": "builtin",
+            "position": "before"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": ["react"],
+        "newlines-between": "never",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ]
+  }
+}

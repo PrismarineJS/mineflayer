@@ -1,0 +1,15 @@
+import { Callout } from 'nextra-theme-docs'
+
+<Callout type="error"emoji="⚠️">
+    This feature is not stable and can change at any moment. Use it at your own risk.
+</Callout>
+
+# Unstable API : bot._
+
+These methods and classes are useful in some special cases but are not stable and can change at any moment.
+
+## bot._client
+
+`bot._client` is created using [node-minecraft-protocol](https://github.com/PrismarineJS/node-minecraft-protocol).
+It handles writing and reading packet.
+Its behaviour can change (for example at each new minecraft version) so it's better to use mineflayer methods if possible.
