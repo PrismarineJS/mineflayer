@@ -2077,9 +2077,9 @@ These are lower level methods for the inventory, they can be useful sometimes bu
 
 This function returns a `Promise`, with `void` as its argument upon completion.
   
-The only valid mode option at the moment is 0. Shift clicking or mouse draging is not implemented.
+The only valid mode option at the moment is 0. Shift clicking or mouse dragging is not implemented.
 
-Click on the current window. See details at https://wiki.vg/Protocol#Click_Window
+Click on the current window. See details at https://wiki.vg/Protocol#Click_Container
 
 Prefer using bot.simpleClick.*
 
