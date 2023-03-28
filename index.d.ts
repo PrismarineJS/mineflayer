@@ -565,7 +565,7 @@ export interface FindBlockOptions {
   matching: number | number[] | ((block: Block) => boolean)
   maxDistance?: number
   count?: number
-  useExtraInfo?: boolean
+  useExtraInfo?: boolean | ((block: Block) => boolean)
 }
 
 export type EquipmentDestination = 'hand' | 'head' | 'torso' | 'legs' | 'feet' | 'off-hand'
