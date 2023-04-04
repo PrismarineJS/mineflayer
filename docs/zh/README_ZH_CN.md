@@ -10,7 +10,7 @@
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb)
 
-| <sub>EN</sub> [English](README.md) | <sub>RU</sub> [русский](ru/README_RU.md) | <sub>ES</sub> [Español](es/README_ES.md) | <sub>FR</sub> [Français](fr/README_FR.md) | <sub>TR</sub> [Türkçe](tr/README_TR.md) | <sub>ZH</sub> [中文](zh/README_ZH_CN.md) |
+| <sub>EN</sub> [English](../README.md) | <sub>RU</sub> [русский](../ru/README_RU.md) | <sub>ES</sub> [Español](../es/README_ES.md) | <sub>FR</sub> [Français](../fr/README_FR.md) | <sub>TR</sub> [Türkçe](../tr/README_TR.md) | <sub>ZH</sub> [中文](../zh/README_ZH_CN.md) 
 |-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
 
 使用强大、稳定、高级的JavaScript [API](../api.md) 来开发Minecraft机器人，同时支持 Python。
@@ -101,7 +101,7 @@ bot.on('error', console.log)
 ### 看看你的bot在做什么
 
 感谢 [prismarin-viewer](https://github.com/PrismarineJS/prismarine-viewer)项目，它可以在浏览器窗口显示你的机器人正在做什么。  
-只需要运行 `npm install prismane-viewer` 并将其添加到你的bot代码中。
+只需要运行 `npm install prismarine-viewer` 并将其添加到你的bot代码中。
 
 ```js
 const { mineflayer: mineflayerViewer } = require('prismarine-viewer')

@@ -16,6 +16,7 @@
     - [vec3](#vec3)
     - [mineflayer.Location](#mineflayerlocation)
     - [Entity](#entity)
+      - [Player Skin Data](#player-skin-data)
     - [Block](#block)
     - [Biome](#biome)
     - [Item](#item)
@@ -75,6 +76,14 @@
       - [BossBar.isDragonBar](#bossbarisdragonbar)
       - [BossBar.createFog](#bossbarcreatefog)
       - [BossBar.color](#bossbarcolor)
+    - [mineflayer.Particle](#mineflayerparticle)
+      - [Particle.id](#particleid)
+      - [Particle.name](#particlename)
+      - [Particle.position](#particleposition)
+      - [Particle.offset](#particleoffset)
+      - [Particle.longDistanceRender](#particlelongdistancerender)
+      - [Particle.count](#particlecount)
+      - [Particle.movementSpeed](#particlemovementspeed)
   - [Bot](#bot)
     - [mineflayer.createBot(options)](#mineflayercreatebotoptions)
     - [Properties](#properties)
@@ -150,9 +159,9 @@
     - [Events](#events)
       - ["chat" (username, message, translate, jsonMsg, matches)](#chat-username-message-translate-jsonmsg-matches)
       - ["whisper" (username, message, translate, jsonMsg, matches)](#whisper-username-message-translate-jsonmsg-matches)
-      - ["actionBar" (jsonMsg)](#actionbar-jsonmsg)
-      - ["message" (jsonMsg, position)](#message-jsonmsg-position)
-      - ["messagestr" (message, messagePosition, jsonMsg)](#messagestr-message-messageposition-jsonmsg)
+      - ["actionBar" (jsonMsg, verified)](#actionbar-jsonmsg-verified)
+      - ["message" (jsonMsg, position, sender, verified)](#message-jsonmsg-position-sender-verified)
+      - ["messagestr" (message, messagePosition, jsonMsg, sender, verified)](#messagestr-message-messageposition-jsonmsg-sender-verified)
       - ["inject_allowed"](#inject_allowed)
       - ["login"](#login)
       - ["spawn"](#spawn)
@@ -209,8 +218,8 @@
       - ["noteHeard" (block, instrument, pitch)](#noteheard-block-instrument-pitch)
       - ["pistonMove" (block, isPulling, direction)](#pistonmove-block-ispulling-direction)
       - ["chestLidMove" (block, isOpen, block2)](#chestlidmove-block-isopen-block2)
-      - ["blockBreakProgressObserved" (block, destroyStage)](#blockbreakprogressobserved-block-destroystage)
-      - ["blockBreakProgressEnd" (block)](#blockbreakprogressend-block)
+      - ["blockBreakProgressObserved" (block, destroyStage, entity)](#blockbreakprogressobserved-block-destroystage-entity)
+      - ["blockBreakProgressEnd" (block, entity)](#blockbreakprogressend-block-entity)
       - ["diggingCompleted" (block)](#diggingcompleted-block)
       - ["diggingAborted" (block)](#diggingaborted-block)
       - ["move"](#move)
@@ -239,12 +248,13 @@
       - ["heldItemChanged" (heldItem)](#helditemchanged-helditem)
       - ["physicsTick" ()](#physicstick-)
       - ["chat:name" (matches)](#chatname-matches)
+      - ["particle"](#particle)
     - [Functions](#functions)
       - [bot.blockAt(point, extraInfos=true)](#botblockatpoint-extrainfostrue)
       - [bot.waitForChunksToLoad()](#botwaitforchunkstoload)
       - [bot.blockInSight(maxSteps, vectorLength)](#botblockinsightmaxsteps-vectorlength)
       - [bot.blockAtCursor(maxDistance=256)](#botblockatcursormaxdistance256)
-      - [bot.entityAtCursor(maxDistance = 3.5)](#botentityatcursormaxdistance35)
+      - [bot.entityAtCursor(maxDistance=3.5)](#botentityatcursormaxdistance35)
       - [bot.blockAtEntityCursor(entity=bot.entity, maxDistance=256)](#botblockatentitycursorentitybotentity-maxdistance256)
       - [bot.canSeeBlock(block)](#botcanseeblockblock)
       - [bot.findBlocks(options)](#botfindblocksoptions)
@@ -395,6 +405,18 @@ properties.
 Entities represent players, mobs, and objects. They are emitted
 in many events, and you can access your own entity with `bot.entity`.
 See [prismarine-entity](https://github.com/PrismarineJS/prismarine-entity)
+
+#### Player Skin Data
+
+The skin data is stored in the `skinData` property of the player object, if present.
+
+```js
+// player.skinData
+{
+  url: 'http://textures.minecraft.net/texture/...',
+  model: 'slim' // or 'classic'
+}
+```
 
 ### Block
 
@@ -725,6 +747,36 @@ Determines whether or not boss bar creates fog
 
 Determines what color the boss bar color is, one of `pink`, `blue`, `red`, `green`, `yellow`, `purple`, `white`
 
+### mineflayer.Particle
+
+#### Particle.id
+
+Particle ID, as defined in the [protocol](https://wiki.vg/Protocol#Particle)
+
+#### Particle.name
+
+Particle Name, as defined in the [protocol](https://wiki.vg/Protocol#Particle)
+
+#### Particle.position
+
+Vec3 instance of where the particle was created
+
+#### Particle.offset
+
+Vec3 instance of the particle's offset
+
+#### Particle.longDistanceRender
+
+Determines whether or not to force the rendering of a particle despite client particle settings and increases maximum view distance from 256 to 65536
+
+#### Particle.count
+
+Amount of particles created
+
+#### Particle.movementSpeed
+
+Particle speed in a random direction
+
 ## Bot
 
 ### mineflayer.createBot(options)
@@ -746,6 +798,7 @@ Create and return an instance of the class bot.
  * loadInternalPlugins : defaults to true
  * storageBuilder : an optional function, takes as argument version and worldName and return an instance of something with the same API as prismarine-provider-anvil. Will be used to save the world.
  * client : an instance of node-minecraft-protocol, if not specified, mineflayer makes it's own client. This can be used to enable using mineflayer through a proxy of many clients or a vanilla client and a mineflayer client.
+ * brand : the brand name for the client to use. Defaults to vanilla. Can be used to simulate custom clients for servers that require it.
  * plugins : object : defaults to {}
    - pluginName : false : don't load internal plugin with given name ie. `pluginName`
    - pluginName : true : load internal plugin with given name ie. `pluginName` even though loadInternalplugins is set to false
@@ -775,15 +828,13 @@ A sync representation of the world. Check the doc at http://github.com/Prismarin
 
 Fires when a block updates. Both `oldBlock` and `newBlock` provided for
 comparison.
-
-Note that `oldBlock` may be `null`.
+`oldBlock` may be `null` with normal block updates.
 
 ##### world "blockUpdate:(x, y, z)" (oldBlock, newBlock)
 
 Fires for a specific point. Both `oldBlock` and `newBlock` provided for
-comparison.
-
-Note that `oldBlock` may be `null`.
+comparison. All listeners receive null for `oldBlock` and `newBlock` and get automatically removed when the world is unloaded.
+`oldBlock` may be `null` with normal block updates.
 
 
 #### bot.entity
@@ -1106,26 +1157,36 @@ Only emitted when a player chats to you privately.
  * `jsonMsg` - unmodified JSON message from the server
  * `matches` - array of returned matches from regular expressions. May be null
 
-#### "actionBar" (jsonMsg)
+#### "actionBar" (jsonMsg, verified)
 
 Emitted for every server message which appears on the Action Bar.
 
  * `jsonMsg` - unmodified JSON message from the server
+ * `verified` -> null if non signed, true if signed and correct, false if signed and incorrect
 
-#### "message" (jsonMsg, position)
+#### "message" (jsonMsg, position, sender, verified)
 
 Emitted for every server message, including chats.
 
- * `jsonMsg` - unmodified JSON message from the server
+ * `jsonMsg` - [ChatMessage](https://github.com/PrismarineJS/prismarine-chat) object containing the formatted chat message. Might additionally have the following properties:
+   * unsigned - Unsigned ChatMessage object. Only present in 1.19.2+, and only when the server allows insecure chat and the server modified the chat message without the user's signature
 
  * `position` - (>= 1.8.1): position of Chat message can be
    * chat
    * system
    * game_info
 
-#### "messagestr" (message, messagePosition, jsonMsg)
+ * `sender` - UUID of sender if known (1.16+), else null
 
-Alias for the "message" event but it calls .toString() on the message object to get a string for the message before emitting.
+ * `verified` -> null if non signed, true if signed and correct, false if signed and incorrect
+
+#### "messagestr" (message, messagePosition, jsonMsg, sender, verified)
+
+Alias for the "message" event but it calls .toString() on the prismarine-message object to get a string for the message before emitting.
+
+ * `sender` - UUID of sender if known (1.16+), else null
+
+ * `verified` -> null if non signed, true if signed and correct, false if signed and incorrect
 
 #### "inject_allowed"
 Fires when the index file has been loaded, you can load mcData and plugins here but it's better to wait for "spawn" event.
@@ -1455,6 +1516,10 @@ Fires every tick if bot.physicsEnabled is set to true.
 #### "chat:name" (matches)
 
 Fires when the all of a chat pattern's regexs have matches
+
+#### "particle"
+
+Fires when a particle is created
 
 ### Functions
 
@@ -2011,9 +2076,9 @@ These are lower level methods for the inventory, they can be useful sometimes bu
 
 This function returns a `Promise`, with `void` as its argument upon completion.
   
-The only valid mode option at the moment is 0. Shift clicking or mouse draging is not implemented.
+The only valid mode option at the moment is 0. Shift clicking or mouse dragging is not implemented.
 
-Click on the current window. See details at https://wiki.vg/Protocol#Click_Window
+Click on the current window. See details at https://wiki.vg/Protocol#Click_Container
 
 Prefer using bot.simpleClick.*
 

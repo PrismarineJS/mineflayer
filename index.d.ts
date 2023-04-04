@@ -8,6 +8,7 @@ import { Recipe } from 'prismarine-recipe'
 import { Block } from 'prismarine-block'
 import { Entity } from 'prismarine-entity'
 import { ChatMessage } from 'prismarine-chat'
+import { Registry } from 'prismarine-registry'
 
 export function createBot (options: { client: Client } & Partial<BotOptions>): Bot
 export function createBot (options: BotOptions): Bot
@@ -30,7 +31,7 @@ export interface BotOptions extends ClientOptions {
 }
 
 export type ChatLevel = 'enabled' | 'commandsOnly' | 'disabled'
-export type ViewDistance = 'far' | 'normal' | 'short' | 'tiny'
+export type ViewDistance = 'far' | 'normal' | 'short' | 'tiny' | number
 export type MainHands = 'left' | 'right'
 
 export interface PluginOptions {
@@ -39,7 +40,7 @@ export interface PluginOptions {
 
 export type Plugin = (bot: Bot, options: BotOptions) => void
 
-interface BotEvents {
+export interface BotEvents {
   chat: (
     username: string,
     message: string,
@@ -103,7 +104,7 @@ interface BotEvents {
   playerUpdated: (player: Player) => Promise<void> | void
   playerLeft: (entity: Player) => Promise<void> | void
   blockUpdate: (oldBlock: Block | null, newBlock: Block) => Promise<void> | void
-  'blockUpdate:(x, y, z)': (oldBlock: Block | null, newBlock: Block) => Promise<void> | void
+  'blockUpdate:(x, y, z)': (oldBlock: Block | null, newBlock: Block | null) => Promise<void> | void
   chunkColumnLoad: (entity: Vec3) => Promise<void> | void
   chunkColumnUnload: (entity: Vec3) => Promise<void> | void
   soundEffectHeard: (
@@ -121,7 +122,7 @@ interface BotEvents {
   ) => Promise<void> | void
   noteHeard: (block: Block, instrument: Instrument, pitch: number) => Promise<void> | void
   pistonMove: (block: Block, isPulling: number, direction: number) => Promise<void> | void
-  chestLidMove: (block: Block, isOpen: number) => Promise<void> | void
+  chestLidMove: (block: Block, isOpen: number, block2: Block | null) => Promise<void> | void
   blockBreakProgressObserved: (block: Block, destroyStage: number) => Promise<void> | void
   blockBreakProgressEnd: (block: Block) => Promise<void> | void
   diggingCompleted: (block: Block) => Promise<void> | void
@@ -151,6 +152,7 @@ interface BotEvents {
   bossBarDeleted: (bossBar: BossBar) => Promise<void> | void
   bossBarUpdated: (bossBar: BossBar) => Promise<void> | void
   resourcePack: (url: string, hash: string) => Promise<void> | void
+  particle: (particle: Particle) => Promise<void> | void
 }
 
 export interface Bot extends TypedEmitter<BotEvents> {
@@ -177,7 +179,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   physicsEnabled: boolean
   time: Time
   quickBarSlot: number
-  inventory: Window
+  inventory: Window<StorageEvents>
   targetDigBlock: Block
   isSleeping: boolean
   scoreboards: { [name: string]: ScoreBoard }
@@ -188,9 +190,11 @@ export interface Bot extends TypedEmitter<BotEvents> {
   world: any
   _client: Client
   heldItem: Item | null
+  usingHeldItem: boolean
   currentWindow: Window | null
   simpleClick: simpleClick
   tablist: Tablist
+  registry: Registry
 
   connect: (options: BotOptions) => void
 
@@ -338,7 +342,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
     pages: string[]
   ) => Promise<void>
 
-  openContainer: (chest: Block | Entity, direction?: Vec3, cursorPos?: Vec3) => Promise<Chest | Furnace | Dispenser>
+  openContainer: (chest: Block | Entity, direction?: Vec3, cursorPos?: Vec3) => Promise<Chest | Dispenser>
 
   openChest: (chest: Block | Entity, direction?: number, cursorPos?: Vec3) => Promise<Chest>
 
@@ -446,7 +450,7 @@ export type LevelType =
   | 'buffet'
   | 'default_1_1'
 export type GameMode = 'survival' | 'creative' | 'adventure' | 'spectator'
-export type Dimension = 'minecraft:nether' | 'minecraft:overworld' | 'minecraft:end'
+export type Dimension = 'the_nether' | 'overworld' | 'the_end'
 export type Difficulty = 'peaceful' | 'easy' | 'normal' | 'hard'
 
 export interface Player {
@@ -456,6 +460,16 @@ export interface Player {
   gamemode: number
   ping: number
   entity: Entity
+  skinData: SkinData | undefined
+  profileKeys?: {
+    publicKey: Buffer
+    signature: Buffer
+  }
+}
+
+export interface SkinData {
+  url: string
+  model: string | null
 }
 
 export interface ChatPattern {
@@ -551,7 +565,7 @@ export interface FindBlockOptions {
   matching: number | number[] | ((block: Block) => boolean)
   maxDistance?: number
   count?: number
-  useExtraInfo?: boolean
+  useExtraInfo?: boolean | ((block: Block) => boolean)
 }
 
 export type EquipmentDestination = 'hand' | 'head' | 'torso' | 'legs' | 'feet' | 'off-hand'
@@ -560,6 +574,7 @@ export interface TransferOptions {
   window: Window
   itemType: number
   metadata: number | null
+  count?: number,
   sourceStart: number
   sourceEnd: number
   destStart: number
@@ -606,7 +621,7 @@ export class Painting {
 interface StorageEvents {
   open: () => void
   close: () => void
-  updateSlot: (oldItem: Item | null, newItem: Item) => void
+  updateSlot: (oldItem: Item | null, newItem: Item | null) => void
 }
 
 interface FurnaceEvents extends StorageEvents {
@@ -617,9 +632,7 @@ interface ConditionalStorageEvents extends StorageEvents {
   ready: () => void
 }
 
-export class Chest extends (EventEmitter as new () => TypedEmitter<StorageEvents>) {
-  window: object | /* prismarine-windows ChestWindow */ null
-
+export class Chest extends Window<StorageEvents> {
   constructor ();
 
   close (): void;
@@ -635,13 +648,9 @@ export class Chest extends (EventEmitter as new () => TypedEmitter<StorageEvents
     metadata: number | null,
     count: number | null
   ): Promise<void>;
-
-  count (itemType: number, metadata: number | null): number;
-
-  items (): Item[];
 }
 
-export class Furnace extends (EventEmitter as new () => TypedEmitter<FurnaceEvents>) {
+export class Furnace extends Window<FurnaceEvents> {
   fuel: number
   progress: number
 
@@ -674,7 +683,7 @@ export class Furnace extends (EventEmitter as new () => TypedEmitter<FurnaceEven
   outputItem (): Item;
 }
 
-export class Dispenser extends (EventEmitter as new () => TypedEmitter<StorageEvents>) {
+export class Dispenser extends Window<StorageEvents> {
   constructor ();
 
   close (): void;
@@ -690,13 +699,9 @@ export class Dispenser extends (EventEmitter as new () => TypedEmitter<StorageEv
     metadata: number | null,
     count: number | null
   ): Promise<void>;
-
-  count (itemType: number, metadata: number | null): number;
-
-  items (): Item[];
 }
 
-export class EnchantmentTable extends (EventEmitter as new () => TypedEmitter<ConditionalStorageEvents>) {
+export class EnchantmentTable extends Window<ConditionalStorageEvents> {
   enchantments: Enchantment[]
 
   constructor ();
@@ -725,7 +730,7 @@ export interface Enchantment {
   level: number
 }
 
-export class Villager extends (EventEmitter as new () => TypedEmitter<ConditionalStorageEvents>) {
+export class Villager extends Window<ConditionalStorageEvents> {
   trades: VillagerTrade[]
 
   constructor ();
@@ -830,6 +835,26 @@ export class BossBar {
     color: number,
     flags: number
   );
+}
+
+export class Particle {
+    id: number
+    name: string
+    position: Vec3
+    offset: Vec3
+    count: number
+    movementSpeed: number
+    longDistanceRender: boolean
+    static fromNetwork(packet: Object): Particle
+
+    constructor (
+        id: number,
+        position: Vec3,
+        offset: Vec3,
+        count?: number,
+        movementSpeed?: number,
+        longDistanceRender?: boolean
+    );
 }
 
 export let supportedVersions: string[]

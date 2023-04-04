@@ -18,7 +18,7 @@
 const mineflayer = require('mineflayer')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node use_anvil.js <host> <port> [<name>] [<password>]')
+  console.log('Usage : node anvil.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 
@@ -28,10 +28,6 @@ const bot = mineflayer.createBot({
   username: process.argv[4] ? process.argv[4] : 'anvilman',
   password: process.argv[5]
 })
-
-let mcData
-
-bot.on('spawn', () => { mcData = require('minecraft-data')(bot.version) })
 
 bot.on('chat', async (username, message) => {
   const command = message.split(' ')
@@ -105,10 +101,10 @@ function sayItems (items = bot.inventory.items()) {
 }
 
 function getAnvilIds () {
-  const matchingBlocks = [mcData.blocksByName.anvil.id]
-  if (mcData.blocksByName?.chipped_anvil) {
-    matchingBlocks.push(mcData.blocksByName.chipped_anvil.id)
-    matchingBlocks.push(mcData.blocksByName.damaged_anvil.id)
+  const matchingBlocks = [bot.registry.blocksByName.anvil.id]
+  if (bot.registry.blocksByName?.chipped_anvil) {
+    matchingBlocks.push(bot.registry.blocksByName.chipped_anvil.id)
+    matchingBlocks.push(bot.registry.blocksByName.damaged_anvil.id)
   }
   return matchingBlocks
 }

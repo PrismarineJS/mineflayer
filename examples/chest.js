@@ -33,11 +33,6 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
-let mcData
-bot.once('inject_allowed', () => {
-  mcData = require('minecraft-data')(bot.version)
-})
-
 bot.on('experience', () => {
   bot.chat(`I am level ${bot.experience.level}`)
 })
@@ -86,7 +81,7 @@ async function watchChest (minecart, blocks = []) {
   let chestToOpen
   if (minecart) {
     chestToOpen = Object.keys(bot.entities)
-      .map(id => bot.entities[id]).find(e => e.entityType === mcData.entitiesByName.chest_minecart &&
+      .map(id => bot.entities[id]).find(e => e.entityType === bot.registry.entitiesByName.chest_minecart &&
       e.objectData.intField === 1 &&
       bot.entity.position.distanceTo(e.position) < 3)
     if (!chestToOpen) {
@@ -95,7 +90,7 @@ async function watchChest (minecart, blocks = []) {
     }
   } else {
     chestToOpen = bot.findBlock({
-      matching: blocks.map(name => mcData.blocksByName[name].id),
+      matching: blocks.map(name => bot.registry.blocksByName[name].id),
       maxDistance: 6
     })
     if (!chestToOpen) {
@@ -170,7 +165,7 @@ async function watchChest (minecart, blocks = []) {
 
 async function watchFurnace () {
   const furnaceBlock = bot.findBlock({
-    matching: ['furnace', 'lit_furnace'].filter(name => mcData.blocksByName[name] !== undefined).map(name => mcData.blocksByName[name].id),
+    matching: ['furnace', 'lit_furnace'].filter(name => bot.registry.blocksByName[name] !== undefined).map(name => bot.registry.blocksByName[name].id),
     maxDistance: 6
   })
   if (!furnaceBlock) {
@@ -256,7 +251,7 @@ async function watchFurnace () {
 
 async function watchEnchantmentTable () {
   const enchantTableBlock = bot.findBlock({
-    matching: ['enchanting_table'].map(name => mcData.blocksByName[name].id),
+    matching: ['enchanting_table'].map(name => bot.registry.blocksByName[name].id),
     maxDistance: 6
   })
   if (!enchantTableBlock) {
@@ -322,8 +317,8 @@ async function watchEnchantmentTable () {
     }
 
     async function addLapis () {
-      const item = itemByType(table.window.items(), ['dye', 'purple_dye', 'lapis_lazuli'].filter(name => mcData.itemByName[name] !== undefined)
-        .map(name => mcData.itemByName[name].id))
+      const item = itemByType(table.window.items(), ['dye', 'purple_dye', 'lapis_lazuli'].filter(name => bot.registry.itemByName[name] !== undefined)
+        .map(name => bot.registry.itemByName[name].id))
       if (item) {
         try {
           await table.putLapis(item)
