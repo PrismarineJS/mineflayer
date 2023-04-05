@@ -6,6 +6,7 @@ on:
       - master
     paths:
       - 'docs/**'
+      - '.github/workflows/docs.yml'
     workflow_dispatch:
 permissions:
   contents: read
@@ -21,34 +22,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Detect package manager
-        id: detect-package-manager
-        # fond package manager and info in docs directory
-        run: |
-          if [ -f "docs/package-lock.json" ]; then
-            echo "::set-output name=manager::npm"
-            echo "::set-output name=command::ci"
-            echo "::set-output name=runner::npm run"
-          elif [ -f "docs/yarn.lock" ]; then
-            echo "::set-output name=manager::yarn"
-            echo "::set-output name=command::install"
-            echo "::set-output name=runner::yarn"
-          else
-            echo "No package manager found"
-            exit 1
-          fi
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: '16'
-          cache: ${{ steps.detect-package-manager.outputs.manager }}
+          cache: 'npm'
       - name: Setup Pages
         uses: actions/configure-pages@v3
         with:
-          # Automatically inject basePath in your Next.js configuration file and disable
-          # server side image optimization (https://nextjs.org/docs/api-reference/next/image#unoptimized).
-          #
-          # You may remove this line if you want to manage the configuration yourself.
           static_site_generator: next
       - name: Restore cache
         uses: actions/cache@v3
