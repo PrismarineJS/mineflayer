@@ -19,11 +19,6 @@ export default {
       <span>Copyright © 2015 Andrew Kelley</span>
     )
   },
-  banner: {
-    text: (
-      <span>This documentation is a beta. It may therefore contain problems.</span>
-    )
-  },
   docsRepositoryBase: 'https://github.com/PrismarineJS/mineflayer',
   i18n: [
     { locale: 'en', text: 'English' },
