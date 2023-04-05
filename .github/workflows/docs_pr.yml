@@ -1,0 +1,33 @@
+name: ci docs
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+jobs:
+  jobs:
+    lint:
+      name: Lint
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - uses: actions/setup-node@v1
+          with:
+            node-version: 12
+        - name: Install dependencies
+          run: cd docs && npm ci
+        - name: Lint
+          run: cd docs && npm run lint
+    build:
+      name: Build
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - uses: actions/setup-node@v1
+          with:
+            node-version: 12
+        - name: Install dependencies
+          run: cd docs && npm ci
+        - name: Build
+          run: cd docs && npm run build
+  
