@@ -23,19 +23,18 @@ jobs:
         uses: actions/checkout@v3
       - name: Detect package manager
         id: detect-package-manager
+        # fond package manager and info in docs directory
         run: |
-          if [ -f "${{ github.workspace }}/yarn.lock" ]; then
-            echo "manager=yarn" >> $GITHUB_OUTPUT
-            echo "command=install" >> $GITHUB_OUTPUT
-            echo "runner=yarn" >> $GITHUB_OUTPUT
-            exit 0
-          elif [ -f "${{ github.workspace }}/package.json" ]; then
-            echo "manager=npm" >> $GITHUB_OUTPUT
-            echo "command=ci" >> $GITHUB_OUTPUT
-            echo "runner=npx --no-install" >> $GITHUB_OUTPUT
-            exit 0
+          if [ -f "docs/package-lock.json" ]; then
+            echo "::set-output name=manager::npm"
+            echo "::set-output name=command::ci"
+            echo "::set-output name=runner::npm run"
+          elif [ -f "docs/yarn.lock" ]; then
+            echo "::set-output name=manager::yarn"
+            echo "::set-output name=command::install"
+            echo "::set-output name=runner::yarn"
           else
-            echo "Unable to determine packager manager"
+            echo "No package manager found"
             exit 1
           fi
       - name: Setup Node
