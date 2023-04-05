@@ -112,7 +112,7 @@ bot.once('spawn', () => {
 
 然后你会得到一个看起来像这样的*实时视图*：
 
-[<img src="https://prismarine.js.org/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarine.js.org/prismarine-viewer/)
+[<img src="https://prismarinejs.github.io/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarinejs.github.io/prismarine-viewer/)
 
 #### 更多示例
 
