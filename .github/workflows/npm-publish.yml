@@ -1,6 +1,8 @@
-name: npm-publish
+name: NPM publish
 on:
   push:
+    paths-ignore:
+      - './docs/**'
     branches:
       - master # Change this to your default branch
 jobs:

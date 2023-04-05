@@ -1,7 +1,9 @@
-name: CI
+name: CI Package
 
 on:
   push:
+    paths-ignore:
+      - 'docs/**'
     branches:
       - master
   pull_request:

@@ -1,7 +1,7 @@
 # shared with .npmignore
 # different than .npmignore
 node_modules
-package-lock.json
+./package-lock.json
 yarn.lock
 /README.md
 versions/
