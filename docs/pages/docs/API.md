@@ -1,4 +1,4 @@
-# API Documentation
+# API
 
 ## Enums
 
@@ -449,6 +449,7 @@ Create and return an instance of the class bot.
  * loadInternalPlugins : defaults to true
  * storageBuilder : an optional function, takes as argument version and worldName and return an instance of something with the same API as prismarine-provider-anvil. Will be used to save the world.
  * client : an instance of node-minecraft-protocol, if not specified, mineflayer makes it's own client. This can be used to enable using mineflayer through a proxy of many clients or a vanilla client and a mineflayer client.
+ * brand : the brand name for the client to use. Defaults to vanilla. Can be used to simulate custom clients for servers that require it.
  * plugins : object : defaults to {}
    - pluginName : false : don't load internal plugin with given name ie. `pluginName`
    - pluginName : true : load internal plugin with given name ie. `pluginName` even though loadInternalplugins is set to false
@@ -478,15 +479,13 @@ A sync representation of the world. Check the doc at http://github.com/Prismarin
 
 Fires when a block updates. Both `oldBlock` and `newBlock` provided for
 comparison.
-
-Note that `oldBlock` may be `null`.
+`oldBlock` may be `null` with normal block updates.
 
 ##### world "blockUpdate:(x, y, z)" (oldBlock, newBlock)
 
 Fires for a specific point. Both `oldBlock` and `newBlock` provided for
-comparison.
-
-Note that `oldBlock` may be `null`.
+comparison. All listeners receive null for `oldBlock` and `newBlock` and get automatically removed when the world is unloaded.
+`oldBlock` may be `null` with normal block updates.
 
 
 #### bot.entity
@@ -1728,9 +1727,9 @@ These are lower level methods for the inventory, they can be useful sometimes bu
 
 This function returns a `Promise`, with `void` as its argument upon completion.
   
-The only valid mode option at the moment is 0. Shift clicking or mouse draging is not implemented.
+The only valid mode option at the moment is 0. Shift clicking or mouse dragging is not implemented.
 
-Click on the current window. See details at https://wiki.vg/Protocol#Click_Window
+Click on the current window. See details at https://wiki.vg/Protocol#Click_Container
 
 Prefer using bot.simpleClick.*
 
