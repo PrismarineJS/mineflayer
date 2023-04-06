@@ -1,7 +1,7 @@
 # Mineflayer
 
 [![NPM version](https://img.shields.io/npm/v/mineflayer.svg?color=success&label=npm%20package&logo=npm)](https://www.npmjs.com/package/mineflayer)
-[![Build Status](https://img.shields.io/github/workflow/status/PrismarineJS/mineflayer/CI.svg?label=CI&logo=github&logoColor=lightgrey)](https://github.com/PrismarineJS/mineflayer/actions?query=workflow%3A%22CI%22)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/PrismarineJS/mineflayer/ci.yml.svg?label=CI&logo=github&logoColor=lightgrey)](https://github.com/PrismarineJS/mineflayer/actions?query=workflow%3A%22CI%22)
 [![Try it on gitpod](https://img.shields.io/static/v1.svg?label=try&message=on%20gitpod&color=brightgreen&logo=gitpod)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 [![Open In Colab](https://img.shields.io/static/v1.svg?label=open&message=on%20colab&color=blue&logo=google-colab)](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/PrismarineJS)](https://github.com/sponsors/PrismarineJS)
@@ -39,13 +39,15 @@ First install Node.js >= 14 from [nodejs.org](https://nodejs.org/) then:
 
 `npm install mineflayer`
 
+To update mineflayer (or any Node.js) package and its dependencies, use `npm update --depth 9999`
+
 ## Documentation
 
 | link | description |
 |---|---|
 |[tutorial](tutorial.md) | Begin with Node.js and mineflayer |
 | [FAQ.md](FAQ.md) | Got a question ? go there first |
-| [api.md](api.md) [unstable_api.md](unstable_api.md) | The full API reference |
+| **[api.md](api.md)** <br/>[unstable_api.md](unstable_api.md) | The full API reference |
 | [history.md](history.md) | The changelog for mineflayer |
 | [examples/](https://github.com/PrismarineJS/mineflayer/tree/master/examples) | Checkout all the mineflayer examples |
 
@@ -79,10 +81,10 @@ const mineflayer = require('mineflayer')
 const bot = mineflayer.createBot({
   host: 'localhost', // minecraft server ip
   username: 'email@example.com', // minecraft username
-  password: '12345678' // minecraft password, comment out if you want to log into online-mode=false servers
+  auth: 'microsoft' // for offline mode servers, you can set this to 'offline'
   // port: 25565,                // only set if you need a port that isn't 25565
   // version: false,             // only set if you need a specific version or snapshot (ie: "1.8.9" or "1.16.5"), otherwise it's set automatically
-  // auth: 'mojang'              // only set if you need microsoft auth, then set this to 'microsoft'
+  // password: '12345678'        // set if you want to use password-based auth (may be unreliable)
 })
 
 bot.on('chat', (username, message) => {
@@ -107,7 +109,7 @@ bot.once('spawn', () => {
 ```
 And you'll get a *live* view looking like this:
 
-[<img src="https://prismarine.js.org/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarine.js.org/prismarine-viewer/)
+[<img src="https://prismarinejs.github.io/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarinejs.github.io/prismarine-viewer/)
 
 #### More Examples
 
@@ -180,19 +182,18 @@ The most updated and useful are :
  * [pathfinder](https://github.com/Karang/mineflayer-pathfinder) - advanced A* pathfinding with a lot of configurable features
  * [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer) - simple web chunk viewer
  * [web-inventory](https://github.com/ImHarvol/mineflayer-web-inventory) - web based inventory viewer
- * [statemachine](https://github.com/TheDudeFromCI/mineflayer-statemachine) - A state machine API for more complex bot behaviors
+ * [statemachine](https://github.com/PrismarineJS/mineflayer-statemachine) - A state machine API for more complex bot behaviors
  * [Armor Manager](https://github.com/G07cha/MineflayerArmorManager) - automatic armor management
- * [Collect Block](https://github.com/TheDudeFromCI/mineflayer-collectblock) - Quick and simple block collection API.
  * [Dashboard](https://github.com/wvffle/mineflayer-dashboard) - Frontend dashboard for mineflayer bot
- * [PVP](https://github.com/TheDudeFromCI/mineflayer-pvp) - Easy API for basic PVP and PVE.
+ * [PVP](https://github.com/PrismarineJS/mineflayer-pvp) - Easy API for basic PVP and PVE.
  * [Auto Eat](https://github.com/link-discord/mineflayer-auto-eat) - Automatic eating of food.
  * [Auto Crystal](https://github.com/link-discord/mineflayer-autocrystal) - Automatic placing & breaking of end crystals.
  * [Tool](https://github.com/TheDudeFromCI/mineflayer-tool) - A utility for automatic tool/weapon selection with a high level API.
  * [Hawkeye](https://github.com/sefirosweb/minecraftHawkEye) - A utility for using auto-aim with bows.
  * [GUI](https://github.com/firejoust/mineflayer-GUI) - Interact with nested GUI windows using async/await
  * [Projectile](https://github.com/firejoust/mineflayer-projectile) - Get the required launch angle for projectiles
-* [Movement](https://github.com/firejoust/mineflayer-movement) - Smooth and realistic player movement, best suited for PvP
-
+ * [Movement](https://github.com/firejoust/mineflayer-movement) - Smooth and realistic player movement, best suited for PvP
+ * [Collect Block](https://github.com/PrismarineJS/mineflayer-collectblock) - Quick and simple block collection API.
 
  But also check out :
 
@@ -213,7 +214,7 @@ The most updated and useful are :
  * [vogonistic/voxel](https://github.com/vogonistic/mineflayer-voxel) - visualize what
    the bot is up to using voxel.js
  * [JonnyD/Skynet](https://github.com/JonnyD/Skynet) -  log player activity onto an online API
- * [MinecraftChat](https://github.com/rom1504/MinecraftChat) (last open source version, built by AlexKvazos) -  Minecraft web based chat client <https://minecraftchat.net/>
+ * [MinecraftChat](https://github.com/rom1504/MinecraftChat) (last open source version, built by AlexKvazos) -  Minecraft web based chat client
  * [Cheese Bot](https://github.com/Minecheesecraft/Cheese-Bot) - Plugin based bot with a clean GUI. Made with Node-Webkit.
  * [Chaoscraft](https://github.com/schematical/chaoscraft) - Minecraft bot using genetic algorithms, see [its youtube videos](https://www.youtube.com/playlist?list=PLLkpLgU9B5xJ7Qy4kOyBJl5J6zsDIMceH)
  * [hexatester/minetelegram](https://github.com/hexatester/minetelegram) -  Minecraft - Telegram bridge, build on top of mineflayer & telegraf.
