@@ -109,7 +109,7 @@ bot.once('spawn', () => {
 ```
 And you'll get a *live* view looking like this:
 
-[<img src="https://prismarine.js.org/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarine.js.org/prismarine-viewer/)
+[<img src="https://prismarinejs.github.io/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarinejs.github.io/prismarine-viewer/)
 
 #### More Examples
 

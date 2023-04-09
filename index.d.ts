@@ -40,7 +40,7 @@ export interface PluginOptions {
 
 export type Plugin = (bot: Bot, options: BotOptions) => void
 
-interface BotEvents {
+export interface BotEvents {
   chat: (
     username: string,
     message: string,
@@ -104,7 +104,7 @@ interface BotEvents {
   playerUpdated: (player: Player) => Promise<void> | void
   playerLeft: (entity: Player) => Promise<void> | void
   blockUpdate: (oldBlock: Block | null, newBlock: Block) => Promise<void> | void
-  'blockUpdate:(x, y, z)': (oldBlock: Block | null, newBlock: Block) => Promise<void> | void
+  'blockUpdate:(x, y, z)': (oldBlock: Block | null, newBlock: Block | null) => Promise<void> | void
   chunkColumnLoad: (entity: Vec3) => Promise<void> | void
   chunkColumnUnload: (entity: Vec3) => Promise<void> | void
   soundEffectHeard: (
@@ -565,7 +565,7 @@ export interface FindBlockOptions {
   matching: number | number[] | ((block: Block) => boolean)
   maxDistance?: number
   count?: number
-  useExtraInfo?: boolean
+  useExtraInfo?: boolean | ((block: Block) => boolean)
 }
 
 export type EquipmentDestination = 'hand' | 'head' | 'torso' | 'legs' | 'feet' | 'off-hand'

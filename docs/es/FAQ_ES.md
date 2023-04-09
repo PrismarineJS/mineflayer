@@ -15,7 +15,7 @@ client.on('end', () => {})
 ## Mi evento de chat no se emite en un servidor personalizado, cómo lo resuelvo?
 
 Los servidores spigot, en particular algunos plugins, usan formatos personalizados de chat, tienes que analizarlos con un regex personalizado.
-Lee y modifica [chat_parsing.js](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chat_parsing.js) para que funcione con tu plugin de chat particular. Lee también http://mineflayer.prismarine.js.org/#/tutorial?id=custom-chat
+Lee y modifica [chat_parsing.js](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chat_parsing.js) para que funcione con tu plugin de chat particular. Lee también http://prismarinejs.github.io/mineflayer/#/tutorial?id=custom-chat
 
 ### Como puedo recolectar información de un plugin de chat personalizado?
 
