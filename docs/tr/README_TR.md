@@ -104,7 +104,7 @@ bot.once('spawn', () => {
 ```
 ve şuna benzeyen *canlı* bir görüntü elde edeceksin:
 
-[<img src="https://prismarine.js.org/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarine.js.org/prismarine-viewer/)
+[<img src="https://prismarinejs.github.io/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarinejs.github.io/prismarine-viewer/)
 
 #### Daha fazla örnek
 
