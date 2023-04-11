@@ -7,7 +7,7 @@ const bot = mineflayer.createBot({
   username: process.argv[4] ? process.argv[4] : 'Archer',
   password: process.argv[5]
 })
-bot.loadPlugin(minecraftHawkEye)
+bot.loadPlugin(minecraftHawkEye.default)
 
 bot.on('spawn', function () {
   bot.chat(`/give ${bot.username} bow{Enchantments:[{id:unbreaking,lvl:100}]} 1`)
