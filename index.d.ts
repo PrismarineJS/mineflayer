@@ -71,7 +71,7 @@ export interface BotEvents {
   kicked: (reason: string, loggedIn: boolean) => Promise<void> | void
   end: (reason: string) => Promise<void> | void
   spawnReset: () => Promise<void> | void
-  death: () => Promise<void> | void
+  death: (deathType: string, deathBy: string | null) => Promise<void> | void
   health: () => Promise<void> | void
   breath: () => Promise<void> | void
   entitySwingArm: (entity: Entity) => Promise<void> | void
