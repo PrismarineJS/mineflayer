@@ -23,13 +23,15 @@ bot.once('spawn', () => {
   const defaultMove = new Movements(bot)
 
   bot.on('chat', (username, message) => {
-    if (username === bot.username) return
-    if (message !== 'come') return
+    if (username === bot.username || message !== 'come') return
+
     const target = bot.players[username]?.entity
+
     if (!target) {
-      bot.chat("I don't see you !")
+      bot.chat("I don't see you!")
       return
     }
+
     const { x: playerX, y: playerY, z: playerZ } = target.position
 
     bot.pathfinder.setMovements(defaultMove)
