@@ -28,6 +28,7 @@ export interface BotOptions extends ClientOptions {
   client?: Client
   brand?: string
   defaultChatPatterns?: boolean
+  respawn?: boolean
 }
 
 export type ChatLevel = 'enabled' | 'commandsOnly' | 'disabled'
