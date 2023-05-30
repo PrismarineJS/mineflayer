@@ -35,6 +35,8 @@ jobs:
            mcVersion: '1.19.2'
          - javaVersion: 17
            mcVersion: '1.19.3'
+         - javaVersion: 17
+           mcVersion: '1.19.4'
       fail-fast: false
 
     steps:
@@ -50,5 +52,7 @@ jobs:
           java-package: jre
       - name: Install Dependencies
         run: npm install
+      - name: TEMP MCDATA BRANCH
+        run: cd node_modules/minecraft-data/ && rm -fr minecraft-data && git clone https://github.com/TFBosoN/minecraft-data && node ./bin/generate_data.js
       - name: Start Tests
         run: npm run mocha_test -- -g ${{ matrix.mcVersion }}
