@@ -52,5 +52,7 @@ jobs:
           java-package: jre
       - name: Install Dependencies
         run: npm install
+      - name: TEMP MCDATA BRANCH
+        run: cd node_modules/minecraft-data/ && rm -fr minecraft-data && git clone -b entitymeta https://github.com/extremeheat/minecraft-data --depth 1 && node ./bin/generate_data.js
       - name: Start Tests
         run: npm run mocha_test -- -g ${{ matrix.mcVersion }}
