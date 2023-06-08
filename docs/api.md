@@ -263,6 +263,7 @@
       - [bot.recipesFor(itemType, metadata, minResultCount, craftingTable)](#botrecipesforitemtype-metadata-minresultcount-craftingtable)
       - [bot.recipesAll(itemType, metadata, craftingTable)](#botrecipesallitemtype-metadata-craftingtable)
       - [bot.nearestEntity(match = (entity) => { return true })](#botnearestentitymatch--entity---return-true-)
+      - [bot.requestStatistics()](#botrequeststatisticscb)
     - [Methods](#methods)
       - [bot.end(reason)](#botendreason)
       - [bot.quit(reason)](#botquitreason)
@@ -1611,6 +1612,12 @@ Example:
 ```js
 const cow = bot.nearestEntity(entity => entity.name.toLowerCase() === 'cow') // we use .toLowercase() because in 1.8 cow was capitalized, for newer versions that can be ommitted
 ```
+
+Return the nearest entity to the bot, matching the function (default to all entities). Return null if no entity is found.
+
+#### bot.requestStatistics()
+
+This function returns a `Promise`, with `object` filled by statistics.
 
 ### Methods
 
