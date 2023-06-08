@@ -4,7 +4,6 @@
  *
  */
 const mineflayer = require('mineflayer')
-const assert = require('assert')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node statistics.js <host> <port> [<name>] [<password>]')
@@ -26,7 +25,7 @@ bot.on('chat', async (username, message) => {
       await bot.waitForChunksToLoad()
       bot.chat('Ready!')
       break
-    case 'test':
+    case 'test': {
       // Jump Statistic
       bot.setControlState('jump', true)
       await bot.waitForTicks(1)
@@ -37,6 +36,6 @@ bot.on('chat', async (username, message) => {
 
       const statistics = await bot.requestStatistics()
       bot.chat(`deaths=${statistics['stat.deaths']};timeLastDeath=${statistics['stat.timeSinceDeath']};jumps=${statistics['stat.jump']}`)
-      break
+    }
   }
 })
