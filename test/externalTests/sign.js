@@ -7,7 +7,7 @@ module.exports = () => async (bot) => {
 
   let signItem = null
   for (const name in bot.registry.itemsByName) {
-    if (name.includes('sign')) signItem = bot.registry.itemsByName[name]
+    if (name.includes('sign') && !name.includes('hanging')) signItem = bot.registry.itemsByName[name]
   }
   assert.notStrictEqual(signItem, null)
 
