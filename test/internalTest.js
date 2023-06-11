@@ -586,7 +586,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             client.write('entity_metadata', {
               entityId: 8,
               metadata: [
-                { type: 0, key: 0, value: 1 }
+                { key: 0, type: bot.registry.supportFeature('mcDataHasEntityMetadata') ? 'int' : 0, value: 1 }
               ]
             })
           })
@@ -609,8 +609,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
             velocityY: 17,
             velocityZ: 18,
             metadata: [
-              { type: 0, key: 0, value: 0 },
-              { type: 0, key: 1, value: 1 }
+              { type: 0, key: bot.registry.supportFeature('mcDataHasEntityMetadata') ? 'byte' : 0, value: 0 },
+              { type: 0, key: bot.registry.supportFeature('mcDataHasEntityMetadata') ? 'int' : 1, value: 1 }
             ]
           })
         })
@@ -679,6 +679,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
           if (bot.supportFeature('entityMetadataHasLong')) {
             metadataPacket.metadata[0].type = 7
+          }
+
+          if (bot.registry.supportFeature('mcDataHasEntityMetadata')) {
+            metadataPacket.metadata[0].type = 'item_stack'
           }
 
           client.write('entity_metadata', metadataPacket)
