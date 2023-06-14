@@ -1,3 +1,15 @@
+## 4.9.0
+
+* Fix bot not updating world height on respawn packet (@frej4189)
+* Persist properties received in player_info packet (@Paulomart)
+* Fix reference error with block updates (@IceTank)
+* Add spectator to gameModes array (@williamd5)
+* Standardize dimensions for all versions (@sefirosweb)
+* Emit inject_allowed after a timeout of 0 (@IceTank)
+* Add window transaction timeout (@firejoust)
+* Made bot auto respawning togglable (@Averagess)
+* support 1.19.4 (@extremeheat)
+
 ## 4.8.1
 
 * Fix client crashing when player_remove contains unknown player (@frej4189)
