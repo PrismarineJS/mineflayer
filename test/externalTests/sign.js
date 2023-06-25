@@ -22,6 +22,12 @@ module.exports = () => async (bot) => {
 
         assert.strictEqual(sign.signText, '1\n2\n3\n')
 
+        if (sign.blockEntity) {
+          // Check block update
+          bot.activateBlock(sign)
+          assert.notStrictEqual(sign.blockEntity, undefined)
+        }
+
         bot._client.removeAllListeners('open_sign_entity')
         resolve()
       }, 500)

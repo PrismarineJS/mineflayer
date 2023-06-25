@@ -422,18 +422,16 @@ The skin data is stored in the `skinData` property of the player object, if pres
 
 See [prismarine-block](https://github.com/PrismarineJS/prismarine-block)
 
-Also `block.blockEntity` is additional field with block entity data as `Object`
+Also `block.blockEntity` is additional field with block entity data as `Object`. The data in this varies between versions.
 ```js
-// sign.blockEntity
+// sign.blockEntity example from 1.19
 {
-  x: -53,
-  y: 88,
-  z: 66,
-  id: 'minecraft:sign', // 'Sign' in 1.10
-  Text1: { toString: Function }, // ChatMessage object
-  Text2: { toString: Function }, // ChatMessage object
-  Text3: { toString: Function }, // ChatMessage object
-  Text4: { toString: Function } // ChatMessage object
+  GlowingText: 0, // 0 for false, 1 for true
+  Color: 'black',
+  Text1: '{"text":"1"}', 
+  Text2: '{"text":"2"}', 
+  Text3: '{"text":"3"}', 
+  Text4: '{"text":"4"}' 
 }
 ```
 
@@ -1803,9 +1801,9 @@ Set the direction your head is facing.
    are looking, such as for dropping items or shooting arrows. This is not
    needed for client-side calculation such as walking direction.
 
-#### bot.updateSign(block, text)
+#### bot.updateSign(block, text, isFrontText = true)
 
-Changes the text on the sign.
+Changes the text on the sign. `isFrontText` is a boolean value for whether you're writing on the front or back of the sign, this parameter is not required and if not passed the bot will default to writing on the front.
 
 #### bot.equip(item, destination)
 
