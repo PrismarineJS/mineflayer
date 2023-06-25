@@ -11,7 +11,7 @@ module.exports = () => async (bot) => {
   }
   assert.notStrictEqual(signItem, null)
 
-  const p = new Promise((resolve, reject) => {
+  const p = new Promise((resolve) => {
     bot._client.on('open_sign_entity', (packet) => {
       const sign = bot.blockAt(new Vec3(packet.location))
       bot.updateSign(sign, '1\n2\n3\n')
@@ -20,13 +20,21 @@ module.exports = () => async (bot) => {
         // Get updated sign
         const sign = bot.blockAt(bot.entity.position)
 
-        assert.strictEqual(sign.signText, '1\n2\n3\n')
+        if (bot.supportFeature('multiSidedSigns')) {
+          assert.strictEqual(sign.signFrontText, '1\n2\n3\n')
+          assert.strictEqual(sign.blockEntity.front.lines[0].toString(), '1')
+          assert.strictEqual(sign.blockEntity.front.lines[1].toString(), '2')
+          assert.strictEqual(sign.blockEntity.front.lines[2].toString(), '3')
+          assert.strictEqual(sign.blockEntity.front.lines[3].toString(), '')
+        } else {
+          assert.strictEqual(sign.signText, '1\n2\n3\n')
 
-        if (sign.blockEntity && sign.blockEntity.Text1) {
-          assert.strictEqual(sign.blockEntity.Text1.toString(), '1')
-          assert.strictEqual(sign.blockEntity.Text2.toString(), '2')
-          assert.strictEqual(sign.blockEntity.Text3.toString(), '3')
-          assert.strictEqual(sign.blockEntity.Text4.toString(), '')
+          if (sign.blockEntity && sign.blockEntity.Text1) {
+            assert.strictEqual(sign.blockEntity.Text1.toString(), '1')
+            assert.strictEqual(sign.blockEntity.Text2.toString(), '2')
+            assert.strictEqual(sign.blockEntity.Text3.toString(), '3')
+            assert.strictEqual(sign.blockEntity.Text4.toString(), '')
+          }
         }
 
         if (sign.blockEntity) {
@@ -35,6 +43,7 @@ module.exports = () => async (bot) => {
           assert.notStrictEqual(sign.blockEntity, undefined)
         }
 
+        bot._client.removeAllListeners('open_sign_entity')
         resolve()
       }, 500)
     })
