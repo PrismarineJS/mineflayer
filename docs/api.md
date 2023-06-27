@@ -428,10 +428,10 @@ Also `block.blockEntity` is additional field with block entity data as `Object`.
 {
   GlowingText: 0, // 0 for false, 1 for true
   Color: 'black',
-  Text1: '{"text":"1"}', 
-  Text2: '{"text":"2"}', 
-  Text3: '{"text":"3"}', 
-  Text4: '{"text":"4"}' 
+  Text1: '{"text":"1"}',
+  Text2: '{"text":"2"}',
+  Text3: '{"text":"3"}',
+  Text4: '{"text":"4"}'
 }
 ```
 
