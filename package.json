@@ -22,7 +22,7 @@
   "license": "MIT",
   "dependencies": {
     "minecraft-data": "^3.37.0",
-    "minecraft-protocol": "^1.43.0",
+    "minecraft-protocol": "^1.43.1",
     "prismarine-biome": "^1.1.1",
     "prismarine-block": "github:PondWader/prismarine-block",
     "prismarine-chat": "^1.7.1",
