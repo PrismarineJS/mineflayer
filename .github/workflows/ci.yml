@@ -56,7 +56,5 @@ jobs:
           java-package: jre
       - name: Install Dependencies
         run: npm install
-      - name: TEMP MCDATA BRANCH
-        run: cd node_modules/minecraft-data/ && rm -fr minecraft-data && git clone https://github.com/PondWader/minecraft-data && node ./bin/generate_data.js
       - name: Start Tests
         run: npm run mocha_test -- -g ${{ matrix.mcVersion }}
