@@ -436,7 +436,7 @@ Also `block.blockEntity` is additional field with block entity data as `Object`.
 ```
 
 Note if you want to get a sign's plain text, you can use [`block.getSignText()`](https://github.com/PrismarineJS/prismarine-block/blob/master/doc/API.md#sign) instead of unstable blockEntity data.
-```js
+```java
 > block = bot.blockAt(new Vec3(0, 60, 0)) // assuming a sign is here
 > block.getSignText()
 [ "Front text\nHello world", "Back text\nHello world" ]
