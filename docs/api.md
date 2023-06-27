@@ -435,6 +435,13 @@ Also `block.blockEntity` is additional field with block entity data as `Object`.
 }
 ```
 
+Note if you want to get a sign's plain text, you can use [`block.getSignText()`](https://github.com/PrismarineJS/prismarine-block/blob/master/doc/API.md#sign) instead of unstable blockEntity data.
+```js
+> block = bot.blockAt(new Vec3(0, 60, 0)) // assuming a sign is here
+> block.getSignText()
+[ "Front text\nHello world", "Back text\nHello world" ]
+```
+
 ### Biome
 
 See [prismarine-biome](https://github.com/PrismarineJS/prismarine-biome)
@@ -1801,9 +1808,9 @@ Set the direction your head is facing.
    are looking, such as for dropping items or shooting arrows. This is not
    needed for client-side calculation such as walking direction.
 
-#### bot.updateSign(block, text, isFrontText = true)
+#### bot.updateSign(block, text, back = false)
 
-Changes the text on the sign. `isFrontText` is a boolean value for whether you're writing on the front or back of the sign, this parameter is not required and if not passed the bot will default to writing on the front.
+Changes the text on the sign. On Minecraft 1.20 and newer, a truthy `back` will try setting the text on the back of a sign (only visible if not attached to a wall).
 
 #### bot.equip(item, destination)
 

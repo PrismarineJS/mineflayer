@@ -275,7 +275,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
     force?: boolean
   ) => Promise<void>
 
-  updateSign: (block: Block, text: string, isFrontText?: boolean) => void
+  updateSign: (block: Block, text: string, back?: boolean) => void
 
   equip: (
     item: Item | number,

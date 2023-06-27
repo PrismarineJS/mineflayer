@@ -12,7 +12,7 @@ module.exports = () => async (bot) => {
   assert.notStrictEqual(signItem, null)
 
   const p = new Promise((resolve) => {
-    bot._client.on('open_sign_entity', (packet) => {
+    bot._client.once('open_sign_entity', (packet) => {
       const sign = bot.blockAt(new Vec3(packet.location))
       bot.updateSign(sign, '1\n2\n3\n')
 
@@ -28,7 +28,6 @@ module.exports = () => async (bot) => {
           assert.notStrictEqual(sign.blockEntity, undefined)
         }
 
-        bot._client.removeAllListeners('open_sign_entity')
         resolve()
       }, 500)
     })
