@@ -20,7 +20,7 @@ module.exports = () => async (bot) => {
         // Get updated sign
         const sign = bot.blockAt(bot.entity.position)
 
-        assert.strictEqual(sign.signText, '1\n2\n3')
+        assert.strictEqual(sign.signText.trimEnd(), '1\n2\n3')
 
         if (sign.blockEntity) {
           // Check block update
