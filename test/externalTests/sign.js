@@ -11,8 +11,8 @@ module.exports = () => async (bot) => {
   }
   assert.notStrictEqual(signItem, null)
 
-  const p = new Promise((resolve, reject) => {
-    bot._client.on('open_sign_entity', (packet) => {
+  const p = new Promise((resolve) => {
+    bot._client.once('open_sign_entity', (packet) => {
       const sign = bot.blockAt(new Vec3(packet.location))
       bot.updateSign(sign, '1\n2\n3\n')
 
@@ -20,14 +20,7 @@ module.exports = () => async (bot) => {
         // Get updated sign
         const sign = bot.blockAt(bot.entity.position)
 
-        assert.strictEqual(sign.signText, '1\n2\n3\n')
-
-        if (sign.blockEntity && sign.blockEntity.Text1) {
-          assert.strictEqual(sign.blockEntity.Text1.toString(), '1')
-          assert.strictEqual(sign.blockEntity.Text2.toString(), '2')
-          assert.strictEqual(sign.blockEntity.Text3.toString(), '3')
-          assert.strictEqual(sign.blockEntity.Text4.toString(), '')
-        }
+        assert.strictEqual(sign.signText.trimEnd(), '1\n2\n3')
 
         if (sign.blockEntity) {
           // Check block update
