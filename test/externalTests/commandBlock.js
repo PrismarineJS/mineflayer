@@ -1,6 +1,7 @@
 const assert = require('assert')
 const { once } = require('events')
 const { Vec3 } = require('vec3')
+const { onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const command = `/say ${Math.floor(Math.random() * 1000)}`
@@ -13,19 +14,9 @@ module.exports = () => async (bot) => {
   await p
   bot.setCommandBlock(commandBlockPos, command, false)
 
-  return new Promise((resolve, reject) => {
-    const messageListener = (message) => {
-      if (message.json.with[0] === command) {
-        assert(message.json.translate === 'advMode.setCommand.success')
-        bot.off('message', messageListener)
-        clearTimeout(timeout)
-        resolve()
-      }
-    }
-    const timeout = setTimeout(() => {
-      bot.off('message', messageListener)
-      reject(new Error('Timed out waiting for command block command to be set'))
-    }, 5000)
-    bot.on('message', messageListener)
+  const [message] = await onceWithCleanup(bot, 'message', {
+    timeout: 5000,
+    checkCondition: (message) => message.json.with[0] === command
   })
+  assert(message.json.translate === 'advMode.setCommand.success')
 }
