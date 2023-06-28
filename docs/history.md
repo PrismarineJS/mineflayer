@@ -1,3 +1,8 @@
+## 4.10.0
+
+* Fix handling for entities with unknown metadata (@extremeheat)
+* support 1.20 (@PondWader)
+
 ## 4.9.0
 
 * Fix bot not updating world height on respawn packet (@frej4189)
