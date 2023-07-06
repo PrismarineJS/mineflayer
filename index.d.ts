@@ -82,6 +82,7 @@ export interface BotEvents {
   entityTamed: (entity: Entity) => Promise<void> | void
   entityShakingOffWater: (entity: Entity) => Promise<void> | void
   entityEatingGrass: (entity: Entity) => Promise<void> | void
+  entityHandSwap: (entity: Entity) => Promise<void> | void
   entityWake: (entity: Entity) => Promise<void> | void
   entityEat: (entity: Entity) => Promise<void> | void
   entityCriticalEffect: (entity: Entity) => Promise<void> | void
