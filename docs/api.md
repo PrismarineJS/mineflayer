@@ -422,19 +422,24 @@ The skin data is stored in the `skinData` property of the player object, if pres
 
 See [prismarine-block](https://github.com/PrismarineJS/prismarine-block)
 
-Also `block.blockEntity` is additional field with block entity data as `Object`
+Also `block.blockEntity` is additional field with block entity data as `Object`. The data in this varies between versions.
 ```js
-// sign.blockEntity
+// sign.blockEntity example from 1.19
 {
-  x: -53,
-  y: 88,
-  z: 66,
-  id: 'minecraft:sign', // 'Sign' in 1.10
-  Text1: { toString: Function }, // ChatMessage object
-  Text2: { toString: Function }, // ChatMessage object
-  Text3: { toString: Function }, // ChatMessage object
-  Text4: { toString: Function } // ChatMessage object
+  GlowingText: 0, // 0 for false, 1 for true
+  Color: 'black',
+  Text1: '{"text":"1"}',
+  Text2: '{"text":"2"}',
+  Text3: '{"text":"3"}',
+  Text4: '{"text":"4"}'
 }
+```
+
+Note if you want to get a sign's plain text, you can use [`block.getSignText()`](https://github.com/PrismarineJS/prismarine-block/blob/master/doc/API.md#sign) instead of unstable blockEntity data.
+```java
+> block = bot.blockAt(new Vec3(0, 60, 0)) // assuming a sign is here
+> block.getSignText()
+[ "Front text\nHello world", "Back text\nHello world" ]
 ```
 
 ### Biome
@@ -798,6 +803,8 @@ Create and return an instance of the class bot.
  * loadInternalPlugins : defaults to true
  * storageBuilder : an optional function, takes as argument version and worldName and return an instance of something with the same API as prismarine-provider-anvil. Will be used to save the world.
  * client : an instance of node-minecraft-protocol, if not specified, mineflayer makes it's own client. This can be used to enable using mineflayer through a proxy of many clients or a vanilla client and a mineflayer client.
+ * brand : the brand name for the client to use. Defaults to vanilla. Can be used to simulate custom clients for servers that require it.
+ * respawn : when set to false disables bot from automatically respawning, defaults to true.
  * plugins : object : defaults to {}
    - pluginName : false : don't load internal plugin with given name ie. `pluginName`
    - pluginName : true : load internal plugin with given name ie. `pluginName` even though loadInternalplugins is set to false
@@ -827,15 +834,13 @@ A sync representation of the world. Check the doc at http://github.com/Prismarin
 
 Fires when a block updates. Both `oldBlock` and `newBlock` provided for
 comparison.
-
-Note that `oldBlock` may be `null`.
+`oldBlock` may be `null` with normal block updates.
 
 ##### world "blockUpdate:(x, y, z)" (oldBlock, newBlock)
 
 Fires for a specific point. Both `oldBlock` and `newBlock` provided for
-comparison.
-
-Note that `oldBlock` may be `null`.
+comparison. All listeners receive null for `oldBlock` and `newBlock` and get automatically removed when the world is unloaded.
+`oldBlock` may be `null` with normal block updates.
 
 
 #### bot.entity
@@ -865,6 +870,8 @@ Whether the bot is using the item that it's holding, for example eating food or 
 #### bot.game.levelType
 
 #### bot.game.dimension
+
+The bot's current dimension, such as `overworld`, `the_end` or `the_nether`.
 
 #### bot.game.difficulty
 
@@ -1801,9 +1808,9 @@ Set the direction your head is facing.
    are looking, such as for dropping items or shooting arrows. This is not
    needed for client-side calculation such as walking direction.
 
-#### bot.updateSign(block, text)
+#### bot.updateSign(block, text, back = false)
 
-Changes the text on the sign.
+Changes the text on the sign. On Minecraft 1.20 and newer, a truthy `back` will try setting the text on the back of a sign (only visible if not attached to a wall).
 
 #### bot.equip(item, destination)
 
@@ -2077,9 +2084,9 @@ These are lower level methods for the inventory, they can be useful sometimes bu
 
 This function returns a `Promise`, with `void` as its argument upon completion.
   
-The only valid mode option at the moment is 0. Shift clicking or mouse draging is not implemented.
+The only valid mode option at the moment is 0. Shift clicking or mouse dragging is not implemented.
 
-Click on the current window. See details at https://wiki.vg/Protocol#Click_Window
+Click on the current window. See details at https://wiki.vg/Protocol#Click_Container
 
 Prefer using bot.simpleClick.*
 

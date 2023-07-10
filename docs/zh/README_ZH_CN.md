@@ -101,7 +101,7 @@ bot.on('error', console.log)
 ### 看看你的bot在做什么
 
 感谢 [prismarin-viewer](https://github.com/PrismarineJS/prismarine-viewer)项目，它可以在浏览器窗口显示你的机器人正在做什么。  
-只需要运行 `npm install prismane-viewer` 并将其添加到你的bot代码中。
+只需要运行 `npm install prismarine-viewer` 并将其添加到你的bot代码中。
 
 ```js
 const { mineflayer: mineflayerViewer } = require('prismarine-viewer')
@@ -112,7 +112,7 @@ bot.once('spawn', () => {
 
 然后你会得到一个看起来像这样的*实时视图*：
 
-[<img src="https://prismarine.js.org/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarine.js.org/prismarine-viewer/)
+[<img src="https://prismarinejs.github.io/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarinejs.github.io/prismarine-viewer/)
 
 #### 更多示例
 

@@ -17,7 +17,7 @@ First time using Node.js? You may want to start with the [tutorial](tutorial.md)
 
 ## Features
 
- * Supports Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18 and 1.19.
+ * Supports Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 and 1.20.
  * Entity knowledge and tracking.
  * Block knowledge. You can query the world around you. Milliseconds to find any block.
  * Physics and movement - handle all bounding boxes
@@ -109,7 +109,7 @@ bot.once('spawn', () => {
 ```
 And you'll get a *live* view looking like this:
 
-[<img src="https://prismarine.js.org/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarine.js.org/prismarine-viewer/)
+[<img src="https://prismarinejs.github.io/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarinejs.github.io/prismarine-viewer/)
 
 #### More Examples
 
@@ -207,6 +207,7 @@ The most updated and useful are :
 
 ## Projects Using Mineflayer
 
+ * [Voyager](https://github.com/MineDojo/Voyager) An Open-Ended Embodied Agent with Large Language Models
  * [rom1504/rbot](https://github.com/rom1504/rbot)
    - [YouTube - building a spiral staircase](https://www.youtube.com/watch?v=UM1ZV5200S0)
    - [YouTube - replicating a building](https://www.youtube.com/watch?v=0cQxg9uDnzA)

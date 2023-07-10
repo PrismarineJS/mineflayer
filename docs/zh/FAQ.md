@@ -15,7 +15,7 @@ client.on('end', () => {})
 ### 我无法在自定义服务器上获取聊天事件，如何解决?
 
 Spigot 服务器, 特别是一些插件, 使用的是自定义聊天格式,您需要使用自定义正则表达式/解析器对其进行解析。
-阅读并改编[chat_parsing.js](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chat_parsing.js)使其适用于您的特定聊天插件. 或者阅读 http://mineflayer.prismarine.js.org/#/tutorial?id=custom-chat
+阅读并改编[chat_parsing.js](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chat_parsing.js)使其适用于您的特定聊天插件. 或者阅读 http://prismarinejs.github.io/mineflayer/#/tutorial?id=custom-chat
 
 ### 如何用自定义插件在聊天中收集信息 ?
 
