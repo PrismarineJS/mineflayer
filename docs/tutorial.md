@@ -158,9 +158,8 @@ First, lets make an event that listens to when a chat message is sent.
 
 ```js
 bot.on('chat', (username, message) => {
-  if (username === bot.username) return // To prevent infinite loop
-
-  // We will write the rest of our code in here...
+  if (username === bot.username) return // To prevent infinite loop.
+  // ...
 })
 ```
 
@@ -234,10 +233,10 @@ bot.on('chat', (username, message) => {
 
   if (message === 'find me') {
     const defaultMove = new Movements(bot)
-    
+
     const playerTarget = bot.players[username].entity // Gets the player entity
     const pos = playerTarget.position
-    
+
     bot.pathfinder.setMovements(defaultMove)
     bot.pathfinder.setGoal(new GoalNear(pos.x, pos.y, pos.z, 4))
 
