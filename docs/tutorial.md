@@ -158,7 +158,7 @@ First, lets make an event that listens to when a chat message is sent.
 
 ```js
 bot.on('chat', (username, message) => {
-  if (username === bot.username) return // To prevent infinite loop.
+  if (username === bot.username) return null // To prevent infinite loop.
   // ...
 })
 ```
