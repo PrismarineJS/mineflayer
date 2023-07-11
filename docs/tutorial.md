@@ -97,8 +97,8 @@ Let's make our bot say "Hello there!" when he spawns in the world. We can make a
 
 ```js
 bot.on('spawn', () => {
-    // Runs when the bot spawns into our world
-    bot.chat('Hello there!')
+  // Runs when the bot spawns into our world
+  bot.chat('Hello there!')
 })
 ```
 
@@ -172,7 +172,7 @@ Lets first check if our message asks the bot to find us.
 ```js
 
 if (message === 'find me') {
-    // ...
+  // ...
 }
 ```
 
@@ -193,7 +193,7 @@ The first line of code creates a new `Movements` for the bot. Then, we get the p
 
 ```js
 bot.once('goal_reached', () => {
-    bot.chat('Found you!')
+  bot.chat('Found you!')
 })
 ```
 
@@ -249,7 +249,7 @@ bot.on('chat', (username, message) => {
 
 ```
 
-#### Custom chat
+### Custom chat
 
 Creating an event based on custom chat format.  
 Custom chat example:
