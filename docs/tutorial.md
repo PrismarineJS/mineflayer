@@ -6,8 +6,9 @@
 - [Learn JavaScript](#learn-javascript)
 - [Getting Started](#getting-started)
   - [Creating a New Project](#creating-a-new-project)
+  - [Create Your First Bot](#create-your-first-bot)
   - [Using Events](#using-events)
-  - [Modules](#plugins)
+- [Plugins](#plugins)
 
 ## Introduction
 
@@ -47,7 +48,7 @@ npm i mineflayer
 
 This will put Mineflayer in the modules we have installed, and we can start using Mineflayer!
 
-### Create your First Bot
+### Create Your First Bot
 
 I would recommend starting a Minecraft server to test your bot on. A good place to host a small, simple server to host your bot on is [Aternos](https://aternos.org), although you could also host your own Minecraft server locally on `localhost` for more configuration, better ping, and access to more plugins if you're using a software like Spigot or PaperMC.
 
@@ -115,7 +116,7 @@ bot.once('chat', () => {
 
 ![Our bot only replies once to .once() event listeners.](https://i.imgur.com/qow3N0f.png)
 
-### Plugins
+## Plugins
 
 Mineflayer lets you use plugins with your bot. This means you can add features to the bot that you (or other people) made. Let's try use PrismarineJS's official `mineflayer-pathfinder` plugin now to make our bot able to easily move to certain locations.
 
@@ -198,26 +199,54 @@ bot.once('goal_reached', () => {
 
 Once the goal is reached, the event listener will fire, and make the bot say "Found you!" in the chat.
 
+[Full code](#find-me-bot)
+
 ![The bot found me!!](https://i.imgur.com/CAWQ7Wk.png)
 
 ## Examples
 
-### Answer Hello Bot
+### Find Me Bot
 
-Here we're creating a bot that answer 'hello' from the other player.
+The bot from the [Plugins](#plugins) section.
 
 ```js
-bot.chatAddPattern(
-  /(helo|hello|Hello)/,
-  'hello',
-  'Someone says hello'
-)
+const mineflayer = require('mineflayer')
+const mineflayerPathfinder = require('mineflayer-pathfinder')
 
-const hi = () => {
-  bot.chat('Hi!')
-}
+const pathfinder = mineflayerPathfinder.pathfinder
+const Movements = mineflayerPathfinder.Movements
+const GoalNear = mineflayerPathfinder.goals.GoalNear
 
-bot.on('hello', hi)
+const bot = mineflayer.createBot({
+  username: 'MineflayerBot',
+  password: 'abc123',
+  // password is your Microsoft password.
+  // If you are using the bot on a cracked/offline server, you don't need the password field.
+  host: 'localhost',
+  port: 25565, // Replace with the port for your aternos server.
+  version: '1.19.4'
+})
+
+bot.loadPlugin(pathfinder)
+
+bot.on('chat', (username, message) => {
+  if (username === bot.username) return // To prevent infinite loop
+
+  if (message === 'find me') {
+    const defaultMove = new Movements(bot)
+    
+    const playerTarget = bot.players[username].entity // Gets the player entity
+    const pos = playerTarget.position
+    
+    bot.pathfinder.setMovements(defaultMove)
+    bot.pathfinder.setGoal(new GoalNear(pos.x, pos.y, pos.z, 4))
+
+    bot.once('goal_reached', () => {
+      bot.chat('Found you!')
+    })
+  }
+})
+
 ```
 
 #### Custom chat
