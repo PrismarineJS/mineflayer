@@ -291,6 +291,12 @@ To speed up the process, we can make a script in our `package.json` file that co
 }
 ```
 
+To run and compile at the same time, you can now type this in your command line:
+
+```bash
+npm start
+```
+
 Now you can start coding away in TypeScript with it's enourmous productivity boost and type-safe checks.
 
 ## Examples
