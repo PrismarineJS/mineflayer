@@ -231,6 +231,68 @@ Once the goal is reached, the event listener will fire, and make the bot say "Fo
 
 ![The bot found me!!](https://i.imgur.com/CAWQ7Wk.png)
 
+## Adding TypeScript
+
+[TypeScript](https://typescriptlang.org/) is a superset of JavaScript that adds static typing to the language. This makes it easier to write, maintain, and debug JavaScript code, especially for large applications. TypeScript is a typed language, which means that the types of variables and expressions are known at compile time. This helps to prevent errors and makes code more readable and maintainable.
+
+Since there is TypeScript support in Mineflayer, we can make sure that we use the correct types for everything we do in Mineflayer, and also get very handy autocomplete for event names and functions.
+
+![TypeScript in action](https://i.imgur.com/jvGmkH1.png)
+
+To use TypeScript, go back into our command line and type: 
+
+```bash
+npm i -D typescript
+```
+
+We will use the `-D` flag to save this as a developer dependency.
+
+Then, we will use the TypeScript compiler to create a `tsconfig.json` file.
+
+```bash
+npx tsc --init
+```
+
+Replace everything in your `tsconfig.json` file with this JSON. It is tailored towards Mineflayer development in Node.js.
+
+```json
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist"
+  }
+}
+```
+
+Now, rename your `index.js` file to `index.ts` to change it to TypeScript. Do this with all of your code. Then, go in your command line and type:
+
+```bash
+npx tsc
+```
+
+This will compile all your code back into normal JavaScript so that we can run it with Node.js. If there are any errors when compiling, just go back and fix them, as the error messages should be pretty straightforward. Now if we run our code in dist/index.js, everything should work as expected.
+
+```bash
+node ./dist/index.js
+
+... Code runs!
+```
+
+To speed up the process, we can make a script in our `package.json` file that compiles our code and runs it at the same time! Open your `package.json` file and locate the "scripts" attribute. Then paste in this code:
+
+```json
+"scripts": {
+  "start": "npx tsc && node ./dist/index.js"
+}
+```
+
+Now you can start coding away in TypeScript with it's enourmous productivity boost and type-safe checks.
+
 ## Examples
 
 ### Find Me Bot
