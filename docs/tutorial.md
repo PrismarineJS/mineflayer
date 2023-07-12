@@ -10,6 +10,11 @@
 - [Using Events](#using-events)
   - [Custom Chat Events](#custom-chat-events)
 - [Plugins](#plugins)
+- [Adding Typescript](#adding-typescript)
+- [Examples](#examples)
+  - [Find Me Bot](#find-me-bot)
+  - [Dad Joke Chat Bot on Server](#dad-joke-chat-bot-on-server)
+- [FAQ](#faq)
 
 ## Introduction
 
@@ -347,6 +352,15 @@ bot.on('chat', (username, message) => {
 ```
 
 ```js
+const mineflayer = require('mineflayer')
+
+const bot = mineflayer.createBot({
+  username: 'MineflayerBot',
+  password: 'abc123',
+  host: 'localhost',
+  port: 25565
+})
+
 bot.once('spawn', () => {
   bot.addChatPattern('dad_joke', /^<(.+)> im (.+)$/, { parse: true })
 
