@@ -245,7 +245,6 @@ bot.on('chat', (username, message) => {
     })
   }
 })
-
 ```
 
 ### Custom chat
