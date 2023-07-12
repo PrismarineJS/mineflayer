@@ -51,7 +51,7 @@ This will put Mineflayer in the modules we have installed, and we can start usin
 
 ### Create Your First Bot
 
-I would recommend starting a Minecraft server to test your bot on. A good place to host a small, simple server to host your bot on is [Aternos](https://aternos.org), although you could also host your own Minecraft server locally on `localhost` for more configuration, better ping, and access to more plugins if you're using a software like Spigot or PaperMC.
+I would recommend starting a Minecraft server to test your bot on. A good place to start is to host the server [on your own computer](https://help.minecraft.net/hc/en-us/articles/360058525452-How-to-Setup-a-Minecraft-Java-Edition-Server). If you need to test your bot with plugins, you can use a software such as [PaperMC](https://papermc.io/). If you are too lazy to go through the hassle of hosting locally, you could use a free host such as [Aternos](https://aternos.org/).
 
 Create a new file called `index.js` to store our code.
 
@@ -159,18 +159,18 @@ Now we can import this module in our code like we did before.
 
 ```js
 const mineflayerPathfinder = require('mineflayer-pathfinder')
-/* Note: It is good practice to keep all your modules
-         the top of your file. Try to put this under
-         the line you imported Mineflayer.
+/* Note: Make sure to place all your require() imports at the top of
+   the file where possible. This prevents your code from being blocked
+   loading modules at runtime by loading all the dependencies before
+   your program code is ran.
 */
 ```
 
 Lets extract the pathfinder part of this module, as well as some others we'll use later.
 
 ```js
-const pathfinder = mineflayerPathfinder.pathfinder
-const Movements = mineflayerPathfinder.Movements
-const GoalNear = mineflayerPathfinder.goals.GoalNear
+const { pathfinder, Movements } = mineflayerPathfinder
+const { GoalNear } = mineflayerPathfinder.goals
 ```
 
 To import the module in our bot, lets use `bot.loadPlugin()`
@@ -240,19 +240,14 @@ The bot from the [Plugins](#plugins) section.
 ```js
 const mineflayer = require('mineflayer')
 const mineflayerPathfinder = require('mineflayer-pathfinder')
-
-const pathfinder = mineflayerPathfinder.pathfinder
-const Movements = mineflayerPathfinder.Movements
-const GoalNear = mineflayerPathfinder.goals.GoalNear
+const { pathfinder, Movements } = mineflayerPathfinder
+const { GoalNear } = mineflayerPathfinder.goals
 
 const bot = mineflayer.createBot({
   username: 'MineflayerBot',
   password: 'abc123',
-  // password is your Microsoft password.
-  // If you are using the bot on a cracked/offline server, you don't need the password field.
   host: 'localhost',
-  port: 25565, // Replace with the port for your aternos server.
-  version: '1.19.4'
+  port: 25565
 })
 
 bot.loadPlugin(pathfinder)
