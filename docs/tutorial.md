@@ -7,7 +7,8 @@
 - [Getting Started](#getting-started)
   - [Creating a New Project](#creating-a-new-project)
   - [Create Your First Bot](#create-your-first-bot)
-  - [Using Events](#using-events)
+- [Using Events](#using-events)
+  - [Custom Chat Events](#custom-chat-events)
 - [Plugins](#plugins)
 
 ## Introduction
@@ -83,7 +84,7 @@ Congratulations! If you did everything correctly, you should have your bot join 
 
 ![MineflayerBot is on your Minecraft Server!](https://i.ibb.co/F7Xdgf1/2023-07-11-22-30-42.png)
 
-### Using Events
+## Using Events
 
 Now that our bot is on our server, we need to make it interact with the world around us.
 
@@ -116,6 +117,34 @@ bot.once('chat', () => {
 
 ![Our bot only replies once to .once() event listeners.](https://i.imgur.com/qow3N0f.png)
 
+### Custom Chat Events
+
+You can make your own custom events that will when something appears in chat. For this you will need to know regular expressions, however you could alternatively use a website such as [RegExr](https://regexr.com/) or [Regex101](https://regex101.com/) to creat your regular expressions easier.
+
+To add your own custom event, we will use `bot.addChatPattern()`, which has 3 arguments.
+
+1. A regular expression of the message you want (RegExp).
+2. The name of your event (string).
+3. Some settings/configuratrion (object).
+
+If your regular expression has groups `()` and your settings has `parse: true`, then they will be passed as strings into your arguments.
+
+For example, if we want a bot that replies to us saying hello, we can write:
+
+```js
+bot.once('spawn', () => {
+  // bot.addChatPattern() only works once the bot spawns in.
+
+  bot.addChatPattern('hello', /^<(.+)> hello$/, { parse: true })
+  // The (.+) in the RegExp is a group,
+  // which is passed into our function arguments,
+  // since we have { parse: true }.
+
+  bot.on('chat:hello', (username) => {
+    bot.chat('Hi there ' + username + '!')
+  })
+})
+```
 ## Plugins
 
 Mineflayer lets you use plugins with your bot. This means you can add features to the bot that you (or other people) made. Let's try use PrismarineJS's official `mineflayer-pathfinder` plugin now to make our bot able to easily move to certain locations.
@@ -158,7 +187,7 @@ First, lets make an event that listens to when a chat message is sent.
 
 ```js
 bot.on('chat', (username, message) => {
-  if (username === bot.username) return null // To prevent infinite loop.
+  if (username === bot.username) return null // Return to prevent infinite loop.
   // ...
 })
 ```
@@ -247,33 +276,26 @@ bot.on('chat', (username, message) => {
 })
 ```
 
-### Custom chat
+### Dad Joke Chat Bot on Server
 
-Creating an event based on custom chat format.  
-Custom chat example:
-
-```txt
-[Player] Player1 > Hello
-[Admin] Alex > Hi
-[Player] Player2 > Help me, im stuck
-[Mod] Jim > On my way
+```
+<Player> I'm happy
+<MineflayerBot> Hey happy, I'm MineflayerBot!
 ```
 
 ```js
-bot.chatAddPattern(
-  /^\[(.+)\] (\S+) > (.+)$/,
-  'my_chat_event',
-  'Custom chat event'
-)
+bot.once('spawn', () => {
+  bot.addChatPattern('dad_joke', /^<(.+)> im (.+)$/, { parse: true })
 
-const logger = (rank, username, message) => {
-  console.log(`${username} said ${message}`)
-}
+  bot.on('chat:dad_joke', ([[username, word]]) => {
+    if (username === bot.username) return null
 
-bot.on('my_chat_event', logger)
+    bot.chat('Hey ' + word + ', I\'m ' + bot.username + '!')
+  })
+})
 ```
 
-Explanation on the regex `^\[(.+)\] (\S+) > (.+)$` can be found [here](https://regex101.com/r/VDUrDC/2).
+Explanation on the RegExp can be found [here](https://regex101.com/r/zH4pTp/1).
 
 ## FAQ
 
