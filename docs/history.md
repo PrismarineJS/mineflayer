@@ -1,3 +1,7 @@
+## 4.10.1
+
+* Fix attempting to access unloaded chunks (@frej4189)
+
 ## 4.10.0
 
 * Fix handling for entities with unknown metadata (@extremeheat)
