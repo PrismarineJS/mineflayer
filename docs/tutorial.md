@@ -376,6 +376,14 @@ Explanation on the RegExp can be found [here](https://regex101.com/r/zH4pTp/1).
 
 ## FAQ
 
+### How do I find mineflayer modules?
+
+If you want to find mineflayer modules, there are 3 ways.
+
+1. Finding one made by PrismarineJS (on their GitHub profile), which includes many useful ones such as mineflayer-pathfinder, mineflayer-pvp, and mineflayer-tool.
+2. Searching online, or asking around in the PrismarineJS Discord.
+3. Contribute and make your own module!
+
 ### How to run a bot on android
 
 Here is a quick setup for running a bot on an android device using [Termux](https://termux.com/).
