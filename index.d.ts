@@ -177,6 +177,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   food: number
   foodSaturation: number
   oxygenLevel: number
+  score: number
   physics: PhysicsOptions
   physicsEnabled: boolean
   time: Time
@@ -501,7 +502,6 @@ export interface GameSettings {
 
 export interface Experience {
   level: number
-  points: number
   progress: number
 }
 
