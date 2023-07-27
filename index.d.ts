@@ -503,6 +503,8 @@ export interface Experience {
   level: number
   points: number
   progress: number
+  convertLevelsToXpPoints: (level: number) => number | null
+  convertXpPointsToLevels: (xpPoints: number) => number | null
 }
 
 export interface PhysicsOptions {
