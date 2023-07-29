@@ -14,7 +14,7 @@ client.on('end', () => {})
 
 Сервера Spigot, в частности некоторые плагины, используют разные форматы чата, вам необходимо проанализировать его с помощью регулярного выражения/парсера.
 Посмотрите и измените скрипт [chatAddPattern.js](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chatAddPattern.js), чтобы он работал для вашего плагина чата,
-также прочтите http://mineflayer.prismarine.js.org/#/tutorial?id=custom-chat.
+также прочтите http://prismarinejs.github.io/mineflayer/#/tutorial?id=custom-chat.
 
 ### Как я могу отправлять команды серверу?
 
@@ -54,7 +54,7 @@ function getLore (item) {
   if (item.nbt == null) return message
 
   const nbt = require('prismarine-nbt')
-  const ChatMessage = require('prismarine-chat')(bot.version)
+  const ChatMessage = require('prismarine-chat')(bot.registry)
 
   const data = nbt.simplify(item.nbt)
   const display = data.display

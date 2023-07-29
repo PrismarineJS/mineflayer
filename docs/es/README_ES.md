@@ -17,7 +17,7 @@ Crea bots para Minecraft con una API de JavaScript potente, estable y de alto ni
 
 ## Características
 
- * Soporta Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17 y 1.18.
+ * Soporta Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 y 1.20.
  * Rastreo e información de entidades.
  * Información sobre bloques. Puedes solicitar información de todo lo que te rodea. Encuentra bloques en milisegundos
  * Físicas y movimientos básicos - maneja todos los cuadros de colisión
@@ -104,7 +104,7 @@ bot.once('spawn', () => {
 ```
 Y podrás ver una representación *en vivo* como esta:
 
-[<img src="https://prismarine.js.org/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarine.js.org/prismarine-viewer/)
+[<img src="https://prismarinejs.github.io/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarinejs.github.io/prismarine-viewer/)
 
 #### Más ejemplos
 

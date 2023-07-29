@@ -6,12 +6,7 @@ const pathfinder = require('mineflayer-pathfinder').pathfinder
 const collectBlock = require('mineflayer-collectblock').plugin
 
 if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node collector.js <host> <port> [<name>] [<password>]')
-  process.exit(1)
-}
-
-if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node collectBlock.js <host> <port> [<name>] [<password>]')
+  console.log('Usage : node collectblock.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 
@@ -26,19 +21,13 @@ const bot = mineflayer.createBot({
 bot.loadPlugin(pathfinder)
 bot.loadPlugin(collectBlock)
 
-// Load mc data
-let mcData
-bot.once('spawn', () => {
-  mcData = require('minecraft-data')(bot.version)
-})
-
 // Listen for when a player says "collect [something]" in chat
 bot.on('chat', (username, message) => {
   const args = message.split(' ')
   if (args[0] !== 'collect') return
 
   // Get the correct block type
-  const blockType = mcData.blocksByName[args[1]]
+  const blockType = bot.registry.blocksByName[args[1]]
   if (!blockType) {
     bot.chat("I don't know any blocks with that name.")
     return

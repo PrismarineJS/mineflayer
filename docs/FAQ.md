@@ -22,7 +22,7 @@ client.on('end', () => {})
 
 Spigot servers, in particular some plugins, use custom chat formats, you need to parse it with a custom regex / parser.
 Read and adapt [chat_parsing.js](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chat_parsing.js) to make it work for your particular
-chat plugin. Also read http://mineflayer.prismarine.js.org/#/tutorial?id=custom-chat
+chat plugin. Also read http://prismarinejs.github.io/mineflayer/#/tutorial?id=custom-chat
 
 ### How can I collect info from an custom plugin in chat ?
 
