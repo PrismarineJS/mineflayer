@@ -18,7 +18,7 @@
 
 ## Возможности
 
- * Поддержка 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17 и 1.18
+ * Поддержка 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 и 1.20
  * Поддержка энтити и их отслеживание
  * Вы можете полностью взаимодействовать с миром. Миллисекунды на поиск любого блока
  * Физика и управление
@@ -108,7 +108,7 @@ bot.once('spawn', () => {
 ```
 После запуска, вы в прямом эфире сможете наблюдать за происходящим:
 
-[<img src="https://prismarine.js.org/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarine.js.org/prismarine-viewer/)
+[<img src="https://prismarinejs.github.io/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarinejs.github.io/prismarine-viewer/)
 
 #### Больше примеров
 

@@ -18,7 +18,7 @@ Si c'est la première fois que vous utilisez Node.js, il vaut mieux commencer av
 
 ## Caractéristiques:
 
- * Compatible avec Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15 et 1.16.
+ * Compatible avec Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 et 1.20.
  * Reconnaissante et pistage des entités.
  * Identification des blocs. Vous pouvez passer en revue le monde autour de vous. Quelques millisecondes suffisent pour trouver n'importe quel bloc.
  * Information sur la physique et mouvements, données sur la taille des blocs...
@@ -108,7 +108,7 @@ bot.once('spawn', () => {
 ```
 et vous obtiendrez un affichage en *direct* qui ressemble à ceci:
 
-[<img src="https://prismarine.js.org/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarine.js.org/prismarine-viewer/)
+[<img src="https://prismarinejs.github.io/prismarine-viewer/test_1.16.1.png" alt="viewer" width="500">](https://prismarinejs.github.io/prismarine-viewer/)
 
 #### Exemples:
 

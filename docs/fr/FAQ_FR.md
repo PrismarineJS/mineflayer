@@ -23,7 +23,7 @@ client.on('end', () => {})
 
 Les serveurs Spigot, en particulier certains plugins, utilisent des formats de chat personnalisés, vous devez les analyser avec une expression rationnelle / un analyseur syntaxique personnalisé.
 Lisez et adaptez [chat_parsing.js](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chat_parsing.js) pour qu'il fonctionne pour vos besoins particuliers.
-plugin de chat. A lire également <http://mineflayer.prismarine.js.org/#/tutorial?id=custom-chat>
+plugin de chat. A lire également <http://prismarinejs.github.io/mineflayer/#/tutorial?id=custom-chat>
 
 ### Comment puis-je collecter les informations d'un plugin personnalisé dans le chat ?
 

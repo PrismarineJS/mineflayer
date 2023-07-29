@@ -28,6 +28,7 @@ export interface BotOptions extends ClientOptions {
   client?: Client
   brand?: string
   defaultChatPatterns?: boolean
+  respawn?: boolean
 }
 
 export type ChatLevel = 'enabled' | 'commandsOnly' | 'disabled'
@@ -40,7 +41,7 @@ export interface PluginOptions {
 
 export type Plugin = (bot: Bot, options: BotOptions) => void
 
-interface BotEvents {
+export interface BotEvents {
   chat: (
     username: string,
     message: string,
@@ -81,6 +82,7 @@ interface BotEvents {
   entityTamed: (entity: Entity) => Promise<void> | void
   entityShakingOffWater: (entity: Entity) => Promise<void> | void
   entityEatingGrass: (entity: Entity) => Promise<void> | void
+  entityHandSwap: (entity: Entity) => Promise<void> | void
   entityWake: (entity: Entity) => Promise<void> | void
   entityEat: (entity: Entity) => Promise<void> | void
   entityCriticalEffect: (entity: Entity) => Promise<void> | void
@@ -104,7 +106,7 @@ interface BotEvents {
   playerUpdated: (player: Player) => Promise<void> | void
   playerLeft: (entity: Player) => Promise<void> | void
   blockUpdate: (oldBlock: Block | null, newBlock: Block) => Promise<void> | void
-  'blockUpdate:(x, y, z)': (oldBlock: Block | null, newBlock: Block) => Promise<void> | void
+  'blockUpdate:(x, y, z)': (oldBlock: Block | null, newBlock: Block | null) => Promise<void> | void
   chunkColumnLoad: (entity: Vec3) => Promise<void> | void
   chunkColumnUnload: (entity: Vec3) => Promise<void> | void
   soundEffectHeard: (
@@ -190,6 +192,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   world: any
   _client: Client
   heldItem: Item | null
+  usingHeldItem: boolean
   currentWindow: Window | null
   simpleClick: simpleClick
   tablist: Tablist
@@ -273,7 +276,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
     force?: boolean
   ) => Promise<void>
 
-  updateSign: (block: Block, text: string) => void
+  updateSign: (block: Block, text: string, back?: boolean) => void
 
   equip: (
     item: Item | number,
@@ -449,7 +452,7 @@ export type LevelType =
   | 'buffet'
   | 'default_1_1'
 export type GameMode = 'survival' | 'creative' | 'adventure' | 'spectator'
-export type Dimension = 'minecraft:the_nether' | 'minecraft:overworld' | 'minecraft:the_end'
+export type Dimension = 'the_nether' | 'overworld' | 'the_end'
 export type Difficulty = 'peaceful' | 'easy' | 'normal' | 'hard'
 
 export interface Player {
@@ -459,10 +462,16 @@ export interface Player {
   gamemode: number
   ping: number
   entity: Entity
+  skinData: SkinData | undefined
   profileKeys?: {
     publicKey: Buffer
     signature: Buffer
   }
+}
+
+export interface SkinData {
+  url: string
+  model: string | null
 }
 
 export interface ChatPattern {
@@ -558,7 +567,7 @@ export interface FindBlockOptions {
   matching: number | number[] | ((block: Block) => boolean)
   maxDistance?: number
   count?: number
-  useExtraInfo?: boolean
+  useExtraInfo?: boolean | ((block: Block) => boolean)
 }
 
 export type EquipmentDestination = 'hand' | 'head' | 'torso' | 'legs' | 'feet' | 'off-hand'
@@ -721,6 +730,7 @@ export class Anvil {
 
 export interface Enchantment {
   level: number
+  expected: { enchant: number, level: number }
 }
 
 export class Villager extends Window<ConditionalStorageEvents> {
