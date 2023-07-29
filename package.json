@@ -24,7 +24,7 @@
     "minecraft-data": "^3.44.0",
     "minecraft-protocol": "^1.44.0",
     "prismarine-biome": "^1.1.1",
-    "prismarine-block": "^1.17.0",
+    "prismarine-block": "1.16.0",
     "prismarine-chat": "^1.7.1",
     "prismarine-chunk": "^1.34.0",
     "prismarine-entity": "^2.2.0",
