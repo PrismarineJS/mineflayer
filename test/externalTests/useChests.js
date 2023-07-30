@@ -128,7 +128,7 @@ module.exports = () => async (bot) => {
   await withdrawBones(smallTrappedChestLocation, 1)
   await withdrawBones(largeTrappedChestLocations[0], 2)
 
-  const itemsWith64Stacks = bot.registry.itemsArray.filter(item => item.stackSize === 64)
+  const itemsWith64Stacks = bot.registry.itemsArray.filter(item => item.stackSize === 64 && item.name !== 'air')
   itemsWith64Stacks.length = 3
 
   const itemsWith16Stacks = bot.registry.itemsArray.filter(item => item.stackSize === 16)
