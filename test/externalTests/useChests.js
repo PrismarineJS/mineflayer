@@ -1,7 +1,7 @@
 const { Vec3 } = require('vec3')
 const assert = require('assert')
 const { once } = require('events')
-const { sleep, onceWithCleanup, withTimeout } = require('../../lib/promise_utils')
+const { onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
@@ -127,18 +127,17 @@ module.exports = () => async (bot) => {
 
   await withdrawBones(smallTrappedChestLocation, 1)
   await withdrawBones(largeTrappedChestLocations[0], 2)
-  
-  
+
   const itemsWith64Stacks = bot.registry.itemsArray.filter(item => item.stackSize === 64)
   itemsWith64Stacks.length = 3
 
   const itemsWith16Stacks = bot.registry.itemsArray.filter(item => item.stackSize === 16)
   itemsWith64Stacks.length = 3
-  
+
   const itemsWith1Stacks = bot.registry.itemsArray.filter(item => item.stackSize === 1)
   itemsWith64Stacks.length = 3
 
-  function getRandomStackableItem() {
+  function getRandomStackableItem () {
     if (Math.random() < 0.75) {
       return itemsWith64Stacks[~~(Math.random() * itemsWith64Stacks.length)]
     } else {
@@ -150,7 +149,7 @@ module.exports = () => async (bot) => {
     }
   }
 
-  async function createRandomLayout(window, slotPopulationFactor) {
+  async function createRandomLayout (window, slotPopulationFactor) {
     await bot.test.clearInventory()
     await bot.test.becomeCreative()
 
@@ -166,7 +165,7 @@ module.exports = () => async (bot) => {
     await bot.test.becomeSurvival()
   }
 
-  async function testMouseClick(window, clicks) {
+  async function testMouseClick (window, clicks) {
     let iterations = 0
     while (iterations++ < clicks) {
       const populatedSlots = window.slots.filter(stack => stack !== null).map(slot => slot.slot)
@@ -175,26 +174,28 @@ module.exports = () => async (bot) => {
     }
   }
 
-  async function testShiftClick(window, clicks) {
+  /*
+  async function testShiftClick (window, clicks) {
     let iterations = 0
     while (iterations++ < clicks) {
       await bot.clickWindow(~~(Math.random() * window.inventoryEnd), 0, 1)
     }
   }
 
-  async function testNumberClick(window, clicks) {
+  async function testNumberClick (window, clicks) {
     let iterations = 0
     while (iterations++ < clicks) {
       await bot.clickWindow(~~(Math.random() * window.inventoryEnd), ~~(Math.random() * 8), 2)
     }
   }
+  */
 
-  function clearLargeChest() {
+  function clearLargeChest () {
     bot.chat(`/setblock ${largeChestLocations[0].x} ${largeChestLocations[0].y} ${largeChestLocations[0].z} chest`)
     bot.chat(`/setblock ${largeChestLocations[1].x} ${largeChestLocations[1].y} ${largeChestLocations[1].z} chest`)
   }
 
-  let window = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
+  const window = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
   await createRandomLayout(window, 0.3)
 
   await testMouseClick(window, 250)
