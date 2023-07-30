@@ -18,7 +18,7 @@ JavaScript ile güçlü, stabil ve üst seviye Minecraft botları oluşturabilec
 
 ## Özellikler
 
- * Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15 ve 1.16 sürümlerini destekler.
+ * Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 ve 1.20 sürümlerini destekler.
  * Varlık bilgisi ve takibi.
  * Blok bilgisi. Etrafını inceleyebilirsin. Bir bloğu bulmak milisaniyeler sürer.
  * Fizik ve hareket - bütün hayali kutucukları ele alabilirsin
