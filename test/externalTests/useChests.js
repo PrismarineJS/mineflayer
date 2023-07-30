@@ -1,7 +1,7 @@
 const { Vec3 } = require('vec3')
 const assert = require('assert')
 const { once } = require('events')
-const { sleep, onceWithCleanup } = require('../../lib/promise_utils')
+const { onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
@@ -158,8 +158,8 @@ module.exports = () => async (bot) => {
         bot.chat(`/give ${bot.username} ${item.name} ${Math.ceil(Math.random() * item.stackSize)}`)
         await onceWithCleanup(window, 'updateSlot', { checkCondition: (slot, oldItem, newItem) => newItem?.name === item.name })
 
-        await bot.clickWindow(slot, 0, 2)
-        // await bot.moveSlotItem(window.hotbarStart, slot)
+        // await bot.clickWindow(slot, 0, 2)
+        await bot.moveSlotItem(window.hotbarStart, slot)
       }
     }
 
