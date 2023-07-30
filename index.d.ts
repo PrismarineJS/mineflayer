@@ -730,6 +730,7 @@ export class Anvil {
 
 export interface Enchantment {
   level: number
+  expected: { enchant: number, level: number }
 }
 
 export class Villager extends Window<ConditionalStorageEvents> {
