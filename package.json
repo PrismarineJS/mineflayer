@@ -28,7 +28,7 @@
     "prismarine-chat": "^1.7.1",
     "prismarine-chunk": "^1.34.0",
     "prismarine-entity": "^2.2.0",
-    "prismarine-item": "github:frej4189/prismarine-item",
+    "prismarine-item": "github:extremeheat/prismarine-item#durability-fix",
     "prismarine-nbt": "^2.0.0",
     "prismarine-physics": "^1.8.0",
     "prismarine-recipe": "^1.3.0",
