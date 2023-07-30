@@ -1,7 +1,7 @@
 const { Vec3 } = require('vec3')
 const assert = require('assert')
 const { once } = require('events')
-const { onceWithCleanup } = require('../../lib/promise_utils')
+const { sleep, onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
@@ -150,7 +150,6 @@ module.exports = () => async (bot) => {
   }
 
   async function createRandomLayout (window, slotPopulationFactor) {
-    await bot.test.clearInventory()
     await bot.test.becomeCreative()
 
     for (let slot = 0; slot < window.slots.length; slot++) {
@@ -159,8 +158,8 @@ module.exports = () => async (bot) => {
         bot.chat(`/give ${bot.username} ${item.name} ${Math.ceil(Math.random() * item.stackSize)}`)
         await onceWithCleanup(window, 'updateSlot', { checkCondition: (slot, oldItem, newItem) => newItem?.name === item.name })
 
-        // await bot.clickWindow(slot, 0, 2)
-        await bot.moveSlotItem(window.hotbarStart, slot)
+        await bot.clickWindow(slot, 0, 2)
+        // await bot.moveSlotItem(window.hotbarStart, slot)
       }
     }
 
@@ -207,6 +206,7 @@ module.exports = () => async (bot) => {
   // tests for more click modes
   /*
   window = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
+  await bot.test.clearInventory()
   await createRandomLayout(window)
 
   await testShiftClick(window, 250)
@@ -214,6 +214,7 @@ module.exports = () => async (bot) => {
   window.close()
   clearLargeChest()
   window = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
+  await bot.test.clearInventory()
   await createRandomLayout(window)
 
   await testNumberClick(window, 250)
