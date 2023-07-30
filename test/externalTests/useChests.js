@@ -128,23 +128,20 @@ module.exports = () => async (bot) => {
   await withdrawBones(smallTrappedChestLocation, 1)
   await withdrawBones(largeTrappedChestLocations[0], 2)
 
-  const itemsWith64Stacks = bot.registry.itemsArray.filter(item => item.stackSize === 64 && item.name !== 'air')
-  itemsWith64Stacks.length = 3
-
-  const itemsWith16Stacks = bot.registry.itemsArray.filter(item => item.stackSize === 16)
-  itemsWith64Stacks.length = 3
-
-  const itemsWith1Stacks = bot.registry.itemsArray.filter(item => item.stackSize === 1)
-  itemsWith64Stacks.length = 3
+  const itemsWithStackSize = {
+    64: ['stone', 'grass'],
+    16: ['ender_pearl', 'egg'],
+    1: ['fishing_rod', 'bow']
+  }
 
   function getRandomStackableItem () {
     if (Math.random() < 0.75) {
-      return itemsWith64Stacks[~~(Math.random() * itemsWith64Stacks.length)]
+      return itemsWithStackSize[64][~~(Math.random() * itemsWithStackSize[64].length)]
     } else {
       if (Math.random() < 0.5) {
-        return itemsWith16Stacks[~~(Math.random() * itemsWith16Stacks.length)]
+        return itemsWithStackSize[16][~~(Math.random() * itemsWithStackSize[16].length)]
       } else {
-        return itemsWith1Stacks[~~(Math.random() * itemsWith1Stacks.length)]
+        return itemsWithStackSize[1][~~(Math.random() * itemsWithStackSize[1].length)]
       }
     }
   }
@@ -152,11 +149,12 @@ module.exports = () => async (bot) => {
   async function createRandomLayout (window, slotPopulationFactor) {
     await bot.test.becomeCreative()
 
-    for (let slot = 0; slot < window.slots.length; slot++) {
+    for (let slot = 0; slot < window.inventoryStart; slot++) {
       if (Math.random() < slotPopulationFactor) {
-        const item = getRandomStackableItem()
+        const itemName = getRandomStackableItem()
+        const item = bot.registry.itemsByName[itemName]
         bot.chat(`/give ${bot.username} ${item.name} ${Math.ceil(Math.random() * item.stackSize)}`)
-        await onceWithCleanup(window, 'updateSlot', { checkCondition: (slot, oldItem, newItem) => newItem?.name === item.name })
+        await onceWithCleanup(window, 'updateSlot', { checkCondition: (slot, oldItem, newItem) => slot === window.hotbarStart && newItem?.name === item.name })
 
         // await bot.clickWindow(slot, 0, 2)
         await bot.moveSlotItem(window.hotbarStart, slot)
@@ -169,27 +167,11 @@ module.exports = () => async (bot) => {
   async function testMouseClick (window, clicks) {
     let iterations = 0
     while (iterations++ < clicks) {
-      const populatedSlots = window.slots.filter(stack => stack !== null).map(slot => slot.slot)
+      const populatedSlots = window.containerItems().map(slot => slot.slot)
       const clickPopulated = Math.random() < 0.75
-      await bot.clickWindow(clickPopulated ? populatedSlots[~~(Math.random() * populatedSlots.length)] : ~~(Math.random() * window.inventoryEnd), 0, 0)
+      await bot.clickWindow(clickPopulated ? populatedSlots[~~(Math.random() * populatedSlots.length)] : ~~(Math.random() * window.inventoryStart), 0, 0)
     }
   }
-
-  /*
-  async function testShiftClick (window, clicks) {
-    let iterations = 0
-    while (iterations++ < clicks) {
-      await bot.clickWindow(~~(Math.random() * window.inventoryEnd), 0, 1)
-    }
-  }
-
-  async function testNumberClick (window, clicks) {
-    let iterations = 0
-    while (iterations++ < clicks) {
-      await bot.clickWindow(~~(Math.random() * window.inventoryEnd), ~~(Math.random() * 8), 2)
-    }
-  }
-  */
 
   function clearLargeChest () {
     bot.chat(`/setblock ${largeChestLocations[0].x} ${largeChestLocations[0].y} ${largeChestLocations[0].z} chest`)
@@ -197,29 +179,10 @@ module.exports = () => async (bot) => {
   }
 
   const window = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
-  await createRandomLayout(window, 0.3)
+  await createRandomLayout(window, 0.5)
 
   await testMouseClick(window, 250)
 
   window.close()
   clearLargeChest()
-  // tests for more click modes
-  /*
-  window = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
-  await bot.test.clearInventory()
-  await createRandomLayout(window)
-
-  await testShiftClick(window, 250)
-
-  window.close()
-  clearLargeChest()
-  window = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
-  await bot.test.clearInventory()
-  await createRandomLayout(window)
-
-  await testNumberClick(window, 250)
-
-  window.close()
-  clearLargeChest()
-  */
 }
