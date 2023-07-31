@@ -167,9 +167,7 @@ module.exports = () => async (bot) => {
   async function testMouseClick (window, clicks) {
     let iterations = 0
     while (iterations++ < clicks) {
-      const populatedSlots = window.containerItems().map(slot => slot.slot)
-      const clickPopulated = Math.random() < 0.75
-      await bot.clickWindow(clickPopulated ? populatedSlots[~~(Math.random() * populatedSlots.length)] : ~~(Math.random() * window.inventoryStart), 0, 0)
+      await bot.clickWindow(~~(Math.random() * window.inventoryStart), 0, 0)
     }
   }
 
@@ -179,7 +177,7 @@ module.exports = () => async (bot) => {
   }
 
   const window = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
-  await createRandomLayout(window, 0.5)
+  await createRandomLayout(window, 0.95)
 
   await testMouseClick(window, 250)
 
