@@ -151,8 +151,7 @@ module.exports = () => async (bot) => {
 
     for (let slot = 0; slot < window.inventoryStart; slot++) {
       if (Math.random() < slotPopulationFactor) {
-        const itemName = getRandomStackableItem()
-        const item = bot.registry.itemsByName[itemName]
+        const item = bot.registry.itemsByName[getRandomStackableItem()]
         bot.chat(`/give ${bot.username} ${item.name} ${Math.ceil(Math.random() * item.stackSize)}`)
         await onceWithCleanup(window, 'updateSlot', { checkCondition: (slot, oldItem, newItem) => slot === window.hotbarStart && newItem?.name === item.name })
 
