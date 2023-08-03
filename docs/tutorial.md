@@ -88,7 +88,7 @@ node index.js
 
 Congratulations! If you did everything correctly, you should have your bot join your Minecraft server.
 
-![MineflayerBot is on your Minecraft Server!](https://i.ibb.co/F7Xdgf1/2023-07-11-22-30-42.png)
+![MineflayerBot is on your Minecraft Server!](img/onserver.png)
 
 ## Using Events
 
@@ -111,7 +111,7 @@ bot.on('spawn', () => {
 
 Go to the command line and use Ctrl+C to stop your bot from running, and run the code again using `node index.js` like earlier. Now, using the power of events, we can make our bot do actions when certain things happen in the world.
 
-![Our bot saying "Hello there!"](https://i.imgur.com/Wz0ia8w.png)
+![Our bot saying "Hello there!"](img/hellothere.png)
 
 Alternatively, if we want to listen to an event once, we can use `bot.once()`.
 
@@ -121,7 +121,7 @@ bot.once('chat', () => {
 })
 ```
 
-![Our bot only replies once to .once() event listeners.](https://i.imgur.com/qow3N0f.png)
+![Our bot only replies once to .once() event listeners.](img/dotonceevent.png)
 
 ### Custom Chat Events
 
@@ -235,7 +235,7 @@ Once the goal is reached, the event listener will fire, and make the bot say "Fo
 
 [Full code](#find-me-bot)
 
-![The bot found me!!](https://i.imgur.com/CAWQ7Wk.png)
+![The bot found me!](img/foundme.png)
 
 ## Adding TypeScript
 
@@ -243,7 +243,7 @@ Once the goal is reached, the event listener will fire, and make the bot say "Fo
 
 Since there is TypeScript support in Mineflayer, we can make sure that we use the correct types for everything we do in Mineflayer, and also get very handy autocomplete for event names and functions.
 
-![TypeScript in action](https://i.imgur.com/jvGmkH1.png)
+![TypeScript in action (using Visual Studio Code)](img/typescriptintellisense.png)
 
 To use TypeScript, go back into our command line and type: 
 
