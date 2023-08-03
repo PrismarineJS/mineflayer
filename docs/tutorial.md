@@ -31,6 +31,7 @@ There are many online resources to help you learn JavaScript. These include (but
 - [Eloquent JavaScript](https://eloquentjavascript.net/)
 - [Programiz.com](https://www.programiz.com/javascript)
 - [W3Schools](https://www.w3schools.com/js/default.asp)
+- [Mineflayer's JavaScript tutorial](jstutorial.md)
 
 We recommend learning from one of these soruces, as they will guide you through all the basics of JavaScript, such as installing Node.js and more.
 
