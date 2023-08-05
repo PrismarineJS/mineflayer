@@ -1,6 +1,7 @@
 const { Vec3 } = require('vec3')
 const assert = require('assert')
 const { once } = require('events')
+const { onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
@@ -126,4 +127,59 @@ module.exports = () => async (bot) => {
 
   await withdrawBones(smallTrappedChestLocation, 1)
   await withdrawBones(largeTrappedChestLocations[0], 2)
+
+  const itemsWithStackSize = {
+    64: ['stone', 'grass'],
+    16: ['ender_pearl', 'egg'],
+    1: ['fishing_rod', 'bow']
+  }
+
+  function getRandomStackableItem () {
+    if (Math.random() < 0.75) {
+      return itemsWithStackSize[64][~~(Math.random() * itemsWithStackSize[64].length)]
+    } else {
+      if (Math.random() < 0.5) {
+        return itemsWithStackSize[16][~~(Math.random() * itemsWithStackSize[16].length)]
+      } else {
+        return itemsWithStackSize[1][~~(Math.random() * itemsWithStackSize[1].length)]
+      }
+    }
+  }
+
+  async function createRandomLayout (window, slotPopulationFactor) {
+    await bot.test.becomeCreative()
+
+    for (let slot = 0; slot < window.inventoryStart; slot++) {
+      if (Math.random() < slotPopulationFactor) {
+        const item = bot.registry.itemsByName[getRandomStackableItem()]
+        bot.chat(`/give ${bot.username} ${item.name} ${Math.ceil(Math.random() * item.stackSize)}`)
+        await onceWithCleanup(window, 'updateSlot', { checkCondition: (slot, oldItem, newItem) => slot === window.hotbarStart && newItem?.name === item.name })
+
+        // await bot.clickWindow(slot, 0, 2)
+        await bot.moveSlotItem(window.hotbarStart, slot)
+      }
+    }
+
+    await bot.test.becomeSurvival()
+  }
+
+  async function testMouseClick (window, clicks) {
+    let iterations = 0
+    while (iterations++ < clicks) {
+      await bot.clickWindow(~~(Math.random() * window.inventoryStart), 0, 0)
+    }
+  }
+
+  function clearLargeChest () {
+    bot.chat(`/setblock ${largeChestLocations[0].x} ${largeChestLocations[0].y} ${largeChestLocations[0].z} chest`)
+    bot.chat(`/setblock ${largeChestLocations[1].x} ${largeChestLocations[1].y} ${largeChestLocations[1].z} chest`)
+  }
+
+  const window = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
+  await createRandomLayout(window, 0.95)
+
+  await testMouseClick(window, 250)
+
+  window.close()
+  clearLargeChest()
 }
