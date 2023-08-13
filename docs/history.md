@@ -1,3 +1,17 @@
+## 4.11.0
+* [Import changedSlots computation from prismarine-windows (#3134)](https://github.com/PrismarineJS/mineflayer/commit/e5b5eeecf1133c1c80c0ef48d6e72fed77d84834) (thanks @kaduvert)
+* [Make the place block success check ignore block updates received with no block type changes (#3090)](https://github.com/PrismarineJS/mineflayer/commit/bbdd93afe2e31d1f1e899176e7edf8e73af5d5d3) (thanks @PondWader)
+* [Use node-minecraft-protocol for chat (#3110)](https://github.com/PrismarineJS/mineflayer/commit/385fba65ed6ebe632c870c7cf234666cacf5a766) (thanks @lkwilson)
+* [Extended useChests.js tests (#3132)](https://github.com/PrismarineJS/mineflayer/commit/131a7ea63c9c6b2cce41ebb29a26c898f859471d) (thanks @kaduvert)
+* [Allow more click modes (#3133)](https://github.com/PrismarineJS/mineflayer/commit/a315653bb94274113c9d6078d4c2ab840af0f62a) (thanks @kaduvert)
+* [Add nether test (#2932)](https://github.com/PrismarineJS/mineflayer/commit/6b1d6ea15c72edc5b761b78765a53d2ab7d0d274) (thanks @frej4189)
+* [Explicitly depend on pitem 1.14.0 with fix](https://github.com/PrismarineJS/mineflayer/commit/acc6ec9b5e61d566facb76e9c3ff512cc9a5137f) (thanks @rom1504)
+* [Make sure we pass a string to a storagebuilder (#2645)](https://github.com/PrismarineJS/mineflayer/commit/fc95843dac69bc1101dd5ec898a2aaf4dcfbf520) (thanks @u9g)
+* [extra types for enchantments (#3123)](https://github.com/PrismarineJS/mineflayer/commit/b336d2259d1ce0935bf8e10a4edb3c0a9030fb10) (thanks @zisis912)
+* [Add 1.20 to supported versions in readme (#3111)](https://github.com/PrismarineJS/mineflayer/commit/d764706f53dbe7ba16cf49645d66d192a309cc5c) (thanks @litfa)
+* [Handle hand swap entity status (#3097)](https://github.com/PrismarineJS/mineflayer/commit/a80d69a8f1a637ab1a0720ec776fc4f05c38afed) (thanks @PondWader)
+* [Add command gh workflow allowing to use release command in comments (#3116)](https://github.com/PrismarineJS/mineflayer/commit/5a55744ee0dc670f984229ec2629239bdc3e5705) (thanks @rom1504)
+
 ## 4.10.1
 
 * Fix attempting to access unloaded chunks (@frej4189)
