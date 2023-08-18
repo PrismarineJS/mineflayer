@@ -1,3 +1,6 @@
+## 4.12.0
+* [Mineflayer physics refactor (#2492)](https://github.com/PrismarineJS/mineflayer/commit/d0eb3a1afe6cda7b04ae2f88052cd868ba0c0c4f) (thanks @U5B)
+
 ## 4.11.0
 * [Import changedSlots computation from prismarine-windows (#3134)](https://github.com/PrismarineJS/mineflayer/commit/e5b5eeecf1133c1c80c0ef48d6e72fed77d84834) (thanks @kaduvert)
 * [Make the place block success check ignore block updates received with no block type changes (#3090)](https://github.com/PrismarineJS/mineflayer/commit/bbdd93afe2e31d1f1e899176e7edf8e73af5d5d3) (thanks @PondWader)
