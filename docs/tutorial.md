@@ -45,7 +45,7 @@ First, create a new folder to store your Node.js Project. Initialize the project
 npm init -y
 ```
 
-This will create a `project.json` file that will store all our project's packages, so that if you want to send your code to someone else, they can easily download Mineflayer and any other dependencies you need.
+This will create a `package.json` file that will store all our project's packages, so that if you want to send your code to someone else, they can easily download Mineflayer and any other dependencies you need.
 
 Secondly, we need to install the `mineflayer` package from the Node Package Manager (NPM). :
 
