@@ -254,6 +254,62 @@ The advantage of this is that you don't have to use all the options available, a
 The value can be anything, even other object. If the value is a function, that function is often called a method for that object.  
 You can also create the object in-line.
 
+## Promises
+A [promise](https://nodejs.dev/learn/understanding-javascript-promises) is a function that you can use the `await` variable to wait on until it's job is complete. (you can omit the await to not wait for results)
+
+```js
+async function consume (bot) {
+  try {
+    await bot.consume()
+    console.log('Finished consuming')
+  } catch (err) {
+    console.log(error)
+  }
+}
+```
+
+The above code will try to consume what the bot is currently holding.  
+When the consuming ends, the function that is passed along is called.  
+We can then do other things that we want to do after.  
+The function could also be called when an error occurs.
+
+### Correct and incorrect approach
+
+Below is an example of a bot that will craft oak logs into oak planks and then into sticks.
+
+Incorect approach ❌:
+
+```js
+function craft (bot) {
+  const mcData = require('minecraft-data')(bot.version)
+  const plankRecipe = bot.recipesFor(mcData.itemsByName.oak_planks.id ?? mcData.itemsByName.planks.id)[0] // Get the first recipe for oak planks
+  bot.craft(plankRecipe, 1) // ❌ start crafting oak planks.
+
+  const stickRecipe = bot.recipesFor(mcData.itemsByName.sticks.id)[0] // Get the first recipe for sticks
+  bot.craft(stickRecipe, 1) // ❌ start crafting sticks.
+}
+```
+
+Correct approach with promises ✔️:
+
+```js
+async function craft (bot) {
+  const mcData = require('minecraft-data')(bot.version)
+  const plankRecipe = bot.recipesFor(mcData.itemsByName.oak_planks.id ?? mcData.itemsByName.planks.id)[0]
+  await bot.craft(plankRecipe, 1, null)
+  const stickRecipe = bot.recipesFor(mcData.itemsByName.sticks.id)[0]
+  await bot.craft(stickRecipe, 1, null)
+  bot.chat('Crafting Sticks finished')
+}
+```
+
+The reason the incorrect approach is wrong is because when `bot.craft()` is called, the code will continue below while the bot is crafting.  
+By the time the code reaches the second `bot.craft()`, the first probably hasn't finished yet, which means the wanted resource is not available yet.  
+Using promises can fix this because they will only be called after the `bot.craft()` is finished.
+
+More on the [bot.craft()](https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md#botcraftrecipe-count-craftingtable) method.
+
+
 ## Node Package manager
 
 The last thing you need to know is how to use the [Node Package Manager](https://www.npmjs.com/).  

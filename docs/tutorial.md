@@ -50,7 +50,7 @@ This will create a `project.json` file that will store all our project's package
 Secondly, we need to install the `mineflayer` package from the Node Package Manager (NPM). :
 
 ```bash
-npm i mineflayer
+npm i --save mineflayer
 ```
 
 This will put Mineflayer in the modules we have installed, and we can start using Mineflayer!
@@ -123,6 +123,23 @@ bot.once('chat', () => {
 
 ![Our bot only replies once to .once() event listeners.](img/dotonceevent.png)
 
+Many other blocks and entities have events too. Here are links to their events in the API Reference.
+- [`Chests`](http://prismarinejs.github.io/mineflayer/#/api?id=mineflayerchest)
+- [`Furnaces`](http://prismarinejs.github.io/mineflayer/#/api?id=mineflayerfurnace)
+- [`Dispensers`](http://prismarinejs.github.io/mineflayer/#/api?id=mineflayerdispenser)
+- [`Enchantment Tables`](http://prismarinejs.github.io/mineflayer/#/api?id=mineflayerenchantmenttable)
+- [`Villager`](http://prismarinejs.github.io/mineflayer/#/api?id=mineflayervillager)
+
+Finally, if you ever need to remove an event, you can use `bot.removeListener()`.
+
+```js
+bot.on('chat', () => {
+  console.log('This is an event that will be removed!')
+})
+
+bot.removeListener('chat')
+```
+
 ### Custom Chat Events
 
 You can make your own custom events that will when something appears in chat. For this you will need to know regular expressions, however you could alternatively use a website such as [RegExr](https://regexr.com/) or [Regex101](https://regex101.com/) to creat your regular expressions easier.
@@ -158,7 +175,7 @@ Mineflayer lets you use plugins with your bot. This means you can add features t
 First, we need to install the `mineflayer-pathfinder` package from NPM, which includes our plugin. Go back to your command line and type:
 
 ```bash
-npm i mineflayer-pathfinder
+npm i --save mineflayer-pathfinder
 ```
 
 Now we can import this module in our code like we did before.
@@ -236,6 +253,14 @@ Once the goal is reached, the event listener will fire, and make the bot say "Fo
 [Full code](#find-me-bot)
 
 ![The bot found me!](img/foundme.png)
+
+## Where to Go From Here
+
+If you want to find a more in-depth dive into mineflayer, read the API reference so you can see all the blocks, events, and player/bot actions that are supported by mineflayer.
+
+If you need your JavaScript/mineflayer questions answered, you can ask the [Official PrismarineJS Discord server](https://discord.gg/GsEFRM8). All updates to mineflayer and related projects are announced in the Discord server, and there is also a help channel where people can ask questions and get help for fixing their bugs.
+
+If you want to find a plugin for your bot, try [searching on GitHub](https://github.com/topics/mineflayer) or looking through [PrismarineJS's official GitHub account](https://github.com/PrismarineJS). There are an abundance of plugins to be found online, but if you can't find one to fit your needs, try create a plugin yourself!
 
 ## Adding TypeScript
 
