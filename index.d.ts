@@ -164,6 +164,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
   version: string
   entity: Entity
   entities: { [id: string]: Entity }
+  elytraFlying: boolean
+  fireworkRocketDuration: number
   spawnPoint: Vec3
   game: GameState
   player: Player
@@ -259,6 +261,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
   isABed: (bedBlock: Block) => boolean
 
   wake: () => Promise<void>
+
+  elytraFly: () => Promise<void>
 
   setControlState: (control: ControlState, state: boolean) => void
 
