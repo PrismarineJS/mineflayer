@@ -136,6 +136,8 @@
       - [bot.foodSaturation](#botfoodsaturation)
       - [bot.oxygenLevel](#botoxygenlevel)
       - [bot.physics](#botphysics)
+      - [bot.elytraFlying](#botelytraflying)
+      - [bot.fireworkRocketDuration](#botfireworkrocketduration)
       - [bot.simpleClick.leftMouse (slot)](#botsimpleclickleftmouse-slot)
       - [bot.simpleClick.rightMouse (slot)](#botsimpleclickrightmouse-slot)
       - [bot.time.doDaylightCycle](#bottimedodaylightcycle)
@@ -293,6 +295,7 @@
       - [bot.unequip(destination)](#botunequipdestination)
       - [bot.tossStack(item)](#bottossstackitem)
       - [bot.toss(itemType, metadata, count)](#bottossitemtype-metadata-count)
+      - [bot.elytraFly()](#botelytrafly)
       - [bot.dig(block, [forceLook = true], [digFace])](#botdigblock-forcelook--true-digface)
       - [bot.stopDigging()](#botstopdigging)
       - [bot.digTime(block)](#botdigtimeblock)
@@ -1036,6 +1039,14 @@ Number in the range [0, 20] respresenting the number of water-icons known as oxy
 
 Edit these numbers to tweak gravity, jump speed, terminal velocity, etc.
 Do this at your own risk.
+
+#### bot.elytraFlying
+
+Whether or not the bot is elytra flying.
+
+#### bot.fireworkRocketDuration
+
+How many physics ticks worth of firework rocket boost are left.
 
 #### bot.simpleClick.leftMouse (slot)
 
@@ -1851,6 +1862,11 @@ This function returns a `Promise`, with `void` as its argument once tossing is c
    to match any metadata
  * `count` - how many you want to toss. `null` is an alias for `1`.
 
+#### bot.elytraFly()
+
+This function returns a `Promise`, with `void` as its argument once activating
+elytra flight is complete. It will throw an Error if it fails.
+
 #### bot.dig(block, [forceLook = true], [digFace])
 
 This function returns a `Promise`, with `void` as its argument when the block is broken or you are interrupted.
@@ -1946,7 +1962,9 @@ Use fishing rod
 
 #### bot.activateItem(offHand=false)
 
-Activates the currently held item. This is how you eat, shoot bows, throw an egg, etc.
+Activates the currently held item. This is how you eat, shoot bows, throw an
+egg, activate firework rockets, etc.
+
 Optional parameter is `false` for main hand and `true` for off hand.
 
 #### bot.deactivateItem()
