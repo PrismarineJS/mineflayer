@@ -136,7 +136,6 @@
       - [bot.foodSaturation](#botfoodsaturation)
       - [bot.oxygenLevel](#botoxygenlevel)
       - [bot.physics](#botphysics)
-      - [bot.elytraFlying](#botelytraflying)
       - [bot.fireworkRocketDuration](#botfireworkrocketduration)
       - [bot.simpleClick.leftMouse (slot)](#botsimpleclickleftmouse-slot)
       - [bot.simpleClick.rightMouse (slot)](#botsimpleclickrightmouse-slot)
@@ -199,6 +198,9 @@
       - ["entityEquip" (entity)](#entityequip-entity)
       - ["entitySleep" (entity)](#entitysleep-entity)
       - ["entitySpawn" (entity)](#entityspawn-entity)
+      - ["entityUsedFireworkRocket" (fireworkEntity, attachedToTargetEntityId)](#entityusedfireworkrocket-fireworkentity-attachedtotargetentityid)
+      - ["entityElytraFlying" (entity)](#entityElytraFlying-entity)
+      - ["entityElytraLanded" (entity)](#entityElytraLanded-entity)
       - ["itemDrop" (entity)](#itemdrop-entity)
       - ["playerCollect" (collector, collected)](#playercollect-collector-collected)
       - ["entityGone" (entity)](#entitygone-entity)
@@ -1040,10 +1042,6 @@ Number in the range [0, 20] respresenting the number of water-icons known as oxy
 Edit these numbers to tweak gravity, jump speed, terminal velocity, etc.
 Do this at your own risk.
 
-#### bot.elytraFlying
-
-Whether or not the bot is elytra flying.
-
 #### bot.fireworkRocketDuration
 
 How many physics ticks worth of firework rocket boost are left.
@@ -1312,6 +1310,13 @@ Fires when an attribute of an entity changes.
 #### "entityEquip" (entity)
 #### "entitySleep" (entity)
 #### "entitySpawn" (entity)
+#### "entityUsedFireworkRocket" (fireworkEntity, attachedToTargetEntityId)
+
+* `fireworkEntity` - The firework entity
+* `fireworkEntity` - The entity id of the player that used the firework
+
+#### "entityElytraFlying" (entity)
+#### "entityElytraLanded" (entity)
 #### "itemDrop" (entity)
 #### "playerCollect" (collector, collected)
 

@@ -164,7 +164,6 @@ export interface Bot extends TypedEmitter<BotEvents> {
   version: string
   entity: Entity
   entities: { [id: string]: Entity }
-  elytraFlying: boolean
   fireworkRocketDuration: number
   spawnPoint: Vec3
   game: GameState
