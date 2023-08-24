@@ -92,6 +92,8 @@ export interface BotEvents {
   entityEquip: (entity: Entity) => Promise<void> | void
   entitySleep: (entity: Entity) => Promise<void> | void
   entitySpawn: (entity: Entity) => Promise<void> | void
+  entityElytraFlew: (entity: Entity) => Promise<void> | void
+  usedFirework: () => Promise<void> | void
   itemDrop: (entity: Entity) => Promise<void> | void
   playerCollect: (collector: Entity, collected: Entity) => Promise<void> | void
   entityAttributes: (entity: Entity) => Promise<void> | void

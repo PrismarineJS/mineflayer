@@ -19,7 +19,6 @@ module.exports = () => async (bot) => {
 
   await bot.look(bot.entity.yaw, 0)
   await bot.waitForTicks(5)
-  console.error('Flying')
   await assert.doesNotReject(bot.elytraFly())
   await bot.waitForTicks(20) // wait for server to accept
   assert.ok(bot.entity.elytraFlying)

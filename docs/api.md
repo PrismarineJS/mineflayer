@@ -198,9 +198,7 @@
       - ["entityEquip" (entity)](#entityequip-entity)
       - ["entitySleep" (entity)](#entitysleep-entity)
       - ["entitySpawn" (entity)](#entityspawn-entity)
-      - ["entityUsedFireworkRocket" (fireworkEntity, attachedToTargetEntityId)](#entityusedfireworkrocket-fireworkentity-attachedtotargetentityid)
-      - ["entityElytraFlying" (entity)](#entityElytraFlying-entity)
-      - ["entityElytraLanded" (entity)](#entityElytraLanded-entity)
+      - ["entityElytraFlew" (entity)](#entityelytraflew-entity)
       - ["itemDrop" (entity)](#itemdrop-entity)
       - ["playerCollect" (collector, collected)](#playercollect-collector-collected)
       - ["entityGone" (entity)](#entitygone-entity)
@@ -227,6 +225,7 @@
       - ["blockBreakProgressEnd" (block, entity)](#blockbreakprogressend-block-entity)
       - ["diggingCompleted" (block)](#diggingcompleted-block)
       - ["diggingAborted" (block)](#diggingaborted-block)
+      - ["usedFirework"](#usedfirework)
       - ["move"](#move)
       - ["forcedMove"](#forcedmove)
       - ["mount"](#mount)
@@ -1310,13 +1309,10 @@ Fires when an attribute of an entity changes.
 #### "entityEquip" (entity)
 #### "entitySleep" (entity)
 #### "entitySpawn" (entity)
-#### "entityUsedFireworkRocket" (fireworkEntity, attachedToTargetEntityId)
+#### "entityElytraFlew" (entity)
 
-* `fireworkEntity` - The firework entity
-* `fireworkEntity` - The entity id of the player that used the firework
+An entity started elytra flying.
 
-#### "entityElytraFlying" (entity)
-#### "entityElytraLanded" (entity)
 #### "itemDrop" (entity)
 #### "playerCollect" (collector, collected)
 
@@ -1432,6 +1428,10 @@ This occurs whether the process was completed or aborted.
 #### "diggingAborted" (block)
 
  * `block` - the block that still exists
+
+#### "usedfirework"
+
+Fires when the bot uses a firework while elytra flying.
 
 #### "move"
 
