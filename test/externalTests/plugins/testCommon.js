@@ -18,6 +18,7 @@ function inject (bot) {
   bot.test.becomeSurvival = becomeSurvival
   bot.test.becomeCreative = becomeCreative
   bot.test.fly = fly
+  bot.test.teleport = teleport
   bot.test.resetState = resetState
   bot.test.setInventorySlot = setInventorySlot
   bot.test.placeBlock = placeBlock
