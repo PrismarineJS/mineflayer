@@ -59,7 +59,7 @@ bot.on('physicsTick', () => {
 
   // Only look for mobs within 16 blocks
   const filter = e => e.type === 'mob' && e.position.distanceTo(bot.entity.position) < 16 &&
-                    e.mobType !== 'Armor Stand' // Mojang classifies armor stands as mobs for some reason?
+                    e.displayName !== 'Armor Stand' // Mojang classifies armor stands as mobs for some reason?
 
   const entity = bot.nearestEntity(filter)
   if (entity) {

@@ -714,7 +714,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       it('metadata', (done) => {
         server.on('login', (client) => {
           bot.on('entitySpawn', (entity) => {
-            assert.strictEqual(entity.mobType, 'Creeper')
+            assert.strictEqual(entity.displayName, 'Creeper')
 
             const lastMeta = entity.metadata
             bot.on('entityUpdate', (entity) => {

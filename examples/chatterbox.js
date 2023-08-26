@@ -176,11 +176,11 @@ bot.on('playerCollect', (collector, collected) => {
 
 bot.on('entitySpawn', (entity) => {
   if (entity.type === 'mob') {
-    console.log(`Look out! A ${entity.mobType} spawned at ${entity.position}`)
+    console.log(`Look out! A ${entity.displayName} spawned at ${entity.position}`)
   } else if (entity.type === 'player') {
     bot.chat(`Look who decided to show up: ${entity.username}`)
   } else if (entity.type === 'object') {
-    console.log(`There's a ${entity.objectType} at ${entity.position}`)
+    console.log(`There's a ${entity.displayName} at ${entity.position}`)
   } else if (entity.type === 'global') {
     bot.chat('Ooh lightning!')
   } else if (entity.type === 'orb') {
@@ -189,7 +189,7 @@ bot.on('entitySpawn', (entity) => {
 })
 bot.on('entityHurt', (entity) => {
   if (entity.type === 'mob') {
-    bot.chat(`Haha! The ${entity.mobType} got hurt!`)
+    bot.chat(`Haha! The ${entity.displayName} got hurt!`)
   } else if (entity.type === 'player') {
     bot.chat(`Aww, poor ${entity.username} got hurt. Maybe you shouldn't have a ping of ${bot.players[entity.username].ping}`)
   }
@@ -214,12 +214,12 @@ bot.on('entityEat', (entity) => {
 })
 bot.on('entityAttach', (entity, vehicle) => {
   if (entity.type === 'player' && vehicle.type === 'object') {
-    bot.chat(`Sweet, ${entity.username} is riding that ${vehicle.objectType}`)
+    bot.chat(`Sweet, ${entity.username} is riding that ${vehicle.displayName}`)
   }
 })
 bot.on('entityDetach', (entity, vehicle) => {
   if (entity.type === 'player' && vehicle.type === 'object') {
-    bot.chat(`Lame, ${entity.username} stopped riding the ${vehicle.objectType}`)
+    bot.chat(`Lame, ${entity.username} stopped riding the ${vehicle.displayName}`)
   }
 })
 bot.on('entityEquipmentChange', (entity) => {
