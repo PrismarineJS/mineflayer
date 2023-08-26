@@ -58,7 +58,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           username: 'flatbot',
           viewDistance: 'tiny',
           port: PORT,
-          host: 'localhost',
+          host: '127.0.0.1',
           version: supportedVersion
         })
         commonTest(bot)
@@ -89,6 +89,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             console.log(`pinging ${version.minecraftVersion} port : ${PORT}`)
             mc.ping({
               port: PORT,
+              host: '127.0.0.1',
               version: supportedVersion
             }, (err, results) => {
               if (err) return done(err)

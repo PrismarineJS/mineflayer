@@ -183,7 +183,7 @@ function inject (bot) {
       return run(childBotName)
     }
 
-    const child = spawn('node', [file, 'localhost', `${bot.test.port}`])
+    const child = spawn('node', [file, '127.0.0.1', `${bot.test.port}`])
 
     // Useful to debug child processes:
     child.stdout.on('data', (data) => { console.log(`${data}`) })

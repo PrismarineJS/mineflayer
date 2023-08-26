@@ -7,7 +7,7 @@ module.exports = () => async (bot) => {
     username: 'spawnbot',
     viewDistance: 'tiny',
     port: bot.test.port,
-    host: 'localhost',
+    host: '127.0.0.1',
     version: bot.version
   })
   await once(spawnBot, 'spawn')
