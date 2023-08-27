@@ -1,3 +1,10 @@
+## 4.13.0
+* [Switch to entity.displayName (#3168)](https://github.com/PrismarineJS/mineflayer/commit/2409ad458b952173de669a7d9cfaeb770effe3ae) (thanks @lkwilson)
+* [Update readme auth doc (#3169)](https://github.com/PrismarineJS/mineflayer/commit/f5d4a288a768ca6717fa4d22c72fb0267428c684) (thanks @extremeheat)
+* [Add OpenDeliveryBot to "Projects Using Mineflayer" (#3162)](https://github.com/PrismarineJS/mineflayer/commit/ab3c0cf25d0cc28ccba89640b2ceff6ab6b4dace) (thanks @SilkePilon)
+* [Use node 18 on CI (#3157)](https://github.com/PrismarineJS/mineflayer/commit/d3df34dcaa804a71bf0d8cc50a419990d4a2dce3) (thanks @extremeheat)
+* [Fix ambigious function naming (#3161)](https://github.com/PrismarineJS/mineflayer/commit/9ecdf201794bfa350486839a01e318dfd94b3bfb) (thanks @frej4189)
+
 ## 4.12.0
 * [Mineflayer physics refactor (#2492)](https://github.com/PrismarineJS/mineflayer/commit/d0eb3a1afe6cda7b04ae2f88052cd868ba0c0c4f) (thanks @U5B)
 

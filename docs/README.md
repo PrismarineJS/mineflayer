@@ -80,11 +80,11 @@ const mineflayer = require('mineflayer')
 
 const bot = mineflayer.createBot({
   host: 'localhost', // minecraft server ip
-  username: 'email@example.com', // minecraft username
+  username: 'Bot', // username or email, switch if you want to change accounts
   auth: 'microsoft' // for offline mode servers, you can set this to 'offline'
   // port: 25565,                // only set if you need a port that isn't 25565
   // version: false,             // only set if you need a specific version or snapshot (ie: "1.8.9" or "1.16.5"), otherwise it's set automatically
-  // password: '12345678'        // set if you want to use password-based auth (may be unreliable)
+  // password: '12345678'        // set if you want to use password-based auth (may be unreliable). If specified, the `username` must be an email
 })
 
 bot.on('chat', (username, message) => {
@@ -95,6 +95,26 @@ bot.on('chat', (username, message) => {
 // Log errors and kick reasons:
 bot.on('kicked', console.log)
 bot.on('error', console.log)
+```
+
+If `auth` is set to `microsoft`, you will be prompted to login to microsoft.com with a code in your browser. After signing in on your browser, 
+the bot will automatically obtain and cache authentication tokens in the local file system so you don't have to sign-in again. 
+To switch the account, update the supplied `username`. By default, cached tokens will be stored in your user's .minecraft folder.
+For more information on these options and others, see node-minecraft-protocol's [API doc](https://github.com/PrismarineJS/node-minecraft-protocol/blob/master/docs/API.md#mccreateclientoptions).
+
+#### Connecting to a Realm
+
+To join a Realm that your Minecraft account has been invited to, you can pass a `realms` object with a selector function like below.
+
+```js
+const client = mineflayer.createBot({
+  username: 'email@example.com', // minecraft username
+  realms: {
+    // This function is called with an array of Realms the account can join. It should return the one it wants to join.
+    pickRealm: (realms) => realms[0]
+  },
+  auth: 'microsoft'
+})
 ```
 
 ### See what your bot is doing
@@ -220,6 +240,7 @@ The most updated and useful are :
  * [Chaoscraft](https://github.com/schematical/chaoscraft) - Minecraft bot using genetic algorithms, see [its youtube videos](https://www.youtube.com/playlist?list=PLLkpLgU9B5xJ7Qy4kOyBJl5J6zsDIMceH)
  * [hexatester/minetelegram](https://github.com/hexatester/minetelegram) -  Minecraft - Telegram bridge, build on top of mineflayer & telegraf.
  * [PrismarineJS/mineflayer-builder](https://github.com/PrismarineJS/mineflayer-builder) - Prints minecraft schematics in survival, keeping orientation
+ * [SilkePilon/OpenDeliveryBot](https://github.com/SilkePilon/OpenDeliveryBot) - Minecraft bot in python to deliver items from place to place.
  * [and hundreds more](https://github.com/PrismarineJS/mineflayer/network/dependents) - All the projects that github detected are using mineflayer
 
 
