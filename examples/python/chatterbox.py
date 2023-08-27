@@ -224,12 +224,12 @@ def playerCollect(this, collector, collected):
 def entitySpawn(this, entity):
     if entity.type == "mob":
         p = entity.position
-        console.log(f"Look out! A {entity.mobType} spawned at {p.toString()}")
+        console.log(f"Look out! A {entity.displayName} spawned at {p.toString()}")
     elif entity.type == "player":
         bot.chat(f"Look who decided to show up: {entity.username}")
     elif entity.type == "object":
         p = entity.position
-        console.log(f"There's a {entity.objectType} at {p.toString()}")
+        console.log(f"There's a {entity.displayName} at {p.toString()}")
     elif entity.type == "global":
         bot.chat("Ooh lightning!")
     elif entity.type == "orb":
@@ -239,7 +239,7 @@ def entitySpawn(this, entity):
 @On(bot, "entityHurt")
 def entityHurt(this, entity):
     if entity.type == "mob":
-        bot.chat(f"Haha! The ${entity.mobType} got hurt!")
+        bot.chat(f"Haha! The ${entity.displayName} got hurt!")
     elif entity.type == "player":
         if entity.username in bot.players:
             ping = bot.players[entity.username].ping
@@ -279,13 +279,13 @@ def entityEat(this, entity):
 @On(bot, "entityAttach")
 def entityAttach(this, entity, vehicle):
     if entity.type == "player" and vehicle.type == "object":
-        print(f"Sweet, {entity.username} is riding that {vehicle.objectType}")
+        print(f"Sweet, {entity.username} is riding that {vehicle.displayName}")
 
 
 @On(bot, "entityDetach")
 def entityDetach(this, entity, vehicle):
     if entity.type == "player" and vehicle.type == "object":
-        print(f"Lame, {entity.username} stopped riding the {vehicle.objectType}")
+        print(f"Lame, {entity.username} stopped riding the {vehicle.displayName}")
 
 
 @On(bot, "entityEquipmentChange")
