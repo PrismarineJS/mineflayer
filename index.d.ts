@@ -8,6 +8,7 @@ import { Recipe } from 'prismarine-recipe'
 import { Block } from 'prismarine-block'
 import { Entity } from 'prismarine-entity'
 import { ChatMessage } from 'prismarine-chat'
+import { world } from 'prismarine-world'
 import { Registry } from 'prismarine-registry'
 
 export function createBot (options: { client: Client } & Partial<BotOptions>): Bot
@@ -189,7 +190,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   teamMap: { [name: string]: Team }
   controlState: ControlStateStatus
   creative: creativeMethods
-  world: any
+  world: world.World
   _client: Client
   heldItem: Item | null
   usingHeldItem: boolean
