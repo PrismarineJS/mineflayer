@@ -21,7 +21,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "minecraft-data": "^3.37.0",
+    "minecraft-data": "^3.44.0",
     "minecraft-protocol": "^1.44.0",
     "prismarine-biome": "^1.1.1",
     "prismarine-block": "^1.17.0",
