@@ -136,6 +136,7 @@
       - [bot.foodSaturation](#botfoodsaturation)
       - [bot.oxygenLevel](#botoxygenlevel)
       - [bot.physics](#botphysics)
+      - [bot.fireworkRocketDuration](#botfireworkrocketduration)
       - [bot.simpleClick.leftMouse (slot)](#botsimpleclickleftmouse-slot)
       - [bot.simpleClick.rightMouse (slot)](#botsimpleclickrightmouse-slot)
       - [bot.time.doDaylightCycle](#bottimedodaylightcycle)
@@ -197,6 +198,7 @@
       - ["entityEquip" (entity)](#entityequip-entity)
       - ["entitySleep" (entity)](#entitysleep-entity)
       - ["entitySpawn" (entity)](#entityspawn-entity)
+      - ["entityElytraFlew" (entity)](#entityelytraflew-entity)
       - ["itemDrop" (entity)](#itemdrop-entity)
       - ["playerCollect" (collector, collected)](#playercollect-collector-collected)
       - ["entityGone" (entity)](#entitygone-entity)
@@ -223,6 +225,7 @@
       - ["blockBreakProgressEnd" (block, entity)](#blockbreakprogressend-block-entity)
       - ["diggingCompleted" (block)](#diggingcompleted-block)
       - ["diggingAborted" (block)](#diggingaborted-block)
+      - ["usedFirework"](#usedfirework)
       - ["move"](#move)
       - ["forcedMove"](#forcedmove)
       - ["mount"](#mount)
@@ -293,6 +296,7 @@
       - [bot.unequip(destination)](#botunequipdestination)
       - [bot.tossStack(item)](#bottossstackitem)
       - [bot.toss(itemType, metadata, count)](#bottossitemtype-metadata-count)
+      - [bot.elytraFly()](#botelytrafly)
       - [bot.dig(block, [forceLook = true], [digFace])](#botdigblock-forcelook--true-digface)
       - [bot.stopDigging()](#botstopdigging)
       - [bot.digTime(block)](#botdigtimeblock)
@@ -1037,6 +1041,10 @@ Number in the range [0, 20] respresenting the number of water-icons known as oxy
 Edit these numbers to tweak gravity, jump speed, terminal velocity, etc.
 Do this at your own risk.
 
+#### bot.fireworkRocketDuration
+
+How many physics ticks worth of firework rocket boost are left.
+
 #### bot.simpleClick.leftMouse (slot)
 
 abstraction over `bot.clickWindow(slot, 0, 0)`
@@ -1301,6 +1309,10 @@ Fires when an attribute of an entity changes.
 #### "entityEquip" (entity)
 #### "entitySleep" (entity)
 #### "entitySpawn" (entity)
+#### "entityElytraFlew" (entity)
+
+An entity started elytra flying.
+
 #### "itemDrop" (entity)
 #### "playerCollect" (collector, collected)
 
@@ -1416,6 +1428,10 @@ This occurs whether the process was completed or aborted.
 #### "diggingAborted" (block)
 
  * `block` - the block that still exists
+
+#### "usedfirework"
+
+Fires when the bot uses a firework while elytra flying.
 
 #### "move"
 
@@ -1851,6 +1867,11 @@ This function returns a `Promise`, with `void` as its argument once tossing is c
    to match any metadata
  * `count` - how many you want to toss. `null` is an alias for `1`.
 
+#### bot.elytraFly()
+
+This function returns a `Promise`, with `void` as its argument once activating
+elytra flight is complete. It will throw an Error if it fails.
+
 #### bot.dig(block, [forceLook = true], [digFace])
 
 This function returns a `Promise`, with `void` as its argument when the block is broken or you are interrupted.
@@ -1946,7 +1967,9 @@ Use fishing rod
 
 #### bot.activateItem(offHand=false)
 
-Activates the currently held item. This is how you eat, shoot bows, throw an egg, etc.
+Activates the currently held item. This is how you eat, shoot bows, throw an
+egg, activate firework rockets, etc.
+
 Optional parameter is `false` for main hand and `true` for off hand.
 
 #### bot.deactivateItem()

@@ -92,6 +92,8 @@ export interface BotEvents {
   entityEquip: (entity: Entity) => Promise<void> | void
   entitySleep: (entity: Entity) => Promise<void> | void
   entitySpawn: (entity: Entity) => Promise<void> | void
+  entityElytraFlew: (entity: Entity) => Promise<void> | void
+  usedFirework: () => Promise<void> | void
   itemDrop: (entity: Entity) => Promise<void> | void
   playerCollect: (collector: Entity, collected: Entity) => Promise<void> | void
   entityAttributes: (entity: Entity) => Promise<void> | void
@@ -164,6 +166,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   version: string
   entity: Entity
   entities: { [id: string]: Entity }
+  fireworkRocketDuration: number
   spawnPoint: Vec3
   game: GameState
   player: Player
@@ -259,6 +262,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
   isABed: (bedBlock: Block) => boolean
 
   wake: () => Promise<void>
+
+  elytraFly: () => Promise<void>
 
   setControlState: (control: ControlState, state: boolean) => void
 
