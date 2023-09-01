@@ -136,6 +136,7 @@
       - [bot.foodSaturation](#botfoodsaturation)
       - [bot.oxygenLevel](#botoxygenlevel)
       - [bot.physics](#botphysics)
+      - [bot.fireworkRocketDuration](#botfireworkrocketduration)
       - [bot.simpleClick.leftMouse (slot)](#botsimpleclickleftmouse-slot)
       - [bot.simpleClick.rightMouse (slot)](#botsimpleclickrightmouse-slot)
       - [bot.time.doDaylightCycle](#bottimedodaylightcycle)
@@ -197,6 +198,7 @@
       - ["entityEquip" (entity)](#entityequip-entity)
       - ["entitySleep" (entity)](#entitysleep-entity)
       - ["entitySpawn" (entity)](#entityspawn-entity)
+      - ["entityElytraFlew" (entity)](#entityelytraflew-entity)
       - ["itemDrop" (entity)](#itemdrop-entity)
       - ["playerCollect" (collector, collected)](#playercollect-collector-collected)
       - ["entityGone" (entity)](#entitygone-entity)
@@ -223,6 +225,7 @@
       - ["blockBreakProgressEnd" (block, entity)](#blockbreakprogressend-block-entity)
       - ["diggingCompleted" (block)](#diggingcompleted-block)
       - ["diggingAborted" (block)](#diggingaborted-block)
+      - ["usedFirework"](#usedfirework)
       - ["move"](#move)
       - ["forcedMove"](#forcedmove)
       - ["mount"](#mount)
@@ -293,6 +296,7 @@
       - [bot.unequip(destination)](#botunequipdestination)
       - [bot.tossStack(item)](#bottossstackitem)
       - [bot.toss(itemType, metadata, count)](#bottossitemtype-metadata-count)
+      - [bot.elytraFly()](#botelytrafly)
       - [bot.dig(block, [forceLook = true], [digFace])](#botdigblock-forcelook--true-digface)
       - [bot.stopDigging()](#botstopdigging)
       - [bot.digTime(block)](#botdigtimeblock)
@@ -1072,6 +1076,10 @@ UUID существа, который определяется боссом.
 Изменение значений скорости, отдачи, скорости прыжка и т.д.
 Изменяйте на свой страх и риск!
 
+#### bot.fireworkRocketDuration
+
+Сколько физических тиков осталось до окончания ускорения от фейерверка.
+
 #### bot.simpleClick.leftMouse (slot)
 
 То же, что и `bot.clickWindow(slot, 0, 0)`.
@@ -1331,6 +1339,10 @@ UUID существа, который определяется боссом.
 #### "entityEquip" (entity)
 #### "entitySleep" (entity)
 #### "entitySpawn" (entity)
+#### "entityElytraFlew" (entity)
+
+Если существо начало летать на элитрах.
+
 #### "itemDrop" (entity)
 #### "playerCollect" (collector, collected)
 
@@ -1440,6 +1452,10 @@ UUID существа, который определяется боссом.
 #### "diggingAborted" (block)
 
  * `block` - Блок, который не был разрушен.
+
+#### "usedfirework"
+
+Срабатывает при использовании фейерверка во время полёта на элитрах.
 
 #### "move"
 
@@ -1866,6 +1882,11 @@ bot.once('login', () => {
  * `metadata` - Мета-данные предмета. Используйте `null`, чтобы выбрать любые мета-данные.
  * `count` - Количество предметов, которые вы хотите выбросить. `null` равно `1`.
 
+#### bot.elytraFly()
+
+Эта функция возвращает `Promise` с `void` в качестве аргумента при завершении полёта на элитрах.
+В случае сбоя выдаёт сообщение об ошибке.
+
 #### bot.dig(block, [forceLook = true], [digFace])
 
 Эта функция возвращает `Promise` с `void` в качестве аргумента, когда блок был сломан или разрушение было прервано.
@@ -1954,7 +1975,7 @@ bot.once('login', () => {
 
 #### bot.activateItem(offHand=false)
 
-Активирует предмет, который находится в руке. Используется для выстрела из лука, бросания яиц и т.д.
+Активирует предмет, который находится в руке. Используется для выстрела из лука, бросания яиц, использования фейерверков и т.д.
 
  * `offHand` - Во второй ли руке находится предмет для активации.
 
