@@ -45,10 +45,10 @@
 
 | Ссылка                                                                     | Описание                              |
 | -------------------------------------------------------------------------- | ------------------------------------- |
-| [Обучение](tutorial.md)                                                    | Знакомство с Node.js и Mineflayer     |
+| [Обучение](tutorial_ru.md)                                                 | Знакомство с Node.js и Mineflayer     |
 | [ЧАВО](FAQ_RU.md)                                                          | Появился вопрос? Найдите ответ здесь. |
 | **[api_ru.md](api_ru.md)** <br/>[unstable_api.md](unstable_api_ru.md)      | Полное описание API                   |
-| [Обновления](history.md)                                                   | Список изменений в обновлениях        |
+| [Обновления](../history.md)                                                | Список изменений в обновлениях        |
 | [Примеры](https://github.com/PrismarineJS/mineflayer/tree/master/examples) | Примеры использования Mineflayer      |
 
 
