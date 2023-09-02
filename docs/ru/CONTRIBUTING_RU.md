@@ -23,7 +23,7 @@ Mineflayer имеет 2 вида тестов :
 
 ### Создание внешних тестов
 
-Для внешних тестов вам просто нужно создать файл в [test/externalTests](test/externalTests)
+Для внешних тестов вам просто нужно создать файл в [test/externalTests](../../test/externalTests)
 
 Например : [test/externalTests/digAndBuild.js](https://github.com/PrismarineJS/mineflayer/blob/master/test/externalTests/digAndBuild.js)
 
