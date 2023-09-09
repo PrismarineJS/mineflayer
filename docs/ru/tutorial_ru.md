@@ -197,7 +197,7 @@ const notDefined = undefined // undefined type
 ```js
 const name = 'Боб'
 
-if (name === `Боб`) {
+if (name === 'Боб') {
   console.log('Меня зовут Боб')
 } else if (name === 'Алиса') {
   console.log('Меня зовут Алиса')
