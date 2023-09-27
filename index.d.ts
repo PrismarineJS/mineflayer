@@ -423,6 +423,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
   acceptResourcePack: () => void
 
   denyResourcePack: () => void
+
+  respawn: () => void
 }
 
 export interface simpleClick {
