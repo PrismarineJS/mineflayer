@@ -1396,7 +1396,7 @@ Fires when a note block goes off somewhere.
  * `pitch`: The pitch of the note (between 0-24 inclusive where 0 is the
    lowest and 24 is the highest). More information about how the pitch values
    correspond to notes in real life are available on the
-   [official Minecraft wiki](http://www.minecraftwiki.net/wiki/Note_Block).
+   [official Minecraft wiki](http://minecraft.wiki/w/Note_Block).
 
 #### "pistonMove" (block, isPulling, direction)
 
