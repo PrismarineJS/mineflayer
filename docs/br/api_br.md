@@ -1547,12 +1547,12 @@ Promessa que é resolvida quando uma das mensagens fornecidas é cumprida.
 Exemplo:
 
 ```js
-async function wait() {
-  await bot.awaitMessage('<flatbot> hello world') // é cumprido em "hello world" no chat por flatbot
-  await bot.awaitMessage(['<flatbot> hello', '<flatbot> world']) // é cumprido em "hello" ou "world" no chat por flatbot
-  await bot.awaitMessage(['<flatbot> hello', '<flatbot> world'], ['<flatbot> im', '<flatbot> batman']) // é cumprido em "hello" ou "world" ou "im" ou "batman" no chat por flatbot
-  await bot.awaitMessage('<flatbot> hello', '<flatbot> world') // é cumprido em "hello" ou "world" no chat por flatbot
-  await bot.awaitMessage(/<flatbot> (.+)/) // é cumprido na primeira mensagem que corresponder à regex
+async function wait () {
+  await bot.awaitMessage('<flatbot> hello world') // resolve "hello world" no chat por flatbot (se resolve quando um usuário chamado flatbot escreve "hello world" no chat)
+  await bot.awaitMessage(['<flatbot> hello', '<flatbot> world']) // resolve "hello" ou "world" no chat por flatbot (se resolve quando um usuário chamado flatbot escreve "hello" ou "world" no chat)
+  await bot.awaitMessage(['<flatbot> hello', '<flatbot> world'], ['<flatbot> im', '<flatbot> batman']) // resolve "hello" ou "world" ou "im" ou "batman" no chat por flatbot (se resolve quando um usuário chamado flatbot escreve "hello world", "world", "im" ou "batman" no bater papo)
+  await bot.awaitMessage('<flatbot> hello', '<flatbot> world') // resolve "hello" ou "world" no chat do flatbot
+  await bot.awaitMessage(/<flatbot> (.+)/) // resolve na primeira mensagem correspondente ao regex (se resolve quando um usuário chamado flatbot escreve algo que coincide com o padrão)
 }
 ```
 
@@ -1567,12 +1567,12 @@ Introduz um Plugin. Não faz nada se o plugin já estiver carregado/introduzido.
  * `plugin` - função
 
 ```js
-function somePlugin(bot, options) {
-  function someFunction() {
+function somePlugin (bot, options) {
+  function someFunction () {
     bot.chat('Yay!')
   }
 
-  bot.myPlugin = {} // Boa prática para criar um espaço de nomes para a API do plugin
+  bot.myPlugin = {} // Boas práticas para API de plugin de namespace (faça isso para evitar erros como myPlugin não está definido)
   bot.myPlugin.someFunction = someFunction
 }
 
