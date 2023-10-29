@@ -219,7 +219,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   findBlock: (options: FindBlockOptions) => Block | null
 
-  findBlocks: (options: FindBlockOptions) => Vec3[]
+  findBlocks: (options: FindBlockOptions) => Promise<Vec3[]>
 
   canDigBlock: (block: Block) => boolean
 
