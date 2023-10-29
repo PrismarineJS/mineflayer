@@ -40,7 +40,7 @@ bot.on('wake', () => {
 })
 
 async function goToSleep () {
-  const bed = bot.findBlock({
+  const bed = await bot.findBlock({
     matching: block => bot.isABed(block)
   })
   if (bed) {

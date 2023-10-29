@@ -89,7 +89,7 @@ async function watchChest (minecart, blocks = []) {
       return
     }
   } else {
-    chestToOpen = bot.findBlock({
+    chestToOpen = await bot.findBlock({
       matching: blocks.map(name => bot.registry.blocksByName[name].id),
       maxDistance: 6
     })
@@ -164,7 +164,7 @@ async function watchChest (minecart, blocks = []) {
 }
 
 async function watchFurnace () {
-  const furnaceBlock = bot.findBlock({
+  const furnaceBlock = await bot.findBlock({
     matching: ['furnace', 'lit_furnace'].filter(name => bot.registry.blocksByName[name] !== undefined).map(name => bot.registry.blocksByName[name].id),
     maxDistance: 6
   })
@@ -250,7 +250,7 @@ async function watchFurnace () {
 }
 
 async function watchEnchantmentTable () {
-  const enchantTableBlock = bot.findBlock({
+  const enchantTableBlock = await bot.findBlock({
     matching: ['enchanting_table'].map(name => bot.registry.blocksByName[name].id),
     maxDistance: 6
   })

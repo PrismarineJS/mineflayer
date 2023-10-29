@@ -41,7 +41,7 @@ bot.on('chat', async (ign, msg) => {
   if (!item) bot.chat("I don't have any ender crystals")
 
   // find the crystal
-  const block = bot.findBlock({
+  const block = await bot.findBlock({
     point: findBlocksNearPoint,
     matching: ['bedrock', 'obsidian'].map(blockName => bot.registry.blocksByName[blockName].id),
     useExtraInfo: block => {

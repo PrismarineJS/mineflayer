@@ -22,14 +22,14 @@ bot.on('message', (cm) => {
   }
 })
 
-function spawner () {
+async function spawner () {
   let blockName
   if (bot.supportFeature('mobSpawner')) {
     blockName = bot.registry.blocksByName.mob_spawner.id
   } else if (bot.supportFeature('spawner')) {
     blockName = bot.registry.blocksByName.spawner.id
   }
-  const block = bot.findBlock({
+  const block = await bot.findBlock({
     matching: blockName,
     point: bot.entity.position
   })

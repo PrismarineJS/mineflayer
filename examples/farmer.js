@@ -41,7 +41,7 @@ function blockToHarvest () {
 async function loop () {
   try {
     while (1) {
-      const toHarvest = blockToHarvest()
+      const toHarvest = await blockToHarvest()
       if (toHarvest) {
         await bot.dig(toHarvest)
       } else {
@@ -49,7 +49,7 @@ async function loop () {
       }
     }
     while (1) {
-      const toSow = blockToSow()
+      const toSow = await blockToSow()
       if (toSow) {
         await bot.equip(bot.registry.itemsByName.wheat_seeds.id, 'hand')
         await bot.placeBlock(toSow, new Vec3(0, 1, 0))

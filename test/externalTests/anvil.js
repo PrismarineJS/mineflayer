@@ -20,7 +20,7 @@ module.exports = () => {
 
     await once(bot, 'experience')
 
-    const b = bot.findBlock({ matching: bot.registry.blocksByName.anvil.id }) // find anvil before tests so all tests can use it
+    const b = await bot.findBlock({ matching: bot.registry.blocksByName.anvil.id }) // find anvil before tests so all tests can use it
 
     function makeBook (enchants) {
       return makeItem({ type: bot.registry.itemsByName.enchanted_book.id, count: 1, enchants })

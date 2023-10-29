@@ -40,7 +40,7 @@ module.exports = () => async (bot) => {
   await bot.test.placeBlock(36, bot.entity.position.offset(1, 0, 2))
   await bot.test.placeBlock(36, bot.entity.position.offset(2, 0, 2))
 
-  const b = bot.findBlock({ matching: bot.registry.blocksByName.enchanting_table.id })
+  const b = await bot.findBlock({ matching: bot.registry.blocksByName.enchanting_table.id })
   const enchantingTable = await bot.openEnchantmentTable(b)
 
   console.log('Opened enchanting table')

@@ -130,7 +130,7 @@ async function craftItem (name, amount) {
   const item = bot.registry.itemsByName[name]
   const craftingTableID = bot.registry.blocksByName.crafting_table.id
 
-  const craftingTable = bot.findBlock({
+  const craftingTable = await bot.findBlock({
     matching: craftingTableID
   })
 

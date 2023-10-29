@@ -110,7 +110,7 @@ function getAnvilIds () {
 }
 
 async function rename (bot, itemName, name) {
-  const anvilBlock = bot.findBlock({
+  const anvilBlock = await bot.findBlock({
     matching: getAnvilIds()
   })
   const anvil = await bot.openAnvil(anvilBlock)
@@ -124,7 +124,7 @@ async function rename (bot, itemName, name) {
 }
 
 async function combine (bot, itemName1, itemName2, name) {
-  const anvilBlock = bot.findBlock({
+  const anvilBlock = await bot.findBlock({
     matching: getAnvilIds()
   })
   const anvil = await bot.openAnvil(anvilBlock)

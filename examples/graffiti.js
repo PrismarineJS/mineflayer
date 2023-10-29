@@ -37,13 +37,13 @@ bot.on('chat', (username, message) => {
   }
 })
 
-function watchPaintingOrSign () {
-  const paintingBlock = bot.findBlock({
+async function watchPaintingOrSign () {
+  const paintingBlock = await bot.findBlock({
     matching (block) {
       return !!block.painting
     }
   })
-  const signBlock = bot.findBlock({
+  const signBlock = await bot.findBlock({
     matching: ['painting', 'sign'].map(name => bot.registry.blocksByName[name].id)
   })
   if (signBlock) {
@@ -55,8 +55,8 @@ function watchPaintingOrSign () {
   }
 }
 
-function updateSign (message) {
-  const signBlock = bot.findBlock({
+async function updateSign (message) {
+  const signBlock = await bot.findBlock({
     matching: ['painting', 'sign'].map(name => bot.registry.blocksByName[name].id)
   })
   if (signBlock) {

@@ -22,7 +22,7 @@ bot.loadPlugin(pathfinder)
 bot.loadPlugin(collectBlock)
 
 // Listen for when a player says "collect [something]" in chat
-bot.on('chat', (username, message) => {
+bot.on('chat', async (username, message) => {
   const args = message.split(' ')
   if (args[0] !== 'collect') return
 
@@ -36,7 +36,7 @@ bot.on('chat', (username, message) => {
   bot.chat('Collecting the nearest ' + blockType.name)
 
   // Try and find that block type in the world
-  const block = bot.findBlock({
+  const block = await bot.findBlock({
     matching: blockType.id,
     maxDistance: 64
   })

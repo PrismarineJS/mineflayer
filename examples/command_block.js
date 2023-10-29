@@ -16,12 +16,12 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
-bot.on('chat', (username, message) => {
+bot.on('chat', async (username, message) => {
   if (username === bot.username) return
   const command = message.split(' ')
   switch (true) {
     case /^setCommandBlock (.+)$/.test(message): {
-      const commandBlock = bot.findBlock({
+      const commandBlock = await bot.findBlock({
         matching: bot.registry.blocksByName.command_block.id
       })
       bot.setCommandBlock(commandBlock.position, command[1], false)
