@@ -1339,6 +1339,12 @@ This occurs whether the process was completed or aborted.
 
  * `block` - 方块仍然存在
 
+#### "usedFirework" (fireworkEntityId)
+
+在机器人在鞘翅飞行时使用烟花火箭时触发
+
+ * `fireworkEntityId` - 烟花火箭的实体编号
+
 #### "move"
 
 当机器人移动时触发. 如果需要当前位置，请使用
