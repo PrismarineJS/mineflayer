@@ -240,6 +240,7 @@ Mineflayer 支持插件；任何人都可以创建一个插件，在 Mineflayer 
 ### 示例
 
 `npm run mocha_test -- -g "1.18.1.*BlockFinder"` 进行1.18.1寻路测试
+
 ## 许可证
 
 [MIT](../LICENSE)
