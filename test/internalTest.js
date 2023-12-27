@@ -39,7 +39,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
     }
   }
 
-  describe(`mineflayer_internal ${version.minecraftVersion}`, function () {
+  describe(`mineflayer_internal ${supportedVersion}v`, function () {
     this.timeout(10 * 1000)
     let bot
     let server

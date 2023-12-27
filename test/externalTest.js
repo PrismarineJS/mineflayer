@@ -44,7 +44,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
     console.log(line)
   })
 
-  describe(`mineflayer_external ${version.minecraftVersion}`, function () {
+  describe(`mineflayer_external ${supportedVersion}v`, function () {
     let bot
     this.timeout(10 * 60 * 1000)
     before(async function () {
