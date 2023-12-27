@@ -17,42 +17,44 @@ jobs:
       with:
         node-version: 18.x
     - run: npm i && npm run lint
+  
+  PrepareSupportedVersions:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 18.x
+      uses: actions/setup-node@v1.4.4
+      with:
+        node-version: 18.x
+    - id: set-matrix
+      run: |
+        node -e "
+          const testedVersions = require('./lib/version').testedVersions;
+          console.log('matrix='+JSON.stringify({'include': testedVersions.map(mcVersion => ({mcVersion}))}))
+        " >> $GITHUB_OUTPUT
 
   MinecraftServer:
+    needs: PrepareSupportedVersions
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        javaVersion: [1.8]
-        mcVersion: ['1.8.8', '1.9.4', '1.10.2', '1.11.2', '1.12.2', '1.13.2', '1.14.4', '1.15.2', '1.16.5']
-        include:
-         - javaVersion: 16
-           mcVersion: '1.17.1'
-         - javaVersion: 17
-           mcVersion: '1.18.2'
-         - javaVersion: 17
-           mcVersion: '1.19'
-         - javaVersion: 17
-           mcVersion: '1.19.2'
-         - javaVersion: 17
-           mcVersion: '1.19.3'
-         - javaVersion: 17
-           mcVersion: '1.19.4'
-         - javaVersion: 17
-           mcVersion: '1.20.1'
+      matrix: ${{fromJson(needs.PrepareSupportedVersions.outputs.matrix)}}
       fail-fast: false
 
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js 18.x
         uses: actions/setup-node@v1.4.4
         with:
           node-version: 18.x
       - name: Setup Java JDK
         uses: actions/setup-java@v1.4.3
         with:
-          java-version: ${{ matrix.javaVersion }}
+          java-version: 17
           java-package: jre
       - name: Install Dependencies
         run: npm install
       - name: Start Tests
-        run: npm run mocha_test -- -g ${{ matrix.mcVersion }}
+        run: npm run mocha_test -- -g ${{ matrix.mcVersion }}v
