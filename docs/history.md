@@ -1,3 +1,32 @@
+## 4.14.0
+* [Update Jupyter notebook to install node 18, update the server in example (#3176)](https://github.com/PrismarineJS/mineflayer/commit/e8a967d4e832f72d665781492c037d26169ae5a0) (thanks @extremeheat)
+* [Update index.d.ts (#3175)](https://github.com/PrismarineJS/mineflayer/commit/d4db3991c135344180937b69621c0ee31daa39f0) (thanks @StayWithMeSenpai)
+* [Add elytra flying support and rocket support (#3163)](https://github.com/PrismarineJS/mineflayer/commit/010460e9dd752a56195d8a48f35a62e704dcf99f) (thanks @lkwilson)
+
+## 4.13.0
+* [Switch to entity.displayName (#3168)](https://github.com/PrismarineJS/mineflayer/commit/2409ad458b952173de669a7d9cfaeb770effe3ae) (thanks @lkwilson)
+* [Update readme auth doc (#3169)](https://github.com/PrismarineJS/mineflayer/commit/f5d4a288a768ca6717fa4d22c72fb0267428c684) (thanks @extremeheat)
+* [Add OpenDeliveryBot to "Projects Using Mineflayer" (#3162)](https://github.com/PrismarineJS/mineflayer/commit/ab3c0cf25d0cc28ccba89640b2ceff6ab6b4dace) (thanks @SilkePilon)
+* [Use node 18 on CI (#3157)](https://github.com/PrismarineJS/mineflayer/commit/d3df34dcaa804a71bf0d8cc50a419990d4a2dce3) (thanks @extremeheat)
+* [Fix ambigious function naming (#3161)](https://github.com/PrismarineJS/mineflayer/commit/9ecdf201794bfa350486839a01e318dfd94b3bfb) (thanks @frej4189)
+
+## 4.12.0
+* [Mineflayer physics refactor (#2492)](https://github.com/PrismarineJS/mineflayer/commit/d0eb3a1afe6cda7b04ae2f88052cd868ba0c0c4f) (thanks @U5B)
+
+## 4.11.0
+* [Import changedSlots computation from prismarine-windows (#3134)](https://github.com/PrismarineJS/mineflayer/commit/e5b5eeecf1133c1c80c0ef48d6e72fed77d84834) (thanks @kaduvert)
+* [Make the place block success check ignore block updates received with no block type changes (#3090)](https://github.com/PrismarineJS/mineflayer/commit/bbdd93afe2e31d1f1e899176e7edf8e73af5d5d3) (thanks @PondWader)
+* [Use node-minecraft-protocol for chat (#3110)](https://github.com/PrismarineJS/mineflayer/commit/385fba65ed6ebe632c870c7cf234666cacf5a766) (thanks @lkwilson)
+* [Extended useChests.js tests (#3132)](https://github.com/PrismarineJS/mineflayer/commit/131a7ea63c9c6b2cce41ebb29a26c898f859471d) (thanks @kaduvert)
+* [Allow more click modes (#3133)](https://github.com/PrismarineJS/mineflayer/commit/a315653bb94274113c9d6078d4c2ab840af0f62a) (thanks @kaduvert)
+* [Add nether test (#2932)](https://github.com/PrismarineJS/mineflayer/commit/6b1d6ea15c72edc5b761b78765a53d2ab7d0d274) (thanks @frej4189)
+* [Explicitly depend on pitem 1.14.0 with fix](https://github.com/PrismarineJS/mineflayer/commit/acc6ec9b5e61d566facb76e9c3ff512cc9a5137f) (thanks @rom1504)
+* [Make sure we pass a string to a storagebuilder (#2645)](https://github.com/PrismarineJS/mineflayer/commit/fc95843dac69bc1101dd5ec898a2aaf4dcfbf520) (thanks @u9g)
+* [extra types for enchantments (#3123)](https://github.com/PrismarineJS/mineflayer/commit/b336d2259d1ce0935bf8e10a4edb3c0a9030fb10) (thanks @zisis912)
+* [Add 1.20 to supported versions in readme (#3111)](https://github.com/PrismarineJS/mineflayer/commit/d764706f53dbe7ba16cf49645d66d192a309cc5c) (thanks @litfa)
+* [Handle hand swap entity status (#3097)](https://github.com/PrismarineJS/mineflayer/commit/a80d69a8f1a637ab1a0720ec776fc4f05c38afed) (thanks @PondWader)
+* [Add command gh workflow allowing to use release command in comments (#3116)](https://github.com/PrismarineJS/mineflayer/commit/5a55744ee0dc670f984229ec2629239bdc3e5705) (thanks @rom1504)
+
 ## 4.10.1
 
 * Fix attempting to access unloaded chunks (@frej4189)
