@@ -868,5 +868,7 @@ export class Particle {
 }
 
 export let testedVersions: string[]
+export let latestSupportedVersion: string
+export let oldestSupportedVersion: string
 
 export function supportFeature (feature: string, version: string): boolean
