@@ -2,11 +2,7 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Содержание**  *сгенерировано с помощью [DocToc](https://github.com/thlorenz/doctoc)*
 
-Данный перевод был сделан добровольно, и не имеет прямого отношения к разработчикам Mineflayer.
-Иногда данный перевод может быть неактуален, так как Mineflayer не стоит на месте и постоянно обновляется. 
-Чтобы посмотреть актуальную информацию, Вы можете посмотреть оригинальную документацию [нестабильного API](unstable_api.md).
-
-- [нестабильное API : bot._](#unstable-api--bot_)
+- [unstable API : bot._](#unstable-api--bot_)
   - [bot._client](#bot_client)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->

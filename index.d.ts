@@ -8,6 +8,7 @@ import { Recipe } from 'prismarine-recipe'
 import { Block } from 'prismarine-block'
 import { Entity } from 'prismarine-entity'
 import { ChatMessage } from 'prismarine-chat'
+import { world } from 'prismarine-world'
 import { Registry } from 'prismarine-registry'
 
 export function createBot (options: { client: Client } & Partial<BotOptions>): Bot
@@ -82,6 +83,7 @@ export interface BotEvents {
   entityTamed: (entity: Entity) => Promise<void> | void
   entityShakingOffWater: (entity: Entity) => Promise<void> | void
   entityEatingGrass: (entity: Entity) => Promise<void> | void
+  entityHandSwap: (entity: Entity) => Promise<void> | void
   entityWake: (entity: Entity) => Promise<void> | void
   entityEat: (entity: Entity) => Promise<void> | void
   entityCriticalEffect: (entity: Entity) => Promise<void> | void
@@ -91,6 +93,8 @@ export interface BotEvents {
   entityEquip: (entity: Entity) => Promise<void> | void
   entitySleep: (entity: Entity) => Promise<void> | void
   entitySpawn: (entity: Entity) => Promise<void> | void
+  entityElytraFlew: (entity: Entity) => Promise<void> | void
+  usedFirework: () => Promise<void> | void
   itemDrop: (entity: Entity) => Promise<void> | void
   playerCollect: (collector: Entity, collected: Entity) => Promise<void> | void
   entityAttributes: (entity: Entity) => Promise<void> | void
@@ -163,6 +167,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   version: string
   entity: Entity
   entities: { [id: string]: Entity }
+  fireworkRocketDuration: number
   spawnPoint: Vec3
   game: GameState
   player: Player
@@ -188,7 +193,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   teamMap: { [name: string]: Team }
   controlState: ControlStateStatus
   creative: creativeMethods
-  world: any
+  world: world.World
   _client: Client
   heldItem: Item | null
   usingHeldItem: boolean
@@ -259,6 +264,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   wake: () => Promise<void>
 
+  elytraFly: () => Promise<void>
+
   setControlState: (control: ControlState, state: boolean) => void
 
   getControlState: (control: ControlState) => boolean
@@ -275,7 +282,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
     force?: boolean
   ) => Promise<void>
 
-  updateSign: (block: Block, text: string) => void
+  updateSign: (block: Block, text: string, back?: boolean) => void
 
   equip: (
     item: Item | number,
@@ -401,6 +408,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   waitForChunksToLoad: () => Promise<void>
 
+  entityAtCursor: (maxDistance?: number) => Entity | null
   nearestEntity: (filter?: (entity: Entity) => boolean) => Entity | null
 
   waitForTicks: (ticks: number) => Promise<void>
@@ -729,6 +737,7 @@ export class Anvil {
 
 export interface Enchantment {
   level: number
+  expected: { enchant: number, level: number }
 }
 
 export class Villager extends Window<ConditionalStorageEvents> {

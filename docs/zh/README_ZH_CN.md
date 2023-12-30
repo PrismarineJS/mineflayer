@@ -10,8 +10,8 @@
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb)
 
-| <sub>EN</sub> [English](../README.md) | <sub>RU</sub> [русский](../ru/README_RU.md) | <sub>ES</sub> [Español](../es/README_ES.md) | <sub>FR</sub> [Français](../fr/README_FR.md) | <sub>TR</sub> [Türkçe](../tr/README_TR.md) | <sub>ZH</sub> [中文](../zh/README_ZH_CN.md) 
-|-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
+| <sub>EN</sub> [English](../README.md) | <sub>RU</sub> [русский](../ru/README_RU.md) | <sub>ES</sub> [Español](../es/README_ES.md) | <sub>FR</sub> [Français](../fr/README_FR.md) | <sub>TR</sub> [Türkçe](../tr/README_TR.md) | <sub>ZH</sub> [中文](../zh/README_ZH_CN.md) | <sub>BR</sub> [Portuguese](../br/README_BR.md) |
+|-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
 
 使用强大、稳定、高级的JavaScript [API](../api.md) 来开发Minecraft机器人，同时支持 Python。
 
@@ -19,7 +19,7 @@
 
 ## 特点
 
- * 支持版本：Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15 1.16 1.17,1.18 
+ * 支持版本：Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 和 1.20 
  * 实体感知与追踪
  * 方块感知，你可以在几毫秒内查找到bot周围的任何方块
  * 物理和运动引擎 - 支持所有的碰撞箱
@@ -240,6 +240,7 @@ Mineflayer 支持插件；任何人都可以创建一个插件，在 Mineflayer 
 ### 示例
 
 `npm run mocha_test -- -g "1.18.1.*BlockFinder"` 进行1.18.1寻路测试
+
 ## 许可证
 
 [MIT](../LICENSE)

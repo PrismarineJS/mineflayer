@@ -8,8 +8,8 @@
 
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 
-| <sub>EN</sub> [English](../README.md) | <sub>RU</sub> [русский](../ru/README_RU.md) | <sub>ES</sub> [Español](../es/README_ES.md) | <sub>FR</sub> [Français](../fr/README_FR.md) | <sub>TR</sub> [Türkçe](../tr/README_TR.md) |
-|-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
+| <sub>EN</sub> [English](../README.md) | <sub>RU</sub> [русский](../ru/README_RU.md) | <sub>ES</sub> [Español](../es/README_ES.md) | <sub>FR</sub> [Français](../fr/README_FR.md) | <sub>TR</sub> [Türkçe](../tr/README_TR.md) | <sub>ZH</sub> [中文](../zh/README_ZH_CN.md) | <sub>BR</sub> [Português](../br/README_BR.md) |
+|-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
 
 Crea bots para Minecraft con una API de JavaScript potente, estable y de alto nivel.
 
@@ -17,7 +17,7 @@ Crea bots para Minecraft con una API de JavaScript potente, estable y de alto ni
 
 ## Características
 
- * Soporta Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18 y 1.19.
+ * Soporta Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 y 1.20.
  * Rastreo e información de entidades.
  * Información sobre bloques. Puedes solicitar información de todo lo que te rodea. Encuentra bloques en milisegundos
  * Físicas y movimientos básicos - maneja todos los cuadros de colisión
