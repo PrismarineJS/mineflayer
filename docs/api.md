@@ -152,6 +152,7 @@
       - [bot.foodSaturation](#botfoodsaturation)
       - [bot.oxygenLevel](#botoxygenlevel)
       - [bot.physics](#botphysics)
+      - [bot.fireworkRocketDuration](#botfireworkrocketduration)
       - [bot.simpleClick.leftMouse (slot)](#botsimpleclickleftmouse-slot)
       - [bot.simpleClick.rightMouse (slot)](#botsimpleclickrightmouse-slot)
       - [bot.time.doDaylightCycle](#bottimedodaylightcycle)
@@ -203,6 +204,7 @@
       - ["entityTamed" (entity)](#entitytamed-entity)
       - ["entityShakingOffWater" (entity)](#entityshakingoffwater-entity)
       - ["entityEatingGrass" (entity)](#entityeatinggrass-entity)
+      - ["entityHandSwap" (entity)](#entityhandswap-entity)
       - ["entityWake" (entity)](#entitywake-entity)
       - ["entityEat" (entity)](#entityeat-entity)
       - ["entityCriticalEffect" (entity)](#entitycriticaleffect-entity)
@@ -212,6 +214,7 @@
       - ["entityEquip" (entity)](#entityequip-entity)
       - ["entitySleep" (entity)](#entitysleep-entity)
       - ["entitySpawn" (entity)](#entityspawn-entity)
+      - ["entityElytraFlew" (entity)](#entityelytraflew-entity)
       - ["itemDrop" (entity)](#itemdrop-entity)
       - ["playerCollect" (collector, collected)](#playercollect-collector-collected)
       - ["entityGone" (entity)](#entitygone-entity)
@@ -238,6 +241,7 @@
       - ["blockBreakProgressEnd" (block, entity)](#blockbreakprogressend-block-entity)
       - ["diggingCompleted" (block)](#diggingcompleted-block)
       - ["diggingAborted" (block)](#diggingaborted-block)
+      - ["usedFirework"](#usedfirework)
       - ["move"](#move)
       - ["forcedMove"](#forcedmove)
       - ["mount"](#mount)
@@ -308,6 +312,7 @@
       - [bot.unequip(destination)](#botunequipdestination)
       - [bot.tossStack(item)](#bottossstackitem)
       - [bot.toss(itemType, metadata, count)](#bottossitemtype-metadata-count)
+      - [bot.elytraFly()](#botelytrafly)
       - [bot.dig(block, [forceLook = true], [digFace])](#botdigblock-forcelook--true-digface)
       - [bot.stopDigging()](#botstopdigging)
       - [bot.digTime(block)](#botdigtimeblock)
@@ -438,19 +443,24 @@ The skin data is stored in the `skinData` property of the player object, if pres
 
 See [prismarine-block](https://github.com/PrismarineJS/prismarine-block)
 
-Also `block.blockEntity` is additional field with block entity data as `Object`
+Also `block.blockEntity` is additional field with block entity data as `Object`. The data in this varies between versions.
 ```js
-// sign.blockEntity
+// sign.blockEntity example from 1.19
 {
-  x: -53,
-  y: 88,
-  z: 66,
-  id: 'minecraft:sign', // 'Sign' in 1.10
-  Text1: { toString: Function }, // ChatMessage object
-  Text2: { toString: Function }, // ChatMessage object
-  Text3: { toString: Function }, // ChatMessage object
-  Text4: { toString: Function } // ChatMessage object
+  GlowingText: 0, // 0 for false, 1 for true
+  Color: 'black',
+  Text1: '{"text":"1"}',
+  Text2: '{"text":"2"}',
+  Text3: '{"text":"3"}',
+  Text4: '{"text":"4"}'
 }
+```
+
+Note if you want to get a sign's plain text, you can use [`block.getSignText()`](https://github.com/PrismarineJS/prismarine-block/blob/master/doc/API.md#sign) instead of unstable blockEntity data.
+```java
+> block = bot.blockAt(new Vec3(0, 60, 0)) // assuming a sign is here
+> block.getSignText()
+[ "Front text\nHello world", "Back text\nHello world" ]
 ```
 
 ### Biome
@@ -882,6 +892,7 @@ Create and return an instance of the class bot.
  * storageBuilder : an optional function, takes as argument version and worldName and return an instance of something with the same API as prismarine-provider-anvil. Will be used to save the world.
  * client : an instance of node-minecraft-protocol, if not specified, mineflayer makes it's own client. This can be used to enable using mineflayer through a proxy of many clients or a vanilla client and a mineflayer client.
  * brand : the brand name for the client to use. Defaults to vanilla. Can be used to simulate custom clients for servers that require it.
+ * respawn : when set to false disables bot from automatically respawning, defaults to true.
  * plugins : object : defaults to {}
    - pluginName : false : don't load internal plugin with given name ie. `pluginName`
    - pluginName : true : load internal plugin with given name ie. `pluginName` even though loadInternalplugins is set to false
@@ -947,6 +958,8 @@ Whether the bot is using the item that it's holding, for example eating food or 
 #### bot.game.levelType
 
 #### bot.game.dimension
+
+The bot's current dimension, such as `overworld`, `the_end` or `the_nether`.
 
 #### bot.game.difficulty
 
@@ -1110,6 +1123,10 @@ Number in the range [0, 20] respresenting the number of water-icons known as oxy
 
 Edit these numbers to tweak gravity, jump speed, terminal velocity, etc.
 Do this at your own risk.
+
+#### bot.fireworkRocketDuration
+
+How many physics ticks worth of firework rocket boost are left.
 
 #### bot.simpleClick.leftMouse (slot)
 
@@ -1365,6 +1382,7 @@ Fires when an attribute of an entity changes.
 #### "entityTamed" (entity)
 #### "entityShakingOffWater" (entity)
 #### "entityEatingGrass" (entity)
+#### "entityHandSwap" (entity)
 #### "entityWake" (entity)
 #### "entityEat" (entity)
 #### "entityCriticalEffect" (entity)
@@ -1374,6 +1392,10 @@ Fires when an attribute of an entity changes.
 #### "entityEquip" (entity)
 #### "entitySleep" (entity)
 #### "entitySpawn" (entity)
+#### "entityElytraFlew" (entity)
+
+An entity started elytra flying.
+
 #### "itemDrop" (entity)
 #### "playerCollect" (collector, collected)
 
@@ -1457,7 +1479,7 @@ Fires when a note block goes off somewhere.
  * `pitch`: The pitch of the note (between 0-24 inclusive where 0 is the
    lowest and 24 is the highest). More information about how the pitch values
    correspond to notes in real life are available on the
-   [official Minecraft wiki](http://www.minecraftwiki.net/wiki/Note_Block).
+   [official Minecraft wiki](http://minecraft.wiki/w/Note_Block).
 
 #### "pistonMove" (block, isPulling, direction)
 
@@ -1489,6 +1511,12 @@ This occurs whether the process was completed or aborted.
 #### "diggingAborted" (block)
 
  * `block` - the block that still exists
+
+#### "usedFirework" (fireworkEntityId)
+
+Fires when the bot uses a firework while elytra flying.
+
+ * `fireworkEntityId` - the entity id of the firework.
 
 #### "move"
 
@@ -1883,9 +1911,9 @@ Set the direction your head is facing.
    are looking, such as for dropping items or shooting arrows. This is not
    needed for client-side calculation such as walking direction.
 
-#### bot.updateSign(block, text)
+#### bot.updateSign(block, text, back = false)
 
-Changes the text on the sign.
+Changes the text on the sign. On Minecraft 1.20 and newer, a truthy `back` will try setting the text on the back of a sign (only visible if not attached to a wall).
 
 #### bot.equip(item, destination)
 
@@ -1923,6 +1951,11 @@ This function returns a `Promise`, with `void` as its argument once tossing is c
  * `metadata` - metadata of the item you wish to toss. Use `null`
    to match any metadata
  * `count` - how many you want to toss. `null` is an alias for `1`.
+
+#### bot.elytraFly()
+
+This function returns a `Promise`, with `void` as its argument once activating
+elytra flight is complete. It will throw an Error if it fails.
 
 #### bot.dig(block, [forceLook = true], [digFace])
 
@@ -2019,7 +2052,9 @@ Use fishing rod
 
 #### bot.activateItem(offHand=false)
 
-Activates the currently held item. This is how you eat, shoot bows, throw an egg, etc.
+Activates the currently held item. This is how you eat, shoot bows, throw an
+egg, activate firework rockets, etc.
+
 Optional parameter is `false` for main hand and `true` for off hand.
 
 #### bot.deactivateItem()

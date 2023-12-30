@@ -26,7 +26,7 @@ bot.on('chat', async (username, message) => {
   const [mainCommand, subCommand] = message.split(' ')
   if (mainCommand !== 'equip' && mainCommand !== 'unequip') return
 
-  const armorStand = bot.nearestEntity(e => e.mobType === 'Armor Stand' && bot.entity.position.distanceTo(e.position) < 4)
+  const armorStand = bot.nearestEntity(e => e.displayName === 'Armor Stand' && bot.entity.position.distanceTo(e.position) < 4)
   if (!armorStand) {
     bot.chat('No armor stands nearby!')
     return

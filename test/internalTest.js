@@ -4,6 +4,7 @@ const mineflayer = require('../')
 const vec3 = require('vec3')
 const mc = require('minecraft-protocol')
 const assert = require('assert')
+const { sleep } = require('../lib/promise_utils')
 
 for (const supportedVersion of mineflayer.testedVersions) {
   const registry = require('prismarine-registry')(supportedVersion)
@@ -38,7 +39,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
     }
   }
 
-  describe(`mineflayer_internal ${version.minecraftVersion}`, function () {
+  describe(`mineflayer_internal ${supportedVersion}v`, function () {
     this.timeout(10 * 1000)
     let bot
     let server
@@ -224,7 +225,147 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
     describe('physics', () => {
       const pos = vec3(1, 65, 1)
+      const pos2 = vec3(2, 65, 1)
       const goldId = 41
+      it('no physics if there is no chunk', (done) => {
+        let fail = 0
+        const basePosition = {
+          x: 1.5,
+          y: 66,
+          z: 1.5,
+          pitch: 0,
+          yaw: 0,
+          flags: 0,
+          teleportId: 0
+        }
+        server.on('login', async (client) => {
+          await client.write('login', bot.test.generateLoginPacket())
+          await client.write('position', basePosition)
+          client.on('packet', (data, meta) => {
+            const packetName = meta.name
+            switch (packetName) {
+              case 'position':
+                fail++
+                break
+              case 'position_look':
+                fail++
+                break
+              case 'look':
+                fail++
+                break
+            }
+            if (fail > 1) assert.fail('position packet sent')
+          })
+          await sleep(2000)
+          done()
+        })
+      })
+      it('absolute position & relative position (velocity)', (done) => {
+        server.on('login', async (client) => {
+          await client.write('login', bot.test.generateLoginPacket())
+          const chunk = await bot.test.buildChunk()
+
+          await chunk.setBlockType(pos, goldId)
+          await chunk.setBlockType(pos2, goldId)
+          await client.write('map_chunk', generateChunkPacket(chunk))
+          let check = true
+          let absolute = true
+          const basePosition = {
+            x: 1.5,
+            y: 66,
+            z: 1.5,
+            pitch: 0,
+            yaw: 0,
+            flags: 0,
+            teleportId: 0
+          }
+          client.on('packet', (data, meta) => {
+            const packetName = meta.name
+            switch (packetName) {
+              case 'teleport_confirm': {
+                assert.ok(basePosition.teleportId === data.teleportId)
+                break
+              }
+              case 'position_look': {
+                if (!check) return
+                if (absolute) {
+                  assert.ok(bot.entity.velocity.y === 0)
+                } else {
+                  assert.ok(bot.entity.velocity.y !== 0)
+                }
+                assert.ok(basePosition.x === data.x)
+                assert.ok(basePosition.y === data.y)
+                assert.ok(basePosition.z === data.z)
+                assert.ok(basePosition.yaw === data.yaw)
+                assert.ok(basePosition.pitch === data.pitch)
+                check = false
+                break
+              }
+              default:
+                break
+            }
+          })
+          // Absolute Position Tests
+          // absolute position test
+          check = true
+          await client.write('position', basePosition)
+          await bot.waitForTicks(5)
+          // absolute position test 2
+          basePosition.x = 2.5
+          basePosition.teleportId = 1
+          await bot.waitForTicks(1)
+          check = true
+          await client.write('position', basePosition)
+          await bot.waitForTicks(2)
+          // absolute position test 3
+          basePosition.x = 1.5
+          basePosition.teleportId = 2
+          await bot.waitForTicks(1)
+          check = true
+          await client.write('position', basePosition)
+          await bot.waitForTicks(2)
+
+          // Relative Position Tests
+          const relativePosition = {
+            x: 1,
+            y: 0,
+            z: 0,
+            pitch: 0,
+            yaw: 0,
+            flags: 31,
+            teleportId: 3
+          }
+          absolute = false
+          // relative position test 1
+          basePosition.x = 2.5
+          basePosition.teleportId = 3
+          relativePosition.x = 1
+          relativePosition.teleportId = 3
+          await bot.waitForTicks(1)
+          check = true
+          await client.write('position', relativePosition)
+          await bot.waitForTicks(2)
+          // relative position test 2
+          basePosition.x = 1.5
+          basePosition.teleportId = 4
+          relativePosition.x = -1
+          relativePosition.teleportId = 4
+          await bot.waitForTicks(1)
+          check = true
+          await client.write('position', relativePosition)
+          await bot.waitForTicks(2)
+          // relative position test 3
+          basePosition.x = 2.5
+          basePosition.teleportId = 5
+          relativePosition.x = 1
+          relativePosition.teleportId = 5
+          await bot.waitForTicks(1)
+          check = true
+          await client.write('position', relativePosition)
+          await bot.waitForTicks(2)
+          done()
+        })
+      })
       it('gravity + land on solid block + jump', (done) => {
         let y = 80
         let landed = false
@@ -573,7 +714,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       it('metadata', (done) => {
         server.on('login', (client) => {
           bot.on('entitySpawn', (entity) => {
-            assert.strictEqual(entity.mobType, 'Creeper')
+            assert.strictEqual(entity.displayName, 'Creeper')
 
             const lastMeta = entity.metadata
             bot.on('entityUpdate', (entity) => {
@@ -586,7 +727,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             client.write('entity_metadata', {
               entityId: 8,
               metadata: [
-                { type: 0, key: 0, value: 1 }
+                { key: 0, type: bot.registry.supportFeature('mcDataHasEntityMetadata') ? 'int' : 0, value: 1 }
               ]
             })
           })
@@ -609,8 +750,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
             velocityY: 17,
             velocityZ: 18,
             metadata: [
-              { type: 0, key: 0, value: 0 },
-              { type: 0, key: 1, value: 1 }
+              { type: 0, key: bot.registry.supportFeature('mcDataHasEntityMetadata') ? 'byte' : 0, value: 0 },
+              { type: 0, key: bot.registry.supportFeature('mcDataHasEntityMetadata') ? 'int' : 1, value: 1 }
             ]
           })
         })
@@ -679,6 +820,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
           if (bot.supportFeature('entityMetadataHasLong')) {
             metadataPacket.metadata[0].type = 7
+          }
+
+          if (bot.registry.supportFeature('mcDataHasEntityMetadata')) {
+            metadataPacket.metadata[0].type = 'item_stack'
           }
 
           client.write('entity_metadata', metadataPacket)

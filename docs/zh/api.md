@@ -1308,7 +1308,7 @@ comparison.
  * `pitch`: The pitch of the note (between 0-24 inclusive where 0 is the
    lowest and 24 is the highest). More information about how the pitch values
    correspond to notes in real life are available on the
-   [official Minecraft wiki](http://www.minecraftwiki.net/wiki/Note_Block).
+   [official Minecraft wiki](http://minecraft.wiki/w/Note_Block).
 
 #### "pistonMove" (block, isPulling, direction)
 
@@ -1338,6 +1338,12 @@ This occurs whether the process was completed or aborted.
 #### "diggingAborted" (block)
 
  * `block` - 方块仍然存在
+
+#### "usedFirework" (fireworkEntityId)
+
+在机器人在鞘翅飞行时使用烟花火箭时触发
+
+ * `fireworkEntityId` - 烟花火箭的实体编号
 
 #### "move"
 

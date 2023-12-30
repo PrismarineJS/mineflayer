@@ -18,6 +18,7 @@ function inject (bot) {
   bot.test.becomeSurvival = becomeSurvival
   bot.test.becomeCreative = becomeCreative
   bot.test.fly = fly
+  bot.test.teleport = teleport
   bot.test.resetState = resetState
   bot.test.setInventorySlot = setInventorySlot
   bot.test.placeBlock = placeBlock
@@ -183,7 +184,7 @@ function inject (bot) {
       return run(childBotName)
     }
 
-    const child = spawn('node', [file, 'localhost', `${bot.test.port}`])
+    const child = spawn('node', [file, '127.0.0.1', `${bot.test.port}`])
 
     // Useful to debug child processes:
     child.stdout.on('data', (data) => { console.log(`${data}`) })
