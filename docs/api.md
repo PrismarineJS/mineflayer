@@ -1429,9 +1429,11 @@ This occurs whether the process was completed or aborted.
 
  * `block` - the block that still exists
 
-#### "usedfirework"
+#### "usedFirework" (fireworkEntityId)
 
 Fires when the bot uses a firework while elytra flying.
+
+ * `fireworkEntityId` - the entity id of the firework.
 
 #### "move"
 
