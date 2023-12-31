@@ -1,3 +1,6 @@
+## 4.16.0
+* [Fix version check (#3259)](https://github.com/PrismarineJS/mineflayer/commit/88d361f9209cdc2bc4620b32118fb2245f6dcdf9) (thanks @extremeheat)
+
 ## 4.15.0
 * [Fix several bugs in villager trading (#3230)](https://github.com/PrismarineJS/mineflayer/commit/1caa2c216b3a10a2bccd7b78a22f3809cb359fe3) (thanks @evan-goode)
 * [Fix `bot.heldItem` and `bot.entity.equipment` (#3225)](https://github.com/PrismarineJS/mineflayer/commit/9865ab72f7438fff9d74f2fe19a138da870c41aa) (thanks @szdytom)
