@@ -870,7 +870,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         done()
       })
 
-      server.once('login', (client) => {
+      server.once('playerJoin', (client) => {
         bot.time.timeOfDay = 18000
         const loginPacket = bot.test.generateLoginPacket()
         client.write('login', loginPacket)
