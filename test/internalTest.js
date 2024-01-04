@@ -458,7 +458,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
               assert.ok(bot.world.getColumn(0, 0) === undefined)
               done()
             })
-            respawnPacket.worldName = 'minecraft:nether'
+            respawnPacket.worldName = 'minecraft:the_nether'
             if (bot.supportFeature('usesLoginPacket')) {
               respawnPacket.dimension.name = 'e'
             } else {

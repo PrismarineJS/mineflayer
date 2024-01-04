@@ -1353,6 +1353,12 @@ comparison.
 
 Note that `oldBlock` may be `null`.
 
+#### "dimensionChange" (dimension)
+
+Emitted after the dimension the bot is in has changed.
+
+ * `dimension` - The dimension that was switched to
+
 #### "blockPlaced" (oldBlock, newBlock)
 
 Fires when bot places block. Both `oldBlock` and `newBlock` provided for
