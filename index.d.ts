@@ -10,6 +10,7 @@ import { Entity } from 'prismarine-entity'
 import { ChatMessage } from 'prismarine-chat'
 import { world } from 'prismarine-world'
 import { Registry } from 'prismarine-registry'
+import { IndexedData } from 'minecraft-data'
 
 export function createBot (options: { client: Client } & Partial<BotOptions>): Bot
 export function createBot (options: BotOptions): Bot
@@ -26,6 +27,8 @@ export interface BotOptions extends ClientOptions {
   difficulty?: number
   chatLengthLimit?: number
   physicsEnabled?: boolean
+  /** @default 4 */
+  maxCatchupTicks?: number
   client?: Client
   brand?: string
   defaultChatPatterns?: boolean
@@ -204,7 +207,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   connect: (options: BotOptions) => void
 
-  supportFeature: (feature: string) => boolean
+  supportFeature: IndexedData['supportFeature']
 
   end: (reason?: string) => void
 
