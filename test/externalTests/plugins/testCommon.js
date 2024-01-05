@@ -20,6 +20,7 @@ function inject (bot) {
   bot.test.fly = fly
   bot.test.teleport = teleport
   bot.test.resetState = resetState
+  bot.test.resetNetherRoofToBedrock = resetNetherRoofToBedrock
   bot.test.setInventorySlot = setInventorySlot
   bot.test.placeBlock = placeBlock
   bot.test.runExample = runExample
@@ -70,6 +71,14 @@ function inject (bot) {
     for (let y = groundY + 4; y >= groundY - 1; y--) {
       const realY = y + bot.test.groundY - 4
       bot.chat(`/fill ~-5 ${realY} ~-5 ~5 ${realY} ~5 ` + layerNames[y])
+    }
+    await bot.test.wait(100)
+  }
+
+  async function resetNetherRoofToBedrock () {
+    bot.chat('/fill ~-5 127 ~-5 ~5 127 ~5 bedrock')
+    for (let y = 128; y < 131; y++) {
+      bot.chat(`/fill ~-5 ${y} ~-5 ~5 ${y} ~5 air`)
     }
     await bot.test.wait(100)
   }
