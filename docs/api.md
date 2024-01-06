@@ -225,7 +225,7 @@
       - ["blockBreakProgressEnd" (block, entity)](#blockbreakprogressend-block-entity)
       - ["diggingCompleted" (block)](#diggingcompleted-block)
       - ["diggingAborted" (block)](#diggingaborted-block)
-      - ["usedFirework"](#usedfirework)
+      - ["usedfirework"](#usedfirework)
       - ["move"](#move)
       - ["forcedMove"](#forcedmove)
       - ["mount"](#mount)
@@ -291,7 +291,7 @@
       - [bot.getExplosionDamages(entity, position, radius, [rawDamages])](#botgetexplosiondamagesentity-position-radius-rawdamages)
       - [bot.lookAt(point, [force])](#botlookatpoint-force)
       - [bot.look(yaw, pitch, [force])](#botlookyaw-pitch-force)
-      - [bot.updateSign(block, text)](#botupdatesignblock-text)
+      - [bot.updateSign(block, text, back = false)](#botupdatesignblock-text-back--false)
       - [bot.equip(item, destination)](#botequipitem-destination)
       - [bot.unequip(destination)](#botunequipdestination)
       - [bot.tossStack(item)](#bottossstackitem)
@@ -331,6 +331,7 @@
       - [bot.setCommandBlock(pos, command, [options])](#botsetcommandblockpos-command-options)
       - [bot.supportFeature(name)](#botsupportfeaturename)
       - [bot.waitForTicks(ticks)](#botwaitforticksticks)
+      - [bot.respawn()](#botrespawn)
     - [Lower level inventory methods](#lower-level-inventory-methods)
       - [bot.clickWindow(slot, mouseButton, mode)](#botclickwindowslot-mousebutton-mode)
       - [bot.putSelectedItemRange(start, end, window, slot)](#botputselecteditemrangestart-end-window-slot)
@@ -2102,6 +2103,10 @@ The list of available features can be found inside the [./lib/features.json](htt
 #### bot.waitForTicks(ticks)
 
 This is a promise-based function that waits for a given number of in-game ticks to pass before continuing. This is useful for quick timers that need to function with specific timing, regardless of the given physics tick speed of the bot. This is similar to the standard Javascript setTimeout function, but runs on the physics timer of the bot specifically.
+
+#### bot.respawn()
+
+When `respawn` option is disabled, you can call this method manually to respawn.
 
 ### Lower level inventory methods
 
