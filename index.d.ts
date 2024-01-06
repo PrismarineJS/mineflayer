@@ -64,6 +64,7 @@ export interface BotEvents {
   unmatchedMessage: (stringMsg: string, jsonMsg: ChatMessage) => Promise<void> | void
   inject_allowed: () => Promise<void> | void
   login: () => Promise<void> | void
+  /** When `respawn` option is disabled, you can call this method manually to respawn. */
   spawn: () => Promise<void> | void
   respawn: () => Promise<void> | void
   game: () => Promise<void> | void

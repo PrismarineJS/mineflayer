@@ -2101,6 +2101,10 @@ The list of available features can be found inside the [./lib/features.json](htt
 
 This is a promise-based function that waits for a given number of in-game ticks to pass before continuing. This is useful for quick timers that need to function with specific timing, regardless of the given physics tick speed of the bot. This is similar to the standard Javascript setTimeout function, but runs on the physics timer of the bot specifically.
 
+#### bot.respawn()
+
+When `respawn` option is disabled, you can call this method manually to respawn.
+
 ### Lower level inventory methods
 
 These are lower level methods for the inventory, they can be useful sometimes but prefer the inventory methods presented above if you can.
