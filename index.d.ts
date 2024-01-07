@@ -10,6 +10,7 @@ import { Entity } from 'prismarine-entity'
 import { ChatMessage } from 'prismarine-chat'
 import { world } from 'prismarine-world'
 import { Registry } from 'prismarine-registry'
+import { IndexedData } from 'minecraft-data'
 
 export function createBot (options: { client: Client } & Partial<BotOptions>): Bot
 export function createBot (options: BotOptions): Bot
@@ -26,6 +27,8 @@ export interface BotOptions extends ClientOptions {
   difficulty?: number
   chatLengthLimit?: number
   physicsEnabled?: boolean
+  /** @default 4 */
+  maxCatchupTicks?: number
   client?: Client
   brand?: string
   defaultChatPatterns?: boolean
@@ -64,6 +67,7 @@ export interface BotEvents {
   unmatchedMessage: (stringMsg: string, jsonMsg: ChatMessage) => Promise<void> | void
   inject_allowed: () => Promise<void> | void
   login: () => Promise<void> | void
+  /** When `respawn` option is disabled, you can call this method manually to respawn. */
   spawn: () => Promise<void> | void
   respawn: () => Promise<void> | void
   game: () => Promise<void> | void
@@ -205,7 +209,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   connect: (options: BotOptions) => void
 
-  supportFeature: (feature: string) => boolean
+  supportFeature: IndexedData['supportFeature']
 
   end: (reason?: string) => void
 
@@ -425,6 +429,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
   acceptResourcePack: () => void
 
   denyResourcePack: () => void
+
+  respawn: () => void
 }
 
 export interface simpleClick {
