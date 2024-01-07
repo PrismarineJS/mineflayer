@@ -59,7 +59,7 @@ module.exports = (version) => {
     }
 
     // Get back to the overworld
-    bot.test.sayEverywhere(`/tp ~ 128 ~`)
+    bot.test.sayEverywhere('/tp ~ 128 ~')
     await onceWithCleanup(bot, 'forcedMove')
     await sleep(1000)
     bot.test.sayEverywhere('/setblock ~ ~ ~ portal')
@@ -82,7 +82,7 @@ module.exports = (version) => {
 
     // Get back to the overworld
     await bot.test.resetNetherRoofToBedrock()
-    bot.test.sayEverywhere(`/tp ~ 128 ~`)
+    bot.test.sayEverywhere('/tp ~ 128 ~')
     await onceWithCleanup(bot, 'forcedMove')
     await sleep(1000)
     bot.test.sayEverywhere('/setblock ~ ~ ~ portal')
