@@ -35,7 +35,7 @@
  
 ## Установка
 
-Сначала установите Node.js >= 14 из [nodejs.org](https://nodejs.org/), затем выполните:
+Сначала установите Node.js >= 18 из [nodejs.org](https://nodejs.org/), затем выполните:
 
 `npm install mineflayer`
 

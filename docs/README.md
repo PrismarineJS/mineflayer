@@ -35,7 +35,7 @@ First time using Node.js? You may want to start with the [tutorial](tutorial.md)
 
 ## Installation
 
-First install Node.js >= 14 from [nodejs.org](https://nodejs.org/) then:
+First install Node.js >= 18 from [nodejs.org](https://nodejs.org/) then:
 
 `npm install mineflayer`
 
