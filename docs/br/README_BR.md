@@ -33,7 +33,7 @@ Primeira vez usando o Node.js? Você pode querer começar com o tutorial [tutori
 - Dê uma olhada em nossos [projetos atuais](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects)
 
 ## Instalação
-- Primeiro, instale o Node.js >= 14 a partir do [nodejs.org](https://nodejs.org/)
+- Primeiro, instale o Node.js >= 18 a partir do [nodejs.org](https://nodejs.org/)
 
 `npm install mineflayer`
 

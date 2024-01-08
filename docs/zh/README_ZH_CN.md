@@ -36,7 +36,7 @@
 
 ## 安装
 
-首先，从 [nodejs.org](https://nodejs.org/) 安装 nodejs（版本要求 >= 14），
+首先，从 [nodejs.org](https://nodejs.org/) 安装 nodejs（版本要求 >= 18），
 
 然后在你创建的bot项目目录中，使用命令行运行：
 

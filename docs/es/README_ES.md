@@ -34,7 +34,7 @@ Crea bots para Minecraft con una API de JavaScript potente, estable y de alto ni
 Echa un vistazo a nuestros [proyectos actuales](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects)
 
 ## Instalación
-Primero instala Node.js >= 14 desde [nodejs.org](https://nodejs.org/)
+Primero instala Node.js >= 18 desde [nodejs.org](https://nodejs.org/)
 
 `npm install mineflayer`
 
