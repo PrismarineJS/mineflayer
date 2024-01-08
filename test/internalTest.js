@@ -636,6 +636,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             client.write('spawn_entity', {
               entityId: 56,
               objectUUID: '1-2-3-4',
+              type: bot.registry.entitiesByName.player.internalId,
               x: 1,
               y: 2,
               z: 3,
@@ -714,17 +715,34 @@ for (const supportedVersion of mineflayer.testedVersions) {
             })
           }
 
-          client.write('named_entity_spawn', {
-            entityId: 56,
-            playerUUID: '1-2-3-4',
-            x: 1,
-            y: 2,
-            z: 3,
-            yaw: 0,
-            pitch: 0,
-            currentItem: -1,
-            metadata: []
-          })
+          if (bot.registry.version['>=']('1.20.2')) {
+            client.write('spawn_entity', {
+              entityId: 56,
+              objectUUID: '1-2-3-4',
+              x: 1,
+              y: 2,
+              z: 3,
+              pitch: 0,
+              yaw: 0,
+              headPitch: 0,
+              objectData: 1,
+              velocityX: 0,
+              velocityY: 0,
+              velocityZ: 0
+            })
+          } else {
+            client.write('named_entity_spawn', {
+              entityId: 56,
+              playerUUID: '1-2-3-4',
+              x: 1,
+              y: 2,
+              z: 3,
+              yaw: 0,
+              pitch: 0,
+              currentItem: -1,
+              metadata: []
+            })
+          }
         })
       })
 
