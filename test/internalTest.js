@@ -632,7 +632,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             })
           }
 
-          if (bot.registry.version['>=']('1.20.2')) {
+          if (bot.registry.supportFeature('unifiedPlayerAndEntitySpawnPacket')) {
             client.write('spawn_entity', {
               entityId: 56,
               objectUUID: '1-2-3-4',
@@ -715,10 +715,11 @@ for (const supportedVersion of mineflayer.testedVersions) {
             })
           }
 
-          if (bot.registry.version['>=']('1.20.2')) {
+          if (bot.registry.supportFeature('unifiedPlayerAndEntitySpawnPacket')) {
             client.write('spawn_entity', {
               entityId: 56,
               objectUUID: '1-2-3-4',
+              type: bot.registry.entitiesByName.player.internalId,
               x: 1,
               y: 2,
               z: 3,
