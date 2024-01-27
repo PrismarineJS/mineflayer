@@ -245,7 +245,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
   tabComplete: (
     str: string,
     assumeCommand?: boolean,
-    sendBlockInSight?: boolean
+    sendBlockInSight?: boolean,
+    timeout?: number
   ) => Promise<string[]>
 
   chat: (message: string) => void

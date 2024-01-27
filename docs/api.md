@@ -225,7 +225,7 @@
       - ["blockBreakProgressEnd" (block, entity)](#blockbreakprogressend-block-entity)
       - ["diggingCompleted" (block)](#diggingcompleted-block)
       - ["diggingAborted" (block)](#diggingaborted-block)
-      - ["usedfirework"](#usedfirework)
+      - ["usedFirework" (fireworkEntityId)](#usedfirework-fireworkentityid)
       - ["move"](#move)
       - ["forcedMove"](#forcedmove)
       - ["mount"](#mount)
@@ -270,7 +270,7 @@
     - [Methods](#methods)
       - [bot.end(reason)](#botendreason)
       - [bot.quit(reason)](#botquitreason)
-      - [bot.tabComplete(str, [assumeCommand], [sendBlockInSight])](#bottabcompletestr-assumecommand-sendblockinsight)
+      - [bot.tabComplete(str, [assumeCommand], [sendBlockInSight], [timeout])](#bottabcompletestr-assumecommand-sendblockinsight-timeout)
       - [bot.chat(message)](#botchatmessage)
       - [bot.whisper(username, message)](#botwhisperusername-message)
       - [bot.chatAddPattern(pattern, chatType, description)](#botchataddpatternpattern-chattype-description)
@@ -1649,7 +1649,7 @@ End the connection with the server.
 
 Gracefully disconnect from the server with the given reason (defaults to 'disconnect.quitting').
 
-#### bot.tabComplete(str, [assumeCommand], [sendBlockInSight])
+#### bot.tabComplete(str, [assumeCommand], [sendBlockInSight], [timeout])
 
 This function returns a `Promise`, with `matches` as its argument upon completion.
 
@@ -1657,6 +1657,7 @@ Requests chat completion from the server.
  * `str` - String to complete.
  * `assumeCommand` - Field sent to server, defaults to false.
  * `sendBlockInSight` - Field sent to server, defaults to true. Set this option to false if you want more performance.
+ * `timeout` - Timeout in milliseconds, after which the function will return an ampty array, defaults to 5000.
 
 #### bot.chat(message)
 
