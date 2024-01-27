@@ -1657,7 +1657,7 @@ Requests chat completion from the server.
  * `str` - String to complete.
  * `assumeCommand` - Field sent to server, defaults to false.
  * `sendBlockInSight` - Field sent to server, defaults to true. Set this option to false if you want more performance.
- * `timeout` - Timeout in milliseconds, after which the function will return an ampty array, defaults to 100.
+ * `timeout` - Timeout in milliseconds, after which the function will return an ampty array. Defaults to 'auto' which will set it based on the bot ping.
 
 #### bot.chat(message)
 
