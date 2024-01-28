@@ -37,9 +37,14 @@ First time using Node.js? You may want to start with the [tutorial](tutorial.md)
 
 First install Node.js >= 18 from [nodejs.org](https://nodejs.org/) then:
 
-`npm install mineflayer`
+```bash
+npm install mineflayer
+```
 
-To update mineflayer (or any Node.js) package and its dependencies, use `npm update --depth 9999`
+To update mineflayer (or any Node.js) package and its dependencies, use 
+```bash
+npm update --depth 9999
+```
 
 ## Documentation
 
@@ -248,17 +253,36 @@ The most updated and useful are :
 
 ### Testing everything
 
-Simply run: `npm test`
+Simply run: 
+
+```bash
+npm test
+```
 
 ### Testing specific version
-Run `npm run mocha_test -- -g <version>`, where `<version>` is a minecraft version like `1.12`, `1.15.2`...
+Run 
+
+```bash
+npm run mocha_test -- -g <version>
+```
+
+where `<version>` is a minecraft version like `1.12`, `1.15.2`...
 
 ### Testing specific test
-Run `npm run mocha_test -- -g <test_name>`, where `<test_name>` is a name of the test like `bed`, `useChests`, `rayTrace`...
+Run 
+
+```bash
+npm run mocha_test -- -g <test_name>
+```
+
+where `<test_name>` is a name of the test like `bed`, `useChests`, `rayTrace`...
 
 ### Example
 
-`npm run mocha_test -- -g "1.18.1.*BlockFinder"` to run the block finder test for 1.18.1
+```bash
+npm run mocha_test -- -g "1.18.1.*BlockFinder"
+```
+to run the block finder test for 1.18.1
 
 ## License
 
