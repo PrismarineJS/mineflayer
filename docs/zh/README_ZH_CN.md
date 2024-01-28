@@ -228,20 +228,39 @@ mineflayer 支持插件；任何人都可以创建一个插件，在 mineflayer 
 
 ### 完整测试
 
-运行：`npm test`
+运行
+```bash
+npm test
+````
 
 ### 测试指定版本
 
-运行 `npm mocha_test -- -g <version>`, 其中 `<version>` 表示 minecraft 版本号 如 `1.12`, `1.15.2`...
+运行 
+
+```bash
+npm mocha_test -- -g <version>
+```
+
+其中 `<version>` 表示 minecraft 版本号 如 `1.12`, `1.15.2`...
 
 ### 测试指定测试脚本
 
-运行 `npm mocha_test -- -g <test_name>`，其中 `<test_name>` 是测试名称，例如 `bed`, `useChests`, `rayTrace`...
+运行 
+
+```bash
+npm mocha_test -- -g <test_name>
+```
+
+其中 `<test_name>` 是测试名称，例如 `bed`, `useChests`, `rayTrace`...
 
 ### 示例
 
-`npm run mocha_test -- -g "1.18.1.*BlockFinder"` 进行 1.18.1 寻路测试
+```bash
+npm run mocha_test -- -g "1.18.1.*BlockFinder"
+```
+
+进行 1.18.1 寻路测试
 
 ## 许可证
 
-[MIT](../LICENSE)
+[MIT](../../LICENSE)
