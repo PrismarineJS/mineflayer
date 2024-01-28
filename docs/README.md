@@ -85,11 +85,11 @@ const mineflayer = require('mineflayer')
 
 const bot = mineflayer.createBot({
   host: 'localhost', // minecraft server ip
-  username: 'Bot', // username or email, switch if you want to change accounts
+  username: 'Bot', // username to join as if auth is `offline`, else a unique identifier for caching. Switch if you want to change accounts
   auth: 'microsoft' // for offline mode servers, you can set this to 'offline'
-  // port: 25565,                // only set if you need a port that isn't 25565
-  // version: false,             // only set if you need a specific version or snapshot (ie: "1.8.9" or "1.16.5"), otherwise it's set automatically
-  // password: '12345678'        // set if you want to use password-based auth (may be unreliable). If specified, the `username` must be an email
+  // port: 25565,              // set if you need a port that isn't 25565
+  // version: false,           // only set if you need a specific version or snapshot (ie: "1.8.9" or "1.16.5"), otherwise it's set automatically
+  // password: '12345678'      // set if you want to use password-based auth (may be unreliable). If specified, the `username` must be an email
 })
 
 bot.on('chat', (username, message) => {
@@ -103,9 +103,10 @@ bot.on('error', console.log)
 ```
 
 If `auth` is set to `microsoft`, you will be prompted to login to microsoft.com with a code in your browser. After signing in on your browser, 
-the bot will automatically obtain and cache authentication tokens in the local file system so you don't have to sign-in again. 
-To switch the account, update the supplied `username`. By default, cached tokens will be stored in your user's .minecraft folder.
-For more information on these options and others, see node-minecraft-protocol's [API doc](https://github.com/PrismarineJS/node-minecraft-protocol/blob/master/docs/API.md#mccreateclientoptions).
+the bot will automatically obtain and cache authentication tokens (under your specified username) so you don't have to sign-in again. 
+
+To switch the account, update the supplied `username`. By default, cached tokens will be stored in your user's .minecraft folder, or if `profilesFolder` is specified, they'll instead be stored there.
+For more information on bot options see node-minecraft-protocol's [API doc](https://github.com/PrismarineJS/node-minecraft-protocol/blob/master/docs/API.md#mccreateclientoptions).
 
 #### Connecting to a Realm
 
