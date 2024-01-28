@@ -213,17 +213,33 @@ Pero también echa un vistazo a:
 
 ### Ejecuta todas las pruebas
 
-Simplemente ejecuta: `npm test`
+Simplemente ejecuta:
+
+```bash
+npm test
+```
 
 ### Ejecuta pruebas para una versión específica de Minecraft
-Ejecuta `npm test -- -g <version>`, donde `<version>` es una versión de minecraft como `1.12`, `1.15.2`...
+
+Ejecuta
+```bash
+npm test -- -g <version>
+```
+
+donde `<version>` es una versión de minecraft como `1.12`, `1.15.2`...
 
 ### Ejecuta una prueba específica
-Ejecuta `npm test -- -g <test_name>`, donde `<test_name>` es el nombre de la prueba que quieres ejecutar como `bed`, `useChests`, `rayTrace`...
+
+Ejecuta
+```bash
+npm test -- -g <test_name>
+```
+
+donde `<test_name>` es el nombre de la prueba que quieres ejecutar como `bed`, `useChests`, `rayTrace`...
 
 ## Licencia
 
-[MIT](LICENSE)
+[MIT](../../LICENSE)
 
 
 Esta documentación no está mantenida oficialmente, si quiere ver las últimas novedades, por favor dirijase a la documentación original: [unstable_api](../README.md)
