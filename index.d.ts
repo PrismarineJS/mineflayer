@@ -194,6 +194,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   isSleeping: boolean
   scoreboards: { [name: string]: ScoreBoard }
   scoreboard: { [slot in DisplaySlot]: ScoreBoard }
+  teams: { [name: string]: Team }
   teamMap: { [name: string]: Team }
   controlState: ControlStateStatus
   creative: creativeMethods
@@ -245,7 +246,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
   tabComplete: (
     str: string,
     assumeCommand?: boolean,
-    sendBlockInSight?: boolean
+    sendBlockInSight?: boolean,
+    timeout?: number
   ) => Promise<string[]>
 
   chat: (message: string) => void
@@ -779,7 +781,7 @@ export class ScoreBoard {
 
   setTitle (title: string): void;
 
-  add (name: string, value: number, displayName: ChatMessage): ScoreBoardItem;
+  add(name: string, value: number): ScoreBoardItem;
 
   remove (name: string): ScoreBoardItem;
 }
@@ -791,6 +793,7 @@ export interface ScoreBoardItem {
 }
 
 export class Team {
+  team: string
   name: ChatMessage
   friendlyFire: number
   nameTagVisibility: string
@@ -798,8 +801,10 @@ export class Team {
   color: string
   prefix: ChatMessage
   suffix: ChatMessage
+  memberMap: { [name: string]: '' }
+  members: string[]
 
-  constructor (packet: object);
+  constructor(team: string, name: string, friendlyFire: boolean, nameTagVisibility: string, collisionRule: string, formatting: number, prefix: string, suffix: string);
 
   parseMessage (value: string): ChatMessage;
 
@@ -841,6 +846,7 @@ export class BossBar {
   color: 'pink' | 'blue' | 'red' | 'green' | 'yellow' | 'purple' | 'white'
   shouldDarkenSky: boolean
   isDragonBar: boolean
+  createFog: boolean
   shouldCreateFog: boolean
 
   constructor (
@@ -854,23 +860,22 @@ export class BossBar {
 }
 
 export class Particle {
-    id: number
-    name: string
-    position: Vec3
-    offset: Vec3
-    count: number
-    movementSpeed: number
-    longDistanceRender: boolean
-    static fromNetwork(packet: Object): Particle
+  id: number
+  position: Vec3
+  offset: Vec3
+  count: number
+  movementSpeed: number
+  longDistanceRender: boolean
+  static fromNetwork(packet: Object): Particle
 
-    constructor (
-        id: number,
-        position: Vec3,
-        offset: Vec3,
-        count?: number,
-        movementSpeed?: number,
-        longDistanceRender?: boolean
-    );
+  constructor(
+    id: number,
+    position: Vec3,
+    offset: Vec3,
+    count?: number,
+    movementSpeed?: number,
+    longDistanceRender?: boolean
+  );
 }
 
 export let testedVersions: string[]
