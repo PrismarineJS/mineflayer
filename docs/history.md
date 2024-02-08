@@ -1,3 +1,14 @@
+## 4.19.0
+* [Clarify readme createBot username handling (#3300)](https://github.com/PrismarineJS/mineflayer/commit/7a2680bc07f53d16626679537ea1f07aae180549) (thanks @extremeheat)
+* [fix world typing (#3302)](https://github.com/PrismarineJS/mineflayer/commit/5dc36d6cdeaf4be72ea023827d45b9d78e575f66) (thanks @GenerelSchwerz)
+* [modified the README.md files for other languages and fixed a linking issue at those files. (#3297)](https://github.com/PrismarineJS/mineflayer/commit/cc98f1307e3ab48477d2a9ff29da4447f42b30bc) (thanks @Axwaizee)
+* [formatted docs/README.md for easy copy (#3295)](https://github.com/PrismarineJS/mineflayer/commit/468c8aa9d382a7872ec991c3b834b98cbe495e8d) (thanks @Axwaizee)
+* [Added missing bot.teams definition (#3294)](https://github.com/PrismarineJS/mineflayer/commit/fb8ee7aa619bd38cc97d5dbd870bb11455d51d39) (thanks @Ynfuien)
+* [Timeout for bot.tabComplete() (#3293)](https://github.com/PrismarineJS/mineflayer/commit/4231a169d579d08ac7b9ec0694e18b1f6ac837ea) (thanks @Ynfuien)
+* [:label: Update types to be updated with what's in JavaScript (#3287)](https://github.com/PrismarineJS/mineflayer/commit/210785e86c031f7e3323d7d2ffe5152d2d4a5eb6) (thanks @fantomitechno)
+* [Fixed some typo (#3290)](https://github.com/PrismarineJS/mineflayer/commit/ba53a953d03a6edb34aa5bf38bccde58e65d816d) (thanks @SilianZ)
+* [Updated digging code to account for raycasted tall grass checks (#3285)](https://github.com/PrismarineJS/mineflayer/commit/bd0fb5c4d3b665f264009f62f9288828f3018cea) (thanks @GenerelSchwerz)
+
 ## 4.18.0
 * [Minecraft 1.20.2 support (#3262)](https://github.com/PrismarineJS/mineflayer/commit/2ff9919760d714be57dcb678f8ab5ecff69f5fee) (thanks @rom1504)
 * [Update recommended Node.js version (#3279)](https://github.com/PrismarineJS/mineflayer/commit/5c71edf48bb2f2dfa16cddb9af5baa0c4d55cf0d) (thanks @Nyaasu66)
