@@ -198,7 +198,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   teamMap: { [name: string]: Team }
   controlState: ControlStateStatus
   creative: creativeMethods
-  world: world.World
+  world: world.WorldSync
   _client: Client
   heldItem: Item | null
   usingHeldItem: boolean
