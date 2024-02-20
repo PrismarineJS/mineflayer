@@ -88,6 +88,6 @@ docs/api.md 的内容是用doctoc制作的。更新该文件后，应运行 `doc
 
 没有doctoc命令使用下面的命令安装
 
-```
+```bash
 npm install -g doctoc
 ```

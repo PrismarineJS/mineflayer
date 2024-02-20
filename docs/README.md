@@ -17,7 +17,7 @@ First time using Node.js? You may want to start with the [tutorial](tutorial.md)
 
 ## Features
 
- * Supports Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 and 1.20.
+ * Supports Minecraft 1.8 to 1.20.2 (1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 and 1.20)
  * Entity knowledge and tracking.
  * Block knowledge. You can query the world around you. Milliseconds to find any block.
  * Physics and movement - handle all bounding boxes
@@ -35,11 +35,16 @@ First time using Node.js? You may want to start with the [tutorial](tutorial.md)
 
 ## Installation
 
-First install Node.js >= 14 from [nodejs.org](https://nodejs.org/) then:
+First install Node.js >= 18 from [nodejs.org](https://nodejs.org/) then:
 
-`npm install mineflayer`
+```bash
+npm install mineflayer
+```
 
-To update mineflayer (or any Node.js) package and its dependencies, use `npm update --depth 9999`
+To update mineflayer (or any Node.js) package and its dependencies, use 
+```bash
+npm update --depth 9999
+```
 
 ## Documentation
 
@@ -80,11 +85,11 @@ const mineflayer = require('mineflayer')
 
 const bot = mineflayer.createBot({
   host: 'localhost', // minecraft server ip
-  username: 'Bot', // username or email, switch if you want to change accounts
+  username: 'Bot', // username to join as if auth is `offline`, else a unique identifier for this account. Switch if you want to change accounts
   auth: 'microsoft' // for offline mode servers, you can set this to 'offline'
-  // port: 25565,                // only set if you need a port that isn't 25565
-  // version: false,             // only set if you need a specific version or snapshot (ie: "1.8.9" or "1.16.5"), otherwise it's set automatically
-  // password: '12345678'        // set if you want to use password-based auth (may be unreliable). If specified, the `username` must be an email
+  // port: 25565,              // set if you need a port that isn't 25565
+  // version: false,           // only set if you need a specific version or snapshot (ie: "1.8.9" or "1.16.5"), otherwise it's set automatically
+  // password: '12345678'      // set if you want to use password-based auth (may be unreliable). If specified, the `username` must be an email
 })
 
 bot.on('chat', (username, message) => {
@@ -98,9 +103,10 @@ bot.on('error', console.log)
 ```
 
 If `auth` is set to `microsoft`, you will be prompted to login to microsoft.com with a code in your browser. After signing in on your browser, 
-the bot will automatically obtain and cache authentication tokens in the local file system so you don't have to sign-in again. 
-To switch the account, update the supplied `username`. By default, cached tokens will be stored in your user's .minecraft folder.
-For more information on these options and others, see node-minecraft-protocol's [API doc](https://github.com/PrismarineJS/node-minecraft-protocol/blob/master/docs/API.md#mccreateclientoptions).
+the bot will automatically obtain and cache authentication tokens (under your specified username) so you don't have to sign-in again. 
+
+To switch the account, update the supplied `username`. By default, cached tokens will be stored in your user's .minecraft folder, or if `profilesFolder` is specified, they'll instead be stored there.
+For more information on bot options see node-minecraft-protocol's [API doc](https://github.com/PrismarineJS/node-minecraft-protocol/blob/master/docs/API.md#mccreateclientoptions).
 
 #### Connecting to a Realm
 
@@ -248,17 +254,36 @@ The most updated and useful are :
 
 ### Testing everything
 
-Simply run: `npm test`
+Simply run: 
+
+```bash
+npm test
+```
 
 ### Testing specific version
-Run `npm run mocha_test -- -g <version>`, where `<version>` is a minecraft version like `1.12`, `1.15.2`...
+Run 
+
+```bash
+npm run mocha_test -- -g <version>
+```
+
+where `<version>` is a minecraft version like `1.12`, `1.15.2`...
 
 ### Testing specific test
-Run `npm run mocha_test -- -g <test_name>`, where `<test_name>` is a name of the test like `bed`, `useChests`, `rayTrace`...
+Run 
+
+```bash
+npm run mocha_test -- -g <test_name>
+```
+
+where `<test_name>` is a name of the test like `bed`, `useChests`, `rayTrace`...
 
 ### Example
 
-`npm run mocha_test -- -g "1.18.1.*BlockFinder"` to run the block finder test for 1.18.1
+```bash
+npm run mocha_test -- -g "1.18.1.*BlockFinder"
+```
+to run the block finder test for 1.18.1
 
 ## License
 

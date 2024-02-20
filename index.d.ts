@@ -10,6 +10,7 @@ import { Entity } from 'prismarine-entity'
 import { ChatMessage } from 'prismarine-chat'
 import { world } from 'prismarine-world'
 import { Registry } from 'prismarine-registry'
+import { IndexedData } from 'minecraft-data'
 
 export function createBot (options: { client: Client } & Partial<BotOptions>): Bot
 export function createBot (options: BotOptions): Bot
@@ -26,6 +27,8 @@ export interface BotOptions extends ClientOptions {
   difficulty?: number
   chatLengthLimit?: number
   physicsEnabled?: boolean
+  /** @default 4 */
+  maxCatchupTicks?: number
   client?: Client
   brand?: string
   defaultChatPatterns?: boolean
@@ -64,6 +67,7 @@ export interface BotEvents {
   unmatchedMessage: (stringMsg: string, jsonMsg: ChatMessage) => Promise<void> | void
   inject_allowed: () => Promise<void> | void
   login: () => Promise<void> | void
+  /** When `respawn` option is disabled, you can call this method manually to respawn. */
   spawn: () => Promise<void> | void
   respawn: () => Promise<void> | void
   game: () => Promise<void> | void
@@ -190,10 +194,11 @@ export interface Bot extends TypedEmitter<BotEvents> {
   isSleeping: boolean
   scoreboards: { [name: string]: ScoreBoard }
   scoreboard: { [slot in DisplaySlot]: ScoreBoard }
+  teams: { [name: string]: Team }
   teamMap: { [name: string]: Team }
   controlState: ControlStateStatus
   creative: creativeMethods
-  world: world.World
+  world: world.WorldSync
   _client: Client
   heldItem: Item | null
   usingHeldItem: boolean
@@ -204,7 +209,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   connect: (options: BotOptions) => void
 
-  supportFeature: (feature: string) => boolean
+  supportFeature: IndexedData['supportFeature']
 
   end: (reason?: string) => void
 
@@ -241,7 +246,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
   tabComplete: (
     str: string,
     assumeCommand?: boolean,
-    sendBlockInSight?: boolean
+    sendBlockInSight?: boolean,
+    timeout?: number
   ) => Promise<string[]>
 
   chat: (message: string) => void
@@ -424,6 +430,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
   acceptResourcePack: () => void
 
   denyResourcePack: () => void
+
+  respawn: () => void
 }
 
 export interface simpleClick {
@@ -773,7 +781,7 @@ export class ScoreBoard {
 
   setTitle (title: string): void;
 
-  add (name: string, value: number, displayName: ChatMessage): ScoreBoardItem;
+  add(name: string, value: number): ScoreBoardItem;
 
   remove (name: string): ScoreBoardItem;
 }
@@ -785,6 +793,7 @@ export interface ScoreBoardItem {
 }
 
 export class Team {
+  team: string
   name: ChatMessage
   friendlyFire: number
   nameTagVisibility: string
@@ -792,8 +801,10 @@ export class Team {
   color: string
   prefix: ChatMessage
   suffix: ChatMessage
+  memberMap: { [name: string]: '' }
+  members: string[]
 
-  constructor (packet: object);
+  constructor(team: string, name: string, friendlyFire: boolean, nameTagVisibility: string, collisionRule: string, formatting: number, prefix: string, suffix: string);
 
   parseMessage (value: string): ChatMessage;
 
@@ -835,6 +846,7 @@ export class BossBar {
   color: 'pink' | 'blue' | 'red' | 'green' | 'yellow' | 'purple' | 'white'
   shouldDarkenSky: boolean
   isDragonBar: boolean
+  createFog: boolean
   shouldCreateFog: boolean
 
   constructor (
@@ -848,26 +860,26 @@ export class BossBar {
 }
 
 export class Particle {
-    id: number
-    name: string
-    position: Vec3
-    offset: Vec3
-    count: number
-    movementSpeed: number
-    longDistanceRender: boolean
-    static fromNetwork(packet: Object): Particle
+  id: number
+  position: Vec3
+  offset: Vec3
+  count: number
+  movementSpeed: number
+  longDistanceRender: boolean
+  static fromNetwork(packet: Object): Particle
 
-    constructor (
-        id: number,
-        position: Vec3,
-        offset: Vec3,
-        count?: number,
-        movementSpeed?: number,
-        longDistanceRender?: boolean
-    );
+  constructor(
+    id: number,
+    position: Vec3,
+    offset: Vec3,
+    count?: number,
+    movementSpeed?: number,
+    longDistanceRender?: boolean
+  );
 }
 
-export let supportedVersions: string[]
 export let testedVersions: string[]
+export let latestSupportedVersion: string
+export let oldestSupportedVersion: string
 
 export function supportFeature (feature: string, version: string): boolean

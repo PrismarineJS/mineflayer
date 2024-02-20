@@ -193,10 +193,14 @@ function inject (bot) {
     const closeExample = async (err) => {
       console.log('kill process ' + child.pid)
 
-      process.kill(child.pid, 'SIGTERM')
-
-      const [code] = await once(child, 'close')
-      console.log('close requested', code)
+      try {
+        process.kill(child.pid, 'SIGTERM')
+        const [code] = await onceWithCleanup(child, 'close', { timeout: 1000 })
+        console.log('close requested', code)
+      } catch (e) {
+        console.log(e)
+        console.log('process termination failed, process may already be closed')
+      }
 
       if (err) {
         throw err
