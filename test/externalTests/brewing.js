@@ -21,9 +21,7 @@ module.exports = () => async (bot) => {
   await bot.test.setInventorySlot(39, wbottle)
   await bot.test.setInventorySlot(40, new Item(bot.registry.itemsByName.nether_wart.id, 1))
   await bot.test.setInventorySlot(41, new Item(bot.registry.itemsByName.ghast_tear.id, 1))
-  if (bot.registry.isNewerOrEqualTo('1.9')) {
-    await bot.test.setInventorySlot(44, new Item(bot.registry.itemsByName.blaze_powder.id, 1))
-  }
+  await bot.test.setInventorySlot(44, new Item(bot.registry.itemsByName.blaze_powder.id, 1))
 
   await bot.test.becomeSurvival()
 
@@ -42,10 +40,8 @@ module.exports = () => async (bot) => {
   }
 
   // put in fuel
-  if (bot.registry.isNewerOrEqualTo('1.9')) {
-    const blaze = brewingStand.findInventoryItem(bot.registry.itemsByName.blaze_powder.id)
-    await brewingStand.putFuel(blaze.type, null, 1)
-  }
+  const blaze = brewingStand.findInventoryItem(bot.registry.itemsByName.blaze_powder.id)
+  await brewingStand.putFuel(blaze.type, null, 1)
 
   // brew ingredients, waiting in between
   const wart = brewingStand.findInventoryItem(bot.registry.itemsByName.nether_wart.id)
