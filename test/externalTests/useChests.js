@@ -1,7 +1,6 @@
 const { Vec3 } = require('vec3')
 const assert = require('assert')
-const { once } = require('events')
-const { onceWithCleanup } = require('../../lib/promise_utils')
+const { once, onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
