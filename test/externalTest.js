@@ -68,7 +68,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         bot.once('spawn', () => {
           wrap.writeServer('op flatbot\n')
           bot.once('messagestr', msg => {
-            if (msg === '[Server: Made flatbot a server operator]' || msg === '[Server: Opped flatbot]') {
+            if (msg.includes('Made flatbot a server operator') || msg === '[Server: Opped flatbot]') {
               done()
             }
           })
