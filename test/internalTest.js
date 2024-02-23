@@ -16,7 +16,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
   function chatText (text) {
     // TODO: move this to prismarine-chat in a new ChatMessage(text).toNotch(asNbt) method
     return registry.supportFeature('chatPacketsUseNbtComponents')
-      ? nbt.comp({ text })
+      ? nbt.comp({ text: nbt.string(text) })
       : JSON.stringify({ text })
   }
 
