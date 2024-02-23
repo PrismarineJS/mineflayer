@@ -128,7 +128,7 @@ module.exports = () => async (bot) => {
   await withdrawBones(largeTrappedChestLocations[0], 2)
 
   const itemsWithStackSize = {
-    64: ['stone', 'grass'],
+    64: ['stone', 'mycelium'],
     16: ['ender_pearl', 'egg'],
     1: ['fishing_rod', 'bow']
   }
