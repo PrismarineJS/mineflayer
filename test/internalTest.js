@@ -16,7 +16,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
   function chatText (text) {
     // TODO: move this to prismarine-chat in a new ChatMessage(text).toNotch(asNbt) method
     return registry.supportFeature('chatPacketsUseNbtComponents')
-      ? nbt.comp({ text: nbt.string(text) })
+      ? nbt.comp({ text: nbt.string(text),  })
       : JSON.stringify({ text })
   }
 
@@ -988,7 +988,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
       it('handles newlines in header and footer', (done) => {
         const HEADER = 'asd\ndsa'
         const FOOTER = '\nas\nas\nas\n'
-
         bot._client.on('playerlist_header', (packet) => {
           setImmediate(() => {
             assert.strictEqual(bot.tablist.header.toString(), HEADER)
@@ -996,13 +995,22 @@ for (const supportedVersion of mineflayer.testedVersions) {
             done()
           })
         })
-
-        server.on('playerJoin', (client) => {
-          client.write('playerlist_header', {
-            header: JSON.stringify({ text: '', extra: [{ text: HEADER, color: 'yellow' }] }),
-            footer: JSON.stringify({ text: '', extra: [{ text: FOOTER, color: 'yellow' }] })
+        // TODO: figure out how the "extra" should be encoded in NBT so this branch can be removed
+        if (registry.supportFeature('chatPacketsUseNbtComponents')) {
+          server.on('playerJoin', (client) => {
+            client.write('playerlist_header', {
+              header: chatText(HEADER),
+              footer: chatText(FOOTER)
+            })
           })
-        })
+        } else {
+          server.on('playerJoin', (client) => {
+            client.write('playerlist_header', {
+              header: JSON.stringify({ text: '', extra: [{ text: HEADER, color: 'yellow' }] }),
+              footer: JSON.stringify({ text: '', extra: [{ text: FOOTER, color: 'yellow' }] })
+            })
+          })
+        }
       })
     })
   })
