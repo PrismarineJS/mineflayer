@@ -20,7 +20,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
       : JSON.stringify({ text })
   }
 
-
   function generateChunkPacket (chunk) {
     const lights = chunk.dumpLight()
     return {
