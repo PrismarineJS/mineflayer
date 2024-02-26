@@ -1,7 +1,6 @@
 const { Vec3 } = require('vec3')
 const assert = require('assert')
-const { once } = require('events')
-const { onceWithCleanup } = require('../../lib/promise_utils')
+const { once, onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
@@ -129,7 +128,7 @@ module.exports = () => async (bot) => {
   await withdrawBones(largeTrappedChestLocations[0], 2)
 
   const itemsWithStackSize = {
-    64: ['stone', 'grass'],
+    64: ['stone', 'mycelium'],
     16: ['ender_pearl', 'egg'],
     1: ['fishing_rod', 'bow']
   }
@@ -151,7 +150,9 @@ module.exports = () => async (bot) => {
 
     for (let slot = 0; slot < window.inventoryStart; slot++) {
       if (Math.random() < slotPopulationFactor) {
-        const item = bot.registry.itemsByName[getRandomStackableItem()]
+        const randomItem = getRandomStackableItem()
+        const item = bot.registry.itemsByName[randomItem]
+        console.log('createRandomLayout', randomItem, bot.registry.itemsByName)
         bot.chat(`/give ${bot.username} ${item.name} ${Math.ceil(Math.random() * item.stackSize)}`)
         await onceWithCleanup(window, 'updateSlot', { checkCondition: (slot, oldItem, newItem) => slot === window.hotbarStart && newItem?.name === item.name })
 

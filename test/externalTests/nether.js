@@ -1,6 +1,6 @@
 const assert = require('assert')
 const Vec3 = require('vec3')
-const { once } = require('events')
+const { once } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   // Test spawn event on death
