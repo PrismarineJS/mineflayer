@@ -5,12 +5,20 @@ const vec3 = require('vec3')
 const mc = require('minecraft-protocol')
 const assert = require('assert')
 const { sleep } = require('../lib/promise_utils')
+const nbt = require('prismarine-nbt')
 
 for (const supportedVersion of mineflayer.testedVersions) {
   const registry = require('prismarine-registry')(supportedVersion)
   const version = registry.version
   const Chunk = require('prismarine-chunk')(supportedVersion)
   const hasSignedChat = registry.supportFeature('signedChat')
+
+  function chatText (text) {
+    // TODO: move this to prismarine-chat in a new ChatMessage(text).toNotch(asNbt) method
+    return registry.supportFeature('chatPacketsUseNbtComponents')
+      ? nbt.comp({ text: nbt.string(text) })
+      : JSON.stringify({ text })
+  }
 
   function generateChunkPacket (chunk) {
     const lights = chunk.dumpLight()
@@ -119,13 +127,14 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
         if (hasSignedChat) {
           const uuid = 'd3527a0b-bc03-45d5-a878-2aafdd8c8a43' // random
+          const networkName = chatText('gary')
 
           if (registry.supportFeature('useChatSessions')) {
             client.write('player_chat', {
               plainMessage: 'hello',
               filterType: 0,
               type: 0,
-              networkName: JSON.stringify({ text: 'gary' }),
+              networkName,
               previousMessages: [],
               senderUuid: uuid,
               timestamp: Date.now(),
@@ -137,7 +146,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
               plainMessage: 'hello',
               filterType: 0,
               type: 0,
-              networkName: JSON.stringify({ text: 'gary' }),
+              networkName,
               previousMessages: [],
               senderUuid: uuid,
               timestamp: Date.now(),
@@ -539,7 +548,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
                   },
                   gamemode: 0,
                   latency: 0,
-                  displayName: '{"text":"wvffle"}'
+                  displayName: chatText('wvffle')
                 }]
               })
             } else {
@@ -556,7 +565,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
                   gamemode: 0,
                   ping: 0,
                   hasDisplayName: true,
-                  displayName: '{"text":"wvffle"}'
+                  displayName: chatText('wvffle')
                 }]
               })
             }
@@ -979,7 +988,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
       it('handles newlines in header and footer', (done) => {
         const HEADER = 'asd\ndsa'
         const FOOTER = '\nas\nas\nas\n'
-
         bot._client.on('playerlist_header', (packet) => {
           setImmediate(() => {
             assert.strictEqual(bot.tablist.header.toString(), HEADER)
@@ -987,13 +995,22 @@ for (const supportedVersion of mineflayer.testedVersions) {
             done()
           })
         })
-
-        server.on('playerJoin', (client) => {
-          client.write('playerlist_header', {
-            header: JSON.stringify({ text: '', extra: [{ text: HEADER, color: 'yellow' }] }),
-            footer: JSON.stringify({ text: '', extra: [{ text: FOOTER, color: 'yellow' }] })
+        // TODO: figure out how the "extra" should be encoded in NBT so this branch can be removed
+        if (registry.supportFeature('chatPacketsUseNbtComponents')) {
+          server.on('playerJoin', (client) => {
+            client.write('playerlist_header', {
+              header: chatText(HEADER),
+              footer: chatText(FOOTER)
+            })
           })
-        })
+        } else {
+          server.on('playerJoin', (client) => {
+            client.write('playerlist_header', {
+              header: JSON.stringify({ text: '', extra: [{ text: HEADER, color: 'yellow' }] }),
+              footer: JSON.stringify({ text: '', extra: [{ text: FOOTER, color: 'yellow' }] })
+            })
+          })
+        }
       })
     })
   })

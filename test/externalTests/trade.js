@@ -1,5 +1,5 @@
 const assert = require('assert')
-const { once } = require('events')
+const { once } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)

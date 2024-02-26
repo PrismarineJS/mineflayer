@@ -1774,6 +1774,8 @@ the event will be called `"chat:name"`, with name being the name passed
 
 returns a number which can be used with bot.removeChatPattern() to only delete this pattern
 
+- :eyes: cf. [examples/chat_parsing](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chat_parsing.js#L17-L36)
+
 #### bot.addChatPatternSet(name, patterns, chatPatternOptions)
 
 make an event that is called every time all patterns havee been matched to messages,
@@ -1785,6 +1787,8 @@ the event will be called `"chat:name"`, with name being the name passed
   * `parse` - instead of returning the actual message that was matched, return the capture groups from the regex
 
 returns a number which can be used with bot.removeChatPattern() to only delete this patternset
+
+- :eyes: cf. [examples/chat_parsing](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chat_parsing.js#L17-L36)
 
 #### bot.removeChatPattern(name)
 
