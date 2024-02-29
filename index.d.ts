@@ -160,7 +160,7 @@ export interface BotEvents {
   teamMemberRemoved: (team: Team) => Promise<void> | void
   bossBarDeleted: (bossBar: BossBar) => Promise<void> | void
   bossBarUpdated: (bossBar: BossBar) => Promise<void> | void
-  resourcePack: (url: string, hash: string) => Promise<void> | void
+  resourcePack: (url: string, hash?: string, uuid?: string) => Promise<void> | void
   particle: (particle: Particle) => Promise<void> | void
 }
 
