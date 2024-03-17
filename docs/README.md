@@ -8,8 +8,8 @@
 
 [![Official Discord](https://img.shields.io/static/v1.svg?label=OFFICIAL&message=DISCORD&color=blue&logo=discord&style=for-the-badge)](https://discord.gg/GsEFRM8)
 
-| <sub>EN</sub> [English](README.md) | <sub>RU</sub> [русский](ru/README_RU.md) | <sub>ES</sub> [Español](es/README_ES.md) | <sub>FR</sub> [Français](fr/README_FR.md) | <sub>TR</sub> [Türkçe](tr/README_TR.md) | <sub>ZH</sub> [中文](zh/README_ZH_CN.md) |
-|-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
+| <sub>EN</sub> [English](README.md) | <sub>RU</sub> [русский](ru/README_RU.md) | <sub>ES</sub> [Español](es/README_ES.md) | <sub>FR</sub> [Français](fr/README_FR.md) | <sub>TR</sub> [Türkçe](tr/README_TR.md) | <sub>ZH</sub> [中文](zh/README_ZH_CN.md) | <sub>BR</sub> [Português](br/README_BR.md) |
+|-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|-------------------------|--------------------|
 
 Create Minecraft bots with a powerful, stable, and high level JavaScript [API](api.md), also usable from Python.
 
@@ -17,7 +17,7 @@ First time using Node.js? You may want to start with the [tutorial](tutorial.md)
 
 ## Features
 
- * Supports Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 and 1.20.
+ * Supports Minecraft 1.8 to 1.20.4 (1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 and 1.20)
  * Entity knowledge and tracking.
  * Block knowledge. You can query the world around you. Milliseconds to find any block.
  * Physics and movement - handle all bounding boxes
@@ -35,11 +35,16 @@ First time using Node.js? You may want to start with the [tutorial](tutorial.md)
 
 ## Installation
 
-First install Node.js >= 14 from [nodejs.org](https://nodejs.org/) then:
+First install Node.js >= 18 from [nodejs.org](https://nodejs.org/) then:
 
-`npm install mineflayer`
+```bash
+npm install mineflayer
+```
 
-To update mineflayer (or any Node.js) package and its dependencies, use `npm update --depth 9999`
+To update mineflayer (or any Node.js) package and its dependencies, use 
+```bash
+npm update --depth 9999
+```
 
 ## Documentation
 
@@ -80,11 +85,11 @@ const mineflayer = require('mineflayer')
 
 const bot = mineflayer.createBot({
   host: 'localhost', // minecraft server ip
-  username: 'email@example.com', // minecraft username
+  username: 'Bot', // username to join as if auth is `offline`, else a unique identifier for this account. Switch if you want to change accounts
   auth: 'microsoft' // for offline mode servers, you can set this to 'offline'
-  // port: 25565,                // only set if you need a port that isn't 25565
-  // version: false,             // only set if you need a specific version or snapshot (ie: "1.8.9" or "1.16.5"), otherwise it's set automatically
-  // password: '12345678'        // set if you want to use password-based auth (may be unreliable)
+  // port: 25565,              // set if you need a port that isn't 25565
+  // version: false,           // only set if you need a specific version or snapshot (ie: "1.8.9" or "1.16.5"), otherwise it's set automatically
+  // password: '12345678'      // set if you want to use password-based auth (may be unreliable). If specified, the `username` must be an email
 })
 
 bot.on('chat', (username, message) => {
@@ -95,6 +100,27 @@ bot.on('chat', (username, message) => {
 // Log errors and kick reasons:
 bot.on('kicked', console.log)
 bot.on('error', console.log)
+```
+
+If `auth` is set to `microsoft`, you will be prompted to login to microsoft.com with a code in your browser. After signing in on your browser, 
+the bot will automatically obtain and cache authentication tokens (under your specified username) so you don't have to sign-in again. 
+
+To switch the account, update the supplied `username`. By default, cached tokens will be stored in your user's .minecraft folder, or if `profilesFolder` is specified, they'll instead be stored there.
+For more information on bot options see node-minecraft-protocol's [API doc](https://github.com/PrismarineJS/node-minecraft-protocol/blob/master/docs/API.md#mccreateclientoptions).
+
+#### Connecting to a Realm
+
+To join a Realm that your Minecraft account has been invited to, you can pass a `realms` object with a selector function like below.
+
+```js
+const client = mineflayer.createBot({
+  username: 'email@example.com', // minecraft username
+  realms: {
+    // This function is called with an array of Realms the account can join. It should return the one it wants to join.
+    pickRealm: (realms) => realms[0]
+  },
+  auth: 'microsoft'
+})
 ```
 
 ### See what your bot is doing
@@ -220,6 +246,7 @@ The most updated and useful are :
  * [Chaoscraft](https://github.com/schematical/chaoscraft) - Minecraft bot using genetic algorithms, see [its youtube videos](https://www.youtube.com/playlist?list=PLLkpLgU9B5xJ7Qy4kOyBJl5J6zsDIMceH)
  * [hexatester/minetelegram](https://github.com/hexatester/minetelegram) -  Minecraft - Telegram bridge, build on top of mineflayer & telegraf.
  * [PrismarineJS/mineflayer-builder](https://github.com/PrismarineJS/mineflayer-builder) - Prints minecraft schematics in survival, keeping orientation
+ * [SilkePilon/OpenDeliveryBot](https://github.com/SilkePilon/OpenDeliveryBot) - Minecraft bot in python to deliver items from place to place.
  * [and hundreds more](https://github.com/PrismarineJS/mineflayer/network/dependents) - All the projects that github detected are using mineflayer
 
 
@@ -227,17 +254,36 @@ The most updated and useful are :
 
 ### Testing everything
 
-Simply run: `npm test`
+Simply run: 
+
+```bash
+npm test
+```
 
 ### Testing specific version
-Run `npm run mocha_test -- -g <version>`, where `<version>` is a minecraft version like `1.12`, `1.15.2`...
+Run 
+
+```bash
+npm run mocha_test -- -g <version>
+```
+
+where `<version>` is a minecraft version like `1.12`, `1.15.2`...
 
 ### Testing specific test
-Run `npm run mocha_test -- -g <test_name>`, where `<test_name>` is a name of the test like `bed`, `useChests`, `rayTrace`...
+Run 
+
+```bash
+npm run mocha_test -- -g <test_name>
+```
+
+where `<test_name>` is a name of the test like `bed`, `useChests`, `rayTrace`...
 
 ### Example
 
-`npm run mocha_test -- -g "1.18.1.*BlockFinder"` to run the block finder test for 1.18.1
+```bash
+npm run mocha_test -- -g "1.18.1.*BlockFinder"
+```
+to run the block finder test for 1.18.1
 
 ## License
 

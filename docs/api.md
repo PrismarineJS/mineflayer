@@ -136,6 +136,7 @@
       - [bot.foodSaturation](#botfoodsaturation)
       - [bot.oxygenLevel](#botoxygenlevel)
       - [bot.physics](#botphysics)
+      - [bot.fireworkRocketDuration](#botfireworkrocketduration)
       - [bot.simpleClick.leftMouse (slot)](#botsimpleclickleftmouse-slot)
       - [bot.simpleClick.rightMouse (slot)](#botsimpleclickrightmouse-slot)
       - [bot.time.doDaylightCycle](#bottimedodaylightcycle)
@@ -197,6 +198,7 @@
       - ["entityEquip" (entity)](#entityequip-entity)
       - ["entitySleep" (entity)](#entitysleep-entity)
       - ["entitySpawn" (entity)](#entityspawn-entity)
+      - ["entityElytraFlew" (entity)](#entityelytraflew-entity)
       - ["itemDrop" (entity)](#itemdrop-entity)
       - ["playerCollect" (collector, collected)](#playercollect-collector-collected)
       - ["entityGone" (entity)](#entitygone-entity)
@@ -223,6 +225,7 @@
       - ["blockBreakProgressEnd" (block, entity)](#blockbreakprogressend-block-entity)
       - ["diggingCompleted" (block)](#diggingcompleted-block)
       - ["diggingAborted" (block)](#diggingaborted-block)
+      - ["usedFirework" (fireworkEntityId)](#usedfirework-fireworkentityid)
       - ["move"](#move)
       - ["forcedMove"](#forcedmove)
       - ["mount"](#mount)
@@ -267,7 +270,7 @@
     - [Methods](#methods)
       - [bot.end(reason)](#botendreason)
       - [bot.quit(reason)](#botquitreason)
-      - [bot.tabComplete(str, [assumeCommand], [sendBlockInSight])](#bottabcompletestr-assumecommand-sendblockinsight)
+      - [bot.tabComplete(str, [assumeCommand], [sendBlockInSight], [timeout])](#bottabcompletestr-assumecommand-sendblockinsight-timeout)
       - [bot.chat(message)](#botchatmessage)
       - [bot.whisper(username, message)](#botwhisperusername-message)
       - [bot.chatAddPattern(pattern, chatType, description)](#botchataddpatternpattern-chattype-description)
@@ -288,11 +291,12 @@
       - [bot.getExplosionDamages(entity, position, radius, [rawDamages])](#botgetexplosiondamagesentity-position-radius-rawdamages)
       - [bot.lookAt(point, [force])](#botlookatpoint-force)
       - [bot.look(yaw, pitch, [force])](#botlookyaw-pitch-force)
-      - [bot.updateSign(block, text)](#botupdatesignblock-text)
+      - [bot.updateSign(block, text, back = false)](#botupdatesignblock-text-back--false)
       - [bot.equip(item, destination)](#botequipitem-destination)
       - [bot.unequip(destination)](#botunequipdestination)
       - [bot.tossStack(item)](#bottossstackitem)
       - [bot.toss(itemType, metadata, count)](#bottossitemtype-metadata-count)
+      - [bot.elytraFly()](#botelytrafly)
       - [bot.dig(block, [forceLook = true], [digFace])](#botdigblock-forcelook--true-digface)
       - [bot.stopDigging()](#botstopdigging)
       - [bot.digTime(block)](#botdigtimeblock)
@@ -327,6 +331,7 @@
       - [bot.setCommandBlock(pos, command, [options])](#botsetcommandblockpos-command-options)
       - [bot.supportFeature(name)](#botsupportfeaturename)
       - [bot.waitForTicks(ticks)](#botwaitforticksticks)
+      - [bot.respawn()](#botrespawn)
     - [Lower level inventory methods](#lower-level-inventory-methods)
       - [bot.clickWindow(slot, mouseButton, mode)](#botclickwindowslot-mousebutton-mode)
       - [bot.putSelectedItemRange(start, end, window, slot)](#botputselecteditemrangestart-end-window-slot)
@@ -1037,6 +1042,10 @@ Number in the range [0, 20] respresenting the number of water-icons known as oxy
 Edit these numbers to tweak gravity, jump speed, terminal velocity, etc.
 Do this at your own risk.
 
+#### bot.fireworkRocketDuration
+
+How many physics ticks worth of firework rocket boost are left.
+
 #### bot.simpleClick.leftMouse (slot)
 
 abstraction over `bot.clickWindow(slot, 0, 0)`
@@ -1301,6 +1310,10 @@ Fires when an attribute of an entity changes.
 #### "entityEquip" (entity)
 #### "entitySleep" (entity)
 #### "entitySpawn" (entity)
+#### "entityElytraFlew" (entity)
+
+An entity started elytra flying.
+
 #### "itemDrop" (entity)
 #### "playerCollect" (collector, collected)
 
@@ -1384,7 +1397,7 @@ Fires when a note block goes off somewhere.
  * `pitch`: The pitch of the note (between 0-24 inclusive where 0 is the
    lowest and 24 is the highest). More information about how the pitch values
    correspond to notes in real life are available on the
-   [official Minecraft wiki](http://www.minecraftwiki.net/wiki/Note_Block).
+   [official Minecraft wiki](http://minecraft.wiki/w/Note_Block).
 
 #### "pistonMove" (block, isPulling, direction)
 
@@ -1416,6 +1429,12 @@ This occurs whether the process was completed or aborted.
 #### "diggingAborted" (block)
 
  * `block` - the block that still exists
+
+#### "usedFirework" (fireworkEntityId)
+
+Fires when the bot uses a firework while elytra flying.
+
+ * `fireworkEntityId` - the entity id of the firework.
 
 #### "move"
 
@@ -1630,7 +1649,7 @@ End the connection with the server.
 
 Gracefully disconnect from the server with the given reason (defaults to 'disconnect.quitting').
 
-#### bot.tabComplete(str, [assumeCommand], [sendBlockInSight])
+#### bot.tabComplete(str, [assumeCommand], [sendBlockInSight], [timeout])
 
 This function returns a `Promise`, with `matches` as its argument upon completion.
 
@@ -1638,6 +1657,7 @@ Requests chat completion from the server.
  * `str` - String to complete.
  * `assumeCommand` - Field sent to server, defaults to false.
  * `sendBlockInSight` - Field sent to server, defaults to true. Set this option to false if you want more performance.
+ * `timeout` - Timeout in milliseconds, after which the function will return an ampty array, defaults to 5000.
 
 #### bot.chat(message)
 
@@ -1671,6 +1691,8 @@ the event will be called `"chat:name"`, with name being the name passed
 
 returns a number which can be used with bot.removeChatPattern() to only delete this pattern
 
+- :eyes: cf. [examples/chat_parsing](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chat_parsing.js#L17-L36)
+
 #### bot.addChatPatternSet(name, patterns, chatPatternOptions)
 
 make an event that is called every time all patterns havee been matched to messages,
@@ -1682,6 +1704,8 @@ the event will be called `"chat:name"`, with name being the name passed
   * `parse` - instead of returning the actual message that was matched, return the capture groups from the regex
 
 returns a number which can be used with bot.removeChatPattern() to only delete this patternset
+
+- :eyes: cf. [examples/chat_parsing](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chat_parsing.js#L17-L36)
 
 #### bot.removeChatPattern(name)
 
@@ -1851,6 +1875,11 @@ This function returns a `Promise`, with `void` as its argument once tossing is c
    to match any metadata
  * `count` - how many you want to toss. `null` is an alias for `1`.
 
+#### bot.elytraFly()
+
+This function returns a `Promise`, with `void` as its argument once activating
+elytra flight is complete. It will throw an Error if it fails.
+
 #### bot.dig(block, [forceLook = true], [digFace])
 
 This function returns a `Promise`, with `void` as its argument when the block is broken or you are interrupted.
@@ -1946,7 +1975,9 @@ Use fishing rod
 
 #### bot.activateItem(offHand=false)
 
-Activates the currently held item. This is how you eat, shoot bows, throw an egg, etc.
+Activates the currently held item. This is how you eat, shoot bows, throw an
+egg, activate firework rockets, etc.
+
 Optional parameter is `false` for main hand and `true` for off hand.
 
 #### bot.deactivateItem()
@@ -2077,6 +2108,10 @@ The list of available features can be found inside the [./lib/features.json](htt
 #### bot.waitForTicks(ticks)
 
 This is a promise-based function that waits for a given number of in-game ticks to pass before continuing. This is useful for quick timers that need to function with specific timing, regardless of the given physics tick speed of the bot. This is similar to the standard Javascript setTimeout function, but runs on the physics timer of the bot specifically.
+
+#### bot.respawn()
+
+When `respawn` option is disabled, you can call this method manually to respawn.
 
 ### Lower level inventory methods
 

@@ -1,7 +1,7 @@
 const { Vec3 } = require('vec3')
 
 const { spawn } = require('child_process')
-const { once } = require('events')
+const { once } = require('../../../lib/promise_utils')
 const process = require('process')
 const assert = require('assert')
 const { sleep, onceWithCleanup, withTimeout } = require('../../../lib/promise_utils')
@@ -18,6 +18,7 @@ function inject (bot) {
   bot.test.becomeSurvival = becomeSurvival
   bot.test.becomeCreative = becomeCreative
   bot.test.fly = fly
+  bot.test.teleport = teleport
   bot.test.resetState = resetState
   bot.test.setInventorySlot = setInventorySlot
   bot.test.placeBlock = placeBlock
@@ -183,7 +184,7 @@ function inject (bot) {
       return run(childBotName)
     }
 
-    const child = spawn('node', [file, 'localhost', `${bot.test.port}`])
+    const child = spawn('node', [file, '127.0.0.1', `${bot.test.port}`])
 
     // Useful to debug child processes:
     child.stdout.on('data', (data) => { console.log(`${data}`) })
@@ -192,10 +193,14 @@ function inject (bot) {
     const closeExample = async (err) => {
       console.log('kill process ' + child.pid)
 
-      process.kill(child.pid, 'SIGTERM')
-
-      const [code] = await once(child, 'close')
-      console.log('close requested', code)
+      try {
+        process.kill(child.pid, 'SIGTERM')
+        const [code] = await onceWithCleanup(child, 'close', { timeout: 1000 })
+        console.log('close requested', code)
+      } catch (e) {
+        console.log(e)
+        console.log('process termination failed, process may already be closed')
+      }
 
       if (err) {
         throw err

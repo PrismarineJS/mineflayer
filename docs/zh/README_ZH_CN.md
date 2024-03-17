@@ -10,12 +10,12 @@
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb)
 
-| <sub>EN</sub> [English](../README.md) | <sub>RU</sub> [русский](../ru/README_RU.md) | <sub>ES</sub> [Español](../es/README_ES.md) | <sub>FR</sub> [Français](../fr/README_FR.md) | <sub>TR</sub> [Türkçe](../tr/README_TR.md) | <sub>ZH</sub> [中文](../zh/README_ZH_CN.md) 
-|-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
+| <sub>EN</sub> [English](../README.md) | <sub>RU</sub> [русский](../ru/README_RU.md) | <sub>ES</sub> [Español](../es/README_ES.md) | <sub>FR</sub> [Français](../fr/README_FR.md) | <sub>TR</sub> [Türkçe](../tr/README_TR.md) | <sub>ZH</sub> [中文](../zh/README_ZH_CN.md) | <sub>BR</sub> [Portuguese](../br/README_BR.md) |
+|-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
 
-使用强大、稳定、高级的JavaScript [API](../api.md) 来开发Minecraft机器人，同时支持 Python。
+使用强大、稳定、高级的 JavaScript [API](../api.md) 来开发 Minecraft 机器人，同时支持 Python。
 
-第一次使用 node.js ？你可以先看看 [使用教程](../tutorial.md) 。了解过 Python？这里有一些 [Python实例](https://github.com/PrismarineJS/mineflayer/tree/master/examples/python)，同时你也可以 [在谷歌Colab中运行Mineflayer](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb) 来体验一下。
+第一次使用 node.js ？你可以先看看 [使用教程](../tutorial.md) 。了解过 Python？这里有一些 [Python 实例](https://github.com/PrismarineJS/mineflayer/tree/master/examples/python)，同时你也可以[在谷歌 Colab 中运行 Mineflayer](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb) 来体验一下。
 
 ## 特点
 
@@ -30,13 +30,14 @@
  * 各种各样的的信息接口，比如查看你的血量或是否下雨
  * 激活方块和使用物品
  * 进行聊天
+
 ### 路线图
 
  [点这里](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects) 看看目前我们有哪些实用的项目
 
 ## 安装
 
-首先，从 [nodejs.org](https://nodejs.org/) 安装 nodejs（版本要求 >= 14），
+首先，从 [nodejs.org](https://nodejs.org/) 安装 nodejs（版本要求 >= 18），
 
 然后在你创建的bot项目目录中，使用命令行运行：
 
@@ -80,11 +81,11 @@
 const mineflayer = require('mineflayer')
 
 const bot = mineflayer.createBot({
-  host: 'localhost', // minecraft 服务器的 ip地址
+  host: 'localhost', // minecraft 服务器的 IP 地址
   username: 'email@example.com', // minecraft 用户名
   password: '12345678' // minecraft 密码, 如果你玩的是不需要正版验证的服务器，请注释掉。
-  // port: 25565,                // 默认使用25565，如果你的服务器端口不是这个请取消注释并填写。
-  // version: false,             // 如果需要指定使用一个版本或快照时，请取消注释并手动填写（如："1.8.9 " 或 "1.16.5"），否则会自动设置。
+  // port: 25565,                // 默认使用 25565，如果你的服务器端口不是这个请取消注释并填写。
+  // version: false,             // 如果需要指定使用一个版本或快照时，请取消注释并手动填写（如："1.8.9" 或 "1.16.5"），否则会自动设置。
   // auth: 'mojang'              // 如果需要使用微软账号登录时，请取消注释，然后将值设置为 'microsoft'，否则会自动设置为 'mojang'。
 })
 
@@ -93,15 +94,15 @@ bot.on('chat', (username, message) => {
   bot.chat(message)
 })
 
-//  记录错误和被踢出服务器的原因:
+// 记录错误和被踢出服务器的原因:
 bot.on('kicked', console.log)
 bot.on('error', console.log)
 ```
 
-### 看看你的bot在做什么
+### 看看你的 bot 在做什么
 
-感谢 [prismarin-viewer](https://github.com/PrismarineJS/prismarine-viewer)项目，它可以在浏览器窗口显示你的机器人正在做什么。  
-只需要运行 `npm install prismarine-viewer` 并将其添加到你的bot代码中。
+感谢 [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer)项目，它可以在浏览器窗口显示你的机器人正在做什么。  
+只需要运行 `npm install prismarine-viewer` 并将其添加到你的 bot 代码中。
 
 ```js
 const { mineflayer: mineflayerViewer } = require('prismarine-viewer')
@@ -118,13 +119,13 @@ bot.once('spawn', () => {
 
 | 例子 | 描述 |
 |---|---|
-|[viewer](https://github.com/PrismarineJS/mineflayer/tree/master/examples/viewer) | 在浏览器中显示bot的视角 |
-|[pathfinder](https://github.com/PrismarineJS/mineflayer/tree/master/examples/pathfinder) | 让你的bot自动前往任何地点  |
+|[viewer](https://github.com/PrismarineJS/mineflayer/tree/master/examples/viewer) | 在浏览器中显示 bot 的视角 |
+|[pathfinder](https://github.com/PrismarineJS/mineflayer/tree/master/examples/pathfinder) | 让你的 bot 自动前往任何地点  |
 |[chest](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chest.js) | 使用箱子、熔炉、酿造台、附魔台 |
 |[digger](https://github.com/PrismarineJS/mineflayer/blob/master/examples/digger.js) | 学习如何创建一个能够挖掘方块的简单bot |
 |[discord](https://github.com/PrismarineJS/mineflayer/blob/master/examples/discord.js) | 将 discord bot 与 mineflayer bot 进行消息互通 |
 |[jumper](https://github.com/PrismarineJS/mineflayer/blob/master/examples/jumper.js) | 学习如何移动、跳跃、骑乘载具、攻击附近的实体 |
-|[ansi](https://github.com/PrismarineJS/mineflayer/blob/master/examples/ansi.js) | 使用全彩色在命令行中显示bot的聊天记录 |
+|[ansi](https://github.com/PrismarineJS/mineflayer/blob/master/examples/ansi.js) | 使用全彩色在命令行中显示 bot 的聊天记录 |
 |[guard](https://github.com/PrismarineJS/mineflayer/blob/master/examples/guard.js) | 让bot守卫一个指定的区域，不让附近的生物进入。 |
 |[multiple-from-file](https://github.com/PrismarineJS/mineflayer/blob/master/examples/multiple_from_file.js) | 创建一个包含账户信息的文本文件，让它们全部同时登录 |
 
@@ -132,15 +133,15 @@ bot.once('spawn', () => {
 
 ### 模块
 
-很多活跃的开发都发生在 mineflayer 所使用的小型npm包内
+很多活跃的开发都发生在 mineflayer 所使用的小型 npm 包内
 
-#### The Node Way&trade;
+#### The Node Way & trade;
 
 > "当你很好的编写了一个应用程序，此时它的价值仅限于这些特定的需求。你要知道，真正好的、可重复使用的优秀组件都会升华到github和npm上，在那里，每个人都可以合作来推进公共事业。" — [《 how I write modules 》 - substack](https://gist.github.com/substack/5075355)
 
 #### 子模块
 
-这些是 构成Mineflayer 的主要模块：
+这些是 构成 mineflayer 的主要模块：
 
 | 模块 | 描述 |
 |---|---|
@@ -177,7 +178,7 @@ node your_script.js
 
 ## 第三方插件
 
-Mineflayer 支持插件；任何人都可以创建一个插件，在 Mineflayer 之上添加更高级别的 API。
+mineflayer 支持插件；任何人都可以创建一个插件，在 mineflayer 之上添加更高级别的 API。
 
 最新和最有用的有：
 
@@ -206,9 +207,9 @@ Mineflayer 支持插件；任何人都可以创建一个插件，在 Mineflayer 
 * [Bloodhound](https://github.com/Nixes/mineflayer-bloodhound) - 确定谁和什么对另一个实体的损害负责
 * [tps](https://github.com/SiebeDW/mineflayer-tps) - 获取当前的 tps（已处理的 tps）
 * [panorama](https://github.com/IceTank/mineflayer-panorama) - 拍摄您的世界的全景图像
- * [player-death-event](https://github.com/tuanzisama/mineflayer-death-event) - 在Mineflayer里监听玩家死亡事件
+ * [player-death-event](https://github.com/tuanzisama/mineflayer-death-event) - 在 Mineflayer 里监听玩家死亡事件
 
-## 正在使用 Mineflayer 的项目
+## 正在使用 mineflayer 的项目
 
 * [rom1504/rbot](https://github.com/rom1504/rbot)
   * [YouTube - 建造旋转楼梯](https://www.youtube.com/watch?v=UM1ZV5200S0)
@@ -227,19 +228,39 @@ Mineflayer 支持插件；任何人都可以创建一个插件，在 Mineflayer 
 
 ### 完整测试
 
-运行：`npm test`
+运行
+```bash
+npm test
+````
 
 ### 测试指定版本
 
-运行 `npm mocha_test -- -g <version>`, 其中 `<version>` 表示 minecraft 版本号 如 `1.12`, `1.15.2`...
+运行 
+
+```bash
+npm mocha_test -- -g <version>
+```
+
+其中 `<version>` 表示 minecraft 版本号 如 `1.12`, `1.15.2`...
 
 ### 测试指定测试脚本
 
-运行 `npm mocha_test -- -g <test_name>`，其中 `<test_name>` 是测试名称，例如 `bed`, `useChests`, `rayTrace`...
+运行 
+
+```bash
+npm mocha_test -- -g <test_name>
+```
+
+其中 `<test_name>` 是测试名称，例如 `bed`, `useChests`, `rayTrace`...
 
 ### 示例
 
-`npm run mocha_test -- -g "1.18.1.*BlockFinder"` 进行1.18.1寻路测试
+```bash
+npm run mocha_test -- -g "1.18.1.*BlockFinder"
+```
+
+进行 1.18.1 寻路测试
+
 ## 许可证
 
-[MIT](../LICENSE)
+[MIT](../../LICENSE)

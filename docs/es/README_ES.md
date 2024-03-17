@@ -8,8 +8,8 @@
 
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 
-| <sub>EN</sub> [English](../README.md) | <sub>RU</sub> [русский](../ru/README_RU.md) | <sub>ES</sub> [Español](../es/README_ES.md) | <sub>FR</sub> [Français](../fr/README_FR.md) | <sub>TR</sub> [Türkçe](../tr/README_TR.md) |
-|-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
+| <sub>EN</sub> [English](../README.md) | <sub>RU</sub> [русский](../ru/README_RU.md) | <sub>ES</sub> [Español](../es/README_ES.md) | <sub>FR</sub> [Français](../fr/README_FR.md) | <sub>TR</sub> [Türkçe](../tr/README_TR.md) | <sub>ZH</sub> [中文](../zh/README_ZH_CN.md) | <sub>BR</sub> [Português](../br/README_BR.md) |
+|-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
 
 Crea bots para Minecraft con una API de JavaScript potente, estable y de alto nivel.
 
@@ -34,7 +34,7 @@ Crea bots para Minecraft con una API de JavaScript potente, estable y de alto ni
 Echa un vistazo a nuestros [proyectos actuales](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects)
 
 ## Instalación
-Primero instala Node.js >= 14 desde [nodejs.org](https://nodejs.org/)
+Primero instala Node.js >= 18 desde [nodejs.org](https://nodejs.org/)
 
 `npm install mineflayer`
 
@@ -213,17 +213,33 @@ Pero también echa un vistazo a:
 
 ### Ejecuta todas las pruebas
 
-Simplemente ejecuta: `npm test`
+Simplemente ejecuta:
+
+```bash
+npm test
+```
 
 ### Ejecuta pruebas para una versión específica de Minecraft
-Ejecuta `npm test -- -g <version>`, donde `<version>` es una versión de minecraft como `1.12`, `1.15.2`...
+
+Ejecuta
+```bash
+npm test -- -g <version>
+```
+
+donde `<version>` es una versión de minecraft como `1.12`, `1.15.2`...
 
 ### Ejecuta una prueba específica
-Ejecuta `npm test -- -g <test_name>`, donde `<test_name>` es el nombre de la prueba que quieres ejecutar como `bed`, `useChests`, `rayTrace`...
+
+Ejecuta
+```bash
+npm test -- -g <test_name>
+```
+
+donde `<test_name>` es el nombre de la prueba que quieres ejecutar como `bed`, `useChests`, `rayTrace`...
 
 ## Licencia
 
-[MIT](LICENSE)
+[MIT](../../LICENSE)
 
 
 Esta documentación no está mantenida oficialmente, si quiere ver las últimas novedades, por favor dirijase a la documentación original: [unstable_api](../README.md)

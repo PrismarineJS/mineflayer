@@ -108,9 +108,9 @@ bot.once('spawn', () => {
 })
 
 bot.on('mount', () => {
-  bot.chat(`mounted ${bot.vehicle.objectType}`)
+  bot.chat(`mounted ${bot.vehicle.displayName}`)
 })
 
 bot.on('dismount', (vehicle) => {
-  bot.chat(`dismounted ${vehicle.objectType}`)
+  bot.chat(`dismounted ${vehicle.displayName}`)
 })

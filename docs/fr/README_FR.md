@@ -9,8 +9,8 @@
 
 [![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
 
-| <sub>EN</sub> [Anglais](../README.md) | <sub>RU</sub> [Russe](../ru/README_RU.md) | <sub>ES</sub> [Espagnol](../es/README_ES.md) | <sub>FR</sub> [Français](README_FR.md) | <sub>TR</sub> [Türkçe](../tr/README_TR.md) | <sub>ZH</sub> [Chinois](../zh/README_ZH_CN.md) |
-|-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
+| <sub>EN</sub> [Anglais](../README.md) | <sub>RU</sub> [Russe](../ru/README_RU.md) | <sub>ES</sub> [Espagnol](../es/README_ES.md) | <sub>FR</sub> [Français](README_FR.md) | <sub>TR</sub> [Türkçe](../tr/README_TR.md) | <sub>ZH</sub> [Chinois](../zh/README_ZH_CN.md) | <sub>BR</sub> [Portuguese](../br/README_BR.md) |
+|-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
 
 Créé des robots Minecraft avec API stable, puissante et facilement maniable, [API](api.md).
 
@@ -221,14 +221,32 @@ Laissez un coup d'oeil à ses projets :
 
 ### Tout tester
 
-Exécuter seulement : `npm test`
+Exécuter seulement :
+
+```bash
+npm test
+```
 
 ### Tester une version spécifique
-Exécutez `npm test -g <version>`, où `<version>` est une version de Minecraft comme `1.12`, `1.15.2`...
+
+Exécutez
+
+```bash
+npm test -g <version>
+```
+
+où `<version>` est une version de Minecraft comme `1.12`, `1.15.2`...
 
 ### Tester un test spécifique
-Executer `npm test -g <test_name>`, où `<test_name>` est le nom d'un teste comme `lit`, `utiliseCoffre`, `rayTrace`...
+
+Executer
+
+```bash
+npm test -g <test_name>
+```
+
+où `<test_name>` est le nom d'un teste comme `lit`, `utiliseCoffre`, `rayTrace`...
 
 ## Licence
 
-[MIT](LICENCE)
+[MIT](../../LICENSE)

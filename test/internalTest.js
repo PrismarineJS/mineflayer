@@ -5,12 +5,20 @@ const vec3 = require('vec3')
 const mc = require('minecraft-protocol')
 const assert = require('assert')
 const { sleep } = require('../lib/promise_utils')
+const nbt = require('prismarine-nbt')
 
 for (const supportedVersion of mineflayer.testedVersions) {
   const registry = require('prismarine-registry')(supportedVersion)
   const version = registry.version
   const Chunk = require('prismarine-chunk')(supportedVersion)
   const hasSignedChat = registry.supportFeature('signedChat')
+
+  function chatText (text) {
+    // TODO: move this to prismarine-chat in a new ChatMessage(text).toNotch(asNbt) method
+    return registry.supportFeature('chatPacketsUseNbtComponents')
+      ? nbt.comp({ text: nbt.string(text) })
+      : JSON.stringify({ text })
+  }
 
   function generateChunkPacket (chunk) {
     const lights = chunk.dumpLight()
@@ -39,7 +47,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
     }
   }
 
-  describe(`mineflayer_internal ${version.minecraftVersion}`, function () {
+  describe(`mineflayer_internal ${supportedVersion}v`, function () {
     this.timeout(10 * 1000)
     let bot
     let server
@@ -104,7 +112,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         assert.strictEqual(message, 'hello')
         bot.chat('hi')
       })
-      server.on('login', (client) => {
+      server.on('playerJoin', (client) => {
         client.write('login', bot.test.generateLoginPacket())
         const message = hasSignedChat
           ? JSON.stringify({ text: 'hello' })
@@ -119,13 +127,14 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
         if (hasSignedChat) {
           const uuid = 'd3527a0b-bc03-45d5-a878-2aafdd8c8a43' // random
+          const networkName = chatText('gary')
 
           if (registry.supportFeature('useChatSessions')) {
             client.write('player_chat', {
               plainMessage: 'hello',
               filterType: 0,
               type: 0,
-              networkName: JSON.stringify({ text: 'gary' }),
+              networkName,
               previousMessages: [],
               senderUuid: uuid,
               timestamp: Date.now(),
@@ -137,7 +146,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
               plainMessage: 'hello',
               filterType: 0,
               type: 0,
-              networkName: JSON.stringify({ text: 'gary' }),
+              networkName,
               previousMessages: [],
               senderUuid: uuid,
               timestamp: Date.now(),
@@ -180,7 +189,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       // Versions prior to 1.11 have capital first letter
       const entities = bot.registry.entitiesByName
       const creeperId = entities.creeper ? entities.creeper.id : entities.Creeper.id
-      server.on('login', (client) => {
+      server.on('playerJoin', (client) => {
         client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
           entityId: 8, // random
           entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
@@ -215,7 +224,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         assert.strictEqual(bot.blockAt(pos).type, goldId)
         done()
       })
-      server.on('login', (client) => {
+      server.on('playerJoin', (client) => {
         client.write('login', bot.test.generateLoginPacket())
         const chunk = bot.test.buildChunk()
         chunk.setBlockType(pos, goldId)
@@ -238,7 +247,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           flags: 0,
           teleportId: 0
         }
-        server.on('login', async (client) => {
+        server.on('playerJoin', async (client) => {
           await client.write('login', bot.test.generateLoginPacket())
           await client.write('position', basePosition)
           client.on('packet', (data, meta) => {
@@ -261,7 +270,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
       it('absolute position & relative position (velocity)', (done) => {
-        server.on('login', async (client) => {
+        server.on('playerJoin', async (client) => {
           await client.write('login', bot.test.generateLoginPacket())
           const chunk = await bot.test.buildChunk()
 
@@ -383,7 +392,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             assert.strictEqual(bot.entity.onGround, false)
           }
         })
-        server.on('login', (client) => {
+        server.on('playerJoin', (client) => {
           client.write('login', bot.test.generateLoginPacket())
           const chunk = bot.test.buildChunk()
 
@@ -451,7 +460,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           flags: 0,
           teleportId: 0
         }
-        server.on('login', async (client) => {
+        server.on('playerJoin', async (client) => {
           bot.once('respawn', () => {
             assert.ok(bot.world.getColumn(0, 0) !== undefined)
             bot.once('respawn', () => {
@@ -482,7 +491,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
     describe('game', () => {
       it('responds to ping / transaction packets', (done) => { // only on 1.17
-        server.on('login', async (client) => {
+        server.on('playerJoin', async (client) => {
           if (bot.supportFeature('transactionPacketExists')) {
             const transactionPacket = { windowId: 0, action: 42, accepted: false }
             client.once('transaction', (data, meta) => {
@@ -506,7 +515,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
     describe('entities', () => {
       it('entity id changes on login', (done) => {
         const loginPacket = bot.test.generateLoginPacket()
-        server.on('login', (client) => {
+        server.on('playerJoin', (client) => {
           if (bot.supportFeature('usesLoginPacket')) {
             loginPacket.entityId = 0 // Default login packet in minecraft-data 1.16.5 is 1, so set it to 0
           }
@@ -524,7 +533,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
 
       it('player displayName', (done) => {
-        server.on('login', (client) => {
+        server.on('playerJoin', (client) => {
           bot.on('entitySpawn', (entity) => {
             const player = bot.players[entity.username]
             assert.strictEqual(entity.username, player.displayName.toString())
@@ -539,7 +548,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
                   },
                   gamemode: 0,
                   latency: 0,
-                  displayName: '{"text":"wvffle"}'
+                  displayName: chatText('wvffle')
                 }]
               })
             } else {
@@ -556,7 +565,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
                   gamemode: 0,
                   ping: 0,
                   hasDisplayName: true,
-                  displayName: '{"text":"wvffle"}'
+                  displayName: chatText('wvffle')
                 }]
               })
             }
@@ -632,17 +641,35 @@ for (const supportedVersion of mineflayer.testedVersions) {
             })
           }
 
-          client.write('named_entity_spawn', {
-            entityId: 56,
-            playerUUID: '1-2-3-4',
-            x: 1,
-            y: 2,
-            z: 3,
-            yaw: 0,
-            pitch: 0,
-            currentItem: -1,
-            metadata: []
-          })
+          if (bot.registry.supportFeature('unifiedPlayerAndEntitySpawnPacket')) {
+            client.write('spawn_entity', {
+              entityId: 56,
+              objectUUID: '1-2-3-4',
+              type: bot.registry.entitiesByName.player.internalId,
+              x: 1,
+              y: 2,
+              z: 3,
+              pitch: 0,
+              yaw: 0,
+              headPitch: 0,
+              objectData: 1,
+              velocityX: 0,
+              velocityY: 0,
+              velocityZ: 0
+            })
+          } else {
+            client.write('named_entity_spawn', {
+              entityId: 56,
+              playerUUID: '1-2-3-4',
+              x: 1,
+              y: 2,
+              z: 3,
+              yaw: 0,
+              pitch: 0,
+              currentItem: -1,
+              metadata: []
+            })
+          }
         })
       })
 
@@ -663,7 +690,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           assert.strictEqual(bot.players[entity.username], undefined)
           done()
         })
-        server.on('login', (client) => {
+        server.on('playerJoin', (client) => {
           serverClient = client
 
           if (registry.supportFeature('playerInfoActionIsBitfield')) {
@@ -697,24 +724,42 @@ for (const supportedVersion of mineflayer.testedVersions) {
             })
           }
 
-          client.write('named_entity_spawn', {
-            entityId: 56,
-            playerUUID: '1-2-3-4',
-            x: 1,
-            y: 2,
-            z: 3,
-            yaw: 0,
-            pitch: 0,
-            currentItem: -1,
-            metadata: []
-          })
+          if (bot.registry.supportFeature('unifiedPlayerAndEntitySpawnPacket')) {
+            client.write('spawn_entity', {
+              entityId: 56,
+              objectUUID: '1-2-3-4',
+              type: bot.registry.entitiesByName.player.internalId,
+              x: 1,
+              y: 2,
+              z: 3,
+              pitch: 0,
+              yaw: 0,
+              headPitch: 0,
+              objectData: 1,
+              velocityX: 0,
+              velocityY: 0,
+              velocityZ: 0
+            })
+          } else {
+            client.write('named_entity_spawn', {
+              entityId: 56,
+              playerUUID: '1-2-3-4',
+              x: 1,
+              y: 2,
+              z: 3,
+              yaw: 0,
+              pitch: 0,
+              currentItem: -1,
+              metadata: []
+            })
+          }
         })
       })
 
       it('metadata', (done) => {
-        server.on('login', (client) => {
+        server.on('playerJoin', (client) => {
           bot.on('entitySpawn', (entity) => {
-            assert.strictEqual(entity.mobType, 'Creeper')
+            assert.strictEqual(entity.displayName, 'Creeper')
 
             const lastMeta = entity.metadata
             bot.on('entityUpdate', (entity) => {
@@ -763,7 +808,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           itemCount: 5
         }
 
-        server.on('login', (client) => {
+        server.on('playerJoin', (client) => {
           bot.on('itemDrop', (entity) => {
             const slotPosition = metadataPacket.metadata[0].key
 
@@ -870,7 +915,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         done()
       })
 
-      server.once('login', (client) => {
+      server.once('playerJoin', (client) => {
         bot.time.timeOfDay = 18000
         const loginPacket = bot.test.generateLoginPacket()
         client.write('login', loginPacket)
@@ -943,7 +988,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
       it('handles newlines in header and footer', (done) => {
         const HEADER = 'asd\ndsa'
         const FOOTER = '\nas\nas\nas\n'
-
         bot._client.on('playerlist_header', (packet) => {
           setImmediate(() => {
             assert.strictEqual(bot.tablist.header.toString(), HEADER)
@@ -951,13 +995,22 @@ for (const supportedVersion of mineflayer.testedVersions) {
             done()
           })
         })
-
-        server.on('login', (client) => {
-          client.write('playerlist_header', {
-            header: JSON.stringify({ text: '', extra: [{ text: HEADER, color: 'yellow' }] }),
-            footer: JSON.stringify({ text: '', extra: [{ text: FOOTER, color: 'yellow' }] })
+        // TODO: figure out how the "extra" should be encoded in NBT so this branch can be removed
+        if (registry.supportFeature('chatPacketsUseNbtComponents')) {
+          server.on('playerJoin', (client) => {
+            client.write('playerlist_header', {
+              header: chatText(HEADER),
+              footer: chatText(FOOTER)
+            })
           })
-        })
+        } else {
+          server.on('playerJoin', (client) => {
+            client.write('playerlist_header', {
+              header: JSON.stringify({ text: '', extra: [{ text: HEADER, color: 'yellow' }] }),
+              footer: JSON.stringify({ text: '', extra: [{ text: FOOTER, color: 'yellow' }] })
+            })
+          })
+        }
       })
     })
   })

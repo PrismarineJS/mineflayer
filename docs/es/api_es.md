@@ -1289,7 +1289,7 @@ Se emite cuando un bloque de notas se dispara en algún sitio
  * `instrument`:
    - `id`: id con números enteros
    - `name`: uno de estos [`harp`, `doubleBass`, `snareDrum`, `sticks`, `bassDrum`]. (`harpa`, `dobleBajo`, `tambor`, `palos`, `tamborBajo`)
- * `pitch`: El tono de la nota (entre 0 y 24 ambos incluídos donde 0 es el más bajo y 24 es el más alto). Se puede leer más (sobre como los valores de los tonos corresponden a las notas en la vida real) aquí: [official Minecraft wiki](http://www.minecraftwiki.net/wiki/Note_Block).
+ * `pitch`: El tono de la nota (entre 0 y 24 ambos incluídos donde 0 es el más bajo y 24 es el más alto). Se puede leer más (sobre como los valores de los tonos corresponden a las notas en la vida real) aquí: [official Minecraft wiki](http://minecraft.wiki/w/Note_Block).
 
 #### "pistonMove" (block, isPulling, direction)
 

@@ -44,7 +44,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
     console.log(line)
   })
 
-  describe(`mineflayer_external ${version.minecraftVersion}`, function () {
+  describe(`mineflayer_external ${supportedVersion}v`, function () {
     let bot
     this.timeout(10 * 60 * 1000)
     before(async function () {
@@ -58,7 +58,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           username: 'flatbot',
           viewDistance: 'tiny',
           port: PORT,
-          host: 'localhost',
+          host: '127.0.0.1',
           version: supportedVersion
         })
         commonTest(bot)
@@ -68,7 +68,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         bot.once('spawn', () => {
           wrap.writeServer('op flatbot\n')
           bot.once('messagestr', msg => {
-            if (msg === '[Server: Made flatbot a server operator]' || msg === '[Server: Opped flatbot]') {
+            if (msg.includes('Made flatbot a server operator') || msg === '[Server: Opped flatbot]') {
               done()
             }
           })
@@ -89,6 +89,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             console.log(`pinging ${version.minecraftVersion} port : ${PORT}`)
             mc.ping({
               port: PORT,
+              host: '127.0.0.1',
               version: supportedVersion
             }, (err, results) => {
               if (err) return done(err)

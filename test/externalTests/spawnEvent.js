@@ -1,5 +1,5 @@
 const mineflayer = require('mineflayer')
-const { once } = require('events')
+const { once } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   // Test spawn event on login
@@ -7,7 +7,7 @@ module.exports = () => async (bot) => {
     username: 'spawnbot',
     viewDistance: 'tiny',
     port: bot.test.port,
-    host: 'localhost',
+    host: '127.0.0.1',
     version: bot.version
   })
   await once(spawnBot, 'spawn')
