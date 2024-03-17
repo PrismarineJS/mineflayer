@@ -32,7 +32,9 @@ export interface BotOptions extends ClientOptions {
   client?: Client
   brand?: string
   defaultChatPatterns?: boolean
+  /** @deprecated Renamed to `autoRespawn`. */
   respawn?: boolean
+  autoRespawn?: boolean
 }
 
 export type ChatLevel = 'enabled' | 'commandsOnly' | 'disabled'
