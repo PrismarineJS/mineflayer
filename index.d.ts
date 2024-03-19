@@ -72,6 +72,7 @@ export interface BotEvents {
   respawn: () => Promise<void> | void
   game: () => Promise<void> | void
   title: (text: string) => Promise<void> | void
+  titles: (type: "subtitle" | "title", msg: ChatMessage) => Promise<void> | void
   rain: () => Promise<void> | void
   time: () => Promise<void> | void
   kicked: (reason: string, loggedIn: boolean) => Promise<void> | void
