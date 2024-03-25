@@ -16,7 +16,7 @@ jobs:
       uses: actions/setup-node@v1.4.4
       with:
         node-version: 18.x
-    - run: npm i && npm run lint
+    - run: yarn && yarn lint
   
   PrepareSupportedVersions:
     runs-on: ubuntu-latest
@@ -55,6 +55,6 @@ jobs:
           java-version: 17
           java-package: jre
       - name: Install Dependencies
-        run: npm install
+        run: yarn
       - name: Start Tests
-        run: npm run mocha_test -- -g ${{ matrix.mcVersion }}v
+        run: yarn start -- -g ${{ matrix.mcVersion }}
