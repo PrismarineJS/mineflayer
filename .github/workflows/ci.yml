@@ -57,4 +57,4 @@ jobs:
       - name: Install Dependencies
         run: yarn
       - name: Start Tests
-        run: yarn start -- -g ${{ matrix.mcVersion }}
+        run: yarn start -g ${{ matrix.mcVersion }}
