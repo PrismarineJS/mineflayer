@@ -158,6 +158,7 @@ export interface BotEvents {
   teamUpdated: (team: Team) => Promise<void> | void
   teamMemberAdded: (team: Team) => Promise<void> | void
   teamMemberRemoved: (team: Team) => Promise<void> | void
+  bossBarCreated: (bossBar: BossBar) => Promise<void> | void
   bossBarDeleted: (bossBar: BossBar) => Promise<void> | void
   bossBarUpdated: (bossBar: BossBar) => Promise<void> | void
   resourcePack: (url: string, hash?: string, uuid?: string) => Promise<void> | void
