@@ -1,3 +1,10 @@
+## 4.20.1
+* [Add bossBarCreated event in index.d.ts (#3340)](https://github.com/PrismarineJS/mineflayer/commit/8299288526cd7ff24bcd87511814221f8ad62507) (thanks @gguio)
+* [Update scoreboard.js (#3318)](https://github.com/PrismarineJS/mineflayer/commit/195b3cbd70a110080af9b77a4659991c5d9e484a) (thanks @vicdum)
+* [Fix hardcoded diggingface for cancel digging (#3322)](https://github.com/PrismarineJS/mineflayer/commit/ab78bf855929a476386b5eb6efcf3b271d02455e) (thanks @Vinciepincie)
+* [Fix 1.20.4 server resource pack error (#3320)](https://github.com/PrismarineJS/mineflayer/commit/7c01eeb970647ed2933c10cb2b94fd7b44c777f5) (thanks @TerminalCalamitas)
+* [Fix scoreboard delete handler not first checking if scoreboard exists (#3324)](https://github.com/PrismarineJS/mineflayer/commit/d9e9e15aeb646d81da2a3e2987566de47e3bae04) (thanks @Ynfuien)
+
 ## 4.20.0
 * [Update api.md - addChatPattern[Set] link to example of usage (#3304)](https://github.com/PrismarineJS/mineflayer/commit/bb3e5877b7b3b8ab063b39a5b47d103b819da1c2) (thanks @boly38)
 * [Fixed deleted scoreboards not being removed from ScoreBoard.positions (#3306)](https://github.com/PrismarineJS/mineflayer/commit/643023df91bf428d3e7d30e8f2eab97e3238b0b2) (thanks @Ynfuien)
