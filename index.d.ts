@@ -457,6 +457,7 @@ export interface GameState {
   dimension: Dimension
   difficulty: Difficulty
   maxPlayers: number
+  serverBrand: string
 }
 
 export type LevelType =
