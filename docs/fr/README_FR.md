@@ -221,14 +221,32 @@ Laissez un coup d'oeil à ses projets :
 
 ### Tout tester
 
-Exécuter seulement : `npm test`
+Exécuter seulement :
+
+```bash
+npm test
+```
 
 ### Tester une version spécifique
-Exécutez `npm test -g <version>`, où `<version>` est une version de Minecraft comme `1.12`, `1.15.2`...
+
+Exécutez
+
+```bash
+npm test -g <version>
+```
+
+où `<version>` est une version de Minecraft comme `1.12`, `1.15.2`...
 
 ### Tester un test spécifique
-Executer `npm test -g <test_name>`, où `<test_name>` est le nom d'un teste comme `lit`, `utiliseCoffre`, `rayTrace`...
+
+Executer
+
+```bash
+npm test -g <test_name>
+```
+
+où `<test_name>` est le nom d'un teste comme `lit`, `utiliseCoffre`, `rayTrace`...
 
 ## Licence
 
-[MIT](LICENCE)
+[MIT](../../LICENSE)

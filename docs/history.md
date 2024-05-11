@@ -1,3 +1,33 @@
+## 4.20.1
+* [Add bossBarCreated event in index.d.ts (#3340)](https://github.com/PrismarineJS/mineflayer/commit/8299288526cd7ff24bcd87511814221f8ad62507) (thanks @gguio)
+* [Update scoreboard.js (#3318)](https://github.com/PrismarineJS/mineflayer/commit/195b3cbd70a110080af9b77a4659991c5d9e484a) (thanks @vicdum)
+* [Fix hardcoded diggingface for cancel digging (#3322)](https://github.com/PrismarineJS/mineflayer/commit/ab78bf855929a476386b5eb6efcf3b271d02455e) (thanks @Vinciepincie)
+* [Fix 1.20.4 server resource pack error (#3320)](https://github.com/PrismarineJS/mineflayer/commit/7c01eeb970647ed2933c10cb2b94fd7b44c777f5) (thanks @TerminalCalamitas)
+* [Fix scoreboard delete handler not first checking if scoreboard exists (#3324)](https://github.com/PrismarineJS/mineflayer/commit/d9e9e15aeb646d81da2a3e2987566de47e3bae04) (thanks @Ynfuien)
+
+## 4.20.0
+* [Update api.md - addChatPattern[Set] link to example of usage (#3304)](https://github.com/PrismarineJS/mineflayer/commit/bb3e5877b7b3b8ab063b39a5b47d103b819da1c2) (thanks @boly38)
+* [Fixed deleted scoreboards not being removed from ScoreBoard.positions (#3306)](https://github.com/PrismarineJS/mineflayer/commit/643023df91bf428d3e7d30e8f2eab97e3238b0b2) (thanks @Ynfuien)
+* [Support 1.20.4 (#3310)](https://github.com/PrismarineJS/mineflayer/commit/aa99daa7d63ee9549f2dda5a79c140e30e19a89b) (thanks @rom1504)
+
+## 4.19.0
+* [Clarify readme createBot username handling (#3300)](https://github.com/PrismarineJS/mineflayer/commit/7a2680bc07f53d16626679537ea1f07aae180549) (thanks @extremeheat)
+* [fix world typing (#3302)](https://github.com/PrismarineJS/mineflayer/commit/5dc36d6cdeaf4be72ea023827d45b9d78e575f66) (thanks @GenerelSchwerz)
+* [modified the README.md files for other languages and fixed a linking issue at those files. (#3297)](https://github.com/PrismarineJS/mineflayer/commit/cc98f1307e3ab48477d2a9ff29da4447f42b30bc) (thanks @Axwaizee)
+* [formatted docs/README.md for easy copy (#3295)](https://github.com/PrismarineJS/mineflayer/commit/468c8aa9d382a7872ec991c3b834b98cbe495e8d) (thanks @Axwaizee)
+* [Added missing bot.teams definition (#3294)](https://github.com/PrismarineJS/mineflayer/commit/fb8ee7aa619bd38cc97d5dbd870bb11455d51d39) (thanks @Ynfuien)
+* [Timeout for bot.tabComplete() (#3293)](https://github.com/PrismarineJS/mineflayer/commit/4231a169d579d08ac7b9ec0694e18b1f6ac837ea) (thanks @Ynfuien)
+* [:label: Update types to be updated with what's in JavaScript (#3287)](https://github.com/PrismarineJS/mineflayer/commit/210785e86c031f7e3323d7d2ffe5152d2d4a5eb6) (thanks @fantomitechno)
+* [Fixed some typo (#3290)](https://github.com/PrismarineJS/mineflayer/commit/ba53a953d03a6edb34aa5bf38bccde58e65d816d) (thanks @SilianZ)
+* [Updated digging code to account for raycasted tall grass checks (#3285)](https://github.com/PrismarineJS/mineflayer/commit/bd0fb5c4d3b665f264009f62f9288828f3018cea) (thanks @GenerelSchwerz)
+
+## 4.18.0
+* [Minecraft 1.20.2 support (#3262)](https://github.com/PrismarineJS/mineflayer/commit/2ff9919760d714be57dcb678f8ab5ecff69f5fee) (thanks @rom1504)
+* [Update recommended Node.js version (#3279)](https://github.com/PrismarineJS/mineflayer/commit/5c71edf48bb2f2dfa16cddb9af5baa0c4d55cf0d) (thanks @Nyaasu66)
+* [feat: bot.respawn, fix respawn with flying squid (#3206)](https://github.com/PrismarineJS/mineflayer/commit/3a6ce543b4ba8a3d0f55777670d142968af14571) (thanks @zardoy)
+* [Add `maxCatchupTicks`, improve `supportFeature` typing (#3277)](https://github.com/PrismarineJS/mineflayer/commit/91108d392c4c5800204dd4674ce9247495ac98e0) (thanks @zardoy)
+* [Fixed typo of "fromt" to "from" (#3273)](https://github.com/PrismarineJS/mineflayer/commit/216cab742db1cd053d9fa23bd7293b770239085b) (thanks @BorretSquared)
+
 ## 4.17.0
 * [Exclude browser from node version check (#3268)](https://github.com/PrismarineJS/mineflayer/commit/c466d327227796865c53bfd24e66668911be4af5) (thanks @rom1504)
 * [Fix for a possible error in lib/plugins/entities.js file (#3254)](https://github.com/PrismarineJS/mineflayer/commit/15cfeb4fa59edfcddf7a0b70a966294b24d798ed) (thanks @Mykola1453)

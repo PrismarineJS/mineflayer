@@ -1,7 +1,6 @@
 const assert = require('assert')
-const { once } = require('events')
 const { Vec3 } = require('vec3')
-const { onceWithCleanup } = require('../../lib/promise_utils')
+const { once, onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const command = `/say ${Math.floor(Math.random() * 1000)}`

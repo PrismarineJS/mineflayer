@@ -1,5 +1,5 @@
 const mineflayer = require('mineflayer')
-const { once } = require('events')
+const { once } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   // Test spawn event on login

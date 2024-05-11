@@ -1,4 +1,4 @@
-const { once } = require('events')
+const { once } = require('../../lib/promise_utils')
 const { Vec3 } = require('vec3')
 
 module.exports = () => async (bot) => {

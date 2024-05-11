@@ -1,7 +1,7 @@
 const { Vec3 } = require('vec3')
 
 const { spawn } = require('child_process')
-const { once } = require('events')
+const { once } = require('../../../lib/promise_utils')
 const process = require('process')
 const assert = require('assert')
 const { sleep, onceWithCleanup, withTimeout } = require('../../../lib/promise_utils')

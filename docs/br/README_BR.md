@@ -33,7 +33,7 @@ Primeira vez usando o Node.js? Você pode querer começar com o tutorial [tutori
 - Dê uma olhada em nossos [projetos atuais](https://github.com/PrismarineJS/mineflayer/wiki/Big-Prismarine-projects)
 
 ## Instalação
-- Primeiro, instale o Node.js >= 14 a partir do [nodejs.org](https://nodejs.org/)
+- Primeiro, instale o Node.js >= 18 a partir do [nodejs.org](https://nodejs.org/)
 
 `npm install mineflayer`
 
@@ -213,16 +213,33 @@ Mas também dê uma olhada em:
 
 ### Executar Todos os Testes
 
-Basta executar: `npm test`
+Basta executar:
+
+```bash
+npm test
+```
 
 ### Executar Testes para uma Versão Específica do Minecraft
-Execute `npm test -- -g <versão>`, onde `<versão>` é uma versão do Minecraft, como `1.12`, `1.15.2`...
+
+Execute
+
+```bash
+npm test -- -g <versão>
+```
+
+onde `<versão>` é uma versão do Minecraft, como `1.12`, `1.15.2`...
 
 ### Executar um Teste Específico
-Execute `npm test -- -g <nome_do_teste>`, onde `<nome_do_teste>` é o nome do teste que você deseja executar, como `bed`, `useChests`, `rayTrace`...
+
+Execute
+```bash
+npm test -- -g <nome_do_teste>
+```
+
+onde `<nome_do_teste>` é o nome do teste que você deseja executar, como `bed`, `useChests`, `rayTrace`...
 
 ## Licença
 
-[MIT](LICENSE)
+[MIT](../../LICENSE)
 
 Esta documentação não é oficialmente mantida. Para ver as últimas atualizações, consulte a documentação original: [unstable_api](../README.md)
