@@ -44,8 +44,8 @@ module.exports = () => async (bot) => {
 
   // Wait and take the output and inputs
   await bot.test.wait(500)
-  assert(furnace.fuel > 0 && furnace.fuel < 1)
-  assert(furnace.progress > 0 && furnace.progress < 1)
+  assert(furnace.fuel > 0 && furnace.fuel < 1, furnace.fuel)
+  assert(furnace.progress > 0 && furnace.progress < 1, furnace.progress)
 
   await bot.test.wait(furnace.progressSeconds * 1000 + 500)
   assert.strictEqual(furnace.outputItem(), furnace.slots[2])

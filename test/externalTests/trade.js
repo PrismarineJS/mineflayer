@@ -28,7 +28,7 @@ module.exports = () => async (bot) => {
   bot.test.sayEverywhere(`/setblock ${redstoneBlockPos.toArray().join(' ')} redstone_block`) // Activate the command block
 
   const [entity] = await once(bot, 'entitySpawn')
-  assert(entity.name === villagerType)
+  assert.strictEqual(entity.name, villagerType)
 
   const villager = await bot.openVillager(entity)
 

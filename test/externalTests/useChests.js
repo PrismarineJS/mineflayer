@@ -39,8 +39,8 @@ module.exports = () => async (bot) => {
 
   async function depositBones (chestLocation, count) {
     const chest = await bot.openContainer(bot.blockAt(chestLocation))
-    assert(chest.containerItems().length === 0)
-    assert(chest.items().length > 0)
+    assert.strictEqual(chest.containerItems().length, 0)
+    assert(chest.items().length > 0, `${chest.items().length} > ${0}`)
     const name = 'bone'
     const item = itemByName(chest.items(), name)
     if (!item) {
@@ -60,8 +60,8 @@ module.exports = () => async (bot) => {
       throw new Error(`unknown item ${name}`)
     }
     await chest.withdraw(item.type, null, count)
-    assert(chest.containerItems().length === 0)
-    assert(chest.items().length > 0)
+    assert.strictEqual(chest.containerItems().length, 0)
+    assert(chest.items().length > 0, `${chest.items().length} > ${0}`)
     chest.close()
   }
 
@@ -115,7 +115,7 @@ module.exports = () => async (bot) => {
   await depositBones(smallChestLocation, 1)
   await depositBones(largeChestLocations[0], 2)
 
-  assert(bot.inventory.items().length === 0)
+  assert.strictEqual(bot.inventory.items().length, 0)
 
   await withdrawBones(smallChestLocation, 1)
   await withdrawBones(largeChestLocations[0], 2)
@@ -123,7 +123,7 @@ module.exports = () => async (bot) => {
   await depositBones(smallTrappedChestLocation, 1)
   await depositBones(largeTrappedChestLocations[0], 2)
 
-  assert(bot.inventory.items().length === 0)
+  assert.strictEqual(bot.inventory.items().length, 0)
 
   await withdrawBones(smallTrappedChestLocation, 1)
   await withdrawBones(largeTrappedChestLocations[0], 2)

@@ -141,7 +141,8 @@ function inject (bot) {
 
   // you need to be in creative mode for this to work
   async function setInventorySlot (targetSlot, item) {
-    assert(item === null || item.name !== 'unknown', `item should not be unknown ${JSON.stringify(item)}`)
+    assert.ok(item)
+    assert.notEqual(item.name, 'unknown', `item should not be unknown ${JSON.stringify(item)}`)
     return bot.creative.setInventorySlot(targetSlot, item)
   }
 

@@ -18,5 +18,5 @@ module.exports = () => async (bot) => {
     timeout: 5000,
     checkCondition: (message) => message.json.with[0] === command
   })
-  assert(message.json.translate === 'advMode.setCommand.success')
+  assert.strictEqual(message.json.translate, 'advMode.setCommand.success')
 }
