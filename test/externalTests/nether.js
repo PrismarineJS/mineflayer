@@ -42,7 +42,8 @@ module.exports = (version) => {
 
     const [packet] = await onceWithCleanup(bot._client, 'open_sign_entity')
 
-    const sign = bot.blockAt(new Vec3(...Object.values(packet.location)))
+    console.log('[test/nether] Open Sign Packet', packet)
+    const sign = bot.blockAt(new Vec3(packet.location.x, packet.location.y, packet.location.z))
     bot.updateSign(sign, '1\n2\n3\n')
 
     await sleep(500)
