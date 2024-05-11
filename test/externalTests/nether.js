@@ -1,6 +1,5 @@
 const assert = require('assert')
 const { onceWithCleanup, sleep } = require('../../lib/promise_utils')
-const Vec3Parser = require('vec3')
 const { Vec3 } = require('vec3')
 
 module.exports = (version) => {
@@ -43,7 +42,7 @@ module.exports = (version) => {
 
     const [packet] = await onceWithCleanup(bot._client, 'open_sign_entity')
 
-    const sign = bot.blockAt(Vec3Parser(packet.location))
+    const sign = bot.blockAt(new Vec3(...Object.values(packet.location)))
     bot.updateSign(sign, '1\n2\n3\n')
 
     await sleep(500)
