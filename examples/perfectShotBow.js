@@ -30,7 +30,7 @@ bot.on('spawn', function () {
 
   // Auto attack every 1,2 secs with bow
   // With crossbow attack when crossbow is charget (enchant 3 = 0.5s)
-  // ['snowball', 'ender_pearl', 'egg', 'splash_potion'] auto attack every 0,1 sec, no recomended use autoAttack for these items, instead use "bot.hawkEye.oneShot(target, weapon)"
+  // ['snowball', 'ender_pearl', 'egg', 'splash_potion'] auto attack every 0,1 sec, no recommended use autoAttack for these items, instead use "bot.hawkEye.oneShot(target, weapon)"
 
   bot.hawkEye.autoAttack(target, weapon)
   // If you force stop attack use:

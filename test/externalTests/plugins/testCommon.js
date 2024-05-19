@@ -28,7 +28,7 @@ function inject (bot) {
     return new Promise((resolve) => { setTimeout(resolve, ms) })
   }
 
-  bot.test.awaitItemRecieved = async (command) => {
+  bot.test.awaitItemReceived = async (command) => {
     const p = once(bot.inventory, 'updateSlot')
     bot.chat(command)
     await p // await getting the item
