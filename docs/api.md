@@ -1597,7 +1597,7 @@ Finds the closest blocks from the given point.
    - `matching` - A function that returns true if the given block is a match. Also supports this value being a block id or array of block ids.
    - `useExtraInfo` - To preserve backward compatibility can result in two behavior depending on the type
       - **boolean** - Provide your `matching` function more data - noticeably slower approach
-      - **function** - Creates two stage maching, if block passes `matching` function it is passed further to `useExtraInfo` with additional info
+      - **function** - Creates two stage matching, if block passes `matching` function it is passed further to `useExtraInfo` with additional info
    - `maxDistance` - The furthest distance for the search, defaults to 16.
    - `count` - Number of blocks to find before returning the search. Default to 1. Can return less if not enough blocks are found exploring the whole area.
 
@@ -1627,7 +1627,7 @@ with `metadata`.
 
 #### bot.recipesAll(itemType, metadata, craftingTable)
 
-The same as bot.recipesFor except that it does not check wether the bot has enough materials for the recipe.
+The same as bot.recipesFor except that it does not check whether the bot has enough materials for the recipe.
 
 #### bot.nearestEntity(match = (entity) => { return true })
 
