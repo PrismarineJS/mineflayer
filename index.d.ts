@@ -379,7 +379,14 @@ export interface Bot extends TypedEmitter<BotEvents> {
     times?: number
   ) => Promise<void>
 
-  setCommandBlock: (pos: Vec3, command: string, trackOutput: boolean) => void
+  
+  export interface CommandBlockOptions {
+    mode: number,
+    trackOutput: boolean,
+    conditional: boolean,
+    alwaysActive: boolean
+  }
+  export function setCommandBlock(pos: Vec3, command: string, options: CommandBlockOptions) => void
 
   clickWindow: (
     slot: number,
@@ -457,6 +464,7 @@ export interface GameState {
   dimension: Dimension
   difficulty: Difficulty
   maxPlayers: number
+  serverBrand: string
 }
 
 export type LevelType =
