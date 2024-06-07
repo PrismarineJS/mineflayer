@@ -10,7 +10,7 @@
 # may flood the chat, feel free to check them out for other purposes though.
 #
 # This bot also replies to some specific chat messages so you can ask him
-# a few informations while you are in game.
+# a few information while you are in game.
 # ===========================================================================
 import sys, re
 from javascript import require, On, Once, console

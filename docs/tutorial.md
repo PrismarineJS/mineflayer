@@ -453,7 +453,7 @@ The function could also be called when an error occurs.
 
 Below is an example of a bot that will craft oak logs into oak planks and then into sticks.
 
-Incorect approach ❌:
+Incorrect approach ❌:
 
 ```js
 function craft (bot) {
