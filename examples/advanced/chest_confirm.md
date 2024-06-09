@@ -1,4 +1,4 @@
-# Menual Chest Confirm
+# Manual Chest Confirm
 
 This code snippet will tell the bot not to wait for chest confirmations that some spigot plugins will not send
 
