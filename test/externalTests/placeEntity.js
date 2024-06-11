@@ -18,7 +18,7 @@ module.exports = (version) => {
     await bot.test.setBlock({ z: 1, relative: true, blockName: 'obsidian' })
     await bot.test.awaitItemReceived(`/give ${bot.username} end_crystal`)
     const crystal = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
-    assert(crystal !== null)
+    assert.ok(crystal)
     let name = 'EnderCrystal'
     if (bot.supportFeature('enderCrystalNameEndsInErNoCaps')) {
       name = 'ender_crystal'
@@ -28,7 +28,7 @@ module.exports = (version) => {
       name = 'end_crystal'
     }
     const entity = bot.nearestEntity(o => o.name === name)
-    assert(entity?.name === name)
+    assert.strictEqual(entity?.name, name)
     bot.attack(entity)
     await once(bot, 'entityGone')
     await bot.test.setBlock({ z: 1, blockName: 'air', relative: true })
@@ -47,10 +47,10 @@ module.exports = (version) => {
     await placeBlocksForTest('water')
     await bot.test.awaitItemReceived(`/give ${bot.username} ${bot.registry.oak_boat ? 'oak_boat' : 'boat'}`)
     const boat = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, -1, -2)), new Vec3(0, -1, 0))
-    assert(boat !== null)
+    assert.ok(boat)
     const name = bot.supportFeature('entityNameUpperCaseNoUnderscore') ? 'Boat' : 'boat'
     const entity = bot.nearestEntity(o => o.name === name)
-    assert(entity?.name === name)
+    assert.strictEqual(entity?.name, name)
     await placeBlocksForTest('air')
     bot.attack(entity)
     await once(bot, 'entityGone')
@@ -71,10 +71,10 @@ module.exports = (version) => {
     }
     await bot.test.awaitItemReceived(command)
     const zombie = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
-    assert(zombie !== null)
+    assert.ok(zombie)
     const name = bot.supportFeature('entityNameUpperCaseNoUnderscore') ? 'Zombie' : 'zombie'
     const entity = bot.nearestEntity(o => o.name === name)
-    assert(entity?.name === name)
+    assert.strictEqual(entity?.name, name)
     bot.chat(`/kill @e[type=${name}]`) // use /kill instead of bot.attack() because it takes more than one hit to kill
     await once(bot, 'entityGone')
   })
@@ -82,7 +82,7 @@ module.exports = (version) => {
   addTest('place armor stand', async (bot) => {
     await bot.test.awaitItemReceived(`/give ${bot.username} armor_stand`)
     const armorStand = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
-    assert(armorStand !== null)
+    assert.ok(armorStand)
     let name
     if (bot.supportFeature('entityNameUpperCaseNoUnderscore')) {
       name = 'ArmorStand'
@@ -92,7 +92,7 @@ module.exports = (version) => {
       name = 'armor_stand'
     }
     const entity = bot.nearestEntity(o => o.name === name)
-    assert(entity?.name === name)
+    assert.strictEqual(entity?.name, name)
     bot.attack(entity)
     await once(bot, 'entityGone')
   })

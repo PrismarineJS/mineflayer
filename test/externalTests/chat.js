@@ -69,7 +69,7 @@ module.exports = () => {
     bot.once('chat:test', listener)
     bot.chat('/tellraw @p {"translate":"chat.type.text", "with":["U9G", "Hello"]}')
     await once(bot, 'message')
-    assert.ok(triggered === false)
+    assert.strictEqual(triggered, false)
     bot.off('chat:test', listener)
   })
 

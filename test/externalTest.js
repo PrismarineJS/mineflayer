@@ -94,8 +94,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
             }, (err, results) => {
               if (err) return done(err)
               console.log('pong')
-              assert.ok(results.latency >= 0)
-              assert.ok(results.latency <= 1000)
+              assert.ok(results.latency >= 0, results.latency)
+              assert.ok(results.latency <= 1000, results.latency)
               begin()
             })
           })

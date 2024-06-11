@@ -10,7 +10,7 @@ module.exports = () => async (bot) => {
   await bot.test.setInventorySlot(6, new Item(bot.registry.itemsByName.elytra.id, 1))
   if (supportsFireworkRockets) {
     const fireworkItem = bot.registry.itemsArray.find(item => item.displayName === 'Firework Rocket')
-    assert.ok(fireworkItem !== undefined)
+    assert.notStrictEqual(fireworkItem, undefined)
     await bot.test.setInventorySlot(36, new Item(fireworkItem.id, 64))
   }
   await bot.test.teleport(bot.entity.position.offset(0, 100, 0))
@@ -35,7 +35,7 @@ module.exports = () => async (bot) => {
   }
   await bot.waitForTicks(3)
   let lateActivations = 0
-  assert.ok(bot.fireworkRocketDuration > 0)
+  assert.ok(bot.fireworkRocketDuration > 0, `${bot.fireworkRocketDuration} > 0`)
   for (let i = bot.fireworkRocketDuration; i > 0; --i) {
     await bot.waitForTicks(1)
     assert.ok(bot.entity.elytraFlying)
@@ -45,5 +45,5 @@ module.exports = () => async (bot) => {
     }
     assert.ok(lateActivations <= activationTicks)
   }
-  assert.ok(bot.fireworkRocketDuration === 0)
+  assert.strictEqual(bot.fireworkRocketDuration, 0)
 }

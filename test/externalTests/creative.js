@@ -14,13 +14,13 @@ module.exports = () => async (bot) => {
     bot.creative.setInventorySlot(SLOT, item1)
   } catch (err) {
     assert.ok(err instanceof Error, 'The error has not been passed')
-    assert.ok(bot.inventory.slots[SLOT] == null)
+    assert.equal(bot.inventory.slots[SLOT], null)
   }
 
   // setting a slot once works
   await promise
   assert.ok(bot.inventory.slots[SLOT] != null)
-  assert.ok(bot.inventory.slots[SLOT].type === item2.type)
+  assert.strictEqual(bot.inventory.slots[SLOT].type, item2.type)
   // set the same item in the same slot again to ensure we don't hang
   const returnValue = await Promise.race([
     bot.creative.setInventorySlot(SLOT, item2),

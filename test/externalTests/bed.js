@@ -22,7 +22,7 @@ module.exports = () => async (bot) => {
   await bot.test.wait(1000)
 
   console.log(bot.time.timeOfDay, bot.blockAt(bedPos1).name, bot.blockAt(bedPos2).name)
-  assert(bot.time.timeOfDay >= midnight)
+  assert(bot.time.timeOfDay >= midnight, `${bot.time.timeOfDay} >= ${midnight}`)
   assert(bot.blockAt(bedPos1).name.endsWith('bed'))
   assert(bot.blockAt(bedPos2).name.endsWith('bed'))
 
