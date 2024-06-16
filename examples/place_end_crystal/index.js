@@ -51,7 +51,7 @@ bot.on('chat', async (ign, msg) => {
       const { x: aboveX, y: aboveY, z: aboveZ } = block.position.offset(0, 1, 0)
       const blockBoundingBox = new AABB(aboveX, aboveY, aboveZ, aboveX + 1, aboveY + 2, aboveZ + 1)
       const entityAABBs = Object.values(bot.entities).map(entity => {
-        // taken from taken from https://github.com/PrismarineJS/prismarine-physics/blob/d145e54a4bb8604300258badd7563f59f2101922/index.js#L92
+        // taken from https://github.com/PrismarineJS/prismarine-physics/blob/d145e54a4bb8604300258badd7563f59f2101922/index.js#L92
         const w = entity.height / 2
         const { x, y, z } = entity.position
         return new AABB(-w, 0, -w, w, entity.height, w).offset(x, y, z)
