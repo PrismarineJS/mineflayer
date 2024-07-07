@@ -189,7 +189,6 @@ function inject (bot) {
 
     const runExampleOnReady = async () => {
       await onceWithCleanup(bot, 'chat', {
-        timeout,
         checkCondition: (username, message) => message === 'Ready!'
       })
       return run(childBotName)
