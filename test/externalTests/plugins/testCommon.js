@@ -6,6 +6,7 @@ const process = require('process')
 const assert = require('assert')
 const { sleep, onceWithCleanup, withTimeout } = require('../../../lib/promise_utils')
 
+const timeout = 5000
 module.exports = inject
 
 function inject (bot) {
@@ -109,7 +110,10 @@ function inject (bot) {
     // this function behaves the same whether we start in creative mode or not.
     // also, creative mode is always allowed for ops, even if server.properties says force-gamemode=true in survival mode.
     let i = 0
-    const msgProm = onceWithCleanup(bot, 'message', { checkCondition: msg => gameModeChangedMessages.includes(msg.translate) && i++ > 0 && bot.game.gameMode === getGM(value) })
+    const msgProm = onceWithCleanup(bot, 'message', {
+      timeout,
+      checkCondition: msg => gameModeChangedMessages.includes(msg.translate) && i++ > 0 && bot.game.gameMode === getGM(value)
+    })
 
     // do it three times to ensure that we get feedback
     bot.chat(`/gamemode ${getGM(value)}`)
@@ -119,11 +123,14 @@ function inject (bot) {
   }
 
   async function clearInventory () {
-    const msgProm = onceWithCleanup(bot, 'message', { checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success' })
+    const msgProm = onceWithCleanup(bot, 'message', {
+      timeout,
+      checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
+    })
     bot.chat('/give @a stone 1')
-    await onceWithCleanup(bot.inventory, 'updateSlot', { checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
+    await onceWithCleanup(bot.inventory, 'updateSlot', { timeout, checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
     const inventoryClearedProm = Promise.all(bot.inventory.slots.filter(item => item)
-      .map(item => onceWithCleanup(bot.inventory, `updateSlot:${item.slot}`, { checkCondition: (oldItem, newItem) => newItem === null })))
+      .map(item => onceWithCleanup(bot.inventory, `updateSlot:${item.slot}`, { timeout, checkCondition: (oldItem, newItem) => newItem === null })))
     bot.chat('/clear') // don't rely on the message (as it'll come to early), wait for the result of /clear instead
     await msgProm // wait for the message so it doesn't leak into chat tests
     await inventoryClearedProm
@@ -140,6 +147,7 @@ function inject (bot) {
     bot.chat(`/tp ${bot.username} ${position.x} ${position.y} ${position.z}`)
 
     return onceWithCleanup(bot, 'move', {
+      timeout,
       checkCondition: () => bot.entity.position.distanceTo(position) < 0.9
     })
   }
@@ -155,6 +163,7 @@ function inject (bot) {
 
   async function tellAndListen (to, what, listen) {
     const chatMessagePromise = onceWithCleanup(bot, 'chat', {
+      timeout,
       checkCondition: (username, message) => username === to && listen(message)
     })
 
@@ -168,6 +177,7 @@ function inject (bot) {
 
     const detectChildJoin = async () => {
       const [message] = await onceWithCleanup(bot, 'message', {
+        timeout,
         checkCondition: message => message.json.translate === 'multiplayer.player.joined'
       })
       childBotName = message.json.with[0].insertion
@@ -179,6 +189,7 @@ function inject (bot) {
 
     const runExampleOnReady = async () => {
       await onceWithCleanup(bot, 'chat', {
+        timeout,
         checkCondition: (username, message) => message === 'Ready!'
       })
       return run(childBotName)
