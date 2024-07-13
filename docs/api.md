@@ -808,7 +808,7 @@ Create and return an instance of the class bot.
  * checkTimeoutInterval : default to `30*1000` (30s), check if keepalive received at that period, disconnect otherwise.
  * loadInternalPlugins : defaults to true
  * storageBuilder : an optional function, takes as argument version and worldName and return an instance of something with the same API as prismarine-provider-anvil. Will be used to save the world.
- * client : an instance of node-minecraft-protocol, if not specified, mineflayer makes it's own client. This can be used to enable using mineflayer through a proxy of many clients or a vanilla client and a mineflayer client.
+ * client : an instance of node-minecraft-protocol, if not specified, mineflayer makes its own client. This can be used to enable using mineflayer through a proxy of many clients or a vanilla client and a mineflayer client.
  * brand : the brand name for the client to use. Defaults to vanilla. Can be used to simulate custom clients for servers that require it.
  * respawn : when set to false disables bot from automatically respawning, defaults to true.
  * plugins : object : defaults to {}
@@ -1892,7 +1892,7 @@ dig any other blocks until the block has been broken, or you call
 `bot.stopDigging()`.
 
  * `block` - the block to start digging into
- * `forceLook` - (optional) if true, look at the block and start mining instantly. If false, the bot will slowly turn to the block to mine. Additionally, this can be assigned to 'ignore' to prevent the bot from moving it's head at all. Also, this can be assigned to 'raycast' to raycast from the bots head to place where the bot is looking.
+ * `forceLook` - (optional) if true, look at the block and start mining instantly. If false, the bot will slowly turn to the block to mine. Additionally, this can be assigned to 'ignore' to prevent the bot from moving its head at all. Also, this can be assigned to 'raycast' to raycast from the bots head to place where the bot is looking.
  * `digFace` - (optional) Default is 'auto' looks at the center of the block and mines the top face. Can also be a vec3 vector
  of the face the bot should be looking at when digging the block. For example: ```vec3(0, 1, 0)``` when mining the top. Can also be 'raycast' raycast checks if there is a face visible by the bot and mines that face. Useful for servers with anti cheat.
 
@@ -2249,4 +2249,4 @@ Note that while flying, `bot.entity.velocity` will not be accurate.
 
 #### bot.creative.stopFlying()
 
-Restores `bot.physics.gravity` to it's original value.
+Restores `bot.physics.gravity` to its original value.
