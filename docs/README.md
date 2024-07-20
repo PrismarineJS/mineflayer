@@ -43,7 +43,7 @@ npm install mineflayer
 
 To update mineflayer (or any Node.js) package and its dependencies, use 
 ```bash
-npm update --depth 9999
+npm update
 ```
 
 ## Documentation
