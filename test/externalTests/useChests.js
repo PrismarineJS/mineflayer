@@ -153,7 +153,7 @@ module.exports = () => async (bot) => {
         const randomItem = getRandomStackableItem()
         const item = bot.registry.itemsByName[randomItem]
         bot.chat(`/give ${bot.username} ${item.name} ${Math.ceil(Math.random() * item.stackSize)}`)
-        await onceWithCleanup(window, 'updateSlot', { 
+        await onceWithCleanup(window, 'updateSlot', {
           timeout: 5000,
           checkCondition: (slot, oldItem, newItem) => slot === window.hotbarStart && newItem?.name === item.name
         })
