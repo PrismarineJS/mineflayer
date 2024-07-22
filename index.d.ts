@@ -165,6 +165,13 @@ export interface BotEvents {
   particle: (particle: Particle) => Promise<void> | void
 }
 
+export interface CommandBlockOptions {
+  mode: number,
+  trackOutput: boolean,
+  conditional: boolean,
+  alwaysActive: boolean
+}
+
 export interface Bot extends TypedEmitter<BotEvents> {
   username: string
   protocolVersion: string
@@ -380,13 +387,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
   ) => Promise<void>
 
   
-  export interface CommandBlockOptions {
-    mode: number,
-    trackOutput: boolean,
-    conditional: boolean,
-    alwaysActive: boolean
-  }
-  export function setCommandBlock(pos: Vec3, command: string, options: CommandBlockOptions) => void
+  
+  setCommandBlock: (pos: Vec3, command: string, options: CommandBlockOptions) => void
 
   clickWindow: (
     slot: number,
