@@ -649,7 +649,7 @@ export class Painting {
 interface StorageEvents {
   open: () => void
   close: () => void
-  updateSlot: (oldItem: Item | null, newItem: Item | null) => void
+  updateSlot: (slot: number, oldItem: Item | null, newItem: Item | null) => void
 }
 
 interface FurnaceEvents extends StorageEvents {
