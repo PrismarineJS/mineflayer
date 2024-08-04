@@ -292,21 +292,21 @@ for (const supportedVersion of mineflayer.testedVersions) {
             const packetName = meta.name
             switch (packetName) {
               case 'teleport_confirm': {
-                assert.ok(basePosition.teleportId === data.teleportId)
+                assert.strictEqual(basePosition.teleportId, data.teleportId)
                 break
               }
               case 'position_look': {
                 if (!check) return
                 if (absolute) {
-                  assert.ok(bot.entity.velocity.y === 0)
+                  assert.strictEqual(bot.entity.velocity.y, 0)
                 } else {
-                  assert.ok(bot.entity.velocity.y !== 0)
+                  assert.notStrictEqual(bot.entity.velocity.y, 0)
                 }
-                assert.ok(basePosition.x === data.x)
-                assert.ok(basePosition.y === data.y)
-                assert.ok(basePosition.z === data.z)
-                assert.ok(basePosition.yaw === data.yaw)
-                assert.ok(basePosition.pitch === data.pitch)
+                assert.strictEqual(basePosition.x, data.x)
+                assert.strictEqual(basePosition.y, data.y)
+                assert.strictEqual(basePosition.z, data.z)
+                assert.strictEqual(basePosition.yaw, data.yaw)
+                assert.strictEqual(basePosition.pitch, data.pitch)
                 check = false
                 break
               }
@@ -380,8 +380,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
         let landed = false
         bot.on('move', () => {
           if (landed) return
-          assert.ok(bot.entity.position.y <= y)
-          assert.ok(bot.entity.position.y >= pos.y)
+          assert.ok(bot.entity.position.y <= y, bot.entity.position.y)
+          assert.ok(bot.entity.position.y >= pos.y, bot.entity.position.y)
           y = bot.entity.position.y
           if (bot.entity.position.y <= pos.y + 1) {
             assert.strictEqual(bot.entity.position.y, pos.y + 1)
@@ -462,12 +462,12 @@ for (const supportedVersion of mineflayer.testedVersions) {
         }
         server.on('playerJoin', async (client) => {
           bot.once('respawn', () => {
-            assert.ok(bot.world.getColumn(0, 0) !== undefined)
+            assert.ok(bot.world.getColumn(0, 0))
             bot.once('respawn', () => {
-              assert.ok(bot.world.getColumn(0, 0) === undefined)
+              assert.strictEqual(bot.world.getColumn(0, 0), undefined)
               done()
             })
-            respawnPacket.worldName = 'minecraft:nether'
+            respawnPacket.worldName = 'minecraft:the_nether'
             if (bot.supportFeature('usesLoginPacket')) {
               respawnPacket.dimension.name = 'e'
             } else {
@@ -495,15 +495,15 @@ for (const supportedVersion of mineflayer.testedVersions) {
           if (bot.supportFeature('transactionPacketExists')) {
             const transactionPacket = { windowId: 0, action: 42, accepted: false }
             client.once('transaction', (data, meta) => {
-              assert.ok(meta.name === 'transaction')
-              assert.ok(data.action === 42)
-              assert.ok(data.accepted === true)
+              assert.strictEqual(meta.name, 'transaction')
+              assert.strictEqual(data.action, 42)
+              assert.strictEqual(data.accepted, true)
               done()
             })
             client.write('transaction', transactionPacket)
           } else {
             client.once('pong', (data) => {
-              assert(data.id === 42)
+              assert.strictEqual(data.id, 42)
               done()
             })
             client.write('ping', { id: 42 })
@@ -521,10 +521,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
           client.write('login', loginPacket)
           bot.once('login', () => {
-            assert.ok(bot.entity.id === 0)
+            assert.strictEqual(bot.entity.id, 0)
             loginPacket.entityId = 42
             bot.once('login', () => {
-              assert.ok(bot.entity.id === 42)
+              assert.strictEqual(bot.entity.id, 42)
               done()
             })
             client.write('login', loginPacket)

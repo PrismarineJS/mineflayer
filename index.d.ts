@@ -114,6 +114,7 @@ export interface BotEvents {
   playerLeft: (entity: Player) => Promise<void> | void
   blockUpdate: (oldBlock: Block | null, newBlock: Block) => Promise<void> | void
   'blockUpdate:(x, y, z)': (oldBlock: Block | null, newBlock: Block | null) => Promise<void> | void
+  dimensionChange: (dimension: Dimension) => Promise<void> | void
   chunkColumnLoad: (entity: Vec3) => Promise<void> | void
   chunkColumnUnload: (entity: Vec3) => Promise<void> | void
   soundEffectHeard: (
