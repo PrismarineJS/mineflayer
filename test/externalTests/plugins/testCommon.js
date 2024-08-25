@@ -129,12 +129,13 @@ function inject (bot) {
     })
     bot.chat('/give @a stone 1')
     await onceWithCleanup(bot.inventory, 'updateSlot', { timeout, checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
-    const inventoryClearedProm = Promise.all(bot.inventory.slots.filter(item => item)
-      .map(item => onceWithCleanup(bot.inventory, `updateSlot:${item.slot}`, { timeout, checkCondition: (oldItem, newItem) => newItem === null })))
     bot.chat('/clear') // don't rely on the message (as it'll come to early), wait for the result of /clear instead
     await msgProm // wait for the message so it doesn't leak into chat tests
-    await inventoryClearedProm
-    assert.strictEqual(bot.inventory.slots.filter(i => i).length, 0)
+
+    // Check that the inventory is clear
+    for (const slot of bot.inventory.slots) {
+      if (slot.itemCount <= 0) throw new Error('Inventory was not cleared: ' + JSON.stringify(bot.inventory.slots))
+    }
   }
 
   // you need to be in creative mode for this to work

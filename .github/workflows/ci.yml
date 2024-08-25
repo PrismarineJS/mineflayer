@@ -57,5 +57,7 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - run: cd node_modules && cd minecraft-data && mv minecraft-data minecraft-data-old && git clone -b pc1.20.5 https://github.com/extremeheat/minecraft-data/ --depth 1 && node bin/generate_data.js
+      - run: cd node_modules/protodef && git clone https://github.com/ProtoDef-io/ProtoDef
+      - run: npm run compileProtocol
       - name: Start Tests
         run: npm run mocha_test -- -g ${{ matrix.mcVersion }}v
