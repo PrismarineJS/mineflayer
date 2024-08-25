@@ -10,7 +10,8 @@
     "pretest": "npm run lint",
     "lint": "standard && standard-markdown",
     "fix": "standard --fix && standard-markdown --fix",
-    "prepublishOnly": "cp docs/README.md README.md"
+    "prepublishOnly": "cp docs/README.md README.md",
+    "compileProtocol": "node test/common/protodefCompile.js"
   },
   "repository": {
     "type": "git",
@@ -35,7 +36,7 @@
     "prismarine-registry": "extremeheat/prismarine-registry#pc1.20.5",
     "prismarine-windows": "^2.9.0",
     "prismarine-world": "^3.6.0",
-    "protodef": "^1.14.0",
+    "protodef": "github:extremeheat/node-protodef#fix-anon-containers",
     "typed-emitter": "^1.0.0",
     "vec3": "^0.1.7"
   },
@@ -45,6 +46,7 @@
     "minecraft-wrap": "^1.3.0",
     "mineflayer": "file:.",
     "mocha": "^10.0.0",
+    "protodef-yaml": "^1.5.3",
     "standard": "^17.0.0",
     "standard-markdown": "^7.1.0",
     "typescript": "^5.4.5"
