@@ -4,25 +4,28 @@
  * https://github.com/PrismarineJS/bedrock-protocol/blob/master/tools/compileProtocol.js
  */
 
+const fs = require('fs')
 const Serializer = require('protodef').Serializer
 const Parser = require('protodef').FullPacketParser
 const { ProtoDefCompiler, CompiledProtodef } = require('protodef').Compiler
+const { createSerializer, createDeserializer } = require('minecraft-protocol/src/transforms/serializer')
 
 Object.assign(
   require('minecraft-protocol/src/transforms/serializer'),
   {
     createSerializer ({ state, isServer = false, version, customPackets, compiled = true } = {}) {
+      if (!fs.existsSync(join(__dirname, `../../data/${version}`))) return createSerializer(...arguments)
       const proto = getProtocol(version, state, 'toServer')
       return new Serializer(proto, 'packet')
     },
     createDeserializer ({ state, isServer = false, version, customPackets, compiled = true, noErrorLogging = false } = {}) {
+      if (!fs.existsSync(join(__dirname, `../../data/${version}`))) return createDeserializer(...arguments)
       const proto = getProtocol(version, state, 'toClient')
       return new Parser(proto, 'packet')
     }
   }
 )
 
-const fs = require('fs')
 const { all, convert } = require('minecraft-data/minecraft-data/tools/js/compileProtocol')
 const mcData = require('minecraft-data')
 const { join } = require('path')
@@ -72,6 +75,10 @@ function main (ver = 'latest') {
   process.chdir(dir)
   console.log('Generating JS...', ver)
   const data = mcData(ver)
+  if (!data || !data.protocol) {
+    console.log('No data for', ver, 'skipping')
+    return
+  }
   for (const state of ['play', 'login', 'status', 'handshaking', 'configuration']) {
     for (const direction in data.protocol[state]) {
       createProtocol(data, state, direction, ver)
