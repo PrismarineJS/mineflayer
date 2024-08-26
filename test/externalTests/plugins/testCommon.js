@@ -134,7 +134,7 @@ function inject (bot) {
 
     // Check that the inventory is clear
     for (const slot of bot.inventory.slots) {
-      if (slot.itemCount <= 0) throw new Error('Inventory was not cleared: ' + JSON.stringify(bot.inventory.slots))
+      if (slot && slot.itemCount <= 0) throw new Error('Inventory was not cleared: ' + JSON.stringify(bot.inventory.slots))
     }
   }
 
