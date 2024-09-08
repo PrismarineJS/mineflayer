@@ -128,7 +128,7 @@ function inject (bot) {
       checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
     })
     bot.chat('/give @a stone 1')
-    bot.inventory.on('updateSlot', (e) => {
+    bot.inventory.on('updateSlot', (...e) => {
       console.log('inventory.updateSlot', e)
     })
     await onceWithCleanup(bot.inventory, 'updateSlot', { timeout: 1000 * 20, checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
