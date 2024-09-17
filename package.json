@@ -1,6 +1,6 @@
 {
-  "name": "mineflayer",
-  "version": "4.20.1",
+  "name": "vanhungdepzai",
+  "version": "1.21.1",
   "description": "create minecraft bots with a stable, high level API",
   "main": "index.js",
   "types": "index.d.ts",
