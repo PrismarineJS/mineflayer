@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 
+require('./common/protodefCompile')
 const assert = require('assert')
 const mineflayer = require('../')
 const commonTest = require('./externalTests/plugins/testCommon')
@@ -132,7 +133,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         const runTest = (testName, testFunction) => {
           return function (done) {
             this.timeout(TEST_TIMEOUT_MS)
-            bot.test.sayEverywhere(`starting ${testName}`)
+            bot.test.sayEverywhere(`### Starting ${testName}`)
             testFunction(bot, done).then(res => done()).catch(e => done(e))
           }
         }

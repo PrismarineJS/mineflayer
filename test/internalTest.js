@@ -58,6 +58,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         // 25565 - local server, 25566 - proxy server
         port: 25567
       })
+      console.log('Server Codec', server.registryCodec)
       server.on('listening', () => {
         bot = mineflayer.createBot({
           username: 'player',
