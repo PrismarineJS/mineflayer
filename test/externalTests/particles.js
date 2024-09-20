@@ -5,7 +5,11 @@ module.exports = () => async (bot) => {
 
   return new Promise((resolve, reject) => {
     function onParticleEvent (particle) {
-      assert.strictEqual(particle.id, particleData.id)
+      if (typeof particle.id === 'number') {
+        assert.strictEqual(particle.id, particleData.id)
+      } else {
+        assert.strictEqual(particle.id, particleData.name)
+      }
       assert.strictEqual(particle.name, particleData.name)
       assert.strictEqual(particle.position.x, bot.entity.position.x)
       assert.strictEqual(particle.position.y, bot.entity.position.y)
