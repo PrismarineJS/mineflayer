@@ -56,6 +56,5 @@ jobs:
           java-package: jre
       - name: Install Dependencies
         run: npm install
-      - run: npm run compileProtocol
       - name: Start Tests
         run: npm run mocha_test -- -g ${{ matrix.mcVersion }}v
