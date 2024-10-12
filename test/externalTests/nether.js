@@ -14,12 +14,14 @@ module.exports = () => async (bot) => {
 
   const p = new Promise((resolve, reject) => {
     bot._client.on('open_sign_entity', (packet) => {
+      console.log('Open sign', packet)
       const sign = bot.blockAt(new Vec3(packet.location))
       bot.updateSign(sign, '1\n2\n3\n')
 
       setTimeout(() => {
         // Get updated sign
         const sign = bot.blockAt(bot.entity.position)
+        console.log('Updated sign', sign)
 
         assert.strictEqual(sign.signText.trimEnd(), '1\n2\n3')
 
