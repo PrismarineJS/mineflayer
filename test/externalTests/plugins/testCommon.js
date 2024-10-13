@@ -148,7 +148,7 @@ function inject (bot) {
   }
 
   async function teleport (position) {
-    bot.chat(`/tp ${bot.username} ${position.x} ${position.y} ${position.z}`)
+    bot.test.sayEverywhere(`/execute in overworld run tp ${bot.username} ${position.x} ${position.y} ${position.z}`)
 
     return onceWithCleanup(bot, 'move', {
       timeout,

@@ -50,5 +50,5 @@ module.exports = () => async (bot) => {
   await bot.lookAt(lowerBlock.position, true)
   await bot.test.setInventorySlot(36, new Item(signItem.id, 1, 0))
   await bot.placeBlock(lowerBlock, new Vec3(0, 1, 0))
-  return p
+  await p
 }
