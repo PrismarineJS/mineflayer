@@ -477,14 +477,12 @@ for (const supportedVersion of mineflayer.testedVersions) {
             })
             if (bot.supportFeature('spawnRespawnWorldDataField')) {
               respawnPacket.worldState.name = 'minecraft:nether'
-            }
-            else {
+            } else {
               respawnPacket.worldName = 'minecraft:nether'
             }
             if (bot.supportFeature('spawnRespawnWorldDataField')) {
               respawnPacket.worldState.dimension = 1
-            }
-            else if (bot.supportFeature('usesLoginPacket')) {
+            } else if (bot.supportFeature('usesLoginPacket')) {
               respawnPacket.dimension.name = 'e'
             } else {
               respawnPacket.dimension = 1
