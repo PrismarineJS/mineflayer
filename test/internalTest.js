@@ -58,6 +58,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         // 25565 - local server, 25566 - proxy server
         port: 25567
       })
+      console.log('Server Codec', server.registryCodec)
       server.on('listening', () => {
         bot = mineflayer.createBot({
           username: 'player',
@@ -440,6 +441,13 @@ for (const supportedVersion of mineflayer.testedVersions) {
               }
             }
           }
+          if (bot.supportFeature('spawnRespawnWorldDataField')) {
+            respawnPacket = {
+              worldState: respawnPacket
+            }
+            respawnPacket.worldState.name = loginPacket.worldName
+            respawnPacket.worldState.dimension = loginPacket.dimension
+          }
         } else {
           respawnPacket = {
             dimension: 0,
@@ -467,8 +475,14 @@ for (const supportedVersion of mineflayer.testedVersions) {
               assert.ok(bot.world.getColumn(0, 0) === undefined)
               done()
             })
-            respawnPacket.worldName = 'minecraft:nether'
-            if (bot.supportFeature('usesLoginPacket')) {
+            if (bot.supportFeature('spawnRespawnWorldDataField')) {
+              respawnPacket.worldState.name = 'minecraft:nether'
+            } else {
+              respawnPacket.worldName = 'minecraft:nether'
+            }
+            if (bot.supportFeature('spawnRespawnWorldDataField')) {
+              respawnPacket.worldState.dimension = 1
+            } else if (bot.supportFeature('usesLoginPacket')) {
               respawnPacket.dimension.name = 'e'
             } else {
               respawnPacket.dimension = 1
@@ -870,6 +884,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
           if (bot.registry.supportFeature('mcDataHasEntityMetadata')) {
             metadataPacket.metadata[0].type = 'item_stack'
           }
+          metadataPacket.metadata[0].value.addedComponentCount = 0
+          metadataPacket.metadata[0].value.removedComponentCount = 0
+          metadataPacket.metadata[0].value.components = []
+          metadataPacket.metadata[0].value.removeComponents = []
 
           client.write('entity_metadata', metadataPacket)
         })
