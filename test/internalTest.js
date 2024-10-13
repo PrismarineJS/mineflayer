@@ -441,6 +441,13 @@ for (const supportedVersion of mineflayer.testedVersions) {
               }
             }
           }
+          if (bot.supportFeature('spawnRespawnWorldDataField')) {
+            respawnPacket = {
+              worldState: respawnPacket
+            }
+            respawnPacket.worldState.name = loginPacket.worldName
+            respawnPacket.worldState.dimension = loginPacket.dimension
+          }
         } else {
           respawnPacket = {
             dimension: 0,
@@ -468,8 +475,16 @@ for (const supportedVersion of mineflayer.testedVersions) {
               assert.ok(bot.world.getColumn(0, 0) === undefined)
               done()
             })
-            respawnPacket.worldName = 'minecraft:nether'
-            if (bot.supportFeature('usesLoginPacket')) {
+            if (bot.supportFeature('spawnRespawnWorldDataField')) {
+              respawnPacket.worldState.name = 'minecraft:nether'
+            }
+            else {
+              respawnPacket.worldName = 'minecraft:nether'
+            }
+            if (bot.supportFeature('spawnRespawnWorldDataField')) {
+              respawnPacket.worldState.dimension = 1
+            }
+            else if (bot.supportFeature('usesLoginPacket')) {
               respawnPacket.dimension.name = 'e'
             } else {
               respawnPacket.dimension = 1
