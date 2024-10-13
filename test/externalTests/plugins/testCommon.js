@@ -148,8 +148,11 @@ function inject (bot) {
   }
 
   async function teleport (position) {
-    bot.test.sayEverywhere(`/execute in overworld run tp ${bot.username} ${position.x} ${position.y} ${position.z}`)
-
+    if (bot.supportFeature('hasExecuteCommand')) {
+      bot.test.sayEverywhere(`/execute in overworld run teleport ${bot.username} ${position.x} ${position.y} ${position.z}`)
+    } else {
+      bot.test.sayEverywhere(`/tp ${bot.username} ${position.x} ${position.y} ${position.z}`)
+    }
     return onceWithCleanup(bot, 'move', {
       timeout,
       checkCondition: () => bot.entity.position.distanceTo(position) < 0.9
