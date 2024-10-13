@@ -884,6 +884,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
           if (bot.registry.supportFeature('mcDataHasEntityMetadata')) {
             metadataPacket.metadata[0].type = 'item_stack'
           }
+          metadataPacket.metadata[0].value.addedComponentCount = 0
+          metadataPacket.metadata[0].value.removedComponentCount = 0
+          metadataPacket.metadata[0].value.components = []
+          metadataPacket.metadata[0].value.removeComponents = []
 
           client.write('entity_metadata', metadataPacket)
         })
