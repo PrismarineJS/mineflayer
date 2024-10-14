@@ -1,3 +1,6 @@
+## 4.22.0
+* [Remove debug logging (#3478)](https://github.com/PrismarineJS/mineflayer/commit/eb29d350ede0590fce17e04bf21071807a87e3a1) (thanks @extremeheat)
+
 ## 4.21.0
 * [1.20.6 (#3412)](https://github.com/PrismarineJS/mineflayer/commit/44fad41c18be5024564e24e1cdee624d35d4d387) (thanks @extremeheat)
 * [Update README.md (#3420)](https://github.com/PrismarineJS/mineflayer/commit/1c2a5c0fa78f74a63fabd7edde85c4a74db32dee) (thanks @SilkePilon)
