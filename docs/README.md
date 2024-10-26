@@ -234,6 +234,7 @@ The most updated and useful are :
 ## Projects Using Mineflayer
 
  * [Voyager](https://github.com/MineDojo/Voyager) An Open-Ended Embodied Agent with Large Language Models
+ * [mindcraft](https://github.com/kolbytn/mindcraft) Lib for using mineflayer with LLMs
  * [rom1504/rbot](https://github.com/rom1504/rbot)
    - [YouTube - building a spiral staircase](https://www.youtube.com/watch?v=UM1ZV5200S0)
    - [YouTube - replicating a building](https://www.youtube.com/watch?v=0cQxg9uDnzA)
