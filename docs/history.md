@@ -1,3 +1,7 @@
+## 4.23.0
+* [1.21 (#3480)](https://github.com/PrismarineJS/mineflayer/commit/4aa10fb45431940504c7809f078f1f410e7fa7a3) (thanks @Madlykeanu)
+* [Adding mindcraft to mineflayer readme](https://github.com/PrismarineJS/mineflayer/commit/dd00db42ba20682418d8fbd5629e1033dfb0ff20) (thanks @rom1504)
+
 ## 4.22.0
 * [Remove debug logging (#3478)](https://github.com/PrismarineJS/mineflayer/commit/eb29d350ede0590fce17e04bf21071807a87e3a1) (thanks @extremeheat)
 
