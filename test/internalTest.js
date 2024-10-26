@@ -58,7 +58,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
         // 25565 - local server, 25566 - proxy server
         port: 25567
       })
-      console.log('Server Codec', server.registryCodec)
       server.on('listening', () => {
         bot = mineflayer.createBot({
           username: 'player',
@@ -130,7 +129,19 @@ for (const supportedVersion of mineflayer.testedVersions) {
           const uuid = 'd3527a0b-bc03-45d5-a878-2aafdd8c8a43' // random
           const networkName = chatText('gary')
 
-          if (registry.supportFeature('useChatSessions')) {
+          if (registry.supportFeature('incrementedChatType')) {
+            client.write('player_chat', {
+              plainMessage: 'hello',
+              filterType: 0,
+              type: { registryIndex: 1 },
+              networkName,
+              previousMessages: [],
+              senderUuid: uuid,
+              timestamp: Date.now(),
+              index: 0,
+              salt: 0n
+            })
+          } else if (registry.supportFeature('useChatSessions')) {
             client.write('player_chat', {
               plainMessage: 'hello',
               filterType: 0,
@@ -909,9 +920,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
       const zombieId = entities.zombie ? entities.zombie.id : entities.Zombie.id
       let bedBlock
-      if (mineflayer.supportFeature('oneBlockForSeveralVariations', version.majorVersion)) {
+      if (bot.supportFeature('oneBlockForSeveralVariations', version.majorVersion)) {
         bedBlock = blocks.bed
-      } else if (mineflayer.supportFeature('blockSchemeIsFlat', version.majorVersion)) {
+      } else if (bot.supportFeature('blockSchemeIsFlat', version.majorVersion)) {
         bedBlock = blocks.red_bed
       }
       const bedId = bedBlock.id
@@ -945,7 +956,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           chunk.setBlockType(beds[bed].foot, bedId)
         }
 
-        if (mineflayer.supportFeature('blockStateId', version.majorVersion)) {
+        if (bot.supportFeature('blockStateId', version.majorVersion)) {
           chunk.setBlockStateId(beds[0].foot, 3 + bedBlock.minStateId) // { facing: north, occupied: false, part: foot }
           chunk.setBlockStateId(beds[0].head, 2 + bedBlock.minStateId) // { facing:north, occupied: false, part: head }
 
@@ -957,7 +968,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
           chunk.setBlockStateId(beds[3].foot, 11 + bedBlock.minStateId) // { facing: west, occupied: false, part: foot }
           chunk.setBlockStateId(beds[3].head, 10 + bedBlock.minStateId) // { facing: west, occupied: false, part: head }
-        } else if (mineflayer.supportFeature('blockMetadata', version.majorVersion)) {
+        } else if (bot.supportFeature('blockMetadata', version.majorVersion)) {
           chunk.setBlockData(beds[0].foot, 2) // { facing: north, occupied: false, part: foot }
           chunk.setBlockData(beds[0].head, 10) // { facing:north, occupied: false, part: head }
 
