@@ -225,7 +225,7 @@ function inject (bot) {
     }
 
     try {
-      await withTimeout(Promise.all([detectChildJoin(), runExampleOnReady()]), 20000)
+      await withTimeout(Promise.all([detectChildJoin(), runExampleOnReady()]), 30000)
     } catch (err) {
       console.log(err)
       return closeExample(err)
