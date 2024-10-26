@@ -32,7 +32,7 @@
     "prismarine-nbt": "^2.0.0",
     "prismarine-physics": "github:Madlykeanu/prismarine-physics#1.21",
     "prismarine-recipe": "^1.3.0",
-    "prismarine-registry": "^1.8.0",
+    "prismarine-registry": "github:SuperGamerTron/prismarine-registry#1.21",
     "prismarine-windows": "^2.9.0",
     "prismarine-world": "^3.6.0",
     "protodef": "1.17.0",
