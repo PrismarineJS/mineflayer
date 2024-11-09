@@ -152,9 +152,11 @@ module.exports = () => async (bot) => {
       if (Math.random() < slotPopulationFactor) {
         const randomItem = getRandomStackableItem()
         const item = bot.registry.itemsByName[randomItem]
-        console.log('createRandomLayout', randomItem, bot.registry.itemsByName)
         bot.chat(`/give ${bot.username} ${item.name} ${Math.ceil(Math.random() * item.stackSize)}`)
-        await onceWithCleanup(window, 'updateSlot', { checkCondition: (slot, oldItem, newItem) => slot === window.hotbarStart && newItem?.name === item.name })
+        await onceWithCleanup(window, 'updateSlot', {
+          timeout: 5000,
+          checkCondition: (slot, oldItem, newItem) => slot === window.hotbarStart && newItem?.name === item.name
+        })
 
         // await bot.clickWindow(slot, 0, 2)
         await bot.moveSlotItem(window.hotbarStart, slot)
