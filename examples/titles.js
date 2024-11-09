@@ -19,5 +19,4 @@ const bot = mineflayer.createBot({
 bot.on('title', (text, type) => {
   // type is either "title" or "subtitle"
   console.log(`Received ${type}: ${text}`)
-
 })
