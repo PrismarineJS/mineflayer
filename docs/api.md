@@ -169,7 +169,7 @@
       - ["respawn"](#respawn)
       - ["game"](#game)
       - ["resourcePack" (url, hash)](#resourcepack-url-hash)
-      - ["title"](#title)
+      - ["title" (title, type)](#title-title-type)
       - ["rain"](#rain)
       - ["weatherUpdate"](#weatherupdate)
       - ["time"](#time)
@@ -1237,11 +1237,12 @@ Emitted when the server changes any of the game properties.
 
 Emitted when the server sends a resource pack.
 
-#### "title"
+#### "title" (title, type)
 
 Emitted when the server sends a title
 
- * `text` - title's text
+ * `title` - title's text
+ * `type` - title's type "subtitle" or "title"
 
 #### "rain"
 
@@ -1771,7 +1772,7 @@ Checks if the given plugin is loaded (or scheduled to be loaded) on this bot.
 
 This function returns a `Promise`, with `void` as its argument upon completion.
 
-Sleep in a bed. `bedBlock` should be a `Block` instance which is a bed. 
+Sleep in a bed. `bedBlock` should be a `Block` instance which is a bed.
 
 #### bot.isABed(bedBlock)
 
@@ -1781,7 +1782,7 @@ Return true if `bedBlock` is a bed
 
 This function returns a `Promise`, with `void` as its argument upon completion.
 
-Get out of bed. 
+Get out of bed.
 
 #### bot.setControlState(control, state)
 
@@ -2120,7 +2121,7 @@ These are lower level methods for the inventory, they can be useful sometimes bu
 #### bot.clickWindow(slot, mouseButton, mode)
 
 This function returns a `Promise`, with `void` as its argument upon completion.
-  
+
 The only valid mode option at the moment is 0. Shift clicking or mouse dragging is not implemented.
 
 Click on the current window. See details at https://wiki.vg/Protocol#Click_Container

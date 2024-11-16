@@ -169,7 +169,7 @@
       - ["respawn"](#respawn)
       - ["game"](#game)
       - ["resourcePack" (url, hash)](#resourcepack-url-hash)
-      - ["title"](#title)
+      - ["title" (title, type)](#title-title-type)
       - ["rain"](#rain)
       - ["weatherUpdate"](#weatherupdate)
       - ["time"](#time)
@@ -1264,11 +1264,12 @@ UUID существа, который определяется боссом.
 
 Срабатывает, когда сервер отправляет ресурспак.
 
-#### "title"
+#### "title" (title, type)
 
 Срабатывает, когда сервер отправляет текст по центру экрана.
 
- * `text` - Текст на экране.
+ * `title` - Текст на экране.
+ * `type` - Тип текста "subtitle" или "title"
 
 #### "rain"
 
@@ -1634,7 +1635,7 @@ UUID существа, который определяется боссом.
 
 #### bot.recipesFor(itemType, metadata, minResultCount, craftingTable)
 
-Возвращает список рецептов(`Recipe`), которые вы можете использовать для крафта 
+Возвращает список рецептов(`Recipe`), которые вы можете использовать для крафта
 предмета(`itemType`) с мета-данными(`metadata`).
 
  * `itemType` - Числовой ID предмета, который вы хотите создать.
@@ -2116,7 +2117,7 @@ bot.once('login', () => {
 #### bot.clickWindow(slot, mouseButton, mode)
 
 Эта функция возвращает `Promise` с `void` в качестве аргумента при завершении.
-  
+
 Единственное действительное значение для `mode` - 0. Нажатие с шифтом или перемещение через мышь не реализовано.
 
 Нажимает на текущее окно. Подробнее - https://wiki.vg/Protocol#Click_Container
