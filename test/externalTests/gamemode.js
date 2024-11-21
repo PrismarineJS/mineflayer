@@ -19,10 +19,8 @@ module.exports = () => {
 
   addTest('after respawn', async (bot) => {
     await bot.test.becomeCreative()
-
-    bot.chat('/kill')
-
-    await onceWithCleanup(bot, 'respawn', { timeout: 2000 })
+    bot.test.selfKill()
+    await onceWithCleanup(bot, 'respawn', { timeout: 5000 })
     // Respawn packets send the gamemode. If the bot is in creative mode, it should respawn in creative mode. Tested <1.20
     assert.strictEqual(bot.game.gameMode, 'creative', 'Wrong gamemode after respawn')
   })
