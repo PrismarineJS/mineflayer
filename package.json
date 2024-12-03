@@ -22,7 +22,7 @@
   "license": "MIT",
   "dependencies": {
     "minecraft-data": "^3.76.0",
-    "minecraft-protocol": "^1.50.0",
+    "minecraft-protocol": "github:PrismarineJS/node-minecraft-protocol#1.21.3",
     "prismarine-biome": "^1.1.1",
     "prismarine-block": "^1.17.0",
     "prismarine-chat": "^1.7.1",

@@ -56,5 +56,6 @@ jobs:
           java-package: jre
       - name: Install Dependencies
         run: npm install
+      - run: cd node_modules && cd minecraft-data && mv minecraft-data minecraft-data-old && git clone -b pc1.21.3 https://github.com/GroobleDierne/minecraft-data.git --depth 1 && node bin/generate_data.js
       - name: Start Tests
         run: npm run mocha_test -- -g ${{ matrix.mcVersion }}v
