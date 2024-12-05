@@ -4,7 +4,7 @@ This Frequently Asked Question document is meant to help people for the most com
 
 ### I get an error (ie. protocol/data) when bot is trying to connect to minecraft server
 
-Make sure the Minecraft server version is supported (cf. root readme), else you should retry using one of the [mineflyer tested versions](../lib/version.js).
+Make sure the Minecraft server version is supported (cf. root readme), else you should retry using one of the [mineflayer tested versions](../lib/version.js).
 
 ### I get an error when trying to login with a microsoft account.
 
