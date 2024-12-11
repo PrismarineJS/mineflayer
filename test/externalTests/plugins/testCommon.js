@@ -25,6 +25,7 @@ function inject (bot) {
   bot.test.placeBlock = placeBlock
   bot.test.runExample = runExample
   bot.test.tellAndListen = tellAndListen
+  bot.test.selfKill = selfKill
   bot.test.wait = function (ms) {
     return new Promise((resolve) => { setTimeout(resolve, ms) })
   }
@@ -231,5 +232,9 @@ function inject (bot) {
       return closeExample(err)
     }
     return closeExample()
+  }
+
+  function selfKill () {
+    bot.chat('/kill @p')
   }
 }
