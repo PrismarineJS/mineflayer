@@ -53,6 +53,22 @@
       - [villager "ready"](#villager-ready)
       - [villager.trades](#villagertrades)
       - [villager.trade(tradeIndex, [times])](#villagertradetradeindex-times)
+    - [mineflayer.BrewingStand](#mineflayerbrewingstand)
+      - [brewingStand "update"](#brewingstand-update)
+      - [brewingStand "brewingStopped"](#brewingstand-brewingstopped)
+      - [brewingStand.takeIngredient()](#brewingstandtakeingredient)
+      - [brewingStand.takeFuel()](#brewingstandtakefuel)
+      - [brewingStand.takePotion(slot)](#brewingstandtakepotionslot)
+      - [brewingStand.takePotions()](#brewingstandtakepotions)
+      - [brewingStand.putIngredient(itemType, metadata, count)](#brewingstandputingredientitemtype-metadata-count)
+      - [brewingStand.putFuel(itemType, metadata, count)](#brewingstandputfuelitemtype-metadata-count)
+      - [brewingStand.putPotion(slot, itemType, metadata, count)](#brewingstandputpotionslot-itemtype-metadata-count)
+      - [brewingStand.ingredientItem()](#brewingstandingredientitem)
+      - [brewingStand.fuelItem()](#brewingstandfuelitem)
+      - [brewingStand.potions()](#brewingstandpotions)
+      - [brewingStand.fuel](#brewingstandfuel)
+      - [brewingStand.progress](#brewingstandprogress)
+      - [brewingStand.progressSeconds](#brewingstandprogressseconds)
     - [mineflayer.ScoreBoard](#mineflayerscoreboard)
       - [ScoreBoard.name](#scoreboardname)
       - [ScoreBoard.title](#scoreboardtitle)
@@ -661,6 +677,73 @@ Looks like:
 
 #### villager.trade(tradeIndex, [times])
 Is the same as [bot.trade(villagerInstance, tradeIndex, [times])](#bottradevillagerinstance-tradeindex-times)
+
+
+### mineflayer.BrewingStand
+
+Extends windows.Window for brewing stand.
+See `bot.openBrewingStand(brewingStandBlock)`.
+
+#### brewingStand "update"
+
+Fires when `brewingStand.fuel` or `brewingStand.progress` update.
+
+#### brewingStand "brewingStopped"
+
+Fires when the active brewing stand finishes brewing or gets stopped due to removal of ingredient.
+
+#### brewingStand.takeIngredient()
+
+This function returns a `Promise`, with `item` as its argument upon completion.
+
+#### brewingStand.takeFuel()
+
+This function returns a `Promise`, with `item` as its argument upon completion. Only works post-1.9.
+
+#### brewingStand.takePotion(slot)
+
+This function returns a `Promise`, with `item` as its argument upon completion. `slot` can be 0, 1, or 2.
+
+#### brewingStand.takePotions()
+
+This function takes all potions in the brewing stand. No return value.
+
+#### brewingStand.putIngredient(itemType, metadata, count)
+
+This function returns a `Promise`, with `void` as its argument upon completion.
+
+#### brewingStand.putFuel(itemType, metadata, count)
+
+This function returns a `Promise`, with `void` as its argument upon completion. Only works post-1.9.
+
+#### brewingStand.putPotion(slot, itemType, metadata, count)
+
+This function returns a `Promise`, with `void` as its argument upon completion. `slot` is the destination slot of the potion. Can be 0, 1, or 2.
+
+#### brewingStand.ingredientItem()
+
+Returns `Item` instance which is the brewing ingredient.
+
+#### brewingStand.fuelItem()
+
+Returns `Item` instance which is the fuel (blaze powder). Only works post-1.9.
+
+#### brewingStand.potions()
+
+Returns array of `Item` instances with `null` as empty slots.
+
+#### brewingStand.fuel
+
+How much fuel is left in the brewing stand. Integer between 0 and 20.
+
+#### brewingStand.progress
+
+Ticks until potion finishes brewing. Integer between 0 and 400.
+
+#### brewingStand.progressSeconds
+
+Seconds until potion finishes brewing. Decimal between 0 and 20.
+
 
 ### mineflayer.ScoreBoard
 
