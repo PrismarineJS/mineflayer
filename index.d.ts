@@ -363,6 +363,8 @@ export interface Bot extends TypedEmitter<BotEvents> {
     slot: number,
     pages: string[]
   ) => Promise<void>
+  
+  openBrewingStand: (brewingStand: Block) => Promise<BrewingStand>
 
   openContainer: (chest: Block | Entity, direction?: Vec3, cursorPos?: Vec3) => Promise<Chest | Dispenser>
 
@@ -659,6 +661,36 @@ interface FurnaceEvents extends StorageEvents {
 
 interface ConditionalStorageEvents extends StorageEvents {
   ready: () => void
+}
+
+export class BrewingStand extends Window<StorageManager> {
+  constructor ();
+  
+  fuel: any
+
+  progress: number
+
+  progressSeconds: number
+
+  takeIngredient: () => Promise<any>
+
+  takeFuel: () => Promise<any>
+
+  takePotion: (slot: number) => Promise<any>
+
+  takePotions: () => Promise<void>
+
+  putIngredient: (itemType: any, metadata: any, count: any) => Promise<void>
+
+  putFuel: (itemType: any, metadata: any, count: any) => Promise<void>
+
+  putPotion: (slot: any, itemType: any, metadata: any, count: any) => Promise<void>
+
+  ingredientItem: () => any
+
+  fuelItem: () => any
+
+  potions: () => any
 }
 
 export class Chest extends Window<StorageEvents> {
