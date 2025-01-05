@@ -890,8 +890,13 @@ export class Particle {
   );
 }
 
-export let testedVersions: string[]
-export let latestSupportedVersion: string
-export let oldestSupportedVersion: string
+export interface VersionDetails {
+  testedVersions: string[];
+  latestSupportedVersion: string;
+  oldestSupportedVersion: string;
+}
+
+export let supportedVersionsPC: VersionDetails
+export let supportedVersionsBedrock: VersionDetails
 
 export function supportFeature (feature: string, version: string): boolean

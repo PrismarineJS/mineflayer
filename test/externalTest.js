@@ -33,7 +33,7 @@ const download = require('minecraft-wrap').download
 
 const MC_SERVER_PATH = path.join(__dirname, 'server')
 
-for (const supportedVersion of mineflayer.testedVersions) {
+for (const supportedVersion of mineflayer.supportedVersionsPC.testedVersions) {
   let PORT = 25565
   const registry = require('prismarine-registry')(supportedVersion)
   const version = registry.version
