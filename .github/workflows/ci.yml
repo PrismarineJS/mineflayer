@@ -32,7 +32,7 @@ jobs:
     - id: set-matrix
       run: |
         node -e "
-          const testedVersions = require('./lib/version').testedVersions;
+          const testedVersions = require('./lib/version').pc.testedVersions;
           console.log('matrix='+JSON.stringify({'include': testedVersions.map(mcVersion => ({mcVersion}))}))
         " >> $GITHUB_OUTPUT
 
