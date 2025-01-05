@@ -7,7 +7,7 @@ const assert = require('assert')
 const { sleep } = require('../lib/promise_utils')
 const nbt = require('prismarine-nbt')
 
-for (const supportedVersion of mineflayer.testedVersions) {
+for (const supportedVersion of mineflayer.supportedVersionsPC.testedVersions) {
   const registry = require('prismarine-registry')(supportedVersion)
   const version = registry.version
   const Chunk = require('prismarine-chunk')(supportedVersion)
