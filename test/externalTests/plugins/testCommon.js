@@ -145,17 +145,21 @@ function inject (bot) {
   // DEBUG
   bot._client.on('packet', function (data, meta) {
     if (['chunk', 'time', 'light', 'alive'].some(e => meta.name.includes(e))) return
-    console.log('->', meta.name, JSON.stringify(data)?.slice(0, 120))
+    console.log('->', meta.name, JSON.stringify(data)?.slice(0, 250))
   })
   const oldWrite = bot._client.write
   bot._client.write = function (name, data) {
     if (['alive', 'pong', 'ping'].some(e => name.includes(e))) return
-    console.log('<-', name, JSON.stringify(data)?.slice(0, 120))
+    console.log('<-', name, JSON.stringify(data)?.slice(0, 250))
     oldWrite.apply(bot._client, arguments)
+  }
+  BigInt.prototype.toJSON ??= function () {
+    return this.toString()
   }
 
   // you need to be in creative mode for this to work
   async function setInventorySlot (targetSlot, item) {
+    console.trace('Setting inv slot to', targetSlot, JSON.stringify(item))
     assert(item === null || item.name !== 'unknown', `item should not be unknown ${JSON.stringify(item)}`)
     return bot.creative.setInventorySlot(targetSlot, item)
   }
