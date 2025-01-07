@@ -145,8 +145,14 @@ function inject (bot) {
   // DEBUG
   bot._client.on('packet', function (data, meta) {
     if (['chunk', 'time', 'light', 'alive'].some(e => meta.name.includes(e))) return
-    console.log('->', meta.name, JSON.stringify(data)?.slice(0, 100))
+    console.log('->', meta.name, JSON.stringify(data)?.slice(0, 120))
   })
+  const oldWrite = bot._client.write
+  bot._client.write = function (name, data) {
+    if (['alive', 'pong', 'ping'].some(e => name.includes(e))) return
+    console.log('<-', name, JSON.stringify(data)?.slice(0, 120))
+    oldWrite.apply(bot._client, arguments)
+  }
 
   // you need to be in creative mode for this to work
   async function setInventorySlot (targetSlot, item) {
