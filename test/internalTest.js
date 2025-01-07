@@ -254,9 +254,12 @@ for (const supportedVersion of mineflayer.testedVersions) {
           x: 1.5,
           y: 66,
           z: 1.5,
+          dx: 0, // 1.21.3
+          dy: 0, // 1.21.3
+          dz: 0, // 1.21.3
           pitch: 0,
           yaw: 0,
-          flags: 0,
+          flags: bot.registry.version['>=']('1.21.3') ? {} : 0,
           teleportId: 0
         }
         server.on('playerJoin', async (client) => {
@@ -351,9 +354,22 @@ for (const supportedVersion of mineflayer.testedVersions) {
             x: 1,
             y: 0,
             z: 0,
+            dx: 0, // 1.21.3
+            dy: 0, // 1.21.3
+            dz: 0, // 1.21.3
             pitch: 0,
             yaw: 0,
-            flags: 31,
+            flags: bot.registry.version['>=']('1.21.3')
+              ? {
+                  // flags = ["x", "y", "z", "yaw", "pitch", "dx", "dy", "dz", "yawDelta"]
+                  // 31 = 0b11111
+                  x: true,
+                  y: true,
+                  z: true,
+                  yaw: true,
+                  pitch: true
+                }
+              : 31,
             teleportId: 3
           }
           absolute = false
