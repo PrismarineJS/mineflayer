@@ -13,7 +13,18 @@ for (const supportedVersion of mineflayer.testedVersions) {
   const Chunk = require('prismarine-chunk')(supportedVersion)
   const isNewPlayerInfoFormat = registry.version['>=']('1.21.3')
   function wrapPlayerInfo (n) {
-    if (isNewPlayerInfoFormat) return { _value: n }
+    if (isNewPlayerInfoFormat) {
+      return {
+        _value: n,
+        add_player: (n & 1) !== 0,
+        initialize_chat: (n & 2) !== 0,
+        update_game_mode: (n & 4) !== 0,
+        update_listed: (n & 8) !== 0,
+        update_latency: (n & 16) !== 0,
+        update_display_name: (n & 32) !== 0,
+        update_priority: (n & 64) !== 0
+      }
+    }
     return n
   }
 
