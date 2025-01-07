@@ -11,8 +11,13 @@ for (const supportedVersion of mineflayer.testedVersions) {
   const registry = require('prismarine-registry')(supportedVersion)
   const version = registry.version
   const Chunk = require('prismarine-chunk')(supportedVersion)
-  const hasSignedChat = registry.supportFeature('signedChat')
+  const isNewPlayerInfoFormat = registry.version['>=']('1.20.3')
+  function wrapPlayerInfo (n) {
+    if (isNewPlayerInfoFormat) return { _value: n }
+    return n
+  }
 
+  const hasSignedChat = registry.supportFeature('signedChat')
   function chatText (text) {
     // TODO: move this to prismarine-chat in a new ChatMessage(text).toNotch(asNbt) method
     return registry.supportFeature('chatPacketsUseNbtComponents')
@@ -580,7 +585,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             assert.strictEqual(entity.username, player.displayName.toString())
             if (registry.supportFeature('playerInfoActionIsBitfield')) {
               client.write('player_info', {
-                action: 53,
+                action: wrapPlayerInfo(53),
                 data: [{
                   uuid: '1-2-3-4',
                   player: {
@@ -616,7 +621,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             assert.strictEqual('wvffle', player.displayName.toString())
             if (registry.supportFeature('playerInfoActionIsBitfield')) {
               client.write('player_info', {
-                action: 53,
+                action: wrapPlayerInfo(53),
                 data: [{
                   uuid: '1-2-3-4',
                   player: {
@@ -653,7 +658,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
           if (registry.supportFeature('playerInfoActionIsBitfield')) {
             client.write('player_info', {
-              action: 53,
+              action: wrapPlayerInfo(53),
               data: [{
                 uuid: '1-2-3-4',
                 player: {
@@ -736,7 +741,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
           if (registry.supportFeature('playerInfoActionIsBitfield')) {
             client.write('player_info', {
-              action: 53,
+              action: wrapPlayerInfo(53),
               data: [{
                 uuid: '1-2-3-4',
                 player: {
