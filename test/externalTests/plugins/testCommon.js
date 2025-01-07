@@ -146,7 +146,7 @@ function inject (bot) {
   async function setInventorySlot (targetSlot, item) {
     // DEBUG
     bot._client.on('packet', function (data, meta) {
-      console.log(meta.name, JSON.stringify(data).slice(0, 100))
+      console.log(meta.name, JSON.stringify(data)?.slice(0, 100))
     })
     assert(item === null || item.name !== 'unknown', `item should not be unknown ${JSON.stringify(item)}`)
     return bot.creative.setInventorySlot(targetSlot, item)
