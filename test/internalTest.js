@@ -11,7 +11,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
   const registry = require('prismarine-registry')(supportedVersion)
   const version = registry.version
   const Chunk = require('prismarine-chunk')(supportedVersion)
-  const isNewPlayerInfoFormat = registry.version['>=']('1.20.3')
+  const isNewPlayerInfoFormat = registry.version['>=']('1.21.3')
   function wrapPlayerInfo (n) {
     if (isNewPlayerInfoFormat) return { _value: n }
     return n
