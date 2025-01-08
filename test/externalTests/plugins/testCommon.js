@@ -144,7 +144,6 @@ function inject (bot) {
 
   // you need to be in creative mode for this to work
   async function setInventorySlot (targetSlot, item) {
-    console.trace('Setting inv slot to', targetSlot, JSON.stringify(item))
     assert(item === null || item.name !== 'unknown', `item should not be unknown ${JSON.stringify(item)}`)
     return bot.creative.setInventorySlot(targetSlot, item)
   }
