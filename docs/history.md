@@ -1,3 +1,6 @@
+## 4.25.0
+* [1.21.4 (#3546)](https://github.com/PrismarineJS/mineflayer/commit/8bbf5669f5ff3ea8a708633e51b47c312dc7a26b) (thanks @extremeheat)
+
 ## 4.24.0
 * [Support 1.21.3. (#3489)](https://github.com/PrismarineJS/mineflayer/commit/58ae9e5b5abf75139f4ba93fe4f34ef7ed3936e8) (thanks @rom1504)
 * [Fix out of bounds access leading to crash at spawn (#3535)](https://github.com/PrismarineJS/mineflayer/commit/3187368397e880ba8b32bb03affa18203cbcbb42) (thanks @wAIfu-DEV)
