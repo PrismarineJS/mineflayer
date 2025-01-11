@@ -159,6 +159,10 @@ connect: (client) => {
   `socks` is declared with `const socks = require('socks').SocksClient` and uses [this](https://www.npmjs.com/package/socks) package.
   Some servers might reject the connection. If that happens try adding `fakeHost: MC_SERVER_ADDRESS` to your createBot options.
   
+### How to handle re-entering the configuration phase?
+
+In the latest versions of the server, the bot needs to support re-entering the configuration phase. This can be managed by updating the `createBot` function to handle re-entering the configuration phase. Ensure that the bot's implementation includes logic to manage this phase transition.
+
 # Common Errors
 
 ### `UnhandledPromiseRejectionWarning: Error: Failed to read asymmetric key`
