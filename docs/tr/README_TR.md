@@ -218,13 +218,28 @@ En çok güncellenen ve en kullanışlı olan bazıları:
 
 ### Her şeyi test etme
 
-Basitçe `npm test` komutunu çalıştırın
+Basitçe
+```bash
+npm test
+```
+
+komutunu çalıştırın
 
 ### Özel bir sürümü test etme
-`npm test -- -g <version>` komutunu çalıştırın, `<version>` bir Minecraft sürümü olmalı (`1.12`, `1.15.2` gibi).
+
+```bash
+npm test -- -g <version>
+```
+
+komutunu çalıştırın, `<version>` bir Minecraft sürümü olmalı (`1.12`, `1.15.2` gibi).
 
 ### Özel bir şeyi test etme
-`npm test -- -g <test_name>` komutunu çalıştırın, `<test_name>` kısmının olduğu bölüm bir test adı olmalı (`bed`, `useChests`, `rayTrace` gibi).
+
+```bash
+npm test -- -g <test_name>
+```
+
+komutunu çalıştırın, `<test_name>` kısmının olduğu bölüm bir test adı olmalı (`bed`, `useChests`, `rayTrace` gibi).
 
 ## Lisans
-[MIT](LICENSE)
+[MIT](../../LICENSE)

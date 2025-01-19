@@ -1,5 +1,5 @@
 /*
- * This script will automaticly look at the closest entity.
+ * This script will automatically look at the closest entity.
  * It checks for a near entity every tick.
  */
 const mineflayer = require('mineflayer')

@@ -68,7 +68,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         bot.once('spawn', () => {
           wrap.writeServer('op flatbot\n')
           bot.once('messagestr', msg => {
-            if (msg === '[Server: Made flatbot a server operator]' || msg === '[Server: Opped flatbot]') {
+            if (msg.includes('Made flatbot a server operator') || msg === '[Server: Opped flatbot]') {
               done()
             }
           })
@@ -132,7 +132,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         const runTest = (testName, testFunction) => {
           return function (done) {
             this.timeout(TEST_TIMEOUT_MS)
-            bot.test.sayEverywhere(`starting ${testName}`)
+            bot.test.sayEverywhere(`### Starting ${testName}`)
             testFunction(bot, done).then(res => done()).catch(e => done(e))
           }
         }

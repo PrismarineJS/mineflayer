@@ -141,7 +141,7 @@
       - ["respawn"](#respawn)
       - ["game"](#game)
       - ["resourcePack" (url, hash)](#resourcepack-url-hash)
-      - ["title"](#title)
+      - ["title" (title, type)](#title-title-type)
       - ["rain"](#rain)
       - ["weatherUpdate"](#weatherupdate)
       - ["time"](#time)
@@ -1060,11 +1060,12 @@ Este evento é emitido quando o arquivo index é carregado. Você pode carregar 
 
 É emitido quando o servidor envia um pacote de recursos.
 
-#### "title"
+#### "title" (title, type)
 
 É emitido quando o servidor exibe um título.
 
- * `text` - texto do título
+ * `title` - texto do título
+ * `type` - tipo do título "subtitle" ou "title"
 
 #### "rain"
 

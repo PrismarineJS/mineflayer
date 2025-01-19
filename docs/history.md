@@ -1,3 +1,95 @@
+## 4.25.0
+* [1.21.4 (#3546)](https://github.com/PrismarineJS/mineflayer/commit/8bbf5669f5ff3ea8a708633e51b47c312dc7a26b) (thanks @extremeheat)
+
+## 4.24.0
+* [Support 1.21.3. (#3489)](https://github.com/PrismarineJS/mineflayer/commit/58ae9e5b5abf75139f4ba93fe4f34ef7ed3936e8) (thanks @rom1504)
+* [Fix out of bounds access leading to crash at spawn (#3535)](https://github.com/PrismarineJS/mineflayer/commit/3187368397e880ba8b32bb03affa18203cbcbb42) (thanks @wAIfu-DEV)
+* [fix: use dimension data on 1.16.2 (#3397)](https://github.com/PrismarineJS/mineflayer/commit/f6187f66c16dd122165287be7864c78b2fe7c32c) (thanks @zardoy)
+* [update contribution docs to show test running commands (#3511)](https://github.com/PrismarineJS/mineflayer/commit/71a3a262681a173db86b8911aec82402a6993d21) (thanks @Madlykeanu)
+* [Update inventory.js (#3507)](https://github.com/PrismarineJS/mineflayer/commit/a0e92cad5887181bf7e235f69378c8ede14a350c) (thanks @Pix3lPirat3)
+* [Update FAQ.md - add mineflayer tested versions : lib/version.js (#3517)](https://github.com/PrismarineJS/mineflayer/commit/f2dd3a37505b374bf63119633659e35ec2ce3542) (thanks @boly38)
+* [Bump protodef from 1.17.0 to 1.18.0 (#3523)](https://github.com/PrismarineJS/mineflayer/commit/06faa36c2da3da399bd5370869700aea6c65c9b0) (thanks @dependabot[bot])
+* [Bump mocha from 10.8.2 to 11.0.1 (#3516)](https://github.com/PrismarineJS/mineflayer/commit/166971d317db3ec68cf3eebeda37f509152628fd) (thanks @dependabot[bot])
+* [Fix chatterbox example (#3506)](https://github.com/PrismarineJS/mineflayer/commit/386200759556aa261fa212f26c43992a66cfa8ac) (thanks @ShiftSad)
+* [Proper title event (#3498)](https://github.com/PrismarineJS/mineflayer/commit/3829a25150eec782bc045a222476865af7b0ac72) (thanks @SMEDjs)
+* [Set `sequence` field correctly in activateItem (#3445)](https://github.com/PrismarineJS/mineflayer/commit/fdba03737ecdeaaf419e3175b9be33291db4e085) (thanks @GenerelSchwerz)
+* [increase timeout in external test common](https://github.com/PrismarineJS/mineflayer/commit/3d6e2344751c38428701dc52e9f29dda73f7f782) (thanks @rom1504)
+
+## 4.23.0
+* [1.21 (#3480)](https://github.com/PrismarineJS/mineflayer/commit/4aa10fb45431940504c7809f078f1f410e7fa7a3) (thanks @Madlykeanu)
+* [Adding mindcraft to mineflayer readme](https://github.com/PrismarineJS/mineflayer/commit/dd00db42ba20682418d8fbd5629e1033dfb0ff20) (thanks @rom1504)
+
+## 4.22.0
+* [Remove debug logging (#3478)](https://github.com/PrismarineJS/mineflayer/commit/eb29d350ede0590fce17e04bf21071807a87e3a1) (thanks @extremeheat)
+
+## 4.21.0
+* [1.20.6 (#3412)](https://github.com/PrismarineJS/mineflayer/commit/44fad41c18be5024564e24e1cdee624d35d4d387) (thanks @extremeheat)
+* [Update README.md (#3420)](https://github.com/PrismarineJS/mineflayer/commit/1c2a5c0fa78f74a63fabd7edde85c4a74db32dee) (thanks @SilkePilon)
+* [types: add pitchSpeed as an option in typings (#3446)](https://github.com/PrismarineJS/mineflayer/commit/05b48ad0dad4cf64a1c11660bac256d7b4015841) (thanks @GenerelSchwerz)
+* [Fixed a bug with not closing the window when changing the subserver (#3424)](https://github.com/PrismarineJS/mineflayer/commit/d00c386cfe51cefc361c0ff4d30b100aee9f114a) (thanks @DenisKvak1)
+* [Bump @types/node from 20.14.14 to 22.1.0 (#3431)](https://github.com/PrismarineJS/mineflayer/commit/1d461616b514969fdece38e49bfbec747ab8d76a) (thanks @dependabot[bot])
+* [Fix updateSlot event type (#3425)](https://github.com/PrismarineJS/mineflayer/commit/5d39db26a6ab17baac38b68af8ccd3eeb4af3def) (thanks @DenisKvak1)
+* [Player hitbox fixes (#3382)](https://github.com/PrismarineJS/mineflayer/commit/78b4eccb4572a821b11c3124b7a593f3b91f1180) (thanks @AreaDenial)
+* [Typo fixes (#3418)](https://github.com/PrismarineJS/mineflayer/commit/ef042a242ca9f5fc5820fe4dc2e1d997ef1db202) (thanks @kgurchiek)
+* [Added support for 1.18+ edit book packet #3204 (#3373)](https://github.com/PrismarineJS/mineflayer/commit/eb9982aa04973b0086aac68a2847005d77f01a3d) (thanks @unlimitedcoder2)
+* [Fix typos (#3381)](https://github.com/PrismarineJS/mineflayer/commit/d581ea7cee4d5b7df9606f671656bb0be0fdbf91) (thanks @data-miner00)
+* [Fix typescript types syntax for setCommandBlock (#3366)](https://github.com/PrismarineJS/mineflayer/commit/315cdfc4b1fc2760e4a8a36feb718626a66d5056) (thanks @undefined)
+* [Remove invalid sign check (#3328)](https://github.com/PrismarineJS/mineflayer/commit/ec76468c8ac4c6232bad3c2b66d4160f95f58396) (thanks @zardoy)
+* [refactor: simplifying the code of blockAtCursor (#3337)](https://github.com/PrismarineJS/mineflayer/commit/dc70f932ac9aaab6e6cdb15057b409b15c3232dd) (thanks @SnowRunescape)
+* [Updated setCommandBlock's 3rd argument (#3356)](https://github.com/PrismarineJS/mineflayer/commit/04ad6db404f0da779004b3ddd0e049bf2c6be0a3) (thanks @FlooferLand)
+* [Added the serverBrand property to index.d.ts (#3355)](https://github.com/PrismarineJS/mineflayer/commit/0bb2707d2f6d0d64a467d4e0d6ddc52adf526127) (thanks @Khaogamermain01)
+
+## 4.20.1
+* [Add bossBarCreated event in index.d.ts (#3340)](https://github.com/PrismarineJS/mineflayer/commit/8299288526cd7ff24bcd87511814221f8ad62507) (thanks @gguio)
+* [Update scoreboard.js (#3318)](https://github.com/PrismarineJS/mineflayer/commit/195b3cbd70a110080af9b77a4659991c5d9e484a) (thanks @vicdum)
+* [Fix hardcoded diggingface for cancel digging (#3322)](https://github.com/PrismarineJS/mineflayer/commit/ab78bf855929a476386b5eb6efcf3b271d02455e) (thanks @Vinciepincie)
+* [Fix 1.20.4 server resource pack error (#3320)](https://github.com/PrismarineJS/mineflayer/commit/7c01eeb970647ed2933c10cb2b94fd7b44c777f5) (thanks @TerminalCalamitas)
+* [Fix scoreboard delete handler not first checking if scoreboard exists (#3324)](https://github.com/PrismarineJS/mineflayer/commit/d9e9e15aeb646d81da2a3e2987566de47e3bae04) (thanks @Ynfuien)
+
+## 4.20.0
+* [Update api.md - addChatPattern[Set] link to example of usage (#3304)](https://github.com/PrismarineJS/mineflayer/commit/bb3e5877b7b3b8ab063b39a5b47d103b819da1c2) (thanks @boly38)
+* [Fixed deleted scoreboards not being removed from ScoreBoard.positions (#3306)](https://github.com/PrismarineJS/mineflayer/commit/643023df91bf428d3e7d30e8f2eab97e3238b0b2) (thanks @Ynfuien)
+* [Support 1.20.4 (#3310)](https://github.com/PrismarineJS/mineflayer/commit/aa99daa7d63ee9549f2dda5a79c140e30e19a89b) (thanks @rom1504)
+
+## 4.19.0
+* [Clarify readme createBot username handling (#3300)](https://github.com/PrismarineJS/mineflayer/commit/7a2680bc07f53d16626679537ea1f07aae180549) (thanks @extremeheat)
+* [fix world typing (#3302)](https://github.com/PrismarineJS/mineflayer/commit/5dc36d6cdeaf4be72ea023827d45b9d78e575f66) (thanks @GenerelSchwerz)
+* [modified the README.md files for other languages and fixed a linking issue at those files. (#3297)](https://github.com/PrismarineJS/mineflayer/commit/cc98f1307e3ab48477d2a9ff29da4447f42b30bc) (thanks @Axwaizee)
+* [formatted docs/README.md for easy copy (#3295)](https://github.com/PrismarineJS/mineflayer/commit/468c8aa9d382a7872ec991c3b834b98cbe495e8d) (thanks @Axwaizee)
+* [Added missing bot.teams definition (#3294)](https://github.com/PrismarineJS/mineflayer/commit/fb8ee7aa619bd38cc97d5dbd870bb11455d51d39) (thanks @Ynfuien)
+* [Timeout for bot.tabComplete() (#3293)](https://github.com/PrismarineJS/mineflayer/commit/4231a169d579d08ac7b9ec0694e18b1f6ac837ea) (thanks @Ynfuien)
+* [:label: Update types to be updated with what's in JavaScript (#3287)](https://github.com/PrismarineJS/mineflayer/commit/210785e86c031f7e3323d7d2ffe5152d2d4a5eb6) (thanks @fantomitechno)
+* [Fixed some typo (#3290)](https://github.com/PrismarineJS/mineflayer/commit/ba53a953d03a6edb34aa5bf38bccde58e65d816d) (thanks @SilianZ)
+* [Updated digging code to account for raycasted tall grass checks (#3285)](https://github.com/PrismarineJS/mineflayer/commit/bd0fb5c4d3b665f264009f62f9288828f3018cea) (thanks @GenerelSchwerz)
+
+## 4.18.0
+* [Minecraft 1.20.2 support (#3262)](https://github.com/PrismarineJS/mineflayer/commit/2ff9919760d714be57dcb678f8ab5ecff69f5fee) (thanks @rom1504)
+* [Update recommended Node.js version (#3279)](https://github.com/PrismarineJS/mineflayer/commit/5c71edf48bb2f2dfa16cddb9af5baa0c4d55cf0d) (thanks @Nyaasu66)
+* [feat: bot.respawn, fix respawn with flying squid (#3206)](https://github.com/PrismarineJS/mineflayer/commit/3a6ce543b4ba8a3d0f55777670d142968af14571) (thanks @zardoy)
+* [Add `maxCatchupTicks`, improve `supportFeature` typing (#3277)](https://github.com/PrismarineJS/mineflayer/commit/91108d392c4c5800204dd4674ce9247495ac98e0) (thanks @zardoy)
+* [Fixed typo of "fromt" to "from" (#3273)](https://github.com/PrismarineJS/mineflayer/commit/216cab742db1cd053d9fa23bd7293b770239085b) (thanks @BorretSquared)
+
+## 4.17.0
+* [Exclude browser from node version check (#3268)](https://github.com/PrismarineJS/mineflayer/commit/c466d327227796865c53bfd24e66668911be4af5) (thanks @rom1504)
+* [Fix for a possible error in lib/plugins/entities.js file (#3254)](https://github.com/PrismarineJS/mineflayer/commit/15cfeb4fa59edfcddf7a0b70a966294b24d798ed) (thanks @Mykola1453)
+* [Make explicit supported versions in readme (#3264)](https://github.com/PrismarineJS/mineflayer/commit/931a4187965aef686c6188b944de84455c65b827) (thanks @rom1504)
+
+## 4.16.0
+* [Fix version check (#3259)](https://github.com/PrismarineJS/mineflayer/commit/88d361f9209cdc2bc4620b32118fb2245f6dcdf9) (thanks @extremeheat)
+
+## 4.15.0
+* [Fix several bugs in villager trading (#3230)](https://github.com/PrismarineJS/mineflayer/commit/1caa2c216b3a10a2bccd7b78a22f3809cb359fe3) (thanks @evan-goode)
+* [Fix `bot.heldItem` and `bot.entity.equipment` (#3225)](https://github.com/PrismarineJS/mineflayer/commit/9865ab72f7438fff9d74f2fe19a138da870c41aa) (thanks @szdytom)
+* [Improve CI per version setup (#3256)](https://github.com/PrismarineJS/mineflayer/commit/48c3ca71ea5822c4304ec74951970dbefd5026eb) (thanks @rom1504)
+* [added Readme Português-BR (#3219)](https://github.com/PrismarineJS/mineflayer/commit/70a652ee5b6c0151826e17b38efd458357fc93ac) (thanks @LukeTheNeko)
+* [Fixes `fireworkRocketDuration` calculation (#3222)](https://github.com/PrismarineJS/mineflayer/commit/3d8a1aaed036c2df74c2e607245cefab12409761) (thanks @szdytom)
+* [Update Minecraft Wiki links to new domain after fork (#3203)](https://github.com/PrismarineJS/mineflayer/commit/08208e2f110af2c6de41fac9a389597aac916412) (thanks @misode)
+* [typings: add entityAtCursor to bot (#3200)](https://github.com/PrismarineJS/mineflayer/commit/7016c19f9c736671d8af1401ac25d5175401891f) (thanks @SnowRunescape)
+* [Handle unknown scoreboard objectives (#3191)](https://github.com/PrismarineJS/mineflayer/commit/2e02cee82d6d154b3b7bfb30d213479e7c4fbc59) (thanks @frej4189)
+* [Sidebar fixes (#3188)](https://github.com/PrismarineJS/mineflayer/commit/e571e54edf46ac6da000e1c84f36bec3b75ccf24) (thanks @FurnyGo)
+* [Fix ci : fix lint in MD (#3192)](https://github.com/PrismarineJS/mineflayer/commit/7987e3c546038de0eaa6d573596f51d3edc383bb) (thanks @frej4189)
+* [Updating RU docs (#3178)](https://github.com/PrismarineJS/mineflayer/commit/7474564da5432295c682e8a4f827f58e3c3f3be8) (thanks @FurnyGo)
+
 ## 4.14.0
 * [Update Jupyter notebook to install node 18, update the server in example (#3176)](https://github.com/PrismarineJS/mineflayer/commit/e8a967d4e832f72d665781492c037d26169ae5a0) (thanks @extremeheat)
 * [Update index.d.ts (#3175)](https://github.com/PrismarineJS/mineflayer/commit/d4db3991c135344180937b69621c0ee31daa39f0) (thanks @StayWithMeSenpai)

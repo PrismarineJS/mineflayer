@@ -1,6 +1,6 @@
 const assert = require('assert')
 const { Vec3 } = require('vec3')
-const { once } = require('events')
+const { once } = require('../../lib/promise_utils')
 
 module.exports = (version) => {
   async function runTest (bot, testFunction) {
@@ -16,7 +16,7 @@ module.exports = (version) => {
   addTest('place crystal', async (bot) => {
     if (!bot.registry.itemsByName.end_crystal) return // unsupported
     await bot.test.setBlock({ z: 1, relative: true, blockName: 'obsidian' })
-    await bot.test.awaitItemRecieved(`/give ${bot.username} end_crystal`)
+    await bot.test.awaitItemReceived(`/give ${bot.username} end_crystal`)
     const crystal = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
     assert(crystal !== null)
     let name = 'EnderCrystal'
@@ -45,7 +45,7 @@ module.exports = (version) => {
     }
 
     await placeBlocksForTest('water')
-    await bot.test.awaitItemRecieved(`/give ${bot.username} ${bot.registry.oak_boat ? 'oak_boat' : 'boat'}`)
+    await bot.test.awaitItemReceived(`/give ${bot.username} ${bot.registry.oak_boat ? 'oak_boat' : 'boat'}`)
     const boat = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, -1, -2)), new Vec3(0, -1, 0))
     assert(boat !== null)
     const name = bot.supportFeature('entityNameUpperCaseNoUnderscore') ? 'Boat' : 'boat'
@@ -69,7 +69,7 @@ module.exports = (version) => {
     } else {
       command = '/give @p zombie_spawn_egg 1' // >1.12
     }
-    await bot.test.awaitItemRecieved(command)
+    await bot.test.awaitItemReceived(command)
     const zombie = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
     assert(zombie !== null)
     const name = bot.supportFeature('entityNameUpperCaseNoUnderscore') ? 'Zombie' : 'zombie'
@@ -80,7 +80,7 @@ module.exports = (version) => {
   })
 
   addTest('place armor stand', async (bot) => {
-    await bot.test.awaitItemRecieved(`/give ${bot.username} armor_stand`)
+    await bot.test.awaitItemReceived(`/give ${bot.username} armor_stand`)
     const armorStand = await bot.placeEntity(bot.blockAt(bot.entity.position.offset(0, 0, 1)), new Vec3(0, 1, 0))
     assert(armorStand !== null)
     let name
