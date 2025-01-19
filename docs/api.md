@@ -169,7 +169,7 @@
       - ["respawn"](#respawn)
       - ["game"](#game)
       - ["resourcePack" (url, hash)](#resourcepack-url-hash)
-      - ["title"](#title)
+      - ["title" (title, type)](#title-title-type)
       - ["rain"](#rain)
       - ["weatherUpdate"](#weatherupdate)
       - ["time"](#time)
@@ -808,7 +808,7 @@ Create and return an instance of the class bot.
  * checkTimeoutInterval : default to `30*1000` (30s), check if keepalive received at that period, disconnect otherwise.
  * loadInternalPlugins : defaults to true
  * storageBuilder : an optional function, takes as argument version and worldName and return an instance of something with the same API as prismarine-provider-anvil. Will be used to save the world.
- * client : an instance of node-minecraft-protocol, if not specified, mineflayer makes it's own client. This can be used to enable using mineflayer through a proxy of many clients or a vanilla client and a mineflayer client.
+ * client : an instance of node-minecraft-protocol, if not specified, mineflayer makes its own client. This can be used to enable using mineflayer through a proxy of many clients or a vanilla client and a mineflayer client.
  * brand : the brand name for the client to use. Defaults to vanilla. Can be used to simulate custom clients for servers that require it.
  * respawn : when set to false disables bot from automatically respawning, defaults to true.
  * plugins : object : defaults to {}
@@ -974,7 +974,7 @@ Default true, whether or not you receive color codes in chats from the server.
 
 #### bot.settings.viewDistance
 
-Can be a string listed below or a postive number.
+Can be a string listed below or a positive number.
 Choices:
  * `far` (default)
  * `normal`
@@ -1035,7 +1035,7 @@ saturation of 5.0. Eating food increases the saturation as well as the food bar.
 
 #### bot.oxygenLevel
 
-Number in the range [0, 20] respresenting the number of water-icons known as oxygen level.
+Number in the range [0, 20] representing the number of water-icons known as oxygen level.
 
 #### bot.physics
 
@@ -1237,11 +1237,12 @@ Emitted when the server changes any of the game properties.
 
 Emitted when the server sends a resource pack.
 
-#### "title"
+#### "title" (title, type)
 
 Emitted when the server sends a title
 
- * `text` - title's text
+ * `title` - title's text
+ * `type` - title's type "subtitle" or "title"
 
 #### "rain"
 
@@ -1554,7 +1555,7 @@ Fires when a particle is created
 
 #### bot.blockAt(point, extraInfos=true)
 
-Returns the block at `point` or `null` if that point is not loaded. If `extraInfos` set to true, also returns informations about signs, paintings and block entities (slower).
+Returns the block at `point` or `null` if that point is not loaded. If `extraInfos` set to true, also returns information about signs, paintings and block entities (slower).
 See `Block`.
 
 #### bot.waitForChunksToLoad()
@@ -1596,8 +1597,8 @@ Finds the closest blocks from the given point.
    - `point` - The start position of the search (center). Default is the bot position.
    - `matching` - A function that returns true if the given block is a match. Also supports this value being a block id or array of block ids.
    - `useExtraInfo` - To preserve backward compatibility can result in two behavior depending on the type
-      - **boolean** - Provide your `matching` function more data - noticeably slower aproach
-      - **function** - Creates two stage maching, if block passes `matching` function it is passed further to `useExtraInfo` with additional info
+      - **boolean** - Provide your `matching` function more data - noticeably slower approach
+      - **function** - Creates two stage matching, if block passes `matching` function it is passed further to `useExtraInfo` with additional info
    - `maxDistance` - The furthest distance for the search, defaults to 16.
    - `count` - Number of blocks to find before returning the search. Default to 1. Can return less if not enough blocks are found exploring the whole area.
 
@@ -1627,7 +1628,7 @@ with `metadata`.
 
 #### bot.recipesAll(itemType, metadata, craftingTable)
 
-The same as bot.recipesFor except that it does not check wether the bot has enough materials for the recipe.
+The same as bot.recipesFor except that it does not check whether the bot has enough materials for the recipe.
 
 #### bot.nearestEntity(match = (entity) => { return true })
 
@@ -1635,7 +1636,7 @@ Return the nearest entity to the bot, matching the function (default to all enti
 
 Example:
 ```js
-const cow = bot.nearestEntity(entity => entity.name.toLowerCase() === 'cow') // we use .toLowercase() because in 1.8 cow was capitalized, for newer versions that can be ommitted
+const cow = bot.nearestEntity(entity => entity.name.toLowerCase() === 'cow') // we use .toLowercase() because in 1.8 cow was capitalized, for newer versions that can be omitted
 ```
 
 ### Methods
@@ -1657,7 +1658,7 @@ Requests chat completion from the server.
  * `str` - String to complete.
  * `assumeCommand` - Field sent to server, defaults to false.
  * `sendBlockInSight` - Field sent to server, defaults to true. Set this option to false if you want more performance.
- * `timeout` - Timeout in milliseconds, after which the function will return an ampty array, defaults to 5000.
+ * `timeout` - Timeout in milliseconds, after which the function will return an empty array, defaults to 5000.
 
 #### bot.chat(message)
 
@@ -1683,11 +1684,11 @@ Adds a regex pattern to the bot's chat matching. Useful for bukkit servers where
 make an event that is called every time the pattern is matched to a message,
 the event will be called `"chat:name"`, with name being the name passed
 * `name` - the name used to listen for the event
-* `pattern` - regular expression to match to messages recieved
+* `pattern` - regular expression to match to messages received
 * `chatPatternOptions` - object
   * `repeat` - defaults to true, whether to listen for this event after the first match
   * `parse` - instead of returning the actual message that was matched, return the capture groups from the regex
-  * `deprecated` - (**unstable**) used by bot.chatAddPattern to keep compatability, likely to be removed
+  * `deprecated` - (**unstable**) used by bot.chatAddPattern to keep compatibility, likely to be removed
 
 returns a number which can be used with bot.removeChatPattern() to only delete this pattern
 
@@ -1695,10 +1696,10 @@ returns a number which can be used with bot.removeChatPattern() to only delete t
 
 #### bot.addChatPatternSet(name, patterns, chatPatternOptions)
 
-make an event that is called every time all patterns havee been matched to messages,
+make an event that is called every time all patterns have been matched to messages,
 the event will be called `"chat:name"`, with name being the name passed
 * `name` - the name used to listen for the event
-* `patterns` - array of regular expression to match to messages recieved
+* `patterns` - array of regular expression to match to messages received
 * `chatPatternOptions` - object
   * `repeat` - defaults to true, whether to listen for this event after the first match
   * `parse` - instead of returning the actual message that was matched, return the capture groups from the regex
@@ -1771,7 +1772,7 @@ Checks if the given plugin is loaded (or scheduled to be loaded) on this bot.
 
 This function returns a `Promise`, with `void` as its argument upon completion.
 
-Sleep in a bed. `bedBlock` should be a `Block` instance which is a bed. 
+Sleep in a bed. `bedBlock` should be a `Block` instance which is a bed.
 
 #### bot.isABed(bedBlock)
 
@@ -1781,7 +1782,7 @@ Return true if `bedBlock` is a bed
 
 This function returns a `Promise`, with `void` as its argument upon completion.
 
-Get out of bed. 
+Get out of bed.
 
 #### bot.setControlState(control, state)
 
@@ -1892,7 +1893,7 @@ dig any other blocks until the block has been broken, or you call
 `bot.stopDigging()`.
 
  * `block` - the block to start digging into
- * `forceLook` - (optional) if true, look at the block and start mining instantly. If false, the bot will slowly turn to the block to mine. Additionally, this can be assigned to 'ignore' to prevent the bot from moving it's head at all. Also, this can be assigned to 'raycast' to raycast from the bots head to place where the bot is looking.
+ * `forceLook` - (optional) if true, look at the block and start mining instantly. If false, the bot will slowly turn to the block to mine. Additionally, this can be assigned to 'ignore' to prevent the bot from moving its head at all. Also, this can be assigned to 'raycast' to raycast from the bots head to place where the bot is looking.
  * `digFace` - (optional) Default is 'auto' looks at the center of the block and mines the top face. Can also be a vec3 vector
  of the face the bot should be looking at when digging the block. For example: ```vec3(0, 1, 0)``` when mining the top. Can also be 'raycast' raycast checks if there is a face visible by the bot and mines that face. Useful for servers with anti cheat.
 
@@ -2127,7 +2128,7 @@ These are lower level methods for the inventory, they can be useful sometimes bu
 #### bot.clickWindow(slot, mouseButton, mode)
 
 This function returns a `Promise`, with `void` as its argument upon completion.
-  
+
 The only valid mode option at the moment is 0. Shift clicking or mouse dragging is not implemented.
 
 Click on the current window. See details at https://wiki.vg/Protocol#Click_Container
@@ -2256,4 +2257,4 @@ Note that while flying, `bot.entity.velocity` will not be accurate.
 
 #### bot.creative.stopFlying()
 
-Restores `bot.physics.gravity` to it's original value.
+Restores `bot.physics.gravity` to its original value.

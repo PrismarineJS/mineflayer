@@ -71,7 +71,7 @@ export interface BotEvents {
   spawn: () => Promise<void> | void
   respawn: () => Promise<void> | void
   game: () => Promise<void> | void
-  title: (text: string) => Promise<void> | void
+  title: (text: string, type: "subtitle" | "title") => Promise<void> | void
   rain: () => Promise<void> | void
   time: () => Promise<void> | void
   kicked: (reason: string, loggedIn: boolean) => Promise<void> | void
@@ -158,10 +158,18 @@ export interface BotEvents {
   teamUpdated: (team: Team) => Promise<void> | void
   teamMemberAdded: (team: Team) => Promise<void> | void
   teamMemberRemoved: (team: Team) => Promise<void> | void
+  bossBarCreated: (bossBar: BossBar) => Promise<void> | void
   bossBarDeleted: (bossBar: BossBar) => Promise<void> | void
   bossBarUpdated: (bossBar: BossBar) => Promise<void> | void
   resourcePack: (url: string, hash?: string, uuid?: string) => Promise<void> | void
   particle: (particle: Particle) => Promise<void> | void
+}
+
+export interface CommandBlockOptions {
+  mode: number,
+  trackOutput: boolean,
+  conditional: boolean,
+  alwaysActive: boolean
 }
 
 export interface Bot extends TypedEmitter<BotEvents> {
@@ -378,7 +386,9 @@ export interface Bot extends TypedEmitter<BotEvents> {
     times?: number
   ) => Promise<void>
 
-  setCommandBlock: (pos: Vec3, command: string, trackOutput: boolean) => void
+  
+  
+  setCommandBlock: (pos: Vec3, command: string, options: CommandBlockOptions) => void
 
   clickWindow: (
     slot: number,
@@ -456,6 +466,7 @@ export interface GameState {
   dimension: Dimension
   difficulty: Difficulty
   maxPlayers: number
+  serverBrand: string
 }
 
 export type LevelType =
@@ -530,6 +541,7 @@ export interface PhysicsOptions {
   playerHeight: number
   jumpSpeed: number
   yawSpeed: number
+  pitchSpeed: number
   sprintSpeed: number
   maxGroundSpeedSoulSand: number
   maxGroundSpeedWater: number
@@ -638,7 +650,7 @@ export class Painting {
 interface StorageEvents {
   open: () => void
   close: () => void
-  updateSlot: (oldItem: Item | null, newItem: Item | null) => void
+  updateSlot: (slot: number, oldItem: Item | null, newItem: Item | null) => void
 }
 
 interface FurnaceEvents extends StorageEvents {

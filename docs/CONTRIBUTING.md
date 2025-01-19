@@ -22,6 +22,22 @@ Mineflayer has two kind of tests :
  
 The objective of these tests is to know automatically what works and what doesn't in mineflayer, so it's easier to make mineflayer work.
 
+
+## Running tests
+You can run tests for Different Minecraft versions using the `-g` flag with npm run mocha_test. For example:
+
+```bash
+# Run all tests in all supported versions
+npm run test
+
+# Run a specific test in Minecraft 1.20.4
+npm run mocha_test -- -g "mineflayer_external 1.20.4v.*exampleBee"
+
+# Run all tests in just version 1.20.4
+npm run mocha_test -- -g "mineflayer_external 1.20.4v"
+```
+
+
 ### Creating an external test
 
 In order to add an external test now you only need to create a file in [test/externalTests](test/externalTests)

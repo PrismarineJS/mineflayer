@@ -5,6 +5,7 @@ module.exports = () => async (bot) => {
 
   await bot.test.becomeCreative()
   await bot.test.clearInventory()
+  await bot.test.wait(100)
   assert.equal(bot.heldItem, null)
 
   const stoneId = bot.registry.itemsByName.stone.id
