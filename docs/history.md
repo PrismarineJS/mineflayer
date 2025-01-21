@@ -1,3 +1,20 @@
+## 4.25.0
+* [1.21.4 (#3546)](https://github.com/PrismarineJS/mineflayer/commit/8bbf5669f5ff3ea8a708633e51b47c312dc7a26b) (thanks @extremeheat)
+
+## 4.24.0
+* [Support 1.21.3. (#3489)](https://github.com/PrismarineJS/mineflayer/commit/58ae9e5b5abf75139f4ba93fe4f34ef7ed3936e8) (thanks @rom1504)
+* [Fix out of bounds access leading to crash at spawn (#3535)](https://github.com/PrismarineJS/mineflayer/commit/3187368397e880ba8b32bb03affa18203cbcbb42) (thanks @wAIfu-DEV)
+* [fix: use dimension data on 1.16.2 (#3397)](https://github.com/PrismarineJS/mineflayer/commit/f6187f66c16dd122165287be7864c78b2fe7c32c) (thanks @zardoy)
+* [update contribution docs to show test running commands (#3511)](https://github.com/PrismarineJS/mineflayer/commit/71a3a262681a173db86b8911aec82402a6993d21) (thanks @Madlykeanu)
+* [Update inventory.js (#3507)](https://github.com/PrismarineJS/mineflayer/commit/a0e92cad5887181bf7e235f69378c8ede14a350c) (thanks @Pix3lPirat3)
+* [Update FAQ.md - add mineflayer tested versions : lib/version.js (#3517)](https://github.com/PrismarineJS/mineflayer/commit/f2dd3a37505b374bf63119633659e35ec2ce3542) (thanks @boly38)
+* [Bump protodef from 1.17.0 to 1.18.0 (#3523)](https://github.com/PrismarineJS/mineflayer/commit/06faa36c2da3da399bd5370869700aea6c65c9b0) (thanks @dependabot[bot])
+* [Bump mocha from 10.8.2 to 11.0.1 (#3516)](https://github.com/PrismarineJS/mineflayer/commit/166971d317db3ec68cf3eebeda37f509152628fd) (thanks @dependabot[bot])
+* [Fix chatterbox example (#3506)](https://github.com/PrismarineJS/mineflayer/commit/386200759556aa261fa212f26c43992a66cfa8ac) (thanks @ShiftSad)
+* [Proper title event (#3498)](https://github.com/PrismarineJS/mineflayer/commit/3829a25150eec782bc045a222476865af7b0ac72) (thanks @SMEDjs)
+* [Set `sequence` field correctly in activateItem (#3445)](https://github.com/PrismarineJS/mineflayer/commit/fdba03737ecdeaaf419e3175b9be33291db4e085) (thanks @GenerelSchwerz)
+* [increase timeout in external test common](https://github.com/PrismarineJS/mineflayer/commit/3d6e2344751c38428701dc52e9f29dda73f7f782) (thanks @rom1504)
+
 ## 4.23.0
 * [1.21 (#3480)](https://github.com/PrismarineJS/mineflayer/commit/4aa10fb45431940504c7809f078f1f410e7fa7a3) (thanks @Madlykeanu)
 * [Adding mindcraft to mineflayer readme](https://github.com/PrismarineJS/mineflayer/commit/dd00db42ba20682418d8fbd5629e1033dfb0ff20) (thanks @rom1504)

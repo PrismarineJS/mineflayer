@@ -1,11 +1,11 @@
 {
   "name": "mineflayer",
-  "version": "4.23.0",
+  "version": "4.25.0",
   "description": "create minecraft bots with a stable, high level API",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "mocha_test": "mocha --reporter spec --exit --bail",
+    "mocha_test": "mocha --reporter spec --exit",
     "test": "npm run mocha_test",
     "pretest": "npm run lint",
     "lint": "standard && standard-markdown",
@@ -22,12 +22,12 @@
   "license": "MIT",
   "dependencies": {
     "minecraft-data": "^3.76.0",
-    "minecraft-protocol": "^1.50.0",
+    "minecraft-protocol": "^1.51.0",
     "prismarine-biome": "^1.1.1",
     "prismarine-block": "^1.17.0",
     "prismarine-chat": "^1.7.1",
     "prismarine-chunk": "^1.36.0",
-    "prismarine-entity": "^2.3.0",
+    "prismarine-entity": "^2.5.0",
     "prismarine-item": "^1.15.0",
     "prismarine-nbt": "^2.0.0",
     "prismarine-physics": "^1.9.0",

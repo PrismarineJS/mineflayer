@@ -25,6 +25,7 @@ function inject (bot) {
   bot.test.placeBlock = placeBlock
   bot.test.runExample = runExample
   bot.test.tellAndListen = tellAndListen
+  bot.test.selfKill = selfKill
   bot.test.wait = function (ms) {
     return new Promise((resolve) => { setTimeout(resolve, ms) })
   }
@@ -231,5 +232,26 @@ function inject (bot) {
       return closeExample(err)
     }
     return closeExample()
+  }
+
+  function selfKill () {
+    bot.chat('/kill @p')
+  }
+
+  // Debug packet IO when tests are re-run with "Enable debug logging" - https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables
+  if (process.env.RUNNER_DEBUG) {
+    bot._client.on('packet', function (data, meta) {
+      if (['chunk', 'time', 'light', 'alive'].some(e => meta.name.includes(e))) return
+      console.log('->', meta.name, JSON.stringify(data)?.slice(0, 250))
+    })
+    const oldWrite = bot._client.write
+    bot._client.write = function (name, data) {
+      if (['alive', 'pong', 'ping'].some(e => name.includes(e))) return
+      console.log('<-', name, JSON.stringify(data)?.slice(0, 250))
+      oldWrite.apply(bot._client, arguments)
+    }
+      BigInt.prototype.toJSON ??= function () { // eslint-disable-line
+      return this.toString()
+    }
   }
 }
