@@ -2,6 +2,10 @@
 
 This Frequently Asked Question document is meant to help people for the most common things.
 
+### I get an error (ie. protocol/data) when bot is trying to connect to minecraft server
+
+Make sure the Minecraft server version is supported (cf. root readme), else you should retry using one of the [mineflayer tested versions](../lib/version.js).
+
 ### I get an error when trying to login with a microsoft account.
 
 Make sure the email you entered into the username option in createBot can be used to login to `minecraft.net` using the 'Login with Microsoft' button.

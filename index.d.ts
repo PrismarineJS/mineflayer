@@ -71,7 +71,7 @@ export interface BotEvents {
   spawn: () => Promise<void> | void
   respawn: () => Promise<void> | void
   game: () => Promise<void> | void
-  title: (text: string) => Promise<void> | void
+  title: (text: string, type: "subtitle" | "title") => Promise<void> | void
   rain: () => Promise<void> | void
   time: () => Promise<void> | void
   kicked: (reason: string, loggedIn: boolean) => Promise<void> | void
@@ -542,6 +542,7 @@ export interface PhysicsOptions {
   playerHeight: number
   jumpSpeed: number
   yawSpeed: number
+  pitchSpeed: number
   sprintSpeed: number
   maxGroundSpeedSoulSand: number
   maxGroundSpeedWater: number
