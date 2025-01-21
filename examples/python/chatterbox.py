@@ -30,8 +30,7 @@ username = sys.argv[3] if len(sys.argv) > 3 else "boat"
 bot = mineflayer.createBot({
     "host": host,
     "port": port,
-    "username": username,
-    "port": port
+    "username": username
 })
 
 Item = require("prismarine-item")(bot.registry)

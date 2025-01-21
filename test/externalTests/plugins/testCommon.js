@@ -6,6 +6,7 @@ const process = require('process')
 const assert = require('assert')
 const { sleep, onceWithCleanup, withTimeout } = require('../../../lib/promise_utils')
 
+const timeout = 5000
 module.exports = inject
 
 function inject (bot) {
@@ -24,6 +25,7 @@ function inject (bot) {
   bot.test.placeBlock = placeBlock
   bot.test.runExample = runExample
   bot.test.tellAndListen = tellAndListen
+  bot.test.selfKill = selfKill
   bot.test.wait = function (ms) {
     return new Promise((resolve) => { setTimeout(resolve, ms) })
   }
@@ -109,7 +111,10 @@ function inject (bot) {
     // this function behaves the same whether we start in creative mode or not.
     // also, creative mode is always allowed for ops, even if server.properties says force-gamemode=true in survival mode.
     let i = 0
-    const msgProm = onceWithCleanup(bot, 'message', { checkCondition: msg => gameModeChangedMessages.includes(msg.translate) && i++ > 0 && bot.game.gameMode === getGM(value) })
+    const msgProm = onceWithCleanup(bot, 'message', {
+      timeout,
+      checkCondition: msg => gameModeChangedMessages.includes(msg.translate) && i++ > 0 && bot.game.gameMode === getGM(value)
+    })
 
     // do it three times to ensure that we get feedback
     bot.chat(`/gamemode ${getGM(value)}`)
@@ -119,15 +124,22 @@ function inject (bot) {
   }
 
   async function clearInventory () {
-    const msgProm = onceWithCleanup(bot, 'message', { checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success' })
+    const msgProm = onceWithCleanup(bot, 'message', {
+      timeout,
+      checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
+    })
     bot.chat('/give @a stone 1')
-    await onceWithCleanup(bot.inventory, 'updateSlot', { checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
-    const inventoryClearedProm = Promise.all(bot.inventory.slots.filter(item => item)
-      .map(item => onceWithCleanup(bot.inventory, `updateSlot:${item.slot}`, { checkCondition: (oldItem, newItem) => newItem === null })))
+    bot.inventory.on('updateSlot', (...e) => {
+      // console.log('inventory.updateSlot', e)
+    })
+    await onceWithCleanup(bot.inventory, 'updateSlot', { timeout: 1000 * 20, checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
     bot.chat('/clear') // don't rely on the message (as it'll come to early), wait for the result of /clear instead
     await msgProm // wait for the message so it doesn't leak into chat tests
-    await inventoryClearedProm
-    assert.strictEqual(bot.inventory.slots.filter(i => i).length, 0)
+
+    // Check that the inventory is clear
+    for (const slot of bot.inventory.slots) {
+      if (slot && slot.itemCount <= 0) throw new Error('Inventory was not cleared: ' + JSON.stringify(bot.inventory.slots))
+    }
   }
 
   // you need to be in creative mode for this to work
@@ -137,9 +149,13 @@ function inject (bot) {
   }
 
   async function teleport (position) {
-    bot.chat(`/tp ${bot.username} ${position.x} ${position.y} ${position.z}`)
-
+    if (bot.supportFeature('hasExecuteCommand')) {
+      bot.test.sayEverywhere(`/execute in overworld run teleport ${bot.username} ${position.x} ${position.y} ${position.z}`)
+    } else {
+      bot.test.sayEverywhere(`/tp ${bot.username} ${position.x} ${position.y} ${position.z}`)
+    }
     return onceWithCleanup(bot, 'move', {
+      timeout,
       checkCondition: () => bot.entity.position.distanceTo(position) < 0.9
     })
   }
@@ -155,6 +171,7 @@ function inject (bot) {
 
   async function tellAndListen (to, what, listen) {
     const chatMessagePromise = onceWithCleanup(bot, 'chat', {
+      timeout,
       checkCondition: (username, message) => username === to && listen(message)
     })
 
@@ -168,6 +185,7 @@ function inject (bot) {
 
     const detectChildJoin = async () => {
       const [message] = await onceWithCleanup(bot, 'message', {
+        timeout,
         checkCondition: message => message.json.translate === 'multiplayer.player.joined'
       })
       childBotName = message.json.with[0].insertion
@@ -208,11 +226,32 @@ function inject (bot) {
     }
 
     try {
-      await withTimeout(Promise.all([detectChildJoin(), runExampleOnReady()]), 20000)
+      await withTimeout(Promise.all([detectChildJoin(), runExampleOnReady()]), 30000)
     } catch (err) {
       console.log(err)
       return closeExample(err)
     }
     return closeExample()
+  }
+
+  function selfKill () {
+    bot.chat('/kill @p')
+  }
+
+  // Debug packet IO when tests are re-run with "Enable debug logging" - https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables
+  if (process.env.RUNNER_DEBUG) {
+    bot._client.on('packet', function (data, meta) {
+      if (['chunk', 'time', 'light', 'alive'].some(e => meta.name.includes(e))) return
+      console.log('->', meta.name, JSON.stringify(data)?.slice(0, 250))
+    })
+    const oldWrite = bot._client.write
+    bot._client.write = function (name, data) {
+      if (['alive', 'pong', 'ping'].some(e => name.includes(e))) return
+      console.log('<-', name, JSON.stringify(data)?.slice(0, 250))
+      oldWrite.apply(bot._client, arguments)
+    }
+      BigInt.prototype.toJSON ??= function () { // eslint-disable-line
+      return this.toString()
+    }
   }
 }

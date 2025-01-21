@@ -153,7 +153,7 @@
       - ["respawn"](#respawn)
       - ["game"](#game)
       - ["resourcePack" (url, hash)](#resourcepack-url-hash)
-      - ["title"](#title)
+      - ["title" (title, type)](#title-title-type)
       - ["rain"](#rain)
       - ["weatherUpdate"](#weatherupdate)
       - ["time"](#time)
@@ -1127,11 +1127,12 @@ Emitted for every server message, including chats.
 
 当服务器发送资源包时触发
 
-#### "title"
+#### "title" (title, type)
 
 当服务器发送标题时触发
 
- * `text` - 标题文本
+ * `title` - 标题文本
+ * `type` - 标题类型 "subtitle" 或 "title"
 
 #### "rain"
 
@@ -1150,11 +1151,11 @@ If you join a server where it is already raining, this event will fire.
 
 当bot从服务器被踢出时触发
 
- `reason`是一条解释你被踢的原因的聊天信息. 
+ `reason`是一条解释你被踢的原因的聊天信息.
 
 `loggedIn`
  如果客户端在成功登录后被踢出则为`true`
-如果kick发生在登录阶段则为 `false` 
+如果kick发生在登录阶段则为 `false`
 
 #### "end" (reason)
 

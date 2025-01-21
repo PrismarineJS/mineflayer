@@ -141,7 +141,7 @@
       - ["respawn"](#respawn)
       - ["game"](#game)
       - ["resourcePack" (url, hash)](#resourcepack-url-hash)
-      - ["title"](#title)
+      - ["title" (title, type)](#title-title-type)
       - ["rain"](#rain)
       - ["weatherUpdate"](#weatherupdate)
       - ["time"](#time)
@@ -1071,11 +1071,12 @@ Se emite cuando el servidor cambia cualquiera de sus propiedades
 
 Se emite cuando el servidor manda un paquete de recursos
 
-#### "title"
+#### "title" (title, type)
 
 Se emite cuando el servidor manda/muestra un título
 
- * `text` - texto del título
+ * `title` - texto del título
+ * `type` - tipo del título "subtitle" o "title"
 
 #### "rain"
 
