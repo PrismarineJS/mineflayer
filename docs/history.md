@@ -1,3 +1,9 @@
+## 4.26.0
+* [Use node 22 (#3570)](https://github.com/PrismarineJS/mineflayer/commit/dbff9314418d30df203c32fe83f2a1b56653d0a6) (thanks @rom1504)
+* [Fix infinity setTimeout by throwing error (#3561)](https://github.com/PrismarineJS/mineflayer/commit/69539494c88c2ca718330142839a35414ecd3bda) (thanks @BBpezsgo)
+* [Prevent TypeError when removing event lPrevent TypeError when removing event listeners in switchWorld (BunJS issue maybe)isteners in switchWorld (#3544)](https://github.com/PrismarineJS/mineflayer/commit/e974e703a875d16f5e36d35574bf334a20c76b1b) (thanks @0x15d3v2)
+* [Mounting for other entities and fix bot not dismounting when the vehicle is gone (#3384)](https://github.com/PrismarineJS/mineflayer/commit/08b7317b57ca5c2f1a6ddd116bd0c74c2e10c20c) (thanks @qwqtoday)
+
 ## 4.25.0
 * [1.21.4 (#3546)](https://github.com/PrismarineJS/mineflayer/commit/8bbf5669f5ff3ea8a708633e51b47c312dc7a26b) (thanks @extremeheat)
 
