@@ -2124,17 +2124,17 @@ This function returns a `Promise`, with `void` as its argument upon completion.
 
 mode support:
   - stable:
-    - mouse clicks (mode 0)
+    - 0 (mouse clicks)
 
   - experimental:
-    - shift clicks (mode 1)
-    - number clicks (mode 2)
-    - middle clicks (mode 3)
-    - drop clicks (mode 4)
+    - 1 (shift clicks)
+    - 2 (number clicks)
+    - 3 (middle clicks)
+    - 4 (drop clicks)
 
   - unimplemented:
-    - drag clicks (mode 5)
-    - double clicks (mode 6)
+    - 5 (drag clicks)
+    - 6 (double clicks)
 
 Click on the current window. See details at https://wiki.vg/Protocol#Click_Container
 
