@@ -302,7 +302,7 @@
       - [bot.digTime(block)](#botdigtimeblock)
       - [bot.acceptResourcePack()](#botacceptresourcepack)
       - [bot.denyResourcePack()](#botdenyresourcepack)
-      - [bot.placeBlock(referenceBlock, faceVector)](#botplaceblockreferenceblock-facevector)
+      - [bot.placeBlock(referenceBlock, faceVector, optionsPlace)](#botplaceblockreferenceblock-facevector)
       - [bot.placeEntity(referenceBlock, faceVector)](#botplaceentityreferenceblock-facevector)
       - [bot.activateBlock(block, direction?: Vec3, cursorPos?: Vec3)](#botactivateblockblock-direction-vec3-cursorpos-vec3)
       - [bot.activateEntity(entity)](#botactivateentityentity)
@@ -1913,15 +1913,22 @@ Accepts resource pack.
 
 Denies resource pack.
 
-#### bot.placeBlock(referenceBlock, faceVector)
+#### bot.placeBlock(referenceBlock, faceVector, optionsPlace)
 
 This function returns a `Promise`, with `void` as its argument when the server confirms that the block has indeed been placed.
 
  * `referenceBlock` - the block you want to place a new block next to
  * `faceVector` - one of the six cardinal directions, such as `new Vec3(0, 1, 0)` for the top face,
    indicating which face of the `referenceBlock` to place the block against.
+### placeBlock(referenceBlock, faceVector, optionsPlace)
 
-The new block will be placed at `referenceBlock.position.plus(faceVector)`.
+This function is used to place a block in the Minecraft world.
+
+- `referenceBlock` (object): The reference block where the new block will be placed adjacent to.
+- `faceVector` (object): The vector representing the face of the reference block where the new block will be placed.
+- `optionsPlace` (object): An optional object containing additional options for placing the block.
+  - `swingArm` (string): The arm to swing while placing the block. Defaults to 'right' if not provided.
+  - `timeOut` (number): The timeout duration in milliseconds for placing the block. Defaults to 5000 milliseconds if not provided.
 
 #### bot.placeEntity(referenceBlock, faceVector)
 
