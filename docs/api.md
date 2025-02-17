@@ -1974,7 +1974,7 @@ This function returns a `Promise`, with `void` as its argument when fishing ends
 Use fishing rod
 
 
-#### bot.activateItem(offHand=false, degX=false, degY=false)
+#### bot.activateItem(offHand=false, degX=0, degY=0)
 
 Activates the currently held item. This is how you eat, shoot bows, throw an
 egg, activate firework rockets, etc.
