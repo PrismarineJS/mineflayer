@@ -1041,7 +1041,7 @@ All scoreboards known to the bot in an object scoreboard displaySlot -> scoreboa
  * `belowName` - scoreboard placed in belowName
  * `sidebar` - scoreboard placed in sidebar
  * `list` - scoreboard placed in list
- * `0-18` - slots defined in [protocol](https://wiki.vg/Protocol#Display_Scoreboard)
+ * `0-18` - slots defined in [protocol](https://minecraft.wiki/w/Java_Edition_protocol#Display_Objective)
 
 #### bot.teams
 
@@ -2022,7 +2022,7 @@ These are lower level methods for the inventory, they can be useful sometimes bu
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
 
-Click on the current window. See details at https://wiki.vg/Protocol#Click_Window
+Click on the current window. See details at https://minecraft.wiki/w/Java_Edition_protocol#Click_Container
 
 #### bot.putSelectedItemRange(start, end, window, slot)
 
