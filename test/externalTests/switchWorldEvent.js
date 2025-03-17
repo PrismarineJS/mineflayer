@@ -9,7 +9,7 @@ module.exports = () => async (bot) => {
   })
 
   let switchWorldTriggered = false
-  
+
   const switchWorldListener = () => {
     switchWorldTriggered = true
   }
@@ -17,7 +17,7 @@ module.exports = () => async (bot) => {
   bot.on('switchWorld', switchWorldListener)
 
   bot.test.sayEverywhere('/kill')
-  
+
   await sleep(3000)
 
   bot.off('switchWorld', switchWorldListener)
