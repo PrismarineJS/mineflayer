@@ -1,4 +1,3 @@
-const assert = require('assert')
 const { once, onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
