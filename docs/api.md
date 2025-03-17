@@ -2122,7 +2122,19 @@ These are lower level methods for the inventory, they can be useful sometimes bu
 
 This function returns a `Promise`, with `void` as its argument upon completion.
 
-The only valid mode option at the moment is 0. Shift clicking or mouse dragging is not implemented.
+mode support:
+  - stable:
+    - mouse clicks (0)
+
+  - experimental:
+    - shift clicks (1)
+    - number clicks (2)
+    - middle clicks (3)
+    - drop clicks (4)
+
+  - unimplemented:
+    - drag clicks (5)
+    - double clicks (6)
 
 Click on the current window. See details at https://wiki.vg/Protocol#Click_Container
 
