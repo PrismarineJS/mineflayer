@@ -16,7 +16,10 @@ module.exports = () => async (bot) => {
   const switchWorldListener = () => {
     switchWorldTriggered = true
   }
+  bot.chat('/gamemode 1')
+  bot.chat('/gamemode creative')
 
+  await sleep(500)
   bot.on('switchWorld', switchWorldListener)
   console.log('Killing now')
   bot.chat('/kill')
