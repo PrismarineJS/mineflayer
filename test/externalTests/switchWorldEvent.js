@@ -4,32 +4,35 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 module.exports = () => async (bot) => {
   await once(bot, 'spawn')
 
-  const switchWorldPromise = onceWithCleanup(bot, 'switchWorld', {
-    timeout: 15000
+  bot.on('switchWorld', () => {
+    console.log('switchWorld')
   })
 
   let switchWorldTriggered = false
 
+  const switchWorldPromise = onceWithCleanup(bot, 'switchWorld', {
+    timeout: 15000
+  })
   const switchWorldListener = () => {
     switchWorldTriggered = true
   }
 
   bot.on('switchWorld', switchWorldListener)
-
-  bot.test.sayEverywhere('/kill')
-
+  console.log('Killing now')
+  bot.chat('/kill')
   await sleep(3000)
-
   bot.off('switchWorld', switchWorldListener)
+  console.log('Kill switchWorld time over')
 
   if (switchWorldTriggered) {
     throw new Error('switchWorld event was triggered after kill, not after dimension switch!')
   }
 
-  bot.test.sayEverywhere('/setblock ~ ~ ~ nether_portal')
-  bot.test.sayEverywhere('/setblock ~ ~ ~ portal')
+  await sleep(1000)
+  bot.chat('/setblock ~ ~ ~ nether_portal')
+  bot.chat('/setblock ~ ~ ~ portal')
 
   await switchWorldPromise
 
-  console.log('Bot switched worlds, switchWorld event was emitted!')
+  console.log('Bot switched worlds, switchWorld event was properly emitted!')
 }
