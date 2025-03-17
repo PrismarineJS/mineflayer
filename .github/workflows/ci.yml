@@ -12,10 +12,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js 18.x
+    - name: Use Node.js 22.x
       uses: actions/setup-node@v1.4.4
       with:
-        node-version: 18.x
+        node-version: 22.x
     - run: npm i && npm run lint
   
   PrepareSupportedVersions:
@@ -25,10 +25,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js 18.x
+    - name: Use Node.js 22.x
       uses: actions/setup-node@v1.4.4
       with:
-        node-version: 18.x
+        node-version: 22.x
     - id: set-matrix
       run: |
         node -e "
@@ -45,10 +45,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js 18.x
+      - name: Use Node.js 22.x
         uses: actions/setup-node@v1.4.4
         with:
-          node-version: 18.x
+          node-version: 22.x
       - name: Setup Java JDK
         uses: actions/setup-java@v1.4.3
         with:
