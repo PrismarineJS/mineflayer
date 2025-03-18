@@ -2,8 +2,6 @@ const { once, onceWithCleanup } = require('../../lib/promise_utils')
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 module.exports = () => async (bot) => {
-  await once(bot, 'spawn')
-
   bot.on('switchWorld', () => {
     bot.test.sayEverywhere('switchWorld event fired')
   })
