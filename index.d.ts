@@ -163,6 +163,7 @@ export interface BotEvents {
   bossBarUpdated: (bossBar: BossBar) => Promise<void> | void
   resourcePack: (url: string, hash?: string, uuid?: string) => Promise<void> | void
   particle: (particle: Particle) => Promise<void> | void
+  switchWorld: () => void
 }
 
 export interface CommandBlockOptions {
