@@ -5,7 +5,7 @@ module.exports = () => async (bot) => {
   await once(bot, 'spawn')
 
   bot.on('switchWorld', () => {
-    console.log('switchWorld')
+    bot.test.sayEverywhere('switchWorld event fired')
   })
 
   let switchWorldTriggered = false
@@ -18,16 +18,14 @@ module.exports = () => async (bot) => {
   }
   bot.test.sayEverywhere('/gamemode creative')
   bot.test.sayEverywhere('/gamemode 1')
-  bot.test.becomeCreative()
 
   await sleep(500)
   bot.on('switchWorld', switchWorldListener)
-  console.log('Killing now')
+  bot.test.sayEverywhere('Killing now')
   bot.test.sayEverywhere('/kill')
-  bot.test.selfKill()
   await sleep(3000)
   bot.off('switchWorld', switchWorldListener)
-  console.log('Kill switchWorld time over')
+  bot.test.sayEverywhere('Kill switchWorld time over')
 
   if (switchWorldTriggered) {
     throw new Error('switchWorld event was triggered after kill, not after dimension switch!')
@@ -39,5 +37,5 @@ module.exports = () => async (bot) => {
 
   await switchWorldPromise
 
-  console.log('Bot switched worlds, switchWorld event was properly emitted!')
+  bot.test.sayEverywhere('Bot switched worlds, switchWorld event was properly emitted!')
 }
