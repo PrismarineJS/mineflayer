@@ -16,13 +16,15 @@ module.exports = () => async (bot) => {
   const switchWorldListener = () => {
     switchWorldTriggered = true
   }
-  bot.chat('/gamemode 1')
-  bot.chat('/gamemode creative')
+  bot.test.sayEverywhere('/gamemode creative')
+  bot.test.sayEverywhere('/gamemode 1')
+  bot.test.becomeCreative()
 
   await sleep(500)
   bot.on('switchWorld', switchWorldListener)
   console.log('Killing now')
-  bot.chat('/kill')
+  bot.test.sayEverywhere('/kill')
+  bot.test.selfKill()
   await sleep(3000)
   bot.off('switchWorld', switchWorldListener)
   console.log('Kill switchWorld time over')
@@ -32,8 +34,8 @@ module.exports = () => async (bot) => {
   }
 
   await sleep(1000)
-  bot.chat('/setblock ~ ~ ~ nether_portal')
-  bot.chat('/setblock ~ ~ ~ portal')
+  bot.test.sayEverywhere('/setblock ~ ~ ~ nether_portal')
+  bot.test.sayEverywhere('/setblock ~ ~ ~ portal')
 
   await switchWorldPromise
 
