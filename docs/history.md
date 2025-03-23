@@ -1,3 +1,8 @@
+## 4.27.0
+* [Entity Passengers get pushed wrongly (#3601)](https://github.com/PrismarineJS/mineflayer/commit/deb03b52d1e015ece9df1f14536f168f64895c81) (thanks @SinanAkkoyun)
+* [Update bot.clickWindow documentation (#3574)](https://github.com/PrismarineJS/mineflayer/commit/188db17bbb95461743aec2823695c360685559b0) (thanks @kaduvert)
+* [Saving uuid for non-players too (#3603)](https://github.com/PrismarineJS/mineflayer/commit/9937be9b49bb3dd7cd5502c0424809fa66eb60b3) (thanks @SinanAkkoyun)
+
 ## 4.26.0
 * [Use node 22 (#3570)](https://github.com/PrismarineJS/mineflayer/commit/dbff9314418d30df203c32fe83f2a1b56653d0a6) (thanks @rom1504)
 * [Fix infinity setTimeout by throwing error (#3561)](https://github.com/PrismarineJS/mineflayer/commit/69539494c88c2ca718330142839a35414ecd3bda) (thanks @BBpezsgo)
