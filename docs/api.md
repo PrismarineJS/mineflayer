@@ -253,6 +253,7 @@
       - ["physicsTick" ()](#physicstick-)
       - ["chat:name" (matches)](#chatname-matches)
       - ["particle"](#particle)
+      - ["switchWorld"](#switchWorld)
     - [Functions](#functions)
       - [bot.blockAt(point, extraInfos=true)](#botblockatpoint-extrainfostrue)
       - [bot.waitForChunksToLoad()](#botwaitforchunkstoload)
@@ -1550,6 +1551,11 @@ Fires when the all of a chat pattern's regexs have matches
 #### "particle"
 
 Fires when a particle is created
+
+
+#### "switchWorld"
+
+Only fires when the world is being switched (unlike `respawn` which also fires after death)
 
 ### Functions
 
