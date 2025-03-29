@@ -165,6 +165,7 @@
       - ["messagestr" (message, messagePosition, jsonMsg, sender, verified)](#messagestr-message-messageposition-jsonmsg-sender-verified)
       - ["inject_allowed"](#inject_allowed)
       - ["login"](#login)
+      - ["worldSwitch"](#worldswitch)
       - ["spawn"](#spawn)
       - ["respawn"](#respawn)
       - ["game"](#game)
@@ -1214,6 +1215,10 @@ Fires when the index file has been loaded, you can load mcData and plugins here 
 Fires after you successfully login to the server.
 You probably want to wait for the `spawn` event
 before doing anything though.
+
+#### "worldSwitch"
+
+Fires when you switch worlds like going through lobbies on the server. Does not fire on initial world join.
 
 #### "spawn"
 
