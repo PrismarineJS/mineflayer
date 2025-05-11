@@ -205,6 +205,7 @@ higher level API on top of Mineflayer.
 
 The most updated and useful are :
 
+ * [minecraft-mcp-server](https://github.com/yuniko-software/minecraft-mcp-server) A MCP server for mineflayer, allowing using mineflayer from an LLM
  * [pathfinder](https://github.com/Karang/mineflayer-pathfinder) - advanced A* pathfinding with a lot of configurable features
  * [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer) - simple web chunk viewer
  * [web-inventory](https://github.com/ImHarvol/mineflayer-web-inventory) - web based inventory viewer
