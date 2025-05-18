@@ -137,8 +137,8 @@ bot.test.sayEverywhere('/gamerule doDaylightCycle false') // Toggle game rules
 ### Bot Operations
 ```javascript
 async function f() {
-    await bot.test.wait(200)  // Wait for specified milliseconds
-    await once(bot, 'time')   // Wait for specific event
+  await bot.test.wait(200)  // Wait for specified milliseconds
+  await once(bot, 'time')   // Wait for specific event
 }
 ```
 

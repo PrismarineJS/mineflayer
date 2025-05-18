@@ -2,89 +2,42 @@ const assert = require('assert')
 const { once } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
-  console.log('[experience test] Bot username:', bot.username)
-  console.log('[experience test] Switching to survival mode...')
   await bot.test.becomeSurvival()
   await bot.test.wait(1000)
-  console.log('[experience test] In survival mode.')
 
-  // Verify bot is in survival mode (accept both 0 and 'survival')
-  console.log('[experience test] Actual game mode value:', bot.game.gameMode)
-  assert(bot.game.gameMode === 0 || bot.game.gameMode === 'survival', 'Bot should be in survival mode')
-  console.log('[experience test] Passed survival mode check.')
-
-  // Log initial experience state
-  console.log('[experience test] Initial experience state:', {
+  // Initial state
+  const initialState = {
     level: bot.experience.level,
     points: bot.experience.points,
     progress: bot.experience.progress
-  })
-
-  // Add experience event listener for debugging
-  const expListener = () => {
-    console.log('[experience test] Experience event fired! New state:', {
-      level: bot.experience.level,
-      points: bot.experience.points,
-      progress: bot.experience.progress
-    })
   }
-  bot.on('experience', expListener)
+  assert(initialState.level >= 0, 'Initial experience level should be non-negative')
+  assert(initialState.points >= 0, 'Initial experience points should be non-negative')
+  assert(initialState.progress >= 0 && initialState.progress <= 1, 'Initial experience progress should be between 0 and 1')
 
-  // Add packet listener for debugging
-  bot._client.on('experience', (packet) => {
-    console.log('[experience test] Experience packet received:', packet)
-  })
+  // Test experience points
+  const xpCommand = bot.registry.isOlderThan('1.13')
+    ? `/xp 10 ${bot.username}`
+    : `/xp add ${bot.username} 10 points`
 
-  // Give experience and wait for the event
-  let xpCommand
-  if (bot.registry.isOlderThan('1.13')) {
-    xpCommand = `/xp 10 ${bot.username}`
-  } else {
-    xpCommand = `/xp add ${bot.username} 10 points`
-  }
-  console.log('[experience test] Running command:', xpCommand)
-  const xpPromise = once(bot, 'experience')
-  bot.chat(xpCommand)
-  console.log('[experience test] Command executed, waiting for experience event...')
-  console.log('[experience test] Waiting for experience event after xp 10...')
-  await xpPromise
-  console.log('[experience test] Experience event received after xp 10')
+  await bot.chat(xpCommand)
+  await once(bot, 'experience')
 
-  // Verify experience properties
-  console.log('[experience test] Current experience state:', {
-    level: bot.experience.level,
-    points: bot.experience.points,
-    progress: bot.experience.progress
-  })
-  assert(bot.experience.level >= 0, 'Experience level should be non-negative')
-  assert(bot.experience.points >= 0, 'Experience points should be non-negative')
-  assert(bot.experience.progress >= 0 && bot.experience.progress <= 1, 'Experience progress should be between 0 and 1')
+  // Verify after points
+  assert(bot.experience.points >= 10, 'Experience points should be at least 10 after adding points')
+  assert(bot.experience.level >= initialState.level, 'Experience level should not decrease after adding points')
+  assert(bot.experience.progress >= 0 && bot.experience.progress <= 1, 'Experience progress should be between 0 and 1 after adding points')
 
-  // Give more experience to level up
-  console.log('[experience test] Running level up command...')
-  let levelUpCommand
-  if (bot.registry.isOlderThan('1.13')) {
-    levelUpCommand = `/xp 100L ${bot.username}`
-  } else {
-    levelUpCommand = `/xp add ${bot.username} 100 levels`
-  }
-  const levelUpPromise = once(bot, 'experience')
-  bot.chat(levelUpCommand)
-  console.log('[experience test] Waiting for experience event after level up...')
-  await levelUpPromise
-  console.log('[experience test] Experience event received after level up')
+  // Test experience levels
+  const levelCommand = bot.registry.isOlderThan('1.13')
+    ? `/xp 100L ${bot.username}`
+    : `/xp add ${bot.username} 100 levels`
 
-  // Verify final experience state
-  console.log('[experience test] Final experience state:', {
-    level: bot.experience.level,
-    points: bot.experience.points,
-    progress: bot.experience.progress
-  })
-  assert(bot.experience.level > 0, 'Experience level should be greater than 0 after level up')
-  assert(bot.experience.points > 0, 'Experience points should be greater than 0 after level up')
+  await bot.chat(levelCommand)
+  await once(bot, 'experience')
 
-  // Remove the experience event listener
-  bot.removeListener('experience', expListener)
-
-  console.log('[experience test] All checks passed!')
+  // Verify after levels
+  assert(bot.experience.level >= 100, 'Experience level should be at least 100 after adding levels')
+  assert(bot.experience.points > 0, 'Experience points should be positive after adding levels')
+  assert(bot.experience.progress >= 0 && bot.experience.progress <= 1, 'Experience progress should be between 0 and 1 after adding levels')
 }
