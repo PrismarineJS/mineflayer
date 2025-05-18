@@ -130,14 +130,16 @@ console.log('Time properties:', bot.time)
 
 ### Server Commands
 ```javascript
-bot.test.sayEverywhere('/time set 0')  // Set time
-bot.test.sayEverywhere('/gamerule doDaylightCycle false')  // Toggle game rules
+bot.test.sayEverywhere('/time set 0') // Set time
+bot.test.sayEverywhere('/gamerule doDaylightCycle false') // Toggle game rules
 ```
 
 ### Bot Operations
 ```javascript
-await bot.test.wait(200)  // Wait for specified milliseconds
-await once(bot, 'time')   // Wait for specific event
+async function f() {
+    await bot.test.wait(200)  // Wait for specified milliseconds
+    await once(bot, 'time')   // Wait for specific event
+}
 ```
 
 ## Version Compatibility
@@ -146,6 +148,43 @@ await once(bot, 'time')   // Wait for specific event
 - Handle version-specific packet formats
 - Consider backward compatibility
 - Document version-specific behavior
+
+## Adding a New Test
+
+When adding a new test, follow these steps:
+
+1. **Create a new test file** in the `test/externalTests` directory. For example, `experience.js`.
+2. **Write the test logic** using async/await. Avoid using the `done` callback if possible.
+3. **Handle version differences** if necessary. For example, the experience command syntax differs between Minecraft versions:
+   - For versions older than 1.13, use `/xp <amount> [player]`.
+   - For versions 1.13 and newer, use `/xp add <player> <amount> points` or `/xp add <player> <amount> levels`.
+4. **Add event listeners** for debugging if needed, and ensure they are removed at the end of the test to prevent memory leaks.
+5. **Use `bot.chat`** to issue commands directly instead of `bot.test.runCommand`.
+6. **Run the test** for different Minecraft versions to ensure compatibility.
+
+Example test structure:
+```javascript
+const assert = require('assert')
+const { once } = require('../../lib/promise_utils')
+
+module.exports = () => async (bot) => {
+  // Test logic here
+  // Example: Check bot's experience state
+  console.log('[experience test] Bot username:', bot.username)
+  await bot.test.becomeSurvival()
+  // ... more test logic ...
+  // Remove event listeners at the end
+  bot.removeListener('experience', expListener)
+  console.log('[experience test] All checks passed!')
+}
+```
+
+## Specific Details from Recent Experience
+
+- **Version-Specific Command Syntax**: Always check the Minecraft Wiki or existing tests for the correct command syntax for each version. For example, the experience command syntax changed in 1.13.
+- **Event Listener Cleanup**: Always remove event listeners at the end of the test to prevent memory leaks. Use `bot.removeListener('eventName', listenerFunction)`.
+- **Use `bot.chat`**: For issuing commands, use `bot.chat` directly instead of `bot.test.runCommand` to ensure commands are sent correctly.
+- **Debugging**: Use `console.log` for debugging, but remove these statements before finalizing the test.
 
 ## Conclusion
 
