@@ -186,6 +186,51 @@ module.exports = () => async (bot) => {
 - **Use `bot.chat`**: For issuing commands, use `bot.chat` directly instead of `bot.test.runCommand` to ensure commands are sent correctly.
 - **Debugging**: Use `console.log` for debugging, but remove these statements before finalizing the test.
 
+## Title Plugin Implementation Details
+
+### Version-Specific Title Handling
+- Title packets changed significantly between versions:
+  - 1.8.8 uses a single `title` packet with an action field
+  - 1.14.4+ uses separate packets for different title operations
+- Use `bot.supportFeature('titleUsesLegacyPackets')` to detect version
+- Handle both JSON and plain text title formats
+
+### Title Testing Strategy
+```javascript
+// Example of testing title functionality
+const titleTests = [
+  { type: 'title', text: 'Main Title' },
+  { type: 'subtitle', text: 'Subtitle Text' },
+  { type: 'clear' }
+]
+
+for (const test of titleTests) {
+  if (test.type === 'clear') {
+    bot.test.sayEverywhere('/title @a clear')
+  } else {
+    bot.test.sayEverywhere(`/title @a ${test.type} {"text":"${test.text}"}`)
+  }
+  await once(bot, 'title')
+  // Verify title state
+}
+```
+
+### Title-Specific Best Practices
+1. **Event Handling**
+   - Listen for both legacy and modern title events
+   - Handle title clear events separately
+   - Parse JSON title text properly
+
+2. **Version Compatibility**
+   - Test title display, subtitle, and clear operations
+   - Verify title timing settings work
+   - Check title text parsing across versions
+
+3. **Error Prevention**
+   - Handle malformed JSON in title text
+   - Provide fallbacks for unsupported operations
+   - Log title-related errors for debugging
+
 ## Conclusion
 
 When adding or modifying tests:
