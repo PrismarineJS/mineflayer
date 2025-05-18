@@ -32,7 +32,7 @@ module.exports = () => async (bot) => {
   const isTimeInRange = (current, start, end) => start <= end ? current >= start && current <= end : current >= start || current <= end
   const waitForTime = async () => {
     await once(bot, 'time')
-    await bot.test.wait(500)
+    await bot.test.wait(200)
   }
 
   // Test time transitions
