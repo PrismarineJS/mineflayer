@@ -1,7 +1,10 @@
 const assert = require('assert')
 const { once } = require('../../lib/promise_utils')
 
-module.exports = () => async (bot) => {
+module.exports = (version) => async (bot) => {
+  // Skip test for versions older than 1.13 (bossbar command not available)
+  if (bot.registry.isOlderThan('1.13')) return
+
   console.log('[bossBar test] Starting boss bar tests')
 
   // Test boss bar creation
