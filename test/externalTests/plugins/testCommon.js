@@ -102,7 +102,6 @@ function inject (bot) {
     bot.chat('/gamerule doDaylightCycle true')
     bot.chat('/gamerule doWeatherCycle true')
     bot.chat('/difficulty peaceful')
-    bot.chat('/difficulty normal')
     // Ensure OP status for the bot
     bot.chat(`/op ${bot.username}`)
     await sleep(1000)
