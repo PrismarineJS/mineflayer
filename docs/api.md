@@ -1089,7 +1089,7 @@ Day of the world.
 
 Whether it is day or not.
 
-Based on whether the current time of day is between 13000 and 23000 ticks.
+Based on whether the current time of day is between 0 and 13000 ticks (day + sunset).
 
 #### bot.time.moonPhase
 

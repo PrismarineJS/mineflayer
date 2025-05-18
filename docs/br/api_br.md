@@ -941,7 +941,7 @@ Dia do mundo.
 
 Se é dia ou não.
 
-Baseado no horário atual estar entre 13.000 e 23.000 ticks.
+Baseado no horário atual estar entre 0 e 13000 ticks (dia + pôr do sol).
 
 #### bot.time.moonPhase
 
