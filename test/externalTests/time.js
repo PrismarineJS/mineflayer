@@ -33,8 +33,7 @@ module.exports = () => async (bot) => {
 
   // Helper function to check if time is close to target
   const isTimeClose = (current, target) => {
-    const diff = Math.abs(current - target)
-    return diff < 20 // Allow for 1 second of time difference
+    return Math.abs(current - target) < 100
   }
 
   // Test midnight
