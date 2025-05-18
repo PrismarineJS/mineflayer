@@ -10,10 +10,7 @@ module.exports = () => async (bot) => {
     const title = 'Test Boss Bar'
     const colorName = 'red'
     const styleName = 'notched_6'
-    const colorIndex = 2 // red
-    const styleIndex = 1 // notched_6
     const health = 0.5
-    const flags = 0
 
     bot.test.sayEverywhere(`/bossbar add ${uuid} "${title}"`)
     bot.test.sayEverywhere(`/bossbar set ${uuid} players ${bot.username}`)
@@ -38,8 +35,6 @@ module.exports = () => async (bot) => {
     const newHealth = 0.75
     const newColor = 'blue'
     const newStyle = 'notched_10'
-    const newColorIndex = 1 // blue
-    const newStyleIndex = 2 // notched_10
 
     bot.test.sayEverywhere(`/bossbar set ${uuid} color ${newColor}`)
     bot.test.sayEverywhere(`/bossbar set ${uuid} style ${newStyle}`)
