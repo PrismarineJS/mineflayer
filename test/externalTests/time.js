@@ -2,82 +2,86 @@ const assert = require('assert')
 const { once } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
-  // Test time properties and ranges
-  const timeProps = {
-    doDaylightCycle: 'boolean',
-    bigTime: 'bigint',
-    time: 'number',
-    timeOfDay: 'number',
-    day: 'number',
-    isDay: 'boolean',
-    moonPhase: 'number',
-    bigAge: 'bigint',
-    age: 'number'
+  // Test time properties
+  assert.strictEqual(typeof bot.time.doDaylightCycle, 'boolean')
+  assert.strictEqual(typeof bot.time.bigTime, 'bigint')
+  assert.strictEqual(typeof bot.time.time, 'number')
+  assert.strictEqual(typeof bot.time.timeOfDay, 'number')
+  assert.strictEqual(typeof bot.time.day, 'number')
+  assert.strictEqual(typeof bot.time.isDay, 'boolean')
+  assert.strictEqual(typeof bot.time.moonPhase, 'number')
+  assert.strictEqual(typeof bot.time.bigAge, 'bigint')
+  assert.strictEqual(typeof bot.time.age, 'number')
+
+  // Test time ranges
+  assert(bot.time.timeOfDay >= 0 && bot.time.timeOfDay < 24000)
+  assert(bot.time.moonPhase >= 0 && bot.time.moonPhase < 8)
+  assert(bot.time.day >= 0)
+  assert(bot.time.age >= 0)
+  assert(bot.time.bigAge >= 0n)
+
+  // Test time events
+  const timePromise = once(bot, 'time')
+  bot.test.sayEverywhere('/time set day')
+  await timePromise
+
+  // Test time of day transitions
+  const midnight = 18000
+  const noon = 6000
+  const sunset = 12000
+  const sunrise = 0
+
+  // Helper function to check if time is close to target
+  const isTimeClose = (current, target) => {
+    const diff = Math.abs(current - target)
+    return diff < 20 // Allow for 1 second of time difference
   }
 
-  // Verify all properties exist and have correct types
-  Object.entries(timeProps).forEach(([prop, type]) => {
-    assert.strictEqual(typeof bot.time[prop], type, `Property ${prop} should be of type ${type}`)
-  })
+  // Test midnight
+  bot.test.sayEverywhere(`/time set ${midnight}`)
+  await once(bot, 'time')
+  assert(isTimeClose(bot.time.timeOfDay, midnight), `Expected time to be close to ${midnight}, got ${bot.time.timeOfDay}`)
+  assert.strictEqual(bot.time.isDay, false)
 
-  // Verify ranges
-  assert(bot.time.timeOfDay >= 0 && bot.time.timeOfDay < 24000, 'timeOfDay should be between 0 and 24000')
-  assert(bot.time.moonPhase >= 0 && bot.time.moonPhase < 8, 'moonPhase should be between 0 and 7')
-  assert(bot.time.day >= 0, 'day should be non-negative')
-  assert(bot.time.age >= 0, 'age should be non-negative')
-  assert(bot.time.bigAge >= 0n, 'bigAge should be non-negative')
+  // Test noon
+  bot.test.sayEverywhere(`/time set ${noon}`)
+  await once(bot, 'time')
+  assert(isTimeClose(bot.time.timeOfDay, noon), `Expected time to be close to ${noon}, got ${bot.time.timeOfDay}`)
+  assert.strictEqual(bot.time.isDay, true)
 
-  // Helper functions
-  const isTimeClose = (current, target) => Math.abs(current - target) < 510
-  const isTimeInRange = (current, start, end) => start <= end ? current >= start && current <= end : current >= start || current <= end
-  const waitForTime = async () => {
-    await once(bot, 'time')
-    await bot.test.wait(200)
-  }
+  // Test sunset
+  bot.test.sayEverywhere(`/time set ${sunset}`)
+  await once(bot, 'time')
+  assert(isTimeClose(bot.time.timeOfDay, sunset), `Expected time to be close to ${sunset}, got ${bot.time.timeOfDay}`)
+  assert.strictEqual(bot.time.isDay, true)
 
-  // Test time transitions
-  const timeTests = [
-    { time: 18000, name: 'midnight', isDay: false },
-    { time: 6000, name: 'noon', isDay: true },
-    { time: 12000, name: 'sunset', isDay: true },
-    { time: 0, name: 'sunrise', isDay: true }
-  ]
+  // Test sunrise
+  bot.test.sayEverywhere(`/time set ${sunrise}`)
+  await once(bot, 'time')
+  assert(isTimeClose(bot.time.timeOfDay, sunrise), `Expected time to be close to ${sunrise}, got ${bot.time.timeOfDay}`)
+  assert.strictEqual(bot.time.isDay, true)
 
-  for (const test of timeTests) {
-    bot.test.sayEverywhere(`/time set ${test.time}`)
-    await waitForTime()
-    assert(isTimeClose(bot.time.timeOfDay, test.time), `Expected time to be close to ${test.time}, got ${bot.time.timeOfDay}`)
-    assert.strictEqual(bot.time.isDay, test.isDay, `${test.name} should be ${test.isDay ? 'day' : 'night'}`)
-  }
-
-  // Test day and moon phase progression
+  // Test day increment
   const currentDay = bot.time.day
+  bot.test.sayEverywhere('/time add 24000')
+  await once(bot, 'time')
+  assert.strictEqual(bot.time.day, currentDay + 1)
+
+  // Test moon phase
   const currentPhase = bot.time.moonPhase
   bot.test.sayEverywhere('/time add 24000')
-  await waitForTime()
-  assert(bot.time.day >= currentDay + 1, `Expected day to be at least ${currentDay + 1}, got ${bot.time.day}`)
-  assert.notStrictEqual(bot.time.moonPhase, currentPhase, 'Moon phase should change after a full day')
+  await once(bot, 'time')
+  // Moon phase should change after a full day
+  assert.notStrictEqual(bot.time.moonPhase, currentPhase)
 
   // Test daylight cycle
   const originalDaylightCycle = bot.time.doDaylightCycle
   bot.test.sayEverywhere('/gamerule doDaylightCycle false')
-  await waitForTime()
+  await once(bot, 'time')
   assert.strictEqual(bot.time.doDaylightCycle, false)
 
+  // Restore original daylight cycle
   bot.test.sayEverywhere(`/gamerule doDaylightCycle ${originalDaylightCycle}`)
-  await waitForTime()
+  await once(bot, 'time')
   assert.strictEqual(bot.time.doDaylightCycle, originalDaylightCycle)
-
-  // Test day/night transitions
-  const dayNightTests = [
-    { command: 'day', range: [0, 12000], isDay: true },
-    { command: 'night', range: [12000, 24000], isDay: false }
-  ]
-
-  for (const test of dayNightTests) {
-    bot.test.sayEverywhere(`/time set ${test.command}`)
-    await waitForTime()
-    assert(isTimeInRange(bot.time.timeOfDay, test.range[0], test.range[1]), `Time should be in ${test.command} range`)
-    assert.strictEqual(bot.time.isDay, test.isDay, `${test.command} should be ${test.isDay ? 'day' : 'night'}`)
-  }
-}
+} 
