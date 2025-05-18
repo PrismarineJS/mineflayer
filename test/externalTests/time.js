@@ -84,4 +84,4 @@ module.exports = () => async (bot) => {
   bot.test.sayEverywhere(`/gamerule doDaylightCycle ${originalDaylightCycle}`)
   await once(bot, 'time')
   assert.strictEqual(bot.time.doDaylightCycle, originalDaylightCycle)
-} 
+}
