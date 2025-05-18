@@ -197,21 +197,22 @@ module.exports = () => async (bot) => {
 
 ### Title Testing Strategy
 ```javascript
-// Example of testing title functionality
-const titleTests = [
-  { type: 'title', text: 'Main Title' },
-  { type: 'subtitle', text: 'Subtitle Text' },
-  { type: 'clear' }
-]
-
-for (const test of titleTests) {
-  if (test.type === 'clear') {
-    bot.test.sayEverywhere('/title @a clear')
-  } else {
-    bot.test.sayEverywhere(`/title @a ${test.type} {"text":"${test.text}"}`)
+async function f () {
+  // Example of testing title functionality
+  const titleTests = [
+    { type: 'title', text: 'Main Title' },
+    { type: 'subtitle', text: 'Subtitle Text' },
+    { type: 'clear' }
+  ]
+  for (const test of titleTests) {
+    if (test.type === 'clear') {
+      bot.test.sayEverywhere('/title @a clear')
+    } else {
+      bot.test.sayEverywhere(`/title @a ${test.type} {"text":"${test.text}"}`)
+    }
+    await once(bot, 'title')
+    // Verify title state
   }
-  await once(bot, 'title')
-  // Verify title state
 }
 ```
 
