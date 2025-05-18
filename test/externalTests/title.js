@@ -10,7 +10,7 @@ module.exports = () => async (bot) => {
 
   // Test title
   bot.chat(`/title @a title ${format.title}`)
-  const [title, type] = await once(bot, 'title', 20000)
+  const [title, type] = await once(bot, 'title', 2000)
   if (!format.expect(title, 'Test Title') || type !== 'title') {
     throw new Error(`Title test failed: expected "Test Title" but got "${title}" with type "${type}"`)
   }
@@ -22,9 +22,12 @@ module.exports = () => async (bot) => {
     throw new Error(`Subtitle test failed: expected "Test Subtitle" but got "${subtitle}" with type "${subtitleType}"`)
   }
 
-  // Set times
-  bot.chat('/title @a times 20 40 20')
-  await new Promise(res => setTimeout(res, 1000))
+  // Test title_times event
+  bot.chat('/title @a times 10 20 30')
+  const [fadeIn, stay, fadeOut] = await once(bot, 'title_times', 20000)
+  if (fadeIn !== 10 || stay !== 20 || fadeOut !== 30) {
+    throw new Error(`title_times event failed: expected (10,20,30) but got (${fadeIn},${stay},${fadeOut})`)
+  }
 
   // Test combined title and subtitle
   bot.chat(`/title @a title ${format.title}`)
@@ -38,4 +41,8 @@ module.exports = () => async (bot) => {
   if (!format.expect(combinedSubtitle, 'Test Subtitle') || combinedSubtitleType !== 'subtitle') {
     throw new Error(`Combined subtitle test failed: expected "Test Subtitle" but got "${combinedSubtitle}" with type "${combinedSubtitleType}"`)
   }
+
+  // Test clearing title
+  bot.chat('/title @a clear')
+  await once(bot, 'title_clear', 2000)
 }

@@ -170,6 +170,7 @@
       - ["game"](#game)
       - ["resourcePack" (url, hash)](#resourcepack-url-hash)
       - ["title" (title, type)](#title-title-type)
+      - ["title_times" (fadeIn, stay, fadeOut)](#title_times-fadein-stay-fadeout)
       - ["rain"](#rain)
       - ["weatherUpdate"](#weatherupdate)
       - ["time"](#time)
@@ -1241,8 +1242,24 @@ Emitted when the server sends a resource pack.
 
 Emitted when the server sends a title
 
- * `title` - title's text
- * `type` - title's type "subtitle" or "title"
+* `title` - title's text
+* `type` - title's type "subtitle", "title", or "clear"
+
+#### "title_times" (fadeIn, stay, fadeOut)
+
+Emitted when the server sends a title times packet (i.e., when the fade-in, stay, and fade-out times for titles are set or updated).
+
+ * `fadeIn` - fade-in time in ticks (number)
+ * `stay` - stay time in ticks (number)
+ * `fadeOut` - fade-out time in ticks (number)
+
+Example:
+
+```js
+bot.on('title_times', (fadeIn, stay, fadeOut) => {
+  console.log(`Title times: fadeIn=${fadeIn}, stay=${stay}, fadeOut=${fadeOut}`)
+})
+```
 
 #### "rain"
 
