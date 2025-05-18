@@ -943,9 +943,9 @@ Día del mundo
 
 #### bot.time.isDay
 
-Si es de día o no
+Si es de día o no.
 
-Basado en si la hora actual está entre los 13000 y 23000 ticks.
+Basado en si la hora actual está entre 0 y 13000 ticks (día + atardecer).
 
 #### bot.time.moonPhase
 
