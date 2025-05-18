@@ -28,10 +28,10 @@ module.exports = () => async (bot) => {
   // Test sound effect events
   const soundTest = async () => {
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
+
     return retry(async () => {
       const soundPromise = once(bot, 'soundEffectHeard', 5000)
-      
+
       if (bot.supportFeature('playsoundUsesResourceLocation')) {
         // 1.9+ syntax
         let soundName
@@ -47,15 +47,15 @@ module.exports = () => async (bot) => {
       }
 
       const [soundName, position, volume, pitch] = await soundPromise
-      
-      assert.ok(typeof soundName === 'string' || typeof soundName === 'number', 
+
+      assert.ok(typeof soundName === 'string' || typeof soundName === 'number',
         `Invalid soundName type: ${typeof soundName}`)
       assert.strictEqual(typeof position, 'object', 'Position should be an object')
       assert.strictEqual(typeof volume, 'number', 'Volume should be a number')
       assert.strictEqual(typeof pitch, 'number', 'Pitch should be a number')
-      
+
       const isClose = positionsAreClose(position, bot.entity.position)
-      assert.ok(isClose, 
+      assert.ok(isClose,
         `Position mismatch: expected ${JSON.stringify(bot.entity.position)}, got ${JSON.stringify(position)}`)
     })
   }
@@ -64,18 +64,18 @@ module.exports = () => async (bot) => {
   const noteTest = async () => {
     const pos = bot.entity.position.offset(1, 0, 0).floored()
     const noteBlockName = bot.supportFeature('noteBlockNameIsNoteBlock') ? 'note_block' : 'noteblock'
-    
+
     return retry(async () => {
       await bot.test.setBlock({ x: pos.x, y: pos.y, z: pos.z, blockName: noteBlockName, relative: false })
       await new Promise(resolve => setTimeout(resolve, 250))
-      
+
       const noteHeardPromise = once(bot, 'noteHeard', 5000)
       await bot.test.setBlock({ x: pos.x, y: pos.y - 1, z: pos.z, blockName: 'redstone_block', relative: false })
-      
+
       const [block, instrument, pitch] = await noteHeardPromise
-      
+
       assert.strictEqual(block.name, noteBlockName, 'Wrong block name')
-      
+
       if (typeof instrument === 'string') {
         assert.ok(typeof instrument === 'string', 'Instrument should be a string')
       } else if (typeof instrument === 'object' && instrument !== null) {
@@ -84,7 +84,7 @@ module.exports = () => async (bot) => {
       } else {
         throw new Error(`Unexpected instrument type: ${typeof instrument}`)
       }
-      
+
       assert.strictEqual(typeof pitch, 'number', 'Pitch should be a number')
       assert.ok(pitch >= 0 && pitch <= 24, `Pitch out of range: ${pitch}`)
     })
@@ -99,7 +99,7 @@ module.exports = () => async (bot) => {
           return [0, 'master', position, volume, pitch]
         })
       ])
-      
+
       if (bot.supportFeature('playsoundUsesResourceLocation')) {
         bot.chat(`/playsound minecraft:ui.button.click master ${bot.username} ~ ~ ~ 1 1`)
       } else {
@@ -107,9 +107,9 @@ module.exports = () => async (bot) => {
       }
 
       const [soundId, soundCategory, position, volume, pitch] = await soundPromise
-      
+
       assert.strictEqual(typeof soundId, 'number', 'SoundId should be a number')
-      assert.ok(typeof soundCategory === 'string' || typeof soundCategory === 'number', 
+      assert.ok(typeof soundCategory === 'string' || typeof soundCategory === 'number',
         `Invalid soundCategory type: ${typeof soundCategory}`)
       assert.strictEqual(typeof position, 'object', 'Position should be an object')
       assert.strictEqual(typeof volume, 'number', 'Volume should be a number')
@@ -119,7 +119,7 @@ module.exports = () => async (bot) => {
 
   try {
     bot.chat('### Starting sound')
-    
+
     // Run all tests
     await soundTest()
     await noteTest()
@@ -130,4 +130,4 @@ module.exports = () => async (bot) => {
     await bot.test.setBlock({ x: pos.x, y: pos.y, z: pos.z, blockName: 'air' })
     await bot.test.setBlock({ x: pos.x, y: pos.y - 1, z: pos.z, blockName: 'air' })
   }
-} 
+}

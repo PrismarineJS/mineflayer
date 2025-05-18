@@ -42,13 +42,13 @@ function inject (bot) {
     if (block.name === blockName) {
       return
     }
-    console.log(`Attempting to place block ${blockName} at position (${_x}, ${_y}, ${_z})`);
+    console.log(`Attempting to place block ${blockName} at position (${_x}, ${_y}, ${_z})`)
     const p = once(bot.world, `blockUpdate:(${_x}, ${_y}, ${_z})`)
     const prefix = relative ? '~' : ''
     bot.chat(`/setblock ${prefix}${x} ${prefix}${y} ${prefix}${z} ${blockName}`)
-    console.log(`Waiting for blockUpdate event at position (${_x}, ${_y}, ${_z})`);
+    console.log(`Waiting for blockUpdate event at position (${_x}, ${_y}, ${_z})`)
     await p
-    console.log(`Block ${blockName} placed successfully at position (${_x}, ${_y}, ${_z})`);
+    console.log(`Block ${blockName} placed successfully at position (${_x}, ${_y}, ${_z})`)
   }
 
   let grassName
