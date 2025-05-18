@@ -97,6 +97,8 @@ function inject (bot) {
     // Reset health and food
     bot.chat('/effect clear @a')
     bot.chat('/effect clear @p')
+    bot.chat('/attribute @p minecraft:generic.max_health base set 20')
+    bot.chat('/effect give @p minecraft:saturation 1 20 true')
     bot.chat('/gamerule doDaylightCycle true')
     bot.chat('/gamerule doWeatherCycle true')
     bot.chat('/difficulty peaceful')
