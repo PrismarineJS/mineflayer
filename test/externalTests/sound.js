@@ -4,7 +4,7 @@ const { once } = require('../../lib/promise_utils')
 module.exports = () => async (bot) => {
   // Debug: log all received sound packets
   bot.on('soundEffectHeard', (...args) => {
-    console.log('[DEBUG] soundEffectHeard', ...args)
+    console.log('[DEBUG] soundEffectHeard event received:', ...args)
   })
   bot.on('hardcodedSoundEffectHeard', (...args) => {
     console.log('[DEBUG] hardcodedSoundEffectHeard', ...args)
@@ -21,6 +21,32 @@ module.exports = () => async (bot) => {
   })
   bot._client.on('named_sound_effect', (packet) => {
     console.log('[DEBUG] named_sound_effect packet:', JSON.stringify(packet, null, 2))
+  })
+
+  // Add debug logging for the command being sent
+  const originalChat = bot.chat
+  bot.chat = function (message) {
+    console.log('[DEBUG] Sending chat command:', message)
+    return originalChat.call(this, message)
+  }
+
+  // Add debug logging for all events
+  bot.on('*', (eventName, ...args) => {
+    if (eventName.startsWith('sound') || eventName.includes('sound')) {
+      console.log(`[DEBUG] Event ${eventName} emitted:`, ...args)
+    }
+  })
+
+  // Add debug logging for chat messages
+  bot.on('message', (message) => {
+    console.log('[DEBUG] Chat message received:', message.toString())
+  })
+
+  // Add debug logging for all packets
+  bot._client.on('packet', (data, meta) => {
+    if (meta.name === 'sound_effect' || meta.name === 'named_sound_effect') {
+      console.log(`[DEBUG] Received ${meta.name} packet:`, data)
+    }
   })
 
   // Helper function to check if positions are close enough
@@ -58,7 +84,14 @@ module.exports = () => async (bot) => {
       
       if (bot.supportFeature('playsoundUsesResourceLocation')) {
         // 1.9+ syntax
-        bot.chat('/playsound minecraft:block.note_block.harp master @s ~ ~ ~ 1 1')
+        let soundName
+        if (bot.supportFeature('noteBlockNameIsNoteBlock')) {
+          soundName = 'minecraft:block.note_block.harp'
+        } else {
+          soundName = 'block.note.harp'
+        }
+        // Use the bot's username instead of @s
+        bot.chat(`/playsound ${soundName} master ${bot.username} ~ ~ ~ 1 1`)
       } else {
         // 1.8.8 syntax - use bot.username instead of @s
         bot.chat(`/playsound note.harp ${bot.username} ~ ~ ~ 1 1`)
@@ -131,7 +164,7 @@ module.exports = () => async (bot) => {
       
       if (bot.supportFeature('playsoundUsesResourceLocation')) {
         // 1.9+ syntax
-        bot.chat('/playsound minecraft:ui.button.click master @s ~ ~ ~ 1 1')
+        bot.chat(`/playsound minecraft:ui.button.click master ${bot.username} ~ ~ ~ 1 1`)
       } else {
         // 1.8.8 syntax - use gui.button.press and bot.username
         bot.chat(`/playsound gui.button.press ${bot.username} ~ ~ ~ 1 1`)
