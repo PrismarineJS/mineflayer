@@ -2,12 +2,6 @@ const assert = require('assert')
 const { once } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
-  // Skip test for versions older than 1.9 (no /playsound for custom sounds)
-  if (bot.registry.isOlderThan('1.9')) {
-    console.log('Skipping sound test: /playsound not fully supported in this version')
-    return
-  }
-
   // Debug: log all received sound packets
   bot.on('soundEffectHeard', (...args) => {
     console.log('[DEBUG] soundEffectHeard', ...args)
@@ -37,7 +31,7 @@ module.exports = () => async (bot) => {
   }
 
   // Helper function to retry an operation
-  const retry = async (operation, maxAttempts = 3, delay = 2000) => {
+  const retry = async (operation, maxAttempts = 1, delay = 2000) => {
     let lastError
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
@@ -59,15 +53,15 @@ module.exports = () => async (bot) => {
     await new Promise(resolve => setTimeout(resolve, 2000))
     
     return retry(async () => {
-      const soundPromise = once(bot, 'soundEffectHeard', 15000)
+      const soundPromise = once(bot, 'soundEffectHeard', 5000)
       console.log('[DEBUG] Playing sound...')
       
       if (bot.supportFeature('playsoundUsesResourceLocation')) {
         // 1.9+ syntax
         bot.chat('/playsound minecraft:block.note_block.harp master @s ~ ~ ~ 1 1')
       } else {
-        // 1.8.8 syntax
-        bot.chat('/playsound block.note.harp @s ~ ~ ~ 1 1')
+        // 1.8.8 syntax - use bot.username instead of @s
+        bot.chat(`/playsound note.harp ${bot.username} ~ ~ ~ 1 1`)
       }
 
       const [soundName, position, volume, pitch] = await soundPromise
@@ -98,7 +92,7 @@ module.exports = () => async (bot) => {
       // Wait a short time to ensure the block is placed and the listener is attached
       await new Promise(resolve => setTimeout(resolve, 250))
       
-      const noteHeardPromise = once(bot, 'noteHeard', 15000)
+      const noteHeardPromise = once(bot, 'noteHeard', 5000)
       console.log('[DEBUG] Placing redstone block')
       await bot.test.setBlock({ x: pos.x, y: pos.y - 1, z: pos.z, blockName: 'redstone_block', relative: false })
       
@@ -128,8 +122,8 @@ module.exports = () => async (bot) => {
     return retry(async () => {
       // Listen for either hardcodedSoundEffectHeard or soundEffectHeard
       const soundPromise = Promise.race([
-        once(bot, 'hardcodedSoundEffectHeard', 15000),
-        once(bot, 'soundEffectHeard', 15000).then(([soundName, position, volume, pitch]) => {
+        once(bot, 'hardcodedSoundEffectHeard', 5000),
+        once(bot, 'soundEffectHeard', 5000).then(([soundName, position, volume, pitch]) => {
           // Convert soundEffectHeard to hardcodedSoundEffectHeard format
           return [0, 'master', position, volume, pitch]
         })
@@ -139,8 +133,8 @@ module.exports = () => async (bot) => {
         // 1.9+ syntax
         bot.chat('/playsound minecraft:ui.button.click master @s ~ ~ ~ 1 1')
       } else {
-        // 1.8.8 syntax
-        bot.chat('/playsound random.click @s ~ ~ ~ 1 1')
+        // 1.8.8 syntax - use gui.button.press and bot.username
+        bot.chat(`/playsound gui.button.press ${bot.username} ~ ~ ~ 1 1`)
       }
 
       const [soundId, soundCategory, position, volume, pitch] = await soundPromise
