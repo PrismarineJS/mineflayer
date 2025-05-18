@@ -1,24 +1,17 @@
 const { once } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
-  // Use JSON format for all Java versions, but accept both JSON and quoted string as valid results
-  const format = {
-    title: '{"text":"Test Title"}',
-    subtitle: '{"text":"Test Subtitle"}',
-    expect: (val, exp) => val === exp || val === `{"text":"${exp}"}` || val === `"${exp}"`
-  }
-
   // Test title
-  bot.chat(`/title @a title ${format.title}`)
+  bot.chat('/title @a title {"text":"Test Title"}')
   const [title, type] = await once(bot, 'title', 2000)
-  if (!format.expect(title, 'Test Title') || type !== 'title') {
+  if (title !== 'Test Title' || type !== 'title') {
     throw new Error(`Title test failed: expected "Test Title" but got "${title}" with type "${type}"`)
   }
 
   // Test subtitle
-  bot.chat(`/title @a subtitle ${format.subtitle}`)
+  bot.chat('/title @a subtitle {"text":"Test Subtitle"}')
   const [subtitle, subtitleType] = await once(bot, 'title', 20000)
-  if (!format.expect(subtitle, 'Test Subtitle') || subtitleType !== 'subtitle') {
+  if (subtitle !== 'Test Subtitle' || subtitleType !== 'subtitle') {
     throw new Error(`Subtitle test failed: expected "Test Subtitle" but got "${subtitle}" with type "${subtitleType}"`)
   }
 
@@ -30,15 +23,15 @@ module.exports = () => async (bot) => {
   }
 
   // Test combined title and subtitle
-  bot.chat(`/title @a title ${format.title}`)
+  bot.chat('/title @a title {"text":"Test Title"}')
   const [combinedTitle, combinedTitleType] = await once(bot, 'title', 20000)
-  if (!format.expect(combinedTitle, 'Test Title') || combinedTitleType !== 'title') {
+  if (combinedTitle !== 'Test Title' || combinedTitleType !== 'title') {
     throw new Error(`Combined title test failed: expected "Test Title" but got "${combinedTitle}" with type "${combinedTitleType}"`)
   }
 
-  bot.chat(`/title @a subtitle ${format.subtitle}`)
+  bot.chat('/title @a subtitle {"text":"Test Subtitle"}')
   const [combinedSubtitle, combinedSubtitleType] = await once(bot, 'title', 20000)
-  if (!format.expect(combinedSubtitle, 'Test Subtitle') || combinedSubtitleType !== 'subtitle') {
+  if (combinedSubtitle !== 'Test Subtitle' || combinedSubtitleType !== 'subtitle') {
     throw new Error(`Combined subtitle test failed: expected "Test Subtitle" but got "${combinedSubtitle}" with type "${combinedSubtitleType}"`)
   }
 
