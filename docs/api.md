@@ -171,6 +171,7 @@
       - ["resourcePack" (url, hash)](#resourcepack-url-hash)
       - ["title" (title, type)](#title-title-type)
       - ["title_times" (fadeIn, stay, fadeOut)](#title_times-fadein-stay-fadeout)
+      - ["title_clear"](#title_clear)
       - ["rain"](#rain)
       - ["weatherUpdate"](#weatherupdate)
       - ["time"](#time)
@@ -1243,7 +1244,7 @@ Emitted when the server sends a resource pack.
 Emitted when the server sends a title
 
 * `title` - title's text
-* `type` - title's type "subtitle", "title", or "clear"
+* `type` - title's type "subtitle", "title"
 
 #### "title_times" (fadeIn, stay, fadeOut)
 
@@ -1260,6 +1261,10 @@ bot.on('title_times', (fadeIn, stay, fadeOut) => {
   console.log(`Title times: fadeIn=${fadeIn}, stay=${stay}, fadeOut=${fadeOut}`)
 })
 ```
+
+#### "title_clear"
+
+Emitted when the server clears all titles.
 
 #### "rain"
 
