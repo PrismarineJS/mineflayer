@@ -12,7 +12,7 @@ const { getPort } = require('./common/util')
 // set this to false if you want to test without starting a server automatically
 const START_THE_SERVER = true
 // if you want to have time to look what's happening increase this (milliseconds)
-const TEST_TIMEOUT_MS = 90000
+const TEST_TIMEOUT_MS = 20000
 
 const excludedTests = ['digEverything', 'book', 'anvil', 'placeEntity']
 
