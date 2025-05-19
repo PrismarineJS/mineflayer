@@ -1,3 +1,7 @@
+## 4.29.0
+* [Sound test (#3657)](https://github.com/PrismarineJS/mineflayer/commit/51495665bbc3789ddc4284403c1ef288fea18ddc) (thanks @rom1504)
+* [Add boss bar test (#3655)](https://github.com/PrismarineJS/mineflayer/commit/b6950e9c42324c0f6fba6f2f802d0c87973a8c92) (thanks @rom1504)
+
 ## 4.28.0
 * [Add a test for title and improve the title functionality in mineflayer (#3653)](https://github.com/PrismarineJS/mineflayer/commit/4593da148afd84d9a298074123c5e022f1f8d3e4) (thanks @rom1504)
 * [Add experience test (#3652)](https://github.com/PrismarineJS/mineflayer/commit/32d9d8434465bcea6705d5d6b073a8497adb7c34) (thanks @rom1504)
