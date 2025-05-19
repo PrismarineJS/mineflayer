@@ -1920,7 +1920,7 @@ Esses são métodos de nível mais baixo para o inventário e podem ser úteis e
 
 Esta função também retorna uma `Promise`, com `void` como argumento quando concluída.
 
-Clique na janela/interface atual; os detalhes estão em https://wiki.vg/Protocol#Click_Window
+Clique na janela/interface atual; os detalhes estão em https://minecraft.wiki/w/Protocol#Click_Window
  * slot - número que representa a posição na janela
  * mouseButton - 0 para clique esquerdo e 1 para clique direito
  * mode - mineflayer só tem o modo 0 disponível

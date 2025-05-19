@@ -993,7 +993,7 @@ Todos los scoreboards que el bot conoce en un object de forma casilla de visuali
  * `belowName` - scoreboard que está debajo del nombre
  * `sidebar` - scoreboard que está en la barra del lado
  * `list` - scoreboard que está en la lista
- * `0-18` - casillas definidas en el [protocol](https://wiki.vg/Protocol#Display_Scoreboard)
+ * `0-18` - casillas definidas en el [protocol](https://minecraft.wiki/w/Protocol#Display_Scoreboard)
 
 #### bot.controlState
 
@@ -1931,7 +1931,7 @@ Estos son métodos de un nivel más bajo para el inventario, pueden ser útils a
 
 Esta función también devueve un `Promise`, con `void` como argumento al finalizar.
 
-Hacer click en la ventana/interfaz actual, los detalles están en https://wiki.vg/Protocol#Click_Window
+Hacer click en la ventana/interfaz actual, los detalles están en https://minecraft.wiki/w/Protocol#Click_Window
  * slot - número que representa la casilla de la ventan
  * mouseButton - 0 para click izquierdo, y 1 para click derecho
  * mode - mineflayer solo tiene disponible el modo 0

@@ -773,11 +773,11 @@ UUID существа, который определяется боссом.
 
 #### Particle.id
 
-Идентификатор частицы, который прописан в [протоколе](https://wiki.vg/Protocol#Particle).
+Идентификатор частицы, который прописан в [протоколе](https://minecraft.wiki/w/Protocol#Particle).
 
 #### Particle.name
 
-Название частицы, которое прописано в [протоколе](https://wiki.vg/Protocol#Particle).
+Название частицы, которое прописано в [протоколе](https://minecraft.wiki/w/Protocol#Particle).
 
 #### Particle.position
 
@@ -1170,7 +1170,7 @@ UUID существа, который определяется боссом.
  * `belowName` - Cкорборд размещен снизу никнейма.
  * `sidebar` - Cкорборд размещен на боковой панели.
  * `list` - Cкорборд помещен в список игроков.
- * `0-18` - Cлоты, определённые в [протоколе](https://wiki.vg/Protocol#Display_Scoreboard).
+ * `0-18` - Cлоты, определённые в [протоколе](https://minecraft.wiki/w/Protocol#Display_Scoreboard).
 
 #### bot.teams
 
@@ -2120,7 +2120,7 @@ bot.once('login', () => {
 
 Единственное действительное значение для `mode` - 0. Нажатие с шифтом или перемещение через мышь не реализовано.
 
-Нажимает на текущее окно. Подробнее - https://wiki.vg/Protocol#Click_Container
+Нажимает на текущее окно. Подробнее - https://minecraft.wiki/w/Protocol#Click_Container
 
 Рекомендуется использовать `bot.simpleClick.*`
 
