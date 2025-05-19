@@ -13,8 +13,9 @@ const bot = mineflayer.createBot({
 })
 
 // Listen for any sound effect
-bot.on('soundEffectHeard', (soundId, soundCategory, x, y, z, volume, pitch) => {
-  console.log(`Heard sound: ${soundId} at ${x}, ${y}, ${z}`)
+bot.on('soundEffectHeard', (soundName, position, volume, pitch) => {
+  const { x, y, z } = position
+  console.log(`Heard sound: ${soundName} at ${x}, ${y}, ${z}`)
 })
 
 // Listen for note block sounds
@@ -23,7 +24,8 @@ bot.on('noteHeard', (block, instrument, pitch) => {
 })
 
 // Listen for hardcoded sound effects (like mob sounds)
-bot.on('hardcodedSoundEffectHeard', (soundId, soundCategory, x, y, z, volume, pitch) => {
+bot.on('hardcodedSoundEffectHeard', (soundId, soundCategory, position, volume, pitch) => {
+  const { x, y, z } = position
   console.log(`Heard hardcoded sound: ${soundId} (${soundCategory}) at ${x}, ${y}, ${z}`)
 })
 
