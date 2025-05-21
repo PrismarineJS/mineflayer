@@ -737,8 +737,8 @@ Determines what color the boss bar color is,  `pink`, `blue`, `red`, `green`, `y
  * port : 端口，默认为 25565
  * password : 可以省略 (如果token也被省略，那么它将尝试以离线模式连接)
  * host : 默认为 localhost
- * version : 默认为自动猜测服务器的版本。值示例：“1.12.2”
- * auth : 默认为“mojang”，也可以是“microsoft”
+ * version : 默认为自动猜测服务器的版本。值示例："1.12.2"
+ * auth : 默认为"mojang"，也可以是"microsoft"
  * clientToken : 如果给定密码，则生成
  * accessToken : 如果给定密码，则生成
  * logErrors : 默认情况下为true，捕获错误并记录它们
@@ -1041,7 +1041,7 @@ All scoreboards known to the bot in an object scoreboard displaySlot -> scoreboa
  * `belowName` - scoreboard placed in belowName
  * `sidebar` - scoreboard placed in sidebar
  * `list` - scoreboard placed in list
- * `0-18` - slots defined in [protocol](https://wiki.vg/Protocol#Display_Scoreboard)
+ * `0-18` - slots defined in [protocol](https://minecraft.wiki/w/Protocol#Display_Scoreboard)
 
 #### bot.teams
 
@@ -2022,7 +2022,7 @@ These are lower level methods for the inventory, they can be useful sometimes bu
 
 This function also returns a `Promise`, with `void` as its argument upon completion.
 
-Click on the current window. See details at https://wiki.vg/Protocol#Click_Window
+Click on the current window. See details at https://minecraft.wiki/w/Protocol#Click_Window
 
 #### bot.putSelectedItemRange(start, end, window, slot)
 

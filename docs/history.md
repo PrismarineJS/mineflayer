@@ -1,3 +1,15 @@
+## 4.29.0
+* [Sound test (#3657)](https://github.com/PrismarineJS/mineflayer/commit/51495665bbc3789ddc4284403c1ef288fea18ddc) (thanks @rom1504)
+* [Add boss bar test (#3655)](https://github.com/PrismarineJS/mineflayer/commit/b6950e9c42324c0f6fba6f2f802d0c87973a8c92) (thanks @rom1504)
+
+## 4.28.0
+* [Add a test for title and improve the title functionality in mineflayer (#3653)](https://github.com/PrismarineJS/mineflayer/commit/4593da148afd84d9a298074123c5e022f1f8d3e4) (thanks @rom1504)
+* [Add experience test (#3652)](https://github.com/PrismarineJS/mineflayer/commit/32d9d8434465bcea6705d5d6b073a8497adb7c34) (thanks @rom1504)
+* [Add new external test for time. (#3650)](https://github.com/PrismarineJS/mineflayer/commit/52938fe604096887872a831a7ed0c8feca7ee272) (thanks @rom1504)
+* [Add minecraft-mcp-server: mineflayer mcp server to readme](https://github.com/PrismarineJS/mineflayer/commit/cab65b115f0f8737b6756e811995ea095e776858) (thanks @rom1504)
+* [Add Entity Attacker Detection into EntityHurt emitter (#3631)](https://github.com/PrismarineJS/mineflayer/commit/5688f18df4a7a5e47e6a3435902be1c7226e0b0a) (thanks @1tsMeMario)
+* [Added if(vehicle) check (#3619)](https://github.com/PrismarineJS/mineflayer/commit/52c622a4f006e3631f20e6cded236e4424c38d36) (thanks @SinanAkkoyun)
+
 ## 4.27.0
 * [Entity Passengers get pushed wrongly (#3601)](https://github.com/PrismarineJS/mineflayer/commit/deb03b52d1e015ece9df1f14536f168f64895c81) (thanks @SinanAkkoyun)
 * [Update bot.clickWindow documentation (#3574)](https://github.com/PrismarineJS/mineflayer/commit/188db17bbb95461743aec2823695c360685559b0) (thanks @kaduvert)

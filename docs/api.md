@@ -170,6 +170,8 @@
       - ["game"](#game)
       - ["resourcePack" (url, hash)](#resourcepack-url-hash)
       - ["title" (title, type)](#title-title-type)
+      - ["title_times" (fadeIn, stay, fadeOut)](#title_times-fadein-stay-fadeout)
+      - ["title_clear"](#title_clear)
       - ["rain"](#rain)
       - ["weatherUpdate"](#weatherupdate)
       - ["time"](#time)
@@ -762,11 +764,11 @@ Determines what color the boss bar color is, one of `pink`, `blue`, `red`, `gree
 
 #### Particle.id
 
-Particle ID, as defined in the [protocol](https://wiki.vg/Protocol#Particle)
+Particle ID, as defined in the [protocol](https://minecraft.wiki/w/Protocol#Particle)
 
 #### Particle.name
 
-Particle Name, as defined in the [protocol](https://wiki.vg/Protocol#Particle)
+Particle Name, as defined in the [protocol](https://minecraft.wiki/w/Protocol#Particle)
 
 #### Particle.position
 
@@ -1089,7 +1091,7 @@ Day of the world.
 
 Whether it is day or not.
 
-Based on whether the current time of day is between 13000 and 23000 ticks.
+Based on whether the current time of day is between 0 and 13000 ticks (day + sunset).
 
 #### bot.time.moonPhase
 
@@ -1137,7 +1139,7 @@ All scoreboards known to the bot in an object scoreboard displaySlot -> scoreboa
  * `belowName` - scoreboard placed in belowName
  * `sidebar` - scoreboard placed in sidebar
  * `list` - scoreboard placed in list
- * `0-18` - slots defined in [protocol](https://wiki.vg/Protocol#Display_Scoreboard)
+ * `0-18` - slots defined in [protocol](https://minecraft.wiki/w/Protocol#Display_Scoreboard)
 
 #### bot.teams
 
@@ -1241,8 +1243,28 @@ Emitted when the server sends a resource pack.
 
 Emitted when the server sends a title
 
- * `title` - title's text
- * `type` - title's type "subtitle" or "title"
+* `title` - title's text
+* `type` - title's type "subtitle", "title"
+
+#### "title_times" (fadeIn, stay, fadeOut)
+
+Emitted when the server sends a title times packet (i.e., when the fade-in, stay, and fade-out times for titles are set or updated).
+
+ * `fadeIn` - fade-in time in ticks (number)
+ * `stay` - stay time in ticks (number)
+ * `fadeOut` - fade-out time in ticks (number)
+
+Example:
+
+```js
+bot.on('title_times', (fadeIn, stay, fadeOut) => {
+  console.log(`Title times: fadeIn=${fadeIn}, stay=${stay}, fadeOut=${fadeOut}`)
+})
+```
+
+#### "title_clear"
+
+Emitted when the server clears all titles.
 
 #### "rain"
 
@@ -2136,7 +2158,7 @@ mode support:
     - drag clicks (5)
     - double clicks (6)
 
-Click on the current window. See details at https://wiki.vg/Protocol#Click_Container
+Click on the current window. See details at https://minecraft.wiki/w/Protocol#Click_Container
 
 Prefer using bot.simpleClick.*
 
