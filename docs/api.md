@@ -311,7 +311,7 @@
       - [bot.activateEntityAt(entity, position)](#botactivateentityatentity-position)
       - [bot.consume()](#botconsume)
       - [bot.fish()](#botfish)
-      - [bot.activateItem(offHand=false)](#botactivateitemoffhandfalse)
+      - [bot.activateItem(offHand=false, DegreeX, DegreeY)](#botactivateitemoffhandfalse)
       - [bot.deactivateItem()](#botdeactivateitem)
       - [bot.useOn(targetEntity)](#botuseontargetentity)
       - [bot.attack(entity, swing = true)](#botattackentity-swing--true)
@@ -1996,12 +1996,15 @@ This function returns a `Promise`, with `void` as its argument when fishing ends
 Use fishing rod
 
 
-#### bot.activateItem(offHand=false)
+#### bot.activateItem(offHand=false, DegreeX, DegreeY)
 
 Activates the currently held item. This is how you eat, shoot bows, throw an
 egg, activate firework rockets, etc.
 
 Optional parameter is `false` for main hand and `true` for off hand.
+ * `DegreeX` Optional defaults to bot's current pitch
+ * `DegreeY` Optional defaults to bot's current yaw
+ 
 
 #### bot.deactivateItem()
 
