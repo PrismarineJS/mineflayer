@@ -247,7 +247,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
     describe('physics', () => {
       const pos = vec3(1, 65, 1)
-      const pos2 = vec3(2, 65, 1)
       const goldId = 41
       it('no physics if there is no chunk', (done) => {
         let fail = 0
@@ -313,7 +312,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
           // Assertions for absolute teleport
           assert.strictEqual(bot.entity.velocity.y, 0, 'Velocity should be reset to 0 after an absolute teleport')
-          assert.deepStrictEqual(bot.entity.position, new vec3(1.5, 80, 1.5), 'Position should be set absolutely')
+          assert.deepStrictEqual(bot.entity.position, vec3(1.5, 80, 1.5), 'Position should be set absolutely')
 
           // --- Test 2: Relative Position ---
           const relativePositionPacket = {
@@ -329,7 +328,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           // Set a known velocity *before* the relative update
           bot.entity.velocity.y = -1.0
           const initialPosition = bot.entity.position.clone()
-          const expectedPosition = initialPosition.plus(new vec3(1.0, -2.0, 0.5))
+          const expectedPosition = initialPosition.plus(vec3(1.0, -2.0, 0.5))
 
           const p2 = once(bot, 'forcedMove')
           client.write('position', relativePositionPacket)
