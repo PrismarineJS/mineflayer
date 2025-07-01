@@ -6,27 +6,12 @@ const mc = require('minecraft-protocol')
 const assert = require('assert')
 const { sleep } = require('../lib/promise_utils')
 const nbt = require('prismarine-nbt')
+const { once } = require('../lib/promise_utils')
 
 for (const supportedVersion of mineflayer.testedVersions) {
   const registry = require('prismarine-registry')(supportedVersion)
   const version = registry.version
   const Chunk = require('prismarine-chunk')(supportedVersion)
-  const isNewPlayerInfoFormat = registry.version['>=']('1.21.3')
-  function wrapPlayerInfo (n) {
-    if (isNewPlayerInfoFormat) {
-      return {
-        _value: n,
-        add_player: (n & 1) !== 0,
-        initialize_chat: (n & 2) !== 0,
-        update_game_mode: (n & 4) !== 0,
-        update_listed: (n & 8) !== 0,
-        update_latency: (n & 16) !== 0,
-        update_display_name: (n & 32) !== 0,
-        update_priority: (n & 64) !== 0
-      }
-    }
-    return n
-  }
 
   const hasSignedChat = registry.supportFeature('signedChat')
   function chatText (text) {
@@ -149,25 +134,25 @@ for (const supportedVersion of mineflayer.testedVersions) {
             client.write('player_chat', {
               plainMessage: 'hello',
               filterType: 0,
-              type: { registryIndex: 1 },
+              type: { chatType: 0 },
               networkName,
               previousMessages: [],
               senderUuid: uuid,
               timestamp: Date.now(),
               index: 0,
-              salt: 0n
+              salt: 1n
             })
           } else if (registry.supportFeature('useChatSessions')) {
             client.write('player_chat', {
               plainMessage: 'hello',
               filterType: 0,
-              type: 0,
+              type: { chatType: 0 },
               networkName,
               previousMessages: [],
               senderUuid: uuid,
               timestamp: Date.now(),
               index: 0,
-              salt: 0n
+              salt: 2n
             })
           } else if (registry.supportFeature('chainedChatWithHashing')) {
             client.write('player_chat', {
@@ -178,7 +163,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
               previousMessages: [],
               senderUuid: uuid,
               timestamp: Date.now(),
-              salt: 0n,
+              salt: 3n,
               signature: Buffer.alloc(0)
             })
           } else {
@@ -190,7 +175,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
               senderName: JSON.stringify({ text: 'gary' }),
               senderTeam: undefined,
               timestamp: Date.now(),
-              salt: 0n,
+              salt: 4n,
               signature: Buffer.alloc(0)
             })
           }
@@ -262,7 +247,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
     describe('physics', () => {
       const pos = vec3(1, 65, 1)
-      const pos2 = vec3(2, 65, 1)
       const goldId = 41
       it('no physics if there is no chunk', (done) => {
         let fail = 0
@@ -303,119 +287,57 @@ for (const supportedVersion of mineflayer.testedVersions) {
       it('absolute position & relative position (velocity)', (done) => {
         server.on('playerJoin', async (client) => {
           await client.write('login', bot.test.generateLoginPacket())
-          const chunk = await bot.test.buildChunk()
-
-          await chunk.setBlockType(pos, goldId)
-          await chunk.setBlockType(pos2, goldId)
+          const chunk = bot.test.buildChunk()
+          chunk.setBlockType(pos, goldId)
           await client.write('map_chunk', generateChunkPacket(chunk))
-          let check = true
-          let absolute = true
-          const basePosition = {
+
+          await once(bot, 'chunkColumnLoad')
+
+          // --- Test 1: Absolute Position ---
+          const absolutePositionPacket = {
             x: 1.5,
-            y: 66,
+            y: 80,
             z: 1.5,
             pitch: 0,
             yaw: 0,
-            flags: 0,
-            teleportId: 0
+            teleportId: 1,
+            flags: bot.supportFeature('positionPacketHasBitflags') ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0
           }
-          client.on('packet', (data, meta) => {
-            const packetName = meta.name
-            switch (packetName) {
-              case 'teleport_confirm': {
-                assert.ok(basePosition.teleportId === data.teleportId)
-                break
-              }
-              case 'position_look': {
-                if (!check) return
-                if (absolute) {
-                  assert.ok(bot.entity.velocity.y === 0)
-                } else {
-                  assert.ok(bot.entity.velocity.y !== 0)
-                }
-                assert.ok(basePosition.x === data.x)
-                assert.ok(basePosition.y === data.y)
-                assert.ok(basePosition.z === data.z)
-                assert.ok(basePosition.yaw === data.yaw)
-                assert.ok(basePosition.pitch === data.pitch)
-                check = false
-                break
-              }
-              default:
-                break
-            }
-          })
-          // Absolute Position Tests
-          // absolute position test
-          check = true
-          await client.write('position', basePosition)
-          await bot.waitForTicks(5)
-          // absolute position test 2
-          basePosition.x = 2.5
-          basePosition.teleportId = 1
-          await bot.waitForTicks(1)
-          check = true
-          await client.write('position', basePosition)
-          await bot.waitForTicks(2)
-          // absolute position test 3
-          basePosition.x = 1.5
-          basePosition.teleportId = 2
-          await bot.waitForTicks(1)
-          check = true
-          await client.write('position', basePosition)
-          await bot.waitForTicks(2)
 
-          // Relative Position Tests
-          const relativePosition = {
-            x: 1,
-            y: 0,
-            z: 0,
-            dx: 0, // 1.21.3
-            dy: 0, // 1.21.3
-            dz: 0, // 1.21.3
+          bot.entity.velocity.y = -1.0 // Give bot some velocity
+
+          const p1 = once(bot, 'forcedMove')
+          client.write('position', absolutePositionPacket)
+          await p1
+
+          // Assertions for absolute teleport
+          assert.strictEqual(bot.entity.velocity.y, 0, 'Velocity should be reset to 0 after an absolute teleport')
+          assert.deepStrictEqual(bot.entity.position, vec3(1.5, 80, 1.5), 'Position should be set absolutely')
+
+          // --- Test 2: Relative Position ---
+          const relativePositionPacket = {
+            x: 1.0,
+            y: -2.0,
+            z: 0.5,
             pitch: 0,
             yaw: 0,
-            flags: bot.registry.version['>=']('1.21.3')
-              ? {
-                  // flags = ["x", "y", "z", "yaw", "pitch", "dx", "dy", "dz", "yawDelta"]
-                  // 31 = 0b11111
-                  x: true,
-                  y: true,
-                  z: true,
-                  yaw: true,
-                  pitch: true
-                }
-              : 31,
-            teleportId: 3
+            teleportId: 2,
+            flags: bot.supportFeature('positionPacketHasBitflags') ? { x: true, y: true, z: true, yaw: false, pitch: false } : 7
           }
-          absolute = false
-          // relative position test 1
-          basePosition.x = 2.5
-          basePosition.teleportId = 3
-          relativePosition.x = 1
-          relativePosition.teleportId = 3
-          await bot.waitForTicks(1)
-          check = true
-          await client.write('position', relativePosition)
-          await bot.waitForTicks(2)
-          // relative position test 2
-          basePosition.x = 1.5
-          basePosition.teleportId = 4
-          relativePosition.x = -1
-          relativePosition.teleportId = 4
-          await bot.waitForTicks(1)
-          check = true
-          await client.write('position', relativePosition)
-          await bot.waitForTicks(2)
-          // relative position test 3
-          basePosition.x = 2.5
-          basePosition.teleportId = 5
-          relativePosition.x = 1
-          relativePosition.teleportId = 5
-          await bot.waitForTicks(1)
-          check = true
-          await client.write('position', relativePosition)
-          await bot.waitForTicks(2)
+
+          // Set a known velocity *before* the relative update
+          bot.entity.velocity.y = -1.0
+          const initialPosition = bot.entity.position.clone()
+          const expectedPosition = initialPosition.plus(vec3(1.0, -2.0, 0.5))
+
+          const p2 = once(bot, 'forcedMove')
+          client.write('position', relativePositionPacket)
+          await p2
+
+          // Assertions for relative teleport
+          assert.notStrictEqual(bot.entity.velocity.y, 0, 'Velocity should be preserved after a relative teleport')
+          assert.deepStrictEqual(bot.entity.position, expectedPosition, 'Position should be updated relatively')
+
           done()
         })
       })
@@ -448,7 +370,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             z: 1.5,
             pitch: 0,
             yaw: 0,
-            flags: 0,
+            flags: bot.supportFeature('positionPacketHasBitflags') ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0,
             teleportId: 0
           })
         })
@@ -593,37 +515,20 @@ for (const supportedVersion of mineflayer.testedVersions) {
         server.on('playerJoin', (client) => {
           bot.on('entitySpawn', (entity) => {
             const player = bot.players[entity.username]
-            assert.strictEqual(player.username, entity.username)
-            // TODO: this test is broken as it updates the display name twice (once with, once without)
-            if (!isNewPlayerInfoFormat) assert.strictEqual(entity.username, player.displayName.toString())
+            assert.strictEqual(entity.username, player.displayName.toString())
             if (registry.supportFeature('playerInfoActionIsBitfield')) {
               client.write('player_info', {
-                action: wrapPlayerInfo(53),
+                action: { update_display_name: true },
                 data: [{
                   uuid: '1-2-3-4',
-                  player: {
-                    name: 'bot5',
-                    properties: []
-                  },
-                  gamemode: 0,
-                  latency: 0,
                   displayName: chatText('wvffle')
                 }]
               })
             } else {
               client.write('player_info', {
-                id: 56,
-                state: 'play',
-                action: 3,
-                length: 1,
+                action: 'update_display_name',
                 data: [{
-                  UUID: '1-2-3-4',
-                  name: 'bot5',
-                  propertiesLength: 0,
-                  properties: [],
-                  gamemode: 0,
-                  ping: 0,
-                  hasDisplayName: true,
+                  uuid: '1-2-3-4',
                   displayName: chatText('wvffle')
                 }]
               })
@@ -634,45 +539,31 @@ for (const supportedVersion of mineflayer.testedVersions) {
             assert.strictEqual('wvffle', player.displayName.toString())
             if (registry.supportFeature('playerInfoActionIsBitfield')) {
               client.write('player_info', {
-                action: wrapPlayerInfo(53),
+                action: { update_display_name: true },
                 data: [{
                   uuid: '1-2-3-4',
-                  player: {
-                    name: 'bot5',
-                    properties: []
-                  },
-                  gamemode: 0,
-                  latency: 0
+                  displayName: null
                 }]
               })
             } else {
               client.write('player_info', {
-                id: 56,
-                state: 'play',
-                action: 3,
-                length: 1,
+                action: 'update_display_name',
                 data: [{
-                  UUID: '1-2-3-4',
-                  name: 'bot5',
-                  propertiesLength: 0,
-                  properties: [],
-                  gamemode: 0,
-                  ping: 0,
-                  hasDisplayName: false
+                  uuid: '1-2-3-4',
+                  displayName: null
                 }]
               })
             }
 
             bot.once('playerUpdated', (player) => {
-              // TODO: this test is broken as it updates the display name twice (once with, once without)
-              if (!isNewPlayerInfoFormat) assert.strictEqual(player.entity.username, player.displayName.toString())
+              assert.strictEqual(player.entity.username, player.displayName.toString())
               done()
             })
           })
 
           if (registry.supportFeature('playerInfoActionIsBitfield')) {
             client.write('player_info', {
-              action: wrapPlayerInfo(53),
+              action: { add_player: true },
               data: [{
                 uuid: '1-2-3-4',
                 player: {
@@ -685,18 +576,13 @@ for (const supportedVersion of mineflayer.testedVersions) {
             })
           } else {
             client.write('player_info', {
-              id: 56,
-              state: 'play',
-              action: 0,
-              length: 1,
+              action: 'add_player',
               data: [{
-                UUID: '1-2-3-4',
+                uuid: '1-2-3-4',
                 name: 'bot5',
-                propertiesLength: 0,
                 properties: [],
                 gamemode: 0,
-                ping: 0,
-                hasDisplayName: false
+                ping: 0
               }]
             })
           }
@@ -755,13 +641,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
           if (registry.supportFeature('playerInfoActionIsBitfield')) {
             client.write('player_info', {
-              action: wrapPlayerInfo(53),
+              action: { add_player: true },
               data: [{
                 uuid: '1-2-3-4',
-                player: {
-                  name: 'bot5',
-                  properties: []
-                },
+                player: { name: 'bot5', properties: [] },
                 gamemode: 0,
                 latency: 0
               }]
@@ -770,10 +653,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
             client.write('player_info', {
               id: 56,
               state: 'play',
-              action: 0,
+              action: 'add_player',
               length: 1,
               data: [{
-                UUID: '1-2-3-4',
+                uuid: '1-2-3-4',
                 name: 'bot5',
                 propertiesLength: 0,
                 properties: [],
