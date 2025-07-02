@@ -129,9 +129,9 @@ function inject (bot) {
       checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
     })
     bot.chat('/give @a stone 1')
-    bot.inventory.on('updateSlot', (...e) => {
-      // console.log('inventory.updateSlot', e)
-    })
+    // bot.inventory.on('updateSlot', (...e) => {
+    // console.log('inventory.updateSlot', e)
+    // })
     await onceWithCleanup(bot.inventory, 'updateSlot', { timeout: 1000 * 20, checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
     bot.chat('/clear') // don't rely on the message (as it'll come to early), wait for the result of /clear instead
     await msgProm // wait for the message so it doesn't leak into chat tests
