@@ -802,6 +802,8 @@ Create and return an instance of the class bot.
  * host : default to localhost
  * version : default to automatically guessing the version of the server. Example of value : "1.12.2"
  * auth : default to 'mojang', can also be 'microsoft'
+ * authTitle : the client ID for the service to log in to. A list of known services can be found in [prismarine-auth](https://github.com/PrismarineJS/prismarine-auth/blob/master/docs/API.md#titles). If not specified, defaults to a Nintendo Switch.
+ * deviceType : if specifying an authTitle, the device type to auth as. For example, `Win32`, `iOS`, `Android`, `Nintendo`
  * clientToken : generated if a password is given
  * accessToken : generated if a password is given
  * logErrors : true by default, catch errors and log them
@@ -826,7 +828,8 @@ Create and return an instance of the class bot.
  * [enableTextFiltering](#bot.settings.enableTextFiltering)
  * [enableServerListing](#bot.settings.enableServerListing)
  * chatLengthLimit : the maximum amount of characters that can be sent in a single message. If this is not set, it will be 100 in < 1.11 and 256 in >= 1.11.
- * defaultChatPatterns: defaults to true, set to false to not add the patterns such as chat and whisper
+ * defaultChatPatterns : defaults to true, set to false to not add the patterns such as chat and whisper
+ * profilesFolder : where to store cached data for your accounts, if not specified, saved to `npm-chache` in your minecraft folder.
 
 ### Properties
 
