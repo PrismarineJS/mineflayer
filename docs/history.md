@@ -1,3 +1,8 @@
+## 4.30.0
+* [Update player_info handling (#3689)](https://github.com/PrismarineJS/mineflayer/commit/3f2fd6d393bc39167410df5a292759c93c9b249f) (thanks @extremeheat)
+* [Bump @types/node from 22.15.33 to 24.0.6 (#3686)](https://github.com/PrismarineJS/mineflayer/commit/12e50a2e2d0a921d075ebae8aa835437672a2b29) (thanks @dependabot[bot])
+* [Replace wiki.vg by minecraft.wiki. Close #3596](https://github.com/PrismarineJS/mineflayer/commit/c2794e43da71b346278818ff68acb690ec66a4fb) (thanks @rom1504)
+
 ## 4.29.0
 * [Sound test (#3657)](https://github.com/PrismarineJS/mineflayer/commit/51495665bbc3789ddc4284403c1ef288fea18ddc) (thanks @rom1504)
 * [Add boss bar test (#3655)](https://github.com/PrismarineJS/mineflayer/commit/b6950e9c42324c0f6fba6f2f802d0c87973a8c92) (thanks @rom1504)
