@@ -8,11 +8,17 @@ As of July 2025, Mineflayer has partial 1.21.5 support with several critical iss
 
 Based on the analysis of pull requests and issues, the main problems for 1.21.5 support are:
 
-### 1. Chunk Protocol Changes
+### 1. Chunk Protocol Changes (CRITICAL - BLOCKING ALL TESTS)
 - **Issue**: Network has small changes to chunk format where size is now auto-computed to save a byte
-- **Status**: Fix in prismarine-chunk seems to still be failing mineflayer
-- **Impact**: Chunk loading and world rendering issues
-- **Dependencies**: Requires investigation of prismarine-chunk fixes
+- **Status**: **CONFIRMED** - prismarine-chunk fix is implemented but still failing with "Target offset is beyond the bounds of the internal SmartBuffer data"
+- **Impact**: **ALL TESTS FAIL** - Chunk loading completely broken, bot can't even spawn properly
+- **Error Location**: 
+  - `BitArrayNoSpan.js:183:30` - BitArray.readBuffer
+  - `PaletteContainer.js:34:15` - DirectPaletteContainer.readBuffer
+  - `PaletteChunkSection.js:118:12` - ChunkSection.read
+  - `ChunkColumn.js:255:41` - ChunkColumn.load
+- **Root Cause**: The dynamic size computation `Math.ceil(constants.BLOCK_SECTION_VOLUME * bitsPerValue / 64)` is still incorrect
+- **Dependencies**: Requires fix in prismarine-chunk size calculation logic
 
 ### 2. Creative Set Slot Packet Behavior
 - **Issue**: Creative set slot packet behavior is the main breaking change (not working right now)
@@ -115,9 +121,57 @@ bot._client.on('entity_metadata', (packet) => {
 - **Task**: Ensure 1.21.5 is properly listed as supported
 - **Files**: `lib/version.js`, `package.json`
 
-## Implementation Steps
+## Analysis of Current Fix Status
 
-### Step 1: Environment Setup
+### ✅ **Good News: Fix Already Implemented**
+The [prismarine-chunk PR #289](https://github.com/PrismarineJS/prismarine-chunk/pull/289/files) has already implemented the 1.21.5 chunk protocol fix:
+
+**Key Changes in PR #289:**
+1. **Added `noSizePrefix` detection**: Uses `mcData.version['>=']('1.21.5')` to detect 1.21.5+
+2. **Modified chunk reading**: All palette containers now handle the `noSizePrefix` option
+3. **Dynamic size computation**: When `noSizePrefix` is true, size is computed as `Math.ceil(constants.BLOCK_SECTION_VOLUME * bitsPerValue / 64)`
+
+### 🔍 **Current Status Check**
+Mineflayer is already using the experimental branches:
+- `prismarine-chunk`: `extremeheat/prismarine-chunk#pc1.21.5` ✅
+- `minecraft-protocol`: `extremeheat/node-minecraft-protocol#pcp1.21.5` ✅
+
+### 🚨 **Why Tests Are Still Failing**
+**CONFIRMED**: The fix is implemented but still not working correctly. The issue is in the size computation logic.
+
+**Root Cause Analysis:**
+1. ✅ **Fix is implemented**: `noSizePrefix` detection and logic is present in the code
+2. ✅ **Version detection works**: `mcData.version['>=']('1.21.5')` returns `true` correctly
+3. ❌ **Size computation is wrong**: The dynamic size calculation `Math.ceil(constants.BLOCK_SECTION_VOLUME * bitsPerValue / 64)` is still causing buffer overflow
+4. ❌ **Buffer reading fails**: Still getting "Target offset is beyond the bounds of the internal SmartBuffer data"
+
+**The Problem:**
+The issue is in the `readBuffer` method in `PaletteContainer.js`. The computed size is still incorrect for the actual data being sent by the server.
+
+## Specific Recommendations
+
+### 1. **Fix the Size Computation** (URGENT)
+The current formula `Math.ceil(constants.BLOCK_SECTION_VOLUME * bitsPerValue / 64)` is wrong. Need to:
+
+1. **Analyze actual packet data**: Use packet capture to see the real size being sent
+2. **Fix the calculation**: The formula needs to account for the actual data structure
+3. **Test with real 1.21.5 data**: Verify against actual Minecraft 1.21.5 server packets
+
+### 2. **Debug the Buffer Reading** (High Priority)
+Add debug logging to understand exactly what's happening:
+
+```javascript
+// In PaletteContainer.js readBuffer method
+console.log('noSizePrefix:', this.noSizePrefix)
+console.log('bitsPerValue:', bitsPerValue)
+console.log('computed longs:', longs)
+console.log('buffer remaining:', smartBuffer.remaining())
+```
+
+### 3. **Compare with Working Version** (Medium Priority)
+Compare the 1.21.5 chunk data with 1.21.4 to understand the exact difference in format.
+
+## Implementation Steps
 ```bash
 cd /media/documents/Documents/programmation/interlangage/minecraft/mineflayer
 npm install
