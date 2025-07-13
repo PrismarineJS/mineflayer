@@ -8,17 +8,14 @@ As of July 2025, Mineflayer has partial 1.21.5 support with several critical iss
 
 Based on the analysis of pull requests and issues, the main problems for 1.21.5 support are:
 
-### 1. Chunk Protocol Changes (CRITICAL - BLOCKING ALL TESTS)
+### 1. Chunk Protocol Changes (✅ FIXED)
 - **Issue**: Network has small changes to chunk format where size is now auto-computed to save a byte
-- **Status**: **CONFIRMED** - prismarine-chunk fix is implemented but still failing with "Target offset is beyond the bounds of the internal SmartBuffer data"
-- **Impact**: **ALL TESTS FAIL** - Chunk loading completely broken, bot can't even spawn properly
-- **Error Location**: 
-  - `BitArrayNoSpan.js:183:30` - BitArray.readBuffer
-  - `PaletteContainer.js:34:15` - DirectPaletteContainer.readBuffer
-  - `PaletteChunkSection.js:118:12` - ChunkSection.read
-  - `ChunkColumn.js:255:41` - ChunkColumn.load
-- **Root Cause**: The dynamic size computation `Math.ceil(constants.BLOCK_SECTION_VOLUME * bitsPerValue / 64)` is still incorrect
-- **Dependencies**: Requires fix in prismarine-chunk size calculation logic
+- **Status**: **RESOLVED** - Fixed size computation formula in prismarine-chunk
+- **Fix Applied**: Changed from `Math.ceil(constants.BLOCK_SECTION_VOLUME * bitsPerValue / 64)` to `Math.ceil(constants.BLOCK_SECTION_VOLUME / Math.floor(64 / bitsPerValue))`
+- **Impact**: Chunk loading now works correctly for 1.21.5
+- **Files Modified**: 
+  - `prismarine-chunk/src/pc/common/PaletteContainer.js` (both DirectPaletteContainer and IndirectPaletteContainer)
+- **Dependencies**: Updated package.json to point to fixed prismarine-chunk branch
 
 ### 2. Creative Set Slot Packet Behavior
 - **Issue**: Creative set slot packet behavior is the main breaking change (not working right now)
@@ -136,40 +133,51 @@ Mineflayer is already using the experimental branches:
 - `prismarine-chunk`: `extremeheat/prismarine-chunk#pc1.21.5` ✅
 - `minecraft-protocol`: `extremeheat/node-minecraft-protocol#pcp1.21.5` ✅
 
-### 🚨 **Why Tests Are Still Failing**
-**CONFIRMED**: The fix is implemented but still not working correctly. The issue is in the size computation logic.
+### ✅ **Chunk Loading Issue RESOLVED**
+**FIXED**: The chunk loading issue has been resolved by correcting the size computation formula.
 
 **Root Cause Analysis:**
 1. ✅ **Fix is implemented**: `noSizePrefix` detection and logic is present in the code
 2. ✅ **Version detection works**: `mcData.version['>=']('1.21.5')` returns `true` correctly
-3. ❌ **Size computation is wrong**: The dynamic size calculation `Math.ceil(constants.BLOCK_SECTION_VOLUME * bitsPerValue / 64)` is still causing buffer overflow
-4. ❌ **Buffer reading fails**: Still getting "Target offset is beyond the bounds of the internal SmartBuffer data"
+3. ✅ **Size computation fixed**: Changed from `Math.ceil(constants.BLOCK_SECTION_VOLUME * bitsPerValue / 64)` to `Math.ceil(constants.BLOCK_SECTION_VOLUME / Math.floor(64 / bitsPerValue))`
+4. ✅ **Buffer reading works**: No more "Target offset is beyond the bounds of the internal SmartBuffer data" errors
 
-**The Problem:**
-The issue is in the `readBuffer` method in `PaletteContainer.js`. The computed size is still incorrect for the actual data being sent by the server.
+**The Solution:**
+The issue was in the `readBuffer` method in `PaletteContainer.js`. The formula needed to calculate the number of longs based on the actual BitArray logic used in the constructor.
 
-## Specific Recommendations
+## Current Test Status
 
-### 1. **Fix the Size Computation** (URGENT)
-The current formula `Math.ceil(constants.BLOCK_SECTION_VOLUME * bitsPerValue / 64)` is wrong. Need to:
+### ✅ **Chunk Loading Fixed**
+- **Status**: Chunk loading now works correctly for 1.21.5
+- **Evidence**: No more "Target offset is beyond the bounds of the internal SmartBuffer data" errors
+- **Next**: Focus on remaining test failures
 
-1. **Analyze actual packet data**: Use packet capture to see the real size being sent
-2. **Fix the calculation**: The formula needs to account for the actual data structure
-3. **Test with real 1.21.5 data**: Verify against actual Minecraft 1.21.5 server packets
+### 🚨 **New Test Failures Identified**
+After fixing chunk loading, new issues emerged:
 
-### 2. **Debug the Buffer Reading** (High Priority)
-Add debug logging to understand exactly what's happening:
+1. **Test Setup Timeout**: "Event message did not fire within timeout of 5000ms" in "before each" hook for "bed"
+2. **Server Shutdown Issues**: "Server shutdown took too long. Killing process."
+3. **Potential Protocol Changes**: Other 1.21.5 protocol changes may be affecting test functionality
 
-```javascript
-// In PaletteContainer.js readBuffer method
-console.log('noSizePrefix:', this.noSizePrefix)
-console.log('bitsPerValue:', bitsPerValue)
-console.log('computed longs:', longs)
-console.log('buffer remaining:', smartBuffer.remaining())
-```
+## Next Priority Issues
 
-### 3. **Compare with Working Version** (Medium Priority)
-Compare the 1.21.5 chunk data with 1.21.4 to understand the exact difference in format.
+### 1. **Investigate Test Setup Failures** (High Priority)
+- **Issue**: Tests are timing out during setup phase
+- **Location**: `test/externalTests/plugins/testCommon.js:127:21` - `clearInventory` function
+- **Possible Causes**: 
+  - Creative set slot packet changes
+  - Inventory protocol changes
+  - Entity metadata changes
+
+### 2. **Debug Creative Set Slot** (High Priority)
+- **Issue**: Creative mode functionality may be broken
+- **Location**: `lib/plugins/creative.js`
+- **Test**: `test/externalTests/creative.js`
+
+### 3. **Check Item Format Changes** (Medium Priority)
+- **Issue**: New hashed items and unsecure items concepts
+- **Location**: `lib/plugins/inventory.js`
+- **Impact**: Item handling and inventory management
 
 ## Implementation Steps
 ```bash
@@ -239,6 +247,18 @@ For anyone wanting to contribute to 1.21.5 support:
 3. **Focus on One Issue**: Pick one specific problem to solve
 4. **Test Thoroughly**: Run tests for multiple versions
 5. **Document Changes**: Update relevant documentation
+
+## Updated Timeline
+
+- **Phase 1**: ✅ COMPLETED (chunk protocol fix)
+- **Phase 2**: 2-3 days (investigate and fix test setup failures)
+- **Phase 3**: 2-3 days (fix creative set slot and other protocol issues)
+- **Phase 4**: 1-2 days (testing and validation)
+- **Phase 5**: 1 day (documentation and cleanup)
+
+**Total Estimated Time**: 6-9 days remaining
+
+**Note**: Chunk loading is now fixed! Focus is on remaining protocol changes and test failures.
 
 ## References
 
