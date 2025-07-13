@@ -169,15 +169,74 @@ After fixing chunk loading, new issues emerged:
   - Inventory protocol changes
   - Entity metadata changes
 
-### 2. **Debug Creative Set Slot** (High Priority)
-- **Issue**: Creative mode functionality may be broken
+### 2. **Debug Creative Set Slot** (High Priority - PROTOCOL CHANGE IDENTIFIED)
+- **Issue**: Creative mode functionality broken due to protocol change
 - **Location**: `lib/plugins/creative.js`
 - **Test**: `test/externalTests/creative.js`
+- **Root Cause**: `set_creative_slot` packet changed from `Slot` to `UntrustedSlot` type
+- **Key Changes**:
+  - **1.21.4**: `packet_set_creative_slot.item` type: `Slot`
+  - **1.21.5**: `packet_set_creative_slot.item` type: `UntrustedSlot`
+  - `UntrustedSlot` has `present` boolean field first
+  - Uses `UntrustedSlotComponent` instead of `SlotComponent`
+  - New component system with `addedComponentCount` and `removedComponentCount`
+- **Files to Modify**: `lib/plugins/creative.js` (creative set slot handling)
 
-### 3. **Check Item Format Changes** (Medium Priority)
+### 3. **Check Item Format Changes** (Medium Priority - PROTOCOL CHANGES IDENTIFIED)
 - **Issue**: New hashed items and unsecure items concepts
 - **Location**: `lib/plugins/inventory.js`
 - **Impact**: Item handling and inventory management
+- **Protocol Changes Found**:
+  - **New `vec3i` type**: Added for 3D integer vectors
+  - **Item component system**: New component-based item system
+  - **Component reordering**: Item component IDs have been reordered (e.g., `hide_additional_tooltip` → `tooltip_display`)
+  - **New components**: Added `blocks_attacks`, `weapon` components
+  - **Entity metadata**: `item_stack` type still uses `Slot` but may have component changes
+
+### 4. **Entity Metadata Changes** (Medium Priority - MINIMAL CHANGES)
+- **Issue**: Entity metadata format changes
+- **Location**: `lib/plugins/entities.js`
+- **Impact**: Entity tracking and interaction
+- **Protocol Analysis**: 
+  - **Good news**: `entity_metadata` packet structure unchanged
+  - **Good news**: `item_stack` type in metadata still uses `Slot` (not `UntrustedSlot`)
+  - **Minimal impact**: Entity metadata changes appear to be minimal for 1.21.5
+
+## Protocol Analysis Summary
+
+Based on the [minecraft-data PR #1029](https://github.com/PrismarineJS/minecraft-data/pull/1029/files) analysis, here are the key protocol changes for 1.21.5:
+
+### 🔥 **Critical Changes (Blocking Issues)**
+
+1. **Creative Set Slot Packet**:
+   - **Change**: `packet_set_creative_slot.item` type changed from `Slot` to `UntrustedSlot`
+   - **Impact**: Creative mode inventory management completely broken
+   - **Fix Required**: Update `lib/plugins/creative.js` to handle `UntrustedSlot` format
+
+2. **New Packet Types**:
+   - **Added**: `set_test_block` (0x39) and `test_instance_block_action` (0x3c)
+   - **Impact**: May affect block interaction tests
+
+### 📦 **Item System Changes**
+
+1. **Component System**:
+   - **New**: `UntrustedSlot` with component-based system
+   - **Components**: `addedComponentCount`, `removedComponentCount`, `UntrustedSlotComponent`
+   - **Impact**: Item serialization/deserialization needs updates
+
+2. **Component Reordering**:
+   - **Changed**: Component IDs reordered (e.g., `hide_additional_tooltip` → `tooltip_display`)
+   - **Added**: New components like `blocks_attacks`, `weapon`
+
+### 🎯 **Minimal Impact Changes**
+
+1. **Entity Metadata**: 
+   - **Status**: Unchanged - still uses `Slot` for `item_stack`
+   - **Impact**: Minimal - no changes needed
+
+2. **New Types**:
+   - **Added**: `vec3i` type for 3D integer vectors
+   - **Impact**: May be used in new packets but not critical
 
 ## Implementation Steps
 ```bash
