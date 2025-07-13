@@ -1,5 +1,19 @@
 # Mineflayer 1.21.5 Support Plan
 
+## 🚩 Latest Progress (July 2025)
+
+- ✅ **Chunk loading/parsing is now fixed** in both `node_modules` and the local `prismarine-chunk` repo. The fix was applied to `PaletteChunkSection.js` and `BitArrayNoSpan.js`.
+- 🔗 **Local development uses `npm link` to the local prismarine-chunk repo** for immediate testing of fixes.
+- 🛠️ **BitArrayNoSpan.js** now validates the buffer size and logs a warning if it is invalid (e.g., Infinity), preventing crashes.
+- 🤖 **The bot can now spawn and interact with the world** in 1.21.5. Chunk parsing errors are resolved.
+- ✅ **12 tests pass** for 1.21.5, confirming core protocol and chunk logic is working.
+- ❌ **4 tests fail**, but these are due to higher-level Mineflayer/game logic (timeouts, creative set slot, etc.), not chunk/protocol errors.
+- 🚧 **Current blockers:**
+  - Creative set slot protocol changes (UntrustedSlot)
+  - declare_commands packet parsing (PartialReadError)
+
+---
+
 ## Current Status
 
 As of July 2025, Mineflayer has partial 1.21.5 support with several critical issues remaining. The version is already listed in `testedVersions` but tests are failing due to protocol changes in 1.21.5.
