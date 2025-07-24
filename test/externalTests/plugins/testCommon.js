@@ -124,19 +124,19 @@ function inject (bot) {
   }
 
   async function clearInventory () {
-    const msgProm = onceWithCleanup(bot, 'message', {
-      timeout,
-      checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
-    })
+    const giveStone = onceWithCleanup(bot.inventory, 'updateSlot', { timeout: 1000 * 20, checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
     bot.chat('/give @a stone 1')
     bot.inventory.on('updateSlot', (...e) => {
       // console.log('inventory.updateSlot', e)
     })
-    await msgProm // wait for the message so it doesn't leak into chat tests
+    await giveStone
 
-    const promise = onceWithCleanup(bot.inventory, 'updateSlot', { timeout: 1000 * 20, checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
+    const clearInv = onceWithCleanup(bot, 'message', {
+      timeout,
+      checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
+    })
     bot.chat('/clear') // don't rely on the message (as it'll come to early), wait for the result of /clear instead
-    await promise // wait for the inventory to be cleared
+    await clearInv
 
     // Check that the inventory is clear
     for (const slot of bot.inventory.slots) {
