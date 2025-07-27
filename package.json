@@ -24,7 +24,7 @@
     "minecraft-data": "^3.76.0",
     "minecraft-protocol": "extremeheat/node-minecraft-protocol#pcp1.21.5",
     "prismarine-biome": "^1.1.1",
-    "prismarine-block": "^1.17.0",
+    "prismarine-block": "extremeheat/prismarine-block#pc1.21.5",
     "prismarine-chat": "^1.7.1",
     "prismarine-chunk": "PrismarineJS/prismarine-chunk#1.21.5_continued",
     "prismarine-entity": "^2.5.0",
