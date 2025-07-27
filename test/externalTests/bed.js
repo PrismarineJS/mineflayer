@@ -2,9 +2,8 @@ const assert = require('assert')
 const { once } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
-  // Wait a few seconds for the server to load chunks
-  await bot.test.wait(6000)
-  console.log('# Testing bed placement and sleep/wake functionality')
+  // Wait a few seconds for chunks
+  await bot.test.wait(3000)
   const midnight = 18000
   const bedItem = bot.registry.itemsArray.find(item => item.name.endsWith('bed'))
   const bedPos1 = bot.entity.position.offset(2, 0, 0).floored()
@@ -27,11 +26,9 @@ module.exports = () => async (bot) => {
   console.log(bot.time.timeOfDay, bot.blockAt(bedPos1).name, bot.blockAt(bedPos2).name)
   const blockAtBed1 = bot.blockAt(bedPos1)
   const blockAtBed2 = bot.blockAt(bedPos2)
-  // console.log('BlockAtBed1', blockAtBed1)
-  // console.log('BlockAtBed2', blockAtBed2)
   assert(bot.time.timeOfDay >= midnight)
-  assert(blockAtBed1.name.endsWith('bed') || blockAtBed1.name.endsWith('bedrock'), `Expected bed at ${bedPos1} to be a bed, got ${JSON.stringify(blockAtBed1)}`)
-  assert(blockAtBed2.name.endsWith('bed') || blockAtBed2.name.endsWith('bedrock'), `Expected bed at ${bedPos2} to be a bed, got ${JSON.stringify(blockAtBed2)}`)
+  assert(blockAtBed1?.name?.endsWith('bed'), `Expected ${bedPos1} to be bed, got ${JSON.stringify(blockAtBed1)}`)
+  assert(blockAtBed2?.name?.endsWith('bed'), `Expected ${bedPos2} to be bed, got ${JSON.stringify(blockAtBed2)}`)
 
   // Sleep
   assert(!bot.isSleeping)
