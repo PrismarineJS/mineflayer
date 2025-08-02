@@ -1,3 +1,6 @@
+## 4.31.0
+* [Cursor 1 21 5 (#3701)](https://github.com/PrismarineJS/mineflayer/commit/8770129d26a85f9b077d2a8969d45436fa09c3f3) (thanks @rom1504)
+
 ## 4.30.0
 * [Update player_info handling (#3689)](https://github.com/PrismarineJS/mineflayer/commit/3f2fd6d393bc39167410df5a292759c93c9b249f) (thanks @extremeheat)
 * [Bump @types/node from 22.15.33 to 24.0.6 (#3686)](https://github.com/PrismarineJS/mineflayer/commit/12e50a2e2d0a921d075ebae8aa835437672a2b29) (thanks @dependabot[bot])
