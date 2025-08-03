@@ -74,6 +74,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
         console.log('starting bot')
         bot.once('spawn', () => {
+          console.log('bot spawned, opping...')
           wrap.writeServer('op flatbot\n')
           bot.once('messagestr', msg => {
             if (msg.includes('Made flatbot a server operator') || msg === '[Server: Opped flatbot]') {
@@ -112,8 +113,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
     })
 
     beforeEach(async () => {
-      console.log('reset state')
+      console.log('Resetting state')
       await bot.test.resetState()
+      console.log('State reset')
     })
 
     after((done) => {
