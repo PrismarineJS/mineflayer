@@ -33,6 +33,8 @@ export interface BotOptions extends ClientOptions {
   brand?: string
   defaultChatPatterns?: boolean
   respawn?: boolean
+  /** Mod loader configuration options */
+  modLoader?: ModLoaderOptions
 }
 
 export type ChatLevel = 'enabled' | 'commandsOnly' | 'disabled'
@@ -44,6 +46,183 @@ export interface PluginOptions {
 }
 
 export type Plugin = (bot: Bot, options: BotOptions) => void
+
+// Mod Loader Types
+export type ModLoaderType = 'vanilla' | 'forge' | 'neoforge' | 'fabric'
+
+export interface ModLoaderOptions {
+  /** Enable mod loader support */
+  enabled?: boolean
+  /** Strict mode - fail fast on compatibility issues */
+  strict?: boolean
+  /** Handshake timeout in milliseconds */
+  handshakeTimeout?: number
+  /** Registry synchronization timeout in milliseconds */
+  registryTimeout?: number
+  /** Enable mod compatibility checking */
+  enableCompatibilityChecks?: boolean
+  /** Check version compatibility */
+  checkVersionCompatibility?: boolean
+  /** Allow optional dependencies to be missing */
+  allowOptionalDependencies?: boolean
+  /** Warn about deprecated mods */
+  warnAboutDeprecated?: boolean
+  /** Enable debug mode for verbose logging */
+  debugMode?: boolean
+  /** Allow connection to unsupported mod loader versions */
+  allowUnsupportedVersions?: boolean
+  /** Maximum handshake retry attempts */
+  maxRetries?: number
+  /** Delay between retry attempts in milliseconds */
+  retryDelay?: number
+  /** Enable graceful degradation on errors */
+  enableGracefulDegradation?: boolean
+  /** Custom mod channels to register */
+  customChannels?: string[]
+  /** Error handler options */
+  logErrors?: boolean
+}
+
+export interface ModInfo {
+  /** Unique mod identifier */
+  id: string
+  /** Mod version */
+  version: string
+  /** Display name */
+  name: string
+  /** Mod dependencies */
+  dependencies?: Array<string | ModDependency>
+  /** Conflicting mods */
+  conflicts?: string[]
+  /** Additional metadata */
+  metadata?: any
+  /** Timestamp when mod was added */
+  addedAt?: number
+}
+
+export interface ModDependency {
+  /** Dependency mod ID */
+  id: string
+  /** Required version or version range */
+  version?: string
+  /** Whether dependency is optional */
+  optional?: boolean
+  /** Whether dependency is required */
+  required?: boolean
+}
+
+export interface CompatibilityIssue {
+  /** Type of compatibility issue */
+  type: 'missing_dependency' | 'version_mismatch' | 'mod_conflict' | 'circular_dependency' | 'incompatible_versions' | 'optional_dependency' | 'deprecated_mod' | 'unknown_dependency'
+  /** Severity level */
+  severity: 'critical' | 'error' | 'warning' | 'info'
+  /** Primary mod ID involved in issue */
+  modId?: string
+  /** Dependency mod ID */
+  dependency?: string
+  /** Conflicting mod ID */
+  conflictWith?: string
+  /** Issue message */
+  message: string
+  /** Suggested solutions */
+  suggestions?: string[]
+  /** Additional details */
+  [key: string]: any
+}
+
+export interface CompatibilityReport {
+  /** Report timestamp */
+  timestamp: number
+  /** Total number of mods analyzed */
+  totalMods: number
+  /** Critical issues that prevent operation */
+  issues: CompatibilityIssue[]
+  /** Warnings that may cause problems */
+  warnings: CompatibilityIssue[]
+  /** Recommendations for improvement */
+  recommendations: Array<{
+    type: string
+    message: string
+    suggestions?: string[]
+  }>
+  /** Issue summary by severity */
+  summary: {
+    critical: number
+    errors: number
+    warnings: number
+    info: number
+  }
+}
+
+export interface CompatibilityStatus {
+  /** Compatibility status */
+  status: 'fully_compatible' | 'compatible_with_warnings' | 'problematic' | 'incompatible' | 'unknown'
+  /** Status message */
+  message: string
+}
+
+export interface ModLoaderInfo {
+  /** Detected mod loader type */
+  type: ModLoaderType
+  /** Mod loader version if available */
+  version?: string
+  /** Raw server brand string */
+  raw?: string
+  /** Whether this is a hybrid server */
+  hybrid?: boolean
+  /** Whether handshake is required */
+  requiresHandshake: boolean
+}
+
+export interface ModRegistry {
+  /** Add a mod to the registry */
+  addMod: (modId: string, modInfo: Partial<ModInfo>) => void
+  /** Remove a mod from the registry */
+  removeMod: (modId: string) => boolean
+  /** Get mod information */
+  getMod: (modId: string) => ModInfo | null
+  /** Get all registered mods */
+  getAllMods: () => Map<string, ModInfo>
+  /** Check if mod is registered */
+  hasMod: (modId: string) => boolean
+  /** Get mod count */
+  getModCount: () => number
+  /** Find mods by pattern */
+  findMods: (pattern: string | RegExp) => ModInfo[]
+  /** Validate compatibility */
+  validateCompatibility: () => CompatibilityReport
+  /** Get compatibility report */
+  getCompatibilityReport: () => CompatibilityReport | null
+  /** Get compatibility status */
+  getCompatibilityStatus: () => CompatibilityStatus
+  /** Format compatibility report */
+  formatCompatibilityReport: () => string
+}
+
+export interface ModLoader {
+  /** Get mod loader type */
+  getType: () => ModLoaderType
+  /** Get mod loader version */
+  getVersion: () => string | null
+  /** Check if handshake is required */
+  requiresHandshake: () => boolean
+  /** Start handshake process */
+  startHandshake: () => Promise<void>
+  /** Check if mod loader is ready */
+  isReady: () => boolean
+  /** Get mod information */
+  getMod: (modId: string) => ModInfo | null
+  /** Get all mods */
+  getAllMods: () => Map<string, ModInfo>
+  /** Mod registry */
+  registry: ModRegistry
+  /** Perform compatibility check */
+  checkModCompatibility: () => CompatibilityReport
+  /** Get compatibility status */
+  getCompatibilityStatus: () => CompatibilityStatus
+  /** Format compatibility report */
+  formatCompatibilityReport: () => string
+}
 
 export interface BotEvents {
   chat: (
@@ -163,6 +342,24 @@ export interface BotEvents {
   bossBarUpdated: (bossBar: BossBar) => Promise<void> | void
   resourcePack: (url: string, hash?: string, uuid?: string) => Promise<void> | void
   particle: (particle: Particle) => Promise<void> | void
+  
+  // Mod Loader Events
+  /** Fired when a mod loader is detected */
+  modLoaderDetected: (info: ModLoaderInfo) => Promise<void> | void
+  /** Fired when mod loader handshake completes */
+  modLoaderReady: (modLoader: ModLoader) => Promise<void> | void
+  /** Fired when mod list is received from server */
+  modsReceived: (data: { mods?: ModInfo[], modCount?: number, forgeVersion?: string, errors?: string[] }) => Promise<void> | void
+  /** Fired when registry mapping is updated */
+  registryMappingUpdated: (registryName: string, mapping: Map<number, string>) => Promise<void> | void
+  /** Fired when mod compatibility issues are detected */
+  modCompatibilityIssues: (issues: CompatibilityIssue[]) => Promise<void> | void
+  /** Fired when comprehensive compatibility report is generated */
+  modCompatibilityReport: (report: CompatibilityReport) => Promise<void> | void
+  /** Fired when Forge version is detected */
+  forgeVersionDetected: (version: string) => Promise<void> | void
+  /** Fired when Fabric version sync occurs */
+  fabricVersionSync: (versionInfo: { fabricLoader?: string, fabricApi?: string, minecraft?: string }) => Promise<void> | void
 }
 
 export interface CommandBlockOptions {
@@ -442,6 +639,55 @@ export interface Bot extends TypedEmitter<BotEvents> {
   denyResourcePack: () => void
 
   respawn: () => void
+  
+  // Mod Loader Properties and Methods
+  /** Currently active mod loader instance, null if vanilla */
+  modLoader: ModLoader | null
+  
+  /** Get mod information by ID */
+  getMod: (modId: string) => ModInfo | null
+  
+  /** Get all registered mods */
+  getAllMods: () => Map<string, ModInfo>
+  
+  /** Get total number of loaded mods */
+  getModCount: () => number
+  
+  /** Find mods matching a pattern */
+  findMods: (pattern: string | RegExp) => ModInfo[]
+  
+  /** Resolve modded numeric ID to string identifier */
+  resolveModdedId: (registryType: string, numericId: number) => string | null
+  
+  /** Get mod loader statistics */
+  getModStats: () => {
+    totalMods: number
+    totalDependencies: number
+    totalConflicts: number
+    registries: Record<string, any>
+    compatibility?: {
+      status: string
+      critical: number
+      errors: number
+      warnings: number
+      lastCheck: string
+    }
+  }
+  
+  /** Perform comprehensive mod compatibility check */
+  checkModCompatibility: () => CompatibilityReport | null
+  
+  /** Get current mod compatibility status */
+  getCompatibilityStatus: () => CompatibilityStatus
+  
+  /** Format compatibility report as human-readable text */
+  formatCompatibilityReport: () => string
+  
+  /** Add known incompatibility between mods */
+  addModIncompatibility: (modId: string, incompatibleMods: string[], reason?: string) => void
+  
+  /** Mark mod as deprecated with alternatives */
+  markModAsDeprecated: (modId: string, alternatives?: string[]) => void
 }
 
 export interface simpleClick {
@@ -467,6 +713,16 @@ export interface GameState {
   difficulty: Difficulty
   maxPlayers: number
   serverBrand: string
+  /** Detected mod loader type (forge, neoforge, fabric, or null for vanilla) */
+  modLoader: ModLoaderType | null
+  /** Mod loader version if detected */
+  modLoaderVersion: string | null
+  /** Raw mod loader brand string */
+  modLoaderRaw: string | null
+  /** Whether the server is running mods */
+  isModded: boolean
+  /** Map of loaded mods (if available) */
+  mods: Map<string, ModInfo> | null
 }
 
 export type LevelType =
