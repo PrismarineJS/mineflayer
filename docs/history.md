@@ -1,3 +1,7 @@
+## 4.32.0
+* [1.21.6 (#3713)](https://github.com/PrismarineJS/mineflayer/commit/01f537c394fc78bf2e765b28a8b24a30c1d1fd2e) (thanks @extremeheat)
+* [Fix knockback physics crash (#3715)](https://github.com/PrismarineJS/mineflayer/commit/e3f89d17418ece9e9fac4b111d8243dfe1a5d376) (thanks @Omena0)
+
 ## 4.31.0
 * [Cursor 1 21 5 (#3701)](https://github.com/PrismarineJS/mineflayer/commit/8770129d26a85f9b077d2a8969d45436fa09c3f3) (thanks @rom1504)
 
