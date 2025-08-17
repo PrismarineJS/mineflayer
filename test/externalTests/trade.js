@@ -42,7 +42,7 @@ module.exports = () => async (bot) => {
 
   const villager = await bot.openVillager(entity)
   console.log('Opened villager')
-  console.dir(villager, { depth: null })
+  // console.dir(villager, { depth: null })
 
   // Handle trade #1 -- takes 2x emerald and returns 2x pumpkin_pie
   {
