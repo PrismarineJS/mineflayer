@@ -821,6 +821,52 @@ for (const supportedVersion of mineflayer.testedVersions) {
           client.write('entity_metadata', metadataPacket)
         })
       })
+
+      it('should correctly parse malformed skin texture JSON'), function (done) {
+        const malformedJson = '{textures:{SKIN:{url:\"http://textures.minecraft.net/texture/b67168621fdb0cf3f7e57cb5166d48e9e9c87d677494339f3b8feec8c3a36b\"}}}'
+
+        server.on('playerJoin', (client) => {
+          const loginPacket = bot.test.generateLoginPacket()
+          client.write('login', loginPacket)
+
+          const props = {
+            textures: {
+              value: Buffer.from(malformedJson, 'utf8').toString('base64')
+            }
+          };
+
+          const originalExtractSkinInformation = bot._client.extractSkinInformation
+          bot._client.extractSkinInformation = (props) => {
+            const skinTextureString = Buffer.from(props.textures.value, 'base64').toString('utf8')
+              .split('{textures:').join('{\"textures\":')
+              .split('{SKIN:').join('{\"SKIN\":')
+              .split('{url:').join('{\"url\":')
+
+            const skinTexture = JSON.parse(skinTextureString)
+            return skinTexture
+          }
+
+          bot._client.emit('playerInfo', {
+            action: 'add_player',
+            data: [{
+              UUID: '1-2-3-4',
+              name: 'testPlayer',
+              properties: [{
+                name: 'textures',
+                value: props.textures.value,
+                signature: ''
+              }]
+            }]
+          })
+
+          bot._client.extractSkinInformation = originalExtractSkinInformation
+
+          assert.doesNotThrow(() => {
+            const skinTexture = bot.players['testPlayer'].skinTexture
+            assert.strictEqual(skinTexture.textures.SKIN.url, 'http://textures.minecraft.net/texture/b67168621fdb0cf3f7e57cb5166d48e9e9c87d677494339f3b8feec8c3a36b')
+          }, done)
+        })
+      }
     })
 
     it('bed', (done) => {
