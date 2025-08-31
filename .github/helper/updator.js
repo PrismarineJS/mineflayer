@@ -20,7 +20,7 @@ assert(newVersion)
 assert(triggerBranch)
 
 async function main () {
-  const currentSupportedPath = require.resolve('../../src/version.js')
+  const currentSupportedPath = require.resolve('../../lib/version.js')
   const readmePath = join(__dirname, '../../docs/README.md')
   const ciPath = join(__dirname, '../../.github/workflows/ci.yml')
 
