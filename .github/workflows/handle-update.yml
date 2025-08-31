@@ -36,6 +36,11 @@ jobs:
       with:
         token: ${{ secrets.PAT_PASSWORD }}
 
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v1.4.4
+      with:
+        node-version: 22.x
+
     - run: npm install PrismarineJS/node-minecraft-protocol#${{ github.event.inputs.nmp_branch }}
 
     - name: Run updator script
