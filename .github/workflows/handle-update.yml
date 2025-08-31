@@ -36,9 +36,7 @@ jobs:
       with:
         token: ${{ secrets.PAT_PASSWORD }}
 
-    - run: npm install PrismarineJS/minecraft-protocol#${NMP_BRANCH}
-      env:
-        NMP_BRANCH: ${{ github.event.inputs.nmp_branch }}
+    - run: npm install PrismarineJS/minecraft-protocol#${{ github.event.inputs.nmp_branch }}
 
     - name: Run updator script
       run: cd .github/helper && npm install && node updator.js
