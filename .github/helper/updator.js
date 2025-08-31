@@ -38,7 +38,7 @@ async function main () {
   const currentContentsReadme = fs.readFileSync(readmePath, 'utf8')
   if (!currentContentsReadme.includes(newVersion)) {
     const newReadmeContents = currentContentsReadme
-      .replace(/Supports Minecraft 1\.8 to [0-9a-z_-.]+ \(/, `Supports Minecraft 1.8 to ${newVersion}`)
+      .replace(/Supports Minecraft 1\.8 to [0-9A-Za-z._-]+ \(/, `Supports Minecraft 1.8 to ${newVersion}`)
       .replace(') <!--version-->', `, ${newVersion}) <!--version-->`)
     fs.writeFileSync(readmePath, newReadmeContents)
     console.log('Updated README with new version:', newVersion)
