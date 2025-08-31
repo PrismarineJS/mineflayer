@@ -38,7 +38,7 @@ async function main () {
   const currentContentsReadme = fs.readFileSync(readmePath, 'utf8')
   if (!currentContentsReadme.includes(newVersion)) {
     const newReadmeContents = currentContentsReadme
-      .replace(/Supports Minecraft 1\.8 to [0-9A-Za-z._-]+ \(/, `Supports Minecraft 1.8 to ${newVersion}`)
+      .replace(/Minecraft 1\.8 to [0-9A-Za-z._-]+ \(/, `Minecraft 1.8 to ${newVersion} (`)
       .replace(') <!--version-->', `, ${newVersion}) <!--version-->`)
     fs.writeFileSync(readmePath, newReadmeContents)
     console.log('Updated README with new version:', newVersion)
@@ -49,10 +49,9 @@ async function main () {
   const currentContentsCI = fs.readFileSync(ciPath, 'utf8')
   if (!currentContentsCI.includes(newVersion)) {
     const newCIContents = currentContentsCI.replace(
-      '      run: npm install', `
-      run: npm install
-    - run: cd node_modules && cd minecraft-data && mv minecraft-data minecraft-data-old && git clone -b ${triggerBranch} https://github.com/PrismarineJS/minecraft-data --depth 1 && node bin/generate_data.js
-    - run: curl -o node_modules/protodef/src/serializer.js https://raw.githubusercontent.com/extremeheat/node-protodef/refs/heads/dlog/src/serializer.js && curl -o node_modules/protodef/src/compiler.js https://raw.githubusercontent.com/extremeheat/node-protodef/refs/heads/dlog/src/compiler.js
+      'run: npm install', `run: npm install
+      - run: cd node_modules && cd minecraft-data && mv minecraft-data minecraft-data-old && git clone -b ${triggerBranch} https://github.com/PrismarineJS/minecraft-data --depth 1 && node bin/generate_data.js
+      - run: curl -o node_modules/protodef/src/serializer.js https://raw.githubusercontent.com/extremeheat/node-protodef/refs/heads/dlog/src/serializer.js && curl -o node_modules/protodef/src/compiler.js https://raw.githubusercontent.com/extremeheat/node-protodef/refs/heads/dlog/src/compiler.js
 `)
     fs.writeFileSync(ciPath, newCIContents)
     console.log('Updated CI workflow with new version:', newVersion)
@@ -70,7 +69,7 @@ async function main () {
     `🎈 ${newVersion}`,
     `This automated PR sets up the relevant boilerplate for Minecraft version ${newVersion}.
 
-Related: ${mcdataPrURL}
+Ref: ${mcdataPrURL}
 
 * You can help contribute to this PR by opening a PR against this <code branch>${branchName}</code> branch instead of <code>master</code>.
     `,
