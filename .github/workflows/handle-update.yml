@@ -1,0 +1,54 @@
+name: Update from minecraft-data
+
+on:
+  workflow_dispatch:
+    inputs:
+      new_mc_version:
+        description: New minecraft version number
+        required: true
+        type: string
+      mcdata_branch:
+        description: minecraft-data branch for this version
+        required: true
+        type: string
+      mcdata_pr_url:
+        description: minecraft-data PR number to open a PR here against
+        required: false
+        default: ''
+        type: string
+      nmp_branch:
+        description: minecraft-protocol branch for this version
+        required: true
+        type: string
+      nmp_pr_url:
+        description: minecraft-protocol PR number to open a PR here against
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.PAT_PASSWORD }}
+
+    - name: Use Node.js 22.x
+      uses: actions/setup-node@v1.4.4
+      with:
+        node-version: 22.x
+
+    - run: npm install PrismarineJS/node-minecraft-protocol#${{ github.event.inputs.nmp_branch }}
+
+    - name: Run updator script
+      run: cd .github/helper && npm install && node updator.js
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_PASSWORD }}
+        NEW_MC_VERSION: ${{ github.event.inputs.new_mc_version }}
+        MCDATA_BRANCH: ${{ github.event.inputs.mcdata_branch }}
+        MCDATA_PR_URL: ${{ github.event.inputs.mcdata_pr_url }}
+        NMP_BRANCH: ${{ github.event.inputs.nmp_branch }}
+        NMP_PR_URL: ${{ github.event.inputs.nmp_pr_url }}
