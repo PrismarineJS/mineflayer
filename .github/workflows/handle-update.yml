@@ -29,12 +29,16 @@ on:
 jobs:
   update:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        token: ${{ secrets.PAT_PASSWORD }}
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Use Node.js 22.x
       uses: actions/setup-node@v1.4.4
@@ -46,7 +50,7 @@ jobs:
     - name: Run updator script
       run: cd .github/helper && npm install && node updator.js
       env:
-        GITHUB_TOKEN: ${{ secrets.PAT_PASSWORD }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         NEW_MC_VERSION: ${{ github.event.inputs.new_mc_version }}
         MCDATA_BRANCH: ${{ github.event.inputs.mcdata_branch }}
         MCDATA_PR_URL: ${{ github.event.inputs.mcdata_pr_url }}
