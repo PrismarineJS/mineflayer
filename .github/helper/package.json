@@ -1,5 +1,19 @@
 {
+  "name": "mineflayer-helper",
+  "version": "1.0.0",
+  "description": "Helper scripts for mineflayer automation",
+  "main": "updator.js",
+  "scripts": {
+    "test": "mocha test/**/*.test.js",
+    "test:watch": "mocha test/**/*.test.js --watch", 
+    "test:coverage": "nyc mocha test/**/*.test.js"
+  },
+  "devDependencies": {
+    "mocha": "^10.2.0",
+    "sinon": "^17.0.1",
+    "nyc": "^15.1.0"
+  },
   "dependencies": {
-    "gh-helpers": "^1.0.0"
+    "gh-helpers": "*"
   }
 }
