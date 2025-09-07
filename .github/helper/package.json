@@ -1,5 +1,26 @@
 {
+  "name": "mineflayer-helper",
+  "version": "1.0.0",
+  "description": "Helper scripts for mineflayer automation",
+  "main": "updator.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "jest": "^29.7.0"
+  },
   "dependencies": {
-    "gh-helpers": "^1.0.0"
+    "gh-helpers": "*"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/test/**/*.test.js"],
+    "collectCoverageFrom": [
+      "*.js",
+      "!test/**"
+    ]
   }
 }
