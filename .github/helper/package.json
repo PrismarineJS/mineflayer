@@ -4,23 +4,16 @@
   "description": "Helper scripts for mineflayer automation",
   "main": "updator.js",
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test": "mocha test/**/*.test.js",
+    "test:watch": "mocha test/**/*.test.js --watch", 
+    "test:coverage": "nyc mocha test/**/*.test.js"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
-    "jest": "^29.7.0"
+    "mocha": "^10.2.0",
+    "sinon": "^17.0.1",
+    "nyc": "^15.1.0"
   },
   "dependencies": {
     "gh-helpers": "*"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "testMatch": ["**/test/**/*.test.js"],
-    "collectCoverageFrom": [
-      "*.js",
-      "!test/**"
-    ]
   }
 }

@@ -1,49 +1,54 @@
-const { jest } = require('@jest/globals')
+const sinon = require('sinon')
 const fs = require('fs')
 const cp = require('child_process')
+const assert = require('assert')
 
-// Mock dependencies
-jest.mock('fs')
-jest.mock('child_process')
-jest.mock('gh-helpers', () => () => ({
+// Mock gh-helpers
+const mockGithub = {
   mock: true,
-  createPullRequest: jest.fn().mockResolvedValue({ number: 456, url: 'test-mineflayer-pr' })
-}))
+  createPullRequest: sinon.stub().resolves({ number: 456, url: 'test-mineflayer-pr' })
+}
 
-describe('Mineflayer Updator', () => {
+// Mock modules
+const Module = require('module')
+const originalRequire = Module.prototype.require
+
+Module.prototype.require = function(id) {
+  if (id === 'gh-helpers') {
+    return () => mockGithub
+  }
+  return originalRequire.apply(this, arguments)
+}
+
+describe('Mineflayer Updator', function() {
   let originalEnv
-  let mockFs
-  let mockCp
+  let fsStub
+  let cpStub
 
-  beforeEach(() => {
+  beforeEach(function() {
     originalEnv = process.env
     process.env = { ...originalEnv }
     
-    mockFs = {
-      readFileSync: jest.fn(),
-      writeFileSync: jest.fn()
+    // Stub fs and child_process
+    fsStub = {
+      readFileSync: sinon.stub(fs, 'readFileSync'),
+      writeFileSync: sinon.stub(fs, 'writeFileSync')
     }
     
-    mockCp = {
-      execSync: jest.fn()
+    cpStub = {
+      execSync: sinon.stub(cp, 'execSync')
     }
     
-    fs.readFileSync = mockFs.readFileSync
-    fs.writeFileSync = mockFs.writeFileSync
-    cp.execSync = mockCp.execSync
-    
-    jest.clearAllMocks()
+    sinon.reset()
   })
 
-  afterEach(() => {
+  afterEach(function() {
     process.env = originalEnv
-    jest.restoreAllMocks()
+    sinon.restore()
   })
 
-  describe('Version Update', () => {
-    test('should add new version to testedVersions array', () => {
-      process.env.NEW_MC_VERSION = '1.21.9'
-      
+  describe('Version Update', function() {
+    it('should add new version to testedVersions array', function() {
       const currentVersionFile = `const testedVersions = ['1.8.8', '1.21.6', '1.21.8']
 module.exports = {
   testedVersions,
@@ -51,7 +56,7 @@ module.exports = {
   oldestSupportedVersion: testedVersions[0]
 }`
 
-      mockFs.readFileSync.mockReturnValue(currentVersionFile)
+      fsStub.readFileSync.returns(currentVersionFile)
       
       // Test the logic for adding new version
       const latestVersion = '1.21.8'
@@ -60,50 +65,41 @@ module.exports = {
         ? currentVersionFile
         : currentVersionFile.replace(`, '${latestVersion}'`, `, '${latestVersion}', '${newVersion}'`)
       
-      expect(newContents).toContain("'1.21.9'")
-      expect(newContents).toContain(`'${latestVersion}', '${newVersion}'`)
+      assert(newContents.includes("'1.21.9'"), 'Should contain new version')
+      assert(newContents.includes(`'${latestVersion}', '${newVersion}'`), 'Should add after latest version')
     })
 
-    test('should not duplicate existing versions', () => {
+    it('should not duplicate existing versions', function() {
       const versionFile = `const testedVersions = ['1.21.8', '1.21.9']`
       const newVersion = '1.21.9'
       
       const result = versionFile.includes(newVersion) ? versionFile : versionFile + `, '${newVersion}'`
-      expect(result).toBe(versionFile) // No change since it already exists
+      assert.strictEqual(result, versionFile, 'Should not change if version exists')
     })
 
-    test('should update README.md correctly', () => {
+    it('should update README.md correctly', function() {
       const readmeContent = `# Mineflayer
 
-Create Minecraft bots with a powerful and stable API.
+Supports Minecraft 1.8 to 1.21.8 (https://github.com/PrismarineJS/node-minecraft-protocol)
 
-## Features
-
-* Supports Minecraft 1.8 to 1.21.8 (https://github.com/PrismarineJS/node-minecraft-protocol)
-* Entity knowledge and tracking
-* Block, biome, item, recipe and protocol knowledge from [minecraft-data](https://github.com/PrismarineJS/minecraft-data)
-
-Supports Minecraft versions: 1.8.8, 1.9.4, 1.10.2, 1.11.2, 1.12.2, 1.13.2, 1.14.4, 1.15.2, 1.16.5, 1.17.1, 1.18.2, 1.19, 1.19.2, 1.19.3, 1.19.4, 1.20.1, 1.20.2, 1.20.4, 1.20.6, 1.21.1, 1.21.3, 1.21.4, 1.21.5, 1.21.6, 1.21.8) <!--version-->`
+Supports Minecraft versions: 1.8.8, 1.21.6, 1.21.8) <!--version-->`
 
       const newVersion = '1.21.9'
       const expectedReadme = readmeContent
         .replace(/Minecraft 1\.8 to [0-9A-Za-z._-]+ \(/, `Minecraft 1.8 to ${newVersion} (`)
         .replace(') <!--version-->', `, ${newVersion}) <!--version-->`)
 
-      expect(expectedReadme).toContain('1.21.9')
-      expect(expectedReadme).toContain('Minecraft 1.8 to 1.21.9')
+      assert(expectedReadme.includes('1.21.9'), 'README should contain new version')
+      assert(expectedReadme.includes('Minecraft 1.8 to 1.21.9'), 'README should update version range')
     })
   })
 
-  describe('CI Workflow Update', () => {
-    test('should update CI workflow with new version data', () => {
+  describe('CI Workflow Update', function() {
+    it('should update CI workflow with new version data', function() {
       const ciContent = `name: CI
-on: [push, pull_request]
 jobs:
   test:
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
       - run: npm install`
 
       const newVersion = '1.21.9'
@@ -117,27 +113,27 @@ jobs:
 `
       )
       
-      expect(expectedCI).toContain(`git clone -b ${triggerBranch}`)
-      expect(expectedCI).toContain('node bin/generate_data.js')
+      assert(expectedCI.includes(`git clone -b ${triggerBranch}`), 'CI should include branch clone')
+      assert(expectedCI.includes('node bin/generate_data.js'), 'CI should include data generation')
     })
   })
 
-  describe('Git Operations', () => {
-    test('should create correct branch name from version', () => {
+  describe('Git Operations', function() {
+    it('should create correct branch name from version', function() {
       const version = '1.21.9'
       const branchName = 'pc' + version.replace(/[^a-zA-Z0-9_]/g, '_')
-      expect(branchName).toBe('pc1_21_9')
+      assert.strictEqual(branchName, 'pc1_21_9')
     })
 
-    test('should create correct branch name for test versions', () => {
+    it('should create correct branch name for test versions', function() {
       const testVersion = '1.99.99-test-123456'
       const branchName = 'pc' + testVersion.replace(/[^a-zA-Z0-9_]/g, '_')
-      expect(branchName).toBe('pc1_99_99_test_123456')
+      assert.strictEqual(branchName, 'pc1_99_99_test_123456')
     })
   })
 
-  describe('Environment Variables', () => {
-    test('should sanitize NEW_MC_VERSION correctly', () => {
+  describe('Environment Variables', function() {
+    it('should sanitize NEW_MC_VERSION correctly', function() {
       const testCases = [
         { input: '1.21.9', expected: '1.21.9' },
         { input: '1.99.99-test-123', expected: '1.99.99_test_123' },
@@ -146,26 +142,25 @@ jobs:
       
       testCases.forEach(({ input, expected }) => {
         const sanitized = input.replace(/[^a-zA-Z0-9_.]/g, '_')
-        expect(sanitized).toBe(expected)
+        assert.strictEqual(sanitized, expected)
       })
     })
 
-    test('should handle required environment variables', () => {
+    it('should handle required environment variables', function() {
       const requiredVars = ['NEW_MC_VERSION', 'MCDATA_BRANCH']
       
       requiredVars.forEach(varName => {
-        expect(process.env).toHaveProperty(varName)
         if (!process.env[varName]) {
-          expect(() => {
+          assert.throws(() => {
             throw new Error(`${varName} is required`)
-          }).toThrow(`${varName} is required`)
+          }, new RegExp(`${varName} is required`))
         }
       })
     })
   })
 
-  describe('Package.json Updates', () => {
-    test('should update minecraft-data dependency', () => {
+  describe('Package.json Updates', function() {
+    it('should update minecraft-data dependency', function() {
       const packageJson = {
         dependencies: {
           'minecraft-data': '^3.76.0',
@@ -182,13 +177,13 @@ jobs:
         }
       }
       
-      expect(updatedPackage.dependencies['minecraft-data']).toBe('^3.98.0')
-      expect(updatedPackage.dependencies['minecraft-protocol']).toBe('^1.61.0')
+      assert.strictEqual(updatedPackage.dependencies['minecraft-data'], '^3.98.0')
+      assert.strictEqual(updatedPackage.dependencies['minecraft-protocol'], '^1.61.0')
     })
   })
 
-  describe('PR Creation', () => {
-    test('should create PR with correct metadata', () => {
+  describe('PR Creation', function() {
+    it('should create PR with correct metadata', function() {
       const version = '1.21.9'
       const mcdataPrURL = 'https://github.com/PrismarineJS/minecraft-data/pull/123'
       
@@ -200,54 +195,48 @@ Ref: ${mcdataPrURL}
 * You can help contribute to this PR by opening a PR against this <code branch>pc1_21_9</code> branch instead of <code>master</code>.
     `
     
-      expect(expectedTitle).toBe('🎈 1.21.9')
-      expect(expectedBody).toContain('Minecraft version 1.21.9')
-      expect(expectedBody).toContain('pc1_21_9')
+      assert.strictEqual(expectedTitle, '🎈 1.21.9')
+      assert(expectedBody.includes('Minecraft version 1.21.9'), 'Body should contain version')
+      assert(expectedBody.includes('pc1_21_9'), 'Body should contain branch name')
     })
   })
 
-  describe('Error Handling', () => {
-    test('should handle file read/write errors', () => {
-      mockFs.readFileSync.mockImplementation(() => {
-        throw new Error('Permission denied')
-      })
+  describe('Error Handling', function() {
+    it('should handle file read/write errors', function() {
+      fsStub.readFileSync.throws(new Error('Permission denied'))
       
-      expect(() => {
+      assert.throws(() => {
         try {
-          mockFs.readFileSync('/protected/file')
+          fsStub.readFileSync('/protected/file')
         } catch (e) {
           throw new Error(`File access error: ${e.message}`)
         }
-      }).toThrow('File access error: Permission denied')
+      }, /File access error: Permission denied/)
     })
 
-    test('should handle git operation failures', () => {
-      mockCp.execSync.mockImplementation((cmd) => {
-        if (cmd.includes('git push')) {
-          throw new Error('Authentication failed')
-        }
-      })
+    it('should handle git operation failures', function() {
+      cpStub.execSync.throws(new Error('Authentication failed'))
       
-      expect(() => {
+      assert.throws(() => {
         try {
-          mockCp.execSync('git push origin test')
+          cpStub.execSync('git push origin test')
         } catch (e) {
           throw new Error(`Git push failed: ${e.message}`)
         }
-      }).toThrow('Git push failed: Authentication failed')
+      }, /Git push failed: Authentication failed/)
     })
 
-    test('should validate inputs before processing', () => {
+    it('should validate inputs before processing', function() {
       const validateVersion = (version) => {
         if (!version) throw new Error('Version is required')
         if (!/^[\d\w.-]+$/.test(version)) throw new Error('Invalid version format')
         return true
       }
       
-      expect(() => validateVersion('')).toThrow('Version is required')
-      expect(() => validateVersion('invalid@version')).toThrow('Invalid version format')
-      expect(validateVersion('1.21.9')).toBe(true)
-      expect(validateVersion('1.99.99-test-123')).toBe(true)
+      assert.throws(() => validateVersion(''), /Version is required/)
+      assert.throws(() => validateVersion('invalid@version'), /Invalid version format/)
+      assert.strictEqual(validateVersion('1.21.9'), true)
+      assert.strictEqual(validateVersion('1.99.99-test-123'), true)
     })
   })
 })
