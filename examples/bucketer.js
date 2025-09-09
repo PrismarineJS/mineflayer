@@ -1,7 +1,7 @@
 const mineflayer = require('mineflayer')
 
 // put the bot on grass, give it a water bucket, and say "water_bucket grass_block"
-// this just uses any item type on any target block, but is not bot.useOnBlock
+// this just uses any item type on any target block, but is not bot.activateBlock
 
 const bot = mineflayer.createBot({
   host: 'localhost',
