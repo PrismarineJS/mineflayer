@@ -4,34 +4,34 @@ const mineflayer = require('mineflayer')
 // this just uses any item type on any target block, but is not bot.useOnBlock
 
 const bot = mineflayer.createBot({
-    host: 'localhost',  
-    port: 55916,
-    username: 'bucket_bot',
-});
+  host: 'localhost',
+  port: 55916,
+  username: 'bucket_bot'
+})
 
 bot.on('login', async () => {
-    bot.on('chat', async (username, message) => {
-        if (username === 'bucket_bot') return;
-        const [tool_name, target_name] = message.split(' ');
-        // equip water bucket
-        let bucket = bot.inventory.items().find(item => item.name === tool_name);
-        if (!bucket) {
-            bot.chat('no ' + tool_name);
-            return;
-        }
-        await bot.equip(bucket, 'hand');
+  bot.on('chat', async (username, message) => {
+    if (username === 'bucket_bot') return
+    const [toolName, targetName] = message.split(' ')
+    // equip water bucket
+    const bucket = bot.inventory.items().find(item => item.name === toolName)
+    if (!bucket) {
+      bot.chat('no ' + toolName)
+      return
+    }
+    await bot.equip(bucket, 'hand')
 
-        let target = bot.findBlock({
-            matching: block => block.name === target_name.toLowerCase(),
-            maxDistance: 3
-        });
+    const target = bot.findBlock({
+      matching: block => block.name === targetName.toLowerCase(),
+      maxDistance: 3
+    })
 
-        if (!target) {
-            bot.chat('no target');
-            return;
-        }
+    if (!target) {
+      bot.chat('no target')
+      return
+    }
 
-        await bot.lookAt(target.position.offset(0.5, 0.5, 0.5))
-        await bot.activateItem() // dont use activateBlock
-    });
-});
+    await bot.lookAt(target.position.offset(0.5, 0.5, 0.5))
+    await bot.activateItem() // dont use activateBlock
+  })
+})
