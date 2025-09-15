@@ -1,3 +1,11 @@
+## 4.33.0
+* [Add update workflow (#3727)](https://github.com/PrismarineJS/mineflayer/commit/9c335366d435b58cfe45bbfbbc534b99ee669dc2) (thanks @extremeheat)
+* [Add support for Minecraft 1.21.8 (#3732)](https://github.com/PrismarineJS/mineflayer/commit/ec8220d7c63b72acb4bf16f30cdf4ba346b83f98) (thanks @rom1504)
+
+## 4.32.0
+* [1.21.6 (#3713)](https://github.com/PrismarineJS/mineflayer/commit/01f537c394fc78bf2e765b28a8b24a30c1d1fd2e) (thanks @extremeheat)
+* [Fix knockback physics crash (#3715)](https://github.com/PrismarineJS/mineflayer/commit/e3f89d17418ece9e9fac4b111d8243dfe1a5d376) (thanks @Omena0)
+
 ## 4.31.0
 * [Cursor 1 21 5 (#3701)](https://github.com/PrismarineJS/mineflayer/commit/8770129d26a85f9b077d2a8969d45436fa09c3f3) (thanks @rom1504)
 
