@@ -54,6 +54,9 @@ module.exports = () => async (bot) => {
         if (capturedPacket.yaw !== undefined && capturedPacket.pitch !== undefined) {
           console.log(`✅ FIXED: ${bot.version} correctly has yaw/pitch fields`)
           assert.ok(capturedPacket.rotation === undefined, 'rotation field should not exist in 1.21+ fixed version')
+        } else {
+          // This should not happen after the fix
+          assert.fail(`${bot.version} should have yaw/pitch fields after fix, but got: ${JSON.stringify(capturedPacket)}`)
         }
       } else {
         // Pre-1.21 should always use rotation format
