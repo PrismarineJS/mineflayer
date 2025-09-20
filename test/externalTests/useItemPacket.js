@@ -42,12 +42,16 @@ module.exports = () => async (bot) => {
         // New format: separate yaw and pitch fields
         assert.ok(typeof lastPacket.yaw === 'number', 'yaw should be a number in 1.21+')
         assert.ok(typeof lastPacket.pitch === 'number', 'pitch should be a number in 1.21+')
+        assert.strictEqual(lastPacket.yaw, 0, 'yaw should be 0')
+        assert.strictEqual(lastPacket.pitch, 0, 'pitch should be 0')
         assert.ok(lastPacket.rotation === undefined, 'rotation field should not exist in 1.21+')
       } else {
         // Old format: rotation object with x and y
         assert.ok(lastPacket.rotation !== undefined, 'rotation should exist in versions before 1.21')
         assert.ok(typeof lastPacket.rotation.x === 'number', 'rotation.x should be a number')
         assert.ok(typeof lastPacket.rotation.y === 'number', 'rotation.y should be a number')
+        assert.strictEqual(lastPacket.rotation.x, 0, 'rotation.x should be 0')
+        assert.strictEqual(lastPacket.rotation.y, 0, 'rotation.y should be 0')
         assert.ok(lastPacket.yaw === undefined, 'yaw field should not exist before 1.21')
         assert.ok(lastPacket.pitch === undefined, 'pitch field should not exist before 1.21')
       }
