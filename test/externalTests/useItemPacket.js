@@ -10,15 +10,13 @@ module.exports = () => async (bot) => {
   await bot.test.setInventorySlot(36, new Item(bot.registry.itemsByName.bread.id, 1, 0))
   await bot.test.becomeSurvival()
 
-  let packetSent = false
-  let lastPacket = null
+  const packetsReceived = []
 
   // Capture the use_item packet
   const originalWrite = bot._client.write
   bot._client.write = function (packetName, packet) {
     if (packetName === 'use_item') {
-      packetSent = true
-      lastPacket = packet
+      packetsReceived.push({ name: packetName, data: { ...packet } })
     }
     return originalWrite.call(this, packetName, packet)
   }
@@ -31,8 +29,9 @@ module.exports = () => async (bot) => {
     await bot.test.wait(100)
 
     if (bot.supportFeature('useItemWithOwnPacket')) {
-      assert.ok(packetSent, 'use_item packet should have been sent')
-      assert.ok(lastPacket, 'packet data should be captured')
+      assert.ok(packetsReceived.length > 0, 'use_item packet should have been sent')
+
+      const lastPacket = packetsReceived[packetsReceived.length - 1].data
 
       // Check packet structure based on version
       const versionParts = bot.version.split('.').map(Number)
@@ -55,6 +54,10 @@ module.exports = () => async (bot) => {
         assert.ok(lastPacket.yaw === undefined, 'yaw field should not exist before 1.21')
         assert.ok(lastPacket.pitch === undefined, 'pitch field should not exist before 1.21')
       }
+
+      // All packets should have required fields
+      assert.ok(typeof lastPacket.hand === 'number', 'hand should be a number')
+      assert.ok(typeof lastPacket.sequence === 'number', 'sequence should be a number')
     }
   } finally {
     // Restore original write function
