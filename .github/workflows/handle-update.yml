@@ -37,7 +37,7 @@ jobs:
         token: ${{ secrets.PAT_PASSWORD }}
 
     - name: Use Node.js 22.x
-      uses: actions/setup-node@v1.4.4
+      uses: actions/setup-node@v4
       with:
         node-version: 22.x
 
