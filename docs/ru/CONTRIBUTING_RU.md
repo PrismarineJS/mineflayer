@@ -21,6 +21,20 @@ Mineflayer имеет 2 вида тестов :
  
 Цель этих тестов - автоматически определить, что работает, а что нет в mineflayer, чтобы было проще заставить mineflayer работать.
 
+## Запуск тестов
+Вы можете запустить тесты для разных версий Minecraft, используя флаг `-g` в npm run mocha_test. Например:
+
+```bash
+# Запуск всех тестов для всех поддерживаемых версий
+npm run test
+
+# Запуск определённого теста для Minecraft 1.20.4
+npm run mocha_test -- -g "mineflayer_external 1.20.4v.*exampleBee"
+
+# Запуск всех тестов только для версии 1.20.4
+npm run mocha_test -- -g "mineflayer_external 1.20.4v"
+```
+
 ### Создание внешних тестов
 
 Для внешних тестов вам просто нужно создать файл в [test/externalTests](../../test/externalTests)
