@@ -1737,7 +1737,7 @@ const cow = bot.nearestEntity(entity => entity.name.toLowerCase() === 'cow') // 
 
 Возвращает число, которое используется методом `bot.removeChatPattern()` лишь для того, чтобы можно было удалить этот шаблон.
 
- - :eyes: cf. [examples/chat_parsing](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chat_parsing.js#L17-L36)
+ - :eyes: см. [examples/chat_parsing](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chat_parsing.js#L17-L36)
 
 #### bot.addChatPatternSet(name, patterns, chatPatternOptions)
 
@@ -1751,7 +1751,7 @@ const cow = bot.nearestEntity(entity => entity.name.toLowerCase() === 'cow') // 
 
 Возвращает число, которое используется методом `bot.removeChatPattern()` лишь для того, чтобы можно было удалить этот шаблон.
 
- - :eyes: cf. [examples/chat_parsing](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chat_parsing.js#L17-L36)
+ - :eyes: см. [examples/chat_parsing](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chat_parsing.js#L17-L36)
 
 #### bot.removeChatPattern(name)
 
