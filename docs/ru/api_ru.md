@@ -1271,8 +1271,8 @@ UUID существа, который определяется боссом.
 
 Срабатывает, когда сервер отправляет текст по центру экрана.
 
-* `title` - Текст на экране.
-* `type` - Тип текста "subtitle" или "title"
+ * `title` - Текст на экране.
+ * `type` - Тип текста "subtitle" или "title"
 
 #### "title_times" (fadeIn, stay, fadeOut)
 
@@ -2154,17 +2154,17 @@ bot.once('login', () => {
   
 Поддержка mode:
   - стабильно:
-    - mouse clicks (0)
+    - клик мышью (0)
 
   - экспериментально:
-    - shift clicks (1)
-    - number clicks (2)
-    - middle clicks (3)
-    - drop clicks (4)
+    - клик с шифтом (1)
+    - клик цифрой (2)
+    - клик колёсиком (3)
+    - выкидывающий клик (4)
 
   - не реализовано:
-    - drag clicks (5)
-    - double clicks (6)
+    - драг клик (5)
+    - двойной клик (6)
 
 Нажимает на текущее окно. Подробнее - https://minecraft.wiki/w/Protocol#Click_Container
 
