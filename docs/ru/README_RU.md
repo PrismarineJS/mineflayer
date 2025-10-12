@@ -244,7 +244,7 @@ Mineflayer поддерживает сторонние плагины. Любо�
  * [Chaoscraft](https://github.com/schematical/chaoscraft) - Бот Minecraft, использующий генетические алгоритмы, посмотрите [эти видео](https://www.youtube.com/playlist?list=PLLkpLgU9B5xJ7Qy4kOyBJl5J6zsDIMceH)
  * [hexatester/minetelegram](https://github.com/hexatester/minetelegram) - Мост между Minecraft и Telegram, созданный при помощи Mineflayer & Telegraf
  * [PrismarineJS/mineflayer-builder](https://github.com/PrismarineJS/mineflayer-builder) - Строит схемы в режиме выживания, сохраняя направление
- * [SilkePilon/OpenDeliveryBot](https://github.com/SilkePilon/OpenDeliveryBot) - Minecraft бот на питоне для переноса вещей с места на место.
+ * [SilkePilon/OpenDeliveryBot](https://github.com/SilkePilon/OpenDeliveryBot) - Minecraft бот на Python для переноса вещей с места на место.
  * [и многие другие](https://github.com/PrismarineJS/mineflayer/network/dependents) - Все проекты, обнаруженные GitHub, в которых используется Mineflayer
 
 
