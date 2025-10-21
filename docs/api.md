@@ -1996,12 +1996,15 @@ This function returns a `Promise`, with `void` as its argument when fishing ends
 Use fishing rod
 
 
-#### bot.activateItem(offHand=false)
+#### bot.activateItem(offHand=false, degX=0, degY=0)
 
 Activates the currently held item. This is how you eat, shoot bows, throw an
 egg, activate firework rockets, etc.
 
-Optional parameter is `false` for main hand and `true` for off hand.
+Optional parameters are
+* `false` for main hand and `true` for off hand.
+* degX degree on X direction, ranging from -180 to 180
+* degY degree on Y direction, ranging from -90 to 90
 
 #### bot.deactivateItem()
 
