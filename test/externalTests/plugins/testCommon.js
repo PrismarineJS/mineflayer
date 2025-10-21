@@ -91,6 +91,19 @@ function inject (bot) {
     await teleport(new Vec3(0, bot.test.groundY, 0))
     await bot.waitForChunksToLoad()
     await resetBlocksToSuperflat()
+    // Reset weather and time
+    bot.chat('/weather clear')
+    bot.chat('/time set day')
+    // Reset health and food
+    bot.chat('/effect clear @a')
+    bot.chat('/effect clear @p')
+    bot.chat('/attribute @p minecraft:generic.max_health base set 20')
+    bot.chat('/effect give @p minecraft:saturation 1 20 true')
+    bot.chat('/gamerule doDaylightCycle true')
+    bot.chat('/gamerule doWeatherCycle true')
+    bot.chat('/difficulty peaceful')
+    // Ensure OP status for the bot
+    bot.chat(`/op ${bot.username}`)
     await sleep(1000)
     await clearInventory()
   }
