@@ -837,7 +837,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
 
           const originalExtractSkinInformation = bot._client.extractSkinInformation
-          bot._client.extractSkinInformation = (props) => {
+          const skinTexture = bot._client.extractSkinInformation = (props) => {
             const skinTextureMSON = mojangson.parse(Buffer.from(props.textures.value, 'base64').toString('utf8'))
             const skinTexture = JSON.parse(skinTextureMSON)
             return skinTexture
