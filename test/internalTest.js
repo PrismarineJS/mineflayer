@@ -823,7 +823,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
 
-      it('should correctly parse malformed skin texture JSON'), function (done) {
+      it('should correctly parse malformed skin texture JSON', function (done) {
         const malformedJson = '{textures:{SKIN:{url:"http://textures.minecraft.net/texture/b67168621fdb0cf3f7e57cb5166d48e9e9c87d677494339f3b8feec8c3a36b"}}}'
 
         server.on('playerJoin', (client) => {
@@ -864,7 +864,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }, done)
         })
       }
-    })
+    )
 
     it('bed', (done) => {
       const blocks = bot.registry.blocksByName
