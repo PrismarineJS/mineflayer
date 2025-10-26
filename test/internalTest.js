@@ -7,6 +7,7 @@ const assert = require('assert')
 const { sleep } = require('../lib/promise_utils')
 const nbt = require('prismarine-nbt')
 const { once } = require('../lib/promise_utils')
+const mojangson = require('mojangson')
 
 for (const supportedVersion of mineflayer.testedVersions) {
   const registry = require('prismarine-registry')(supportedVersion)
@@ -823,7 +824,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
 
       it('should correctly parse malformed skin texture JSON'), function (done) {
-        const malformedJson = '{textures:{SKIN:{url:\"http://textures.minecraft.net/texture/b67168621fdb0cf3f7e57cb5166d48e9e9c87d677494339f3b8feec8c3a36b\"}}}'
+        const malformedJson = '{textures:{SKIN:{url:"http://textures.minecraft.net/texture/b67168621fdb0cf3f7e57cb5166d48e9e9c87d677494339f3b8feec8c3a36b"}}}'
 
         server.on('playerJoin', (client) => {
           const loginPacket = bot.test.generateLoginPacket()
@@ -833,16 +834,12 @@ for (const supportedVersion of mineflayer.testedVersions) {
             textures: {
               value: Buffer.from(malformedJson, 'utf8').toString('base64')
             }
-          };
+          }
 
           const originalExtractSkinInformation = bot._client.extractSkinInformation
           bot._client.extractSkinInformation = (props) => {
-            const skinTextureString = Buffer.from(props.textures.value, 'base64').toString('utf8')
-              .split('{textures:').join('{\"textures\":')
-              .split('{SKIN:').join('{\"SKIN\":')
-              .split('{url:').join('{\"url\":')
-
-            const skinTexture = JSON.parse(skinTextureString)
+            const skinTextureMSON = mojangson.parse(Buffer.from(props.textures.value, 'base64').toString('utf8'))
+            const skinTexture = JSON.parse(skinTextureMSON)
             return skinTexture
           }
 
@@ -862,7 +859,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           bot._client.extractSkinInformation = originalExtractSkinInformation
 
           assert.doesNotThrow(() => {
-            const skinTexture = bot.players['testPlayer'].skinTexture
+            const skinTexture = bot.players.testPlayer.skinTexture
             assert.strictEqual(skinTexture.textures.SKIN.url, 'http://textures.minecraft.net/texture/b67168621fdb0cf3f7e57cb5166d48e9e9c87d677494339f3b8feec8c3a36b')
           }, done)
         })
