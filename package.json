@@ -37,6 +37,7 @@
     "prismarine-world": "^3.6.0",
     "protodef": "^1.18.0",
     "typed-emitter": "^1.0.0",
+    "uuid-1345": "^1.0.2",
     "vec3": "^0.1.7"
   },
   "devDependencies": {
