@@ -66,7 +66,6 @@ module.exports = () => async (bot) => {
     const noteBlockName = bot.supportFeature('noteBlockNameIsNoteBlock') ? 'note_block' : 'noteblock'
 
     return retry(async () => {
-      await bot.test.setBlock({ x: pos.x, y: pos.y + 1, z: pos.z, blockName: 'air', relative: false })
       await bot.test.setBlock({ x: pos.x, y: pos.y, z: pos.z, blockName: noteBlockName, relative: false })
       await new Promise(resolve => setTimeout(resolve, 250))
 
