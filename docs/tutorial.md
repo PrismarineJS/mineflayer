@@ -576,14 +576,14 @@ Here we're creating a bot that answer 'hello' from the other player.
 
 ```js
 bot.addChatPattern(
-    'hello',
-    /(helo|hello|Hello)/,
-    'Someone says hello'
-);
+  'hello',
+  /(helo|hello|Hello)/,
+  'Someone says hello'
+)
 
 const hi = () => {
-    bot.chat('Hi!')
-};
+  bot.chat('Hi!')
+}
 
 bot.on('chat:hello', hi)
 ```
