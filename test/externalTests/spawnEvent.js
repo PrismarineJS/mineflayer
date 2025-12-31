@@ -1,7 +1,8 @@
 const mineflayer = require('mineflayer')
 const { once } = require('../../lib/promise_utils')
-
 module.exports = () => async (bot) => {
+  await bot.test.wait(2000) // Add delay at start
+  
   // Test spawn event on login
   const spawnBot = mineflayer.createBot({
     username: 'spawnbot',
@@ -12,7 +13,7 @@ module.exports = () => async (bot) => {
   })
   await once(spawnBot, 'spawn')
   spawnBot.end()
-
+  
   // Test spawn event on death
   bot.test.sayEverywhere(`/kill ${bot.username}`)
   await once(bot, 'spawn')

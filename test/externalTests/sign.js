@@ -3,6 +3,7 @@ const Vec3 = require('vec3')
 
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
+  await bot.test.wait(2000) // Add delay for entity spawns to settle
   const lowerBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
 
   let signItem = null

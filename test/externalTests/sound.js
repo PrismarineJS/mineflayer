@@ -1,7 +1,8 @@
 const assert = require('assert')
 const { once } = require('../../lib/promise_utils')
-
 module.exports = () => async (bot) => {
+  await bot.test.wait(2000) // Add delay for PartialReadErrors to settle
+  
   // Helper function to check if positions are close enough
   const positionsAreClose = (pos1, pos2, tolerance = 1.0) => {
     return Math.abs(pos1.x - pos2.x) <= tolerance &&

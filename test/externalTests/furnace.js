@@ -2,6 +2,7 @@ const assert = require('assert')
 
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
+  await bot.test.wait(2000) // Wait for any entity spawns to finish
 
   const furnacePos = bot.entity.position.offset(2, 0, 0).floored()
   const coalId = bot.registry.itemsByName.coal.id

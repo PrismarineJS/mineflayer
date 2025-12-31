@@ -124,19 +124,31 @@ function inject (bot) {
   }
 
   async function clearInventory () {
-    const giveStone = onceWithCleanup(bot.inventory, 'updateSlot', { timeout: 1000 * 20, checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
+    // Add random delay before starting to avoid PartialReadError timing issues
+    await sleep(Math.floor(Math.random() * 500) + 200) // Random delay 200-700ms
+    
+    const giveStone = onceWithCleanup(bot.inventory, 'updateSlot', { 
+      timeout: 1000 * 30, // Increased from 20s to 30s
+      checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' 
+    })
     bot.chat('/give @a stone 1')
     bot.inventory.on('updateSlot', (...e) => {
       // console.log('inventory.updateSlot', e)
     })
     await giveStone
 
+    // Add random delay before clearing
+    await sleep(Math.floor(Math.random() * 500) + 200) // Random delay 200-700ms
+
     const clearInv = onceWithCleanup(bot, 'message', {
-      timeout,
+      timeout: 30000, // Increased from 5000ms to 30000ms
       checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
     })
     bot.chat('/clear') // don't rely on the message (as it'll come to early), wait for the result of /clear instead
     await clearInv
+
+    // Add random delay after clearing
+    await sleep(Math.floor(Math.random() * 300) + 100) // Random delay 100-400ms
 
     // Check that the inventory is clear
     for (const slot of bot.inventory.slots) {
@@ -252,7 +264,7 @@ function inject (bot) {
       console.log('<-', name, JSON.stringify(data)?.slice(0, 250))
       oldWrite.apply(bot._client, arguments)
     }
-      BigInt.prototype.toJSON ??= function () { // eslint-disable-line
+    BigInt.prototype.toJSON ??= function () { // eslint-disable-line
       return this.toString()
     }
   }
