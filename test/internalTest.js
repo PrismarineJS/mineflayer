@@ -21,18 +21,15 @@ for (const supportedVersion of mineflayer.testedVersions) {
       : JSON.stringify({ text })
   }
 
-  function generateChunkPacket (chunk) {
+  function generateChunkPacket (chunk, minecraftVersion) {
     const lights = chunk.dumpLight()
-
     // Skip biomes for 1.21.9+ to avoid "bits per biome too big" error
-    // The biome format changed and empty chunks cause validation errors
     let biomesData
     try {
-      biomesData = (chunk.dumpBiomes !== undefined && registry.version['<']('1.21.9'))
+      biomesData = (chunk.dumpBiomes !== undefined && minecraftVersion['<']('1.21.9'))
         ? chunk.dumpBiomes()
         : undefined
     } catch (e) {
-    // If dumpBiomes fails, just skip it
       biomesData = undefined
     }
 
@@ -47,7 +44,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         value: {
           MOTION_BLOCKING: { type: 'longArray', value: new Array(36).fill([0, 0]) }
         }
-      }, // send fake heightmap
+      },
       bitMap: chunk.getMask(),
       chunkData: chunk.dump(),
       blockEntities: [],
@@ -254,7 +251,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         client.write('login', bot.test.generateLoginPacket())
         const chunk = bot.test.buildChunk()
         chunk.setBlockType(pos, goldId)
-        client.write('map_chunk', generateChunkPacket(chunk))
+        client.write('map_chunk', generateChunkPacket(chunk, version))
       })
     })
 
@@ -302,7 +299,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           await client.write('login', bot.test.generateLoginPacket())
           const chunk = bot.test.buildChunk()
           chunk.setBlockType(pos, goldId)
-          await client.write('map_chunk', generateChunkPacket(chunk))
+          await client.write('map_chunk', generateChunkPacket(chunk, version))
 
           await once(bot, 'chunkColumnLoad')
 
@@ -377,7 +374,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           const chunk = bot.test.buildChunk()
 
           chunk.setBlockType(pos, goldId)
-          client.write('map_chunk', generateChunkPacket(chunk))
+          client.write('map_chunk', generateChunkPacket(chunk, version))
           client.write('position', {
             x: 1.5,
             y: 80,
@@ -437,7 +434,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         }
         const chunk = bot.test.buildChunk()
         chunk.setBlockType(pos, goldId)
-        const chunkPacket = generateChunkPacket(chunk)
+        const chunkPacket = generateChunkPacket(chunk, version)
         const positionPacket = {
           x: 1.5,
           y: 80,
@@ -941,7 +938,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           metadata: []
         })
 
-        client.write('map_chunk', generateChunkPacket(chunk))
+        client.write('map_chunk', generateChunkPacket(chunk, version))
       })
     })
 
