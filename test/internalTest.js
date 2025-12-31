@@ -247,11 +247,12 @@ for (const supportedVersion of mineflayer.testedVersions) {
         assert.strictEqual(bot.blockAt(pos).type, goldId)
         done()
       })
-      server.on('playerJoin', (client) => {
-        client.write('login', bot.test.generateLoginPacket())
+      server.on('playerJoin', async (client) => {
+        await client.write('login', bot.test.generateLoginPacket())
+        await sleep(500) // CI needs time to process login
         const chunk = bot.test.buildChunk()
         chunk.setBlockType(pos, goldId)
-        client.write('map_chunk', generateChunkPacket(chunk, version))
+        await client.write('map_chunk', generateChunkPacket(chunk, version))
       })
     })
 
@@ -873,10 +874,11 @@ for (const supportedVersion of mineflayer.testedVersions) {
         done()
       })
 
-      server.once('playerJoin', (client) => {
+      server.once('playerJoin', async (client) => {
         bot.time.timeOfDay = 18000
         const loginPacket = bot.test.generateLoginPacket()
-        client.write('login', loginPacket)
+        await client.write('login', loginPacket)
+        await sleep(500) // CI needs time to process login
 
         const chunk = bot.test.buildChunk()
 
@@ -886,32 +888,32 @@ for (const supportedVersion of mineflayer.testedVersions) {
         }
 
         if (bot.supportFeature('blockStateId', version.majorVersion)) {
-          chunk.setBlockStateId(beds[0].foot, 3 + bedBlock.minStateId) // { facing: north, occupied: false, part: foot }
-          chunk.setBlockStateId(beds[0].head, 2 + bedBlock.minStateId) // { facing:north, occupied: false, part: head }
+          chunk.setBlockStateId(beds[0].foot, 3 + bedBlock.minStateId)
+          chunk.setBlockStateId(beds[0].head, 2 + bedBlock.minStateId)
 
-          chunk.setBlockStateId(beds[1].foot, 15 + bedBlock.minStateId) // { facing: east, occupied:false, part:foot }
-          chunk.setBlockStateId(beds[1].head, 14 + bedBlock.minStateId) // { facing: east, occupied: false, part: head }
+          chunk.setBlockStateId(beds[1].foot, 15 + bedBlock.minStateId)
+          chunk.setBlockStateId(beds[1].head, 14 + bedBlock.minStateId)
 
-          chunk.setBlockStateId(beds[2].foot, 7 + bedBlock.minStateId) // { facing: south, occupied: false, part: foot }
-          chunk.setBlockStateId(beds[2].head, 6 + bedBlock.minStateId) // { facing: south, occupied: false, part: head }
+          chunk.setBlockStateId(beds[2].foot, 7 + bedBlock.minStateId)
+          chunk.setBlockStateId(beds[2].head, 6 + bedBlock.minStateId)
 
-          chunk.setBlockStateId(beds[3].foot, 11 + bedBlock.minStateId) // { facing: west, occupied: false, part: foot }
-          chunk.setBlockStateId(beds[3].head, 10 + bedBlock.minStateId) // { facing: west, occupied: false, part: head }
+          chunk.setBlockStateId(beds[3].foot, 11 + bedBlock.minStateId)
+          chunk.setBlockStateId(beds[3].head, 10 + bedBlock.minStateId)
         } else if (bot.supportFeature('blockMetadata', version.majorVersion)) {
-          chunk.setBlockData(beds[0].foot, 2) // { facing: north, occupied: false, part: foot }
-          chunk.setBlockData(beds[0].head, 10) // { facing:north, occupied: false, part: head }
+          chunk.setBlockData(beds[0].foot, 2)
+          chunk.setBlockData(beds[0].head, 10)
 
-          chunk.setBlockData(beds[1].foot, 3) // { facing: east, occupied:false, part:foot }
-          chunk.setBlockData(beds[1].head, 11) // { facing: east, occupied: false, part: head }
+          chunk.setBlockData(beds[1].foot, 3)
+          chunk.setBlockData(beds[1].head, 11)
 
-          chunk.setBlockData(beds[2].foot, 0) // { facing: south, occupied: false, part: foot }
-          chunk.setBlockData(beds[2].head, 8) // { facing: south, occupied: false, part: head }
+          chunk.setBlockData(beds[2].foot, 0)
+          chunk.setBlockData(beds[2].head, 8)
 
-          chunk.setBlockData(beds[3].foot, 1) // { facing: west, occupied: false, part: foot }
-          chunk.setBlockData(beds[3].head, 9) // { facing: west, occupied: false, part: head }
+          chunk.setBlockData(beds[3].foot, 1)
+          chunk.setBlockData(beds[3].head, 9)
         }
 
-        client.write('position', {
+        await client.write('position', {
           x: playerPos.x,
           y: playerPos.y,
           z: playerPos.z,
@@ -921,7 +923,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           teleportId: 1
         })
 
-        client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
+        await client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
           entityId: 8,
           entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
           objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
@@ -938,7 +940,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           metadata: []
         })
 
-        client.write('map_chunk', generateChunkPacket(chunk, version))
+        await client.write('map_chunk', generateChunkPacket(chunk, version))
       })
     })
 
