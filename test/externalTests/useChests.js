@@ -147,27 +147,27 @@ module.exports = () => async (bot) => {
   }
 
   async function createRandomLayout (window, slotPopulationFactor) {
-  await bot.test.becomeCreative()
+    await bot.test.becomeCreative()
 
-  for (let slot = 0; slot < window.inventoryStart; slot++) {
-    if (Math.random() < slotPopulationFactor) {
-      await bot.test.wait(Math.floor(Math.random() * 500) + 200) // Random delay 200-700ms
-      
-      const randomItem = getRandomStackableItem()
-      const item = bot.registry.itemsByName[randomItem]
-      bot.chat(`/give ${bot.username} ${item.name} ${Math.ceil(Math.random() * item.stackSize)}`)
-      await onceWithCleanup(window, 'updateSlot', {
-        timeout: 5000,
-        checkCondition: (slot, oldItem, newItem) => slot === window.hotbarStart && newItem?.name === item.name
-      })
+    for (let slot = 0; slot < window.inventoryStart; slot++) {
+      if (Math.random() < slotPopulationFactor) {
+        await bot.test.wait(Math.floor(Math.random() * 500) + 200) // Random delay 200-700ms
 
-      await bot.moveSlotItem(window.hotbarStart, slot)
-      await bot.test.wait(Math.floor(Math.random() * 300) + 100) // Another random delay 100-400ms
+        const randomItem = getRandomStackableItem()
+        const item = bot.registry.itemsByName[randomItem]
+        bot.chat(`/give ${bot.username} ${item.name} ${Math.ceil(Math.random() * item.stackSize)}`)
+        await onceWithCleanup(window, 'updateSlot', {
+          timeout: 5000,
+          checkCondition: (slot, oldItem, newItem) => slot === window.hotbarStart && newItem?.name === item.name
+        })
+
+        await bot.moveSlotItem(window.hotbarStart, slot)
+        await bot.test.wait(Math.floor(Math.random() * 300) + 100) // Another random delay 100-400ms
+      }
     }
-  }
 
-  await bot.test.becomeSurvival()
-}
+    await bot.test.becomeSurvival()
+  }
 
   async function testMouseClick (window, clicks) {
     let iterations = 0

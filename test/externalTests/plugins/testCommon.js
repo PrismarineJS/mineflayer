@@ -126,10 +126,10 @@ function inject (bot) {
   async function clearInventory () {
     // Add random delay before starting to avoid PartialReadError timing issues
     await sleep(Math.floor(Math.random() * 500) + 200) // Random delay 200-700ms
-    
-    const giveStone = onceWithCleanup(bot.inventory, 'updateSlot', { 
+
+    const giveStone = onceWithCleanup(bot.inventory, 'updateSlot', {
       timeout: 1000 * 30, // Increased from 20s to 30s
-      checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' 
+      checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone'
     })
     bot.chat('/give @a stone 1')
     bot.inventory.on('updateSlot', (...e) => {

@@ -51,7 +51,7 @@ module.exports = () => async (bot) => {
   await bot.test.wait(1000)
   const craftingTable = bot.findBlock({ matching: blocksByName.crafting_table.id })
   await bot.craft(bot.recipesFor(itemsByName.ladder.id, null, null, true)[0], 1, craftingTable)
-  
+
   // Close the crafting table window to clean up
   if (bot.currentWindow) {
     bot.closeWindow(bot.currentWindow)
