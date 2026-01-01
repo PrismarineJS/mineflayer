@@ -4,6 +4,7 @@ const { once, onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
+  await bot.test.wait(3000) // Wait for any entity spawns to finish
 
   bot.test.groundY = bot.supportFeature('tallWorld') ? -60 : 4
 

@@ -1,4 +1,4 @@
-# Mineflayer
+﻿# Mineflayer
 
 [![NPM version](https://img.shields.io/npm/v/mineflayer.svg?color=success&label=npm%20package&logo=npm)](https://www.npmjs.com/package/mineflayer)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/PrismarineJS/mineflayer/ci.yml.svg?label=CI&logo=github&logoColor=lightgrey)](https://github.com/PrismarineJS/mineflayer/actions?query=workflow%3A%22CI%22)
@@ -8,7 +8,7 @@
 
 [![Official Discord](https://img.shields.io/static/v1.svg?label=OFFICIAL&message=DISCORD&color=blue&logo=discord&style=for-the-badge)](https://discord.gg/GsEFRM8)
 
-| <sub>EN</sub> [English](README.md) | <sub>RU</sub> [русский](ru/README_RU.md) | <sub>ES</sub> [Español](es/README_ES.md) | <sub>FR</sub> [Français](fr/README_FR.md) | <sub>TR</sub> [Türkçe](tr/README_TR.md) | <sub>ZH</sub> [中文](zh/README_ZH_CN.md) | <sub>BR</sub> [Português](br/README_BR.md) |
+| <sub>EN</sub> [English](README.md) | <sub>RU</sub> [Ñ€ÑƒÑÑÐºÐ¸Ð¹](ru/README_RU.md) | <sub>ES</sub> [EspaÃ±ol](es/README_ES.md) | <sub>FR</sub> [FranÃ§ais](fr/README_FR.md) | <sub>TR</sub> [TÃ¼rkÃ§e](tr/README_TR.md) | <sub>ZH</sub> [ä¸­æ–‡](zh/README_ZH_CN.md) | <sub>BR</sub> [PortuguÃªs](br/README_BR.md) |
 |-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|-------------------------|--------------------|
 
 Create Minecraft bots with a powerful, stable, and high level JavaScript [API](api.md), also usable from Python.
@@ -17,7 +17,7 @@ First time using Node.js? You may want to start with the [tutorial](tutorial.md)
 
 ## Features
 
- * Supports Minecraft 1.8 to 1.21.8 (1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19, 1.20, 1.21.8) <!--version-->
+ * Supports Minecraft 1.8 to 1.21.11 (1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19, 1.20, 1.21.8, 1.21.9, 1.21.10, 1.21.11) <!--version-->
  * Entity knowledge and tracking.
  * Block knowledge. You can query the world around you. Milliseconds to find any block.
  * Physics and movement - handle all bounding boxes
@@ -159,7 +159,7 @@ A lot of the active development is happening inside of small npm packages which 
 
 #### The Node Way&trade;
 
-> "When applications are done well, they are just the really application-specific, brackish residue that can't be so easily abstracted away. All the nice, reusable components sublimate away onto github and npm where everybody can collaborate to advance the commons." — substack from ["how I write modules"](https://gist.github.com/substack/5075355)
+> "When applications are done well, they are just the really application-specific, brackish residue that can't be so easily abstracted away. All the nice, reusable components sublimate away onto github and npm where everybody can collaborate to advance the commons." â€” substack from ["how I write modules"](https://gist.github.com/substack/5075355)
 
 #### Modules
 
@@ -290,3 +290,5 @@ to run the block finder test for 1.18.1
 ## License
 
 [MIT](/LICENSE)
+
+

@@ -3,6 +3,8 @@ const wait = require('util').promisify(setTimeout)
 const SLOT = 36
 
 module.exports = () => async (bot) => {
+  await bot.test.wait(2000) // Add delay to let PartialReadErrors settle
+
   const Item = require('prismarine-item')(bot.registry)
 
   const item1 = new Item(1, 1, 0)

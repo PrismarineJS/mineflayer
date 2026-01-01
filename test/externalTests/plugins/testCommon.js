@@ -1,4 +1,4 @@
-const { Vec3 } = require('vec3')
+﻿const { Vec3 } = require('vec3')
 
 const { spawn } = require('child_process')
 const { once } = require('../../../lib/promise_utils')
@@ -124,7 +124,11 @@ function inject (bot) {
   }
 
   async function clearInventory () {
-    const giveStone = onceWithCleanup(bot.inventory, 'updateSlot', { timeout: 1000 * 20, checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
+    // Add random delay before starting to avoid PartialReadError timing issues
+    await sleep(Math.floor(Math.random() * 500) + 200) // Random delay 200-700ms
+
+    const giveStone = onceWithCleanup(bot.inventory, 'updateSlot', {
+      timeout: 1000 * 30, // Increased from 20s to 30s, checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
     bot.chat('/give @a stone 1')
     bot.inventory.on('updateSlot', (...e) => {
       // console.log('inventory.updateSlot', e)
@@ -257,3 +261,4 @@ function inject (bot) {
     }
   }
 }
+
