@@ -124,23 +124,48 @@ function inject (bot) {
   }
 
   async function clearInventory () {
-    const giveStone = onceWithCleanup(bot.inventory, 'updateSlot', { timeout: 1000 * 20, checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
-    bot.chat('/give @a stone 1')
-    bot.inventory.on('updateSlot', (...e) => {
-      // console.log('inventory.updateSlot', e)
-    })
-    await giveStone
+    // Run /clear multiple times to ensure everything is cleared
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const clearInv = onceWithCleanup(bot, 'message', {
+        timeout,
+        checkCondition: msg => {
+          const translate = msg.translate || ''
+          return translate.includes('clear') && translate.includes('success')
+        }
+      })
+      bot.chat('/clear')
 
-    const clearInv = onceWithCleanup(bot, 'message', {
-      timeout,
-      checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
-    })
-    bot.chat('/clear') // don't rely on the message (as it'll come to early), wait for the result of /clear instead
-    await clearInv
+      try {
+        await clearInv
+      } catch (err) {
+        // If clear times out, check if inventory is already empty
+        const hasItems = bot.inventory.slots.some(slot => slot && slot.itemCount > 0)
+        if (!hasItems) {
+          break // Inventory is clear, we're done
+        }
+        if (attempt === 4) {
+          throw err // Re-throw on final attempt
+        }
+      }
 
-    // Check that the inventory is clear
-    for (const slot of bot.inventory.slots) {
-      if (slot && slot.itemCount <= 0) throw new Error('Inventory was not cleared: ' + JSON.stringify(bot.inventory.slots))
+      // Check if inventory is now clear
+      await sleep(200) // Longer delay to let updates propagate
+      const hasItems = bot.inventory.slots.some(slot => slot && slot.itemCount > 0)
+      if (!hasItems) {
+        break // Successfully cleared
+      }
+    }
+
+    // Additional wait and final clear to catch any stragglers
+    await sleep(300)
+    bot.chat('/clear')
+    await sleep(200)
+
+    // Final verification
+    const hasItems = bot.inventory.slots.some(slot => slot && slot.itemCount > 0)
+    if (hasItems) {
+      const items = bot.inventory.slots.filter(s => s).map((s, i) => `slot ${i}: ${s.name} x${s.itemCount}`)
+      throw new Error('Inventory was not cleared after 5 attempts: ' + items.join(', '))
     }
   }
 
@@ -187,7 +212,7 @@ function inject (bot) {
 
     const detectChildJoin = async () => {
       const [message] = await onceWithCleanup(bot, 'message', {
-        timeout,
+        timeout: 15000, // Increased timeout for child process to connect
         checkCondition: message => message.json.translate === 'multiplayer.player.joined'
       })
       childBotName = message.json.with[0].insertion
@@ -204,7 +229,8 @@ function inject (bot) {
       return run(childBotName)
     }
 
-    const child = spawn('node', [file, '127.0.0.1', `${bot.test.port}`])
+    // Pass version to child process so it can connect with correct protocol
+    const child = spawn('node', [file, '127.0.0.1', `${bot.test.port}`, '', '', bot.version])
 
     // Useful to debug child processes:
     child.stdout.on('data', (data) => { console.log(`${data}`) })

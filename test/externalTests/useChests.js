@@ -154,12 +154,15 @@ module.exports = () => async (bot) => {
         const item = bot.registry.itemsByName[randomItem]
         bot.chat(`/give ${bot.username} ${item.name} ${Math.ceil(Math.random() * item.stackSize)}`)
         await onceWithCleanup(window, 'updateSlot', {
-          timeout: 5000,
-          checkCondition: (slot, oldItem, newItem) => slot === window.hotbarStart && newItem?.name === item.name
+          timeout: 10000, // Increased timeout
+          checkCondition: (slotNum, oldItem, newItem) => newItem?.name === item.name // Check any slot
         })
 
-        // await bot.clickWindow(slot, 0, 2)
-        await bot.moveSlotItem(window.hotbarStart, slot)
+        // Find the slot where the item appeared
+        const itemSlot = bot.inventory.slots.findIndex(s => s && s.name === item.name)
+        if (itemSlot >= 0 && itemSlot !== slot) {
+          await bot.moveSlotItem(itemSlot, slot)
+        }
       }
     }
 

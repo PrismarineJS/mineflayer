@@ -46,7 +46,10 @@ module.exports = () => async (bot) => {
   assert.strictEqual(bot.inventory.slots[SLOT].type, 4)
   await bot.creative.clearSlot(SLOT)
   assert.strictEqual(bot.inventory.slots[SLOT], null)
-  // clear inventory
+  // clear inventory first to ensure clean state
+  await bot.creative.clearInventory()
+  await new Promise(resolve => setTimeout(resolve, 100))
+  // then set 9 items
   for (let i = 0; i < 9; i++) {
     await bot.creative.setInventorySlot(36 + i, new Item(1, 1, 0))
   }

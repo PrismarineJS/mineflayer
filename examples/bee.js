@@ -1,7 +1,7 @@
 const mineflayer = require('mineflayer')
 
-if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node bee.js <host> <port> [<name>] [<password>]')
+if (process.argv.length < 4 || process.argv.length > 7) {
+  console.log('Usage : node bee.js <host> <port> [<name>] [<password>] [<version>]')
   process.exit(1)
 }
 
@@ -10,6 +10,7 @@ const bot = mineflayer.createBot({
   port: parseInt(process.argv[3]),
   username: process.argv[4] ? process.argv[4] : 'bee',
   password: process.argv[5],
+  version: process.argv[6] || false, // Use specified version or auto-detect
   verbose: true
 })
 

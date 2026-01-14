@@ -21,6 +21,62 @@ for (const supportedVersion of mineflayer.testedVersions) {
       : JSON.stringify({ text })
   }
 
+  // Helper to create spawn_entity packet data for versions that use restBuffer
+  function createSpawnEntityPacket (data) {
+    if (!registry.supportFeature('consolidatedEntitySpawnPacket')) {
+      return data // Old versions use spawn_entity_living with explicit fields
+    }
+
+    // Check if protocol uses restBuffer for movement (1.21.9+)
+    if (registry.version['>=']('1.21.9')) {
+      // Create movement buffer containing: pitch, yaw, headPitch, objectData (varint), velocityX, velocityY, velocityZ
+      // All angles are u8, velocities are i16
+      const buffers = []
+
+      // Angles
+      const angleBuf = Buffer.allocUnsafe(3)
+      angleBuf.writeUInt8(data.pitch || 0, 0)
+      angleBuf.writeUInt8(data.yaw || 0, 1)
+      angleBuf.writeUInt8(data.headPitch || 0, 2)
+      buffers.push(angleBuf)
+
+      // objectData as varint (usually 0 or 1)
+      // Simple varint encoding for small numbers
+      const objectData = data.objectData || 0
+      if (objectData < 128) {
+        buffers.push(Buffer.from([objectData]))
+      } else {
+        // For larger values, use proper varint encoding
+        const ProtoDef = require('protodef').ProtoDef
+        const proto = new ProtoDef()
+        require('protodef/src/datatypes/numeric')(proto)
+        const objectDataBuf = proto.createPacketBuffer('varint', objectData)
+        buffers.push(objectDataBuf)
+      }
+
+      // Velocities as i16
+      const velBuf = Buffer.allocUnsafe(6)
+      velBuf.writeInt16BE(data.velocityX || 0, 0)
+      velBuf.writeInt16BE(data.velocityY || 0, 2)
+      velBuf.writeInt16BE(data.velocityZ || 0, 4)
+      buffers.push(velBuf)
+
+      const movementBuffer = Buffer.concat(buffers)
+
+      return {
+        entityId: data.entityId,
+        objectUUID: data.objectUUID || data.entityUUID,
+        type: data.type,
+        x: data.x,
+        y: data.y,
+        z: data.z,
+        movement: movementBuffer
+      }
+    }
+
+    return data // 1.21.8 and below use explicit fields
+  }
+
   function generateChunkPacket (chunk) {
     const lights = chunk.dumpLight()
     return {
@@ -203,7 +259,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       const entities = bot.registry.entitiesByName
       const creeperId = entities.creeper ? entities.creeper.id : entities.Creeper.id
       server.on('playerJoin', (client) => {
-        client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
+        client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', createSpawnEntityPacket({
           entityId: 8, // random
           entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
           objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
@@ -218,7 +274,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           velocityY: 17,
           velocityZ: 18,
           metadata: []
-        })
+        }))
         client.write('entity_effect', {
           entityId: 8,
           effectId: 10,
@@ -588,7 +644,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
 
           if (bot.registry.supportFeature('unifiedPlayerAndEntitySpawnPacket')) {
-            client.write('spawn_entity', {
+            client.write('spawn_entity', createSpawnEntityPacket({
               entityId: 56,
               objectUUID: '1-2-3-4',
               type: bot.registry.entitiesByName.player.internalId,
@@ -602,7 +658,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
               velocityX: 0,
               velocityY: 0,
               velocityZ: 0
-            })
+            }))
           } else {
             client.write('named_entity_spawn', {
               entityId: 56,
@@ -668,7 +724,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
 
           if (bot.registry.supportFeature('unifiedPlayerAndEntitySpawnPacket')) {
-            client.write('spawn_entity', {
+            client.write('spawn_entity', createSpawnEntityPacket({
               entityId: 56,
               objectUUID: '1-2-3-4',
               type: bot.registry.entitiesByName.player.internalId,
@@ -682,7 +738,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
               velocityX: 0,
               velocityY: 0,
               velocityZ: 0
-            })
+            }))
           } else {
             client.write('named_entity_spawn', {
               entityId: 56,
@@ -723,7 +779,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           // Versions prior to 1.11 have capital first letter
           const entities = bot.registry.entitiesByName
           const creeperId = entities.creeper ? entities.creeper.id : entities.Creeper.id
-          client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
+          client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', createSpawnEntityPacket({
             entityId: 8, // random
             entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
             objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
@@ -741,7 +797,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
               { type: 0, key: bot.registry.supportFeature('mcDataHasEntityMetadata') ? 'byte' : 0, value: 0 },
               { type: 0, key: bot.registry.supportFeature('mcDataHasEntityMetadata') ? 'int' : 1, value: 1 }
             ]
-          })
+          }))
         })
       })
 
@@ -771,7 +827,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           } else {
             entityType = bot.registry.entitiesArray.find(e => e.name.toLowerCase() === 'item' || e.name.toLowerCase() === 'item_stack').id
           }
-          client.write('spawn_entity', {
+          client.write('spawn_entity', createSpawnEntityPacket({
             entityId: 16,
             objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
             type: Number(entityType),
@@ -785,7 +841,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             velocityX: 0,
             velocityY: 0,
             velocityZ: 0
-          })
+          }))
 
           const metadataPacket = {
             entityId: 16,
@@ -910,7 +966,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           teleportId: 1
         })
 
-        client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
+        client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', createSpawnEntityPacket({
           entityId: 8,
           entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
           objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
@@ -925,7 +981,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           velocityY: 0,
           velocityZ: 0,
           metadata: []
-        })
+        }))
 
         client.write('map_chunk', generateChunkPacket(chunk))
       })

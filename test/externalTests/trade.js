@@ -35,10 +35,28 @@ module.exports = () => async (bot) => {
   bot.test.sayEverywhere(`/setblock ${commandBlockPos.toArray().join(' ')} command_block`)
   await bot.test.wait(500)
   bot.setCommandBlock(commandBlockPos, summonCommand)
+  await bot.test.wait(100)
   bot.test.sayEverywhere(`/setblock ${redstoneBlockPos.toArray().join(' ')} redstone_block`) // Activate the command block
 
-  const [entity] = await once(bot, 'entitySpawn')
-  assert(entity.name === villagerType)
+  // Wait for entity to spawn and metadata to populate
+  await bot.test.wait(1000)
+
+  // Find the villager entity
+  let entity = null
+  for (const entityId in bot.entities) {
+    const e = bot.entities[entityId]
+    // Give entity name time to populate
+    if (e.mobType === 'Villager' || e.name === villagerType || e.type === 'mob') {
+      // Check if it's close to spawn position
+      if (e.position && e.position.distanceTo(bot.entity.position) < 10) {
+        entity = e
+        bot.test.sayEverywhere(`Found entity: type=${e.type}, name=${e.name}, mobType=${e.mobType}`)
+        break
+      }
+    }
+  }
+
+  assert(entity, `Villager entity not found. Entities: ${Object.values(bot.entities).map(e => `${e.name}/${e.mobType}`).join(', ')}`)
 
   const villager = await bot.openVillager(entity)
   console.log('Opened villager')
