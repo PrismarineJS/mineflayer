@@ -1,5 +1,4 @@
 const assert = require('assert')
-const { once } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   function expectAmount (amount, greaterThan) {
