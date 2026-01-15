@@ -52,7 +52,13 @@ module.exports = () => async (bot) => {
   await craft(1, craftItem)
   await bot.test.setBlock({ x: 1, y: 0, z: 0, relative: true, blockName: 'crafting_table' })
   bot.chat('/give @p stick 7')
-  await once(bot.inventory, 'updateSlot')
+
+  // Wait until we actually have sticks (not just any inventory update)
+  await bot.test.wait(100)
+  while (bot.inventory.count(itemsByName.stick.id) < 7) {
+    await once(bot.inventory, 'updateSlot')
+  }
+
   const craftingTable = bot.findBlock({ matching: blocksByName.crafting_table.id })
-  await bot.craft(bot.recipesFor(itemsByName.ladder.id, null, null, true)[0], 1, craftingTable)
+  await bot.craft(bot.recipesFor(itemsByName.ladder.id, null, null, craftingTable)[0], 1, craftingTable)
 }

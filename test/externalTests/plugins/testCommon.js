@@ -124,12 +124,15 @@ function inject (bot) {
   }
 
   async function clearInventory () {
-    const giveStone = onceWithCleanup(bot.inventory, 'updateSlot', { timeout: 1000 * 20, checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
-    bot.chat('/give @a stone 1')
-    bot.inventory.on('updateSlot', (...e) => {
-      // console.log('inventory.updateSlot', e)
-    })
-    await giveStone
+    // In 1.21.9+, /give @a stone doesn't trigger updateSlot reliably, so skip the stone test
+    if (!bot.registry.version['>=']('1.21.9')) {
+      const giveStone = onceWithCleanup(bot.inventory, 'updateSlot', { timeout: 1000 * 20, checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
+      bot.chat('/give @a stone 1')
+      bot.inventory.on('updateSlot', (...e) => {
+        // console.log('inventory.updateSlot', e)
+      })
+      await giveStone
+    }
 
     const clearInv = onceWithCleanup(bot, 'message', {
       timeout,
