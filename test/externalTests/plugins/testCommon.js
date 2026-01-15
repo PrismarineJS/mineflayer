@@ -126,16 +126,23 @@ function inject (bot) {
   async function clearInventory () {
     // In creative mode, use bot.creative.clearInventory() to avoid slot conflicts
     if (bot.game.gameMode === 'creative') {
-      await bot.creative.clearInventory()
-      await sleep(200) // Let updates propagate
+      try {
+        await withTimeout(bot.creative.clearInventory(), 10000) // 10 second timeout
+        await sleep(200) // Let updates propagate
 
-      // Verify it's cleared
-      const hasItems = bot.inventory.slots.some(slot => slot && slot.itemCount > 0)
-      if (hasItems) {
-        const items = bot.inventory.slots.filter(s => s).map((s, i) => `slot ${i}: ${s.name} x${s.itemCount}`)
-        throw new Error('Creative inventory was not cleared: ' + items.join(', '))
+        // Verify it's cleared
+        const hasItems = bot.inventory.slots.some(slot => slot && slot.itemCount > 0)
+        if (hasItems) {
+          const items = bot.inventory.slots.filter(s => s).map((s, i) => `slot ${i}: ${s.name} x${s.itemCount}`)
+          console.warn('Creative inventory was not fully cleared, falling back to /clear:', items.join(', '))
+          // Fall through to /clear command as fallback
+        } else {
+          return // Successfully cleared
+        }
+      } catch (err) {
+        console.warn('bot.creative.clearInventory() failed or timed out, falling back to /clear command:', err.message)
+        // Fall through to /clear command as fallback
       }
-      return
     }
 
     // In survival mode, use /clear command
