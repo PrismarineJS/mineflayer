@@ -124,11 +124,18 @@ function inject (bot) {
   }
 
   async function clearInventory () {
-    // In creative mode, use bot.creative.clearInventory() to avoid slot conflicts
-    if (bot.game.gameMode === 'creative') {
+    // In creative mode, use bot.creative.clearInventory() for specific tested versions
+    // Versions 1.16.5-1.20.4 work well, others have issues (1.14.4-1.15.2 have slot conflicts, 1.21.8+ has null item bug)
+    const useCreativeAPI = bot.game.gameMode === 'creative' &&
+                          bot.registry.version['>=']('1.16.5') &&
+                          bot.registry.version['<']('1.21.8')
+
+    if (useCreativeAPI) {
       try {
         await withTimeout(bot.creative.clearInventory(), 10000) // 10 second timeout
-        await sleep(200) // Let updates propagate
+        // Wait longer for all slot operations to fully settle
+        // This is critical - creative operations are async and need time
+        await sleep(1000)
 
         // Verify it's cleared
         const hasItems = bot.inventory.slots.some(slot => slot && slot.itemCount > 0)
