@@ -30,6 +30,9 @@ module.exports = () => async (bot) => {
   }
   await bot.test.setInventorySlot(18, new Item(bot.registry.itemsByName.book.id, 11, 0))
 
+  // Wait for inventory to sync properly
+  await bot.test.wait(500)
+
   // A command block is needed to spawn the villager due to the chat's character limit in some versions
   bot.test.sayEverywhere(`/setblock ${commandBlockPos.toArray().join(' ')} command_block`)
   await bot.test.wait(500)

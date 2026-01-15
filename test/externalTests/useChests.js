@@ -111,6 +111,9 @@ module.exports = () => async (bot) => {
   const chest = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
   await once(chest, 'close')
 
+  // Wait after closing chest before opening next one
+  await bot.test.wait(500)
+
   await depositBones(smallChestLocation, 1)
   await depositBones(largeChestLocations[0], 2)
 
