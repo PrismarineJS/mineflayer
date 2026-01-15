@@ -150,6 +150,7 @@ module.exports = () => async (bot) => {
 
   async function createRandomLayout (window, slotPopulationFactor) {
     await bot.test.becomeCreative()
+    await bot.test.wait(500) // Wait for creative mode to fully sync
 
     for (let slot = 0; slot < window.inventoryStart; slot++) {
       if (Math.random() < slotPopulationFactor) {
