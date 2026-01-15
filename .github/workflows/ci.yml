@@ -56,8 +56,12 @@ jobs:
           java-package: jre
       - name: Install Dependencies
         run: npm install
-      - run: cd node_modules && cd minecraft-data && mv minecraft-data minecraft-data-old && git clone -b pc-1_21_9 https://github.com/PrismarineJS/minecraft-data --depth 1 && node bin/generate_data.js
-      - run: curl -o node_modules/protodef/src/serializer.js https://raw.githubusercontent.com/extremeheat/node-protodef/refs/heads/dlog/src/serializer.js && curl -o node_modules/protodef/src/compiler.js https://raw.githubusercontent.com/extremeheat/node-protodef/refs/heads/dlog/src/compiler.js
+      - name: Apply minecraft-data fix for 1.21.9
+        run: cd node_modules/minecraft-data && mv minecraft-data minecraft-data-old && git clone -b fix/1.21.9-protocol-packets https://github.com/atiweb/minecraft-data --depth 1 && node bin/generate_data.js
+      - name: Apply protodef fix for multi-packet parser
+        run: |
+          curl -o node_modules/protodef/src/serializer.js https://raw.githubusercontent.com/HenkjanvDiermen/node-protodef/fix-fullpacketparser-multi-packet/src/serializer.js
+          curl -o node_modules/protodef/src/compiler.js https://raw.githubusercontent.com/HenkjanvDiermen/node-protodef/fix-fullpacketparser-multi-packet/src/compiler.js
 
       - name: Start Tests
         run: npm run mocha_test -- -g ${{ matrix.mcVersion }}v
