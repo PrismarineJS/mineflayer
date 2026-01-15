@@ -134,12 +134,18 @@ function inject (bot) {
       await giveStone
     }
 
-    const clearInv = onceWithCleanup(bot, 'message', {
-      timeout,
-      checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
-    })
-    bot.chat('/clear') // don't rely on the message (as it'll come to early), wait for the result of /clear instead
-    await clearInv
+    // In 1.21.9+, /clear message format may have changed, so just use a delay
+    if (bot.registry.version['>=']('1.21.9')) {
+      bot.chat('/clear')
+      await sleep(500) // Give time for clear to process
+    } else {
+      const clearInv = onceWithCleanup(bot, 'message', {
+        timeout,
+        checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
+      })
+      bot.chat('/clear') // don't rely on the message (as it'll come to early), wait for the result of /clear instead
+      await clearInv
+    }
 
     // Check that the inventory is clear
     for (const slot of bot.inventory.slots) {
