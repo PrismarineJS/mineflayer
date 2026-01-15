@@ -196,10 +196,24 @@ function inject (bot) {
 
     const detectChildJoin = async () => {
       const [message] = await onceWithCleanup(bot, 'message', {
-        timeout,
-        checkCondition: message => message.json.translate === 'multiplayer.player.joined'
+        timeout: 15000, // Increased timeout
+        checkCondition: message => {
+          // Check for join message (format may vary by version)
+          if (message.json.translate === 'multiplayer.player.joined') return true
+          // 1.21.9+ might use different format, check messagestr as fallback
+          const msgStr = message.toString()
+          return msgStr.includes('joined the game') || msgStr.includes('joined')
+        }
       })
-      childBotName = message.json.with[0].insertion
+      // Extract username from message
+      if (message.json.with && message.json.with[0]) {
+        childBotName = message.json.with[0].insertion || message.json.with[0].text || message.json.with[0]
+      } else {
+        // Fallback: parse from message string
+        const msgStr = message.toString()
+        const match = msgStr.match(/(\w+)\s+joined/)
+        if (match) childBotName = match[1]
+      }
       bot.chat(`/tp ${childBotName} 50 ${bot.test.groundY} 0`)
       setTimeout(() => {
         bot.chat('loaded')

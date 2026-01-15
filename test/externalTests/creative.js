@@ -47,6 +47,11 @@ module.exports = () => async (bot) => {
   await bot.creative.clearSlot(SLOT)
   assert.strictEqual(bot.inventory.slots[SLOT], null)
   // clear inventory
+  // In 1.21.9+, clear everything first to ensure clean state
+  if (bot.registry.version['>=']('1.21.9')) {
+    await bot.creative.clearInventory()
+    await new Promise(resolve => setTimeout(resolve, 200))
+  }
   for (let i = 0; i < 9; i++) {
     await bot.creative.setInventorySlot(36 + i, new Item(1, 1, 0))
   }

@@ -62,6 +62,58 @@ module.exports = () => async (bot) => {
 
   // Test note block sounds
   const noteTest = async () => {
+    // For 1.21+, use improved /playsound approach with chat marker synchronization
+    if (bot.registry.version['>=']('1.21')) {
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        let soundHeard = false
+        const marker = `note_test_${attempt}_${Date.now()}`
+
+        // Set up sound listener
+        const soundListener = () => {
+          soundHeard = true
+        }
+        bot.once('noteHeard', soundListener)
+
+        try {
+          // Send playsound command with correct syntax for version
+          if (bot.registry.version['>=']('1.9')) {
+            const soundName = bot.supportFeature('noteBlockNameIsNoteBlock')
+              ? 'minecraft:block.note_block.harp'
+              : 'block.note.harp'
+            bot.chat(`/playsound ${soundName} master @a ~ ~ ~ 1 1`)
+          } else {
+            bot.chat('/playsound note.harp @a ~ ~ ~ 1 1')
+          }
+
+          // Send marker and wait for echo (synchronization point)
+          bot.chat(marker)
+          await once(bot, 'messagestr', 5000).then(([msg]) => {
+            if (!msg.includes(marker)) throw new Error('Marker not echoed')
+          })
+
+          // Grace period for sound packet to arrive
+          await new Promise(resolve => setTimeout(resolve, 200))
+
+          // Check if sound was heard
+          if (soundHeard) {
+            console.log(`Note test passed on attempt ${attempt}`)
+            return // Success!
+          }
+
+          // Failed this attempt
+          console.log(`Note test failed attempt ${attempt}/${3}`)
+          if (attempt < 3) {
+            await new Promise(resolve => setTimeout(resolve, 1000)) // Wait 1s before retry
+          }
+        } finally {
+          bot.removeListener('noteHeard', soundListener)
+        }
+      }
+
+      throw new Error('Note test failed after 3 attempts')
+    }
+
+    // For older versions, use existing note block approach
     const pos = bot.entity.position.offset(1, 0, 0).floored()
     const noteBlockName = bot.supportFeature('noteBlockNameIsNoteBlock') ? 'note_block' : 'noteblock'
 

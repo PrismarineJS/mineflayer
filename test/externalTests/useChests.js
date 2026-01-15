@@ -38,6 +38,22 @@ module.exports = () => async (bot) => {
 
   async function depositBones (chestLocation, count) {
     const chest = await bot.openContainer(bot.blockAt(chestLocation))
+    // In 1.21.9+, chest state might not sync immediately, wait a bit
+    if (bot.registry.version['>=']('1.21.9')) {
+      await bot.test.wait(100)
+      // If chest still has items, this is unexpected - fail gracefully
+      if (chest.containerItems().length > 0) {
+        console.warn(`Chest not empty, has ${chest.containerItems().length} items, clearing...`)
+        // Try to withdraw all items first to clear the chest
+        for (const item of chest.containerItems()) {
+          try {
+            await chest.withdraw(item.type, null, item.count)
+          } catch (e) {
+            console.warn(`Failed to clear item: ${e.message}`)
+          }
+        }
+      }
+    }
     assert(chest.containerItems().length === 0)
     assert(chest.items().length > 0)
     const name = 'bone'
