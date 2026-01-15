@@ -124,11 +124,12 @@ function inject (bot) {
   }
 
   async function clearInventory () {
-    // In creative mode, use bot.creative.clearInventory() for specific tested versions
-    // Versions 1.16.5-1.20.4 work well, others have issues (1.14.4-1.15.2 have slot conflicts, 1.21.8+ has null item bug)
+    // In creative mode, use bot.creative.clearInventory() for specific tested versions only
+    // Many versions have bugs (null item issues, slot conflicts, etc)
+    // Only use for thoroughly tested stable range: 1.17-1.20.4
     const useCreativeAPI = bot.game.gameMode === 'creative' &&
-                          bot.registry.version['>=']('1.16.5') &&
-                          bot.registry.version['<']('1.21.8')
+                          bot.registry.version['>=']('1.17') &&
+                          bot.registry.version['<=']('1.20.4')
 
     if (useCreativeAPI) {
       try {
@@ -152,7 +153,13 @@ function inject (bot) {
       }
     }
 
-    // In survival mode, use /clear command
+    // For creative mode in versions that don't use bot.creative.clearInventory()
+    // or when falling back from creative API, wait for any pending creative operations
+    if (bot.game.gameMode === 'creative') {
+      await sleep(1000) // Let any pending creative operations settle first
+    }
+
+    // In survival mode (or creative fallback), use /clear command
     // Run /clear multiple times to ensure everything is cleared
     for (let attempt = 0; attempt < 5; attempt++) {
       const clearInv = onceWithCleanup(bot, 'message', {
@@ -188,7 +195,8 @@ function inject (bot) {
     // Additional wait and final clear to catch any stragglers
     await sleep(300)
     bot.chat('/clear')
-    await sleep(200)
+    // Longer wait for older versions to let creative operations fully settle
+    await sleep(1000)
 
     // Final verification
     const hasItems = bot.inventory.slots.some(slot => slot && slot.itemCount > 0)
