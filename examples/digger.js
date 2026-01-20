@@ -13,8 +13,8 @@
 const mineflayer = require('mineflayer')
 const vec3 = require('vec3')
 
-if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node digger.js <host> <port> [<name>] [<password>]')
+if (process.argv.length < 4 || process.argv.length > 7) {
+  console.log('Usage : node digger.js <host> <port> [<name>] [<password>] [<version>]')
   process.exit(1)
 }
 
@@ -22,7 +22,8 @@ const bot = mineflayer.createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
   username: process.argv[4] ? process.argv[4] : 'digger',
-  password: process.argv[5]
+  password: process.argv[5],
+  version: process.argv[6] || false
 })
 
 bot.on('chat', async (username, message) => {
