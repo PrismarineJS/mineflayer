@@ -9,6 +9,7 @@ module.exports = () => async (bot) => {
   const retryOnSlimeDeath = async (operation, maxAttempts = 3) => {
     let lastError
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      console.log(`[useChests] Starting attempt ${attempt}/${maxAttempts}`)
       let deathListener
       let messageListener
       let killedBySlime = false
@@ -37,6 +38,7 @@ module.exports = () => async (bot) => {
         ])
         bot.removeListener('death', deathListener)
         bot.removeListener('message', messageListener)
+        console.log(`[useChests] Attempt ${attempt} succeeded!`)
         return result
       } catch (error) {
         bot.removeListener('death', deathListener)
@@ -44,11 +46,12 @@ module.exports = () => async (bot) => {
         lastError = error
 
         if (killedBySlime && attempt < maxAttempts) {
-          console.log('[useChests] Killing all slimes and retrying...')
+          console.log(`[useChests] Killing all slimes and retrying (attempt ${attempt + 1}/${maxAttempts})...`)
           bot.chat('/kill @e[type=slime]')
           await new Promise(resolve => setTimeout(resolve, 2000))
           await bot.test.resetState()
-        } else if (attempt >= maxAttempts) {
+        } else {
+          console.log(`[useChests] Attempt ${attempt} failed, no more retries`)
           break
         }
       }
@@ -115,7 +118,16 @@ module.exports = () => async (bot) => {
     chest.close()
   }
 
+  // Kill all slimes before starting the test to prevent interference
+  console.log('[useChests] Killing all slimes before test starts...')
+  bot.chat('/kill @e[type=slime]')
+  await new Promise(resolve => setTimeout(resolve, 1000))
+
   await retryOnSlimeDeath(async () => {
+    // Kill slimes again at the start of each attempt
+    bot.chat('/kill @e[type=slime]')
+    await new Promise(resolve => setTimeout(resolve, 500))
+
     await bot.test.setInventorySlot(chestSlot, new Item(bot.registry[blockItemsByName].chest.id, 3, 0))
     await bot.test.setInventorySlot(trappedChestSlot, new Item(bot.registry[blockItemsByName].trapped_chest.id, 3, 0))
     await bot.test.setInventorySlot(boneSlot, new Item(bot.registry.itemsByName.bone.id, 3, 0))
