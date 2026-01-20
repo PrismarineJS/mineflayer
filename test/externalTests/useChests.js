@@ -5,8 +5,8 @@ const { once, onceWithCleanup } = require('../../lib/promise_utils')
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
 
-  // Retry helper for handling slime deaths
-  const retryOnSlimeDeath = async (operation, maxAttempts = 3) => {
+  // Retry helper for handling test failures (slime deaths, timing issues, etc.)
+  const retryOnFailure = async (operation, maxAttempts = 3) => {
     let lastError
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       console.log(`[useChests] Starting attempt ${attempt}/${maxAttempts}`)
@@ -45,13 +45,17 @@ module.exports = () => async (bot) => {
         bot.removeListener('message', messageListener)
         lastError = error
 
-        if (killedBySlime && attempt < maxAttempts) {
-          console.log(`[useChests] Killing all slimes and retrying (attempt ${attempt + 1}/${maxAttempts})...`)
+        if (attempt < maxAttempts) {
+          if (killedBySlime) {
+            console.log(`[useChests] Killed by slime, cleaning up and retrying (attempt ${attempt + 1}/${maxAttempts})...`)
+          } else {
+            console.log(`[useChests] Test failed: ${error.message}, retrying (attempt ${attempt + 1}/${maxAttempts})...`)
+          }
           bot.chat('/kill @e[type=slime]')
           await new Promise(resolve => setTimeout(resolve, 2000))
           await bot.test.resetState()
         } else {
-          console.log(`[useChests] Attempt ${attempt} failed, no more retries`)
+          console.log(`[useChests] Attempt ${attempt} failed, no more retries: ${error.message}`)
           break
         }
       }
@@ -123,7 +127,7 @@ module.exports = () => async (bot) => {
   bot.chat('/kill @e[type=slime]')
   await new Promise(resolve => setTimeout(resolve, 1000))
 
-  await retryOnSlimeDeath(async () => {
+  await retryOnFailure(async () => {
     // Kill slimes again at the start of each attempt
     bot.chat('/kill @e[type=slime]')
     await new Promise(resolve => setTimeout(resolve, 500))
