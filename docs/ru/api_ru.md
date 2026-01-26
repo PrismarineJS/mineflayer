@@ -1444,7 +1444,7 @@ bot.on('title_times', (fadeIn, stay, fadeOut) => {
  * `instrument`: Объект
    - `id` : ID в виде `integer`.
    - `name` : Один из видов звука.
- * `pitch` - Высота ноты (от 0 до 24 включительно, где 0 - это самая низкая, а 24 - самая высокая). Больше информации об этом можно найти на [оффициальной Minecraft википедии](http://www.minecraftwiki.net/wiki/Note_Block).
+ * `pitch` - Высота ноты (от 0 до 24 включительно, где 0 - это самая низкая, а 24 - самая высокая). Больше информации об этом можно найти на [оффициальной Minecraft википедии](http://minecraft.wiki/w/Note_Block).
 
 #### "pistonMove" (block, isPulling, direction)
 
