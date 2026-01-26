@@ -1,3 +1,11 @@
+## 4.34.0
+* [🎈 1.21.9/1.21.10 support (#3754)](https://github.com/PrismarineJS/mineflayer/commit/f0afaf73061c15b67e5d3457b60ed543e711acb6) (thanks @rom1504bot)
+* [Update russian docs (#3762)](https://github.com/PrismarineJS/mineflayer/commit/887b52b933d943c8d605d7835d6d55d198208fee) (thanks @fungoza)
+* [Swap out deprecated bot.chatAddPattern() in tutorial.md (#3709)](https://github.com/PrismarineJS/mineflayer/commit/e5fcf1f022656c7432ef11b4e458ca9b2e08c1ee) (thanks @TheSharkyOfficial)
+* [Add missing uuid-1345 dep](https://github.com/PrismarineJS/mineflayer/commit/464000aa05fc44cc6da236fc370bce6911648a75) (thanks @extremeheat)
+* [Update README.md](https://github.com/PrismarineJS/mineflayer/commit/9d7ea28c3321170f9958f54dfe24cedf48f1113f) (thanks @extremeheat)
+* [Resolved type mismatch (#3748)](https://github.com/PrismarineJS/mineflayer/commit/266af6786edc78d17e7afad77a3e89fc7649e0e0) (thanks @BF5258)
+
 ## 4.33.0
 * [Add update workflow (#3727)](https://github.com/PrismarineJS/mineflayer/commit/9c335366d435b58cfe45bbfbbc534b99ee669dc2) (thanks @extremeheat)
 * [Add support for Minecraft 1.21.8 (#3732)](https://github.com/PrismarineJS/mineflayer/commit/ec8220d7c63b72acb4bf16f30cdf4ba346b83f98) (thanks @rom1504)
