@@ -45,6 +45,9 @@ module.exports = () => async (bot) => {
 
   await once(bot, 'forcedMove')
   await bot.waitForChunksToLoad()
+  // Give the server extra time to stabilize after chunk loading,
+  // slow CI environments may not have blocks fully ready yet
+  await bot.test.wait(1000)
 
   const lowerBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
   await bot.lookAt(lowerBlock.position, true)
