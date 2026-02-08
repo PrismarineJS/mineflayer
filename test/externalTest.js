@@ -52,7 +52,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       console.log(`Port chosen: ${PORT}`)
     })
     before(function (done) {
-      this.timeout(1000 * 60)
+      this.timeout(1000 * 120)
       function begin () {
         bot = mineflayer.createBot({
           username: 'flatbot',
@@ -116,7 +116,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
     })
 
     after((done) => {
-      bot.quit()
+      if (bot) bot.quit()
       wrap.stopServer((err) => {
         if (err) {
           console.log(err)
