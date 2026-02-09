@@ -192,9 +192,16 @@ function inject (bot) {
       })
       childBotName = message.json.with[0].insertion
       bot.chat(`/tp ${childBotName} 50 ${bot.test.groundY} 0`)
-      // The server processes commands in order, so the TP is applied
-      // before this chat message is delivered to the child bot. The
-      // child's waitForChunksToLoad() then waits at the new position.
+      // Wait for the child entity to arrive at the teleport target,
+      // confirming the server has processed the TP
+      const targetPos = new Vec3(50, bot.test.groundY, 0)
+      while (!bot.players[childBotName]?.entity ||
+             bot.players[childBotName].entity.position.distanceTo(targetPos) > 5) {
+        await sleep(100)
+      }
+      // Let the child's physics engine initialize at the new position
+      // (ground detection, chunk processing) before starting the test
+      await bot.waitForTicks(60)
       bot.chat('loaded')
     }
 
