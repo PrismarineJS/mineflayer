@@ -35,6 +35,7 @@ module.exports = () => async (bot) => {
   bot.test.sayEverywhere(`/setblock ${commandBlockPos.toArray().join(' ')} command_block`)
   await bot.test.wait(500)
   bot.setCommandBlock(commandBlockPos, summonCommand)
+  await bot.test.wait(500)
   bot.test.sayEverywhere(`/setblock ${redstoneBlockPos.toArray().join(' ')} redstone_block`) // Activate the command block
 
   const [entity] = await once(bot, 'entitySpawn')
@@ -42,7 +43,7 @@ module.exports = () => async (bot) => {
 
   const villager = await bot.openVillager(entity)
   console.log('Opened villager')
-  console.dir(villager, { depth: null })
+  // console.dir(villager, { depth: null })
 
   // Handle trade #1 -- takes 2x emerald and returns 2x pumpkin_pie
   {
