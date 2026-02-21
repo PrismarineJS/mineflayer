@@ -19,12 +19,16 @@ const bot = mineflayer.createBot({
   password: process.argv[5],
 });
 
+
 const RANGE_GOAL = 1; // get within this radius of the player
 
 bot.loadPlugin(pathfinder);
 
 bot.once("spawn", () => {
   const defaultMove = new Movements(bot);
+  
+  bot.physics.yawSpeed = 50;
+  bot.physics.pitchSpeed = 50;
 
   bot.on("chat", (username, message) => {
     console.log("Chat message received: ", username, message);
