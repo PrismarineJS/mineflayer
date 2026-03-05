@@ -160,6 +160,7 @@ module.exports = () => async (bot) => {
 
         // await bot.clickWindow(slot, 0, 2)
         await bot.moveSlotItem(window.hotbarStart, slot)
+        await bot.test.wait(100)
       }
     }
 

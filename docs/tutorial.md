@@ -576,8 +576,8 @@ Here we're creating a bot that answer 'hello' from the other player.
 
 ```js
 bot.addChatPattern(
-  /(helo|hello|Hello)/,
   'hello',
+  /(helo|hello|Hello)/,
   'Someone says hello'
 )
 
@@ -585,7 +585,7 @@ const hi = () => {
   bot.chat('Hi!')
 }
 
-bot.on('hello', hi)
+bot.on('chat:hello', hi)
 ```
 
 #### Custom chat

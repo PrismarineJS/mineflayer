@@ -52,7 +52,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       console.log(`Port chosen: ${PORT}`)
     })
     before(function (done) {
-      this.timeout(1000 * 60)
+      this.timeout(1000 * 120)
       function begin () {
         bot = mineflayer.createBot({
           username: 'flatbot',
@@ -68,6 +68,11 @@ for (const supportedVersion of mineflayer.testedVersions) {
         bot.once('spawn', () => {
           console.log('bot spawned, opping...')
           wrap.writeServer('op flatbot\n')
+          if (bot.supportFeature('gameRuleUsesResourceLocation')) {
+            wrap.writeServer('gamerule minecraft:spawn_monsters false\n')
+          } else {
+            wrap.writeServer('gamerule spawnMonsters false\n')
+          }
           bot.once('messagestr', msg => {
             if (msg.includes('Made flatbot a server operator') || msg === '[Server: Opped flatbot]') {
               done()
@@ -111,7 +116,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
     })
 
     after((done) => {
-      bot.quit()
+      if (bot) bot.quit()
       wrap.stopServer((err) => {
         if (err) {
           console.log(err)
