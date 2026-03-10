@@ -11,3 +11,4 @@ test/server_*
 .DS_Store
 launcher_accounts.json
 data
+custom_tests

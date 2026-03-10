@@ -1,5 +1,5 @@
 // This example will shoot the player that said "fire" in chat, when it is said in chat.
-const mineflayer = require('mineflayer')
+const mineflayer = require('../')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node elytra.js <host> <port> [<name>] [<password>]')

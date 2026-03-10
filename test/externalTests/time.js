@@ -43,6 +43,21 @@ module.exports = () => async (bot) => {
     }
   }
 
+  // Helper to set gamerule using the correct name for the version
+  const setDaylightCycle = (value) => {
+    if (bot.supportFeature('gameRuleUsesResourceLocation')) {
+      bot.test.sayEverywhere(`/gamerule minecraft:advance_time ${value}`)
+    } else {
+      bot.test.sayEverywhere(`/gamerule doDaylightCycle ${value}`)
+    }
+  }
+
+  // Disable daylight cycle before time transition tests to prevent
+  // time from drifting between /time set and the assertion
+  const originalDaylightCycle = bot.time.doDaylightCycle
+  setDaylightCycle(false)
+  await waitForTime()
+
   // Test time transitions
   const timeTests = [
     { time: 18000, name: 'midnight', isDay: false },
@@ -58,6 +73,10 @@ module.exports = () => async (bot) => {
     assert.strictEqual(bot.time.isDay, test.isDay, `${test.name} should be ${test.isDay ? 'day' : 'night'}`)
   }
 
+  // Re-enable daylight cycle for progression test
+  setDaylightCycle(true)
+  await waitForTime()
+
   // Test day and moon phase progression
   const currentDay = bot.time.day
   const currentPhase = bot.time.moonPhase
@@ -66,23 +85,18 @@ module.exports = () => async (bot) => {
   assert(bot.time.day >= currentDay + 1, `Expected day to be at least ${currentDay + 1}, got ${bot.time.day}`)
   assert.notStrictEqual(bot.time.moonPhase, currentPhase, 'Moon phase should change after a full day')
 
-  // Test daylight cycle
-  const originalDaylightCycle = bot.time.doDaylightCycle
-  if (bot.supportFeature('gameRuleUsesResourceLocation')) {
-    bot.test.sayEverywhere('/gamerule minecraft:advance_time false')
-  } else {
-    bot.test.sayEverywhere('/gamerule doDaylightCycle false')
-  }
+  // Test daylight cycle toggle
+  setDaylightCycle(false)
   await waitForTime()
   assert.strictEqual(bot.time.doDaylightCycle, false)
 
-  if (bot.supportFeature('gameRuleUsesResourceLocation')) {
-    bot.test.sayEverywhere(`/gamerule minecraft:advance_time ${originalDaylightCycle}`)
-  } else {
-    bot.test.sayEverywhere(`/gamerule doDaylightCycle ${originalDaylightCycle}`)
-  }
+  setDaylightCycle(originalDaylightCycle)
   await waitForTime()
   assert.strictEqual(bot.time.doDaylightCycle, originalDaylightCycle)
+
+  // Disable daylight cycle again for day/night range tests
+  setDaylightCycle(false)
+  await waitForTime()
 
   // Test day/night transitions
   const dayNightTests = [
@@ -96,4 +110,8 @@ module.exports = () => async (bot) => {
     assert(isTimeInRange(bot.time.timeOfDay, test.range[0], test.range[1]), `Time should be in ${test.command} range`)
     assert.strictEqual(bot.time.isDay, test.isDay, `${test.command} should be ${test.isDay ? 'day' : 'night'}`)
   }
+
+  // Restore original daylight cycle setting
+  setDaylightCycle(originalDaylightCycle)
+  await waitForTime()
 }

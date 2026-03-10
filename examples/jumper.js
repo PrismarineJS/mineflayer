@@ -5,7 +5,7 @@
  *
  * This bot can move, jump, ride vehicles, attack nearby entities and much more.
  */
-const mineflayer = require('mineflayer')
+const mineflayer = require('..')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node jumper.js <host> <port> [<name>] [<password>]')
@@ -20,6 +20,17 @@ const bot = mineflayer.createBot({
 })
 
 let target = null
+
+bot.on('move', (lastPos) => {
+  console.log(`I moved from ${JSON.stringify(lastPos)} to ${JSON.stringify(bot.entity.position)}`)
+  console.log(`I have ${bot.entity.velocity.toString()} velocity`)
+  console.log(`I am on the ground: ${bot.entity.onGround}`)
+  // console.log(bot.entity)
+});
+
+bot.on('forcedMove', () => {
+  console.log('I am being forced to move')
+})
 
 bot.on('chat', (username, message) => {
   if (username === bot.username) return
@@ -103,7 +114,7 @@ bot.once('spawn', () => {
 
   function watchTarget () {
     if (!target) return
-    bot.lookAt(target.position.offset(0, target.height, 0))
+    bot.lookAt(target.position.offset(0, target.height, 0), true)
   }
 })
 

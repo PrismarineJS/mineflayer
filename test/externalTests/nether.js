@@ -1,6 +1,6 @@
 const assert = require('assert')
 const Vec3 = require('vec3')
-const { once } = require('../../lib/promise_utils')
+const { once, sleep } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   // Test spawn event on death
@@ -46,7 +46,14 @@ module.exports = () => async (bot) => {
   await once(bot, 'forcedMove')
   await bot.waitForChunksToLoad()
 
-  const lowerBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
+  // Poll until the block below is loaded and non-air before placing.
+  // On slow CI, chunks may report as loaded before block data is ready.
+  let lowerBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
+  while (!lowerBlock || lowerBlock.name === 'air') {
+    await sleep(100)
+    lowerBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
+  }
+
   await bot.lookAt(lowerBlock.position, true)
   await bot.test.setInventorySlot(36, new Item(signItem.id, 1, 0))
   await bot.placeBlock(lowerBlock, new Vec3(0, 1, 0))

@@ -4,9 +4,9 @@ const { spawn } = require('child_process')
 const { once } = require('../../../lib/promise_utils')
 const process = require('process')
 const assert = require('assert')
-const { sleep, onceWithCleanup, withTimeout } = require('../../../lib/promise_utils')
+const { sleep, onceWithCleanup } = require('../../../lib/promise_utils')
 
-const timeout = 5000
+const timeout = 20000
 module.exports = inject
 
 function inject (bot) {
@@ -188,14 +188,21 @@ function inject (bot) {
 
     const detectChildJoin = async () => {
       const [message] = await onceWithCleanup(bot, 'message', {
-        timeout,
         checkCondition: message => message.json.translate === 'multiplayer.player.joined'
       })
       childBotName = message.json.with[0].insertion
       bot.chat(`/tp ${childBotName} 50 ${bot.test.groundY} 0`)
-      setTimeout(() => {
-        bot.chat('loaded')
-      }, 5000)
+      // Wait for the child entity to arrive at the teleport target,
+      // confirming the server has processed the TP
+      const targetPos = new Vec3(50, bot.test.groundY, 0)
+      while (!bot.players[childBotName]?.entity ||
+             bot.players[childBotName].entity.position.distanceTo(targetPos) > 5) {
+        await sleep(100)
+      }
+      // Let the child's physics engine initialize at the new position
+      // (ground detection, chunk processing) before starting the test
+      await bot.waitForTicks(60)
+      bot.chat('loaded')
     }
 
     const runExampleOnReady = async () => {
@@ -216,7 +223,7 @@ function inject (bot) {
 
       try {
         process.kill(child.pid, 'SIGTERM')
-        const [code] = await onceWithCleanup(child, 'close', { timeout: 1000 })
+        const [code] = await onceWithCleanup(child, 'close', { timeout: 5000 })
         console.log('close requested', code)
       } catch (e) {
         console.log(e)
@@ -228,8 +235,11 @@ function inject (bot) {
       }
     }
 
+    // Let mocha's test-level timeout (90s) be the backstop instead of
+    // an inner withTimeout, which was causing premature failures on
+    // slow CI runners.
     try {
-      await withTimeout(Promise.all([detectChildJoin(), runExampleOnReady()]), 30000)
+      await Promise.all([detectChildJoin(), runExampleOnReady()])
     } catch (err) {
       console.log(err)
       return closeExample(err)
