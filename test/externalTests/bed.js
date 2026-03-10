@@ -31,16 +31,16 @@ module.exports = () => async (bot) => {
   assert(blockAtBed2?.name?.endsWith('bed'), `Expected ${bedPos2} to be bed, got ${JSON.stringify(blockAtBed2)}`)
 
   // Sleep
-// Sleep
-assert(!bot.isSleeping)
-const wakePromise = once(bot, 'wake')
+  // Sleep
+  assert(!bot.isSleeping)
+  const wakePromise = once(bot, 'wake')
 
-try {
-  await bot.sleep(bot.blockAt(bedPos2))
-} catch (err) {
-  console.error('sleep failed:', err)
-  throw err
-}
+  try {
+    await bot.sleep(bot.blockAt(bedPos2))
+  } catch (err) {
+    console.error('sleep failed:', err)
+    throw err
+  }
   // Wake
   assert(bot.isSleeping)
   await bot.wake()

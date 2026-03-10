@@ -26,7 +26,7 @@ bot.on('move', (lastPos) => {
   console.log(`I have ${bot.entity.velocity.toString()} velocity`)
   console.log(`I am on the ground: ${bot.entity.onGround}`)
   // console.log(bot.entity)
-});
+})
 
 bot.on('forcedMove', () => {
   console.log('I am being forced to move')
