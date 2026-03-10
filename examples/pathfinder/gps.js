@@ -27,8 +27,8 @@ bot.loadPlugin(pathfinder);
 bot.once("spawn", () => {
   const defaultMove = new Movements(bot);
   
-  bot.physics.yawSpeed = 50;
-  bot.physics.pitchSpeed = 50;
+  bot.physics.yawSpeed = 5000;
+  bot.physics.pitchSpeed = 5000;
 
   bot.on("chat", (username, message) => {
     console.log("Chat message received: ", username, message);
