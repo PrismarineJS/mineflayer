@@ -557,8 +557,8 @@ In general, you'll want to use `for of` instead of `for in` so make sure you don
 
 ### Creating an event from chat
 
-You can create your own event from chat using [`bot.chatAddPattern()`](http://prismarinejs.github.io/mineflayer/#/api?id=botchataddpatternpattern-chattype-description) method. Useful for Bukkit servers where the chat format changes a lot.
-[`bot.chatAddPattern()`](http://prismarinejs.github.io/mineflayer/#/api?id=botchataddpatternpattern-chattype-description) method takes three arguments :
+You can create your own event from chat using [`bot.addChatPattern()`](http://prismarinejs.github.io/mineflayer/#/api?id=botaddchatpatternname-pattern-chatpatternoptions) method. Useful for Bukkit servers where the chat format changes a lot.
+[`bot.addChatPattern()`](http://prismarinejs.github.io/mineflayer/#/api?id=botaddchatpatternname-pattern-chatpatternoptions) method takes three arguments :
 
 - `pattern` - regular expression (regex) to match chat
 - `chatType` - the event the bot emits when the pattern matches. e.g. "chat" or "whisper"
@@ -575,9 +575,9 @@ Examples :
 Here we're creating a bot that answer 'hello' from the other player.
 
 ```js
-bot.chatAddPattern(
-  /(helo|hello|Hello)/,
+bot.addChatPattern(
   'hello',
+  /(helo|hello|Hello)/,
   'Someone says hello'
 )
 
@@ -585,7 +585,7 @@ const hi = () => {
   bot.chat('Hi!')
 }
 
-bot.on('hello', hi)
+bot.on('chat:hello', hi)
 ```
 
 #### Custom chat
@@ -601,7 +601,7 @@ Custom chat example:
 ```
 
 ```js
-bot.chatAddPattern(
+bot.addChatPattern(
   /^\[(.+)\] (\S+) > (.+)$/,
   'my_chat_event',
   'Custom chat event'

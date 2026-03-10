@@ -12,3 +12,4 @@ test/server_*
 launcher_accounts.json
 data
 .idea
+custom_tests

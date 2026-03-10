@@ -14,7 +14,15 @@ const START_THE_SERVER = true
 // if you want to have time to look what's happening increase this (milliseconds)
 const TEST_TIMEOUT_MS = 90000
 
+// excludedTests should be everything in the tests folder except "digAndBuild"
+// const testNames = fs.readdirSync(path.resolve(__dirname, './externalTests'))
+//   .filter(file => fs.statSync(path.join(path.resolve(__dirname, './externalTests'), file)).isFile())
+//   .map(file => path.basename(file, '.js'))
+
+// const excludedTests = testNames.filter(test => test !== 'digAndBuild')
+
 const excludedTests = ['digEverything', 'book', 'anvil', 'placeEntity']
+console.log('Excluded tests:', excludedTests)
 
 const propOverrides = {
   'level-type': 'FLAT',
@@ -52,7 +60,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       console.log(`Port chosen: ${PORT}`)
     })
     before(function (done) {
-      this.timeout(1000 * 60)
+      this.timeout(1000 * 120)
       function begin () {
         bot = mineflayer.createBot({
           username: 'flatbot',
@@ -68,6 +76,11 @@ for (const supportedVersion of mineflayer.testedVersions) {
         bot.once('spawn', () => {
           console.log('bot spawned, opping...')
           wrap.writeServer('op flatbot\n')
+          if (bot.supportFeature('gameRuleUsesResourceLocation')) {
+            wrap.writeServer('gamerule minecraft:spawn_monsters false\n')
+          } else {
+            wrap.writeServer('gamerule spawnMonsters false\n')
+          }
           bot.once('messagestr', msg => {
             if (msg.includes('Made flatbot a server operator') || msg === '[Server: Opped flatbot]') {
               done()
@@ -111,7 +124,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
     })
 
     after((done) => {
-      bot.quit()
+      if (bot) bot.quit()
       wrap.stopServer((err) => {
         if (err) {
           console.log(err)
