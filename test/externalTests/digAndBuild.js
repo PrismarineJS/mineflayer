@@ -24,7 +24,7 @@ module.exports = () => async (bot) => {
       assert(!bot.entity.onGround, 'waitForFall called when we were already on the ground')
       const startingPosition = bot.entity.position.clone()
       bot.on('move', function onMove () {
-        console.log("TEST")
+        console.log('TEST')
         if (bot.entity.onGround) {
           const distance = startingPosition.distanceTo(bot.entity.position)
           assert(distance > 0.2, `waitForFall didn't fall very far: ${distance}`)

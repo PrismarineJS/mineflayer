@@ -56,7 +56,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
     let bot
     this.timeout(10 * 60 * 1000)
     before(async function () {
-      PORT = 25565//await getPort()
+      PORT = await getPort()
       console.log(`Port chosen: ${PORT}`)
     })
     before(function (done) {
