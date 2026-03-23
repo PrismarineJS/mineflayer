@@ -250,8 +250,6 @@ The most updated and useful are :
  * [PrismarineJS/mineflayer-builder](https://github.com/PrismarineJS/mineflayer-builder) - Prints minecraft schematics in survival, keeping orientation
  * [SilkePilon/OpenDeliveryBot](https://github.com/SilkePilon/OpenDeliveryBot) - Minecraft bot in python to deliver items from place to place.
  * [GeiserX/Minecraft-Youtube-Follower](https://github.com/GeiserX/Minecraft-Youtube-Follower) - 24/7 automated spectator bot that follows players with a smart third-person camera and streams to YouTube/Twitch, fully Dockerized.
-   - [YouTube - automated server stream](https://youtube.com/live/7pPMtL0e8eE)
-   - [YouTube - player following demo](https://youtube.com/live/9ns0jZ_VBC4)
  * [and hundreds more](https://github.com/PrismarineJS/mineflayer/network/dependents) - All the projects that github detected are using mineflayer
 
 
