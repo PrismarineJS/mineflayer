@@ -21,7 +21,7 @@ jobs:
     - id: publish
       uses: JS-DevTools/npm-publish@v4
     - name: Create Release
-      if: steps.publish.outputs.type != 'none'
+      if: ${{ steps.publish.outputs.type }}
       id: create_release
       uses: actions/create-release@v1
       env:
