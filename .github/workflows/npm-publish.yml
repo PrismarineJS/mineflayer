@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - master # Change this to your default branch
+permissions:
+  id-token: write
+  contents: write
 jobs:
   npm-publish:
     name: npm-publish
@@ -13,11 +16,10 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@master
       with:
-        node-version: 22.0.0
+        node-version: 24
+        registry-url: 'https://registry.npmjs.org'
     - id: publish
-      uses: JS-DevTools/npm-publish@v1
-      with:
-        token: ${{ secrets.NPM_AUTH_TOKEN }}
+      uses: JS-DevTools/npm-publish@v4
     - name: Create Release
       if: steps.publish.outputs.type != 'none'
       id: create_release
