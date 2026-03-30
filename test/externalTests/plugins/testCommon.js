@@ -117,22 +117,20 @@ function inject (bot, wrap) {
     return setCreativeMode(false)
   }
 
-  const gameModeChangedMessages = ['commands.gamemode.success.self', 'gameMode.changed']
-
   async function setCreativeMode (value) {
     const getGM = val => val ? 'creative' : 'survival'
-    // Use server console commands so they work even if the bot is mid-disconnect.
-    let i = 0
-    const msgProm = onceWithCleanup(bot, 'message', {
-      timeout,
-      checkCondition: msg => gameModeChangedMessages.includes(msg.translate) && i++ > 0 && bot.game.gameMode === getGM(value)
-    })
+    const target = getGM(value)
+    // Already in the right mode? Nothing to do.
+    if (bot.game.gameMode === target) return
 
-    // do it three times to ensure that we get feedback
-    wrap.writeServer(`gamemode ${getGM(value)} flatbot\n`)
-    wrap.writeServer(`gamemode ${getGM(!value)} flatbot\n`)
-    wrap.writeServer(`gamemode ${getGM(value)} flatbot\n`)
-    return msgProm
+    // Use server console commands so they work even if the bot is mid-disconnect.
+    // Wait for the game event that confirms the gameMode actually changed.
+    const gameProm = onceWithCleanup(bot, 'game', {
+      timeout,
+      checkCondition: () => bot.game.gameMode === target
+    })
+    wrap.writeServer(`gamemode ${target} flatbot\n`)
+    return gameProm
   }
 
   async function clearInventory () {
@@ -142,9 +140,12 @@ function inject (bot, wrap) {
     wrap.writeServer('give flatbot stone 1\n')
     await giveStone
 
-    const clearInv = onceWithCleanup(bot, 'message', {
+    // Wait for the stone to be removed from inventory (confirms /clear worked).
+    // We use updateSlot instead of message because server console commands
+    // don't always send feedback messages to the player on older MC versions.
+    const clearInv = onceWithCleanup(bot.inventory, 'updateSlot', {
       timeout,
-      checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
+      checkCondition: (slot, oldItem, newItem) => oldItem?.name === 'stone' && newItem === null
     })
     wrap.writeServer('clear flatbot\n')
     await clearInv
