@@ -9,7 +9,7 @@ const { sleep, onceWithCleanup } = require('../../../lib/promise_utils')
 const timeout = 20000
 module.exports = inject
 
-function inject (bot) {
+function inject (bot, wrap) {
   console.log(bot.version)
 
   bot.test = {}
@@ -103,23 +103,19 @@ function inject (bot) {
     return setCreativeMode(false)
   }
 
-  const gameModeChangedMessages = ['commands.gamemode.success.self', 'gameMode.changed']
-
   async function setCreativeMode (value) {
-    const getGM = val => val ? 'creative' : 'survival'
-    // this function behaves the same whether we start in creative mode or not.
-    // also, creative mode is always allowed for ops, even if server.properties says force-gamemode=true in survival mode.
-    let i = 0
-    const msgProm = onceWithCleanup(bot, 'message', {
+    const mode = value ? 'creative' : 'survival'
+    const modeId = value ? 1 : 0
+    if (bot.game.gameMode === mode) return
+    // Use server console for instant, reliable gamemode change.
+    // The old approach (triple chat command + message parsing) was fragile
+    // and the most common source of flaky test timeouts.
+    const gameModePromise = onceWithCleanup(bot._client, 'game_state_change', {
       timeout,
-      checkCondition: msg => gameModeChangedMessages.includes(msg.translate) && i++ > 0 && bot.game.gameMode === getGM(value)
+      checkCondition: (packet) => packet.reason === 3 && packet.gameMode === modeId
     })
-
-    // do it three times to ensure that we get feedback
-    bot.chat(`/gamemode ${getGM(value)}`)
-    bot.chat(`/gamemode ${getGM(!value)}`)
-    bot.chat(`/gamemode ${getGM(value)}`)
-    return msgProm
+    wrap.writeServer(`gamemode ${mode} flatbot\n`)
+    await gameModePromise
   }
 
   async function clearInventory () {
