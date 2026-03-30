@@ -133,8 +133,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
         const runTest = (testName, testFunction) => {
           return function (done) {
             this.timeout(TEST_TIMEOUT_MS)
-            const currentRetry = this.currentRetry()
-            if (currentRetry > 0) console.log(`  [retry ${currentRetry}] ${testName}`)
+            if (this.test._currentRetry > 0) {
+              console.log(`  [retry ${this.test._currentRetry}] ${testName}`)
+            }
             bot.test.resetState()
               .then(() => {
                 bot.test.sayEverywhere(`### Starting ${testName}`)
