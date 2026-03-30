@@ -11,6 +11,7 @@ module.exports = inject
 
 function inject (bot, wrap) {
   console.log(bot.version)
+  const Item = require('prismarine-item')(bot.registry)
 
   bot.test = {}
   bot.test.groundY = bot.supportFeature('tallWorld') ? -60 : 4
@@ -123,14 +124,10 @@ function inject (bot, wrap) {
   }
 
   async function clearInventory () {
-    // Give a stone via bot chat (not server console, to avoid admin
-    // messages interfering with chat pattern tests), then clear via
-    // server console for reliability.
-    bot.chat('/give @a stone 1')
-    await onceWithCleanup(bot.inventory, 'updateSlot', {
-      timeout,
-      checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone'
-    })
+    // Use creative setInventorySlot to place a stone (no chat message),
+    // then clear via server console. This avoids chat messages that
+    // interfere with chat pattern tests.
+    await bot.creative.setInventorySlot(36, new Item(bot.registry.itemsByName.stone.id, 1, 0))
     wrap.writeServer('clear flatbot\n')
     await onceWithCleanup(bot.inventory, 'updateSlot', {
       timeout,
