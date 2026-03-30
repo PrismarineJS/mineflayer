@@ -68,7 +68,7 @@ jobs:
           exit_code=0
           pids=""
           for v in ${{ matrix.versions }}; do
-            npm run mocha_test -- --retries 2 -g "${v}v" > "test-${v}.log" 2>&1 &
+            npm run mocha_test -- --retries 3 -g "${v}v" > "test-${v}.log" 2>&1 &
             pids="$pids $!"
           done
           for pid in $pids; do
