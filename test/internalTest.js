@@ -7,6 +7,7 @@ const assert = require('assert')
 const { sleep } = require('../lib/promise_utils')
 const nbt = require('prismarine-nbt')
 const { once } = require('../lib/promise_utils')
+const { getPort } = require('./common/util')
 
 for (const supportedVersion of mineflayer.testedVersions) {
   const registry = require('prismarine-registry')(supportedVersion)
@@ -52,22 +53,23 @@ for (const supportedVersion of mineflayer.testedVersions) {
     this.timeout(10 * 1000)
     let bot
     let server
-    beforeEach((done) => {
+    let PORT
+    beforeEach(async function () {
+      PORT = await getPort()
       server = mc.createServer({
         'online-mode': false,
         version: supportedVersion,
-        // 25565 - local server, 25566 - proxy server
-        port: 25567
+        port: PORT
       })
-      server.on('listening', () => {
-        bot = mineflayer.createBot({
-          username: 'player',
-          version: supportedVersion,
-          port: 25567
-        })
-        bot.test = {}
+      await once(server, 'listening')
+      bot = mineflayer.createBot({
+        username: 'player',
+        version: supportedVersion,
+        port: PORT
+      })
+      bot.test = {}
 
-        bot.test.buildChunk = () => {
+      bot.test.buildChunk = () => {
           if (bot.supportFeature('tallWorld')) {
             return new Chunk({ minY: -64, worldHeight: 384 })
           } else {
@@ -98,8 +100,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
           return loginPacket
         }
-        done()
-      })
     })
     afterEach((done) => {
       bot.on('end', () => {
