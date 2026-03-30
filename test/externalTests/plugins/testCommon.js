@@ -6,7 +6,7 @@ const process = require('process')
 const assert = require('assert')
 const { sleep, onceWithCleanup } = require('../../../lib/promise_utils')
 
-const timeout = process.env.CI ? 40000 : 20000
+const timeout = 20000
 module.exports = inject
 
 function inject (bot) {
