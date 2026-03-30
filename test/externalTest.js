@@ -201,10 +201,17 @@ for (const supportedVersion of mineflayer.testedVersions) {
     })
 
     const externalTestsFolder = path.resolve(__dirname, './externalTests')
-    fs.readdirSync(externalTestsFolder)
+    // Tests that involve /kill or respawn should run LAST to avoid cascading failures
+    const dangerousTests = ['gamemode', 'spawnEvent']
+    const allTests = fs.readdirSync(externalTestsFolder)
       .filter(file => fs.statSync(path.join(externalTestsFolder, file)).isFile())
-      .forEach((test) => {
-        test = path.basename(test, '.js')
+      .map(file => path.basename(file, '.js'))
+    // Safe tests first, dangerous tests last
+    const orderedTests = [
+      ...allTests.filter(t => !dangerousTests.includes(t)),
+      ...allTests.filter(t => dangerousTests.includes(t))
+    ]
+    orderedTests.forEach((test) => {
         const testFunctions = require(`./externalTests/${test}`)(supportedVersion)
         const runTest = (testName, testFunction) => {
           return function (done) {
