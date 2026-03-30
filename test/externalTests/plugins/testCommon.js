@@ -85,6 +85,12 @@ function inject (bot) {
 
   // always leaves you in creative mode
   async function resetState () {
+    // Wait a tick so the physics loop can process any pending state (e.g. after
+    // a respawn) before we start sending commands.  Without this, Node 24's
+    // faster event-loop timing can cause a stale position packet to reach the
+    // server before the respawn is fully acknowledged, resulting in
+    // "Invalid move player packet received" and a disconnection.
+    await bot.waitForTicks(4)
     await becomeCreative()
     await clearInventory()
     bot.creative.startFlying()
