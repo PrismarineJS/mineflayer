@@ -33,11 +33,12 @@ jobs:
       run: |
         node -e "
           const v = require('./lib/version').testedVersions;
-          const pairs = [];
-          for (let i = 0; i < v.length; i += 2) {
-            pairs.push({ versions: v[i] + (v[i+1] ? ' ' + v[i+1] : '') });
+          const groups = [];
+          const SIZE = 4;
+          for (let i = 0; i < v.length; i += SIZE) {
+            groups.push({ versions: v.slice(i, i + SIZE).join(' ') });
           }
-          console.log('matrix='+JSON.stringify({'include': pairs}))
+          console.log('matrix='+JSON.stringify({'include': groups}))
         " >> $GITHUB_OUTPUT
 
   MinecraftServer:

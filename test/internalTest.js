@@ -70,36 +70,36 @@ for (const supportedVersion of mineflayer.testedVersions) {
       bot.test = {}
 
       bot.test.buildChunk = () => {
-          if (bot.supportFeature('tallWorld')) {
-            return new Chunk({ minY: -64, worldHeight: 384 })
-          } else {
-            return new Chunk()
-          }
+        if (bot.supportFeature('tallWorld')) {
+          return new Chunk({ minY: -64, worldHeight: 384 })
+        } else {
+          return new Chunk()
         }
+      }
 
-        bot.test.generateLoginPacket = () => {
-          let loginPacket
-          if (bot.supportFeature('usesLoginPacket')) {
-            loginPacket = registry.loginPacket
-            loginPacket.entityId = 0 // Default login packet in minecraft-data 1.16.5 is 1, so set it to 0
-          } else {
-            loginPacket = {
-              entityId: 0,
-              levelType: 'fogetaboutit',
-              gameMode: 0,
-              previousGameMode: 255,
-              worldNames: ['minecraft:overworld'],
-              dimension: 0,
-              worldName: 'minecraft:overworld',
-              hashedSeed: [0, 0],
-              difficulty: 0,
-              maxPlayers: 20,
-              reducedDebugInfo: 1,
-              enableRespawnScreen: true
-            }
+      bot.test.generateLoginPacket = () => {
+        let loginPacket
+        if (bot.supportFeature('usesLoginPacket')) {
+          loginPacket = registry.loginPacket
+          loginPacket.entityId = 0 // Default login packet in minecraft-data 1.16.5 is 1, so set it to 0
+        } else {
+          loginPacket = {
+            entityId: 0,
+            levelType: 'fogetaboutit',
+            gameMode: 0,
+            previousGameMode: 255,
+            worldNames: ['minecraft:overworld'],
+            dimension: 0,
+            worldName: 'minecraft:overworld',
+            hashedSeed: [0, 0],
+            difficulty: 0,
+            maxPlayers: 20,
+            reducedDebugInfo: 1,
+            enableRespawnScreen: true
           }
-          return loginPacket
         }
+        return loginPacket
+      }
     })
     afterEach((done) => {
       bot.on('end', () => {
