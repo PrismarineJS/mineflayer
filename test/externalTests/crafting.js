@@ -55,10 +55,13 @@ module.exports = () => async (bot) => {
     }
   }
 
-  await bot.test.setInventorySlot(36, new Item(populateBlockInventory.id, 1, populateBlockMetadata))
+  // Switch to survival first, then give items via /give to avoid
+  // creative→survival inventory desync on older servers.
   await bot.test.becomeSurvival()
-  // Wait a tick for the server to sync inventory after gamemode switch
-  await bot.waitForTicks(1)
+  const giveCmd = bot.supportFeature('oneBlockForSeveralVariations')
+    ? `/give ${bot.username} ${populateBlockInventory.name} 1 ${populateBlockMetadata}`
+    : `/give ${bot.username} ${populateBlockInventory.name} 1`
+  await bot.test.awaitItemReceived(giveCmd)
   await craft(1, craftItem)
   await bot.test.setBlock({ x: 1, y: 0, z: 0, relative: true, blockName: 'crafting_table' })
   bot.chat('/give @p stick 7')
