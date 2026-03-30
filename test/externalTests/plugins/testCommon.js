@@ -123,10 +123,10 @@ function inject (bot, wrap) {
   }
 
   async function clearInventory () {
-    // Use server console for reliable inventory clearing.
-    // Give a stone first to guarantee the server has something to clear,
-    // which ensures we always get an updateSlot event back.
-    wrap.writeServer('give flatbot stone 1\n')
+    // Give a stone via bot chat (not server console, to avoid admin
+    // messages interfering with chat pattern tests), then clear via
+    // server console for reliability.
+    bot.chat('/give @a stone 1')
     await onceWithCleanup(bot.inventory, 'updateSlot', {
       timeout,
       checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone'
