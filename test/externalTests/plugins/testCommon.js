@@ -124,12 +124,15 @@ function inject (bot, wrap) {
 
   async function clearInventory () {
     // Use server console for reliable inventory clearing.
-    // The old approach (chat /give + /clear + message parsing) was flaky
-    // due to updateSlot timeouts on slow CI runners.
-    const hasItems = bot.inventory.slots.some(item => item != null)
-    if (!hasItems) return
     wrap.writeServer('clear flatbot\n')
-    // Wait for the inventory to actually be empty
+    // Wait until the inventory is actually empty. If it's already empty,
+    // the clear is a no-op and we can return immediately.
+    if (!bot.inventory.slots.some(item => item != null)) {
+      // Still wait a tick to let any pending set_slot packets arrive
+      await bot.waitForTicks(2)
+      return
+    }
+    // Wait for all slots to be cleared
     await onceWithCleanup(bot.inventory, 'updateSlot', {
       timeout,
       checkCondition: () => !bot.inventory.slots.some(item => item != null)
