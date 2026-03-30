@@ -124,10 +124,18 @@ function inject (bot, wrap) {
   }
 
   async function clearInventory () {
-    // Use creative setInventorySlot to place a stone (no chat message),
-    // then clear via server console. This avoids chat messages that
-    // interfere with chat pattern tests.
-    await bot.creative.setInventorySlot(36, new Item(bot.registry.itemsByName.stone.id, 1, 0))
+    // Place a stone silently via creative packet (no chat message, no
+    // waiting for confirmation), then clear via server console.
+    const stoneId = bot.registry.itemsByName.stone.id
+    bot._client.write('set_creative_slot', {
+      slot: 36,
+      item: Item.toNotch(new Item(stoneId, 1, 0))
+    })
+    // Wait for the stone to arrive
+    await onceWithCleanup(bot.inventory, 'updateSlot', {
+      timeout,
+      checkCondition: (slot, oldItem, newItem) => newItem?.type === stoneId
+    })
     wrap.writeServer('clear flatbot\n')
     await onceWithCleanup(bot.inventory, 'updateSlot', {
       timeout,
