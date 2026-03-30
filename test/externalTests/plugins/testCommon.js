@@ -85,19 +85,10 @@ function inject (bot) {
 
   // always leaves you in creative mode
   async function resetState () {
-    // Wait for the physics loop to process any pending state (e.g. after
-    // a respawn) before we start sending commands.  Without this, Node 24's
-    // faster event-loop timing can cause a stale position packet to reach the
-    // server before the respawn is fully acknowledged, resulting in
-    // "Invalid move player packet received" and a disconnection.
-    // We try waitForTicks first (needed when the physics loop IS running to
-    // properly sync), but fall back to sleep if the physics loop hasn't
-    // started yet (e.g. first beforeEach on older MC versions).
-    try {
-      await bot.waitForTicks(4)
-    } catch {
-      await sleep(200)
-    }
+    // Re-enable physics if it was disabled (e.g. by selfKill or spawnEvent)
+    // then wait for the server to stabilize before sending commands.
+    bot.physicsEnabled = true
+    await sleep(600)
     await becomeCreative()
     await clearInventory()
     bot.creative.startFlying()
@@ -259,6 +250,10 @@ function inject (bot) {
   }
 
   function selfKill () {
+    // Disable physics before kill to prevent "Invalid move player packet"
+    // kick from the server — the physics loop sends stale position packets
+    // before the server finishes processing the respawn.
+    bot.physicsEnabled = false
     bot.chat('/kill @p')
   }
 
