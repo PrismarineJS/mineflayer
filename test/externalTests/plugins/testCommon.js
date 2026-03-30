@@ -112,7 +112,11 @@ function inject (bot, wrap) {
     // and the most common source of flaky test timeouts.
     const gameModePromise = onceWithCleanup(bot._client, 'game_state_change', {
       timeout,
-      checkCondition: (packet) => packet.reason === 3 && packet.gameMode === modeId
+      checkCondition: (packet) => {
+        // reason is 3 (number) on old versions, 'change_game_mode' (string) on new
+        const isGameModeChange = packet.reason === 3 || packet.reason === 'change_game_mode'
+        return isGameModeChange && Math.floor(packet.gameMode) === modeId
+      }
     })
     wrap.writeServer(`gamemode ${mode} flatbot\n`)
     await gameModePromise
