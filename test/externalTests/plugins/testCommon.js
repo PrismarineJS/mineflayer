@@ -128,13 +128,12 @@ function inject (bot, wrap) {
     // due to updateSlot timeouts on slow CI runners.
     const hasItems = bot.inventory.slots.some(item => item != null)
     if (!hasItems) return
-    // Wait for a set_slot confirming an item was removed (blockId -1)
-    const slotPromise = onceWithCleanup(bot._client, 'set_slot', {
-      timeout,
-      checkCondition: (packet) => packet.windowId === 0 && packet.item?.blockId === -1
-    })
     wrap.writeServer('clear flatbot\n')
-    await slotPromise
+    // Wait for the inventory to actually be empty
+    await onceWithCleanup(bot.inventory, 'updateSlot', {
+      timeout,
+      checkCondition: () => !bot.inventory.slots.some(item => item != null)
+    })
   }
 
   // you need to be in creative mode for this to work
