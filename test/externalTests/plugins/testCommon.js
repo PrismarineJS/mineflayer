@@ -85,19 +85,22 @@ function inject (bot) {
 
   // always leaves you in creative mode
   async function resetState () {
-    // Wait for the physics loop to process any pending state (e.g. after
-    // a respawn) before we start sending commands.  Without this, Node 24's
-    // faster event-loop timing can cause a stale position packet to reach the
-    // server before the respawn is fully acknowledged, resulting in
-    // "Invalid move player packet received" and a disconnection.
-    // We try waitForTicks first (needed when the physics loop IS running to
-    // properly sync), but fall back to sleep if the physics loop hasn't
-    // started yet (e.g. first beforeEach on older MC versions).
+    // Temporarily disable physics so the loop cannot send position packets
+    // while the server may still be processing a respawn from a previous
+    // test.  On Node 24 the event loop is fast enough that without this
+    // guard a stale position packet reaches the server before the respawn
+    // is fully acknowledged, resulting in "Invalid move player packet
+    // received" and a disconnection.
+    const prevPhysics = bot.physicsEnabled
+    bot.physicsEnabled = false
     try {
       await bot.waitForTicks(4)
     } catch {
       await sleep(200)
     }
+    // Extra grace period for the server to settle after respawn
+    await sleep(500)
+    bot.physicsEnabled = prevPhysics
     await becomeCreative()
     await clearInventory()
     bot.creative.startFlying()
@@ -258,8 +261,17 @@ function inject (bot) {
     return closeExample()
   }
 
-  function selfKill () {
+  async function selfKill () {
+    // Disable physics before killing so the physics loop doesn't send a
+    // stale position packet while the server is still processing the
+    // respawn.  This prevents "Invalid move player packet received" kicks.
+    bot.physicsEnabled = false
     bot.chat('/kill @p')
+    await onceWithCleanup(bot, 'respawn', { timeout: 10000 })
+    // Give the server extra time to fully process the respawn before we
+    // allow position packets to flow again.
+    await sleep(500)
+    bot.physicsEnabled = true
   }
 
   // Debug packet IO when tests are re-run with "Enable debug logging" - https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables
