@@ -14,11 +14,6 @@ module.exports = () => async (bot) => {
   spawnBot.end()
 
   // Test spawn event on death
-  // Disable physics before kill to prevent "Invalid move player packet"
-  // kick — the physics loop can send a stale position packet before
-  // the server finishes processing the respawn.
-  bot.physicsEnabled = false
   bot.test.sayEverywhere(`/kill ${bot.username}`)
   await once(bot, 'spawn')
-  bot.physicsEnabled = true
 }
