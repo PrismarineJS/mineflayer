@@ -125,6 +125,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
     })
 
     const externalTestsFolder = path.resolve(__dirname, './externalTests')
+    let distinctFailures = 0
     fs.readdirSync(externalTestsFolder)
       .filter(file => fs.statSync(path.join(externalTestsFolder, file)).isFile())
       .forEach((test) => {
@@ -133,6 +134,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
         const runTest = (testName, testFunction) => {
           return function (done) {
             this.timeout(TEST_TIMEOUT_MS)
+            // Disable retries if too many different tests have already failed
+            // (indicates a systemic issue, not transient flakiness)
+            if (distinctFailures >= 3) this.retries(0)
             if (this.test._currentRetry > 0) {
               console.log(`  [retry ${this.test._currentRetry}] ${testName}`)
             }
@@ -142,7 +146,12 @@ for (const supportedVersion of mineflayer.testedVersions) {
                 return testFunction(bot, done)
               })
               .then(res => done())
-              .catch(e => done(e))
+              .catch(e => {
+                if (this.test._currentRetry >= (this.test.retries() || 0)) {
+                  distinctFailures++
+                }
+                done(e)
+              })
           }
         }
         if (excludedTests.indexOf(test) === -1) {
