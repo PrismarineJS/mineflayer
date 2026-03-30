@@ -109,80 +109,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
       } else begin()
     })
 
-    beforeEach(async function () {
-      this.timeout(90000)
-
-      async function reconnectBot () {
-        console.log('Bot disconnected, reconnecting...')
-        try { bot.end() } catch (e) { /* ignore */ }
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        bot = mineflayer.createBot({
-          username: 'flatbot',
-          viewDistance: 'tiny',
-          port: PORT,
-          host: '127.0.0.1',
-          version: supportedVersion
-        })
-        commonTest(bot)
-        bot.test.port = PORT
-        await new Promise((resolve, reject) => {
-          bot.once('spawn', () => {
-            console.log('Bot reconnected and spawned')
-            resolve()
-          })
-          setTimeout(() => reject(new Error('Reconnection timed out')), 30000)
-        })
-        // Re-op after reconnect
-        wrap.writeServer('op flatbot\n')
-        await new Promise((resolve) => {
-          bot.once('messagestr', msg => {
-            if (msg.includes('Made flatbot a server operator') || msg.includes('Opped flatbot') || msg.includes('Nothing changed')) {
-              resolve()
-            }
-          })
-          setTimeout(resolve, 5000) // fallback if already op
-        })
-      }
-
-      // If already disconnected, reconnect first
-      if (!bot.entity) {
-        await reconnectBot()
-      }
-
-      // Try resetting state; if bot gets kicked during reset, reconnect and retry
-      try {
-        console.log('Resetting state')
-        await bot.test.resetState()
-        console.log('State reset')
-      } catch (e) {
-        console.log('resetState failed:', e.message, '- reconnecting and retrying')
-        await reconnectBot()
-        console.log('Resetting state (retry)')
-        await bot.test.resetState()
-        console.log('State reset (retry)')
-      }
-    })
-
-    afterEach(async function () {
-      // Clean up any lingering state from the test
-      if (bot.entity) {
-        try {
-          bot.removeAllListeners('chat')
-          bot.removeAllListeners('playerCollect')
-          bot.removeAllListeners('entitySpawn')
-          bot.removeAllListeners('entityGone')
-          bot.removeAllListeners('bossBarCreated')
-          bot.removeAllListeners('bossBarUpdated')
-          bot.removeAllListeners('bossBarDeleted')
-          bot.removeAllListeners('scoreboardCreated')
-          bot.removeAllListeners('scoreboardDeleted')
-          bot.removeAllListeners('teamCreated')
-          bot.removeAllListeners('teamMemberAdded')
-          bot.removeAllListeners('teamMemberRemoved')
-        } catch (e) {
-          // ignore cleanup errors
-        }
-      }
+    beforeEach(async () => {
+      console.log('Resetting state')
+      await bot.test.resetState()
+      console.log('State reset')
     })
 
     after((done) => {

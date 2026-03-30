@@ -85,7 +85,6 @@ function inject (bot) {
 
   // always leaves you in creative mode
   async function resetState () {
-    await sleep(200)
     await becomeCreative()
     await clearInventory()
     bot.creative.startFlying()
