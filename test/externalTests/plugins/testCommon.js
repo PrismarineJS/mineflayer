@@ -127,9 +127,7 @@ function inject (bot) {
     const giveStone = onceWithCleanup(bot.inventory, 'updateSlot', { timeout: 1000 * 20, checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
     await bot.test.wait(500)
     bot.chat('/give @a stone 1')
-    bot.inventory.on('updateSlot', (...e) => {
-      // console.log('inventory.updateSlot', e)
-    })
+    // Removed: was leaking a new listener every call
     await giveStone
 
     const clearInv = onceWithCleanup(bot, 'message', {
