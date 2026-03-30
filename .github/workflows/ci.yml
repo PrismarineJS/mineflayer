@@ -57,5 +57,8 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Use fixed minecraft-data recipes
+        run: cd node_modules/minecraft-data && mv minecraft-data minecraft-data-old && git clone -b fix-recipe-metadata https://github.com/PrismarineJS/minecraft-data --depth 1 && node bin/generate_data.js
+
       - name: Start Tests
         run: npm run mocha_test -- --retries 2 -g ${{ matrix.mcVersion }}v
