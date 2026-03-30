@@ -61,6 +61,13 @@ for (const supportedVersion of mineflayer.testedVersions) {
           host: '127.0.0.1',
           version: supportedVersion
         })
+        // Track disconnections so beforeEach can detect them early
+        bot._testDisconnected = false
+        bot.on('end', () => { bot._testDisconnected = true })
+        bot.on('kicked', (reason) => {
+          console.log('Bot kicked:', reason)
+          bot._testDisconnected = true
+        })
         commonTest(bot)
         bot.test.port = PORT
 
@@ -114,8 +121,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
       async function reconnectBot () {
         console.log('Bot disconnected, reconnecting...')
-        try { bot.end() } catch (e) { /* ignore */ }
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        try { bot.removeAllListeners(); bot.end() } catch (e) { /* ignore */ }
+        await new Promise(resolve => setTimeout(resolve, 1500))
         bot = mineflayer.createBot({
           username: 'flatbot',
           viewDistance: 'tiny',
@@ -123,29 +130,48 @@ for (const supportedVersion of mineflayer.testedVersions) {
           host: '127.0.0.1',
           version: supportedVersion
         })
+        // Track disconnections so we detect them early
+        bot._testDisconnected = false
+        bot.on('end', () => { bot._testDisconnected = true })
+        bot.on('kicked', (reason) => {
+          console.log('Bot kicked:', reason)
+          bot._testDisconnected = true
+        })
         commonTest(bot)
         bot.test.port = PORT
+        // Wait for spawn
         await new Promise((resolve, reject) => {
+          const timer = setTimeout(() => reject(new Error('Reconnection timed out')), 30000)
           bot.once('spawn', () => {
+            clearTimeout(timer)
             console.log('Bot reconnected and spawned')
             resolve()
           })
-          setTimeout(() => reject(new Error('Reconnection timed out')), 30000)
         })
+        // Wait for chunks to load so the world is ready
+        try {
+          await bot.waitForChunksToLoad()
+          console.log('Chunks loaded after reconnect')
+        } catch (e) {
+          console.log('waitForChunksToLoad failed after reconnect, continuing:', e.message)
+        }
+        // Let the server fully register the player
+        await new Promise(resolve => setTimeout(resolve, 2000))
         // Re-op after reconnect
         wrap.writeServer('op flatbot\n')
         await new Promise((resolve) => {
+          const timer = setTimeout(resolve, 5000) // fallback if already op
           bot.once('messagestr', msg => {
             if (msg.includes('Made flatbot a server operator') || msg.includes('Opped flatbot') || msg.includes('Nothing changed')) {
+              clearTimeout(timer)
               resolve()
             }
           })
-          setTimeout(resolve, 5000) // fallback if already op
         })
       }
 
-      // If already disconnected, reconnect first
-      if (!bot.entity) {
+      // Detect disconnection via flag or missing entity
+      if (bot._testDisconnected || !bot.entity) {
         await reconnectBot()
       }
 

@@ -85,6 +85,12 @@ function inject (bot) {
 
   // always leaves you in creative mode
   async function resetState () {
+    // Guard: if bot is already disconnected, bail immediately so the
+    // caller (beforeEach) can trigger a reconnect instead of timing out.
+    if (bot._testDisconnected || !bot.entity) {
+      throw new Error('Bot is disconnected, cannot resetState')
+    }
+
     // Wait for the physics loop to process any pending state (e.g. after
     // a respawn) before we start sending commands.  Without this, Node 24's
     // faster event-loop timing can cause a stale position packet to reach the
@@ -98,14 +104,54 @@ function inject (bot) {
     } catch {
       await sleep(200)
     }
-    await becomeCreative()
-    await clearInventory()
+
+    // Wrap each step individually so partial failures are identified and
+    // don't leave the bot in an unknown state.
+    try {
+      await becomeCreative()
+    } catch (e) {
+      console.log('resetState: becomeCreative failed:', e.message)
+      throw e
+    }
+
+    try {
+      await clearInventory()
+    } catch (e) {
+      console.log('resetState: clearInventory (first) failed:', e.message)
+      throw e
+    }
+
     bot.creative.startFlying()
-    await teleport(new Vec3(0, bot.test.groundY, 0))
-    await bot.waitForChunksToLoad()
-    await resetBlocksToSuperflat()
+
+    try {
+      await teleport(new Vec3(0, bot.test.groundY, 0))
+    } catch (e) {
+      console.log('resetState: teleport failed:', e.message)
+      throw e
+    }
+
+    try {
+      await bot.waitForChunksToLoad()
+    } catch (e) {
+      console.log('resetState: waitForChunksToLoad failed:', e.message)
+      throw e
+    }
+
+    try {
+      await resetBlocksToSuperflat()
+    } catch (e) {
+      console.log('resetState: resetBlocksToSuperflat failed:', e.message)
+      throw e
+    }
+
     await sleep(1000)
-    await clearInventory()
+
+    try {
+      await clearInventory()
+    } catch (e) {
+      console.log('resetState: clearInventory (second) failed:', e.message)
+      throw e
+    }
   }
 
   async function becomeCreative () {
