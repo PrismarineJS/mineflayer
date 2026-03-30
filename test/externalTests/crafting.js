@@ -57,9 +57,8 @@ module.exports = () => async (bot) => {
 
   await bot.test.setInventorySlot(36, new Item(populateBlockInventory.id, 1, populateBlockMetadata))
   await bot.test.becomeSurvival()
-  // Wait for inventory to sync after gamemode switch — the server resends
-  // the inventory contents when changing to survival mode
-  await once(bot.inventory, 'updateSlot')
+  // Wait a tick for the server to sync inventory after gamemode switch
+  await bot.waitForTicks(1)
   await craft(1, craftItem)
   await bot.test.setBlock({ x: 1, y: 0, z: 0, relative: true, blockName: 'crafting_table' })
   bot.chat('/give @p stick 7')
