@@ -124,15 +124,12 @@ function inject (bot, wrap) {
 
   async function clearInventory () {
     // Use server console for reliable inventory clearing.
-    const hasItems = bot.inventory.slots.some(item => item != null)
+    if (!bot.inventory.slots.some(item => item != null)) return
     wrap.writeServer('clear flatbot\n')
-    if (hasItems) {
-      // Wait for all slots to be cleared
-      await onceWithCleanup(bot.inventory, 'updateSlot', {
-        timeout,
-        checkCondition: () => !bot.inventory.slots.some(item => item != null)
-      })
-    }
+    await onceWithCleanup(bot.inventory, 'updateSlot', {
+      timeout,
+      checkCondition: () => !bot.inventory.slots.some(item => item != null)
+    })
   }
 
   // you need to be in creative mode for this to work
