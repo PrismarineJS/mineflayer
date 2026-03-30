@@ -110,11 +110,11 @@ for (const supportedVersion of mineflayer.testedVersions) {
     })
 
     beforeEach(async function () {
-      this.timeout(60000)
-      // If the bot got kicked/disconnected, reconnect before resetting state
-      if (!bot.entity) {
+      this.timeout(90000)
+
+      async function reconnectBot () {
         console.log('Bot disconnected, reconnecting...')
-        bot.end()
+        try { bot.end() } catch (e) { /* ignore */ }
         await new Promise(resolve => setTimeout(resolve, 1000))
         bot = mineflayer.createBot({
           username: 'flatbot',
@@ -143,9 +143,24 @@ for (const supportedVersion of mineflayer.testedVersions) {
           setTimeout(resolve, 5000) // fallback if already op
         })
       }
-      console.log('Resetting state')
-      await bot.test.resetState()
-      console.log('State reset')
+
+      // If already disconnected, reconnect first
+      if (!bot.entity) {
+        await reconnectBot()
+      }
+
+      // Try resetting state; if bot gets kicked during reset, reconnect and retry
+      try {
+        console.log('Resetting state')
+        await bot.test.resetState()
+        console.log('State reset')
+      } catch (e) {
+        console.log('resetState failed:', e.message, '- reconnecting and retrying')
+        await reconnectBot()
+        console.log('Resetting state (retry)')
+        await bot.test.resetState()
+        console.log('State reset (retry)')
+      }
     })
 
     afterEach(async function () {
