@@ -41,7 +41,9 @@ jobs:
       with:
         node-version: 22.x
 
-    - run: npm install PrismarineJS/node-minecraft-protocol#${{ github.event.inputs.nmp_branch }}
+    - run: npm install "PrismarineJS/node-minecraft-protocol#${NMP_BRANCH}"
+      env:
+        NMP_BRANCH: ${{ github.event.inputs.nmp_branch }}
 
     - name: Run updator script
       run: cd .github/helper && npm install && node updator.js
