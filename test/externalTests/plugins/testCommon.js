@@ -85,14 +85,17 @@ function inject (bot) {
 
   // always leaves you in creative mode
   async function resetState () {
-    // Wait for the physics loop to process any pending state (e.g. after
-    // a respawn) before we start sending commands.  Without this, Node 24's
-    // faster event-loop timing can cause a stale position packet to reach the
-    // server before the respawn is fully acknowledged, resulting in
-    // "Invalid move player packet received" and a disconnection.
-    // We try waitForTicks first (needed when the physics loop IS running to
-    // properly sync), but fall back to sleep if the physics loop hasn't
-    // started yet (e.g. first beforeEach on older MC versions).
+    // Disable physics immediately to prevent the physics loop from sending
+    // stale position packets (e.g. after a respawn).  On Node 24's faster
+    // event-loop timing these packets can arrive before the server has
+    // finished processing the respawn, causing an "Invalid move player
+    // packet received" kick.
+    bot.physicsEnabled = false
+    try {
+      await sleep(200)
+    } catch { /* ignore */ }
+    // Re-enable physics now that any stale state has been flushed
+    bot.physicsEnabled = true
     try {
       await bot.waitForTicks(4)
     } catch {
@@ -259,7 +262,16 @@ function inject (bot) {
   }
 
   function selfKill () {
+    // Disable physics before /kill to prevent the physics loop from sending
+    // a position packet with stale data after respawn.  The physics loop is
+    // re-enabled once the respawn has fully settled.
+    bot.physicsEnabled = false
     bot.chat('/kill @p')
+    bot.once('respawn', () => {
+      // Give the server a moment to finish processing the respawn before
+      // we start sending position packets again.
+      setTimeout(() => { bot.physicsEnabled = true }, 250)
+    })
   }
 
   // Debug packet IO when tests are re-run with "Enable debug logging" - https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables
