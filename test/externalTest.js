@@ -212,25 +212,25 @@ for (const supportedVersion of mineflayer.testedVersions) {
       ...allTests.filter(t => dangerousTests.includes(t))
     ]
     orderedTests.forEach((test) => {
-        const testFunctions = require(`./externalTests/${test}`)(supportedVersion)
-        const runTest = (testName, testFunction) => {
-          return function (done) {
-            this.timeout(TEST_TIMEOUT_MS)
-            bot.test.sayEverywhere(`### Starting ${testName}`)
-            testFunction(bot, done).then(res => done()).catch(e => done(e))
-          }
+      const testFunctions = require(`./externalTests/${test}`)(supportedVersion)
+      const runTest = (testName, testFunction) => {
+        return function (done) {
+          this.timeout(TEST_TIMEOUT_MS)
+          bot.test.sayEverywhere(`### Starting ${testName}`)
+          testFunction(bot, done).then(res => done()).catch(e => done(e))
         }
-        if (excludedTests.indexOf(test) === -1) {
-          if (typeof testFunctions === 'object') {
-            for (const testFunctionName in testFunctions) {
-              if (testFunctions[testFunctionName] !== undefined) {
-                it(`${test} ${testFunctionName}`, (testFunctionName => runTest(`${test} ${testFunctionName}`, testFunctions[testFunctionName]))(testFunctionName))
-              }
+      }
+      if (excludedTests.indexOf(test) === -1) {
+        if (typeof testFunctions === 'object') {
+          for (const testFunctionName in testFunctions) {
+            if (testFunctions[testFunctionName] !== undefined) {
+              it(`${test} ${testFunctionName}`, (testFunctionName => runTest(`${test} ${testFunctionName}`, testFunctions[testFunctionName]))(testFunctionName))
             }
-          } else {
-            it(test, runTest(test, testFunctions))
           }
+        } else {
+          it(test, runTest(test, testFunctions))
         }
-      })
+      }
+    })
   })
 }
