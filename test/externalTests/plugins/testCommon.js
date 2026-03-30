@@ -124,23 +124,24 @@ function inject (bot, wrap) {
   }
 
   async function clearInventory () {
-    // Place a stone silently via creative packet (no chat message, no
-    // waiting for confirmation), then clear via server console.
+    // Place a stone silently via creative packet (no chat message),
+    // then clear via bot chat (not server console — server console
+    // generates system_chat messages that interfere with chat tests).
     const stoneId = bot.registry.itemsByName.stone.id
     bot._client.write('set_creative_slot', {
       slot: 36,
       item: Item.toNotch(new Item(stoneId, 1, 0))
     })
-    // Wait for the stone to arrive
     await onceWithCleanup(bot.inventory, 'updateSlot', {
       timeout,
       checkCondition: (slot, oldItem, newItem) => newItem?.type === stoneId
     })
-    wrap.writeServer('clear flatbot\n')
-    await onceWithCleanup(bot.inventory, 'updateSlot', {
+    const clearMsg = onceWithCleanup(bot, 'message', {
       timeout,
-      checkCondition: () => !bot.inventory.slots.some(item => item != null)
+      checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
     })
+    bot.chat('/clear')
+    await clearMsg
   }
 
   // you need to be in creative mode for this to work
