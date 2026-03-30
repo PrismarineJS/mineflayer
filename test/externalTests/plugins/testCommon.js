@@ -6,7 +6,7 @@ const process = require('process')
 const assert = require('assert')
 const { sleep, onceWithCleanup } = require('../../../lib/promise_utils')
 
-const timeout = 20000
+const timeout = process.env.CI ? 40000 : 20000
 module.exports = inject
 
 function inject (bot) {
@@ -140,9 +140,7 @@ function inject (bot) {
     const giveStone = onceWithCleanup(bot.inventory, 'updateSlot', { timeout: 1000 * 20, checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
     await bot.test.wait(500)
     bot.chat('/give @a stone 1')
-    bot.inventory.on('updateSlot', (...e) => {
-      // console.log('inventory.updateSlot', e)
-    })
+    // Removed: was leaking a new listener every call
     await giveStone
 
     const clearInv = onceWithCleanup(bot, 'message', {
