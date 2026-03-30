@@ -6,9 +6,17 @@ module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
 
   let populateBlockInventory
+  let populateBlockMetadata = 0
   let craftItem
   if (bot.supportFeature('oneBlockForSeveralVariations')) {
     populateBlockInventory = blocksByName.log
+    // Recipe data uses metadata 12 as wildcard; match it so recipesFor finds the recipe
+    const planksId = (itemsByName.planks || blocksByName.planks).id
+    const recipe = Object.values(bot.registry.recipes).flat().find(r => r.result?.id === planksId)
+    if (recipe) {
+      const ingredient = (recipe.inShape?.flat() || recipe.ingredients || []).find(i => i?.id === blocksByName.log.id)
+      if (ingredient) populateBlockMetadata = ingredient.metadata ?? 0
+    }
     craftItem = 'planks'
   } else if (bot.supportFeature('blockSchemeIsFlat')) {
     populateBlockInventory = itemsByName.birch_log
@@ -47,8 +55,10 @@ module.exports = () => async (bot) => {
     }
   }
 
-  await bot.test.setInventorySlot(36, new Item(populateBlockInventory.id, 1, 0))
+  await bot.test.setInventorySlot(36, new Item(populateBlockInventory.id, 1, populateBlockMetadata))
   await bot.test.becomeSurvival()
+  // Wait for the server to sync inventory after gamemode switch
+  await bot.test.wait(500)
   await craft(1, craftItem)
   await bot.test.setBlock({ x: 1, y: 0, z: 0, relative: true, blockName: 'crafting_table' })
   bot.chat('/give @p stick 7')
