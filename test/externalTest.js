@@ -109,12 +109,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
       } else begin()
     })
 
-    beforeEach(async () => {
-      console.log('Resetting state')
-      await bot.test.resetState()
-      console.log('State reset')
-    })
-
     after((done) => {
       if (bot) bot.quit()
       wrap.stopServer((err) => {
@@ -139,8 +133,13 @@ for (const supportedVersion of mineflayer.testedVersions) {
         const runTest = (testName, testFunction) => {
           return function (done) {
             this.timeout(TEST_TIMEOUT_MS)
-            bot.test.sayEverywhere(`### Starting ${testName}`)
-            testFunction(bot, done).then(res => done()).catch(e => done(e))
+            bot.test.resetState()
+              .then(() => {
+                bot.test.sayEverywhere(`### Starting ${testName}`)
+                return testFunction(bot, done)
+              })
+              .then(res => done())
+              .catch(e => done(e))
           }
         }
         if (excludedTests.indexOf(test) === -1) {
