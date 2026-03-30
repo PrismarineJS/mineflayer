@@ -135,7 +135,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           return function (done) {
             this.timeout(TEST_TIMEOUT_MS)
             // Disable retries if too many different tests have already failed
-            // (indicates a systemic issue, not transient flakiness)
+            // on their first attempt (indicates a systemic issue, not flakiness)
             if (distinctFailures >= 3) this.retries(0)
             if (this.test._currentRetry > 0) {
               console.log(`  [retry ${this.test._currentRetry}] ${testName}`)
@@ -147,7 +147,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
               })
               .then(res => done())
               .catch(e => {
-                if (this.test._currentRetry >= (this.test.retries() || 0)) {
+                if (this.test._currentRetry === 0) {
                   distinctFailures++
                 }
                 done(e)
