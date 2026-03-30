@@ -91,7 +91,6 @@ function inject (bot) {
     await teleport(new Vec3(0, bot.test.groundY, 0))
     await bot.waitForChunksToLoad()
     await resetBlocksToSuperflat()
-    await sleep(1000)
     await clearInventory()
   }
 
