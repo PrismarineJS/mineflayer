@@ -32,15 +32,20 @@ jobs:
     - id: set-matrix
       run: |
         node -e "
-          const testedVersions = require('./lib/version').testedVersions;
-          console.log('matrix='+JSON.stringify({'include': testedVersions.map(mcVersion => ({mcVersion}))}))
+          const v = require('./lib/version').testedVersions;
+          const pairs = [];
+          for (let i = 0; i < v.length; i += 2) {
+            pairs.push({ versions: v[i] + (v[i+1] ? ' ' + v[i+1] : '') });
+          }
+          console.log('matrix='+JSON.stringify({'include': pairs}))
         " >> $GITHUB_OUTPUT
 
   MinecraftServer:
     needs: PrepareSupportedVersions
     runs-on: ubuntu-latest
+    name: MC ${{ matrix.versions }}
     strategy:
-      matrix: ${{fromJson(needs.PrepareSupportedVersions.outputs.matrix)}}
+      matrix: ${{ fromJson(needs.PrepareSupportedVersions.outputs.matrix) }}
       fail-fast: false
 
     steps:
@@ -58,4 +63,22 @@ jobs:
         run: npm install
 
       - name: Start Tests
-        run: npm run mocha_test -- --retries 2 -g ${{ matrix.mcVersion }}v
+        run: |
+          exit_code=0
+          pids=""
+          for v in ${{ matrix.versions }}; do
+            npm run mocha_test -- --retries 2 -g "${v}v" > "test-${v}.log" 2>&1 &
+            pids="$pids $!"
+          done
+          for pid in $pids; do
+            wait $pid || exit_code=$?
+          done
+          # Print logs sequentially with clear headers
+          for v in ${{ matrix.versions }}; do
+            echo ""
+            echo "=========================================="
+            echo "  Results for Minecraft ${v}"
+            echo "=========================================="
+            cat "test-${v}.log"
+          done
+          exit $exit_code
