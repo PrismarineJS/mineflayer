@@ -61,7 +61,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           host: '127.0.0.1',
           version: supportedVersion
         })
-        commonTest(bot)
+        commonTest(bot, wrap)
         bot.test.port = PORT
 
         console.log('starting bot')
@@ -123,7 +123,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           host: '127.0.0.1',
           version: supportedVersion
         })
-        commonTest(bot)
+        commonTest(bot, wrap)
         bot.test.port = PORT
         await new Promise((resolve, reject) => {
           bot.once('spawn', () => {

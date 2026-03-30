@@ -9,7 +9,7 @@ const { sleep, onceWithCleanup } = require('../../../lib/promise_utils')
 const timeout = process.env.CI ? 40000 : 20000
 module.exports = inject
 
-function inject (bot) {
+function inject (bot, wrap) {
   console.log(bot.version)
 
   bot.test = {}
@@ -121,8 +121,7 @@ function inject (bot) {
 
   async function setCreativeMode (value) {
     const getGM = val => val ? 'creative' : 'survival'
-    // this function behaves the same whether we start in creative mode or not.
-    // also, creative mode is always allowed for ops, even if server.properties says force-gamemode=true in survival mode.
+    // Use server console commands so they work even if the bot is mid-disconnect.
     let i = 0
     const msgProm = onceWithCleanup(bot, 'message', {
       timeout,
@@ -130,24 +129,24 @@ function inject (bot) {
     })
 
     // do it three times to ensure that we get feedback
-    bot.chat(`/gamemode ${getGM(value)}`)
-    bot.chat(`/gamemode ${getGM(!value)}`)
-    bot.chat(`/gamemode ${getGM(value)}`)
+    wrap.writeServer(`gamemode ${getGM(value)} flatbot\n`)
+    wrap.writeServer(`gamemode ${getGM(!value)} flatbot\n`)
+    wrap.writeServer(`gamemode ${getGM(value)} flatbot\n`)
     return msgProm
   }
 
   async function clearInventory () {
     const giveStone = onceWithCleanup(bot.inventory, 'updateSlot', { timeout: 1000 * 20, checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
     await bot.test.wait(500)
-    bot.chat('/give @a stone 1')
-    // Removed: was leaking a new listener every call
+    // Use server console command so it works even if bot is mid-disconnect
+    wrap.writeServer('give flatbot stone 1\n')
     await giveStone
 
     const clearInv = onceWithCleanup(bot, 'message', {
       timeout,
       checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
     })
-    bot.chat('/clear') // don't rely on the message (as it'll come to early), wait for the result of /clear instead
+    wrap.writeServer('clear flatbot\n')
     await clearInv
 
     // Check that the inventory is clear
@@ -163,10 +162,13 @@ function inject (bot) {
   }
 
   async function teleport (position) {
+    // Use server console command so it works even if bot is mid-disconnect
     if (bot.supportFeature('hasExecuteCommand')) {
-      bot.test.sayEverywhere(`/execute in overworld run teleport ${bot.username} ${position.x} ${position.y} ${position.z}`)
+      console.log(`/execute in overworld run teleport ${bot.username} ${position.x} ${position.y} ${position.z}`)
+      wrap.writeServer(`execute in overworld run teleport ${bot.username} ${position.x} ${position.y} ${position.z}\n`)
     } else {
-      bot.test.sayEverywhere(`/tp ${bot.username} ${position.x} ${position.y} ${position.z}`)
+      console.log(`/tp ${bot.username} ${position.x} ${position.y} ${position.z}`)
+      wrap.writeServer(`tp ${bot.username} ${position.x} ${position.y} ${position.z}\n`)
     }
     return onceWithCleanup(bot, 'move', {
       timeout,
