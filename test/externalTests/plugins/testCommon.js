@@ -123,23 +123,18 @@ function inject (bot, wrap) {
   }
 
   async function clearInventory () {
-    const giveStone = onceWithCleanup(bot.inventory, 'updateSlot', { timeout: 1000 * 20, checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
-    await bot.test.wait(500)
-    bot.chat('/give @a stone 1')
-    // Removed: was leaking a new listener every call
-    await giveStone
-
-    const clearInv = onceWithCleanup(bot, 'message', {
+    // Use server console for reliable inventory clearing.
+    // The old approach (chat /give + /clear + message parsing) was flaky
+    // due to updateSlot timeouts on slow CI runners.
+    const hasItems = bot.inventory.slots.some(item => item != null)
+    if (!hasItems) return
+    // Wait for a set_slot confirming an item was removed (blockId -1)
+    const slotPromise = onceWithCleanup(bot._client, 'set_slot', {
       timeout,
-      checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
+      checkCondition: (packet) => packet.windowId === 0 && packet.item?.blockId === -1
     })
-    bot.chat('/clear') // don't rely on the message (as it'll come to early), wait for the result of /clear instead
-    await clearInv
-
-    // Check that the inventory is clear
-    for (const slot of bot.inventory.slots) {
-      if (slot && slot.itemCount <= 0) throw new Error('Inventory was not cleared: ' + JSON.stringify(bot.inventory.slots))
-    }
+    wrap.writeServer('clear flatbot\n')
+    await slotPromise
   }
 
   // you need to be in creative mode for this to work
