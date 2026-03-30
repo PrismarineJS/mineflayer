@@ -1,4 +1,11 @@
 ## 4.35.0
+
+## 4.36.0
+* [Update CI to Node 24 (#3861)](https://github.com/PrismarineJS/mineflayer/commit/3b05f83d536adb31103c811f7093361ff35449a1) (thanks @rom1504)
+* [Fix publish condition for npm-publish v4 (#3858)](https://github.com/PrismarineJS/mineflayer/commit/ea663478fa1cb4f602735675aebd0c8459c7576d) (thanks @rom1504)
+* [Switch to trusted publishing via OIDC (#3856)](https://github.com/PrismarineJS/mineflayer/commit/3173eeded3982b144bc40d7b0fdfb083ee7eb118) (thanks @rom1504)
+* [Bump @types/node to 25.2.1 + fix flaky time & nether tests (#3828)](https://github.com/PrismarineJS/mineflayer/commit/89686596c8de1091bf45104ba3230a5e87707a20) (thanks @plainprince)
+
 * [🎈 1.21.11 (#3781)](https://github.com/PrismarineJS/mineflayer/commit/597745c7c061943620fcacba7254bccee05b7a3e) (thanks @rom1504bot)
 * [Fix chat pattern and event listener in tutorial (#3783)](https://github.com/PrismarineJS/mineflayer/commit/48586138f560991de60bea639c71fa82954cf50f) (thanks @brentspine)
 * [Update history.md](https://github.com/PrismarineJS/mineflayer/commit/c9f766513d5bb5a93c5b86c07827128716c0afdb) (thanks @extremeheat)
