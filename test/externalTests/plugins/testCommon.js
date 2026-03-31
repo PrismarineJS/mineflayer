@@ -123,9 +123,11 @@ function inject (bot, wrap) {
   }
 
   async function clearInventory () {
-    // Use bot.chat for /give (server console doesn't trigger updateSlot
-    // on some versions like 1.21.9+) and server console for /clear.
-    bot.chat('/give @a stone 1')
+    // Use server console for both give and clear — more reliable than
+    // bot.chat which can fail if the bot is in a bad state.
+    // The set_player_inventory handler in inventory.js ensures updateSlot
+    // fires on 1.21.9+ where the server uses a different packet.
+    wrap.writeServer('give flatbot stone 1\n')
     await onceWithCleanup(bot.inventory, 'updateSlot', {
       timeout,
       checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone'
