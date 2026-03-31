@@ -130,11 +130,12 @@ function inject (bot, wrap) {
       timeout: 10000,
       checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone'
     })
-    wrap.writeServer('clear flatbot\n')
-    await onceWithCleanup(bot.inventory, 'updateSlot', {
-      timeout,
-      checkCondition: () => !bot.inventory.slots.some(item => item != null)
+    const clearMsg = onceWithCleanup(bot, 'message', {
+      timeout: 10000,
+      checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
     })
+    bot.chat('/clear')
+    await clearMsg
   }
 
   // you need to be in creative mode for this to work
