@@ -8,6 +8,7 @@ const fs = require('fs')
 const path = require('path')
 
 const { getPort } = require('./common/util')
+const { once } = require('../lib/promise_utils')
 
 // set this to false if you want to test without starting a server automatically
 const START_THE_SERVER = true
@@ -124,6 +125,25 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    async function reconnectBot () {
+      console.log('  Bot disconnected, reconnecting...')
+      try { bot.end() } catch (e) { /* ignore */ }
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      bot = mineflayer.createBot({
+        username: 'flatbot',
+        viewDistance: 'tiny',
+        port: PORT,
+        host: '127.0.0.1',
+        version: supportedVersion
+      })
+      commonTest(bot, wrap)
+      bot.test.port = PORT
+      await once(bot, 'spawn')
+      console.log('  Bot reconnected')
+      wrap.writeServer('op flatbot\n')
+      await new Promise(resolve => setTimeout(resolve, 2000))
+    }
+
     const externalTestsFolder = path.resolve(__dirname, './externalTests')
     let distinctFailures = 0
     // Sort test files so example tests (which spawn child processes and can
@@ -150,7 +170,11 @@ for (const supportedVersion of mineflayer.testedVersions) {
             if (this.test._currentRetry > 0) {
               console.log(`  [retry ${this.test._currentRetry}] ${testName}`)
             }
-            bot.test.resetState()
+            // Reconnect if bot got disconnected by a previous test
+            const reconnect = !bot.entity
+              ? reconnectBot()
+              : Promise.resolve()
+            reconnect.then(() => bot.test.resetState())
               .then(() => {
                 bot.test.sayEverywhere(`### Starting ${testName}`)
                 return testFunction(bot, done)
