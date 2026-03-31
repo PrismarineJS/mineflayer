@@ -1,7 +1,11 @@
 // This is an example that uses mineflayer-pathfinder to showcase how simple it is to walk to goals
 
-const mineflayer = require('mineflayer')
-const { pathfinder, Movements, goals: { GoalNear } } = require('mineflayer-pathfinder')
+const mineflayer = require('../../')
+const {
+  pathfinder,
+  Movements,
+  goals: { GoalNear }
+} = require('mineflayer-pathfinder')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node gps.js <host> <port> [<name>] [<password>]')
@@ -22,17 +26,36 @@ bot.loadPlugin(pathfinder)
 bot.once('spawn', () => {
   const defaultMove = new Movements(bot)
 
+  bot.physics.yawSpeed = 5000
+  bot.physics.pitchSpeed = 5000
+
   bot.on('chat', (username, message) => {
+    console.log('Chat message received: ', username, message)
     if (username === bot.username) return
-    if (message !== 'come') return
+
+    const [cmd] = message.split(' ')
+
     const target = bot.players[username]?.entity
     if (!target) {
       bot.chat("I don't see you !")
       return
     }
-    const { x: playerX, y: playerY, z: playerZ } = target.position
 
-    bot.pathfinder.setMovements(defaultMove)
-    bot.pathfinder.setGoal(new GoalNear(playerX, playerY, playerZ, RANGE_GOAL))
+    switch (cmd) {
+      case 'come': {
+        const { x: playerX, y: playerY, z: playerZ } = target.position
+
+        bot.pathfinder.setMovements(defaultMove)
+        bot.pathfinder.setGoal(new GoalNear(playerX, playerY, playerZ, RANGE_GOAL))
+        break
+      }
+      case 'forward': {
+        bot.lookAt(target.position)
+        bot.setControlState('forward', true)
+        break
+      }
+    }
   })
 })
+
+bot.on('error', (err) => console.log(err))
