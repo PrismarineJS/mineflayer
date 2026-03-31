@@ -144,10 +144,11 @@ function inject (bot, wrap) {
   }
 
   async function teleport (position) {
+    // Use server console for teleport — works even if bot is in a bad state
     if (bot.supportFeature('hasExecuteCommand')) {
-      bot.test.sayEverywhere(`/execute in overworld run teleport ${bot.username} ${position.x} ${position.y} ${position.z}`)
+      wrap.writeServer(`execute in overworld run teleport ${bot.username} ${position.x} ${position.y} ${position.z}\n`)
     } else {
-      bot.test.sayEverywhere(`/tp ${bot.username} ${position.x} ${position.y} ${position.z}`)
+      wrap.writeServer(`tp ${bot.username} ${position.x} ${position.y} ${position.z}\n`)
     }
     return onceWithCleanup(bot, 'move', {
       timeout,
