@@ -7,6 +7,7 @@ const assert = require('assert')
 const { sleep } = require('../lib/promise_utils')
 const nbt = require('prismarine-nbt')
 const { once } = require('../lib/promise_utils')
+const { getPort } = require('./common/util')
 
 for (const supportedVersion of mineflayer.testedVersions) {
   const registry = require('prismarine-registry')(supportedVersion)
@@ -52,54 +53,53 @@ for (const supportedVersion of mineflayer.testedVersions) {
     this.timeout(10 * 1000)
     let bot
     let server
-    beforeEach((done) => {
+    let PORT
+    beforeEach(async function () {
+      PORT = await getPort()
       server = mc.createServer({
         'online-mode': false,
         version: supportedVersion,
-        // 25565 - local server, 25566 - proxy server
-        port: 25567
+        port: PORT
       })
-      server.on('listening', () => {
-        bot = mineflayer.createBot({
-          username: 'player',
-          version: supportedVersion,
-          port: 25567
-        })
-        bot.test = {}
+      await once(server, 'listening')
+      bot = mineflayer.createBot({
+        username: 'player',
+        version: supportedVersion,
+        port: PORT
+      })
+      bot.test = {}
 
-        bot.test.buildChunk = () => {
-          if (bot.supportFeature('tallWorld')) {
-            return new Chunk({ minY: -64, worldHeight: 384 })
-          } else {
-            return new Chunk()
+      bot.test.buildChunk = () => {
+        if (bot.supportFeature('tallWorld')) {
+          return new Chunk({ minY: -64, worldHeight: 384 })
+        } else {
+          return new Chunk()
+        }
+      }
+
+      bot.test.generateLoginPacket = () => {
+        let loginPacket
+        if (bot.supportFeature('usesLoginPacket')) {
+          loginPacket = registry.loginPacket
+          loginPacket.entityId = 0 // Default login packet in minecraft-data 1.16.5 is 1, so set it to 0
+        } else {
+          loginPacket = {
+            entityId: 0,
+            levelType: 'fogetaboutit',
+            gameMode: 0,
+            previousGameMode: 255,
+            worldNames: ['minecraft:overworld'],
+            dimension: 0,
+            worldName: 'minecraft:overworld',
+            hashedSeed: [0, 0],
+            difficulty: 0,
+            maxPlayers: 20,
+            reducedDebugInfo: 1,
+            enableRespawnScreen: true
           }
         }
-
-        bot.test.generateLoginPacket = () => {
-          let loginPacket
-          if (bot.supportFeature('usesLoginPacket')) {
-            loginPacket = registry.loginPacket
-            loginPacket.entityId = 0 // Default login packet in minecraft-data 1.16.5 is 1, so set it to 0
-          } else {
-            loginPacket = {
-              entityId: 0,
-              levelType: 'fogetaboutit',
-              gameMode: 0,
-              previousGameMode: 255,
-              worldNames: ['minecraft:overworld'],
-              dimension: 0,
-              worldName: 'minecraft:overworld',
-              hashedSeed: [0, 0],
-              difficulty: 0,
-              maxPlayers: 20,
-              reducedDebugInfo: 1,
-              enableRespawnScreen: true
-            }
-          }
-          return loginPacket
-        }
-        done()
-      })
+        return loginPacket
+      }
     })
     afterEach((done) => {
       bot.on('end', () => {
@@ -868,9 +868,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
 
       server.once('playerJoin', (client) => {
-        bot.time.timeOfDay = 18000
         const loginPacket = bot.test.generateLoginPacket()
         client.write('login', loginPacket)
+        // Set timeOfDay after login is processed so bot.time is initialized
+        bot.once('login', () => { bot.time.timeOfDay = 18000 })
 
         const chunk = bot.test.buildChunk()
 
