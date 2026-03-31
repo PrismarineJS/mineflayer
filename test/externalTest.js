@@ -126,8 +126,18 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
     const externalTestsFolder = path.resolve(__dirname, './externalTests')
     let distinctFailures = 0
+    // Sort test files so example tests (which spawn child processes and can
+    // crash/disconnect the bot) run last, limiting their blast radius.
+    const dangerousTests = ['exampleBee', 'exampleDigger', 'exampleInventory']
     fs.readdirSync(externalTestsFolder)
       .filter(file => fs.statSync(path.join(externalTestsFolder, file)).isFile())
+      .sort((a, b) => {
+        const aName = path.basename(a, '.js')
+        const bName = path.basename(b, '.js')
+        const aDangerous = dangerousTests.includes(aName) ? 1 : 0
+        const bDangerous = dangerousTests.includes(bName) ? 1 : 0
+        return aDangerous - bDangerous
+      })
       .forEach((test) => {
         test = path.basename(test, '.js')
         const testFunctions = require(`./externalTests/${test}`)(supportedVersion)
