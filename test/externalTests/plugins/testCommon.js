@@ -127,7 +127,7 @@ function inject (bot, wrap) {
     // update packets on 1.21.9+). Use server console for /clear.
     bot.chat('/give @a stone 1')
     await onceWithCleanup(bot.inventory, 'updateSlot', {
-      timeout,
+      timeout: 10000,
       checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone'
     })
     wrap.writeServer('clear flatbot\n')
