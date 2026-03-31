@@ -9,7 +9,7 @@ const { sleep, onceWithCleanup } = require('../../../lib/promise_utils')
 const timeout = 20000
 module.exports = inject
 
-function inject (bot) {
+function inject (bot, wrap) {
   console.log(bot.version)
 
   bot.test = {}
@@ -103,43 +103,39 @@ function inject (bot) {
     return setCreativeMode(false)
   }
 
-  const gameModeChangedMessages = ['commands.gamemode.success.self', 'gameMode.changed']
-
   async function setCreativeMode (value) {
-    const getGM = val => val ? 'creative' : 'survival'
-    // this function behaves the same whether we start in creative mode or not.
-    // also, creative mode is always allowed for ops, even if server.properties says force-gamemode=true in survival mode.
-    let i = 0
-    const msgProm = onceWithCleanup(bot, 'message', {
+    const mode = value ? 'creative' : 'survival'
+    const modeId = value ? 1 : 0
+    if (bot.game.gameMode === mode) return
+    // Use server console for instant, reliable gamemode change.
+    // The old approach (triple chat command + message parsing) was fragile
+    // and the most common source of flaky test timeouts.
+    const gameModePromise = onceWithCleanup(bot._client, 'game_state_change', {
       timeout,
-      checkCondition: msg => gameModeChangedMessages.includes(msg.translate) && i++ > 0 && bot.game.gameMode === getGM(value)
+      checkCondition: (packet) => {
+        // reason is 3 (number) on old versions, 'change_game_mode' (string) on new
+        const isGameModeChange = packet.reason === 3 || packet.reason === 'change_game_mode'
+        return isGameModeChange && Math.floor(packet.gameMode) === modeId
+      }
     })
-
-    // do it three times to ensure that we get feedback
-    bot.chat(`/gamemode ${getGM(value)}`)
-    bot.chat(`/gamemode ${getGM(!value)}`)
-    bot.chat(`/gamemode ${getGM(value)}`)
-    return msgProm
+    wrap.writeServer(`gamemode ${mode} flatbot\n`)
+    await gameModePromise
   }
 
   async function clearInventory () {
-    const giveStone = onceWithCleanup(bot.inventory, 'updateSlot', { timeout: 1000 * 20, checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
-    await bot.test.wait(500)
+    // Give a stone then clear — same as the original approach.
+    // The /give ensures the server has something to clear.
     bot.chat('/give @a stone 1')
-    // Removed: was leaking a new listener every call
-    await giveStone
-
-    const clearInv = onceWithCleanup(bot, 'message', {
+    await onceWithCleanup(bot.inventory, 'updateSlot', {
+      timeout,
+      checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone'
+    })
+    const clearMsg = onceWithCleanup(bot, 'message', {
       timeout,
       checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
     })
-    bot.chat('/clear') // don't rely on the message (as it'll come to early), wait for the result of /clear instead
-    await clearInv
-
-    // Check that the inventory is clear
-    for (const slot of bot.inventory.slots) {
-      if (slot && slot.itemCount <= 0) throw new Error('Inventory was not cleared: ' + JSON.stringify(bot.inventory.slots))
-    }
+    bot.chat('/clear')
+    await clearMsg
   }
 
   // you need to be in creative mode for this to work

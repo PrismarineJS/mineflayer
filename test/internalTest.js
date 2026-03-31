@@ -868,9 +868,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
 
       server.once('playerJoin', (client) => {
-        bot.time.timeOfDay = 18000
         const loginPacket = bot.test.generateLoginPacket()
         client.write('login', loginPacket)
+        // Set timeOfDay after login is processed so bot.time is initialized
+        bot.once('login', () => { bot.time.timeOfDay = 18000 })
 
         const chunk = bot.test.buildChunk()
 

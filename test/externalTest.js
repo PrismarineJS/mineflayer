@@ -61,7 +61,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           host: '127.0.0.1',
           version: supportedVersion
         })
-        commonTest(bot)
+        commonTest(bot, wrap)
         bot.test.port = PORT
 
         console.log('starting bot')
@@ -109,12 +109,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
       } else begin()
     })
 
-    beforeEach(async () => {
-      console.log('Resetting state')
-      await bot.test.resetState()
-      console.log('State reset')
-    })
-
     after((done) => {
       if (bot) bot.quit()
       wrap.stopServer((err) => {
@@ -131,6 +125,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
     })
 
     const externalTestsFolder = path.resolve(__dirname, './externalTests')
+    let distinctFailures = 0
     fs.readdirSync(externalTestsFolder)
       .filter(file => fs.statSync(path.join(externalTestsFolder, file)).isFile())
       .forEach((test) => {
@@ -139,8 +134,24 @@ for (const supportedVersion of mineflayer.testedVersions) {
         const runTest = (testName, testFunction) => {
           return function (done) {
             this.timeout(TEST_TIMEOUT_MS)
-            bot.test.sayEverywhere(`### Starting ${testName}`)
-            testFunction(bot, done).then(res => done()).catch(e => done(e))
+            // Disable retries if too many different tests have already failed
+            // on their first attempt (indicates a systemic issue, not flakiness)
+            if (distinctFailures >= 3) this.retries(0)
+            if (this.test._currentRetry > 0) {
+              console.log(`  [retry ${this.test._currentRetry}] ${testName}`)
+            }
+            bot.test.resetState()
+              .then(() => {
+                bot.test.sayEverywhere(`### Starting ${testName}`)
+                return testFunction(bot, done)
+              })
+              .then(res => done())
+              .catch(e => {
+                if (this.test._currentRetry === 0) {
+                  distinctFailures++
+                }
+                done(e)
+              })
           }
         }
         if (excludedTests.indexOf(test) === -1) {
