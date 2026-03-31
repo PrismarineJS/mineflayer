@@ -1,10 +1,11 @@
 const assert = require('assert')
 const Vec3 = require('vec3')
-const { once, sleep } = require('../../lib/promise_utils')
+const { once, sleep, onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   // Test spawn event on death
   const Item = require('prismarine-item')(bot.registry)
+  const portalName = bot.registry.blocksByName.nether_portal ? 'nether_portal' : 'portal'
 
   let signItem = null
   for (const name in bot.registry.itemsByName) {
@@ -31,16 +32,14 @@ module.exports = () => async (bot) => {
           assert.notStrictEqual(sign.blockEntity, undefined)
         }
 
-        bot.test.sayEverywhere('/setblock ~ ~ ~ portal')
-        bot.test.sayEverywhere('/setblock ~ ~ ~ nether_portal')
-        once(bot, 'spawn').then(resolve)
+        bot.chat(`/setblock ~ ~ ~ ${portalName}`)
+        onceWithCleanup(bot, 'spawn', { timeout: 30000 }).then(resolve).catch(reject)
       }, 500)
     })
   })
 
-  bot.test.sayEverywhere('/setblock ~ ~ ~ nether_portal')
-  bot.test.sayEverywhere('/setblock ~ ~ ~ portal')
-  await once(bot, 'spawn')
+  bot.chat(`/setblock ~ ~ ~ ${portalName}`)
+  await onceWithCleanup(bot, 'spawn', { timeout: 30000 })
   bot.test.sayEverywhere('/tp 0 128 0')
 
   await once(bot, 'forcedMove')
