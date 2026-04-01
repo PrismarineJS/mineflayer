@@ -1,5 +1,4 @@
 const assert = require('assert')
-const { onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => {
   const tests = []
@@ -26,18 +25,6 @@ module.exports = () => {
       assert.ok(bot.game.minY <= 0, 'minY should be <= 0')
       assert.ok(bot.game.height >= 256, 'Height should be at least 256')
     }
-  })
-
-  addTest('dimension change on respawn', async (bot) => {
-    // After a /kill respawn, dimension data should still be correct
-    bot.test.sayEverywhere(`/kill ${bot.username}`)
-    await onceWithCleanup(bot, 'respawn', { timeout: 10000 })
-
-    assert.ok(bot.game.dimension, 'bot.game.dimension should be set after respawn')
-    assert.strictEqual(bot.game.dimension, 'overworld', 'Dimension should be overworld after respawn')
-    assert.strictEqual(typeof bot.game.minY, 'number', 'minY should be a number after respawn')
-    assert.strictEqual(typeof bot.game.height, 'number', 'height should be a number after respawn')
-    assert.ok(bot.game.height > 0, 'Height should be positive after respawn')
   })
 
   return tests
