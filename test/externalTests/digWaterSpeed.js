@@ -4,26 +4,11 @@ const assert = require('assert')
 module.exports = () => async (bot) => {
   const groundY = bot.test.groundY
 
-  // Helper: place a dirt block at a position using /setblock
-  async function setBlock (pos, blockName) {
-    await bot.test.setBlock({ x: pos.x, y: pos.y, z: pos.z, blockName })
-  }
-
-  // Helper: measure dig time by actually digging a block
-  async function measureDigTime (blockPos) {
-    const block = bot.blockAt(blockPos)
-    assert(block, `No block found at ${blockPos}`)
-    assert.notStrictEqual(block.name, 'air', `Expected a diggable block at ${blockPos}, got air`)
-    const start = performance.now()
-    await bot.dig(block)
-    return performance.now() - start
-  }
-
   // We will work at a position offset from spawn to avoid interfering with other tests
   const testX = 10
   const testZ = 10
   const floorY = groundY
-  const blockY = floorY + 1 // block to dig will be at this Y (wall block at bot's level)
+  const blockY = floorY + 1
 
   // --- Setup: teleport and prepare the area ---
   await bot.test.becomeCreative()
@@ -37,63 +22,77 @@ module.exports = () => async (bot) => {
   bot.chat(`/fill ${testX - 2} ${floorY} ${testZ - 2} ${testX + 2} ${floorY} ${testZ + 2} stone`)
   await bot.test.wait(500)
 
-  // === Test 1: Dig on dry land (baseline) ===
+  // Place dirt block to test digTime against
   const digBlockPos = new Vec3(testX + 1, blockY, testZ)
+  await bot.test.setBlock({ x: digBlockPos.x, y: digBlockPos.y, z: digBlockPos.z, blockName: 'dirt' })
 
-  await setBlock(digBlockPos, 'dirt')
-  await bot.test.teleport(new Vec3(testX, floorY + 1, testZ))
-  await bot.test.wait(300)
-  await bot.test.becomeSurvival()
-  await bot.test.wait(300)
-
-  const dryDigTime = await measureDigTime(digBlockPos)
-  bot.test.sayEverywhere(`Dry dig time: ${dryDigTime.toFixed(0)}ms`)
-
-  // === Test 2: Feet in water, head above water (should NOT be penalized) ===
-  await bot.test.becomeCreative()
-  // Replace the block we just dug
-  await setBlock(digBlockPos, 'dirt')
-  // Place water at feet level (floorY + 1), only 1 block high
-  // Bot stands at floorY + 1, eyes at ~floorY + 2.62, so water at floorY + 1 only = feet wet, head dry
-  await setBlock(new Vec3(testX, floorY + 1, testZ), 'water')
-  await bot.test.wait(300)
+  // Teleport to standing position and wait for landing
   await bot.test.teleport(new Vec3(testX, floorY + 1, testZ))
   await bot.test.wait(500)
   await bot.test.becomeSurvival()
-  await bot.test.wait(300)
+  await bot.test.wait(500)
 
-  const feetWetDigTime = await measureDigTime(digBlockPos)
-  bot.test.sayEverywhere(`Feet-in-water dig time: ${feetWetDigTime.toFixed(0)}ms`)
+  // === Test 1: digTime on dry land (no water at eye level) ===
+  const block1 = bot.blockAt(digBlockPos)
+  assert(block1, 'Block at dig position should exist')
+  assert.notStrictEqual(block1.name, 'air', 'Block should not be air')
+  const dryDigTime = bot.digTime(block1)
+  bot.test.sayEverywhere(`Dry digTime: ${dryDigTime}ms`)
 
-  // Feet-in-water dig time should be close to dry dig time (within 50% tolerance)
-  // and NOT 5x slower like it would be if water penalty applied
-  assert(feetWetDigTime < dryDigTime * 2,
-    `Feet-in-water dig time (${feetWetDigTime.toFixed(0)}ms) should be similar to dry (${dryDigTime.toFixed(0)}ms), not water-penalized`)
-
-  // === Test 3: Fully submerged (should BE penalized) ===
+  // === Test 2: Place water at eye level and check digTime is slower ===
   await bot.test.becomeCreative()
-  // Remove old water, replace block
-  await setBlock(new Vec3(testX, floorY + 1, testZ), 'air')
-  await bot.test.wait(200)
-  await setBlock(digBlockPos, 'dirt')
-  // Build a small water column: 3 blocks high so bot is fully submerged
+  // Restore dirt in case anything changed
+  await bot.test.setBlock({ x: digBlockPos.x, y: digBlockPos.y, z: digBlockPos.z, blockName: 'dirt' })
+  // Build a water column around the bot (3 blocks high so bot is fully submerged)
   bot.chat(`/fill ${testX} ${floorY + 1} ${testZ} ${testX} ${floorY + 3} ${testZ} water`)
   await bot.test.wait(500)
   await bot.test.teleport(new Vec3(testX, floorY + 1, testZ))
   await bot.test.wait(500)
   await bot.test.becomeSurvival()
+  await bot.test.wait(500)
+
+  const block2 = bot.blockAt(digBlockPos)
+  assert(block2, 'Block at dig position should exist after water placement')
+  assert.notStrictEqual(block2.name, 'air', 'Block should not be air after water placement')
+
+  // Check that the eye-level block is actually water
+  const eyeLevelBlock = bot._getBlockAtEyeLevel()
+  bot.test.sayEverywhere(`Eye-level block: ${eyeLevelBlock?.name ?? 'null'} at ${eyeLevelBlock?.position ?? 'unknown'}`)
+
+  const submergedDigTime = bot.digTime(block2)
+  bot.test.sayEverywhere(`Submerged digTime: ${submergedDigTime}ms`)
+
+  // The water penalty makes digging 5x slower, so submerged should be significantly slower
+  assert(submergedDigTime > dryDigTime,
+    `Submerged digTime (${submergedDigTime}ms) should be greater than dry (${dryDigTime}ms)`)
+
+  // === Test 3: Feet in water but head above water should NOT penalize ===
+  await bot.test.becomeCreative()
+  // Clear the water column
+  bot.chat(`/fill ${testX} ${floorY + 1} ${testZ} ${testX} ${floorY + 3} ${testZ} air`)
   await bot.test.wait(300)
+  // Place water only at feet level (1 block high)
+  await bot.test.setBlock({ x: testX, y: floorY + 1, z: testZ, blockName: 'water' })
+  await bot.test.wait(300)
+  // Restore dirt
+  await bot.test.setBlock({ x: digBlockPos.x, y: digBlockPos.y, z: digBlockPos.z, blockName: 'dirt' })
+  await bot.test.teleport(new Vec3(testX, floorY + 1, testZ))
+  await bot.test.wait(500)
+  await bot.test.becomeSurvival()
+  await bot.test.wait(500)
 
-  const submergedDigTime = await measureDigTime(digBlockPos)
-  bot.test.sayEverywhere(`Submerged dig time: ${submergedDigTime.toFixed(0)}ms`)
+  const block3 = bot.blockAt(digBlockPos)
+  const feetWetDigTime = bot.digTime(block3)
+  bot.test.sayEverywhere(`Feet-in-water digTime: ${feetWetDigTime}ms`)
 
-  // Submerged dig time should be significantly slower (water penalty is 5x)
-  assert(submergedDigTime > dryDigTime * 2,
-    `Submerged dig time (${submergedDigTime.toFixed(0)}ms) should be much slower than dry (${dryDigTime.toFixed(0)}ms) due to water penalty`)
+  // Feet in water (but head above water) should NOT apply the water penalty
+  // digTime should be the same as dry
+  assert.strictEqual(feetWetDigTime, dryDigTime,
+    `Feet-in-water digTime (${feetWetDigTime}ms) should equal dry digTime (${dryDigTime}ms) since eyes are not in water`)
 
-  // Also verify the relationship: submerged should be much slower than feet-wet
+  // Also verify submerged is much slower than feet-wet
   assert(submergedDigTime > feetWetDigTime * 2,
-    `Submerged dig time (${submergedDigTime.toFixed(0)}ms) should be much slower than feet-in-water (${feetWetDigTime.toFixed(0)}ms)`)
+    `Submerged digTime (${submergedDigTime}ms) should be much slower than feet-in-water (${feetWetDigTime}ms)`)
 
   // Cleanup
   await bot.test.becomeCreative()
