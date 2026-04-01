@@ -44,6 +44,10 @@ module.exports = () => async (bot) => {
 
   // Respawn and verify the bot is alive
   await once(bot, 'spawn')
+  await bot.waitForChunksToLoad()
+
+  // Reset state so subsequent tests start clean (creative mode, correct position, chunks loaded)
+  await bot.test.resetState()
 
   bot.test.sayEverywhere('digging death test: pass')
 }
