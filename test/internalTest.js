@@ -938,6 +938,83 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('resource pack', () => {
+      function sendResourcePack (client, testUUID, testUrl, testHash) {
+        if (registry.supportFeature('resourcePackUsesUUID')) {
+          // 1.20.4+ uses add_resource_pack instead of resource_pack_send
+          client.write('add_resource_pack', {
+            uuid: testUUID,
+            url: testUrl,
+            hash: testHash,
+            forced: false,
+            promptMessage: undefined
+          })
+        } else {
+          client.write('resource_pack_send', {
+            url: testUrl,
+            hash: testHash
+          })
+        }
+      }
+
+      it('acceptResourcePack sends back the raw UUID (not a UUID object)', (done) => {
+        const testUUID = 'd3527a0b-bc03-45d5-a878-2aafdd8c8a43'
+        const testUrl = 'https://example.com/pack.zip'
+        const testHash = 'abc123'
+
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+
+          bot.once('resourcePack', () => {
+            // Listen for the bot's response before calling accept
+            client.on('resource_pack_receive', (data) => {
+              if (data.result === 3) { // ACCEPTED
+                if (registry.supportFeature('resourcePackUsesUUID')) {
+                  // The fix: UUID must be the raw string, not a UUID object
+                  assert.strictEqual(typeof data.uuid, 'string', 'uuid should be a string, not a UUID object')
+                  assert.strictEqual(data.uuid, testUUID)
+                }
+                done()
+              }
+            })
+            bot.acceptResourcePack()
+          })
+
+          // Send the resource pack packet after a tick to ensure bot is ready
+          process.nextTick(() => {
+            sendResourcePack(client, testUUID, testUrl, testHash)
+          })
+        })
+      })
+
+      it('denyResourcePack sends back the raw UUID', (done) => {
+        const testUUID = 'd3527a0b-bc03-45d5-a878-2aafdd8c8a43'
+        const testUrl = 'https://example.com/pack.zip'
+        const testHash = 'abc123'
+
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+
+          bot.once('resourcePack', () => {
+            client.on('resource_pack_receive', (data) => {
+              if (data.result === 1) { // DECLINED
+                if (registry.supportFeature('resourcePackUsesUUID')) {
+                  assert.strictEqual(typeof data.uuid, 'string', 'uuid should be a string, not a UUID object')
+                  assert.strictEqual(data.uuid, testUUID)
+                }
+                done()
+              }
+            })
+            bot.denyResourcePack()
+          })
+
+          process.nextTick(() => {
+            sendResourcePack(client, testUUID, testUrl, testHash)
+          })
+        })
+      })
+    })
+
     describe('tablist', () => {
       it('handles newlines in header and footer', (done) => {
         const HEADER = 'asd\ndsa'
