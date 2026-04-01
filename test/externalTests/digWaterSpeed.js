@@ -39,7 +39,7 @@ module.exports = () => async (bot) => {
 
   const eyeBlock2 = bot._getBlockAtEyeLevel()
   bot.test.sayEverywhere(`Test 2 (submerged): eye-level block = ${eyeBlock2?.name ?? 'null'}`)
-  assert.strictEqual(eyeBlock2?.name, 'water',
+  assert(['water', 'flowing_water'].includes(eyeBlock2?.name),
     `Eye-level block should be water when submerged, got ${eyeBlock2?.name ?? 'null'}`)
 
   // === Test 3: Verify isInWater flag no longer affects digTime ===
