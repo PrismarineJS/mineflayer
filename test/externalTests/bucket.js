@@ -1,39 +1,48 @@
 const { Vec3 } = require('vec3')
 const assert = require('assert')
+const { onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
+  const groundY = bot.test.groundY
 
-  // Fly up a bit so we have room to place water below
-  await bot.test.fly(new Vec3(0, 4, 0))
+  // Place a solid block at a known position to act as the surface
+  const solidPos = new Vec3(2, groundY, 2)
+  const waterPos = new Vec3(2, groundY + 1, 2)
 
-  // Clear the target block to make sure it's air
-  const targetPos = bot.entity.position.floored().offset(0, -1, 0)
-  await bot.test.setBlock({ x: targetPos.x, y: targetPos.y, z: targetPos.z, blockName: 'air' })
+  await bot.test.setBlock({ x: solidPos.x, y: solidPos.y, z: solidPos.z, blockName: 'stone' })
+  // Make sure the block above is air
+  await bot.test.setBlock({ x: waterPos.x, y: waterPos.y, z: waterPos.z, blockName: 'air' })
 
-  // Give the bot a water bucket in the hotbar (slot 36 = first hotbar slot)
+  // Fly to a position near the target so we can look at it
+  await bot.test.fly(new Vec3(2, 2, 0))
+
+  // Give the bot a water bucket
   await bot.test.setInventorySlot(36, new Item(bot.registry.itemsByName.water_bucket.id, 1, 0))
   bot.setQuickBarSlot(0)
 
-  // Look down at the block below us
-  await bot.lookAt(targetPos.offset(0.5, 0.5, 0.5), true)
+  // Look at the top face of the solid block (water will be placed on top)
+  await bot.lookAt(solidPos.offset(0.5, 1, 0.5), true)
 
-  // Use the water bucket — this triggers activateItem which should send
-  // the bot's actual rotation so the server places water where we look
+  // Listen for the block update at the water position before activating
+  const blockUpdatePromise = onceWithCleanup(bot.world, `blockUpdate:(${waterPos.x}, ${waterPos.y}, ${waterPos.z})`, { timeout: 5000 })
+
+  // Use the water bucket
   bot.activateItem()
 
-  // Wait for the block update
-  await bot.test.wait(1000)
+  // Wait for the server to acknowledge the block change
+  await blockUpdatePromise
 
-  // Verify water was placed at the target position
-  const block = bot.blockAt(targetPos)
+  // Verify water was placed
+  const block = bot.blockAt(waterPos)
   assert.ok(
     block.name === 'water' || block.name === 'flowing_water',
-    `Expected water at ${targetPos}, but got ${block.name}`
+    `Expected water at ${waterPos}, but got ${block.name}`
   )
 
   bot.test.sayEverywhere('bucket test: pass')
 
-  // Clean up — replace water with air
-  await bot.test.setBlock({ x: targetPos.x, y: targetPos.y, z: targetPos.z, blockName: 'air' })
+  // Clean up
+  await bot.test.setBlock({ x: waterPos.x, y: waterPos.y, z: waterPos.z, blockName: 'air' })
+  await bot.test.setBlock({ x: solidPos.x, y: solidPos.y, z: solidPos.z, blockName: 'air' })
 }
