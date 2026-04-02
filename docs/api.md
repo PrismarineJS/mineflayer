@@ -38,6 +38,15 @@
       - [furnace.outputItem()](#furnaceoutputitem)
       - [furnace.fuel](#furnacefuel)
       - [furnace.progress](#furnaceprogress)
+    - [mineflayer.CartographyTable](#mineflayercartographytable)
+      - [cartographyTable.takeMap()](#cartographytabletakemap)
+      - [cartographyTable.takeModifier()](#cartographytabletakemodifier)
+      - [cartographyTable.takeOutput()](#cartographytabletakeoutput)
+      - [cartographyTable.putMap(itemType, metadata, count)](#cartographytableputmapitemtype-metadata-count)
+      - [cartographyTable.putModifier(itemType, metadata, count)](#cartographytableputmodifieritemtype-metadata-count)
+      - [cartographyTable.mapItem()](#cartographytablemapitem)
+      - [cartographyTable.modifierItem()](#cartographytablemodifieritem)
+      - [cartographyTable.outputItem()](#cartographytableoutputitem)
     - [mineflayer.EnchantmentTable](#mineflayerenchantmenttable)
       - [enchantmentTable "ready"](#enchantmenttable-ready)
       - [enchantmentTable.targetItem()](#enchantmenttabletargetitem)
@@ -325,6 +334,7 @@
       - [bot.openContainer(containerBlock or containerEntity, direction?, cursorPos?)](#botopencontainercontainerblock-or-containerentity-direction-cursorpos)
       - [bot.openChest(chestBlock or minecartchestEntity, direction?, cursorPos?)](#botopenchestchestblock-or-minecartchestentity-direction-cursorpos)
       - [bot.openFurnace(furnaceBlock)](#botopenfurnacefurnaceblock)
+      - [bot.openCartographyTable(cartographyTableBlock)](#botopencartographytablecartographytableblock)
       - [bot.openDispenser(dispenserBlock)](#botopendispenserdispenserblock)
       - [bot.openEnchantmentTable(enchantmentTableBlock)](#botopenenchantmenttableenchantmenttableblock)
       - [bot.openAnvil(anvilBlock)](#botopenanvilanvilblock)
@@ -542,6 +552,47 @@ How much fuel is left between 0 and 1.
 #### furnace.progress
 
 How much cooked the input is between 0 and 1.
+
+### mineflayer.CartographyTable
+
+Extends windows.Window for cartography table
+See `bot.openCartographyTable(cartographyTableBlock)`.
+
+#### cartographyTable.takeMap()
+
+This function returns a `Promise`, with `item` as its argument upon completion.
+
+
+#### cartographyTable.takeModifier()
+
+This function returns a `Promise`, with `item` as its argument upon completion.
+
+
+#### cartographyTable.takeOutput()
+
+This function returns a `Promise`, with `item` as its argument upon completion.
+
+
+#### cartographyTable.putMap(itemType, metadata, count)
+
+This function returns a `Promise`, with `void` as its argument upon completion.
+
+#### cartographyTable.putModifier(itemType, metadata, count)
+
+This function returns a `Promise`, with `void` as its argument upon completion.
+
+#### cartographyTable.mapItem()
+
+Returns `Item` instance which is the filled map being affected.
+
+#### cartographyTable.modifierItem()
+
+Returns `Item` instance which is the item being used to effect the filled map, e.g. Glass Pane, paper, empty map, etc.
+
+#### cartographyTable.outputItem()
+
+Returns `Item` instance which is the output (aka the modified map).
+
 
 ### mineflayer.EnchantmentTable
 
@@ -2082,6 +2133,10 @@ Deprecated. Same as `openContainer`
 #### bot.openFurnace(furnaceBlock)
 
 Returns a promise on a `Furnace` instance which represents the furnace you are opening.
+
+#### bot.openCartographyTable(cartographyTableBlock)
+
+Returns a promise on a `CartographyTable` instance which represents the cartography table you are opening.
 
 #### bot.openDispenser(dispenserBlock)
 
