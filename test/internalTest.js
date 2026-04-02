@@ -304,6 +304,87 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('activateBlock face direction', () => {
+      // Direction mapping: 0=down(-y), 1=up(+y), 2=north(-z), 3=south(+z), 4=west(-x), 5=east(+x)
+      const blockPos = vec3(8, 65, 8)
+
+      async function setupAndActivate (botPosition, done, expectedDirection) {
+        return new Promise((resolve, reject) => {
+          server.on('playerJoin', async (client) => {
+            client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            const stoneId = bot.registry.blocksByName.stone.id
+            chunk.setBlockType(blockPos, stoneId)
+            client.write('map_chunk', generateChunkPacket(chunk))
+
+            await once(bot, 'chunkColumnLoad')
+
+            // Teleport bot to desired position
+            const posPacket = {
+              x: botPosition.x,
+              y: botPosition.y,
+              z: botPosition.z,
+              dx: 0,
+              dy: 0,
+              dz: 0,
+              pitch: 0,
+              yaw: 0,
+              flags: bot.registry.version['>=']('1.21.3') ? {} : 0,
+              teleportId: 1
+            }
+            client.write('position', posPacket)
+            await once(bot, 'forcedMove')
+
+            // Listen for block_place packet to check direction
+            client.on('packet', (data, meta) => {
+              if (meta.name === 'block_place') {
+                try {
+                  assert.strictEqual(data.direction, expectedDirection,
+                    `Expected direction ${expectedDirection} but got ${data.direction}`)
+                  resolve()
+                } catch (e) {
+                  reject(e)
+                }
+              }
+            })
+
+            const block = bot.blockAt(blockPos)
+            bot.activateBlock(block).catch(reject)
+          })
+        })
+      }
+
+      it('should pick east (+x) face when bot is east of block', async function () {
+        // Bot at x=11 vs block center x=8.5 => dx > 0 => east face => direction 5
+        await setupAndActivate(vec3(11, 65, 8.5), null, 5)
+      })
+
+      it('should pick west (-x) face when bot is west of block', async function () {
+        // Bot at x=5 vs block center x=8.5 => dx < 0 => west face => direction 4
+        await setupAndActivate(vec3(5, 65, 8.5), null, 4)
+      })
+
+      it('should pick south (+z) face when bot is south of block', async function () {
+        // Bot at z=11 vs block center z=8.5 => dz > 0 => south face => direction 3
+        await setupAndActivate(vec3(8.5, 65, 11), null, 3)
+      })
+
+      it('should pick north (-z) face when bot is north of block', async function () {
+        // Bot at z=5 vs block center z=8.5 => dz < 0 => north face => direction 2
+        await setupAndActivate(vec3(8.5, 65, 5), null, 2)
+      })
+
+      it('should pick up (+y) face when bot is above block', async function () {
+        // Bot at y=70 vs block center y=65.5 => dy > 0 => up face => direction 1
+        await setupAndActivate(vec3(8.5, 70, 8.5), null, 1)
+      })
+
+      it('should pick down (-y) face when bot is below block', async function () {
+        // Bot at y=60 vs block center y=65.5 => dy < 0 => down face => direction 0
+        await setupAndActivate(vec3(8.5, 60, 8.5), null, 0)
+      })
+    })
+
     describe('physics', () => {
       const pos = vec3(1, 65, 1)
       const goldId = 41
