@@ -1253,6 +1253,71 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('editBook', () => {
+      it('sends correct edit_book packet fields', function (done) {
+        if (!registry.supportFeature('hasEditBookPacket')) {
+          this.skip()
+          return
+        }
+        const Item = require('prismarine-item')(registry)
+        const usesNbt = registry.supportFeature('editBookPacketUsesNbt')
+        const pages = ['Page 1', 'Page 2']
+
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+
+          // Place a writable_book in hotbar slot 36 (first hotbar slot)
+          const bookItem = new Item(registry.itemsByName.writable_book.id, 1, 0)
+          client.write('set_slot', {
+            windowId: 0,
+            slot: 36,
+            item: Item.toNotch(bookItem),
+            stateId: undefined
+          })
+
+          // Listen for the edit_book packet from the bot
+          client.on('edit_book', (packet) => {
+            try {
+              if (usesNbt) {
+                // 1.13 - 1.16.5: should send new_book (item NBT), signing, hand
+                assert.ok(packet.new_book !== undefined, 'edit_book packet should have new_book field for NBT versions')
+                assert.strictEqual(packet.signing, false)
+                assert.strictEqual(packet.hand, 0)
+              } else {
+                // 1.17.1+: should send hand (slot), pages, title
+                assert.strictEqual(packet.hand, 0)
+                assert.ok(Array.isArray(packet.pages), 'edit_book packet should have pages array for non-NBT versions')
+                assert.deepStrictEqual(packet.pages, pages)
+              }
+              // Send set_slot to complete the writeBook flow
+              const writtenBook = new Item(registry.itemsByName.writable_book.id, 1, 0)
+              writtenBook.nbt = {
+                type: 'compound',
+                name: '',
+                value: {
+                  pages: { type: 'list', value: { type: 'string', value: pages } }
+                }
+              }
+              client.write('set_slot', {
+                windowId: 0,
+                slot: 36,
+                item: Item.toNotch(writtenBook),
+                stateId: undefined
+              })
+              done()
+            } catch (err) {
+              done(err)
+            }
+          })
+
+          // Wait a tick for inventory to be set, then call writeBook
+          setTimeout(() => {
+            bot.writeBook(36, pages).catch(done)
+          }, 100)
+        })
+      })
+    })
+
     describe('tablist', () => {
       it('handles newlines in header and footer', (done) => {
         const HEADER = 'asd\ndsa'
