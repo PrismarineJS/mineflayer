@@ -2,6 +2,17 @@
 
 本文档旨在帮助人们解决常见问题
 
+### 当机器人试图连接到MC服务器，我得到一个错误(即protocol/data)
+
+确保mineflayer支持你的Minecraft服务器版本（参见readme文件），否则你应该尝试使用[mineflayer测试版本](../lib/version.js)之一。
+
+### 当我试图登录微软账户时，我得到一个错误。
+
+确保您在createBot中输入的用户名选项中的电子邮件可用于使用 `login with Microsoft` 按钮登录 `minecraft.net` 。
+确保在createBot配置中有 `auth: 'microsoft'` 字段。
+
+当你遇到错误，报错是一些无效的凭据或“这个帐户拥有Minecraft吗？” 尝试删除 `createBot` 配置中的密码字段，然后再试一次。
+
 ### 如何隐藏报错 ?
 
 在createBot选项中使用`hideErrors:true`
@@ -66,7 +77,7 @@ bot.chat('/give @p minecraft:diamond_sword')
 
 ### 是否可以使用bot = mineflayer.createbot登录多个帐户  同时分别控制它们 ?
 
-通过调用createBot创建不同的bot实例，然后为每个实例执行不同的操作，请参考 multiple.js
+通过多次调用 createBot 创建不同的bot实例，然后为每个实例执行不同的操作，请参考 multiple.js
 
 ### 如何让机器人丢出它的全部背包物品?
 
@@ -163,7 +174,7 @@ connect: (client) => {
 
 更新node版本
 
-### The bot can't break/place blocks or open chests
+### bot不能打破/放置方块或打开箱子
 
-检查出生点保护是否阻止了机器人的操作
+检查出生点保护是否阻止了机器人的操作(包括服务器端的领地权限)
 

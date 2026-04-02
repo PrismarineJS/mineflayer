@@ -2132,7 +2132,7 @@ To resume normal physics, call `stopFlying()`.
 This method is useful if you want to hover while digging the ground below you.
 It is not necessary to call this function before calling `flyTo()`.
 
-Note that while flying, `bot.entity.velocity` will not be accurate.
+注意，在飞行时， `bot.entity.velocity` 速度将不准确。
 
 #### bot.creative.stopFlying()
 

@@ -1,14 +1,12 @@
 # Mineflayer
 
-[![NPM version](https://badge.fury.io/js/mineflayer.svg)](http://badge.fury.io/js/mineflayer)
-[![Build Status](https://github.com/PrismarineJS/mineflayer/workflows/CI/badge.svg)](https://github.com/PrismarineJS/mineflayer/actions?query=workflow%3A%22CI%22)
-[![Discord](https://img.shields.io/badge/chat-on%20discord-brightgreen.svg)](https://discord.gg/GsEFRM8)
-[![Gitter](https://img.shields.io/badge/chat-on%20gitter-brightgreen.svg)](https://gitter.im/PrismarineJS/general)
-[![Irc](https://img.shields.io/badge/chat-on%20irc-brightgreen.svg)](https://irc.gitter.im/)
-[![Issue Hunt](https://github.com/BoostIO/issuehunt-materials/blob/master/v1/issuehunt-shield-v1.svg)](https://issuehunt.io/r/PrismarineJS/mineflayer)
+[![NPM version](https://img.shields.io/npm/v/mineflayer.svg?color=success&label=npm%20package&logo=npm)](https://www.npmjs.com/package/mineflayer)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/PrismarineJS/mineflayer/ci.yml.svg?label=CI&logo=github&logoColor=lightgrey)](https://github.com/PrismarineJS/mineflayer/actions?query=workflow%3A%22CI%22)
+[![Try it on gitpod](https://img.shields.io/static/v1.svg?label=try&message=on%20gitpod&color=brightgreen&logo=gitpod)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
+[![Open In Colab](https://img.shields.io/static/v1.svg?label=open&message=on%20colab&color=blue&logo=google-colab)](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/PrismarineJS)](https://github.com/sponsors/PrismarineJS)
 
-[![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb)
+[![Official Discord](https://img.shields.io/static/v1.svg?label=OFFICIAL&message=DISCORD&color=blue&logo=discord&style=for-the-badge)](https://discord.gg/GsEFRM8)
 
 | <sub>EN</sub> [English](../README.md) | <sub>RU</sub> [русский](../ru/README_RU.md) | <sub>ES</sub> [Español](../es/README_ES.md) | <sub>FR</sub> [Français](../fr/README_FR.md) | <sub>TR</sub> [Türkçe](../tr/README_TR.md) | <sub>ZH</sub> [中文](../zh/README_ZH_CN.md) | <sub>BR</sub> [Portuguese](../br/README_BR.md) |
 |-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
@@ -19,7 +17,7 @@
 
 ## 特点
 
- * 支持版本：Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 和 1.20 
+ * 支持版本：Minecraft 1.8 直到 1.21.11 (1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19, 1.20, 1.21, 1.21.9, 1.21.11) <!--version-->
  * 实体感知与追踪
  * 方块感知，你可以在几毫秒内查找到bot周围的任何方块
  * 物理和运动引擎 - 支持所有的碰撞箱
@@ -37,25 +35,30 @@
 
 ## 安装
 
-首先，从 [nodejs.org](https://nodejs.org/) 安装 nodejs（版本要求 >= 18），
+首先，从 [nodejs.org](https://nodejs.org/) 安装 nodejs（版本要求 >= 18），（注：程序只检测18，但是建议更新到22.x.x版本）。然后安装 mineflayer 。
 
-然后在你创建的bot项目目录中，使用命令行运行：
+```bash
+npm install mineflayer
+```
 
-`npm install mineflayer`
+要更新 mineflayer （或任何别的Node.js）包及其依赖项，使用
+```bash
+npm update
+```
 
 ## 文档
 
 | 链接 | 描述 |
 |---|---|
-| [使用教程](../tutorial.md) | node.js 和 mineflayer 入门 |
-| [FAQ](../FAQ.md) | 使用中出现问题？先看看这个文档吧 |
-| [api](../api.md)、[不稳定的api](../unstable_api.md) | 完整的接口参考文档 |
-| [更新日志](../history.md) | mineflayer 的更新日志 |
+| [使用教程](tutorial.md) | node.js 和 mineflayer 入门级教学 |
+| [FAQ](FAQ.md) | 使用中出现问题？先看看这个文档吧 |
+| **[api.md](api.md)** <br/>[不稳定的api](../unstable_api.md) | 完整的接口参考文档 |
+| [更新日志](history.md) | mineflayer 的更新日志 |
 | [示例/](https://github.com/PrismarineJS/mineflayer/tree/master/examples) | 我们为你准备的 mineflayer 使用实例 |
 
 ## 参与贡献
 
-请参阅 [为本项目贡献](../CONTRIBUTING.md)，以及[为 Prismarine 贡献](https://github.com/PrismarineJS/prismarine-contribute)
+请参阅 [为本项目贡献](CONTRIBUTING.md)，以及[为 Prismarine 贡献](https://github.com/PrismarineJS/prismarine-contribute)
 
 ## 如何使用
 
@@ -75,18 +78,18 @@
 如果没有指定特定版本，使用的服务器版本将自动判断并使用。  
 如果没有指定登录类型，默认使用 mojang 账户认证登录。
 
-### 例子：复读机
-
+### 回音例子：复读机
 ```js
 const mineflayer = require('mineflayer')
 
 const bot = mineflayer.createBot({
   host: 'localhost', // minecraft 服务器的 IP 地址
-  username: 'email@example.com', // minecraft 用户名
-  password: '12345678' // minecraft 密码, 如果你玩的是不需要正版验证的服务器，请注释掉。
-  // port: 25565,                // 默认使用 25565，如果你的服务器端口不是这个请取消注释并填写。
-  // version: false,             // 如果需要指定使用一个版本或快照时，请取消注释并手动填写（如："1.8.9" 或 "1.16.5"），否则会自动设置。
+  username: 'Bot', // minecraft 头顶的用户名。如果auth认证为`offline`，则为加入的用户名，否则为该帐户的唯一标识符。如果您想更改帐户，请切换
+  auth: 'microsoft' // 对于离线模式的服务器，您可以将其设置 'offline' 。
   // auth: 'mojang'              // 如果需要使用微软账号登录时，请取消注释，然后将值设置为 'microsoft'，否则会自动设置为 'mojang'。
+  // port: 25565,                // 默认使用 25565，如果你的服务器端口不是这个请取消注释并填写。
+  // version: false,             // 只有需要指定使用一个版本或快照时，请取消注释并手动填写（如："1.8.9" 或 "1.16.5"），否则会自动设置。
+  // password: '12345678' // minecraft 密码, 如果你玩的是不需要正版验证的服务器，请注释掉。如果要使用基于密码的验证（可能不可靠），请设置。如果指定，`username` 必须是有效的电子邮件
 })
 
 bot.on('chat', (username, message) => {
@@ -98,6 +101,11 @@ bot.on('chat', (username, message) => {
 bot.on('kicked', console.log)
 bot.on('error', console.log)
 ```
+
+如果 `auth` 设置为 `microsoft` ，您将被提示登录microsoft.com，并在浏览器中输入代码。登录浏览器后，机器人将自动获取和缓存身份验证令牌（在您指定的用户名下），因此您不必再次登录。
+
+要切换帐户，请更新提供的 `username` 。默认情况下，缓存的令牌将存储在用户的.minecraft文件夹中，或者如果指定了 `profilesFolder` 文件夹，它们将存储在那里。  
+For more information on bot options see node-minecraft-protocol's [API doc](https://github.com/PrismarineJS/node-minecraft-protocol/blob/master/docs/API.md#mccreateclientoptions).
 
 ### 看看你的 bot 在做什么
 
