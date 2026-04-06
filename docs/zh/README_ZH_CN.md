@@ -107,6 +107,21 @@ bot.on('error', console.log)
 要切换帐户，请更新提供的 `username` 。默认情况下，缓存的令牌将存储在用户的.minecraft文件夹中，或者如果指定了 `profilesFolder` 文件夹，它们将存储在那里。  
 For more information on bot options see node-minecraft-protocol's [API doc](https://github.com/PrismarineJS/node-minecraft-protocol/blob/master/docs/API.md#mccreateclientoptions).
 
+#### 连接到领域服(Realm)
+
+要加入您的Minecraft帐户已被邀请的Realm服，您可以通过以下选择函数传递 `realms` 对象。
+
+```js
+const client = mineflayer.createBot({
+  username: 'email@example.com', // minecraft username
+  realms: {
+    // 该函数使用一个可以加入realm的账户的数组来调用。它应该返回它想要加入的那个。
+    pickRealm: (realms) => realms[0]
+  },
+  auth: 'microsoft'
+})
+```
+
 ### 看看你的 bot 在做什么
 
 感谢 [prismarine-viewer](https://github.com/PrismarineJS/prismarine-viewer)项目，它可以在浏览器窗口显示你的机器人正在做什么。  
@@ -204,7 +219,8 @@ mineflayer 支持插件；任何人都可以创建一个插件，在 mineflayer 
  * [Hawkeye](https://github.com/sefirosweb/minecraftHawkEye) - 一个使用自动瞄准弓的工具
  * [GUI](https://github.com/firejoust/mineflayer-GUI) - 简化了嵌套箱子GUI窗口的导航和管理
  * [Projectile](https://github.com/firejoust/mineflayer-projectile) - 以投射物为基础的战斗的可配置插件
-
+ * [Movement](https://github.com/firejoust/mineflayer-movement) - 平滑和逼真的玩家移动，最适合PvP
+ * [Collect Block](https://github.com/PrismarineJS/mineflayer-collectblock) - 快速和简单的方块采集API。
 
  也可以看看这些 :
 
@@ -217,20 +233,24 @@ mineflayer 支持插件；任何人都可以创建一个插件，在 mineflayer 
 * [panorama](https://github.com/IceTank/mineflayer-panorama) - 拍摄您的世界的全景图像
  * [player-death-event](https://github.com/tuanzisama/mineflayer-death-event) - 在 Mineflayer 里监听玩家死亡事件
 
-## 正在使用 mineflayer 的项目
+## 正在使用 Mineflayer 的项目
 
+* [Voyager](https://github.com/MineDojo/Voyager) - 基于大型语言模型的开放世界具身智能体
+* [mindcraft](https://github.com/kolbytn/mindcraft) - 用于结合 LLM 使用 mineflayer 的库
 * [rom1504/rbot](https://github.com/rom1504/rbot)
   * [YouTube - 建造旋转楼梯](https://www.youtube.com/watch?v=UM1ZV5200S0)
   * [YouTube - 复制一个建筑](https://www.youtube.com/watch?v=0cQxg9uDnzA)
-* [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot) - 完成一些简单指令
-* [vogonistic/voxel](https://github.com/vogonistic/mineflayer-voxel) - 使用 voxel.js 可视化机器人正在做什么
-* [JonnyD/Skynet](https://github.com/JonnyD/Skynet) -  将玩家活动记录到在线 API 上
-* [MinecraftChat](https://github.com/rom1504/MinecraftChat) （最后一个开源版本，由 AlexKvazos 构建）——基于 Minecraft 网络的聊天客户端 <https://minecraftchat.net/>
-* [Cheese Bot](https://github.com/Minecheesecraft/Cheese-Bot) -  基于插件的机器人，具有干净的 GUI。使用 Node-Webkit 制作。
-* [Chaoscraft](https://github.com/schematical/chaoscraft) - 使用遗传算法的 Minecraft 机器人，请参阅 [Youtube](https://www.youtube.com/playlist?list=PLLkpLgU9B5xJ7Qy4kOyBJl5J6zsDIMceH)
-* [hexatester/minetelegram](https://github.com/hexatester/minetelegram) -  Minecraft - Telegram 消息互通，基于 mineflayer & telegraf.
-* [PrismarineJS/mineflayer-builder](https://github.com/PrismarineJS/mineflayer-builder) - 在生存中打印我的世界示意图，保持方向
-* [以及数千个](https://github.com/PrismarineJS/mineflayer/network/dependents) - github 检测到的在使用 mineflayer 的项目
+* [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot)
+* [vogonistic/voxel](https://github.com/vogonistic/mineflayer-voxel) - 使用 voxel.js 可视化机器人的行为
+* [JonnyD/Skynet](https://github.com/JonnyD/Skynet) - 将玩家活动记录到在线 API
+* [MinecraftChat](https://github.com/rom1504/MinecraftChat)（最后一个开源版本，由 AlexKvazos 构建）- 基于网页的 Minecraft 聊天客户端
+* [Cheese Bot](https://github.com/Minecheesecraft/Cheese-Bot) - 基于插件的机器人，拥有简洁的图形界面。使用 Node-Webkit 开发。
+* [Chaoscraft](https://github.com/schematical/chaoscraft) - 使用遗传算法的 Minecraft 机器人，详见 [其 YouTube 视频列表](https://www.youtube.com/playlist?list=PLLkpLgU9B5xJ7Qy4kOyBJl5J6zsDIMceH)
+* [hexatester/minetelegram](https://github.com/hexatester/minetelegram) - Minecraft 与 Telegram 的桥接工具，基于 mineflayer 和 telegraf 构建。
+* [PrismarineJS/mineflayer-builder](https://github.com/PrismarineJS/mineflayer-builder) - 在生存模式下打印 Minecraft 结构（schematics），并保持方向一致
+* [SilkePilon/OpenDeliveryBot](https://github.com/SilkePilon/OpenDeliveryBot) - 用 Python 编写的 Minecraft 机器人，用于在不同地点间运送物品。
+* [以及更多项目](https://github.com/PrismarineJS/mineflayer/network/dependents) - GitHub 检测到的所有使用 mineflayer 的项目
+
 
 ## 测试
 
