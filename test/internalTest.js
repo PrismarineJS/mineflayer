@@ -7,6 +7,7 @@ const assert = require('assert')
 const { sleep } = require('../lib/promise_utils')
 const nbt = require('prismarine-nbt')
 const { once } = require('../lib/promise_utils')
+const { getPort } = require('./common/util')
 
 for (const supportedVersion of mineflayer.testedVersions) {
   const registry = require('prismarine-registry')(supportedVersion)
@@ -52,54 +53,53 @@ for (const supportedVersion of mineflayer.testedVersions) {
     this.timeout(10 * 1000)
     let bot
     let server
-    beforeEach((done) => {
+    let PORT
+    beforeEach(async function () {
+      PORT = await getPort()
       server = mc.createServer({
         'online-mode': false,
         version: supportedVersion,
-        // 25565 - local server, 25566 - proxy server
-        port: 25567
+        port: PORT
       })
-      server.on('listening', () => {
-        bot = mineflayer.createBot({
-          username: 'player',
-          version: supportedVersion,
-          port: 25567
-        })
-        bot.test = {}
+      await once(server, 'listening')
+      bot = mineflayer.createBot({
+        username: 'player',
+        version: supportedVersion,
+        port: PORT
+      })
+      bot.test = {}
 
-        bot.test.buildChunk = () => {
-          if (bot.supportFeature('tallWorld')) {
-            return new Chunk({ minY: -64, worldHeight: 384 })
-          } else {
-            return new Chunk()
+      bot.test.buildChunk = () => {
+        if (bot.supportFeature('tallWorld')) {
+          return new Chunk({ minY: -64, worldHeight: 384 })
+        } else {
+          return new Chunk()
+        }
+      }
+
+      bot.test.generateLoginPacket = () => {
+        let loginPacket
+        if (bot.supportFeature('usesLoginPacket')) {
+          loginPacket = registry.loginPacket
+          loginPacket.entityId = 0 // Default login packet in minecraft-data 1.16.5 is 1, so set it to 0
+        } else {
+          loginPacket = {
+            entityId: 0,
+            levelType: 'fogetaboutit',
+            gameMode: 0,
+            previousGameMode: 255,
+            worldNames: ['minecraft:overworld'],
+            dimension: 0,
+            worldName: 'minecraft:overworld',
+            hashedSeed: [0, 0],
+            difficulty: 0,
+            maxPlayers: 20,
+            reducedDebugInfo: 1,
+            enableRespawnScreen: true
           }
         }
-
-        bot.test.generateLoginPacket = () => {
-          let loginPacket
-          if (bot.supportFeature('usesLoginPacket')) {
-            loginPacket = registry.loginPacket
-            loginPacket.entityId = 0 // Default login packet in minecraft-data 1.16.5 is 1, so set it to 0
-          } else {
-            loginPacket = {
-              entityId: 0,
-              levelType: 'fogetaboutit',
-              gameMode: 0,
-              previousGameMode: 255,
-              worldNames: ['minecraft:overworld'],
-              dimension: 0,
-              worldName: 'minecraft:overworld',
-              hashedSeed: [0, 0],
-              difficulty: 0,
-              maxPlayers: 20,
-              reducedDebugInfo: 1,
-              enableRespawnScreen: true
-            }
-          }
-          return loginPacket
-        }
-        done()
-      })
+        return loginPacket
+      }
     })
     afterEach((done) => {
       bot.on('end', () => {
@@ -240,6 +240,64 @@ for (const supportedVersion of mineflayer.testedVersions) {
         const chunk = bot.test.buildChunk()
         chunk.setBlockType(pos, goldId)
         client.write('map_chunk', generateChunkPacket(chunk))
+      })
+    })
+
+    describe('digTime', () => {
+      it('should use eye-level water check instead of isInWater for dig speed', (done) => {
+        const blockPos = vec3(1, 65, 1)
+        const playerPos = vec3(1.5, 66, 1.5)
+        // eyeHeight is 1.62, so eye level at y=67.62 -> block at y=67
+        // A second position where eye level has water: player at y=70, eye at y=71.62 -> block y=71
+        const playerPos2 = vec3(1.5, 70, 1.5)
+        const eyeLevelBlockPos2 = vec3(1, 71, 1)
+        const dirtId = bot.registry.blocksByName.dirt.id
+        const waterId = bot.registry.blocksByName.water.id
+        const blockPos2 = vec3(1, 69, 1)
+
+        bot.on('chunkColumnLoad', () => {
+          // Set bot entity properties
+          bot.entity.eyeHeight = 1.62
+          bot.entity.onGround = true
+          bot.entity.isInWater = false
+          bot.entity.effects = {}
+          bot.game = bot.game || {}
+          bot.game.gameMode = 'survival'
+
+          // Test 1: No water at eye level -> normal dig speed
+          bot.entity.position = playerPos
+          const block1 = bot.blockAt(blockPos)
+          const digTimeNoWater = bot.digTime(block1)
+
+          // Test 2: Water at eye level -> slower dig speed
+          bot.entity.position = playerPos2
+          const block2 = bot.blockAt(blockPos2)
+          const digTimeWithWater = bot.digTime(block2)
+
+          // Digging in water should be slower (higher dig time)
+          assert(digTimeWithWater > digTimeNoWater,
+            `Dig time with water at eye level (${digTimeWithWater}) should be greater than without (${digTimeNoWater})`)
+
+          // Test 3: isInWater=true but no water block at eye level should NOT slow digging
+          // (this is the bug that was fixed - previously isInWater incorrectly affected dig speed)
+          bot.entity.position = playerPos
+          bot.entity.isInWater = true
+          const digTimeFeetInWater = bot.digTime(block1)
+          assert.strictEqual(digTimeFeetInWater, digTimeNoWater,
+            'isInWater should not affect dig time when eye level is not in water')
+
+          done()
+        })
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          const chunk = bot.test.buildChunk()
+          // Place dirt blocks to dig at two locations
+          chunk.setBlockType(blockPos, dirtId)
+          chunk.setBlockType(blockPos2, dirtId)
+          // Place water only at the second eye-level position
+          chunk.setBlockType(eyeLevelBlockPos2, waterId)
+          client.write('map_chunk', generateChunkPacket(chunk))
+        })
       })
     })
 
@@ -487,6 +545,36 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
         })
       })
+
+      it('dimension type lookup uses worldType over worldName on 1.19-1.20.4', function (done) {
+        // On proxy/modded servers the worldName (level name) may differ from
+        // the dimension type. For versions with dimensionDataInCodec but
+        // without segmentedRegistryCodecData (1.19-1.20.4), the bot should
+        // prefer worldType (login) / dimension (respawn) for the codec lookup.
+        if (!bot.supportFeature('dimensionDataInCodec') || bot.supportFeature('segmentedRegistryCodecData')) {
+          this.skip()
+          return
+        }
+
+        const loginPacket = bot.test.generateLoginPacket()
+        // Simulate a proxy/modded server: worldName is a custom level name
+        // but worldType is still the real dimension type
+        loginPacket.worldName = 'modded:custom_world'
+        loginPacket.worldType = 'minecraft:overworld'
+
+        server.on('playerJoin', (client) => {
+          client.write('login', loginPacket)
+          bot.once('login', () => {
+            assert.strictEqual(bot.game.dimension, 'overworld',
+              'should use worldType for dimension, not worldName')
+            assert.ok(bot.game.minY !== undefined,
+              'minY should be set from codec lookup')
+            assert.ok(bot.game.height !== undefined,
+              'height should be set from codec lookup')
+            done()
+          })
+        })
+      })
     })
 
     describe('entities', () => {
@@ -602,6 +690,176 @@ for (const supportedVersion of mineflayer.testedVersions) {
           } else {
             client.write('named_entity_spawn', {
               entityId: 56,
+              playerUUID: '1-2-3-4',
+              x: 1,
+              y: 2,
+              z: 3,
+              yaw: 0,
+              pitch: 0,
+              currentItem: -1,
+              metadata: []
+            })
+          }
+        })
+      })
+
+      it('does not crash when skin texture is mojangson format', (done) => {
+        // Mojangson-style texture data (not valid JSON, but valid mojangson)
+        const mojangsonStr = '{textures:{SKIN:{url:"http://textures.minecraft.net/texture/abc123",metadata:{model:"slim"}}}}'
+        const mojangsonBase64 = Buffer.from(mojangsonStr).toString('base64')
+
+        server.on('playerJoin', (client) => {
+          bot.on('entitySpawn', (entity) => {
+            const player = bot.players[entity.username]
+            assert.ok(player, 'player should exist')
+            assert.ok(player.skinData, 'skinData should be parsed from mojangson')
+            assert.strictEqual(player.skinData.url, 'http://textures.minecraft.net/texture/abc123')
+            assert.strictEqual(player.skinData.model, 'slim')
+            done()
+          })
+
+          if (registry.supportFeature('playerInfoActionIsBitfield')) {
+            client.write('player_info', {
+              action: { add_player: true },
+              data: [{
+                uuid: '1-2-3-4',
+                player: {
+                  name: 'bot5',
+                  properties: [{
+                    name: 'textures',
+                    value: mojangsonBase64,
+                    signature: ''
+                  }]
+                },
+                gamemode: 0,
+                latency: 0
+              }]
+            })
+          } else {
+            client.write('player_info', {
+              action: 'add_player',
+              data: [{
+                uuid: '1-2-3-4',
+                name: 'bot5',
+                properties: [{
+                  name: 'textures',
+                  value: mojangsonBase64,
+                  signature: ''
+                }],
+                gamemode: 0,
+                ping: 0
+              }]
+            })
+          }
+
+          if (bot.registry.supportFeature('unifiedPlayerAndEntitySpawnPacket')) {
+            client.write('spawn_entity', {
+              entityId: 56,
+              objectUUID: '1-2-3-4',
+              type: bot.registry.entitiesByName.player.internalId,
+              x: 1,
+              y: 2,
+              z: 3,
+              pitch: 0,
+              yaw: 0,
+              headPitch: 0,
+              objectData: 1,
+              velocity: { x: 0, y: 0, z: 0 },
+              velocityX: 0,
+              velocityY: 0,
+              velocityZ: 0
+            })
+          } else {
+            client.write('named_entity_spawn', {
+              entityId: 56,
+              playerUUID: '1-2-3-4',
+              x: 1,
+              y: 2,
+              z: 3,
+              yaw: 0,
+              pitch: 0,
+              currentItem: -1,
+              metadata: []
+            })
+          }
+        })
+      })
+
+      it('does not crash when skin texture is valid JSON', (done) => {
+        const validJson = JSON.stringify({
+          textures: {
+            SKIN: {
+              url: 'http://textures.minecraft.net/texture/def456',
+              metadata: { model: 'default' }
+            }
+          }
+        })
+        const jsonBase64 = Buffer.from(validJson).toString('base64')
+
+        server.on('playerJoin', (client) => {
+          bot.on('entitySpawn', (entity) => {
+            const player = bot.players[entity.username]
+            assert.ok(player, 'player should exist')
+            assert.ok(player.skinData, 'skinData should be parsed from JSON')
+            assert.strictEqual(player.skinData.url, 'http://textures.minecraft.net/texture/def456')
+            assert.strictEqual(player.skinData.model, 'default')
+            done()
+          })
+
+          if (registry.supportFeature('playerInfoActionIsBitfield')) {
+            client.write('player_info', {
+              action: { add_player: true },
+              data: [{
+                uuid: '1-2-3-4',
+                player: {
+                  name: 'bot6',
+                  properties: [{
+                    name: 'textures',
+                    value: jsonBase64,
+                    signature: ''
+                  }]
+                },
+                gamemode: 0,
+                latency: 0
+              }]
+            })
+          } else {
+            client.write('player_info', {
+              action: 'add_player',
+              data: [{
+                uuid: '1-2-3-4',
+                name: 'bot6',
+                properties: [{
+                  name: 'textures',
+                  value: jsonBase64,
+                  signature: ''
+                }],
+                gamemode: 0,
+                ping: 0
+              }]
+            })
+          }
+
+          if (bot.registry.supportFeature('unifiedPlayerAndEntitySpawnPacket')) {
+            client.write('spawn_entity', {
+              entityId: 57,
+              objectUUID: '1-2-3-4',
+              type: bot.registry.entitiesByName.player.internalId,
+              x: 1,
+              y: 2,
+              z: 3,
+              pitch: 0,
+              yaw: 0,
+              headPitch: 0,
+              objectData: 1,
+              velocity: { x: 0, y: 0, z: 0 },
+              velocityX: 0,
+              velocityY: 0,
+              velocityZ: 0
+            })
+          } else {
+            client.write('named_entity_spawn', {
+              entityId: 57,
               playerUUID: '1-2-3-4',
               x: 1,
               y: 2,
@@ -853,9 +1111,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
 
       server.once('playerJoin', (client) => {
-        bot.time.timeOfDay = 18000
         const loginPacket = bot.test.generateLoginPacket()
         client.write('login', loginPacket)
+        // Set timeOfDay after login is processed so bot.time is initialized
+        bot.once('login', () => { bot.time.timeOfDay = 18000 })
 
         const chunk = bot.test.buildChunk()
 
@@ -919,6 +1178,63 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('heldItemChanged', () => {
+      it('emits heldItemChanged when the held slot is updated via set_slot', (done) => {
+        const Item = require('prismarine-item')(supportedVersion)
+        const QUICK_BAR_SLOT = 0
+        const HOTBAR_START = 36
+        const stoneId = registry.itemsByName.stone.id
+        const stoneItem = new Item(stoneId, 1)
+        const notchItem = Item.toNotch(stoneItem)
+
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          client.write('held_item_slot', { slot: QUICK_BAR_SLOT })
+
+          // Wait for the held_item_slot to be processed, then listen for the
+          // heldItemChanged triggered by the set_slot update to the held slot
+          setTimeout(() => {
+            bot.once('heldItemChanged', (newItem) => {
+              assert.ok(newItem, 'heldItemChanged should provide the new item')
+              assert.strictEqual(newItem.type, stoneId)
+              done()
+            })
+            client.write('set_slot', {
+              windowId: 0,
+              slot: HOTBAR_START + QUICK_BAR_SLOT,
+              item: notchItem
+            })
+          }, 100)
+        })
+      })
+
+      it('emits heldItemChanged via updateSlot on the inventory', (done) => {
+        const Item = require('prismarine-item')(supportedVersion)
+        const QUICK_BAR_SLOT = 0
+        const stoneId = registry.itemsByName.stone.id
+        const stoneItem = new Item(stoneId, 1)
+
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          client.write('held_item_slot', { slot: QUICK_BAR_SLOT })
+
+          setTimeout(() => {
+            bot.once('heldItemChanged', (newItem) => {
+              assert.ok(newItem, 'heldItemChanged should provide the new item')
+              assert.strictEqual(newItem.type, stoneId)
+              done()
+            })
+            // Directly call updateSlot on the inventory to simulate
+            // the set_player_inventory code path
+            bot.inventory.updateSlot(
+              QUICK_BAR_SLOT + bot.inventory.hotbarStart,
+              stoneItem
+            )
+          }, 100)
+        })
+      })
+    })
+
     describe('tablist', () => {
       it('handles newlines in header and footer', (done) => {
         const HEADER = 'asd\ndsa'
@@ -946,6 +1262,54 @@ for (const supportedVersion of mineflayer.testedVersions) {
             })
           })
         }
+      })
+    })
+
+    describe('activateItem rotation', () => {
+      it('should send the bot rotation in the use_item packet', function (done) {
+        // The rotation field in use_item was added in 1.21.1
+        const useItemFields = registry.protocol?.play?.toServer?.types?.packet_use_item?.[1]
+        const hasRotation = useItemFields && useItemFields.some(f => f.name === 'rotation')
+        if (!hasRotation) {
+          this.skip()
+          return
+        }
+        const { toNotchianYaw, toNotchianPitch } = require('../lib/conversions')
+        const testYaw = 1.5
+        const testPitch = -0.3
+        server.on('playerJoin', async (client) => {
+          await client.write('login', bot.test.generateLoginPacket())
+          await client.write('position', {
+            x: 0,
+            y: 66,
+            z: 0,
+            dx: 0,
+            dy: 0,
+            dz: 0,
+            yaw: 0,
+            pitch: 0,
+            flags: bot.registry.version['>=']('1.21.3') ? {} : 0,
+            teleportId: 0
+          })
+
+          client.on('packet', (data, meta) => {
+            if (meta.name === 'use_item') {
+              const expectedYaw = toNotchianYaw(testYaw)
+              const expectedPitch = toNotchianPitch(testPitch)
+              assert.ok(data.rotation, 'use_item packet should have rotation field')
+              assert.ok(Math.abs(data.rotation.x - expectedYaw) < 0.001,
+                `Expected yaw ${expectedYaw}, got ${data.rotation.x}`)
+              assert.ok(Math.abs(data.rotation.y - expectedPitch) < 0.001,
+                `Expected pitch ${expectedPitch}, got ${data.rotation.y}`)
+              done()
+            }
+          })
+
+          await sleep(100)
+          bot.entity.yaw = testYaw
+          bot.entity.pitch = testPitch
+          bot.activateItem()
+        })
       })
     })
   })

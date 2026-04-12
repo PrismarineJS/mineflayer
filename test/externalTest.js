@@ -8,6 +8,7 @@ const fs = require('fs')
 const path = require('path')
 
 const { getPort } = require('./common/util')
+const { once } = require('../lib/promise_utils')
 
 // set this to false if you want to test without starting a server automatically
 const START_THE_SERVER = true
@@ -61,7 +62,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           host: '127.0.0.1',
           version: supportedVersion
         })
-        commonTest(bot)
+        commonTest(bot, wrap)
         bot.test.port = PORT
 
         console.log('starting bot')
@@ -109,12 +110,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
       } else begin()
     })
 
-    beforeEach(async () => {
-      console.log('Resetting state')
-      await bot.test.resetState()
-      console.log('State reset')
-    })
-
     after((done) => {
       if (bot) bot.quit()
       wrap.stopServer((err) => {
@@ -130,17 +125,67 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    async function reconnectBot () {
+      console.log('  Bot disconnected, reconnecting...')
+      try { bot.end() } catch (e) { /* ignore */ }
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      bot = mineflayer.createBot({
+        username: 'flatbot',
+        viewDistance: 'tiny',
+        port: PORT,
+        host: '127.0.0.1',
+        version: supportedVersion
+      })
+      commonTest(bot, wrap)
+      bot.test.port = PORT
+      await once(bot, 'spawn')
+      console.log('  Bot reconnected')
+      wrap.writeServer('op flatbot\n')
+      await new Promise(resolve => setTimeout(resolve, 2000))
+    }
+
     const externalTestsFolder = path.resolve(__dirname, './externalTests')
+    let distinctFailures = 0
+    // Sort test files so example tests (which spawn child processes and can
+    // crash/disconnect the bot) run last, limiting their blast radius.
+    const dangerousTests = ['exampleBee', 'exampleDigger', 'exampleInventory']
     fs.readdirSync(externalTestsFolder)
       .filter(file => fs.statSync(path.join(externalTestsFolder, file)).isFile())
+      .sort((a, b) => {
+        const aName = path.basename(a, '.js')
+        const bName = path.basename(b, '.js')
+        const aDangerous = dangerousTests.includes(aName) ? 1 : 0
+        const bDangerous = dangerousTests.includes(bName) ? 1 : 0
+        return aDangerous - bDangerous
+      })
       .forEach((test) => {
         test = path.basename(test, '.js')
         const testFunctions = require(`./externalTests/${test}`)(supportedVersion)
         const runTest = (testName, testFunction) => {
           return function (done) {
             this.timeout(TEST_TIMEOUT_MS)
-            bot.test.sayEverywhere(`### Starting ${testName}`)
-            testFunction(bot, done).then(res => done()).catch(e => done(e))
+            // Disable retries if too many different tests have already failed
+            // on their first attempt (indicates a systemic issue, not flakiness)
+            if (distinctFailures >= 3) this.retries(0)
+            if (this.test._currentRetry > 0) {
+              console.log(`  [retry ${this.test._currentRetry}] ${testName}`)
+            }
+            // Reconnect if bot got disconnected by a previous test
+            const reconnect = !bot.entity
+              ? reconnectBot()
+              : Promise.resolve()
+            reconnect.then(() => bot.test.resetState())
+              .then(() => {
+                bot.test.sayEverywhere(`### Starting ${testName}`)
+                return testFunction(bot, done)
+              })
+              .then(res => done())
+              .catch(e => {
+                if (this.test._currentRetry === 0) {
+                  distinctFailures++
+                }
+                done(e)
+              })
           }
         }
         if (excludedTests.indexOf(test) === -1) {
