@@ -1,5 +1,4 @@
 const assert = require('assert')
-const { onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   if (bot.registry.isOlderThan('1.14')) return
@@ -29,6 +28,7 @@ module.exports = () => async (bot) => {
 
   // Open cartography table
   const cartographyTable = await bot.openCartographyTable(bot.blockAt(cartographyTablePos))
+  await bot.test.wait(250)
 
   // Check initial state
   assert.strictEqual(cartographyTable.mapItem(), cartographyTable.slots[0])
@@ -38,21 +38,15 @@ module.exports = () => async (bot) => {
   assert.strictEqual(cartographyTable.modifierItem(), null)
   assert.strictEqual(cartographyTable.outputItem(), null)
 
-  // Put map in slot 0 and wait for update
+  // Put map in slot 0
   await cartographyTable.putMap(mapId, null, 1)
-  await onceWithCleanup(cartographyTable, 'updateSlot', {
-    timeout: 2000,
-    checkCondition: (slot, oldItem, newItem) => slot === 0 && newItem?.type === mapId
-  })
+  await bot.test.wait(250)
   assert.strictEqual(cartographyTable.mapItem().type, mapId)
   assert.strictEqual(cartographyTable.mapItem().count, 1)
 
-  // Put paper in slot 1 (modifier) and wait for update
+  // Put paper in slot 1 (modifier)
   await cartographyTable.putModifier(paperId, null, 1)
-  await onceWithCleanup(cartographyTable, 'updateSlot', {
-    timeout: 2000,
-    checkCondition: (slot, oldItem, newItem) => slot === 1 && newItem?.type === paperId
-  })
+  await bot.test.wait(250)
   assert.strictEqual(cartographyTable.modifierItem().type, paperId)
   assert.strictEqual(cartographyTable.modifierItem().count, 1)
   assert.strictEqual(cartographyTable.mapItem().type, mapId)
@@ -65,7 +59,7 @@ module.exports = () => async (bot) => {
   assert.strictEqual(cartographyTable.modifierItem(), null)
 
   cartographyTable.close()
-  await onceWithCleanup(bot, 'windowClose', { timeout: 2000 })
+  await bot.test.wait(250)
 
   // Check inventory - items should be back
   const mapCount = bot.inventory.count(mapId)
