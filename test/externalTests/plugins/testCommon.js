@@ -123,18 +123,13 @@ function inject (bot, wrap) {
   }
 
   async function clearInventory () {
-    // Wait for inventory updates after giving stone
-    const stonePromises = []
-    for (const slot of bot.inventory.slots.keys()) {
-      stonePromises.push(
-        onceWithCleanup(bot.inventory, `updateSlot:${slot}`, {
-          timeout: 2000,
-          checkCondition: (oldItem, newItem) => newItem?.name === 'stone'
-        })
-      )
-    }
+    // Wait for any inventory slot to receive stone
+    const stonePromise = onceWithCleanup(bot.inventory, 'updateSlot', {
+      timeout: 2000,
+      checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone'
+    })
     bot.chat('/give @a stone 1')
-    await Promise.all(stonePromises)
+    await stonePromise
 
     // Wait for clear command confirmation
     const clearMsg = onceWithCleanup(bot, 'message', {
