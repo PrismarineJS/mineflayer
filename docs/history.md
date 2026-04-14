@@ -1,3 +1,23 @@
+## 4.35.0
+
+## 4.37.0
+* [CI: print failed version logs last for easy debugging (#3876)](https://github.com/PrismarineJS/mineflayer/commit/56efbcde16343576533eaa7a08e85b785ae847cd) (thanks @rom1504)
+* [Fix nether test reliability and add set_player_inventory handler (#3874)](https://github.com/PrismarineJS/mineflayer/commit/fd03f0a83e00229344b0624ce5ace9e0303599f3) (thanks @rom1504)
+* [Improve test reliability: reconnect, retry, server console, packet fix (#3873)](https://github.com/PrismarineJS/mineflayer/commit/23f60d2132d49c08d936073d215466a825045933) (thanks @rom1504)
+* [Improve test reliability: server console gamemode, retries, NaN guard (#3871)](https://github.com/PrismarineJS/mineflayer/commit/7af5e2ccf2f7ed1240ea792cb425a20e669618c2) (thanks @rom1504)
+* [CI: run 4 MC versions per job to halve runner pressure (#3870)](https://github.com/PrismarineJS/mineflayer/commit/85a164d86e2b8bac996946ef6fb46d800861c82f) (thanks @rom1504)
+* [Speed up tests: remove sleep(1000) in resetState (#3869)](https://github.com/PrismarineJS/mineflayer/commit/81ecd72bafafc711ee2bc32b19d64f2bd897c4fb) (thanks @rom1504)
+
+## 4.36.0
+* [Update CI to Node 24 (#3861)](https://github.com/PrismarineJS/mineflayer/commit/3b05f83d536adb31103c811f7093361ff35449a1) (thanks @rom1504)
+* [Fix publish condition for npm-publish v4 (#3858)](https://github.com/PrismarineJS/mineflayer/commit/ea663478fa1cb4f602735675aebd0c8459c7576d) (thanks @rom1504)
+* [Switch to trusted publishing via OIDC (#3856)](https://github.com/PrismarineJS/mineflayer/commit/3173eeded3982b144bc40d7b0fdfb083ee7eb118) (thanks @rom1504)
+* [Bump @types/node to 25.2.1 + fix flaky time & nether tests (#3828)](https://github.com/PrismarineJS/mineflayer/commit/89686596c8de1091bf45104ba3230a5e87707a20) (thanks @plainprince)
+
+* [🎈 1.21.11 (#3781)](https://github.com/PrismarineJS/mineflayer/commit/597745c7c061943620fcacba7254bccee05b7a3e) (thanks @rom1504bot)
+* [Fix chat pattern and event listener in tutorial (#3783)](https://github.com/PrismarineJS/mineflayer/commit/48586138f560991de60bea639c71fa82954cf50f) (thanks @brentspine)
+* [Update history.md](https://github.com/PrismarineJS/mineflayer/commit/c9f766513d5bb5a93c5b86c07827128716c0afdb) (thanks @extremeheat)
+
 ## 4.34.0
 * [🎈 1.21.9/1.21.10 support (#3754)](https://github.com/PrismarineJS/mineflayer/commit/f0afaf73061c15b67e5d3457b60ed543e711acb6) (thanks @rom1504bot)
 * [Update russian docs (#3762)](https://github.com/PrismarineJS/mineflayer/commit/887b52b933d943c8d605d7835d6d55d198208fee) (thanks @fungoza)
