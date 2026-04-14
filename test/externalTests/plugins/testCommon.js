@@ -126,10 +126,29 @@ function inject (bot, wrap) {
     // Use bot.chat for /give (server console /give doesn't send inventory
     // update packets on 1.21.9+). Use server console for /clear.
     bot.chat('/give @a stone 1')
-    await onceWithCleanup(bot.inventory, 'updateSlot', {
-      timeout: 10000,
-      checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone'
-    })
+
+    // Listen for each slot update individually since updateSlot event
+    // without namespace isn't fired for slot changes in newer versions
+    const stoneSlots = []
+    const checkCondition = (slot, oldItem, newItem) => {
+      if (newItem?.name === 'stone') {
+        stoneSlots.push(slot)
+        return true
+      }
+      return false
+    }
+
+    const cleanupPromises = []
+    for (const slot of bot.inventory.slots.keys()) {
+      cleanupPromises.push(
+        onceWithCleanup(bot.inventory, `updateSlot:${slot}`, {
+          timeout: 10000,
+          checkCondition
+        })
+      )
+    }
+    await Promise.all(cleanupPromises)
+
     const clearMsg = onceWithCleanup(bot, 'message', {
       timeout: 10000,
       checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
