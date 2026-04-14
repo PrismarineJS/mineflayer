@@ -41,18 +41,20 @@ module.exports = () => async (bot) => {
 
   // Put map in slot 0
   await cartographyTable.putMap(mapId, null, 1)
-  await bot.test.wait(200)
+  await bot.test.wait(1000)
   assert.strictEqual(cartographyTable.mapItem().type, mapId)
   assert.strictEqual(cartographyTable.mapItem().count, 1)
 
   // Put paper in slot 1 (modifier)
   await cartographyTable.putModifier(paperId, null, 1)
-  await bot.test.wait(200)
+  await bot.test.wait(1000)
   assert.strictEqual(cartographyTable.modifierItem().type, paperId)
   assert.strictEqual(cartographyTable.modifierItem().count, 1)
 
   // Wait for the items to settle in the window
-  await bot.test.wait(500)
+  await bot.test.wait(1000)
+  assert.strictEqual(cartographyTable.mapItem().type, mapId)
+  assert.strictEqual(cartographyTable.mapItem().count, 1)
 
   // Take items back
   await cartographyTable.takeModifier()
@@ -61,7 +63,7 @@ module.exports = () => async (bot) => {
   assert.strictEqual(cartographyTable.modifierItem(), null)
 
   cartographyTable.close()
-  await bot.test.wait(500)
+  await bot.test.wait(1000)
 
   // Check inventory - items should be back
   const mapCount = bot.inventory.count(mapId)
