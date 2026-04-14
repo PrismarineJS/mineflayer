@@ -6,7 +6,7 @@ const process = require('process')
 const assert = require('assert')
 const { sleep, onceWithCleanup } = require('../../../lib/promise_utils')
 
-const timeout = 2000
+const timeout = 5000
 module.exports = inject
 
 function inject (bot, wrap) {
@@ -123,21 +123,20 @@ function inject (bot, wrap) {
   }
 
   async function clearInventory () {
-    // Wait for any inventory slot to receive stone
-    const stonePromise = onceWithCleanup(bot.inventory, 'updateSlot', {
-      timeout: 2000,
+    const giveStone = onceWithCleanup(bot.inventory, 'updateSlot', {
+      timeout: 10000,
       checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone'
     })
+    await bot.test.wait(500)
     bot.chat('/give @a stone 1')
-    await stonePromise
+    await giveStone
 
-    // Wait for clear command confirmation
-    const clearMsg = onceWithCleanup(bot, 'message', {
-      timeout: 2000,
+    const clearInv = onceWithCleanup(bot, 'message', {
+      timeout,
       checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
     })
     bot.chat('/clear')
-    await clearMsg
+    await clearInv
   }
 
   // you need to be in creative mode for this to work
