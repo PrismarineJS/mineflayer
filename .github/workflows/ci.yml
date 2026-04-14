@@ -15,7 +15,7 @@ jobs:
     - name: Use Node.js 22.x
       uses: actions/setup-node@v1.4.4
       with:
-        node-version: 22.x
+        node-version: 24
     - run: npm i && npm run lint
   
   PrepareSupportedVersions:
@@ -28,19 +28,25 @@ jobs:
     - name: Use Node.js 22.x
       uses: actions/setup-node@v1.4.4
       with:
-        node-version: 22.x
+        node-version: 24
     - id: set-matrix
       run: |
         node -e "
-          const testedVersions = require('./lib/version').testedVersions;
-          console.log('matrix='+JSON.stringify({'include': testedVersions.map(mcVersion => ({mcVersion}))}))
+          const v = require('./lib/version').testedVersions;
+          const groups = [];
+          const SIZE = 4;
+          for (let i = 0; i < v.length; i += SIZE) {
+            groups.push({ versions: v.slice(i, i + SIZE).join(' ') });
+          }
+          console.log('matrix='+JSON.stringify({'include': groups}))
         " >> $GITHUB_OUTPUT
 
   MinecraftServer:
     needs: PrepareSupportedVersions
     runs-on: ubuntu-latest
+    name: MC ${{ matrix.versions }}
     strategy:
-      matrix: ${{fromJson(needs.PrepareSupportedVersions.outputs.matrix)}}
+      matrix: ${{ fromJson(needs.PrepareSupportedVersions.outputs.matrix) }}
       fail-fast: false
 
     steps:
@@ -48,7 +54,7 @@ jobs:
       - name: Use Node.js 22.x
         uses: actions/setup-node@v1.4.4
         with:
-          node-version: 22.x
+          node-version: 24
       - name: Setup Java JDK
         uses: actions/setup-java@v1.4.3
         with:
@@ -56,5 +62,35 @@ jobs:
           java-package: jre
       - name: Install Dependencies
         run: npm install
+
       - name: Start Tests
-        run: npm run mocha_test -- -g ${{ matrix.mcVersion }}v
+        run: |
+          exit_code=0
+          pids=""
+          for v in ${{ matrix.versions }}; do
+            npm run mocha_test -- --retries 3 -g "${v}v" > "test-${v}.log" 2>&1 &
+            pids="$pids $!"
+          done
+          for pid in $pids; do
+            wait $pid || exit_code=$?
+          done
+          # Print passing versions first, then failing versions last
+          for v in ${{ matrix.versions }}; do
+            if ! grep -q "failing" "test-${v}.log"; then
+              echo ""
+              echo "=========================================="
+              echo "  Results for Minecraft ${v}"
+              echo "=========================================="
+              cat "test-${v}.log"
+            fi
+          done
+          for v in ${{ matrix.versions }}; do
+            if grep -q "failing" "test-${v}.log"; then
+              echo ""
+              echo "=========================================="
+              echo "  FAILED: Minecraft ${v}"
+              echo "=========================================="
+              cat "test-${v}.log"
+            fi
+          done
+          exit $exit_code

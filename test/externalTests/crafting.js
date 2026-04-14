@@ -47,6 +47,7 @@ module.exports = () => async (bot) => {
     }
   }
 
+  // Test 2x2 crafting (log → planks)
   await bot.test.setInventorySlot(36, new Item(populateBlockInventory.id, 1, 0))
   await bot.test.becomeSurvival()
   await craft(1, craftItem)

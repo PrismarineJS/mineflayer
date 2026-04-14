@@ -1,5 +1,5 @@
 const assert = require('assert')
-const { once } = require('../../lib/promise_utils')
+const { once, onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => {
   async function runTest (bot, testFunction) {
@@ -27,7 +27,10 @@ module.exports = () => {
   addTest('test chatAddPattern', async (bot) => {
     await once(bot, 'message') // => starting chat test chatAddPattern
     bot.chat('/tellraw @p {"translate":"chat.type.text", "with":["U9G", "Hello World!"]}')
-    const [username, message, translate, chatMessage] = await once(bot, 'chat')
+    const [username, message, translate, chatMessage] = await onceWithCleanup(bot, 'chat', {
+      timeout: 20000,
+      checkCondition: (username) => username === 'U9G'
+    })
     assert.strictEqual(username, 'U9G')
     assert.strictEqual(message, 'Hello World!')
     assert.strictEqual(translate, 'chat.type.text')
