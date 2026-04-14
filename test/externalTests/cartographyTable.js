@@ -27,9 +27,8 @@ module.exports = () => async (bot) => {
 
   assert.strictEqual(bot.blockAt(cartographyTablePos).type, cartographyTableBlockId)
 
-  // Open cartography table and wait for window
+  // Open cartography table
   const cartographyTable = await bot.openCartographyTable(bot.blockAt(cartographyTablePos))
-  await onceWithCleanup(bot, 'windowOpen', { timeout: 2000 })
 
   // Check initial state
   assert.strictEqual(cartographyTable.mapItem(), cartographyTable.slots[0])
