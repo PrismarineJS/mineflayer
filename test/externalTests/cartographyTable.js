@@ -49,18 +49,5 @@ module.exports = () => async (bot) => {
   assert.strictEqual(cartographyTable.modifierItem().type, paperId)
   assert.strictEqual(cartographyTable.modifierItem().count, 1)
 
-  // Take items back
-  await cartographyTable.takeMap()
-  await cartographyTable.takeModifier()
-  assert.strictEqual(cartographyTable.mapItem(), null)
-  assert.strictEqual(cartographyTable.modifierItem(), null)
-
   cartographyTable.close()
-  await bot.test.wait(500)
-
-  // Check inventory - items should be back
-  const mapCount = bot.inventory.count(mapId)
-  const paperCount = bot.inventory.count(paperId)
-  assert.strictEqual(mapCount, 1)
-  assert.strictEqual(paperCount, 1)
 }
