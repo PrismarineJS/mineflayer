@@ -29,6 +29,8 @@ module.exports = () => async (bot) => {
   // Open cartography table
   const cartographyTable = await bot.openCartographyTable(bot.blockAt(cartographyTablePos))
 
+  await bot.test.wait(200)
+
   // Check initial state
   assert.strictEqual(cartographyTable.mapItem(), cartographyTable.slots[0])
   assert.strictEqual(cartographyTable.modifierItem(), cartographyTable.slots[1])
