@@ -9,10 +9,12 @@ module.exports = () => async (bot) => {
   const mapId = bot.registry.itemsByName.map.id
   const paperId = bot.registry.itemsByName.paper.id
 
+  const cartographyTableBlockId = bot.registry.blocksByName.cartography_table.id
+
   let blockItemsByName
   if (bot.supportFeature('itemsAreNotBlocks')) {
     blockItemsByName = 'itemsByName'
-  } else if (bot.supportFeature('itemsAreAlsoBlocks')) {
+  } else {
     blockItemsByName = 'blocksByName'
   }
 
@@ -22,7 +24,7 @@ module.exports = () => async (bot) => {
   await bot.test.setInventorySlot(37, new Item(mapId, 1))
   await bot.test.setInventorySlot(38, new Item(paperId, 1))
 
-  assert.strictEqual(bot.blockAt(cartographyTablePos).type, bot.registry[blockItemsByName].cartography_table.id)
+  assert.strictEqual(bot.blockAt(cartographyTablePos).type, cartographyTableBlockId)
 
   // Open cartography table
   const cartographyTable = await bot.openCartographyTable(bot.blockAt(cartographyTablePos))
