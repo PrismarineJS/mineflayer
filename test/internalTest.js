@@ -1242,9 +1242,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
               assert.strictEqual(newItem.type, stoneId)
               done()
             })
-            // Directly call updateSlot on the inventory to simulate
-            // the set_player_inventory code path
-            bot.inventory.updateSlot(
+            // Use _setSlot to simulate the set_player_inventory code path
+            bot._setSlot(
               QUICK_BAR_SLOT + bot.inventory.hotbarStart,
               stoneItem
             )

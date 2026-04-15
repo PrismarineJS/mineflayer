@@ -66,6 +66,7 @@ module.exports = () => async (bot) => {
   // Take items back
   await cartographyTable.takeModifier()
   await cartographyTable.takeMap()
+  await bot.test.wait(500)
   assert.strictEqual(cartographyTable.mapItem(), null)
   assert.strictEqual(cartographyTable.modifierItem(), null)
 
