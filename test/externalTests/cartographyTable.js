@@ -11,7 +11,8 @@ const waitFor = async (check, maxTicks = 20) => {
 }
 
 module.exports = () => async (bot) => {
-  if (bot.registry.isOlderThan('1.14')) return
+  // Only test on 1.16+ due to transaction issues on older versions
+  if (bot.registry.isOlderThan('1.16')) return
 
   const Item = require('prismarine-item')(bot.registry)
 
