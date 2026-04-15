@@ -1,5 +1,15 @@
 const assert = require('assert')
 
+const sleep = (ms) => new Promise((resolve) => { setTimeout(resolve, ms) })
+
+const waitFor = async (check, maxTicks = 20) => {
+  for (let i = 0; i < maxTicks; i++) {
+    await sleep(10)
+    if (check()) return true
+  }
+  return false
+}
+
 module.exports = () => async (bot) => {
   if (bot.registry.isOlderThan('1.14')) return
 
@@ -28,7 +38,7 @@ module.exports = () => async (bot) => {
 
   // Open cartography table
   const cartographyTable = await bot.openCartographyTable(bot.blockAt(cartographyTablePos))
-  await bot.test.wait(250)
+  await waitFor(() => cartographyTable.mapItem() !== undefined)
 
   // Check initial state
   assert.strictEqual(cartographyTable.mapItem(), cartographyTable.slots[0])
@@ -40,13 +50,13 @@ module.exports = () => async (bot) => {
 
   // Put map in slot 0
   await cartographyTable.putMap(mapId, null, 1)
-  await bot.test.wait(250)
+  await waitFor(() => cartographyTable.mapItem()?.type === mapId)
   assert.strictEqual(cartographyTable.mapItem().type, mapId)
   assert.strictEqual(cartographyTable.mapItem().count, 1)
 
   // Put paper in slot 1 (modifier)
   await cartographyTable.putModifier(paperId, null, 1)
-  await bot.test.wait(250)
+  await waitFor(() => cartographyTable.modifierItem()?.type === paperId)
   assert.strictEqual(cartographyTable.modifierItem().type, paperId)
   assert.strictEqual(cartographyTable.modifierItem().count, 1)
   assert.strictEqual(cartographyTable.mapItem().type, mapId)
@@ -59,7 +69,7 @@ module.exports = () => async (bot) => {
   assert.strictEqual(cartographyTable.modifierItem(), null)
 
   cartographyTable.close()
-  await bot.test.wait(250)
+  await waitFor(() => bot.currentWindow === null)
 
   // Check inventory - items should be back
   const mapCount = bot.inventory.count(mapId)
