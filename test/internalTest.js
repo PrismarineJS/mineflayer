@@ -22,13 +22,20 @@ for (const supportedVersion of mineflayer.testedVersions) {
       : JSON.stringify({ text })
   }
 
-  function generateChunkPacket (chunk) {
+  function generateChunkPacket (chunk, version) {
     const lights = chunk.dumpLight()
+    const biomes = chunk.dumpBiomes?.()
+    let bitMap = chunk.getMask()
+    if (bitMap === undefined && chunk.numSections) {
+      for (let i = 0; i < chunk.numSections; i++) {
+        bitMap |= (1 << i)
+      }
+    }
     return {
       x: 0,
       z: 0,
       groundUp: true,
-      biomes: chunk.dumpBiomes !== undefined ? chunk.dumpBiomes() : undefined,
+      biomes: biomes !== undefined ? biomes : undefined,
       heightmaps: {
         type: 'compound',
         name: '',
@@ -36,7 +43,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           MOTION_BLOCKING: { type: 'longArray', value: new Array(36).fill([0, 0]) }
         }
       }, // send fake heightmap
-      bitMap: chunk.getMask(),
+      bitMap,
       chunkData: chunk.dump(),
       blockEntities: [],
       trustEdges: false,
