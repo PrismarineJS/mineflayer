@@ -6,7 +6,7 @@ const process = require('process')
 const assert = require('assert')
 const { sleep, onceWithCleanup } = require('../../../lib/promise_utils')
 
-const timeout = 20000
+const timeout = 5000
 module.exports = inject
 
 function inject (bot, wrap) {
@@ -123,15 +123,15 @@ function inject (bot, wrap) {
   }
 
   async function clearInventory () {
-    // Give a stone then clear — same as the original approach.
-    // The /give ensures the server has something to clear.
+    // Use bot.chat for /give (server console /give doesn't send inventory
+    // update packets on 1.21.9+). Use server console for /clear.
     bot.chat('/give @a stone 1')
     await onceWithCleanup(bot.inventory, 'updateSlot', {
-      timeout,
+      timeout: 10000,
       checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone'
     })
     const clearMsg = onceWithCleanup(bot, 'message', {
-      timeout,
+      timeout: 10000,
       checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
     })
     bot.chat('/clear')
@@ -145,10 +145,11 @@ function inject (bot, wrap) {
   }
 
   async function teleport (position) {
+    // Use server console for teleport — works even if bot is in a bad state
     if (bot.supportFeature('hasExecuteCommand')) {
-      bot.test.sayEverywhere(`/execute in overworld run teleport ${bot.username} ${position.x} ${position.y} ${position.z}`)
+      wrap.writeServer(`execute in overworld run teleport ${bot.username} ${position.x} ${position.y} ${position.z}\n`)
     } else {
-      bot.test.sayEverywhere(`/tp ${bot.username} ${position.x} ${position.y} ${position.z}`)
+      wrap.writeServer(`tp ${bot.username} ${position.x} ${position.y} ${position.z}\n`)
     }
     return onceWithCleanup(bot, 'move', {
       timeout,

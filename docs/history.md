@@ -1,5 +1,13 @@
 ## 4.35.0
 
+## 4.37.0
+* [CI: print failed version logs last for easy debugging (#3876)](https://github.com/PrismarineJS/mineflayer/commit/56efbcde16343576533eaa7a08e85b785ae847cd) (thanks @rom1504)
+* [Fix nether test reliability and add set_player_inventory handler (#3874)](https://github.com/PrismarineJS/mineflayer/commit/fd03f0a83e00229344b0624ce5ace9e0303599f3) (thanks @rom1504)
+* [Improve test reliability: reconnect, retry, server console, packet fix (#3873)](https://github.com/PrismarineJS/mineflayer/commit/23f60d2132d49c08d936073d215466a825045933) (thanks @rom1504)
+* [Improve test reliability: server console gamemode, retries, NaN guard (#3871)](https://github.com/PrismarineJS/mineflayer/commit/7af5e2ccf2f7ed1240ea792cb425a20e669618c2) (thanks @rom1504)
+* [CI: run 4 MC versions per job to halve runner pressure (#3870)](https://github.com/PrismarineJS/mineflayer/commit/85a164d86e2b8bac996946ef6fb46d800861c82f) (thanks @rom1504)
+* [Speed up tests: remove sleep(1000) in resetState (#3869)](https://github.com/PrismarineJS/mineflayer/commit/81ecd72bafafc711ee2bc32b19d64f2bd897c4fb) (thanks @rom1504)
+
 ## 4.36.0
 * [Update CI to Node 24 (#3861)](https://github.com/PrismarineJS/mineflayer/commit/3b05f83d536adb31103c811f7093361ff35449a1) (thanks @rom1504)
 * [Fix publish condition for npm-publish v4 (#3858)](https://github.com/PrismarineJS/mineflayer/commit/ea663478fa1cb4f602735675aebd0c8459c7576d) (thanks @rom1504)

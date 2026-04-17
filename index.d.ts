@@ -163,6 +163,7 @@ export interface BotEvents {
   bossBarDeleted: (bossBar: BossBar) => Promise<void> | void
   bossBarUpdated: (bossBar: BossBar) => Promise<void> | void
   resourcePack: (url: string, hash?: string, uuid?: string) => Promise<void> | void
+  heldItemChanged: (newItem: Item | null) => Promise<void> | void
   particle: (particle: Particle) => Promise<void> | void
   heldItemChanged: (newItem: Item | null) => Promise<void> | void
   abilities: (abilities: Abilities) => Promise<void> | void

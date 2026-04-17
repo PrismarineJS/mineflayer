@@ -75,12 +75,23 @@ jobs:
           for pid in $pids; do
             wait $pid || exit_code=$?
           done
-          # Print logs sequentially with clear headers
+          # Print passing versions first, then failing versions last
           for v in ${{ matrix.versions }}; do
-            echo ""
-            echo "=========================================="
-            echo "  Results for Minecraft ${v}"
-            echo "=========================================="
-            cat "test-${v}.log"
+            if ! grep -q "failing" "test-${v}.log"; then
+              echo ""
+              echo "=========================================="
+              echo "  Results for Minecraft ${v}"
+              echo "=========================================="
+              cat "test-${v}.log"
+            fi
+          done
+          for v in ${{ matrix.versions }}; do
+            if grep -q "failing" "test-${v}.log"; then
+              echo ""
+              echo "=========================================="
+              echo "  FAILED: Minecraft ${v}"
+              echo "=========================================="
+              cat "test-${v}.log"
+            fi
           done
           exit $exit_code
