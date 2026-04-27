@@ -8,6 +8,7 @@ versions/
 server_jars/
 test/server_*
 .vscode
+.nyc_output/
 .DS_Store
 launcher_accounts.json
 data
