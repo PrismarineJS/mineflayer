@@ -1,5 +1,5 @@
 const assert = require('assert')
-const { once } = require('../../lib/promise_utils')
+const { once, onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = (version) => async (bot) => {
   // Skip test for versions older than 1.13 (bossbar command not available)
@@ -44,15 +44,13 @@ module.exports = (version) => async (bot) => {
     bot.test.sayEverywhere(`/bossbar set ${uuid} value ${newHealth * 100}`)
 
     // Wait for the boss bar to have the expected state
-    let bossBar
-    while (true) {
-      [bossBar] = await once(bot, 'bossBarUpdated')
-      if (
+    const [bossBar] = await onceWithCleanup(bot, 'bossBarUpdated', {
+      timeout: 5000,
+      checkCondition: (bossBar) =>
         bossBar.health === newHealth &&
         bossBar.color === newColor &&
         bossBar.dividers === 10
-      ) break
-    }
+    })
     assert.strictEqual(bossBar.health, newHealth)
     assert.strictEqual(bossBar.color, newColor)
     assert.strictEqual(bossBar.dividers, 10)

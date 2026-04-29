@@ -54,6 +54,7 @@ module.exports = () => async (bot) => {
 
   console.log('Table ready')
   await enchantingTable.enchant(enchantSlot)
+  await bot.test.wait(500)
   const result = await enchantingTable.takeTargetItem()
 
   assert.notStrictEqual(result.nbt, undefined)

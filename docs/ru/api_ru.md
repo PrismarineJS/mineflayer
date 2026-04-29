@@ -170,6 +170,8 @@
       - ["game"](#game)
       - ["resourcePack" (url, hash)](#resourcepack-url-hash)
       - ["title" (title, type)](#title-title-type)
+      - ["title_times" (fadeIn, stay, fadeOut)](#title_times-fadein-stay-fadeout)
+      - ["title_clear"](#title_clear)
       - ["rain"](#rain)
       - ["weatherUpdate"](#weatherupdate)
       - ["time"](#time)
@@ -225,7 +227,7 @@
       - ["blockBreakProgressEnd" (block, entity)](#blockbreakprogressend-block-entity)
       - ["diggingCompleted" (block)](#diggingcompleted-block)
       - ["diggingAborted" (block)](#diggingaborted-block)
-      - ["usedFirework"](#usedfirework)
+      - ["usedFirework" (fireworkEntityId)](#usedfirework-fireworkentityid)
       - ["move"](#move)
       - ["forcedMove"](#forcedmove)
       - ["mount"](#mount)
@@ -270,7 +272,7 @@
     - [Methods](#methods)
       - [bot.end(reason)](#botendreason)
       - [bot.quit(reason)](#botquitreason)
-      - [bot.tabComplete(str, [assumeCommand], [sendBlockInSight])](#bottabcompletestr-assumecommand-sendblockinsight)
+      - [bot.tabComplete(str, [assumeCommand], [sendBlockInSight], [timeout])](#bottabcompletestr-assumecommand-sendblockinsight-timeout)
       - [bot.chat(message)](#botchatmessage)
       - [bot.whisper(username, message)](#botwhisperusername-message)
       - [bot.chatAddPattern(pattern, chatType, description)](#botchataddpatternpattern-chattype-description)
@@ -291,7 +293,7 @@
       - [bot.getExplosionDamages(entity, position, radius, [rawDamages])](#botgetexplosiondamagesentity-position-radius-rawdamages)
       - [bot.lookAt(point, [force])](#botlookatpoint-force)
       - [bot.look(yaw, pitch, [force])](#botlookyaw-pitch-force)
-      - [bot.updateSign(block, text, back = false)](#botupdatesignblock-text)
+      - [bot.updateSign(block, text, back = false)](#botupdatesignblock-text-back--false)
       - [bot.equip(item, destination)](#botequipitem-destination)
       - [bot.unequip(destination)](#botunequipdestination)
       - [bot.tossStack(item)](#bottossstackitem)
@@ -331,6 +333,7 @@
       - [bot.setCommandBlock(pos, command, [options])](#botsetcommandblockpos-command-options)
       - [bot.supportFeature(name)](#botsupportfeaturename)
       - [bot.waitForTicks(ticks)](#botwaitforticksticks)
+      - [bot.respawn()](#botrespawn)
     - [Lower level inventory methods](#lower-level-inventory-methods)
       - [bot.clickWindow(slot, mouseButton, mode)](#botclickwindowslot-mousebutton-mode)
       - [bot.putSelectedItemRange(start, end, window, slot)](#botputselecteditemrangestart-end-window-slot)
@@ -1271,6 +1274,26 @@ UUID существа, который определяется боссом.
  * `title` - Текст на экране.
  * `type` - Тип текста "subtitle" или "title"
 
+#### "title_times" (fadeIn, stay, fadeOut)
+
+Срабатывает, когда сервер отправляет пакет с временем для текста по центру экрана (например, когда устанавливается или обновляется время для появления, отображения и исчезновения надписи).
+
+ * `fadeIn` - время появления в тиках (число)
+ * `stay` - время отображения в тиках (число)
+ * `fadeOut` - время исчезновения в тиках (число)
+
+Пример:
+
+```js
+bot.on('title_times', (fadeIn, stay, fadeOut) => {
+  console.log(`Время для надписей: fadeIn=${fadeIn}, stay=${stay}, fadeOut=${fadeOut}`)
+})
+```
+
+#### "title_clear"
+
+Срабатывает, когда сервер очищает все надписи по центру экрана.
+
 #### "rain"
 
 Срабатывает, когда начинается или прекращается дождь. Если вы присоединитесь к
@@ -1454,9 +1477,11 @@ UUID существа, который определяется боссом.
 
  * `block` - Блок, который не был разрушен.
 
-#### "usedfirework"
+#### "usedFirework" (fireworkEntityId)
 
 Срабатывает при использовании фейерверка во время полёта на элитрах.
+
+ * `fireworkEntityId` - айди существа фейерверка.
 
 #### "move"
 
@@ -1635,7 +1660,7 @@ UUID существа, который определяется боссом.
 
 #### bot.recipesFor(itemType, metadata, minResultCount, craftingTable)
 
-Возвращает список рецептов(`Recipe`), которые вы можете использовать для крафта
+Возвращает список рецептов(`Recipe`), которые вы можете использовать для крафта 
 предмета(`itemType`) с мета-данными(`metadata`).
 
  * `itemType` - Числовой ID предмета, который вы хотите создать.
@@ -1667,7 +1692,7 @@ const cow = bot.nearestEntity(entity => entity.name.toLowerCase() === 'cow') // 
 
 Принудительно завершает соединение по собственной причине (по умолчанию `'disconnect.quitting'`).
 
-#### bot.tabComplete(str, [assumeCommand], [sendBlockInSight])
+#### bot.tabComplete(str, [assumeCommand], [sendBlockInSight], [timeout])
 
 Эта функция возвращает `Promise` с `matches` в качестве аргумента при завершении.
 
@@ -1676,6 +1701,7 @@ const cow = bot.nearestEntity(entity => entity.name.toLowerCase() === 'cow') // 
  * `str` - Строка для завершения через подсказки.
  * `assumeCommand` - Поле отправляемое серверу, по умолчанию `false`.
  * `sendBlockInSight` - Поле отправляемое серверу, по умолчанию `true`. Установите для этого параметра значение `false`, если вы хотите повысить производительность.
+ * `timeout` - Время в миллисекундах, после которого функция вернёт пустой массив, по умолчанию 5000.
 
 #### bot.chat(message)
 
@@ -1711,6 +1737,8 @@ const cow = bot.nearestEntity(entity => entity.name.toLowerCase() === 'cow') // 
 
 Возвращает число, которое используется методом `bot.removeChatPattern()` лишь для того, чтобы можно было удалить этот шаблон.
 
+ - :eyes: см. [examples/chat_parsing](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chat_parsing.js#L17-L36)
+
 #### bot.addChatPatternSet(name, patterns, chatPatternOptions)
 
 Создаёт событие, который вызывается каждый раз, когда сообщения совпадают с шаблонами.
@@ -1722,6 +1750,8 @@ const cow = bot.nearestEntity(entity => entity.name.toLowerCase() === 'cow') // 
   * `parse` - Вместо самого сообщения, которое совпало с шаблоном, возвращает группы из регулярного выражения.
 
 Возвращает число, которое используется методом `bot.removeChatPattern()` лишь для того, чтобы можно было удалить этот шаблон.
+
+ - :eyes: см. [examples/chat_parsing](https://github.com/PrismarineJS/mineflayer/blob/master/examples/chat_parsing.js#L17-L36)
 
 #### bot.removeChatPattern(name)
 
@@ -2110,6 +2140,10 @@ bot.once('login', () => {
 
 Это функция основана на промисе. Она ожидает определённое количество игровых тиков перед продолжением. Может быть полезно для быстрых таймеров, который требуют особых задержек, независимо от заданной физической скорости тиканья бота. Это похоже на стандартную функцию Javascript `setTimeout`, но выполняется специально по физическому таймеру бота.
 
+#### bot.respawn()
+
+Когда выключена настройка `respawn`, вы можете вызвать этот метод для ручного возрождения.
+
 ### Методы инвентаря низкого уровня
 
 Эти методы могут быть иногда полезны, но мы рекомендуем использовать методы, описанные выше.
@@ -2117,8 +2151,20 @@ bot.once('login', () => {
 #### bot.clickWindow(slot, mouseButton, mode)
 
 Эта функция возвращает `Promise` с `void` в качестве аргумента при завершении.
+  
+Поддержка mode:
+  - стабильно:
+    - клик мышью (0)
 
-Единственное действительное значение для `mode` - 0. Нажатие с шифтом или перемещение через мышь не реализовано.
+  - экспериментально:
+    - клик с шифтом (1)
+    - клик цифрой (2)
+    - клик колёсиком (3)
+    - выкидывающий клик (4)
+
+  - не реализовано:
+    - драг клик (5)
+    - двойной клик (6)
 
 Нажимает на текущее окно. Подробнее - https://minecraft.wiki/w/Protocol#Click_Container
 
