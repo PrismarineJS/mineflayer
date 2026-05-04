@@ -6,6 +6,7 @@ module.exports = () => async (bot) => {
 
   await bot.test.setInventorySlot(36, new Item(bot.registry.itemsByName.dirt.id, 1, 0))
   await bot.test.fly(new Vec3(0, 2, 0))
+  console.log(bot.entity.position)
   await bot.test.placeBlock(36, bot.entity.position.plus(new Vec3(0, -2, 0)))
   await bot.test.clearInventory()
   await bot.creative.stopFlying()
@@ -23,6 +24,7 @@ module.exports = () => async (bot) => {
       assert(!bot.entity.onGround, 'waitForFall called when we were already on the ground')
       const startingPosition = bot.entity.position.clone()
       bot.on('move', function onMove () {
+        console.log('TEST')
         if (bot.entity.onGround) {
           const distance = startingPosition.distanceTo(bot.entity.position)
           assert(distance > 0.2, `waitForFall didn't fall very far: ${distance}`)
