@@ -56,15 +56,12 @@ jobs:
         with:
           node-version: 24
       - name: Setup Java JDK
-        uses: actions/setup-java@v1.4.3
+        uses: actions/setup-java@v4
         with:
-          java-version: 21
-          java-package: jre
+          distribution: 'temurin'
+          java-version: ${{ contains(matrix.versions, '26.1.2') && '26' || '21' }}
       - name: Install Dependencies
         run: npm install
-      - run: cd node_modules && cd minecraft-data && mv minecraft-data minecraft-data-old && git clone -b pc_26_1_2 https://github.com/PrismarineJS/minecraft-data --depth 1 && node bin/generate_data.js
-      - run: curl -o node_modules/protodef/src/serializer.js https://raw.githubusercontent.com/extremeheat/node-protodef/refs/heads/dlog/src/serializer.js && curl -o node_modules/protodef/src/compiler.js https://raw.githubusercontent.com/extremeheat/node-protodef/refs/heads/dlog/src/compiler.js
-
 
       - name: Start Tests
         run: |
