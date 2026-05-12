@@ -297,6 +297,14 @@ export interface Bot extends TypedEmitter<BotEvents> {
     force?: boolean
   ) => Promise<void>
 
+  look2: (
+    notchYaw: number,
+    notchPitch: number,
+    force?: boolean
+  ) => Promise<void>
+
+  getNotchYawPitch: () => { yaw: number, pitch: number }
+
   updateSign: (block: Block, text: string, back?: boolean) => void
 
   equip: (
