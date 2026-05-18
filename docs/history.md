@@ -1,6 +1,17 @@
-## 4.35.0
-
 ## 4.37.0
+
+## 4.37.1
+* [Convert yaw/pitch in sync_entity_position handler (#3896)](https://github.com/PrismarineJS/mineflayer/commit/2b65c14c6d335758d1fe753ade99d736b610413b) (thanks @domdomegg)
+* [Backport velocity field changes from 1.21.9+ to older versions (#3839)](https://github.com/PrismarineJS/mineflayer/commit/61fbd3a38177bde100b4ee9e130ccbcdb73fc7ea) (thanks @SuperGamerTron)
+* [Update history.md](https://github.com/PrismarineJS/mineflayer/commit/fd00edd4a0211e8f131abf23b0951e04acceb3f5) (thanks @extremeheat)
+* [Fix activateItem always having the same rotation (#3840)](https://github.com/PrismarineJS/mineflayer/commit/47a41c666f1f6e6783867ebe81e7386bbae72c24) (thanks @SuperGamerTron)
+* [Fix crash in digging plugin death handler (#3553) (#3835)](https://github.com/PrismarineJS/mineflayer/commit/8af96fc0186ab770174744ea3e1f247c229a8cb3) (thanks @plainprince)
+* [Fix crash issue when trying to parse bad skin JSON (#3712)](https://github.com/PrismarineJS/mineflayer/commit/dcbc5b2d605e38379724ca36467a911dc9cc562f) (thanks @TheSharkyOfficial)
+* [Patches isInWater for digSpeed (#3542)](https://github.com/PrismarineJS/mineflayer/commit/a516d1cdf21ce2676195c595a64798c6ad29c195) (thanks @Pix3lPirat3)
+* [fix firing heldItemChanged, add type (#3625)](https://github.com/PrismarineJS/mineflayer/commit/c5e0200686c269617f2a92c8db50fdceb899ba8a) (thanks @zardoy)
+* [Fix dimension type lookup for 1.19-1.20.4 on proxy/modded servers (#3822)](https://github.com/PrismarineJS/mineflayer/commit/6d5d3ae576030bbe388f4d36dbc5d4eee99458bf) (thanks @plainprince)
+* [Use minecraft-protocol ^1.66.0 with sync zlib fix (#3878)](https://github.com/PrismarineJS/mineflayer/commit/dc5c91a25a1f0d374017a2d1551b37396be7f658) (thanks @rom1504)
+
 * [CI: print failed version logs last for easy debugging (#3876)](https://github.com/PrismarineJS/mineflayer/commit/56efbcde16343576533eaa7a08e85b785ae847cd) (thanks @rom1504)
 * [Fix nether test reliability and add set_player_inventory handler (#3874)](https://github.com/PrismarineJS/mineflayer/commit/fd03f0a83e00229344b0624ce5ace9e0303599f3) (thanks @rom1504)
 * [Improve test reliability: reconnect, retry, server console, packet fix (#3873)](https://github.com/PrismarineJS/mineflayer/commit/23f60d2132d49c08d936073d215466a825045933) (thanks @rom1504)
@@ -14,6 +25,7 @@
 * [Switch to trusted publishing via OIDC (#3856)](https://github.com/PrismarineJS/mineflayer/commit/3173eeded3982b144bc40d7b0fdfb083ee7eb118) (thanks @rom1504)
 * [Bump @types/node to 25.2.1 + fix flaky time & nether tests (#3828)](https://github.com/PrismarineJS/mineflayer/commit/89686596c8de1091bf45104ba3230a5e87707a20) (thanks @plainprince)
 
+## 4.35.0
 * [🎈 1.21.11 (#3781)](https://github.com/PrismarineJS/mineflayer/commit/597745c7c061943620fcacba7254bccee05b7a3e) (thanks @rom1504bot)
 * [Fix chat pattern and event listener in tutorial (#3783)](https://github.com/PrismarineJS/mineflayer/commit/48586138f560991de60bea639c71fa82954cf50f) (thanks @brentspine)
 * [Update history.md](https://github.com/PrismarineJS/mineflayer/commit/c9f766513d5bb5a93c5b86c07827128716c0afdb) (thanks @extremeheat)
