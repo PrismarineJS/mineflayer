@@ -21,7 +21,7 @@ module.exports = () => async (bot) => {
   await bot.waitForTicks(5)
   await assert.doesNotReject(bot.elytraFly())
   await bot.waitForTicks(20) // wait for server to accept
-  assert.ok(bot.entity.elytraFlying)
+  assert.ok(bot.entity.fallFlying)
 
   if (!supportsFireworkRockets) return
 
@@ -30,7 +30,7 @@ module.exports = () => async (bot) => {
   const activationTicks = 20
   for (let i = 0; i < 20; i++) {
     bot.activateItem()
-    assert.ok(bot.entity.elytraFlying)
+    assert.ok(bot.entity.fallFlying)
     await bot.waitForTicks(1)
   }
   await bot.waitForTicks(3)
@@ -38,7 +38,7 @@ module.exports = () => async (bot) => {
   assert.ok(bot.fireworkRocketDuration > 0)
   for (let i = bot.fireworkRocketDuration; i > 0; --i) {
     await bot.waitForTicks(1)
-    assert.ok(bot.entity.elytraFlying)
+    assert.ok(bot.entity.fallFlying)
     if (bot.fireworkRocketDuration > i) {
       i = bot.fireworkRocketDuration
       ++lateActivations

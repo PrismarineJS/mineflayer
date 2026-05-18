@@ -764,10 +764,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
               yaw: 0,
               headPitch: 0,
               objectData: 1,
-              velocity: { x: 0, y: 0, z: 0 },
-              velocityX: 0,
-              velocityY: 0,
-              velocityZ: 0
+              velocity: { x: 0, y: 0, z: 0 }
             })
           } else {
             client.write('named_entity_spawn', {
@@ -852,10 +849,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
               yaw: 0,
               headPitch: 0,
               objectData: 1,
-              velocity: { x: 0, y: 0, z: 0 },
-              velocityX: 0,
-              velocityY: 0,
-              velocityZ: 0
+              velocity: { x: 0, y: 0, z: 0 }
             })
           } else {
             client.write('named_entity_spawn', {

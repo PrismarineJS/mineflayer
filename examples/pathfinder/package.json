@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "mineflayer-pathfinder": "^2.4.5",
-    "mineflayer": "file:../../"
+    "mineflayer": "file:../../",
+    "mineflayer-pathfinder": "^2.4.5"
   },
   "description": "A mineflayer example"
 }
