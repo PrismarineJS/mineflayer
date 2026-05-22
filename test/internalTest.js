@@ -397,6 +397,35 @@ for (const supportedVersion of mineflayer.testedVersions) {
           done()
         })
       })
+      it('rejects a look promise when a newer look overrides it before sync', async () => {
+        const pJoin = once(server, 'playerJoin')
+        const [client] = await pJoin
+        await client.write('login', bot.test.generateLoginPacket())
+        const chunk = bot.test.buildChunk()
+        chunk.setBlockType(pos, goldId)
+        await client.write('map_chunk', generateChunkPacket(chunk))
+
+        await once(bot, 'chunkColumnLoad')
+        const p1 = once(bot, 'forcedMove')
+        await client.write('position', {
+          x: 1.5,
+          y: 80,
+          z: 1.5,
+          pitch: 0,
+          yaw: 0,
+          flags: bot.supportFeature('positionPacketHasBitflags') ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0,
+          teleportId: 1
+        })
+        await p1
+
+        const staleLook = bot.look(Math.PI / 2, -0.2, false)
+        const staleRejected = assert.rejects(
+          staleLook,
+          /bot\.look was overwritten by a newer bot\.look\/bot\.lookAt call before it synced\./
+        )
+        await bot.look(Math.PI, 0, true)
+        await staleRejected
+      })
       it('gravity + land on solid block + jump', (done) => {
         let y = 80
         let landed = false
