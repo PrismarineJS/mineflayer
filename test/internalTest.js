@@ -307,6 +307,19 @@ for (const supportedVersion of mineflayer.testedVersions) {
     describe('activateBlock face direction', () => {
       // Direction mapping: 0=down(-y), 1=up(+y), 2=north(-z), 3=south(+z), 4=west(-x), 5=east(+x)
       const blockPos = vec3(8, 65, 8)
+      // For each direction, the cursor axis that should sit on the face boundary, and its value (0 = min side, 1 = max side)
+      const faceAxis = ['y', 'y', 'z', 'z', 'x', 'x']
+      const faceValue = [0, 1, 0, 1, 0, 1]
+
+      // The cursor is sent scaled by 16 on older versions and raw [0,1] on newer ones;
+      // detect the scale from the in-face coordinates (which sit around the block middle).
+      function assertCursorOnFace (data, expectedDirection) {
+        const scale = (Math.abs(data.cursorX) > 1.001 || Math.abs(data.cursorY) > 1.001 || Math.abs(data.cursorZ) > 1.001) ? 16 : 1
+        const cursor = { x: data.cursorX / scale, y: data.cursorY / scale, z: data.cursorZ / scale }
+        const axis = faceAxis[expectedDirection]
+        assert.ok(Math.abs(cursor[axis] - faceValue[expectedDirection]) < 0.05,
+          `Cursor ${axis}=${cursor[axis]} not on the expected face (${faceValue[expectedDirection]}) for direction ${expectedDirection}`)
+      }
 
       async function setupAndActivate (botPosition, done, expectedDirection) {
         return new Promise((resolve, reject) => {
@@ -341,6 +354,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
                 try {
                   assert.strictEqual(data.direction, expectedDirection,
                     `Expected direction ${expectedDirection} but got ${data.direction}`)
+                  assertCursorOnFace(data, expectedDirection)
                   resolve()
                 } catch (e) {
                   reject(e)

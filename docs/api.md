@@ -1962,8 +1962,8 @@ This function returns a `Promise`, with `void` as its argument upon completion.
 Punch a note block, open a door, etc.
 
  * `block` - the block to activate
- * `direction` Optional defaults to `new Vec3(0, 1, 0)` (up). A vector off the direction the container block should be interacted with. Does nothing when a container entity is targeted.
- * `cursorPos` Optional defaults to `new Vec3(0.5, 0.5, 0.5)` (block center). The curos position when opening the block instance. This is send with the activate block packet. Does nothing when a container entity is targeted.
+ * `direction` Optional. The face vector the block should be interacted with. If omitted, mineflayer raycasts from the bot's eyes to pick the face the bot can actually see (and falls back to the nearest face by bot position when the block isn't directly visible). Pass an explicit `Vec3` (e.g. `new Vec3(0, 1, 0)` for the top face) to force a specific face. Previously defaulted to `new Vec3(0, 1, 0)` (up), which silently failed for two-block-tall blocks such as doors. Does nothing when a container entity is targeted.
+ * `cursorPos` Optional. The cursor position on the clicked face, sent with the activate block packet. When `direction` is auto-detected this defaults to the raycast hit point on that face; otherwise it defaults to `new Vec3(0.5, 0.5, 0.5)` (block center). Does nothing when a container entity is targeted.
 
 #### bot.activateEntity(entity)
 
