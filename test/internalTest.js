@@ -299,6 +299,63 @@ for (const supportedVersion of mineflayer.testedVersions) {
           client.write('map_chunk', generateChunkPacket(chunk))
         })
       })
+
+      it('recomputes digTime after lookAt resolves so the timer reflects post-await onGround state', (done) => {
+        const blockPos = vec3(1, 65, 1)
+        const playerPos = vec3(1.5, 66, 1.5)
+        const dirtId = bot.registry.blocksByName.dirt.id
+
+        bot.on('chunkColumnLoad', () => {
+          // Set bot entity properties
+          bot.entity.eyeHeight = 1.62
+          bot.entity.position = playerPos
+          bot.entity.isInWater = false
+          bot.entity.effects = {}
+          bot.entity.onGround = true
+          bot.game = bot.game || {}
+          bot.game.gameMode = 'survival'
+
+          // Spy on bot.digTime to record bot.entity.onGround at each call.
+          const observed = []
+          const originalDigTime = bot.digTime
+          bot.digTime = function (block) {
+            observed.push(bot.entity.onGround)
+            return originalDigTime.call(bot, block)
+          }
+
+          // Stub lookAt so the bot becomes airborne during its await,
+          // exercising the race condition this fix addresses.
+          bot.lookAt = function () {
+            return new Promise((resolve) => {
+              bot.entity.onGround = false
+              setImmediate(resolve)
+            })
+          }
+
+          const block = bot.blockAt(blockPos)
+          const digPromise = bot.dig(block)
+
+          // Resolve the dig task by emitting the block-update event that the
+          // digging plugin listens for, so bot.dig() does not hang on its
+          // diggingTask promise while we make assertions.
+          setImmediate(() => {
+            bot.emit(`blockUpdate:${block.position}`, null, { type: 0 })
+          })
+
+          digPromise.then(() => {
+            assert.ok(observed.length >= 2,
+              `bot.digTime should be called at least twice in bot.dig (once for the Infinity guard, once for waitTime). Observed: ${JSON.stringify(observed)}`)
+            assert.strictEqual(observed[observed.length - 1], false,
+              `the last bot.digTime call (the one that sets waitTime) should observe the post-await onGround value. Observed: ${JSON.stringify(observed)}`)
+          }).then(done, done)
+        })
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          const chunk = bot.test.buildChunk()
+          chunk.setBlockType(blockPos, dirtId)
+          client.write('map_chunk', generateChunkPacket(chunk))
+        })
+      })
     })
 
     describe('physics', () => {
