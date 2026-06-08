@@ -525,7 +525,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
     })
 
     describe('health', () => {
-      it('keeps isAlive true for non-death respawn packets', (done) => {
+      it('keeps isAlive true and emits spawn for non-death respawn packets', (done) => {
         const loginPacket = bot.test.generateLoginPacket()
         let respawnPacket
         if (bot.supportFeature('usesLoginPacket')) {
@@ -581,8 +581,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
           assert.strictEqual(bot.isAlive, true)
 
           const respawnPromise = once(bot, 'respawn')
+          const spawnPromise = once(bot, 'spawn')
           client.write('respawn', respawnPacket)
           await respawnPromise
+          await spawnPromise
           assert.strictEqual(bot.isAlive, true)
           done()
         })
