@@ -524,6 +524,73 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('health', () => {
+      it('keeps isAlive true and emits spawn for non-death respawn packets', (done) => {
+        const loginPacket = bot.test.generateLoginPacket()
+        let respawnPacket
+        if (bot.supportFeature('usesLoginPacket')) {
+          loginPacket.worldName = 'minecraft:overworld'
+          loginPacket.hashedSeed = [0, 0]
+          loginPacket.entityId = 0
+          respawnPacket = {
+            dimension: bot.supportFeature('dimensionDataInCodec') ? 'minecraft:overworld' : loginPacket.dimension,
+            worldName: loginPacket.worldName,
+            hashedSeed: loginPacket.hashedSeed,
+            gamemode: 0,
+            previousGamemode: 255,
+            isDebug: false,
+            isFlat: false,
+            copyMetadata: true,
+            death: {
+              dimensionName: '',
+              location: {
+                x: 0,
+                y: 0,
+                z: 0
+              }
+            }
+          }
+          if (bot.supportFeature('spawnRespawnWorldDataField')) {
+            respawnPacket = {
+              worldState: respawnPacket
+            }
+            respawnPacket.worldState.name = loginPacket.worldName
+            respawnPacket.worldState.dimension = loginPacket.dimension
+          }
+        } else {
+          respawnPacket = {
+            dimension: 0,
+            hashedSeed: [0, 0],
+            gamemode: 0,
+            levelType: 'default'
+          }
+        }
+
+        server.on('playerJoin', async (client) => {
+          const loginPromise = once(bot, 'login')
+          client.write('login', loginPacket)
+          await loginPromise
+
+          const healthPromise = once(bot, 'health')
+          client.write('update_health', {
+            health: 20,
+            food: 20,
+            foodSaturation: 0
+          })
+          await healthPromise
+          assert.strictEqual(bot.isAlive, true)
+
+          const respawnPromise = once(bot, 'respawn')
+          const spawnPromise = once(bot, 'spawn')
+          client.write('respawn', respawnPacket)
+          await respawnPromise
+          await spawnPromise
+          assert.strictEqual(bot.isAlive, true)
+          done()
+        })
+      })
+    })
+
     describe('game', () => {
       it('responds to ping / transaction packets', (done) => { // only on 1.17
         server.on('playerJoin', async (client) => {
