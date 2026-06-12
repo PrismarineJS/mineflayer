@@ -299,7 +299,7 @@
       - [bot.tossStack(item)](#bottossstackitem)
       - [bot.toss(itemType, metadata, count)](#bottossitemtype-metadata-count)
       - [bot.elytraFly()](#botelytrafly)
-      - [bot.dig(block, [forceLook = true], [digFace])](#botdigblock-forcelook--true-digface)
+      - [bot.dig(block, [forceLook], [digFace])](#botdigblock-forcelook-digface)
       - [bot.stopDigging()](#botstopdigging)
       - [bot.digTime(block)](#botdigtimeblock)
       - [bot.acceptResourcePack()](#botacceptresourcepack)
@@ -1903,7 +1903,7 @@ This function returns a `Promise`, with `void` as its argument once tossing is c
 This function returns a `Promise`, with `void` as its argument once activating
 elytra flight is complete. It will throw an Error if it fails.
 
-#### bot.dig(block, [forceLook = true], [digFace])
+#### bot.dig(block, [forceLook], [digFace])
 
 This function returns a `Promise`, with `void` as its argument when the block is broken or you are interrupted.
 
@@ -1915,7 +1915,7 @@ dig any other blocks until the block has been broken, or you call
 `bot.stopDigging()`.
 
  * `block` - the block to start digging into
- * `forceLook` - (optional) if true, look at the block and start mining instantly. If false, the bot will slowly turn to the block to mine. Additionally, this can be assigned to 'ignore' to prevent the bot from moving its head at all. Also, this can be assigned to 'raycast' to raycast from the bots head to place where the bot is looking.
+ * `forceLook` - (optional) if true, the bot snaps its head to the block and starts mining instantly. If false or omitted, the bot turns its head to the block at its normal look rate and waits for the turn to finish before digging. Can also be assigned 'ignore' to prevent the bot from moving its head at all.
  * `digFace` - (optional) Default is 'auto' looks at the center of the block and mines the top face. Can also be a vec3 vector
  of the face the bot should be looking at when digging the block. For example: ```vec3(0, 1, 0)``` when mining the top. Can also be 'raycast' raycast checks if there is a face visible by the bot and mines that face. Useful for servers with anti cheat.
 
