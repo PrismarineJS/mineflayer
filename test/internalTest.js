@@ -1235,6 +1235,49 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('activateItem', () => {
+      it('sends correct rotation in use_item packet', (done) => {
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          bot.once('login', () => {
+            if (!bot.supportFeature('useItemWithOwnPacket')) {
+              // Older versions use block_place instead, skip this test
+              done()
+              return
+            }
+
+            // Set a known yaw and pitch on the bot entity
+            const testYawRad = Math.PI / 4 // 45 degrees
+            const testPitchRad = Math.PI / 6 // 30 degrees
+            bot.entity.yaw = testYawRad
+            bot.entity.pitch = testPitchRad
+
+            client.on('packet', (data, meta) => {
+              if (meta.name === 'use_item') {
+                if (data.rotation) {
+                  // Expected conversion: yawDeg = -yaw * 180 / PI + 180, pitchDeg = -pitch * 180 / PI
+                  const expectedYawDeg = -testYawRad * 180 / Math.PI + 180 // 135
+                  const expectedPitchDeg = -testPitchRad * 180 / Math.PI // -30
+
+                  assert.ok(Math.abs(data.rotation.x - expectedYawDeg) < 0.01,
+                    `Expected yaw ~${expectedYawDeg}, got ${data.rotation.x}`)
+                  assert.ok(Math.abs(data.rotation.y - expectedPitchDeg) < 0.01,
+                    `Expected pitch ~${expectedPitchDeg}, got ${data.rotation.y}`)
+                } else {
+                  // Older protocol versions don't have rotation in use_item packet
+                  // Just verify the packet was sent with correct hand
+                  assert.strictEqual(data.hand, 0)
+                }
+                done()
+              }
+            })
+
+            bot.activateItem()
+          })
+        })
+      })
+    })
+
     describe('tablist', () => {
       it('handles newlines in header and footer', (done) => {
         const HEADER = 'asd\ndsa'
