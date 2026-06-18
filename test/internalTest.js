@@ -243,6 +243,83 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('digging', () => {
+      it('swings while digging on physics ticks', (done) => {
+        const blockPos = vec3(1, 65, 1)
+        const blockId = bot.registry.blocksByName.obsidian.id
+        let armAnimations = 0
+        const armAnimationWaiters = []
+
+        function waitForArmAnimations (count) {
+          if (armAnimations >= count) return Promise.resolve()
+
+          return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+              reject(new Error(`Expected ${count} arm animations, got ${armAnimations}`))
+            }, 1000)
+
+            armAnimationWaiters.push(() => {
+              if (armAnimations >= count) {
+                clearTimeout(timeout)
+                resolve()
+                return true
+              }
+              return false
+            })
+          })
+        }
+
+        server.on('playerJoin', async (client) => {
+          try {
+            const loginPacket = bot.test.generateLoginPacket()
+            loginPacket.gameMode = 0
+            client.write('login', loginPacket)
+            client.on('arm_animation', () => {
+              armAnimations++
+              for (let i = armAnimationWaiters.length - 1; i >= 0; i--) {
+                if (armAnimationWaiters[i]()) armAnimationWaiters.splice(i, 1)
+              }
+            })
+
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(blockPos, blockId)
+            const chunkLoaded = once(bot, 'chunkColumnLoad')
+            client.write('map_chunk', generateChunkPacket(chunk))
+            await chunkLoaded
+
+            bot.game.gameMode = 'survival'
+            const block = bot.blockAt(blockPos)
+            assert.strictEqual(block.type, blockId)
+
+            const digging = bot.dig(block, 'ignore').catch(err => err)
+            await waitForArmAnimations(1)
+
+            for (let i = 0; i < 6; i++) bot.emit('physicsTick')
+            await sleep(10)
+            assert.strictEqual(armAnimations, 1)
+
+            bot.emit('physicsTick')
+            await waitForArmAnimations(2)
+
+            for (let i = 0; i < 7; i++) bot.emit('physicsTick')
+            await waitForArmAnimations(3)
+
+            bot.stopDigging()
+            const err = await digging
+            assert.strictEqual(err.message, 'Digging aborted')
+
+            for (let i = 0; i < 7; i++) bot.emit('physicsTick')
+            await sleep(10)
+            assert.strictEqual(armAnimations, 3)
+
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+    })
+
     describe('digTime', () => {
       it('should use eye-level water check instead of isInWater for dig speed', (done) => {
         const blockPos = vec3(1, 65, 1)
