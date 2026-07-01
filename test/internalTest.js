@@ -226,6 +226,111 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
     })
+    // set_passengers exists from 1.9 onward; 1.8 uses the attach_entity packet,
+    // which is handled by a separate code path.
+    if (version.majorVersion !== '1.8') {
+      it('mount and dismount via set_passengers', async () => {
+        const vehicleId = 50
+        const botEntityId = 0 // generateLoginPacket sets the bot's entityId to 0
+        const entitiesByName = bot.registry.entitiesByName
+        const vehicleType = (entitiesByName.boat || entitiesByName.oak_boat ||
+          entitiesByName.minecart || entitiesByName.creeper).id
+
+        let client
+        server.on('playerJoin', (c) => {
+          client = c
+          // Sent over one stream and processed in order: login creates bot.entity,
+          // spawn creates the vehicle, then set_passengers mounts the bot onto it.
+          c.write('login', bot.test.generateLoginPacket())
+          c.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
+            entityId: vehicleId,
+            entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
+            objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
+            type: vehicleType,
+            x: 1,
+            y: 65,
+            z: 1,
+            yaw: 0,
+            pitch: 0,
+            headPitch: 0,
+            velocity: { x: 0, y: 0, z: 0 },
+            metadata: []
+          })
+          c.write('set_passengers', { entityId: vehicleId, passengers: [botEntityId] })
+        })
+
+        await once(bot, 'mount')
+        assert.ok(bot.vehicle, 'bot.vehicle should be set after mount')
+        assert.strictEqual(bot.vehicle.id, vehicleId)
+        assert.ok(bot.vehicle.passengers.some((e) => e.id === bot.entity.id), 'bot should be in vehicle.passengers')
+
+        // Server dismounts the bot by re-sending the vehicle's passenger list
+        // without the bot — the vehicle still exists. This is the case the
+        // includes(bot.entity.id) check alone would miss.
+        client.write('set_passengers', { entityId: vehicleId, passengers: [] })
+        const [originalVehicle] = await once(bot, 'dismount')
+        assert.strictEqual(bot.vehicle, null, 'bot.vehicle should be cleared after dismount')
+        assert.strictEqual(bot.entity.vehicle, null, 'bot.entity.vehicle should be cleared after dismount')
+        assert.strictEqual(originalVehicle.id, vehicleId, 'dismount should report the vehicle that was left')
+      })
+
+      it('emits entityAttach/entityDetach and tracks driver order via set_passengers', async () => {
+        const vehicleId = 50
+        const riderA = 100
+        const riderB = 101
+
+        let client
+        server.on('playerJoin', (c) => {
+          client = c
+          c.write('login', bot.test.generateLoginPacket())
+          c.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
+            entityId: vehicleId,
+            entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
+            objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
+            type: (bot.registry.entitiesByName.boat || bot.registry.entitiesByName.oak_boat ||
+              bot.registry.entitiesByName.minecart || bot.registry.entitiesByName.creeper).id,
+            x: 1,
+            y: 65,
+            z: 1,
+            yaw: 0,
+            pitch: 0,
+            headPitch: 0,
+            velocity: { x: 0, y: 0, z: 0 },
+            metadata: []
+          })
+        })
+        while (!bot.entities[vehicleId]) await sleep(5) // wait for the spawn packet to be processed
+        const vehicle = bot.entities[vehicleId]
+
+        // riderA (another entity, not the bot) boards: expect entityAttach.
+        let attach = once(bot, 'entityAttach')
+        client.write('set_passengers', { entityId: vehicleId, passengers: [riderA] })
+        let [entity, reportedVehicle] = await attach
+        assert.strictEqual(entity.id, riderA, 'entityAttach should report the entity that boarded')
+        assert.strictEqual(reportedVehicle.id, vehicleId, 'entityAttach should report the vehicle boarded')
+        assert.strictEqual(entity.vehicle, vehicle, 'rider.vehicle should point at the vehicle')
+        assert.deepStrictEqual(vehicle.passengers.map((e) => e.id), [riderA])
+
+        // riderB boards too: another entityAttach, riderA stays the front seat (driver).
+        attach = once(bot, 'entityAttach')
+        client.write('set_passengers', { entityId: vehicleId, passengers: [riderA, riderB] })
+        ;[entity] = await attach
+        assert.strictEqual(entity.id, riderB)
+        assert.deepStrictEqual(vehicle.passengers.map((e) => e.id), [riderA, riderB], 'order preserved, index 0 is the driver')
+
+        // The driver (riderA) leaves while riderB stays: expect entityDetach for riderA
+        // and riderB promoted to the front seat. This is the case the old loop, which
+        // only iterated the new list, dropped entirely.
+        const detach = once(bot, 'entityDetach')
+        client.write('set_passengers', { entityId: vehicleId, passengers: [riderB] })
+        const [gone, leftVehicle] = await detach
+        assert.strictEqual(gone.id, riderA, 'entityDetach should report the entity that left')
+        assert.strictEqual(leftVehicle.id, vehicleId)
+        assert.strictEqual(gone.vehicle, null, 'departed rider.vehicle should be cleared')
+        assert.deepStrictEqual(vehicle.passengers.map((e) => e.id), [riderB], 'departed rider removed, no stale entry')
+        assert.strictEqual(vehicle.passengers[0].id, riderB, 'riderB is promoted to the front seat')
+      })
+    }
     it('blockAt', (done) => {
       const pos = vec3(1, 65, 1)
       const goldId = bot.registry.blocksByName.gold_block.id
