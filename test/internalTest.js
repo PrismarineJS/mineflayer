@@ -299,7 +299,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
             metadata: []
           })
         })
-        while (!bot.entities[vehicleId]) await sleep(5) // wait for the spawn packet to be processed
+        // bot.entities is undefined until the plugin is injected on 'inject_allowed'
+        // (fired via setTimeout after connect), so guard with ?. and wait for the spawn.
+        while (!bot.entities?.[vehicleId]) await sleep(5) // wait for injection + spawn packet
         const vehicle = bot.entities[vehicleId]
 
         // riderA (another entity, not the bot) boards: expect entityAttach.
