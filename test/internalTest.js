@@ -9,6 +9,16 @@ const nbt = require('prismarine-nbt')
 const { once } = require('../lib/promise_utils')
 const { getPort } = require('./common/util')
 
+// A mountable vehicle entity type id that exists in every tested version. Entity
+// names were flattened to snake_case in 1.11; before that they were CamelCase
+// (e.g. Boat, Creeper, MinecartRideable), so cover both eras.
+function vehicleTypeId (registry) {
+  const n = registry.entitiesByName
+  const entity = n.boat || n.oak_boat || n.minecart || n.creeper ||
+    n.Boat || n.MinecartRideable || n.Minecart || n.Creeper
+  return entity.id
+}
+
 for (const supportedVersion of mineflayer.testedVersions) {
   const registry = require('prismarine-registry')(supportedVersion)
   const version = registry.version
@@ -232,9 +242,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       it('mount and dismount via set_passengers', async () => {
         const vehicleId = 50
         const botEntityId = 0 // generateLoginPacket sets the bot's entityId to 0
-        const entitiesByName = bot.registry.entitiesByName
-        const vehicleType = (entitiesByName.boat || entitiesByName.oak_boat ||
-          entitiesByName.minecart || entitiesByName.creeper).id
+        const vehicleType = vehicleTypeId(bot.registry)
 
         let client
         server.on('playerJoin', (c) => {
@@ -287,8 +295,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             entityId: vehicleId,
             entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
             objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
-            type: (bot.registry.entitiesByName.boat || bot.registry.entitiesByName.oak_boat ||
-              bot.registry.entitiesByName.minecart || bot.registry.entitiesByName.creeper).id,
+            type: vehicleTypeId(bot.registry),
             x: 1,
             y: 65,
             z: 1,
