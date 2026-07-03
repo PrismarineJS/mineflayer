@@ -82,12 +82,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       }
 
-      // minecraft-wrap's download() refetches Mojang's version_manifest.json on
-      // every call (it is only cached in-memory per instance, never to disk), so
-      // each version's `before` hook hits the network. When Mojang is slow or
-      // unreachable this makes CI flaky. Skip the download - and thus the manifest
-      // fetch - when the server jar is already present on disk (e.g. restored from
-      // the CI cache); only reach out to the network on a cache miss.
+      // Reuse a server jar already on disk (e.g. restored from the CI cache) instead
+      // of downloading it: download() refetches Mojang's version manifest on every
+      // call, so skipping it on a cache hit keeps the run off the network.
       function ensureServerJar (cb) {
         if (fs.existsSync(MC_SERVER_JAR)) {
           console.log(`using cached server jar ${MC_SERVER_JAR}`)

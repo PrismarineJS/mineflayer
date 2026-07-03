@@ -63,9 +63,8 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      # Persist the downloaded server jars between runs. On a cache hit the tests
-      # reuse these jars and skip minecraft-wrap's download(), which avoids fetching
-      # Mojang's version_manifest.json at runtime (the main source of CI flakiness).
+      # Reuse downloaded server jars across runs. On a cache hit the tests skip
+      # download() and its runtime Mojang version-manifest fetch.
       - name: Cache Minecraft server jars
         uses: actions/cache@v6
         with:
