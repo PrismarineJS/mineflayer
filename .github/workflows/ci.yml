@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v7
     - name: Use Node.js 22.x
-      uses: actions/setup-node@v1.4.4
+      uses: actions/setup-node@v6
       with:
         node-version: 24
     - run: npm i && npm run lint
@@ -24,9 +24,9 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v7
     - name: Use Node.js 22.x
-      uses: actions/setup-node@v1.4.4
+      uses: actions/setup-node@v6
       with:
         node-version: 24
     - id: set-matrix
@@ -50,16 +50,16 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
       - name: Use Node.js 22.x
-        uses: actions/setup-node@v1.4.4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
       - name: Setup Java JDK
-        uses: actions/setup-java@v1.4.3
+        uses: actions/setup-java@v5
         with:
+          distribution: temurin
           java-version: 21
-          java-package: jre
       - name: Install Dependencies
         run: npm install
 
@@ -67,7 +67,7 @@ jobs:
       # reuse these jars and skip minecraft-wrap's download(), which avoids fetching
       # Mojang's version_manifest.json at runtime (the main source of CI flakiness).
       - name: Cache Minecraft server jars
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: server_jars
           key: server-jars-${{ hashFiles('lib/version.js') }}-${{ strategy.job-index }}
