@@ -1,14 +1,12 @@
 # Mineflayer
 
-[![NPM version](https://badge.fury.io/js/mineflayer.svg)](http://badge.fury.io/js/mineflayer)
-[![Build Status](https://github.com/PrismarineJS/mineflayer/workflows/CI/badge.svg)](https://github.com/PrismarineJS/mineflayer/actions?query=workflow%3A%22CI%22)
-[![Discord](https://img.shields.io/badge/chat-on%20discord-brightgreen.svg)](https://discord.gg/GsEFRM8)
-[![Gitter](https://img.shields.io/badge/chat-on%20gitter-brightgreen.svg)](https://gitter.im/PrismarineJS/general)
-[![Irc](https://img.shields.io/badge/chat-on%20irc-brightgreen.svg)](https://irc.gitter.im/)
-[![Issue Hunt](https://github.com/BoostIO/issuehunt-materials/blob/master/v1/issuehunt-shield-v1.svg)](https://issuehunt.io/r/PrismarineJS/mineflayer)
+[![NPM version](https://img.shields.io/npm/v/mineflayer.svg?color=success&label=npm%20package&logo=npm)](https://www.npmjs.com/package/mineflayer)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/PrismarineJS/mineflayer/ci.yml.svg?label=CI&logo=github&logoColor=lightgrey)](https://github.com/PrismarineJS/mineflayer/actions?query=workflow%3A%22CI%22)
+[![Try it on gitpod](https://img.shields.io/static/v1.svg?label=try&message=on%20gitpod&color=brightgreen&logo=gitpod)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
+[![Open In Colab](https://img.shields.io/static/v1.svg?label=open&message=on%20colab&color=blue&logo=google-colab)](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/PrismarineJS)](https://github.com/sponsors/PrismarineJS)
 
-[![Try it on gitpod](https://img.shields.io/badge/try-on%20gitpod-brightgreen.svg)](https://gitpod.io/#https://github.com/PrismarineJS/mineflayer)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/PrismarineJS/mineflayer/blob/master/docs/mineflayer.ipynb)
+[![Official Discord](https://img.shields.io/static/v1.svg?label=OFFICIAL&message=DISCORD&color=blue&logo=discord&style=for-the-badge)](https://discord.gg/GsEFRM8)
 
 | <sub>EN</sub> [English](../README.md) | <sub>RU</sub> [русский](../ru/README_RU.md) | <sub>ES</sub> [Español](../es/README_ES.md) | <sub>FR</sub> [Français](../fr/README_FR.md) | <sub>TR</sub> [Türkçe](../tr/README_TR.md) | <sub>ZH</sub> [中文](../zh/README_ZH_CN.md) | <sub>BR</sub> [Portuguese](../br/README_BR.md) |
 |-------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|----------------------------|
@@ -19,7 +17,7 @@
 
 ## 特点
 
- * 支持版本：Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 和 1.20 
+ * 支持版本：Minecraft 1.8 直到 1.21.11 (1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19, 1.20, 1.21, 1.21.9, 1.21.11) <!--version-->
  * 实体感知与追踪
  * 方块感知，你可以在几毫秒内查找到bot周围的任何方块
  * 物理和运动引擎 - 支持所有的碰撞箱
@@ -37,25 +35,30 @@
 
 ## 安装
 
-首先，从 [nodejs.org](https://nodejs.org/) 安装 nodejs（版本要求 >= 18），
+首先，从 [nodejs.org](https://nodejs.org/) 安装 nodejs（版本要求 >= 18），（注：程序只检测18，但是建议更新到22.x.x版本）。然后安装 mineflayer 。
 
-然后在你创建的bot项目目录中，使用命令行运行：
+```bash
+npm install mineflayer
+```
 
-`npm install mineflayer`
+要更新 mineflayer （或任何别的Node.js）包及其依赖项，使用
+```bash
+npm update
+```
 
 ## 文档
 
 | 链接 | 描述 |
 |---|---|
-| [使用教程](../tutorial.md) | node.js 和 mineflayer 入门 |
-| [FAQ](../FAQ.md) | 使用中出现问题？先看看这个文档吧 |
-| [api](../api.md)、[不稳定的api](../unstable_api.md) | 完整的接口参考文档 |
-| [更新日志](../history.md) | mineflayer 的更新日志 |
+| [使用教程](tutorial.md) | node.js 和 mineflayer 入门级教学 |
+| [FAQ](FAQ.md) | 使用中出现问题？先看看这个文档吧 |
+| **[api.md](api.md)** <br/>[不稳定的api](../unstable_api.md) | 完整的接口参考文档 |
+| [更新日志](history.md) | mineflayer 的更新日志 |
 | [示例/](https://github.com/PrismarineJS/mineflayer/tree/master/examples) | 我们为你准备的 mineflayer 使用实例 |
 
 ## 参与贡献
 
-请参阅 [为本项目贡献](../CONTRIBUTING.md)，以及[为 Prismarine 贡献](https://github.com/PrismarineJS/prismarine-contribute)
+请参阅 [为本项目贡献](CONTRIBUTING.md)，以及[为 Prismarine 贡献](https://github.com/PrismarineJS/prismarine-contribute)
 
 ## 如何使用
 
@@ -75,18 +78,18 @@
 如果没有指定特定版本，使用的服务器版本将自动判断并使用。  
 如果没有指定登录类型，默认使用 mojang 账户认证登录。
 
-### 例子：复读机
-
+### 回音例子：复读机
 ```js
 const mineflayer = require('mineflayer')
 
 const bot = mineflayer.createBot({
   host: 'localhost', // minecraft 服务器的 IP 地址
-  username: 'email@example.com', // minecraft 用户名
-  password: '12345678' // minecraft 密码, 如果你玩的是不需要正版验证的服务器，请注释掉。
-  // port: 25565,                // 默认使用 25565，如果你的服务器端口不是这个请取消注释并填写。
-  // version: false,             // 如果需要指定使用一个版本或快照时，请取消注释并手动填写（如："1.8.9" 或 "1.16.5"），否则会自动设置。
+  username: 'Bot', // minecraft 头顶的用户名。如果auth认证为`offline`，则为加入的用户名，否则为该帐户的唯一标识符。如果您想更改帐户，请切换
+  auth: 'microsoft' // 对于离线模式的服务器，您可以将其设置 'offline' 。
   // auth: 'mojang'              // 如果需要使用微软账号登录时，请取消注释，然后将值设置为 'microsoft'，否则会自动设置为 'mojang'。
+  // port: 25565,                // 默认使用 25565，如果你的服务器端口不是这个请取消注释并填写。
+  // version: false,             // 只有需要指定使用一个版本或快照时，请取消注释并手动填写（如："1.8.9" 或 "1.16.5"），否则会自动设置。
+  // password: '12345678' // minecraft 密码, 如果你玩的是不需要正版验证的服务器，请注释掉。如果要使用基于密码的验证（可能不可靠），请设置。如果指定，`username` 必须是有效的电子邮件
 })
 
 bot.on('chat', (username, message) => {
@@ -97,6 +100,26 @@ bot.on('chat', (username, message) => {
 // 记录错误和被踢出服务器的原因:
 bot.on('kicked', console.log)
 bot.on('error', console.log)
+```
+
+如果 `auth` 设置为 `microsoft` ，您将被提示登录microsoft.com，并在浏览器中输入代码。登录浏览器后，机器人将自动获取和缓存身份验证令牌（在您指定的用户名下），因此您不必再次登录。
+
+要切换帐户，请更新提供的 `username` 。默认情况下，缓存的令牌将存储在用户的.minecraft文件夹中，或者如果指定了 `profilesFolder` 文件夹，它们将存储在那里。  
+For more information on bot options see node-minecraft-protocol's [API doc](https://github.com/PrismarineJS/node-minecraft-protocol/blob/master/docs/API.md#mccreateclientoptions).
+
+#### 连接到领域服(Realm)
+
+要加入您的Minecraft帐户已被邀请的Realm服，您可以通过以下选择函数传递 `realms` 对象。
+
+```js
+const client = mineflayer.createBot({
+  username: 'email@example.com', // minecraft username
+  realms: {
+    // 该函数使用一个可以加入realm的账户的数组来调用。它应该返回它想要加入的那个。
+    pickRealm: (realms) => realms[0]
+  },
+  auth: 'microsoft'
+})
 ```
 
 ### 看看你的 bot 在做什么
@@ -196,7 +219,8 @@ mineflayer 支持插件；任何人都可以创建一个插件，在 mineflayer 
  * [Hawkeye](https://github.com/sefirosweb/minecraftHawkEye) - 一个使用自动瞄准弓的工具
  * [GUI](https://github.com/firejoust/mineflayer-GUI) - 简化了嵌套箱子GUI窗口的导航和管理
  * [Projectile](https://github.com/firejoust/mineflayer-projectile) - 以投射物为基础的战斗的可配置插件
-
+ * [Movement](https://github.com/firejoust/mineflayer-movement) - 平滑和逼真的玩家移动，最适合PvP
+ * [Collect Block](https://github.com/PrismarineJS/mineflayer-collectblock) - 快速和简单的方块采集API。
 
  也可以看看这些 :
 
@@ -209,20 +233,24 @@ mineflayer 支持插件；任何人都可以创建一个插件，在 mineflayer 
 * [panorama](https://github.com/IceTank/mineflayer-panorama) - 拍摄您的世界的全景图像
  * [player-death-event](https://github.com/tuanzisama/mineflayer-death-event) - 在 Mineflayer 里监听玩家死亡事件
 
-## 正在使用 mineflayer 的项目
+## 正在使用 Mineflayer 的项目
 
+* [Voyager](https://github.com/MineDojo/Voyager) - 基于大型语言模型的开放世界具身智能体
+* [mindcraft](https://github.com/kolbytn/mindcraft) - 用于结合 LLM 使用 mineflayer 的库
 * [rom1504/rbot](https://github.com/rom1504/rbot)
   * [YouTube - 建造旋转楼梯](https://www.youtube.com/watch?v=UM1ZV5200S0)
   * [YouTube - 复制一个建筑](https://www.youtube.com/watch?v=0cQxg9uDnzA)
-* [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot) - 完成一些简单指令
-* [vogonistic/voxel](https://github.com/vogonistic/mineflayer-voxel) - 使用 voxel.js 可视化机器人正在做什么
-* [JonnyD/Skynet](https://github.com/JonnyD/Skynet) -  将玩家活动记录到在线 API 上
-* [MinecraftChat](https://github.com/rom1504/MinecraftChat) （最后一个开源版本，由 AlexKvazos 构建）——基于 Minecraft 网络的聊天客户端 <https://minecraftchat.net/>
-* [Cheese Bot](https://github.com/Minecheesecraft/Cheese-Bot) -  基于插件的机器人，具有干净的 GUI。使用 Node-Webkit 制作。
-* [Chaoscraft](https://github.com/schematical/chaoscraft) - 使用遗传算法的 Minecraft 机器人，请参阅 [Youtube](https://www.youtube.com/playlist?list=PLLkpLgU9B5xJ7Qy4kOyBJl5J6zsDIMceH)
-* [hexatester/minetelegram](https://github.com/hexatester/minetelegram) -  Minecraft - Telegram 消息互通，基于 mineflayer & telegraf.
-* [PrismarineJS/mineflayer-builder](https://github.com/PrismarineJS/mineflayer-builder) - 在生存中打印我的世界示意图，保持方向
-* [以及数千个](https://github.com/PrismarineJS/mineflayer/network/dependents) - github 检测到的在使用 mineflayer 的项目
+* [Darthfett/Helperbot](https://github.com/Darthfett/Helperbot)
+* [vogonistic/voxel](https://github.com/vogonistic/mineflayer-voxel) - 使用 voxel.js 可视化机器人的行为
+* [JonnyD/Skynet](https://github.com/JonnyD/Skynet) - 将玩家活动记录到在线 API
+* [MinecraftChat](https://github.com/rom1504/MinecraftChat)（最后一个开源版本，由 AlexKvazos 构建）- 基于网页的 Minecraft 聊天客户端
+* [Cheese Bot](https://github.com/Minecheesecraft/Cheese-Bot) - 基于插件的机器人，拥有简洁的图形界面。使用 Node-Webkit 开发。
+* [Chaoscraft](https://github.com/schematical/chaoscraft) - 使用遗传算法的 Minecraft 机器人，详见 [其 YouTube 视频列表](https://www.youtube.com/playlist?list=PLLkpLgU9B5xJ7Qy4kOyBJl5J6zsDIMceH)
+* [hexatester/minetelegram](https://github.com/hexatester/minetelegram) - Minecraft 与 Telegram 的桥接工具，基于 mineflayer 和 telegraf 构建。
+* [PrismarineJS/mineflayer-builder](https://github.com/PrismarineJS/mineflayer-builder) - 在生存模式下打印 Minecraft 结构（schematics），并保持方向一致
+* [SilkePilon/OpenDeliveryBot](https://github.com/SilkePilon/OpenDeliveryBot) - 用 Python 编写的 Minecraft 机器人，用于在不同地点间运送物品。
+* [以及更多项目](https://github.com/PrismarineJS/mineflayer/network/dependents) - GitHub 检测到的所有使用 mineflayer 的项目
+
 
 ## 测试
 

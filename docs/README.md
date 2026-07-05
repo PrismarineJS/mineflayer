@@ -102,10 +102,10 @@ bot.on('kicked', console.log)
 bot.on('error', console.log)
 ```
 
-If `auth` is set to `microsoft`, you will be prompted to login to microsoft.com with a code in your browser. After signing in on your browser, 
+If `auth` is set to `microsoft`, you will be prompted to login to microsoft.com with a code in your browser. After signing in on your browser,  
 the bot will automatically obtain and cache authentication tokens (under your specified username) so you don't have to sign-in again. 
 
-To switch the account, update the supplied `username`. By default, cached tokens will be stored in your user's .minecraft folder, or if `profilesFolder` is specified, they'll instead be stored there.
+To switch the account, update the supplied `username`. By default, cached tokens will be stored in your user's .minecraft folder, or if `profilesFolder` is specified, they'll instead be stored there.  
 For more information on bot options see node-minecraft-protocol's [API doc](https://github.com/PrismarineJS/node-minecraft-protocol/blob/master/docs/API.md#mccreateclientoptions).
 
 #### Connecting to a Realm
