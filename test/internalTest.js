@@ -361,14 +361,21 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
 
           bot.entity.velocity.y = -1.0 // Give bot some velocity
+          bot.entity.isCollidedHorizontally = true
 
           const p1 = once(bot, 'forcedMove')
+          const response = once(client, 'position_look')
           client.write('position', absolutePositionPacket)
           await p1
+          const [responsePacket] = await response
 
           // Assertions for absolute teleport
           assert.strictEqual(bot.entity.velocity.y, 0, 'Velocity should be reset to 0 after an absolute teleport')
           assert.deepStrictEqual(bot.entity.position, vec3(1.5, 80, 1.5), 'Position should be set absolutely')
+          if (bot.registry.isNewerOrEqualTo('1.21.3')) {
+            assert.strictEqual(responsePacket.flags.hasHorizontalCollision, true,
+              'Teleport response should preserve the current horizontal collision flag')
+          }
 
           // --- Test 2: Relative Position ---
           const relativePositionPacket = {
