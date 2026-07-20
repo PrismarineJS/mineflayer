@@ -431,6 +431,53 @@ for (const supportedVersion of mineflayer.testedVersions) {
           })
         })
       })
+
+      it('sends client tick end after each physics tick on 1.21.2+', function (done) {
+        if (!bot.registry.version['>=']('1.21.2')) {
+          this.skip()
+          return
+        }
+
+        bot.physicsEnabled = false
+        let movementPackets = 0
+        let tickEndPackets = 0
+        let started = false
+
+        server.on('playerJoin', async (client) => {
+          client.on('packet', (data, meta) => {
+            if (['flying', 'position', 'look', 'position_look'].includes(meta.name)) {
+              if (started) movementPackets++
+            } else if (meta.name === 'tick_end') {
+              if (started) {
+                assert.ok(movementPackets <= 1, `expected at most one movement packet per tick, got ${movementPackets}`)
+              }
+              movementPackets = 0
+              started = true
+              tickEndPackets++
+            }
+          })
+
+          await client.write('login', bot.test.generateLoginPacket())
+          const chunk = bot.test.buildChunk()
+          chunk.setBlockType(pos, goldId)
+          await client.write('map_chunk', generateChunkPacket(chunk))
+          await client.write('position', {
+            x: 1.5,
+            y: 66,
+            z: 1.5,
+            pitch: 0,
+            yaw: 0,
+            flags: bot.registry.supportFeature('positionPacketHasBitflags')
+              ? { x: false, y: false, z: false, yaw: false, pitch: false }
+              : 0,
+            teleportId: 0
+          })
+
+          await sleep(300)
+          assert.ok(tickEndPackets >= 3, `expected at least three tick_end packets, got ${tickEndPackets}`)
+          done()
+        })
+      })
     })
 
     describe('world', () => {
