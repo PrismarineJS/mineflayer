@@ -433,7 +433,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
 
       it('sends client tick end after each physics tick on 1.21.2+', function (done) {
-        if (!bot.registry.version['>=']('1.21.2')) {
+        if (!bot.supportFeature('sendsClientTickEndPacket')) {
           this.skip()
           return
         }
