@@ -431,6 +431,68 @@ for (const supportedVersion of mineflayer.testedVersions) {
           })
         })
       })
+
+      it('sends complete player input before movement on supported versions', function (done) {
+        if (!bot.supportFeature('newPlayerInputPacket')) {
+          this.skip()
+          return
+        }
+
+        bot.physicsEnabled = true
+        const packets = []
+
+        server.on('playerJoin', async (client) => {
+          try {
+            client.on('packet', (data, meta) => {
+              if (['player_input', 'flying', 'position', 'look', 'position_look'].includes(meta.name)) {
+                packets.push({ name: meta.name, data })
+              }
+            })
+
+            await client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(pos, goldId)
+            await client.write('map_chunk', generateChunkPacket(chunk))
+            await client.write('position', {
+              x: 1.5,
+              y: 66,
+              z: 1.5,
+              pitch: 0,
+              yaw: 0,
+              flags: bot.registry.supportFeature('positionPacketHasBitflags')
+                ? { x: false, y: false, z: false, yaw: false, pitch: false }
+                : 0,
+              teleportId: 0
+            })
+
+            await sleep(100)
+            bot.setControlState('forward', true)
+            bot.setControlState('sprint', true)
+            await sleep(150)
+
+            const inputIndex = packets.findIndex(packet => packet.name === 'player_input' && packet.data.inputs.forward && packet.data.inputs.sprint)
+            assert.ok(inputIndex >= 0, 'expected a player_input packet containing the complete active control state')
+            const movementIndex = packets.findIndex((packet, index) => index > inputIndex && ['flying', 'position', 'look', 'position_look'].includes(packet.name))
+            assert.ok(movementIndex > inputIndex, 'expected player_input before the following movement packet')
+            const expectedInputs = {
+              forward: true,
+              backward: false,
+              left: false,
+              right: false,
+              jump: false,
+              shift: false,
+              sprint: true
+            }
+            for (const [control, state] of Object.entries(expectedInputs)) {
+              assert.strictEqual(packets[inputIndex].data.inputs[control], state)
+            }
+            bot.clearControlStates()
+            done()
+          } catch (error) {
+            done(error)
+          }
+        })
+      })
     })
 
     describe('world', () => {
