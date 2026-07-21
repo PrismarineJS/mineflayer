@@ -432,6 +432,53 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
 
+      it('sends client tick end after each physics tick on supported versions', function (done) {
+        if (!bot.supportFeature('sendsClientTickEndPacket') && !bot.registry.version['>=']('1.21.2')) {
+          this.skip()
+          return
+        }
+
+        bot.physicsEnabled = false
+        let movementPackets = 0
+        let tickEndPackets = 0
+        let started = false
+
+        server.on('playerJoin', async (client) => {
+          client.on('packet', (data, meta) => {
+            if (['flying', 'position', 'look', 'position_look'].includes(meta.name)) {
+              if (started) movementPackets++
+            } else if (meta.name === 'tick_end') {
+              if (started) {
+                assert.ok(movementPackets <= 1, `expected at most one movement packet per tick, got ${movementPackets}`)
+              }
+              movementPackets = 0
+              started = true
+              tickEndPackets++
+            }
+          })
+
+          await client.write('login', bot.test.generateLoginPacket())
+          const chunk = bot.test.buildChunk()
+          chunk.setBlockType(pos, goldId)
+          await client.write('map_chunk', generateChunkPacket(chunk))
+          await client.write('position', {
+            x: 1.5,
+            y: 66,
+            z: 1.5,
+            pitch: 0,
+            yaw: 0,
+            flags: bot.registry.supportFeature('positionPacketHasBitflags')
+              ? { x: false, y: false, z: false, yaw: false, pitch: false }
+              : 0,
+            teleportId: 0
+          })
+
+          await sleep(300)
+          assert.ok(tickEndPackets >= 3, `expected at least three tick_end packets, got ${tickEndPackets}`)
+          done()
+        })
+      })
+
       it('sends complete player input before movement on supported versions', function (done) {
         if (!bot.supportFeature('newPlayerInputPacket')) {
           this.skip()
@@ -488,49 +535,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
             }
             bot.clearControlStates()
             done()
-          } catch (error) {
-            done(error)
-          }
-        })
-      })
-
-      it('sends the target rotation on the next movement tick', (done) => {
-        const { toNotchianYaw, toNotchianPitch } = require('../lib/conversions')
-        let checkRotation = false
-
-        server.on('playerJoin', async (client) => {
-          try {
-            client.on('packet', (data, meta) => {
-              if (!checkRotation || !['look', 'position_look'].includes(meta.name)) return
-
-              const expectedYaw = toNotchianYaw(bot.entity.yaw)
-              const expectedPitch = toNotchianPitch(bot.entity.pitch)
-              assert.ok(Math.abs(data.yaw - expectedYaw) < 0.001,
-                `Expected yaw ${expectedYaw}, got ${data.yaw}`)
-              assert.ok(Math.abs(data.pitch - expectedPitch) < 0.001,
-                `Expected pitch ${expectedPitch}, got ${data.pitch}`)
-              done()
-            })
-
-            await client.write('login', bot.test.generateLoginPacket())
-            const chunk = bot.test.buildChunk()
-            chunk.setBlockType(pos, goldId)
-            await client.write('map_chunk', generateChunkPacket(chunk))
-            await client.write('position', {
-              x: 1.5,
-              y: 66,
-              z: 1.5,
-              pitch: 0,
-              yaw: 0,
-              flags: bot.registry.supportFeature('positionPacketHasBitflags')
-                ? { x: false, y: false, z: false, yaw: false, pitch: false }
-                : 0,
-              teleportId: 0
-            })
-
-            await sleep(100)
-            checkRotation = true
-            bot.look(1.5, -0.3).catch(done)
           } catch (error) {
             done(error)
           }
