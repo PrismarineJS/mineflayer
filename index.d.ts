@@ -29,6 +29,8 @@ export interface BotOptions extends ClientOptions {
   physicsEnabled?: boolean
   /** @default 4 */
   maxCatchupTicks?: number
+  /** Send the 1.21.2+ client tick terminator. Disable when an upstream proxy owns the server tick lifecycle. @default true on supported versions */
+  sendClientTickEnd?: boolean
   client?: Client
   brand?: string
   defaultChatPatterns?: boolean
@@ -196,6 +198,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   oxygenLevel: number
   physics: PhysicsOptions
   physicsEnabled: boolean
+  sendClientTickEnd: boolean
   time: Time
   quickBarSlot: number
   inventory: Window<StorageEvents>
