@@ -9,6 +9,21 @@ const nbt = require('prismarine-nbt')
 const { once } = require('../lib/promise_utils')
 const { getPort } = require('./common/util')
 
+function findMappings (value) {
+  if (Array.isArray(value)) {
+    if (value[0] === 'mapper' && value[1]?.mappings) return value[1].mappings
+    for (const child of value) {
+      const mappings = findMappings(child)
+      if (mappings) return mappings
+    }
+  } else if (value && typeof value === 'object') {
+    for (const child of Object.values(value)) {
+      const mappings = findMappings(child)
+      if (mappings) return mappings
+    }
+  }
+}
+
 for (const supportedVersion of mineflayer.testedVersions) {
   const registry = require('prismarine-registry')(supportedVersion)
   const version = registry.version
@@ -226,6 +241,41 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
     })
+    if (supportedVersion === '1.21.4') {
+      it('uses the canonical movement speed attribute', (done) => {
+        const attributes = bot.registry.protocol.play.toClient.types.packet_entity_update_attributes
+        const mappings = findMappings(attributes)
+        assert.strictEqual(mappings['9'], 'player.entity_interaction_range')
+        assert.strictEqual(mappings['21'], 'generic.movement_speed')
+        assert.strictEqual(mappings['27'], 'generic.step_height')
+
+        bot.once('entityAttributes', (entity) => {
+          const speed = entity.attributes['minecraft:movement_speed']
+          assert.strictEqual(speed.value, 0.1)
+          assert.deepStrictEqual(speed.modifiers, [{
+            uuid: 'minecraft:effect.speed',
+            amount: 0.4,
+            operation: 2
+          }])
+          done()
+        })
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          client.write('entity_update_attributes', {
+            entityId: 0,
+            properties: [{
+              key: 'generic.movement_speed',
+              value: 0.1,
+              modifiers: [{
+                uuid: 'minecraft:effect.speed',
+                amount: 0.4,
+                operation: 2
+              }]
+            }]
+          })
+        })
+      })
+    }
     it('blockAt', (done) => {
       const pos = vec3(1, 65, 1)
       const goldId = bot.registry.blocksByName.gold_block.id
