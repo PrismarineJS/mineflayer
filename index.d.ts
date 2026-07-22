@@ -31,7 +31,6 @@ export interface BotOptions extends ClientOptions {
   maxCatchupTicks?: number
   /** Send the 1.21.2+ client tick terminator. Disable when an upstream proxy owns the server tick lifecycle. @default true on supported versions */
   sendClientTickEnd?: boolean
-  cheats?: import('./cheats').CheatSettings
   client?: Client
   brand?: string
   defaultChatPatterns?: boolean
@@ -200,7 +199,6 @@ export interface Bot extends TypedEmitter<BotEvents> {
   physics: PhysicsOptions
   physicsEnabled: boolean
   sendClientTickEnd: boolean
-  cheats: import('./cheats').CheatSettings
   time: Time
   quickBarSlot: number
   inventory: Window<StorageEvents>
