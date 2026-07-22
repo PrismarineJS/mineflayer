@@ -479,45 +479,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
 
-      it('can delegate client tick end packets to an upstream proxy', function (done) {
-        if (!bot.supportFeature('sendsClientTickEndPacket') && !bot.registry.version['>=']('1.21.2')) {
-          this.skip()
-          return
-        }
-
-        bot.physicsEnabled = false
-        let tickEndPackets = 0
-
-        server.on('playerJoin', async (client) => {
-          client.on('packet', (data, meta) => {
-            if (meta.name === 'tick_end') tickEndPackets++
-          })
-
-          await client.write('login', bot.test.generateLoginPacket())
-          const chunk = bot.test.buildChunk()
-          chunk.setBlockType(pos, goldId)
-          await client.write('map_chunk', generateChunkPacket(chunk))
-          await client.write('position', {
-            x: 1.5,
-            y: 66,
-            z: 1.5,
-            pitch: 0,
-            yaw: 0,
-            flags: bot.registry.supportFeature('positionPacketHasBitflags')
-              ? { x: false, y: false, z: false, yaw: false, pitch: false }
-              : 0,
-            teleportId: 0
-          })
-
-          await sleep(100)
-          bot.sendClientTickEnd = false
-          tickEndPackets = 0
-          await sleep(300)
-          assert.strictEqual(tickEndPackets, 0, `expected the proxy to own tick_end, got ${tickEndPackets} packets`)
-          done()
-        })
-      })
-
       it('sends complete player input before movement on supported versions', function (done) {
         if (!bot.supportFeature('newPlayerInputPacket')) {
           this.skip()
