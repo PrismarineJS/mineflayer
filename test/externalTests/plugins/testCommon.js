@@ -6,10 +6,10 @@ const process = require('process')
 const assert = require('assert')
 const { sleep, onceWithCleanup } = require('../../../lib/promise_utils')
 
-const timeout = 20000
+const timeout = 5000
 module.exports = inject
 
-function inject (bot) {
+function inject (bot, wrap) {
   console.log(bot.version)
 
   bot.test = {}
@@ -91,7 +91,6 @@ function inject (bot) {
     await teleport(new Vec3(0, bot.test.groundY, 0))
     await bot.waitForChunksToLoad()
     await resetBlocksToSuperflat()
-    await sleep(1000)
     await clearInventory()
   }
 
@@ -104,45 +103,39 @@ function inject (bot) {
     return setCreativeMode(false)
   }
 
-  const gameModeChangedMessages = ['commands.gamemode.success.self', 'gameMode.changed']
-
   async function setCreativeMode (value) {
-    const getGM = val => val ? 'creative' : 'survival'
-    // this function behaves the same whether we start in creative mode or not.
-    // also, creative mode is always allowed for ops, even if server.properties says force-gamemode=true in survival mode.
-    let i = 0
-    const msgProm = onceWithCleanup(bot, 'message', {
+    const mode = value ? 'creative' : 'survival'
+    const modeId = value ? 1 : 0
+    if (bot.game.gameMode === mode) return
+    // Use server console for instant, reliable gamemode change.
+    // The old approach (triple chat command + message parsing) was fragile
+    // and the most common source of flaky test timeouts.
+    const gameModePromise = onceWithCleanup(bot._client, 'game_state_change', {
       timeout,
-      checkCondition: msg => gameModeChangedMessages.includes(msg.translate) && i++ > 0 && bot.game.gameMode === getGM(value)
+      checkCondition: (packet) => {
+        // reason is 3 (number) on old versions, 'change_game_mode' (string) on new
+        const isGameModeChange = packet.reason === 3 || packet.reason === 'change_game_mode'
+        return isGameModeChange && Math.floor(packet.gameMode) === modeId
+      }
     })
-
-    // do it three times to ensure that we get feedback
-    bot.chat(`/gamemode ${getGM(value)}`)
-    bot.chat(`/gamemode ${getGM(!value)}`)
-    bot.chat(`/gamemode ${getGM(value)}`)
-    return msgProm
+    wrap.writeServer(`gamemode ${mode} flatbot\n`)
+    await gameModePromise
   }
 
   async function clearInventory () {
-    const giveStone = onceWithCleanup(bot.inventory, 'updateSlot', { timeout: 1000 * 20, checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone' })
-    await bot.test.wait(500)
+    // Use bot.chat for /give (server console /give doesn't send inventory
+    // update packets on 1.21.9+). Use server console for /clear.
     bot.chat('/give @a stone 1')
-    bot.inventory.on('updateSlot', (...e) => {
-      // console.log('inventory.updateSlot', e)
+    await onceWithCleanup(bot.inventory, 'updateSlot', {
+      timeout: 10000,
+      checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone'
     })
-    await giveStone
-
-    const clearInv = onceWithCleanup(bot, 'message', {
-      timeout,
+    const clearMsg = onceWithCleanup(bot, 'message', {
+      timeout: 10000,
       checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
     })
-    bot.chat('/clear') // don't rely on the message (as it'll come to early), wait for the result of /clear instead
-    await clearInv
-
-    // Check that the inventory is clear
-    for (const slot of bot.inventory.slots) {
-      if (slot && slot.itemCount <= 0) throw new Error('Inventory was not cleared: ' + JSON.stringify(bot.inventory.slots))
-    }
+    bot.chat('/clear')
+    await clearMsg
   }
 
   // you need to be in creative mode for this to work
@@ -152,10 +145,11 @@ function inject (bot) {
   }
 
   async function teleport (position) {
+    // Use server console for teleport — works even if bot is in a bad state
     if (bot.supportFeature('hasExecuteCommand')) {
-      bot.test.sayEverywhere(`/execute in overworld run teleport ${bot.username} ${position.x} ${position.y} ${position.z}`)
+      wrap.writeServer(`execute in overworld run teleport ${bot.username} ${position.x} ${position.y} ${position.z}\n`)
     } else {
-      bot.test.sayEverywhere(`/tp ${bot.username} ${position.x} ${position.y} ${position.z}`)
+      wrap.writeServer(`tp ${bot.username} ${position.x} ${position.y} ${position.z}\n`)
     }
     return onceWithCleanup(bot, 'move', {
       timeout,

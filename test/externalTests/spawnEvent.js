@@ -13,6 +13,9 @@ module.exports = () => async (bot) => {
   await once(spawnBot, 'spawn')
   spawnBot.end()
 
+  // Wait for the server to process the disconnection before killing the main bot
+  await once(bot, 'playerLeft')
+
   // Test spawn event on death
   bot.test.sayEverywhere(`/kill ${bot.username}`)
   await once(bot, 'spawn')
