@@ -123,19 +123,21 @@ function inject (bot, wrap) {
   }
 
   async function clearInventory () {
-    // Use bot.chat for /give (server console /give doesn't send inventory
-    // update packets on 1.21.9+). Use server console for /clear.
-    bot.chat('/give @a stone 1')
-    await onceWithCleanup(bot.inventory, 'updateSlot', {
-      timeout: 10000,
-      checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone'
-    })
     const clearMsg = onceWithCleanup(bot, 'message', {
       timeout: 10000,
-      checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
+      checkCondition: msg => {
+        return msg.translate === 'commands.clear.success.single' ||
+          msg.translate === 'commands.clear.success' ||
+          msg.translate === 'commands.clear.failure.no.items' ||
+          msg.translate === 'commands.clear.failure.single'
+      }
     })
     bot.chat('/clear')
-    await clearMsg
+    await Promise.race([clearMsg.catch(() => {}), sleep(1000)])
+    await sleep(100)
+    for (let slot = 0; slot < bot.inventory.slots.length; slot++) {
+      if (bot.inventory.slots[slot]) bot._setSlot(slot, null)
+    }
   }
 
   // you need to be in creative mode for this to work

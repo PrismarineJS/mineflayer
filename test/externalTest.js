@@ -34,6 +34,31 @@ const download = require('minecraft-wrap').download
 
 const MC_SERVER_PATH = path.join(__dirname, 'server')
 
+async function pingServerWithRetry (port, version, attempts = 3) {
+  let lastError
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      console.log(`pinging ${version} port : ${port} attempt ${attempt}/${attempts}`)
+      const results = await mc.ping({
+        port,
+        host: '127.0.0.1',
+        version,
+        closeTimeout: 10000,
+        noPongTimeout: 2000
+      })
+      console.log('pong')
+      assert.ok(results.latency >= 0)
+      assert.ok(results.latency <= 1000)
+      return
+    } catch (err) {
+      lastError = err
+      console.log(`ping failed attempt ${attempt}/${attempts}: ${err.message}`)
+      if (attempt < attempts) await new Promise(resolve => setTimeout(resolve, 1000))
+    }
+  }
+  throw lastError
+}
+
 for (const supportedVersion of mineflayer.testedVersions) {
   let PORT = 25565
   const registry = require('prismarine-registry')(supportedVersion)
@@ -91,20 +116,14 @@ for (const supportedVersion of mineflayer.testedVersions) {
             return
           }
           propOverrides['server-port'] = PORT
-          wrap.startServer(propOverrides, (err) => {
+          wrap.startServer(propOverrides, async (err) => {
             if (err) return done(err)
-            console.log(`pinging ${version.minecraftVersion} port : ${PORT}`)
-            mc.ping({
-              port: PORT,
-              host: '127.0.0.1',
-              version: supportedVersion
-            }, (err, results) => {
-              if (err) return done(err)
-              console.log('pong')
-              assert.ok(results.latency >= 0)
-              assert.ok(results.latency <= 1000)
+            try {
+              await pingServerWithRetry(PORT, supportedVersion)
               begin()
-            })
+            } catch (err) {
+              done(err)
+            }
           })
         })
       } else begin()

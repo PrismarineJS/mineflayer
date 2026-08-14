@@ -8,10 +8,16 @@ module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
 
   await bot.test.setInventorySlot(6, new Item(bot.registry.itemsByName.elytra.id, 1))
+  // 1.21.6+ does not acknowledge creative armor-slot writes, so ensure the
+  // server-side armor slot is populated before testing elytra flight.
+  bot.chat(`/item replace entity ${bot.username} armor.chest with minecraft:elytra`)
+  await bot.test.wait(500)
   if (supportsFireworkRockets) {
     const fireworkItem = bot.registry.itemsArray.find(item => item.displayName === 'Firework Rocket')
     assert.ok(fireworkItem !== undefined)
     await bot.test.setInventorySlot(36, new Item(fireworkItem.id, 64))
+    bot.chat(`/item replace entity ${bot.username} hotbar.0 with minecraft:firework_rocket 64`)
+    await bot.test.wait(500)
   }
   await bot.test.teleport(bot.entity.position.offset(0, 100, 0))
   await bot.test.becomeSurvival()
