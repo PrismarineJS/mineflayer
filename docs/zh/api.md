@@ -2008,7 +2008,7 @@ All options attributes are false by default, except mode which is 2 (as to repli
 
 This can be used to check is a specific feature is available in the current Minecraft version. This is usually only required for handling version-specific functionality.
 
-The list of available features can be found inside the [./lib/features.json](https://github.com/PrismarineJS/mineflayer/blob/master/lib/features.json) file.
+The list of available features can be found inside the [features.json](https://github.com/PrismarineJS/minecraft-data/blob/master/data/pc/common/features.json) file.
 
 #### bot.waitForTicks(ticks)
 
