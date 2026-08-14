@@ -67,6 +67,7 @@ export interface BotEvents {
   unmatchedMessage: (stringMsg: string, jsonMsg: ChatMessage) => Promise<void> | void
   inject_allowed: () => Promise<void> | void
   login: () => Promise<void> | void
+  worldSwitch: () => Promise<void> | void
   /** When `respawn` option is disabled, you can call this method manually to respawn. */
   spawn: () => Promise<void> | void
   respawn: () => Promise<void> | void
@@ -164,6 +165,8 @@ export interface BotEvents {
   resourcePack: (url: string, hash?: string, uuid?: string) => Promise<void> | void
   heldItemChanged: (newItem: Item | null) => Promise<void> | void
   particle: (particle: Particle) => Promise<void> | void
+  heldItemChanged: (newItem: Item | null) => Promise<void> | void
+  abilities: (abilities: Abilities) => Promise<void> | void
 }
 
 export interface CommandBlockOptions {
@@ -178,7 +181,13 @@ export interface Bot extends TypedEmitter<BotEvents> {
   protocolVersion: string
   majorVersion: string
   version: string
-  entity: Entity
+  entity: Entity & {
+    abilities: Abilities
+    isInvulnerable: boolean
+    isFlying: boolean
+    canFly: boolean
+    canInstantlyBuild: boolean
+  }
   entities: { [id: string]: Entity }
   fireworkRocketDuration: number
   spawnPoint: Vec3
@@ -896,3 +905,9 @@ export let latestSupportedVersion: string
 export let oldestSupportedVersion: string
 
 export function supportFeature (feature: string, version: string): boolean
+
+export interface Abilities {
+  flags: number
+  flyingSpeed: number
+  walkingSpeed: number
+}
