@@ -1927,6 +1927,9 @@ If you call bot.dig twice before the first dig is finished, you will get a fatal
 
 Tells you how long it will take to dig the block, in milliseconds.
 
+This includes the 5x digging speed penalty the server applies when the bot is not on the
+ground (airborne) at the moment the dig starts.
+
 #### bot.acceptResourcePack()
 
 Accepts resource pack.
