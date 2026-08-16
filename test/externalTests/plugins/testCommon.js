@@ -13,6 +13,23 @@ function inject (bot, wrap) {
   console.log(bot.version)
 
   bot.test = {}
+  // PACKET_DUMP=<file> writes every packet (both directions) plus test
+  // markers as JSON lines: {"ts":...,"dir":"S2C"|"C2S"|"MARKER","name":...,"data":...}
+  // for analysis with jq afterwards.
+  let dumpStream
+  if (process.env.PACKET_DUMP) {
+    const fs = require('fs')
+    const bigintSafe = (k, v) => typeof v === 'bigint' ? v.toString() : v
+    dumpStream = fs.createWriteStream(process.env.PACKET_DUMP, { flags: 'w' })
+    const write = (dir, name, data) => dumpStream.write(`${JSON.stringify({ ts: Date.now(), dir, name, data }, bigintSafe)}\n`)
+    bot._client.on('packet', (data, meta) => write('S2C', meta.name, data))
+    const oldWrite = bot._client.write
+    bot._client.write = function (name, data) {
+      write('C2S', name, data)
+      oldWrite.apply(this, arguments)
+    }
+    bot.test.dumpMarker = name => write('MARKER', name, null)
+  }
   bot.test.groundY = bot.supportFeature('tallWorld') ? -60 : 4
   bot.test.sayEverywhere = sayEverywhere
   bot.test.clearInventory = clearInventory
@@ -144,16 +161,31 @@ function inject (bot, wrap) {
     const initialClear = clearSuccess()
     bot.chat('/clear')
     await initialClear
-    // Use bot.chat for /give (server console /give doesn't send inventory
-    // update packets on 1.21.9+).
-    bot.chat('/give @a stone 1')
-    await onceWithCleanup(bot.inventory, 'updateSlot', {
-      timeout: 10000,
-      checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone'
-    })
+    // The server also defers some window closes to a later tick (a killed
+    // villager, a crafting table destroyed by our /fill). A /give issued
+    // before that tick runs lands in the still-open window and mineflayer
+    // drops the update — retry, the close is done by the next attempt.
+    // (bot.chat is required: server console /give doesn't send inventory
+    // update packets on 1.21.9+.)
+    for (let attempt = 0; attempt < 3; attempt++) {
+      bot.chat('/give @a stone 1')
+      const got = await onceWithCleanup(bot.inventory, 'updateSlot', {
+        timeout: 3000,
+        checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone'
+      }).then(() => true, () => false)
+      if (got) break
+      if (attempt === 2) throw new Error('stone never reached the inventory after 3 /give attempts')
+    }
     const finalClear = clearSuccess()
     bot.chat('/clear')
     await finalClear
+    // After a server-confirmed /clear the inventory is empty server-side.
+    // Anything left in our model is desync (items the server moved into a
+    // still-open window that it will never sync back) — drop it so tests
+    // see the authoritative empty state.
+    bot.inventory.slots.forEach((item, slot) => {
+      if (item) bot.inventory.updateSlot(slot, null)
+    })
   }
 
   // you need to be in creative mode for this to work
@@ -176,6 +208,7 @@ function inject (bot, wrap) {
   }
 
   function sayEverywhere (message) {
+    if (bot.test.dumpMarker) bot.test.dumpMarker(message)
     bot.chat(message)
     console.log(message)
   }
