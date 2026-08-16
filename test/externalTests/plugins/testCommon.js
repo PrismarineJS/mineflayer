@@ -111,11 +111,13 @@ function inject (bot, wrap) {
   // always leaves you in creative mode
   async function resetState () {
     await becomeCreative()
-    await clearInventory()
     bot.creative.startFlying()
     await teleport(new Vec3(0, bot.test.groundY, 0))
     await bot.waitForChunksToLoad()
     await resetBlocksToSuperflat()
+    // Clear after the fills: they destroy the previous test's containers,
+    // and those deferred closes return items into the inventory — the clear's
+    // give-retry converges over those late returns.
     await clearInventory()
   }
 

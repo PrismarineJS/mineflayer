@@ -151,8 +151,12 @@ module.exports = () => async (bot) => {
     // Wait for the given item to show up in hotbar.0. Depending on version and
     // which container is open, the server syncs it either through the open
     // window or directly to the inventory, so listen on both.
-    const waitHotbarItem = (item) => new Promise((resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error(`item ${item} never reached the hotbar`)), 5000)
+    const waitHotbarItem = (item, timeout) => new Promise((resolve) => {
+      const timer = setTimeout(() => {
+        window.off('updateSlot', onWin)
+        bot.inventory.off('updateSlot', onInv)
+        resolve(false)
+      }, timeout)
       const ok = newItem => newItem?.name === item
       const onWin = (slot, oldItem, newItem) => { if (slot === window.hotbarStart && ok(newItem)) done() }
       const onInv = (slot, oldItem, newItem) => { if (slot === 36 && ok(newItem)) done() }
@@ -160,11 +164,21 @@ module.exports = () => async (bot) => {
         clearTimeout(timer)
         window.off('updateSlot', onWin)
         bot.inventory.off('updateSlot', onInv)
-        resolve()
+        resolve(true)
       }
       window.on('updateSlot', onWin)
       bot.inventory.on('updateSlot', onInv)
     })
+
+    // The server silently drops chat commands sent too close together, so
+    // resend if the item has not arrived shortly after the command.
+    const sendItemToHotbar = async (name, count) => {
+      for (let attempt = 0; attempt < 3; attempt++) {
+        bot.chat(`/item replace entity ${bot.username} hotbar.0 with ${name} ${count}`)
+        if (await waitHotbarItem(name, 500)) return
+      }
+      throw new Error(`item ${name} never reached the hotbar`)
+    }
 
     for (let slot = 0; slot < window.inventoryStart; slot++) {
       if (Math.random() < slotPopulationFactor) {
@@ -175,11 +189,10 @@ module.exports = () => async (bot) => {
           // /item replace lands the item in a specific slot deterministically,
           // so there is no race with the previous move (unlike /give, which
           // targets the first empty slot and needs a settle delay).
-          bot.chat(`/item replace entity ${bot.username} hotbar.0 with ${item.name} ${count}`)
-          await waitHotbarItem(item.name)
+          await sendItemToHotbar(item.name, count)
         } else {
           bot.chat(`/give ${bot.username} ${item.name} ${count}`)
-          await waitHotbarItem(item.name)
+          if (!await waitHotbarItem(item.name, 5000)) throw new Error(`item ${item.name} never reached the hotbar`)
           await bot.test.wait(100)
         }
 
