@@ -152,15 +152,27 @@ module.exports = () => async (bot) => {
       if (Math.random() < slotPopulationFactor) {
         const randomItem = getRandomStackableItem()
         const item = bot.registry.itemsByName[randomItem]
-        bot.chat(`/give ${bot.username} ${item.name} ${Math.ceil(Math.random() * item.stackSize)}`)
-        await onceWithCleanup(window, 'updateSlot', {
-          timeout: 5000,
-          checkCondition: (slot, oldItem, newItem) => slot === window.hotbarStart && newItem?.name === item.name
-        })
+        const count = Math.ceil(Math.random() * item.stackSize)
+        if (bot.registry.version['>=']('1.17')) {
+          // /item replace lands the item in a specific slot deterministically,
+          // so there is no race with the previous move (unlike /give, which
+          // targets the first empty slot and needs a settle delay).
+          bot.chat(`/item replace entity ${bot.username} hotbar.0 with ${item.name} ${count}`)
+          await onceWithCleanup(window, 'updateSlot', {
+            timeout: 5000,
+            checkCondition: (slot, oldItem, newItem) => slot === window.hotbarStart && newItem?.name === item.name
+          })
+        } else {
+          bot.chat(`/give ${bot.username} ${item.name} ${count}`)
+          await onceWithCleanup(window, 'updateSlot', {
+            timeout: 5000,
+            checkCondition: (slot, oldItem, newItem) => slot === window.hotbarStart && newItem?.name === item.name
+          })
+          await bot.test.wait(100)
+        }
 
         // await bot.clickWindow(slot, 0, 2)
         await bot.moveSlotItem(window.hotbarStart, slot)
-        await bot.test.wait(100)
       }
     }
 
