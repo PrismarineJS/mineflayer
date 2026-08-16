@@ -122,20 +122,38 @@ function inject (bot, wrap) {
     await gameModePromise
   }
 
+  const clearSuccess = () => onceWithCleanup(bot, 'message', {
+    timeout: 10000,
+    // A failed clear ("No items were found", when the inventory is already
+    // empty) still confirms the server processed our packets in order.
+    // The failure message arrives with the key nested in extra, not top-level.
+    checkCondition: msg => [
+      'commands.clear.success', // <= 1.12.2
+      'commands.clear.success.single', // 1.13.2+
+      'commands.clear.failure', // <= 1.12.2, empty inventory
+      'clear.failed.single', // 1.13.2+, empty inventory
+      'clear.failed.multiple' // 1.13.2+, empty inventory, multiple targets
+    ].includes(msg.translate ?? msg.json?.extra?.[0]?.translate)
+  })
+
   async function clearInventory () {
+    // Clear first and await the server's confirmation. This guarantees all
+    // previously sent packets (e.g. a close_window from the last test) have
+    // been applied server-side — otherwise /give can land in a container
+    // that the client already closed and the update gets silently dropped.
+    const initialClear = clearSuccess()
+    bot.chat('/clear')
+    await initialClear
     // Use bot.chat for /give (server console /give doesn't send inventory
-    // update packets on 1.21.9+). Use server console for /clear.
+    // update packets on 1.21.9+).
     bot.chat('/give @a stone 1')
     await onceWithCleanup(bot.inventory, 'updateSlot', {
       timeout: 10000,
       checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone'
     })
-    const clearMsg = onceWithCleanup(bot, 'message', {
-      timeout: 10000,
-      checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
-    })
+    const finalClear = clearSuccess()
     bot.chat('/clear')
-    await clearMsg
+    await finalClear
   }
 
   // you need to be in creative mode for this to work

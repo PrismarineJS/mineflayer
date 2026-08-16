@@ -1,5 +1,5 @@
 const assert = require('assert')
-const { once } = require('../../lib/promise_utils')
+const { once, onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   function expectAmount (amount, greaterThan) {
@@ -150,4 +150,8 @@ module.exports = () => async (bot) => {
   assert.rejects(bot.trade(villager, 1, 1)) // Shouldn't be able, the trade is blocked!
   villager.close()
   bot.test.sayEverywhere(`/kill @e[type=${villagerType}]`)
+  // The server defers the window close to a later tick. Wait for the item
+  // dump it sends when the close completes, so the next test's /give doesn't
+  // land in the still-open trade window (where the update gets dropped).
+  await onceWithCleanup(bot.inventory, 'updateSlot', { timeout: 5000 })
 }
