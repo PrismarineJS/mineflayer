@@ -1,6 +1,6 @@
 const { Vec3 } = require('vec3')
 const assert = require('assert')
-const { once, onceWithCleanup } = require('../../lib/promise_utils')
+const { once } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
@@ -148,6 +148,24 @@ module.exports = () => async (bot) => {
   async function createRandomLayout (window, slotPopulationFactor) {
     await bot.test.becomeCreative()
 
+    // Wait for the given item to show up in hotbar.0. Depending on version and
+    // which container is open, the server syncs it either through the open
+    // window or directly to the inventory, so listen on both.
+    const waitHotbarItem = (item) => new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error(`item ${item} never reached the hotbar`)), 5000)
+      const ok = newItem => newItem?.name === item
+      const onWin = (slot, oldItem, newItem) => { if (slot === window.hotbarStart && ok(newItem)) done() }
+      const onInv = (slot, oldItem, newItem) => { if (slot === 36 && ok(newItem)) done() }
+      function done () {
+        clearTimeout(timer)
+        window.off('updateSlot', onWin)
+        bot.inventory.off('updateSlot', onInv)
+        resolve()
+      }
+      window.on('updateSlot', onWin)
+      bot.inventory.on('updateSlot', onInv)
+    })
+
     for (let slot = 0; slot < window.inventoryStart; slot++) {
       if (Math.random() < slotPopulationFactor) {
         const randomItem = getRandomStackableItem()
@@ -158,16 +176,10 @@ module.exports = () => async (bot) => {
           // so there is no race with the previous move (unlike /give, which
           // targets the first empty slot and needs a settle delay).
           bot.chat(`/item replace entity ${bot.username} hotbar.0 with ${item.name} ${count}`)
-          await onceWithCleanup(window, 'updateSlot', {
-            timeout: 5000,
-            checkCondition: (slot, oldItem, newItem) => slot === window.hotbarStart && newItem?.name === item.name
-          })
+          await waitHotbarItem(item.name)
         } else {
           bot.chat(`/give ${bot.username} ${item.name} ${count}`)
-          await onceWithCleanup(window, 'updateSlot', {
-            timeout: 5000,
-            checkCondition: (slot, oldItem, newItem) => slot === window.hotbarStart && newItem?.name === item.name
-          })
+          await waitHotbarItem(item.name)
           await bot.test.wait(100)
         }
 
