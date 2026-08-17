@@ -1233,6 +1233,50 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }, 100)
         })
       })
+
+      it('does not copy unconfirmed click predictions into the inventory on window close', async () => {
+        // On 1.17.1+ clicks are applied optimistically and the server is
+        // expected to echo them with slot updates. If it never does (e.g. it
+        // silently drops a click sent with a stale stateId), the prediction
+        // must not be copied into bot.inventory when the window closes —
+        // no server correction will ever arrive for it.
+        if (!registry.supportFeature('stateIdUsed')) return
+        const Item = require('prismarine-item')(supportedVersion)
+        const windows = require('prismarine-windows')(supportedVersion)
+        const stone = new Item(registry.itemsByName.stone.id, 3)
+
+        const windowType = windows.windows['minecraft:crafting'].type
+        const titleIsNbt = registry.protocol.play.toClient.types.packet_open_window[1]
+          .some(field => field.name === 'windowTitle' && field.type === 'anonymousNbt')
+        const windowTitle = titleIsNbt
+          ? nbt.comp({ text: nbt.string('Crafting') })
+          : JSON.stringify({ text: 'Crafting' })
+
+        // Window slot 10 is the first player-inventory slot of a crafting
+        // window, which maps to bot.inventory slot 9.
+        const WINDOW_SLOT = 10
+        const INV_SLOT = 9
+        const items = Array.from({ length: 46 }, () => Item.toNotch(null))
+        items[WINDOW_SLOT] = Item.toNotch(stone)
+
+        const windowOpen = once(bot, 'windowOpen')
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          client.write('open_window', { windowId: 1, inventoryType: windowType, windowTitle })
+          client.write('window_items', { windowId: 1, stateId: 0, items, carriedItem: Item.toNotch(null) })
+        })
+        const [window] = await windowOpen
+        assert.strictEqual(window.slots[WINDOW_SLOT].count, 3)
+
+        // Pick the stone up and put it down one slot over; the server never
+        // echoes either click.
+        await bot.clickWindow(WINDOW_SLOT, 0, 0)
+        await bot.clickWindow(WINDOW_SLOT + 1, 0, 0)
+        bot.closeWindow(window)
+
+        assert.strictEqual(bot.inventory.slots[INV_SLOT]?.name, 'stone')
+        assert.strictEqual(bot.inventory.slots[INV_SLOT + 1], null)
+      })
     })
 
     describe('tablist', () => {
