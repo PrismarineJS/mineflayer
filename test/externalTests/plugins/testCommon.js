@@ -13,6 +13,31 @@ function inject (bot, wrap) {
   console.log(bot.version)
 
   bot.test = {}
+  // TRACE=<file> writes one JSON stream for analysis with jq afterwards:
+  //   {"ts":...,"dir":"S2C"|"C2S","name":<packet>,"data":{...}}   raw packets
+  //   {"ts":...,"dir":"MODEL","name":"updateSlot","data":{...}}  inventory model writes
+  //   {"ts":...,"dir":"MARKER","name":"### Starting <test>"}     test boundaries
+  let dumpStream
+  if (process.env.TRACE) {
+    const fs = require('fs')
+    const bigintSafe = (k, v) => typeof v === 'bigint' ? v.toString() : v
+    dumpStream = fs.createWriteStream(process.env.TRACE, { flags: 'w' })
+    const write = (dir, name, data) => dumpStream.write(`${JSON.stringify({ ts: Date.now(), dir, name, data }, bigintSafe)}\n`)
+    bot._client.on('packet', (data, meta) => write('S2C', meta.name, data))
+    const oldWrite = bot._client.write
+    bot._client.write = function (name, data) {
+      write('C2S', name, data)
+      oldWrite.apply(this, arguments)
+    }
+    bot.test.dumpMarker = name => write('MARKER', name, null)
+    bot.once('spawn', () => {
+      const orig = bot.inventory.updateSlot.bind(bot.inventory)
+      bot.inventory.updateSlot = (slot, item) => {
+        write('MODEL', 'updateSlot', { slot, item: item ? { name: item.name, count: item.count } : null })
+        return orig(slot, item)
+      }
+    })
+  }
   bot.test.groundY = bot.supportFeature('tallWorld') ? -60 : 4
   bot.test.sayEverywhere = sayEverywhere
   bot.test.clearInventory = clearInventory
@@ -86,11 +111,13 @@ function inject (bot, wrap) {
   // always leaves you in creative mode
   async function resetState () {
     await becomeCreative()
-    await clearInventory()
     bot.creative.startFlying()
     await teleport(new Vec3(0, bot.test.groundY, 0))
     await bot.waitForChunksToLoad()
     await resetBlocksToSuperflat()
+    // Clear after the fills: they destroy the previous test's containers,
+    // and those deferred closes return items into the inventory — the clear's
+    // give-retry converges over those late returns.
     await clearInventory()
   }
 
@@ -122,20 +149,46 @@ function inject (bot, wrap) {
     await gameModePromise
   }
 
+  const clearSuccess = () => onceWithCleanup(bot, 'message', {
+    timeout: 10000,
+    // A failed clear ("No items were found", when the inventory is already
+    // empty) still confirms the server processed our packets in order.
+    // The failure message arrives with the key nested in extra, not top-level.
+    checkCondition: msg => [
+      'commands.clear.success', // <= 1.12.2
+      'commands.clear.success.single', // 1.13.2+
+      'commands.clear.failure', // <= 1.12.2, empty inventory
+      'clear.failed.single', // 1.13.2+, empty inventory
+      'clear.failed.multiple' // 1.13.2+, empty inventory, multiple targets
+    ].includes(msg.translate ?? msg.json?.extra?.[0]?.translate)
+  })
+
   async function clearInventory () {
-    // Use bot.chat for /give (server console /give doesn't send inventory
-    // update packets on 1.21.9+). Use server console for /clear.
-    bot.chat('/give @a stone 1')
-    await onceWithCleanup(bot.inventory, 'updateSlot', {
-      timeout: 10000,
-      checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone'
-    })
-    const clearMsg = onceWithCleanup(bot, 'message', {
-      timeout: 10000,
-      checkCondition: msg => msg.translate === 'commands.clear.success.single' || msg.translate === 'commands.clear.success'
-    })
+    // Clear first and await the server's confirmation. This guarantees all
+    // previously sent packets (e.g. a close_window from the last test) have
+    // been applied server-side — otherwise /give can land in a container
+    // that the client already closed and the update gets silently dropped.
+    const initialClear = clearSuccess()
     bot.chat('/clear')
-    await clearMsg
+    await initialClear
+    // The server also defers some window closes to a later tick (a killed
+    // villager, a crafting table destroyed by our /fill). A /give issued
+    // before that tick runs lands in the still-open window and mineflayer
+    // drops the update — retry, the close is done by the next attempt.
+    // (bot.chat is required: server console /give doesn't send inventory
+    // update packets on 1.21.9+.)
+    for (let attempt = 0; attempt < 3; attempt++) {
+      bot.chat('/give @a stone 1')
+      const got = await onceWithCleanup(bot.inventory, 'updateSlot', {
+        timeout: 3000,
+        checkCondition: (slot, oldItem, newItem) => newItem?.name === 'stone'
+      }).then(() => true, () => false)
+      if (got) break
+      if (attempt === 2) throw new Error('stone never reached the inventory after 3 /give attempts')
+    }
+    const finalClear = clearSuccess()
+    bot.chat('/clear')
+    await finalClear
   }
 
   // you need to be in creative mode for this to work
@@ -158,6 +211,7 @@ function inject (bot, wrap) {
   }
 
   function sayEverywhere (message) {
+    if (bot.test.dumpMarker) bot.test.dumpMarker(message)
     bot.chat(message)
     console.log(message)
   }

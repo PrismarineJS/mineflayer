@@ -38,6 +38,11 @@ module.exports = () => async (bot) => {
     })
   })
 
+  // A portal's link goes inert after a failed attempt at the same spot, so
+  // each retry must use a fresh location or it is guaranteed to time out.
+  bot.test.netherAttempts ??= 0
+  const attempt = ++bot.test.netherAttempts
+  await bot.test.teleport(new Vec3((attempt - 1) * 4, bot.test.groundY, 0))
   bot.chat(`/setblock ~ ~ ~ ${portalName}`)
   await onceWithCleanup(bot, 'spawn', { timeout: 30000 })
   bot.test.sayEverywhere('/tp 0 128 0')

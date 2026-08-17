@@ -1,6 +1,6 @@
 const { Vec3 } = require('vec3')
 const assert = require('assert')
-const { once, onceWithCleanup } = require('../../lib/promise_utils')
+const { once } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
@@ -148,19 +148,56 @@ module.exports = () => async (bot) => {
   async function createRandomLayout (window, slotPopulationFactor) {
     await bot.test.becomeCreative()
 
+    // Wait for the given item to show up in hotbar.0. Depending on version and
+    // which container is open, the server syncs it either through the open
+    // window or directly to the inventory, so listen on both.
+    const waitHotbarItem = (item, timeout) => new Promise((resolve) => {
+      const timer = setTimeout(() => {
+        window.off('updateSlot', onWin)
+        bot.inventory.off('updateSlot', onInv)
+        resolve(false)
+      }, timeout)
+      const ok = newItem => newItem?.name === item
+      const onWin = (slot, oldItem, newItem) => { if (slot === window.hotbarStart && ok(newItem)) done() }
+      const onInv = (slot, oldItem, newItem) => { if (slot === 36 && ok(newItem)) done() }
+      function done () {
+        clearTimeout(timer)
+        window.off('updateSlot', onWin)
+        bot.inventory.off('updateSlot', onInv)
+        resolve(true)
+      }
+      window.on('updateSlot', onWin)
+      bot.inventory.on('updateSlot', onInv)
+    })
+
+    // The server silently drops chat commands sent too close together, so
+    // resend if the item has not arrived shortly after the command.
+    const sendItemToHotbar = async (name, count) => {
+      for (let attempt = 0; attempt < 3; attempt++) {
+        bot.chat(`/item replace entity ${bot.username} hotbar.0 with ${name} ${count}`)
+        if (await waitHotbarItem(name, 500)) return
+      }
+      throw new Error(`item ${name} never reached the hotbar`)
+    }
+
     for (let slot = 0; slot < window.inventoryStart; slot++) {
       if (Math.random() < slotPopulationFactor) {
         const randomItem = getRandomStackableItem()
         const item = bot.registry.itemsByName[randomItem]
-        bot.chat(`/give ${bot.username} ${item.name} ${Math.ceil(Math.random() * item.stackSize)}`)
-        await onceWithCleanup(window, 'updateSlot', {
-          timeout: 5000,
-          checkCondition: (slot, oldItem, newItem) => slot === window.hotbarStart && newItem?.name === item.name
-        })
+        const count = Math.ceil(Math.random() * item.stackSize)
+        if (bot.registry.version['>=']('1.17')) {
+          // /item replace lands the item in a specific slot deterministically,
+          // so there is no race with the previous move (unlike /give, which
+          // targets the first empty slot and needs a settle delay).
+          await sendItemToHotbar(item.name, count)
+        } else {
+          bot.chat(`/give ${bot.username} ${item.name} ${count}`)
+          if (!await waitHotbarItem(item.name, 5000)) throw new Error(`item ${item.name} never reached the hotbar`)
+          await bot.test.wait(100)
+        }
 
         // await bot.clickWindow(slot, 0, 2)
         await bot.moveSlotItem(window.hotbarStart, slot)
-        await bot.test.wait(100)
       }
     }
 

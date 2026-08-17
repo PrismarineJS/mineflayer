@@ -6,6 +6,10 @@ on:
       - master
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   Lint:
     runs-on: ubuntu-latest
@@ -58,7 +62,7 @@ jobs:
       - name: Setup Java JDK
         uses: actions/setup-java@v1.4.3
         with:
-          java-version: 21
+          java-version: 25
           java-package: jre
       - name: Install Dependencies
         run: npm install
@@ -68,7 +72,9 @@ jobs:
           exit_code=0
           pids=""
           for v in ${{ matrix.versions }}; do
-            npm run mocha_test -- --retries 3 -g "${v}v" > "test-${v}.log" 2>&1 &
+            # TRACE is cheap (<1% runtime) and only written by the harness bot,
+            # so always record a packet trace for post-mortem analysis.
+            TRACE="trace-${v}.jsonl" npm run mocha_test -- --retries 3 -g "${v}v" > "test-${v}.log" 2>&1 &
             pids="$pids $!"
           done
           for pid in $pids; do
@@ -93,4 +99,21 @@ jobs:
               cat "test-${v}.log"
             fi
           done
+          # Only the failing versions' logs and packet traces are uploaded,
+          # so artifact storage stays small; they auto-expire quickly too.
+          mkdir -p artifacts
+          for v in ${{ matrix.versions }}; do
+            if grep -q "failing" "test-${v}.log"; then
+              cp "test-${v}.log" artifacts/
+              cp "trace-${v}.jsonl" artifacts/ 2>/dev/null || true
+            fi
+          done
           exit $exit_code
+
+      - name: Upload failed versions' logs and traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failing-versions-${{ strategy.job-index }}
+          path: artifacts/
+          retention-days: 7
