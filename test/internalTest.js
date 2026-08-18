@@ -1312,5 +1312,33 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
     })
+    it('blockAtEntityCursor handles zero yaw and pitch (#3935)', (done) => {
+      // Place a vertical column of gold blocks in the -Z direction from the bot,
+      // so a level (pitch=0) ray along yaw=0 is guaranteed to hit one regardless of eye height.
+      const goldId = bot.registry.blocksByName.gold_block.id
+      server.on('playerJoin', (client) => {
+        client.write('login', bot.test.generateLoginPacket())
+        const chunk = bot.test.buildChunk()
+        chunk.setBlockType(vec3(0, 65, 0), goldId)
+        chunk.setBlockType(vec3(0, 66, 0), goldId)
+        chunk.setBlockType(vec3(0, 67, 0), goldId)
+        client.write('map_chunk', generateChunkPacket(chunk))
+      })
+      bot.on('chunkColumnLoad', () => {
+        // Position the bot at (0.5, 65, 5.5) looking straight north (yaw=0) and level (pitch=0)
+        bot.entity.position = vec3(0.5, 65, 5.5)
+        bot.entity.height = 1.62
+        bot.entity.yaw = 0
+        bot.entity.pitch = 0
+        const block = bot.blockAtEntityCursor(bot.entity, 256)
+        try {
+          assert.ok(block, 'blockAtEntityCursor must not return null when yaw=0 and pitch=0')
+          assert.strictEqual(block.type, goldId, 'should hit the gold block in the cursor')
+          done()
+        } catch (err) {
+          done(err)
+        }
+      })
+    })
   })
 }
