@@ -112,7 +112,6 @@ module.exports = () => async (bot) => {
     assert.strictEqual(bot.time.isDay, test.isDay, `${test.command} should be ${test.isDay ? 'day' : 'night'}`)
   }
 
-  // Restore original daylight cycle setting
+  // Restore for later tests; the server applies it without the client waiting.
   sendSetDaylightCycleCommand(originalDaylightCycle)
-  await waitForTime()
 }
