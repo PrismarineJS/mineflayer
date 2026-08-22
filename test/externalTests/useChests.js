@@ -204,8 +204,84 @@ module.exports = () => async (bot) => {
     await bot.test.becomeSurvival()
   }
 
+  // Each left/right click resolves differently depending on whether the cursor
+  // is holding something and what is in the target slot, so every case needs
+  // its own precondition rather than another random click.
+  async function testClickTransitions (window) {
+    const held = () => window.selectedItem
+    const find = (pred) => {
+      for (let i = 0; i < window.inventoryStart; i++) {
+        if (pred(window.slots[i], i)) return i
+      }
+      return -1
+    }
+
+    assert.ok(!held(), 'cursor must start empty')
+
+    // Needs more than 2 so there is still something on the cursor after placing
+    // one, and something left to merge back.
+    const a = find(s => s !== null && s.count > 2)
+    assert.notStrictEqual(a, -1, 'expected an occupied slot holding more than 2')
+    const taken = { type: window.slots[a].type, count: window.slots[a].count }
+    await bot.clickWindow(a, 0, 0)
+    assert.ok(held(), 'left click on an occupied slot should take it')
+    assert.strictEqual(held().type, taken.type)
+    assert.strictEqual(held().count, taken.count)
+    assert.strictEqual(window.slots[a], null)
+
+    // holding + empty slot, right click -> place exactly one
+    await bot.clickWindow(a, 1, 0)
+    assert.ok(window.slots[a], 'right click on an empty slot should place one')
+    assert.strictEqual(window.slots[a].count, 1)
+    assert.strictEqual(held().count, taken.count - 1)
+
+    // holding + occupied slot of the same type -> merge into it. The slot holds
+    // 1 and the cursor the rest of the same stack, so all of it fits and the
+    // cursor is left empty.
+    await bot.clickWindow(a, 0, 0)
+    assert.strictEqual(window.slots[a].type, taken.type)
+    assert.strictEqual(window.slots[a].count, taken.count, 'the whole stack should merge back')
+    assert.ok(!held(), 'a merge that fits should empty the cursor')
+
+    // holding + occupied slot of a different type -> swap
+    await bot.clickWindow(a, 0, 0)
+    assert.ok(held(), 'expected to be holding the merged stack')
+    const other = find((s, i) => s !== null && i !== a && s.type !== held().type)
+    assert.notStrictEqual(other, -1, 'expected a slot holding a different item type')
+    const there = { type: window.slots[other].type, count: window.slots[other].count }
+    const cursor = { type: held().type, count: held().count }
+    await bot.clickWindow(other, 0, 0)
+    assert.strictEqual(window.slots[other].type, cursor.type, 'swap should leave the cursor item in the slot')
+    assert.strictEqual(window.slots[other].count, cursor.count)
+    assert.strictEqual(held().type, there.type, 'swap should leave the slot item on the cursor')
+    assert.strictEqual(held().count, there.count)
+
+    // holding + empty slot -> drop the whole stack
+    await bot.clickWindow(a, 0, 0)
+    assert.ok(!held(), 'left click on an empty slot should drop the whole stack')
+    assert.strictEqual(window.slots[a].type, there.type)
+
+    // empty cursor + occupied slot, right click -> take half
+    const big = find(s => s !== null && s.count > 1)
+    assert.notStrictEqual(big, -1, 'expected a slot holding more than 1')
+    const whole = window.slots[big].count
+    await bot.clickWindow(big, 1, 0)
+    assert.ok(held(), 'right click on an occupied slot should take half')
+    assert.strictEqual(held().count + (window.slots[big]?.count ?? 0), whole, 'the halves should account for the whole stack')
+    await bot.clickWindow(big, 0, 0)
+    assert.ok(!held(), 'putting the half back should empty the cursor')
+
+    // shift click moves the stack out of the chest entirely
+    const move = find(s => s !== null)
+    assert.notStrictEqual(move, -1, 'expected an occupied slot to shift click')
+    await bot.clickWindow(move, 0, 1)
+    assert.strictEqual(window.slots[move], null, 'shift click should empty the chest slot')
+  }
+
   async function testMouseClick (window, clicks) {
-    // Modes 5 and 6 are assert-unimplemented in prismarine-windows and mode 3
+    // mouseButton/mode pairs. Mode 0 alone only reaches pick up, place, merge
+    // and swap; quick move and collect-to-cursor are separate server paths.
+    // Modes 5 and 6 are assert-unimplemented in prismarine-windows, and mode 3
     // is creative-only, so this is the reachable set from survival.
     const ops = [
       [0, 0], // left click: pick up / place / swap
@@ -227,6 +303,7 @@ module.exports = () => async (bot) => {
   const window = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
   await createRandomLayout(window, 0.95)
 
+  await testClickTransitions(window)
   await testMouseClick(window, 50)
 
   window.close()
