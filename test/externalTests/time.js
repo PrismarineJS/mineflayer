@@ -83,8 +83,6 @@ module.exports = () => async (bot) => {
   const currentPhase = bot.time.moonPhase
   sendSetDaylightCycleCommand(true)
   bot.test.sayEverywhere('/time add 24000')
-  // Two commands are in flight. A server that answers each one sends two
-  // broadcasts, and the first still has the old day, so wait on the day itself.
   await waitForTimeState(() => bot.time.day >= currentDay + 1)
   assert(bot.time.day >= currentDay + 1, `Expected day to be at least ${currentDay + 1}, got ${bot.time.day}`)
   assert.notStrictEqual(bot.time.moonPhase, currentPhase, 'Moon phase should change after a full day')
