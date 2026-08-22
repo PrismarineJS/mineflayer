@@ -205,9 +205,17 @@ module.exports = () => async (bot) => {
   }
 
   async function testMouseClick (window, clicks) {
+    // Modes 5 and 6 are assert-unimplemented in prismarine-windows and mode 3
+    // is creative-only, so this is the reachable set from survival.
+    const ops = [
+      [0, 0], // left click: pick up / place / swap
+      [1, 0], // right click: half stack / place one
+      [0, 1] // shift click: quick move
+    ]
     let iterations = 0
     while (iterations++ < clicks) {
-      await bot.clickWindow(~~(Math.random() * window.inventoryStart), 0, 0)
+      const [mouseButton, mode] = ops[iterations % ops.length]
+      await bot.clickWindow(~~(Math.random() * window.inventoryStart), mouseButton, mode)
     }
   }
 
