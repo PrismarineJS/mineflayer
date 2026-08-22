@@ -30,10 +30,8 @@ module.exports = () => async (bot) => {
   // Helper functions
   const isTimeClose = (current, target) => Math.abs(current - target) < 510
   const isTimeInRange = (current, start, end) => start <= end ? current >= start && current <= end : current >= start || current <= end
-  // One update_time broadcast carries world time AND the doDaylightCycle flag
-  // (vanilla builds it in a single `tickCounter % 20` block), so a wait keyed on
-  // the state we care about can confirm several commands at once. Waiting on the
-  // state also avoids latching onto a broadcast that was already in flight.
+  // update_time is the only carrier of world time and doDaylightCycle, and
+  // vanilla broadcasts it once every 20 ticks.
   const waitForTimeState = async (matches) =>
     onceWithCleanup(bot, 'time', { timeout: 5000, checkCondition: matches })
 
@@ -62,8 +60,7 @@ module.exports = () => async (bot) => {
   // Disable daylight cycle before time transition tests to prevent
   // time from drifting between /time set and the assertion
   const originalDaylightCycle = bot.time.doDaylightCycle
-  // No wait here: the server applies commands in order, so the first /time set
-  // below lands after the cycle is off, and its wait confirms both.
+  // Commands apply in the order sent: the first /time set below lands after this.
   setDaylightCycle(false)
 
   // Test time transitions
@@ -81,15 +78,14 @@ module.exports = () => async (bot) => {
     assert.strictEqual(bot.time.isDay, test.isDay, `${test.name} should be ${test.isDay ? 'day' : 'night'}`)
   }
 
-  // Test day and moon phase progression. Capture before mutating, then let one
-  // broadcast confirm both the re-enabled cycle and the added day.
+  // Test day and moon phase progression.
+  // Must be read before the commands below mutate them.
   const currentDay = bot.time.day
   const currentPhase = bot.time.moonPhase
   setDaylightCycle(true)
   bot.test.sayEverywhere('/time add 24000')
-  // Must key on the day advancing, not just any broadcast: servers that echo
-  // each command immediately would otherwise satisfy a bare wait with the
-  // gamerule's echo, before the added day is reflected.
+  // A broadcast may be the echo of any command in the batch, so the wait has to
+  // be keyed on the state under test.
   await waitForTimeState(() => bot.time.day >= currentDay + 1)
   assert(bot.time.day >= currentDay + 1, `Expected day to be at least ${currentDay + 1}, got ${bot.time.day}`)
   assert.notStrictEqual(bot.time.moonPhase, currentPhase, 'Moon phase should change after a full day')
@@ -103,8 +99,7 @@ module.exports = () => async (bot) => {
   await waitForTimeState(() => bot.time.doDaylightCycle === originalDaylightCycle)
   assert.strictEqual(bot.time.doDaylightCycle, originalDaylightCycle)
 
-  // Disable the cycle again for the range tests; no wait, the first /time set
-  // below is applied after it and its wait confirms both.
+  // Commands apply in the order sent: the first /time set below lands after this.
   setDaylightCycle(false)
 
   // Test day/night transitions
