@@ -154,6 +154,12 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    // mocha doesn't cancel a test it kills at its timeout, it just stops waiting
+    // for it: the attempt's example keeps running and its listeners keep
+    // reacting to the shared bot, so the next test (or retry) would run the
+    // example twice at once. This hook runs after every attempt, retries too.
+    afterEach(() => bot?.test?.abortRunningExample?.())
+
     async function reconnectBot () {
       console.log('  Bot disconnected, reconnecting...')
       try { bot.end() } catch (e) { /* ignore */ }
