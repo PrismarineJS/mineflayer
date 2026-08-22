@@ -48,8 +48,8 @@ module.exports = () => async (bot) => {
     }
   }
 
-  // Helper to set gamerule using the correct name for the version
-  const setDaylightCycle = (value) => {
+  // The gamerule is renamed on versions with gameRuleUsesResourceLocation.
+  const sendSetDaylightCycleCommand = (value) => {
     if (bot.supportFeature('gameRuleUsesResourceLocation')) {
       bot.test.sayEverywhere(`/gamerule minecraft:advance_time ${value}`)
     } else {
@@ -61,7 +61,7 @@ module.exports = () => async (bot) => {
   // time from drifting between /time set and the assertion
   const originalDaylightCycle = bot.time.doDaylightCycle
   // Commands apply in the order sent: the first /time set below lands after this.
-  setDaylightCycle(false)
+  sendSetDaylightCycleCommand(false)
 
   // Test time transitions
   const timeTests = [
@@ -82,7 +82,7 @@ module.exports = () => async (bot) => {
   // Must be read before the commands below mutate them.
   const currentDay = bot.time.day
   const currentPhase = bot.time.moonPhase
-  setDaylightCycle(true)
+  sendSetDaylightCycleCommand(true)
   bot.test.sayEverywhere('/time add 24000')
   // Two commands are in flight. A server that answers each one sends two
   // broadcasts, and the first still has the old day, so wait on the day itself.
@@ -91,16 +91,16 @@ module.exports = () => async (bot) => {
   assert.notStrictEqual(bot.time.moonPhase, currentPhase, 'Moon phase should change after a full day')
 
   // Test daylight cycle toggle
-  setDaylightCycle(false)
+  sendSetDaylightCycleCommand(false)
   await waitForTimeState(() => bot.time.doDaylightCycle === false)
   assert.strictEqual(bot.time.doDaylightCycle, false)
 
-  setDaylightCycle(originalDaylightCycle)
+  sendSetDaylightCycleCommand(originalDaylightCycle)
   await waitForTimeState(() => bot.time.doDaylightCycle === originalDaylightCycle)
   assert.strictEqual(bot.time.doDaylightCycle, originalDaylightCycle)
 
   // Commands apply in the order sent: the first /time set below lands after this.
-  setDaylightCycle(false)
+  sendSetDaylightCycleCommand(false)
 
   // Test day/night transitions
   const dayNightTests = [
@@ -116,6 +116,6 @@ module.exports = () => async (bot) => {
   }
 
   // Restore original daylight cycle setting
-  setDaylightCycle(originalDaylightCycle)
+  sendSetDaylightCycleCommand(originalDaylightCycle)
   await waitForTime()
 }
