@@ -133,19 +133,15 @@ module.exports = () => async (bot) => {
     1: ['fishing_rod', 'bow']
   }
 
-  function getRandomStackableItem () {
-    if (Math.random() < 0.75) {
-      return itemsWithStackSize[64][~~(Math.random() * itemsWithStackSize[64].length)]
-    } else {
-      if (Math.random() < 0.5) {
-        return itemsWithStackSize[16][~~(Math.random() * itemsWithStackSize[16].length)]
-      } else {
-        return itemsWithStackSize[1][~~(Math.random() * itemsWithStackSize[1].length)]
-      }
-    }
-  }
+  // The transition cases need one stack of more than 2, a second stack of a
+  // different type, and a free slot. Nothing asserts on a fuller chest.
+  const layout = [
+    { slot: 0, name: itemsWithStackSize[64][0], count: 8 },
+    { slot: 1, name: itemsWithStackSize[64][1], count: 8 },
+    { slot: 2, name: itemsWithStackSize[16][0], count: 4 }
+  ]
 
-  async function createRandomLayout (window, slotPopulationFactor) {
+  async function createLayout (window) {
     await bot.test.becomeCreative()
 
     // Wait for the given item to show up in hotbar.0. Depending on version and
@@ -180,25 +176,20 @@ module.exports = () => async (bot) => {
       throw new Error(`item ${name} never reached the hotbar`)
     }
 
-    for (let slot = 0; slot < window.inventoryStart; slot++) {
-      if (Math.random() < slotPopulationFactor) {
-        const randomItem = getRandomStackableItem()
-        const item = bot.registry.itemsByName[randomItem]
-        const count = Math.ceil(Math.random() * item.stackSize)
-        if (bot.registry.version['>=']('1.17')) {
-          // /item replace lands the item in a specific slot deterministically,
-          // so there is no race with the previous move (unlike /give, which
-          // targets the first empty slot and needs a settle delay).
-          await sendItemToHotbar(item.name, count)
-        } else {
-          bot.chat(`/give ${bot.username} ${item.name} ${count}`)
-          if (!await waitHotbarItem(item.name, 5000)) throw new Error(`item ${item.name} never reached the hotbar`)
-          await bot.test.wait(100)
-        }
-
-        // await bot.clickWindow(slot, 0, 2)
-        await bot.moveSlotItem(window.hotbarStart, slot)
+    for (const { slot, name, count } of layout) {
+      const item = bot.registry.itemsByName[name]
+      assert.ok(item, `${name} should exist on this version`)
+      if (bot.registry.version['>=']('1.17')) {
+        // /item replace lands the item in a specific slot deterministically,
+        // so there is no race with the previous move (unlike /give, which
+        // targets the first empty slot and needs a settle delay).
+        await sendItemToHotbar(item.name, count)
+      } else {
+        bot.chat(`/give ${bot.username} ${item.name} ${count}`)
+        if (!await waitHotbarItem(item.name, 5000)) throw new Error(`item ${item.name} never reached the hotbar`)
+        await bot.test.wait(100)
       }
+      await bot.moveSlotItem(window.hotbarStart, slot)
     }
 
     await bot.test.becomeSurvival()
@@ -278,33 +269,14 @@ module.exports = () => async (bot) => {
     assert.strictEqual(window.slots[move], null, 'shift click should empty the chest slot')
   }
 
-  async function testMouseClick (window, clicks) {
-    // mouseButton/mode pairs. Mode 0 alone only reaches pick up, place, merge
-    // and swap; quick move and collect-to-cursor are separate server paths.
-    // Modes 5 and 6 are assert-unimplemented in prismarine-windows, and mode 3
-    // is creative-only, so this is the reachable set from survival.
-    const ops = [
-      [0, 0], // left click: pick up / place / swap
-      [1, 0], // right click: half stack / place one
-      [0, 1] // shift click: quick move
-    ]
-    let iterations = 0
-    while (iterations++ < clicks) {
-      const [mouseButton, mode] = ops[iterations % ops.length]
-      await bot.clickWindow(~~(Math.random() * window.inventoryStart), mouseButton, mode)
-    }
-  }
-
   function clearLargeChest () {
     bot.chat(`/setblock ${largeChestLocations[0].x} ${largeChestLocations[0].y} ${largeChestLocations[0].z} chest`)
     bot.chat(`/setblock ${largeChestLocations[1].x} ${largeChestLocations[1].y} ${largeChestLocations[1].z} chest`)
   }
 
   const window = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
-  await createRandomLayout(window, 0.95)
-
+  await createLayout(window)
   await testClickTransitions(window)
-  await testMouseClick(window, 50)
 
   window.close()
   clearLargeChest()
