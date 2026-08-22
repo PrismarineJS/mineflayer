@@ -60,7 +60,6 @@ module.exports = () => async (bot) => {
   // Disable daylight cycle before time transition tests to prevent
   // time from drifting between /time set and the assertion
   const originalDaylightCycle = bot.time.doDaylightCycle
-  // Commands apply in the order sent: the first /time set below lands after this.
   sendSetDaylightCycleCommand(false)
 
   // Test time transitions
@@ -99,7 +98,7 @@ module.exports = () => async (bot) => {
   await waitForTimeState(() => bot.time.doDaylightCycle === originalDaylightCycle)
   assert.strictEqual(bot.time.doDaylightCycle, originalDaylightCycle)
 
-  // Commands apply in the order sent: the first /time set below lands after this.
+  // Disable daylight cycle again for day/night range tests
   sendSetDaylightCycleCommand(false)
 
   // Test day/night transitions
