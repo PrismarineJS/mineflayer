@@ -30,6 +30,13 @@ module.exports = () => async (bot) => {
   // Helper functions
   const isTimeClose = (current, target) => Math.abs(current - target) < 510
   const isTimeInRange = (current, start, end) => start <= end ? current >= start && current <= end : current >= start || current <= end
+  // One update_time broadcast carries world time AND the doDaylightCycle flag
+  // (vanilla builds it in a single `tickCounter % 20` block), so a wait keyed on
+  // the state we care about can confirm several commands at once. Waiting on the
+  // state also avoids latching onto a broadcast that was already in flight.
+  const waitForTimeState = async (matches) =>
+    onceWithCleanup(bot, 'time', { timeout: 5000, checkCondition: matches })
+
   const waitForTime = async (expectedTime) => {
     // Wait for a time event that matches our expectation (if provided)
     // This helps avoid race conditions where we catch an old time update
@@ -55,8 +62,9 @@ module.exports = () => async (bot) => {
   // Disable daylight cycle before time transition tests to prevent
   // time from drifting between /time set and the assertion
   const originalDaylightCycle = bot.time.doDaylightCycle
+  // No wait here: the server applies commands in order, so the first /time set
+  // below lands after the cycle is off, and its wait confirms both.
   setDaylightCycle(false)
-  await waitForTime()
 
   // Test time transitions
   const timeTests = [
@@ -73,30 +81,31 @@ module.exports = () => async (bot) => {
     assert.strictEqual(bot.time.isDay, test.isDay, `${test.name} should be ${test.isDay ? 'day' : 'night'}`)
   }
 
-  // Re-enable daylight cycle for progression test
-  setDaylightCycle(true)
-  await waitForTime()
-
-  // Test day and moon phase progression
+  // Test day and moon phase progression. Capture before mutating, then let one
+  // broadcast confirm both the re-enabled cycle and the added day.
   const currentDay = bot.time.day
   const currentPhase = bot.time.moonPhase
+  setDaylightCycle(true)
   bot.test.sayEverywhere('/time add 24000')
-  await waitForTime()
+  // Must key on the day advancing, not just any broadcast: servers that echo
+  // each command immediately would otherwise satisfy a bare wait with the
+  // gamerule's echo, before the added day is reflected.
+  await waitForTimeState(() => bot.time.day >= currentDay + 1)
   assert(bot.time.day >= currentDay + 1, `Expected day to be at least ${currentDay + 1}, got ${bot.time.day}`)
   assert.notStrictEqual(bot.time.moonPhase, currentPhase, 'Moon phase should change after a full day')
 
   // Test daylight cycle toggle
   setDaylightCycle(false)
-  await waitForTime()
+  await waitForTimeState(() => bot.time.doDaylightCycle === false)
   assert.strictEqual(bot.time.doDaylightCycle, false)
 
   setDaylightCycle(originalDaylightCycle)
-  await waitForTime()
+  await waitForTimeState(() => bot.time.doDaylightCycle === originalDaylightCycle)
   assert.strictEqual(bot.time.doDaylightCycle, originalDaylightCycle)
 
-  // Disable daylight cycle again for day/night range tests
+  // Disable the cycle again for the range tests; no wait, the first /time set
+  // below is applied after it and its wait confirms both.
   setDaylightCycle(false)
-  await waitForTime()
 
   // Test day/night transitions
   const dayNightTests = [
@@ -106,7 +115,7 @@ module.exports = () => async (bot) => {
 
   for (const test of dayNightTests) {
     bot.test.sayEverywhere(`/time set ${test.command}`)
-    await waitForTime()
+    await waitForTimeState(() => isTimeInRange(bot.time.timeOfDay, test.range[0], test.range[1]))
     assert(isTimeInRange(bot.time.timeOfDay, test.range[0], test.range[1]), `Time should be in ${test.command} range`)
     assert.strictEqual(bot.time.isDay, test.isDay, `${test.command} should be ${test.isDay ? 'day' : 'night'}`)
   }
