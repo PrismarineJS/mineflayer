@@ -2,10 +2,8 @@ const assert = require('assert')
 const { once } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
-  // The bed is placed relative to the bot, so the chunks around it have to be
-  // loaded before blockAt can see it. Wait on the chunks themselves rather than
-  // sleeping a fixed 3s: it is both faster and does not silently under-wait on
-  // a slow machine.
+  // The bed is placed relative to the bot; blockAt cannot see it until the
+  // surrounding chunks are loaded.
   await bot.waitForChunksToLoad()
   const midnight = 18000
   const bedItem = bot.registry.itemsArray.find(item => item.name.endsWith('bed'))
