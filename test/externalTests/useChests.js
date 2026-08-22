@@ -219,7 +219,7 @@ module.exports = () => async (bot) => {
   const window = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
   await createRandomLayout(window, 0.95)
 
-  await testMouseClick(window, 250)
+  await testMouseClick(window, 50)
 
   window.close()
   clearLargeChest()
