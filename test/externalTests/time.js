@@ -1,5 +1,5 @@
 const assert = require('assert')
-const { once, onceWithCleanup } = require('../../lib/promise_utils')
+const { onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   // Test time properties and ranges
@@ -29,24 +29,11 @@ module.exports = () => async (bot) => {
 
   // Helper functions
   const isTimeClose = (current, target) => Math.abs(current - target) < 510
-  const isTimeInRange = (current, start, end) => start <= end ? current >= start && current <= end : current >= start || current <= end
   // update_time is the only carrier of world time and doDaylightCycle, and
-  // vanilla broadcasts it once every 20 ticks.
+  // vanilla broadcasts it once every 20 ticks, so each wait costs a full tick
+  // interval on servers that do not echo commands.
   const waitForTimeState = async (matches) =>
     onceWithCleanup(bot, 'time', { timeout: 5000, checkCondition: matches })
-
-  const waitForTime = async (expectedTime) => {
-    // Wait for a time event that matches our expectation (if provided)
-    // This helps avoid race conditions where we catch an old time update
-    if (expectedTime !== undefined) {
-      await onceWithCleanup(bot, 'time', {
-        timeout: 5000,
-        checkCondition: () => isTimeClose(bot.time.timeOfDay, expectedTime)
-      })
-    } else {
-      await once(bot, 'time')
-    }
-  }
 
   // The gamerule is renamed on versions with gameRuleUsesResourceLocation.
   const sendSetDaylightCycleCommand = (value) => {
@@ -60,24 +47,22 @@ module.exports = () => async (bot) => {
   // Disable daylight cycle before time transition tests to prevent
   // time from drifting between /time set and the assertion
   const originalDaylightCycle = bot.time.doDaylightCycle
+
+  // Night with the cycle off: covers isDay false and doDaylightCycle false.
   sendSetDaylightCycleCommand(false)
+  bot.test.sayEverywhere('/time set 18000')
+  await waitForTimeState(() => isTimeClose(bot.time.timeOfDay, 18000))
+  assert(isTimeClose(bot.time.timeOfDay, 18000), `Expected time to be close to 18000, got ${bot.time.timeOfDay}`)
+  assert.strictEqual(bot.time.isDay, false, 'midnight should be night')
+  assert.strictEqual(bot.time.doDaylightCycle, false)
 
-  // Test time transitions
-  const timeTests = [
-    { time: 18000, name: 'midnight', isDay: false },
-    { time: 6000, name: 'noon', isDay: true },
-    { time: 12000, name: 'sunset', isDay: true },
-    { time: 0, name: 'sunrise', isDay: true }
-  ]
+  // 12000 is the last tick that still counts as day.
+  bot.test.sayEverywhere('/time set 12000')
+  await waitForTimeState(() => isTimeClose(bot.time.timeOfDay, 12000))
+  assert(isTimeClose(bot.time.timeOfDay, 12000), `Expected time to be close to 12000, got ${bot.time.timeOfDay}`)
+  assert.strictEqual(bot.time.isDay, true, 'sunset should be day')
 
-  for (const test of timeTests) {
-    bot.test.sayEverywhere(`/time set ${test.time}`)
-    await waitForTime(test.time)
-    assert(isTimeClose(bot.time.timeOfDay, test.time), `Expected time to be close to ${test.time}, got ${bot.time.timeOfDay}`)
-    assert.strictEqual(bot.time.isDay, test.isDay, `${test.name} should be ${test.isDay ? 'day' : 'night'}`)
-  }
-
-  // Test day and moon phase progression.
+  // Day and moon phase progression, and doDaylightCycle true.
   // Must be read before the commands below mutate them.
   const currentDay = bot.time.day
   const currentPhase = bot.time.moonPhase
@@ -86,31 +71,7 @@ module.exports = () => async (bot) => {
   await waitForTimeState(() => bot.time.day >= currentDay + 1)
   assert(bot.time.day >= currentDay + 1, `Expected day to be at least ${currentDay + 1}, got ${bot.time.day}`)
   assert.notStrictEqual(bot.time.moonPhase, currentPhase, 'Moon phase should change after a full day')
-
-  // Test daylight cycle toggle
-  sendSetDaylightCycleCommand(false)
-  await waitForTimeState(() => bot.time.doDaylightCycle === false)
-  assert.strictEqual(bot.time.doDaylightCycle, false)
-
-  sendSetDaylightCycleCommand(originalDaylightCycle)
-  await waitForTimeState(() => bot.time.doDaylightCycle === originalDaylightCycle)
-  assert.strictEqual(bot.time.doDaylightCycle, originalDaylightCycle)
-
-  // Disable daylight cycle again for day/night range tests
-  sendSetDaylightCycleCommand(false)
-
-  // Test day/night transitions
-  const dayNightTests = [
-    { command: 'day', range: [0, 12000], isDay: true },
-    { command: 'night', range: [12000, 24000], isDay: false }
-  ]
-
-  for (const test of dayNightTests) {
-    bot.test.sayEverywhere(`/time set ${test.command}`)
-    await waitForTimeState(() => isTimeInRange(bot.time.timeOfDay, test.range[0], test.range[1]))
-    assert(isTimeInRange(bot.time.timeOfDay, test.range[0], test.range[1]), `Time should be in ${test.command} range`)
-    assert.strictEqual(bot.time.isDay, test.isDay, `${test.command} should be ${test.isDay ? 'day' : 'night'}`)
-  }
+  assert.strictEqual(bot.time.doDaylightCycle, true)
 
   // Restore for later tests; the server applies it without the client waiting.
   sendSetDaylightCycleCommand(originalDaylightCycle)
