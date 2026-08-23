@@ -2,6 +2,7 @@ module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
 
   bot.test.sayEverywhere('/fill ~-10 ~-1 ~-10 ~10 ~-1 ~10 water')
+  bot.test.sayEverywhere('/weather rain') // rain shortens the vanilla bite wait; the rain test clears weather before asserting
   await bot.test.setInventorySlot(36, new Item(bot.registry.itemsByName.fishing_rod.id, 1, 0))
   await bot.test.awaitItemReceived('/enchant @a minecraft:lure 3')
   await bot.lookAt(bot.entity.position) // dont force the position
