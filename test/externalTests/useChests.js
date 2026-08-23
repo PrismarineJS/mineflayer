@@ -4,6 +4,8 @@ const { once } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
+  // openContainer and placeBlock turn to face the block before acting.
+  bot.physics.yawSpeed = bot.physics.pitchSpeed = 1e3
 
   bot.test.groundY = bot.supportFeature('tallWorld') ? -60 : 4
 
