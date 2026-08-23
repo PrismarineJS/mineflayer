@@ -141,58 +141,22 @@ module.exports = () => async (bot) => {
     { slot: 2, name: itemsWithStackSize[16][0], count: 4 }
   ]
 
-  async function createLayout (window) {
-    await bot.test.becomeCreative()
-
-    // Wait for the given item to show up in hotbar.0. Depending on version and
-    // which container is open, the server syncs it either through the open
-    // window or directly to the inventory, so listen on both.
-    const waitHotbarItem = (item, timeout) => new Promise((resolve) => {
-      const timer = setTimeout(() => {
-        window.off('updateSlot', onWin)
-        bot.inventory.off('updateSlot', onInv)
-        resolve(false)
-      }, timeout)
-      const ok = newItem => newItem?.name === item
-      const onWin = (slot, oldItem, newItem) => { if (slot === window.hotbarStart && ok(newItem)) done() }
-      const onInv = (slot, oldItem, newItem) => { if (slot === 36 && ok(newItem)) done() }
-      function done () {
-        clearTimeout(timer)
-        window.off('updateSlot', onWin)
-        bot.inventory.off('updateSlot', onInv)
-        resolve(true)
-      }
-      window.on('updateSlot', onWin)
-      bot.inventory.on('updateSlot', onInv)
-    })
-
-    // The server silently drops chat commands sent too close together, so
-    // resend if the item has not arrived shortly after the command.
-    const sendItemToHotbar = async (name, count) => {
-      for (let attempt = 0; attempt < 3; attempt++) {
-        bot.chat(`/item replace entity ${bot.username} hotbar.0 with ${name} ${count}`)
-        if (await waitHotbarItem(name, 500)) return
-      }
-      throw new Error(`item ${name} never reached the hotbar`)
-    }
-
+  // Write the slots server side. Filling them by clicking leaves the result at
+  // the mercy of the client's predicted state, which from 1.17 is not confirmed
+  // per click, and a lost move is invisible until an assertion reads the slot.
+  function fillChest (pos) {
+    const at = `${pos.x} ${pos.y} ${pos.z}`
     for (const { slot, name, count } of layout) {
       const item = bot.registry.itemsByName[name]
       assert.ok(item, `${name} should exist on this version`)
       if (bot.registry.version['>=']('1.17')) {
-        // /item replace lands the item in a specific slot deterministically,
-        // so there is no race with the previous move (unlike /give, which
-        // targets the first empty slot and needs a settle delay).
-        await sendItemToHotbar(item.name, count)
+        bot.chat(`/item replace block ${at} container.${slot} with ${name} ${count}`)
+      } else if (bot.registry.version['>=']('1.13')) {
+        bot.chat(`/replaceitem block ${at} container.${slot} ${name} ${count}`)
       } else {
-        bot.chat(`/give ${bot.username} ${item.name} ${count}`)
-        if (!await waitHotbarItem(item.name, 5000)) throw new Error(`item ${item.name} never reached the hotbar`)
-        await bot.test.wait(100)
+        bot.chat(`/replaceitem block ${at} slot.container.${slot} minecraft:${name} ${count}`)
       }
-      await bot.moveSlotItem(window.hotbarStart, slot)
     }
-
-    await bot.test.becomeSurvival()
   }
 
   // Each left/right click resolves differently depending on whether the cursor
@@ -274,8 +238,12 @@ module.exports = () => async (bot) => {
     bot.chat(`/setblock ${largeChestLocations[1].x} ${largeChestLocations[1].y} ${largeChestLocations[1].z} chest`)
   }
 
+  fillChest(largeChestLocations[0])
   const window = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
-  await createLayout(window)
+  for (const { slot, name, count } of layout) {
+    assert.strictEqual(window.slots[slot]?.name, name, `expected ${name} in chest slot ${slot}`)
+    assert.strictEqual(window.slots[slot].count, count)
+  }
   await testClickTransitions(window)
 
   window.close()
