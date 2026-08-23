@@ -14,22 +14,20 @@ function inject (bot, wrap) {
   console.log(bot.version)
 
   bot.test = {}
-  if (process.env.TRACE) {
-    bot._client.on('packet', (data, meta) => trace.packet('S2C', meta.name, data))
-    const oldWrite = bot._client.write
-    bot._client.write = function (name, data) {
-      trace.packet('C2S', name, data)
-      oldWrite.apply(this, arguments)
-    }
-    bot.test.dumpMarker = msg => trace.log(msg)
-    bot.once('spawn', () => {
-      const orig = bot.inventory.updateSlot.bind(bot.inventory)
-      bot.inventory.updateSlot = (slot, item) => {
-        trace.write('MODEL', 'updateSlot', { slot, item: item ? { name: item.name, count: item.count } : null })
-        return orig(slot, item)
-      }
-    })
+  bot._client.on('packet', (data, meta) => trace.packet('S2C', meta.name, data))
+  const oldWrite = bot._client.write
+  bot._client.write = function (name, data) {
+    trace.packet('C2S', name, data)
+    oldWrite.apply(this, arguments)
   }
+  bot.test.dumpMarker = msg => trace.log(msg)
+  bot.once('spawn', () => {
+    const orig = bot.inventory.updateSlot.bind(bot.inventory)
+    bot.inventory.updateSlot = (slot, item) => {
+      trace.write('MODEL', 'updateSlot', { slot, item: item ? { name: item.name, count: item.count } : null })
+      return orig(slot, item)
+    }
+  })
   bot.test.groundY = bot.supportFeature('tallWorld') ? -60 : 4
   bot.test.sayEverywhere = sayEverywhere
   bot.test.clearInventory = clearInventory
