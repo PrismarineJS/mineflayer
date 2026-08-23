@@ -240,8 +240,10 @@ module.exports = () => async (bot) => {
 
   fillChest(largeChestLocations[0])
   const window = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
-  for (const { slot, name, count } of layout) {
-    assert.strictEqual(window.slots[slot]?.name, name, `expected ${name} in chest slot ${slot}`)
+  // Which half of a double chest the window lists first depends on the version.
+  for (const { name, count } of layout) {
+    const slot = window.slots.findIndex((s, i) => i < window.inventoryStart && s?.name === name)
+    assert.notStrictEqual(slot, -1, `expected ${name} in the chest`)
     assert.strictEqual(window.slots[slot].count, count)
   }
   await testClickTransitions(window)
