@@ -1,4 +1,5 @@
-// TRACE=<file> writes one JSON stream for analysis with jq afterwards:
+// Writes one JSON stream for analysis with jq afterwards (path is printed when first opened;
+// override it with TRACE=<file>):
 //   {"ts":...,"type":"PACKET","dir":"S2C"|"C2S","name":<packet>,"data":{...}}   raw packets
 //   {"ts":...,"type":"MODEL","name":"updateSlot","data":{...}}  inventory model writes
 //   {"ts":...,"type":"LOG","msg":<message>,"args":{...}}        test boundaries & harness setup stages
@@ -7,7 +8,12 @@
 // would stall its event loop. `pending` is the number of records posted but not
 // yet on disk and must reach zero before the process exits.
 const fs = require('fs')
+const os = require('os')
+const path = require('path')
 const { Worker, isMainThread, parentPort, workerData } = require('worker_threads')
+
+// pid keeps concurrent mocha processes (one per version in CI) from sharing a file
+const file = process.env.TRACE ?? path.join(os.tmpdir(), `mineflayer-trace-${new Date().toISOString().replace(/[:.]/g, '-')}-${process.pid}.jsonl`)
 
 if (!isMainThread) {
   const { file, pending } = workerData
@@ -31,8 +37,9 @@ if (!isMainThread) {
   const getWorker = () => {
     if (worker) return worker
     pending = new Int32Array(new SharedArrayBuffer(4))
-    worker = new Worker(__filename, { workerData: { file: process.env.TRACE, pending } })
+    worker = new Worker(__filename, { workerData: { file, pending } })
     worker.unref()
+    console.log(`trace: ${file}`)
     process.on('exit', () => {
       let n
       while ((n = Atomics.load(pending, 0)) > 0) Atomics.wait(pending, 0, n, 10000)
@@ -41,7 +48,6 @@ if (!isMainThread) {
   }
 
   function emit (record) {
-    if (!process.env.TRACE) return
     const w = getWorker()
     Atomics.add(pending, 0, 1)
     w.postMessage({ ts: Date.now(), ...record })
