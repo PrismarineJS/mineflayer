@@ -27,6 +27,9 @@ const propOverrides = {
   'spawn-monsters': 'false',
   'generate-structures': 'false',
   'enable-command-block': 'true',
+  // 8 is the floor: nether portal travel force-generates ±128 blocks (8 chunks)
+  // regardless, and blockfinder.js findBlocks uses maxDistance 128
+  'view-distance': '8',
   'use-native-transport': 'false' // java 16 throws errors without this, https://www.spigotmc.org/threads/unable-to-access-address-of-buffer.311602
 }
 
