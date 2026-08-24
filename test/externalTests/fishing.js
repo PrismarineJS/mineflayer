@@ -9,9 +9,20 @@ module.exports = () => async (bot) => {
   // viable: they leave only 1-100 tick waits (expected ~2.5s, hard cap 5s).
   // One level higher and the roll can never go positive - the hook never
   // bites. /enchant caps at Lure III, so the level is set via item NBT.
-  const rod = new Item(bot.registry.itemsByName.fishing_rod.id, 1, 0)
-  rod.enchants = [{ name: 'lure', lvl: bot.registry.version['>=']('1.9') ? 5 : 8 }]
-  await bot.test.setInventorySlot(36, rod)
+  // From 1.20.5 the servers silently strip enchantments written by the
+  // client into a creative slot, so the rod must come from a server /give.
+  // The enchantments component lost its levels wrapper in 1.21.5.
+  if (bot.registry.version['>=']('1.21.5')) {
+    await bot.test.clearInventory()
+    await bot.test.awaitItemReceived('/give @a minecraft:fishing_rod[minecraft:enchantments={"minecraft:lure":5}] 1')
+  } else if (bot.registry.version['>=']('1.20.5')) {
+    await bot.test.clearInventory()
+    await bot.test.awaitItemReceived('/give @a minecraft:fishing_rod[minecraft:enchantments={levels:{"minecraft:lure":5}}] 1')
+  } else {
+    const rod = new Item(bot.registry.itemsByName.fishing_rod.id, 1, 0)
+    rod.enchants = [{ name: 'lure', lvl: bot.registry.version['>=']('1.9') ? 5 : 8 }]
+    await bot.test.setInventorySlot(36, rod)
+  }
   await bot.lookAt(bot.entity.position) // dont force the position
   bot.fish()
 
