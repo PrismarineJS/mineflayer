@@ -13,31 +13,6 @@ module.exports = () => async (bot) => {
   }
   assert.notStrictEqual(signItem, null)
 
-  const p = new Promise((resolve, reject) => {
-    bot._client.once('open_sign_entity', (packet) => {
-      console.log('Open sign', packet)
-      const sign = bot.blockAt(new Vec3(packet.location))
-      bot.updateSign(sign, '1\n2\n3\n')
-
-      setTimeout(() => {
-        // Get updated sign
-        const sign = bot.blockAt(bot.entity.position)
-        console.log('Updated sign', sign)
-
-        assert.strictEqual(sign.signText.trimEnd(), '1\n2\n3')
-
-        if (sign.blockEntity) {
-          // Check block update
-          bot.activateBlock(sign)
-          assert.notStrictEqual(sign.blockEntity, undefined)
-        }
-
-        bot.chat(`/setblock ~ ~ ~ ${portalName}`)
-        onceWithCleanup(bot, 'spawn', { timeout: 30000 }).then(resolve).catch(reject)
-      }, 500)
-    })
-  })
-
   // A portal's link goes inert after a failed attempt at the same spot, so
   // each retry must use a fresh location or it is guaranteed to time out.
   bot.test.netherAttempts ??= 0
@@ -61,5 +36,31 @@ module.exports = () => async (bot) => {
   await bot.lookAt(lowerBlock.position, true)
   await bot.test.setInventorySlot(36, new Item(signItem.id, 1, 0))
   await bot.placeBlock(lowerBlock, new Vec3(0, 1, 0))
-  await p
+
+  // By the time placeBlock's block update echo has arrived, the server has
+  // already opened the sign editor for us, so the text can be sent right away.
+  const sign = bot.blockAt(lowerBlock.position.offset(0, 1, 0))
+  bot.updateSign(sign, '1\n2\n3\n')
+
+  // Poll for the server echoing the new text back rather than sleeping a
+  // fixed time: it usually lands within a tick, but can take longer on
+  // slow CI.
+  const deadline = Date.now() + 5000
+  let updated = bot.blockAt(sign.position)
+  while (updated.signText?.trimEnd() !== '1\n2\n3' && Date.now() < deadline) {
+    await sleep(50)
+    updated = bot.blockAt(sign.position)
+  }
+  console.log('Updated sign', updated)
+
+  assert.strictEqual(updated.signText.trimEnd(), '1\n2\n3')
+
+  if (updated.blockEntity) {
+    // Check block update
+    bot.activateBlock(updated)
+    assert.notStrictEqual(updated.blockEntity, undefined)
+  }
+
+  bot.chat(`/setblock ~ ~ ~ ${portalName}`)
+  await onceWithCleanup(bot, 'spawn', { timeout: 30000 })
 }
