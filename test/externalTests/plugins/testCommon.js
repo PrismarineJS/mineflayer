@@ -108,17 +108,32 @@ function inject (bot, wrap) {
     return bot.placeBlock(referenceBlock, new Vec3(0, 1, 0))
   }
 
+  // Any block change since the last superflat repair marks the world dirty;
+  // resetState uses it to skip the /fill roundtrips after read-only tests.
+  // Fills themselves fire blockUpdate, so the flag is cleared after they
+  // settle; a late-arriving update just makes the next reset conservative.
+  let worldDirty = true
+  bot.on('blockUpdate', () => { worldDirty = true })
+
   // always leaves you in creative mode
   async function resetState () {
     await becomeCreative()
     bot.creative.startFlying()
-    await teleport(new Vec3(0, bot.test.groundY, 0))
-    await bot.waitForChunksToLoad()
-    await resetBlocksToSuperflat()
+    const origin = new Vec3(0, bot.test.groundY, 0)
+    if (bot.entity.position.distanceTo(origin) >= 0.9) {
+      await teleport(origin)
+      await bot.waitForChunksToLoad()
+    }
+    if (worldDirty) {
+      await resetBlocksToSuperflat()
+      worldDirty = false
+    }
     // Clear after the fills: they destroy the previous test's containers,
     // and those deferred closes return items into the inventory — the clear's
     // give-retry converges over those late returns.
-    await clearInventory()
+    if (bot.inventory.slots.some((slot) => slot != null) || bot.inventory.selectedItem) {
+      await clearInventory()
+    }
   }
 
   async function becomeCreative () {
