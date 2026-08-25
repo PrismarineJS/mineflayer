@@ -82,9 +82,21 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       }
 
+      // Reuse a server jar already on disk (e.g. restored from the CI cache) instead
+      // of downloading it: download() refetches Mojang's version manifest on every
+      // call, so skipping it on a cache hit keeps the run off the network.
+      function ensureServerJar (cb) {
+        if (fs.existsSync(MC_SERVER_JAR)) {
+          console.log(`using cached server jar ${MC_SERVER_JAR}`)
+          return cb(null)
+        }
+        console.log('downloading server jar')
+        download(version.minecraftVersion, MC_SERVER_JAR, cb)
+      }
+
       if (START_THE_SERVER) {
-        console.log('downloading and starting server')
-        download(version.minecraftVersion, MC_SERVER_JAR, (err) => {
+        console.log('starting server')
+        ensureServerJar((err) => {
           if (err) {
             console.log(err)
             done(err)

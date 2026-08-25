@@ -67,6 +67,16 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      # Reuse downloaded server jars across runs. On a cache hit the tests skip
+      # download() and its runtime Mojang version-manifest fetch.
+      - name: Cache Minecraft server jars
+        uses: actions/cache@v6
+        with:
+          path: server_jars
+          key: server-jars-${{ hashFiles('lib/version.js') }}-${{ strategy.job-index }}
+          restore-keys: |
+            server-jars-${{ hashFiles('lib/version.js') }}-
+
       - name: Start Tests
         run: |
           exit_code=0
