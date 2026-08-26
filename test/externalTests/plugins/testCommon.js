@@ -5,6 +5,7 @@ const { once } = require('../../../lib/promise_utils')
 const process = require('process')
 const assert = require('assert')
 const { sleep, onceWithCleanup } = require('../../../lib/promise_utils')
+const trace = require('../../common/trace')
 
 const timeout = 5000
 module.exports = inject
@@ -13,27 +14,18 @@ function inject (bot, wrap) {
   console.log(bot.version)
 
   bot.test = {}
-  // TRACE=<file> writes one JSON stream for analysis with jq afterwards:
-  //   {"ts":...,"dir":"S2C"|"C2S","name":<packet>,"data":{...}}   raw packets
-  //   {"ts":...,"dir":"MODEL","name":"updateSlot","data":{...}}  inventory model writes
-  //   {"ts":...,"dir":"MARKER","name":"### Starting <test>"}     test boundaries
-  let dumpStream
   if (process.env.TRACE) {
-    const fs = require('fs')
-    const bigintSafe = (k, v) => typeof v === 'bigint' ? v.toString() : v
-    dumpStream = fs.createWriteStream(process.env.TRACE, { flags: 'w' })
-    const write = (dir, name, data) => dumpStream.write(`${JSON.stringify({ ts: Date.now(), dir, name, data }, bigintSafe)}\n`)
-    bot._client.on('packet', (data, meta) => write('S2C', meta.name, data))
+    bot._client.on('packet', (data, meta) => trace.packet('S2C', meta.name, data))
     const oldWrite = bot._client.write
     bot._client.write = function (name, data) {
-      write('C2S', name, data)
+      trace.packet('C2S', name, data)
       oldWrite.apply(this, arguments)
     }
-    bot.test.dumpMarker = name => write('MARKER', name, null)
+    bot.test.dumpMarker = msg => trace.log(msg)
     bot.once('spawn', () => {
       const orig = bot.inventory.updateSlot.bind(bot.inventory)
       bot.inventory.updateSlot = (slot, item) => {
-        write('MODEL', 'updateSlot', { slot, item: item ? { name: item.name, count: item.count } : null })
+        trace.write('MODEL', 'updateSlot', { slot, item: item ? { name: item.name, count: item.count } : null })
         return orig(slot, item)
       }
     })

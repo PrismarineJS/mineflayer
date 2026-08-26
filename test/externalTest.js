@@ -8,6 +8,7 @@ const fs = require('fs')
 const path = require('path')
 
 const { getPort } = require('./common/util')
+const trace = require('./common/trace')
 const { once } = require('../lib/promise_utils')
 
 // set this to false if you want to test without starting a server automatically
@@ -66,8 +67,14 @@ for (const supportedVersion of mineflayer.testedVersions) {
         bot.test.port = PORT
 
         console.log('starting bot')
+        trace.log('bot created')
+        bot._client.on('connect', () => trace.log('bot tcp connected'))
+        bot._client.on('error', err => trace.log('bot client error', { error: err?.message ?? String(err) }))
+        bot._client.on('end', reason => trace.log('bot client ended', { reason }))
+        bot.once('login', () => trace.log('bot logged in'))
         bot.once('spawn', () => {
           console.log('bot spawned, opping...')
+          trace.log('bot spawned, opping')
           wrap.writeServer('op flatbot\n')
           if (bot.supportFeature('gameRuleUsesResourceLocation')) {
             wrap.writeServer('gamerule minecraft:spawn_monsters false\n')
@@ -76,6 +83,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
           bot.once('messagestr', msg => {
             if (msg.includes('Made flatbot a server operator') || msg === '[Server: Opped flatbot]') {
+              trace.log('bot opped, setup done')
               done()
             }
           })
@@ -84,23 +92,33 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
       if (START_THE_SERVER) {
         console.log('downloading and starting server')
+        trace.log('downloading server jar', { version: version.minecraftVersion, port: PORT })
         download(version.minecraftVersion, MC_SERVER_JAR, (err) => {
           if (err) {
             console.log(err)
             done(err)
             return
           }
+          trace.log('server jar downloaded, starting server')
           propOverrides['server-port'] = PORT
           wrap.startServer(propOverrides, (err) => {
             if (err) return done(err)
             console.log(`pinging ${version.minecraftVersion} port : ${PORT}`)
+            trace.log('server started, pinging')
             mc.ping({
               port: PORT,
               host: '127.0.0.1',
-              version: supportedVersion
+              version: supportedVersion,
+              // fail well before the mocha hook timeout (120s) so a hung ping
+              // surfaces as an ETIMEDOUT error instead of a silent hook timeout
+              closeTimeout: 30 * 1000
             }, (err, results) => {
-              if (err) return done(err)
+              if (err) {
+                trace.log('ping failed', { error: err?.message ?? String(err) })
+                return done(err)
+              }
               console.log('pong')
+              trace.log('pong', { latency: results.latency })
               assert.ok(results.latency >= 0)
               assert.ok(results.latency <= 1000)
               begin()
