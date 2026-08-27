@@ -66,6 +66,11 @@ jobs:
           java-package: jre
       - name: Install Dependencies
         run: npm install
+      # minecraft-wrap 1.9.0 persists the version manifest to a path shared by
+      # the concurrent per-version test processes, which tear each other's
+      # writes. Pin the fix until it is released (PrismarineJS/node-minecraft-wrap#111).
+      - name: Install minecraft-wrap with the concurrent download fix
+        run: npm install --no-save PrismarineJS/node-minecraft-wrap#d782f647093b21627fefebbc2b9c144429cc954b
 
       # Per-test durations from the last master run of this version group, so a PR gets a
       # comment listing tests it made more than 1.5x slower (test/common/compareDurations.js).
