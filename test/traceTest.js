@@ -10,8 +10,7 @@ describe('packet trace', () => {
   const RECORDS = 40
   const CHUNK_BYTES = 800000
 
-  // The child mirrors what the external test harness does: emit a burst of
-  // chunk-sized packets from the main thread, then exit without waiting.
+  // Records posted before an immediate process.exit must still reach disk.
   const child = `
     const trace = require(${JSON.stringify(path.resolve(__dirname, 'common/trace.js'))})
     const data = Buffer.alloc(${CHUNK_BYTES}, 1)
@@ -27,7 +26,6 @@ describe('packet trace', () => {
     const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'trace-')), 'trace.jsonl')
     const elapsedMs = Number(execFileSync(process.execPath, ['-e', child], { env: { ...process.env, TRACE: file } }))
 
-    // Serializing ${RECORDS} chunk packets inline takes seconds; posting them to the worker takes milliseconds.
     assert.ok(elapsedMs < 500, `emitting ${RECORDS} records blocked the caller for ${elapsedMs}ms`)
 
     const lines = fs.readFileSync(file, 'utf8').trimEnd().split('\n')
