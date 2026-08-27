@@ -1,5 +1,21 @@
 ## 4.37.0
 
+## 4.38.0
+* [Poll for the sign text echo in the nether test instead of sleeping 500ms (#4013)](https://github.com/PrismarineJS/mineflayer/commit/3d3261974040713b552aef1b99d15abb52f3da86) (thanks @u9g)
+* [Set test server view-distance to 8 to speed up chunk streaming (#4012)](https://github.com/PrismarineJS/mineflayer/commit/ae774712e792731d809d2de31ffcd56a2abb4a57) (thanks @u9g)
+* [test(consume): eat one bread instead of four and wait on the health event (#4014)](https://github.com/PrismarineJS/mineflayer/commit/b4644a02c63518c8a4eb4d6fb009f8572ad43e80) (thanks @u9g)
+* [Fix the intermittent 26.1 external test failure: retry the status ping until the server answers (#4010)](https://github.com/PrismarineJS/mineflayer/commit/41db842e3e2186b74276742adf8290cdef8ab132) (thanks @u9g)
+* [health: send player_loaded on spawn so 1.21.4+ servers accept interactions immediately (#3986)](https://github.com/PrismarineJS/mineflayer/commit/3890b92e35c8a39493d12c6ad8ce72a0523d31d1) (thanks @u9g)
+* [test(time): cut the time test from 13 broadcast waits to 3 (#3978)](https://github.com/PrismarineJS/mineflayer/commit/9b3880d3ed2bad98697fe2b11a9602206c02aef0) (thanks @u9g)
+* [test: record external test setup stages in the TRACE jsonl (#3973)](https://github.com/PrismarineJS/mineflayer/commit/70b01d487924c1d860c5de89840b2d2ed49a1c82) (thanks @rom1504)
+* [🎈 26.1 (#3854)](https://github.com/PrismarineJS/mineflayer/commit/aa8fdfaf42d48f0be9d8fbde45eafd40fde4d134) (thanks @rom1504bot)
+* [Updated and fixed some issues in CONTRIBUTING.md (#3955)](https://github.com/PrismarineJS/mineflayer/commit/d0189a88cc8b4adf56e18cdf1a635da74482c3ba) (thanks @K-en-u)
+* [doc: Fix features.json link (#3959)](https://github.com/PrismarineJS/mineflayer/commit/5ebce9b489cf8a9acd938a902fb560bacd7094a9) (thanks @narcis-dev)
+* [Language ZH_CN Readme update (#3953)](https://github.com/PrismarineJS/mineflayer/commit/a89e76b7a45e790247be77b5c18e155efd89315d) (thanks @K-en-u)
+* [fix(ci): use execFileSync in updator script to prevent command injection (#3954)](https://github.com/PrismarineJS/mineflayer/commit/23a5da947b0e2d40a2eeb03bfdc68374a2716c48) (thanks @Spagles)
+* [Update quote link to archived version](https://github.com/PrismarineJS/mineflayer/commit/7368ac8e9cc8dc9800d611bd46b2548c8b8fe48d) (thanks @extremeheat)
+* [docs: correct bot.dig forceLook description (#3923)](https://github.com/PrismarineJS/mineflayer/commit/b5478b029ee616b9c009bb6d4f2afcf3fab1c5d8) (thanks @VasilisDragon)
+
 ## 4.37.1
 * [Convert yaw/pitch in sync_entity_position handler (#3896)](https://github.com/PrismarineJS/mineflayer/commit/2b65c14c6d335758d1fe753ade99d736b610413b) (thanks @domdomegg)
 * [Backport velocity field changes from 1.21.9+ to older versions (#3839)](https://github.com/PrismarineJS/mineflayer/commit/61fbd3a38177bde100b4ee9e130ccbcdb73fc7ea) (thanks @SuperGamerTron)
