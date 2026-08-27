@@ -215,8 +215,6 @@
       - ["playerLeft" (player)](#playerleft-player)
       - ["blockUpdate" (oldBlock, newBlock)](#blockupdate-oldblock-newblock)
       - ["blockUpdate:(x, y, z)" (oldBlock, newBlock)](#blockupdatex-y-z-oldblock-newblock)
-      - ["blockEntityData" (block)](#blockentitydata-block)
-      - ["signOpen" (block)](#signopen-block)
       - ["blockPlaced" (oldBlock, newBlock)](#blockplaced-oldblock-newblock)
       - ["chunkColumnLoad" (point)](#chunkcolumnload-point)
       - ["chunkColumnUnload" (point)](#chunkcolumnunload-point)
@@ -1378,14 +1376,6 @@ Note that `oldBlock` may be `null`.
 comparison.
 
 Note that `oldBlock` may be `null`.
-
-#### "blockEntityData" (block)
-
-Fires when the server sends new block entity data for a block, for example when a sign's text is updated. `block` is the block at that position with the fresh data (may be `null` if the block is no longer loaded).
-
-#### "signOpen" (block)
-
-Fires when the server opens the sign editor, right after the bot places a sign. `block` is the placed sign (may be `null` if it is not loaded). Respond with [bot.updateSign](#botupdatesignblock-text-back--false).
 
 #### "blockPlaced" (oldBlock, newBlock)
 
