@@ -66,6 +66,16 @@ jobs:
           java-package: jre
       - name: Install Dependencies
         run: npm install
+      # server jars are immutable per version, so the group's version list is
+      # the whole key; a hit lets the tests start without touching Mojang
+      - name: Compute server jar cache key
+        id: jar-cache-key
+        run: echo "key=server-jars-$(echo '${{ matrix.versions }}' | tr ' ' '_')" >> "$GITHUB_OUTPUT"
+      - name: Cache server jars
+        uses: actions/cache@v4
+        with:
+          path: server_jars
+          key: ${{ steps.jar-cache-key.outputs.key }}
 
       - name: Start Tests
         run: |

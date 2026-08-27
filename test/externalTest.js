@@ -92,8 +92,15 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
       if (START_THE_SERVER) {
         console.log('downloading and starting server')
-        trace.log('downloading server jar', { version: version.minecraftVersion, port: PORT })
-        download(version.minecraftVersion, MC_SERVER_JAR, (err) => {
+        // download() fetches Mojang's version manifest before deciding the jar
+        // is already on disk — a needless network dependency (and CI flake
+        // source) when the jar is cached, so don't call it at all then
+        const jarCached = fs.existsSync(MC_SERVER_JAR)
+        trace.log('downloading server jar', { version: version.minecraftVersion, port: PORT, cached: jarCached })
+        const ensureServerJar = jarCached
+          ? (cb) => cb()
+          : (cb) => download(version.minecraftVersion, MC_SERVER_JAR, cb)
+        ensureServerJar((err) => {
           if (err) {
             console.log(err)
             done(err)
