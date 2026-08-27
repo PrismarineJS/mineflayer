@@ -9,7 +9,7 @@ const path = require('path')
 
 const { getPort } = require('./common/util')
 const trace = require('./common/trace')
-const { once } = require('../lib/promise_utils')
+const { once, onceWithCleanup, sleep } = require('../lib/promise_utils')
 
 // set this to false if you want to test without starting a server automatically
 const START_THE_SERVER = true
@@ -74,7 +74,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
     })
     before(function (done) {
       this.timeout(1000 * 120)
+      let loginAttempts = 0
       function begin () {
+        loginAttempts++
         bot = mineflayer.createBot({
           username: 'flatbot',
           viewDistance: 'tiny',
@@ -91,6 +93,15 @@ for (const supportedVersion of mineflayer.testedVersions) {
         bot._client.on('error', err => trace.log('bot client error', { error: err?.message ?? String(err) }))
         bot._client.on('end', reason => trace.log('bot client ended', { reason }))
         bot.once('login', () => trace.log('bot logged in'))
+        // Console commands reach the bot even when the server has stopped
+        // reading its socket; the server echoing our skinParts (127) in our
+        // own entity_metadata is the only proof it is reading us.
+        let settingsAcked
+        bot._client.once('login', packet => {
+          settingsAcked = onceWithCleanup(bot._client, 'entity_metadata', {
+            checkCondition: p => p.entityId === packet.entityId && p.metadata.some(m => m.value === 127)
+          })
+        })
         bot.once('spawn', () => {
           console.log('bot spawned, opping...')
           trace.log('bot spawned, opping')
@@ -102,8 +113,18 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
           bot.once('messagestr', msg => {
             if (msg.includes('Made flatbot a server operator') || msg === '[Server: Opped flatbot]') {
-              trace.log('bot opped, setup done')
-              done()
+              Promise.race([settingsAcked, sleep(3000).then(() => { throw new Error('server is not reading the bot socket') })])
+                .then(() => {
+                  trace.log('bot opped, setup done')
+                  done()
+                }, err => {
+                  trace.log(err.message, { loginAttempts })
+                  console.log(err.message)
+                  if (loginAttempts >= 3) return done(err)
+                  wrap.writeServer('deop flatbot\n')
+                  bot.end()
+                  bot._client.once('end', begin)
+                })
             }
           })
         })
