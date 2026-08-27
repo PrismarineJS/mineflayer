@@ -35,6 +35,22 @@ const download = require('minecraft-wrap').download
 
 const MC_SERVER_PATH = path.join(__dirname, 'server')
 
+// wrap's start callback fires on the server's "Done" log line, which precedes
+// the server answering status requests — by ~80ms on 26.1. That gap is version
+// dependent, so retry rather than sleep a fixed time, and keep closeTimeout well
+// under the 120s hook budget so the retries fit.
+async function pingUntilReady (port, host, version, attempts = 5) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await mc.ping({ port, host, version, closeTimeout: 5 * 1000 })
+    } catch (err) {
+      console.log(`ping attempt ${attempt} failed: ${err.message}`)
+      if (attempt === attempts) throw err
+      await new Promise(resolve => setTimeout(resolve, 250))
+    }
+  }
+}
+
 for (const supportedVersion of mineflayer.testedVersions) {
   let PORT = 25565
   const registry = require('prismarine-registry')(supportedVersion)
@@ -105,23 +121,15 @@ for (const supportedVersion of mineflayer.testedVersions) {
             if (err) return done(err)
             console.log(`pinging ${version.minecraftVersion} port : ${PORT}`)
             trace.log('server started, pinging')
-            mc.ping({
-              port: PORT,
-              host: '127.0.0.1',
-              version: supportedVersion,
-              // fail well before the mocha hook timeout (120s) so a hung ping
-              // surfaces as an ETIMEDOUT error instead of a silent hook timeout
-              closeTimeout: 30 * 1000
-            }, (err, results) => {
-              if (err) {
-                trace.log('ping failed', { error: err?.message ?? String(err) })
-                return done(err)
-              }
+            pingUntilReady(PORT, '127.0.0.1', supportedVersion).then(results => {
               console.log('pong')
               trace.log('pong', { latency: results.latency })
               assert.ok(results.latency >= 0)
               assert.ok(results.latency <= 1000)
               begin()
+            }).catch(err => {
+              trace.log('ping failed', { error: err?.message ?? String(err) })
+              done(err)
             })
           })
         })
