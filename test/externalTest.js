@@ -9,6 +9,7 @@ const path = require('path')
 
 const { getPort } = require('./common/util')
 const trace = require('./common/trace')
+const nettyAgent = require('./common/nettyAgent')
 const { once } = require('../lib/promise_utils')
 
 // set this to false if you want to test without starting a server automatically
@@ -120,6 +121,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
           trace.log('server jar downloaded, starting server')
           propOverrides['server-port'] = PORT
+          const agent = nettyAgent.build()
+          if (agent) process.env.JAVA_TOOL_OPTIONS = `${process.env.JAVA_TOOL_OPTIONS ?? ''} -javaagent:${agent}`.trim()
           wrap.startServer(propOverrides, (err) => {
             if (err) return done(err)
             console.log(`pinging ${version.minecraftVersion} port : ${PORT}`)
