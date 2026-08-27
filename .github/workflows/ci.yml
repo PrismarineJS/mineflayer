@@ -66,11 +66,18 @@ jobs:
           java-package: jre
       - name: Install Dependencies
         run: npm install
-      # minecraft-wrap 1.9.0 persists the version manifest to a path shared by
-      # the concurrent per-version test processes, which tear each other's
-      # writes. Pin the fix until it is released (PrismarineJS/node-minecraft-wrap#111).
-      - name: Install minecraft-wrap with the concurrent download fix
-        run: npm install --no-save PrismarineJS/node-minecraft-wrap#d782f647093b21627fefebbc2b9c144429cc954b
+      # Unreleased upstream fixes the external tests depend on:
+      # - minecraft-wrap 1.9.0 persists the version manifest to a path shared by
+      #   the concurrent per-version test processes, which tear each other's
+      #   writes (PrismarineJS/node-minecraft-wrap#111).
+      # - minecraft-protocol's ping never rejects when the server closes the
+      #   status connection, so the retry in externalTest.js waits out the
+      #   whole closeTimeout per attempt (PrismarineJS/node-minecraft-protocol#1514).
+      - name: Install unreleased minecraft-wrap and minecraft-protocol fixes
+        run: |
+          npm install --no-save \
+            PrismarineJS/node-minecraft-wrap#d782f647093b21627fefebbc2b9c144429cc954b \
+            PrismarineJS/node-minecraft-protocol#0903e593a9936a5e5deffc1d4b229230de4258d8
 
       # Per-test durations from the last master run of this version group, so a PR gets a
       # comment listing tests it made more than 1.5x slower (test/common/compareDurations.js).
