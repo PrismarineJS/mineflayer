@@ -6,7 +6,8 @@ const mc = require('minecraft-protocol')
 const assert = require('assert')
 const { sleep } = require('../lib/promise_utils')
 const nbt = require('prismarine-nbt')
-const { once } = require('../lib/promise_utils')
+const { once, onceWithCleanup } = require('../lib/promise_utils')
+const { EventEmitter } = require('events')
 const { getPort } = require('./common/util')
 
 for (const supportedVersion of mineflayer.testedVersions) {
@@ -1310,6 +1311,32 @@ for (const supportedVersion of mineflayer.testedVersions) {
           bot.entity.pitch = testPitch
           bot.activateItem()
         })
+      })
+    })
+
+    describe('onceWithCleanup', () => {
+      it('rejects instead of throwing out of emit when checkCondition throws', async () => {
+        // A condition that throws used to unwind whatever was emitting. For a
+        // client event that is the socket read path, which then stops delivering
+        // packets entirely and the bot dies on the next keepalive.
+        const emitter = new EventEmitter()
+        const boom = new Error('condition blew up')
+        const promise = onceWithCleanup(emitter, 'thing', {
+          checkCondition: () => { throw boom }
+        })
+        assert.doesNotThrow(() => emitter.emit('thing'))
+        await assert.rejects(promise, err => err === boom)
+        assert.strictEqual(emitter.listenerCount('thing'), 0)
+      })
+
+      it('rejects and removes the listener when the signal is aborted', async () => {
+        const emitter = new EventEmitter()
+        const abort = new AbortController()
+        const reason = new Error('no longer interested')
+        const promise = onceWithCleanup(emitter, 'thing', { signal: abort.signal })
+        abort.abort(reason)
+        await assert.rejects(promise, err => err === reason)
+        assert.strictEqual(emitter.listenerCount('thing'), 0)
       })
     })
   })

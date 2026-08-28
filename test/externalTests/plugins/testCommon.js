@@ -230,11 +230,22 @@ function inject (bot, wrap) {
     return chatMessagePromise
   }
 
+  // The example currently running, if any. Aborting it drops every listener the
+  // attempt armed on the shared bot.
+  let runningExample = null
+  bot.test.abortRunningExample = () => {
+    runningExample?.abort(new Error('a previous attempt of this example is still running'))
+    runningExample = null
+  }
+
   async function runExample (file, run) {
     let childBotName
+    const abort = new AbortController()
+    runningExample = abort
 
     const detectChildJoin = async () => {
       const [message] = await onceWithCleanup(bot, 'message', {
+        signal: abort.signal,
         checkCondition: message => message.json.translate === 'multiplayer.player.joined'
       })
       childBotName = message.json.with[0].insertion
@@ -254,6 +265,7 @@ function inject (bot, wrap) {
 
     const runExampleOnReady = async () => {
       await onceWithCleanup(bot, 'chat', {
+        signal: abort.signal,
         checkCondition: (username, message) => message === 'Ready!'
       })
       return run(childBotName)
@@ -265,16 +277,31 @@ function inject (bot, wrap) {
     child.stdout.on('data', (data) => { console.log(`${data}`) })
     child.stderr.on('data', (data) => { console.error(`${data}`) })
 
-    const closeExample = async (err) => {
-      console.log('kill process ' + child.pid)
+    // Neither wait above settles if the example process dies (an uncaught
+    // chunk-load timeout, say), so without this the attempt just hangs until
+    // mocha's timeout.
+    const childDied = onceWithCleanup(child, 'close', { signal: abort.signal })
+      .then(([code, signal]) => {
+        throw new Error(`${file} exited before the test finished (code ${code}, signal ${signal})`)
+      })
 
-      try {
-        process.kill(child.pid, 'SIGTERM')
-        const [code] = await onceWithCleanup(child, 'close', { timeout: 5000 })
-        console.log('close requested', code)
-      } catch (e) {
-        console.log(e)
-        console.log('process termination failed, process may already be closed')
+    const closeExample = async (err) => {
+      // Drop this attempt's listeners first, so a retry never inherits them.
+      abort.abort(err ?? new Error(`${file} finished`))
+      if (runningExample === abort) runningExample = null
+
+      if (child.exitCode !== null || child.signalCode !== null) {
+        console.log(`process ${child.pid} already exited (code ${child.exitCode}, signal ${child.signalCode})`)
+      } else {
+        console.log('kill process ' + child.pid)
+        try {
+          process.kill(child.pid, 'SIGTERM')
+          const [code] = await onceWithCleanup(child, 'close', { timeout: 5000 })
+          console.log('close requested', code)
+        } catch (e) {
+          console.log(e)
+          console.log('process termination failed, process may already be closed')
+        }
       }
 
       if (err) {
@@ -286,7 +313,7 @@ function inject (bot, wrap) {
     // an inner withTimeout, which was causing premature failures on
     // slow CI runners.
     try {
-      await Promise.all([detectChildJoin(), runExampleOnReady()])
+      await Promise.race([Promise.all([detectChildJoin(), runExampleOnReady()]), childDied])
     } catch (err) {
       console.log(err)
       return closeExample(err)
