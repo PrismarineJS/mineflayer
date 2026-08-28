@@ -88,7 +88,16 @@ function inject (bot, wrap) {
       const realY = y + bot.test.groundY - 4
       bot.chat(`/fill ~-5 ${realY} ~-5 ~5 ${realY} ~5 ` + layerNames[y])
     }
-    await bot.test.wait(100)
+    // The fills are fire-and-forget; a marker chat message on the same
+    // ordered connection confirms they have executed and their block updates
+    // have already arrived, without assuming how long a server tick takes.
+    const marker = 'superflat-reset-done'
+    const echo = onceWithCleanup(bot, 'messagestr', {
+      timeout: 5000,
+      checkCondition: (message) => message.includes(marker)
+    })
+    bot.chat(marker)
+    await echo
   }
 
   async function placeBlock (slot, position) {
