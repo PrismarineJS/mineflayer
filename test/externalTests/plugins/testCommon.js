@@ -257,9 +257,6 @@ function inject (bot, wrap) {
              bot.players[childBotName].entity.position.distanceTo(targetPos) > 5) {
         await sleep(100)
       }
-      // Let the child's physics engine initialize at the new position
-      // (ground detection, chunk processing) before starting the test
-      await bot.waitForTicks(60)
       bot.chat('loaded')
     }
 
