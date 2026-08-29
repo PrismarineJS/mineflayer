@@ -39,6 +39,7 @@ function inject (bot, wrap) {
   bot.test.setInventorySlot = setInventorySlot
   bot.test.placeBlock = placeBlock
   bot.test.runExample = runExample
+  bot.test.serverReads = serverReads
   bot.test.tellAndListen = tellAndListen
   bot.test.selfKill = selfKill
   bot.test.killEntity = killEntity
@@ -239,7 +240,21 @@ function inject (bot, wrap) {
     runningExample = null
   }
 
-  async function runExample (file, run) {
+  // The server echoes a bot's settings skinParts (127) in that bot's
+  // entity_metadata only once it has read the bot's socket. On <=1.20.1 a
+  // login race can leave a socket the server never reads again, and console
+  // commands still reach that bot, so this echo is the only proof of life.
+  async function serverReads (username, timeoutMs = 3000) {
+    const deadline = Date.now() + timeoutMs
+    while (Date.now() < deadline) {
+      const metadata = bot.players[username]?.entity?.metadata
+      if (metadata && Object.values(metadata).includes(127)) return
+      await sleep(50)
+    }
+    throw Object.assign(new Error(`server is not reading ${username}'s socket`), { serverNotReading: true })
+  }
+
+  async function runExample (file, run, attempt = 1) {
     let childBotName
     const abort = new AbortController()
     runningExample = abort
@@ -258,6 +273,7 @@ function inject (bot, wrap) {
              bot.players[childBotName].entity.position.distanceTo(targetPos) > 5) {
         await sleep(100)
       }
+      await serverReads(childBotName)
       bot.chat('loaded')
     }
 
@@ -314,6 +330,11 @@ function inject (bot, wrap) {
       await Promise.race([Promise.all([detectChildJoin(), runExampleOnReady()]), childDied])
     } catch (err) {
       console.log(err)
+      // Relaunching under the same name makes the server kick the dead session.
+      if (err.serverNotReading && attempt < 3) {
+        await closeExample()
+        return runExample(file, run, attempt + 1)
+      }
       return closeExample(err)
     }
     return closeExample()
