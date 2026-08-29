@@ -51,12 +51,11 @@ module.exports = () => async (bot) => {
   // The furnace only completes on cookTime == totalCookTime (not >=), so the
   // merged value must stay below 200.
   const { x, y, z } = furnacePos
-  if (bot.registry.version['>=']('1.21.4')) {
-    bot.chat(`/data merge block ${x} ${y} ${z} {cooking_time_spent:195s}`)
-  } else if (bot.registry.version['>=']('1.13')) {
-    bot.chat(`/data merge block ${x} ${y} ${z} {CookTime:195s}`)
+  const cookTimeKey = bot.supportFeature('furnaceNbtUsesSnakeCase') ? 'cooking_time_spent' : 'CookTime'
+  if (bot.supportFeature('hasDataCommand')) {
+    bot.chat(`/data merge block ${x} ${y} ${z} {${cookTimeKey}:195s}`)
   } else {
-    bot.chat(`/blockdata ${x} ${y} ${z} {CookTime:195s}`)
+    bot.chat(`/blockdata ${x} ${y} ${z} {${cookTimeKey}:195s}`)
   }
   // The 5 remaining ticks complete in 250-320ms on every tested version; a
   // timeout means the merge was silently ignored.
