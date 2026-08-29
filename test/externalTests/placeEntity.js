@@ -97,5 +97,19 @@ module.exports = (version) => {
     await once(bot, 'entityGone')
   })
 
+  addTest('place item_frame', async (bot) => {
+    if (!bot.registry.itemsByName.item_frame) return
+    await bot.test.setBlock({ z: 2, relative: true, blockName: 'stone' })
+    await bot.test.awaitItemReceived(`/give ${bot.username} item_frame`)
+    const referenceBlock = bot.blockAt(bot.entity.position.offset(0, 0, 2))
+    const faceVector = new Vec3(0, 0, -1)
+    await bot.equip(bot.registry.itemsByName.item_frame.id, 'hand')
+    const frame = await bot.placeEntity(referenceBlock, faceVector)
+    assert(frame !== null)
+    const expectedName = bot.supportFeature('entityNameUpperCaseNoUnderscore') ? 'ItemFrame' : 'item_frame'
+    assert.strictEqual(frame.name, expectedName)
+    await bot.test.setBlock({ z: 2, blockName: 'air', relative: true })
+  })
+
   return tests
 }
