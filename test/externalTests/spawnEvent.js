@@ -1,5 +1,5 @@
 const mineflayer = require('mineflayer')
-const { once } = require('../../lib/promise_utils')
+const { once, onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   // Test spawn event on login
@@ -13,11 +13,17 @@ module.exports = () => async (bot) => {
       version: bot.version
     })
     await once(spawnBot, 'spawn')
+    // spawnbot logs in at the world spawn, possibly out of flatbot's view, so
+    // its entity metadata is no proof of life; a chat line reaching flatbot is.
+    spawnBot.chat('spawnbot-alive')
     try {
-      await bot.test.serverReads(spawnBot.username)
+      await onceWithCleanup(bot, 'chat', {
+        timeout: 3000,
+        checkCondition: (username, message) => username === spawnBot.username && message === 'spawnbot-alive'
+      })
       break
     } catch (err) {
-      if (attempt >= 3) throw err
+      if (attempt >= 3) throw new Error(`server is not reading ${spawnBot.username}'s socket`)
       spawnBot.end()
     }
   }
