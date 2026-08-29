@@ -1948,6 +1948,7 @@ Denies resource pack.
 #### bot.placeBlock(referenceBlock, faceVector)
 
 This function returns a `Promise`, with `void` as its argument when the server confirms that the block has indeed been placed.
+It rejects as soon as the server refuses the placement (for example because an entity is in the way).
 
  * `referenceBlock` - the block you want to place a new block next to
  * `faceVector` - one of the six cardinal directions, such as `new Vec3(0, 1, 0)` for the top face,
