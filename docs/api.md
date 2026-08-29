@@ -1044,6 +1044,8 @@ Number in the range [0, 20] representing the number of water-icons known as oxyg
 Edit these numbers to tweak gravity, jump speed, terminal velocity, etc.
 Do this at your own risk.
 
+`bot.physics.physicsIntervalMs` is the current physics tick interval in milliseconds. To change it, call `bot.physics.setPhysicsIntervalMs(value)`.
+
 #### bot.fireworkRocketDuration
 
 How many physics ticks worth of firework rocket boost are left.
