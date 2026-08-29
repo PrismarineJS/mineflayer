@@ -75,7 +75,7 @@ module.exports = (version) => {
     const name = bot.supportFeature('entityNameUpperCaseNoUnderscore') ? 'Zombie' : 'zombie'
     const entity = bot.nearestEntity(o => o.name === name)
     assert(entity?.name === name)
-    await bot.test.killEntity(entity) // instead of bot.attack(), which takes more than one hit
+    await bot.test.killEntity(entity)
   })
 
   addTest('place armor stand', async (bot) => {
