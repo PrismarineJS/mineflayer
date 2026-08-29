@@ -484,6 +484,8 @@ This function returns a `Promise`, with `void` as its argument when done withdra
 
 #### window.close()
 
+Close the `window`; returns the `Promise` from [bot.closeWindow(window)](#botclosewindowwindow).
+
 ### Recipe
 
 See [prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe)
