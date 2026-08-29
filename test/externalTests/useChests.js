@@ -151,12 +151,12 @@ module.exports = () => async (bot) => {
     for (const { slot, name, count } of layout) {
       const item = bot.registry.itemsByName[name]
       assert.ok(item, `${name} should exist on this version`)
-      if (bot.registry.version['>=']('1.17')) {
+      if (bot.supportFeature('hasItemCommand')) {
         bot.chat(`/item replace block ${at} container.${slot} with ${name} ${count}`)
-      } else if (bot.registry.version['>=']('1.13')) {
-        bot.chat(`/replaceitem block ${at} container.${slot} ${name} ${count}`)
-      } else {
+      } else if (bot.supportFeature('replaceItemSlotIsPrefixed')) {
         bot.chat(`/replaceitem block ${at} slot.container.${slot} minecraft:${name} ${count}`)
+      } else {
+        bot.chat(`/replaceitem block ${at} container.${slot} ${name} ${count}`)
       }
     }
   }
