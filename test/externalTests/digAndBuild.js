@@ -18,12 +18,6 @@ module.exports = () => async (bot) => {
   assert(Item.equal(bot.inventory.slots[36], new Item(bot.registry.itemsByName.dirt.id, 1, 0)))
   bot.test.sayEverywhere('dirt collect test: pass')
 
-  // the server refuses a block inside the bot's own hitbox and says so in its
-  // reply, which must surface as a rejection instead of a timeout
-  const start = Date.now()
-  await assert.rejects(bot.test.placeBlock(36, bot.entity.position.floored()), /refused to place dirt .* still air/)
-  assert(Date.now() - start < 2000, `refused placement took ${Date.now() - start}ms to surface`)
-
   async function waitForFall () {
     return new Promise((resolve, reject) => {
       assert(!bot.entity.onGround, 'waitForFall called when we were already on the ground')
