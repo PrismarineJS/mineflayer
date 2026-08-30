@@ -24,10 +24,11 @@ module.exports = () => async (bot) => {
   await bot.test.setInventorySlot(18, new Item(bot.registry.itemsByName.book.id, 11, 0))
 
   // A command block is needed to spawn the villager due to the chat's character limit in some versions
-  bot.test.sayEverywhere(`/setblock ${commandBlockPos.toArray().join(' ')} command_block`)
-  await bot.test.wait(500)
+  await bot.test.setBlock({ ...commandBlockPos, blockName: 'command_block' })
+  // The server echoes the command block (an unchanged block_change) once the command is set
+  const commandSet = once(bot.world, `blockUpdate:${commandBlockPos}`)
   bot.setCommandBlock(commandBlockPos, summonCommand)
-  await bot.test.wait(500)
+  await commandSet
   bot.test.sayEverywhere(`/setblock ${redstoneBlockPos.toArray().join(' ')} redstone_block`) // Activate the command block
 
   const [entity] = await once(bot, 'entitySpawn')
