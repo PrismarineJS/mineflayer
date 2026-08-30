@@ -67,6 +67,18 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      # Per-test durations from the last master run of this version group, so a PR
+      # can be failed if it makes a test more than 1.5x slower (test/common/compareDurations.js).
+      - name: Restore duration baseline
+        uses: actions/cache/restore@v4
+        with:
+          path: durations
+          key: durations-${{ strategy.job-index }}-${{ github.sha }}
+          restore-keys: durations-${{ strategy.job-index }}-
+      - run: |
+          mv durations baseline 2>/dev/null || mkdir -p baseline
+          mkdir -p durations
+
       - name: Start Tests
         run: |
           exit_code=0
@@ -74,7 +86,7 @@ jobs:
           for v in ${{ matrix.versions }}; do
             # TRACE is cheap (<1% runtime) and only written by the harness bot,
             # so always record a packet trace for post-mortem analysis.
-            TRACE="trace-${v}.jsonl" npm run mocha_test -- --retries 3 -g "${v}v" > "test-${v}.log" 2>&1 &
+            TRACE="trace-${v}.jsonl" DURATIONS="durations/durations-${v}.json" npm run mocha_test -- --retries 3 -g "${v}v" > "test-${v}.log" 2>&1 &
             pids="$pids $!"
           done
           for pid in $pids; do
@@ -109,6 +121,16 @@ jobs:
             fi
           done
           exit $exit_code
+
+      - name: Compare test durations against master
+        run: node test/common/compareDurations.js baseline durations
+
+      - name: Save duration baseline
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: actions/cache/save@v4
+        with:
+          path: durations
+          key: durations-${{ strategy.job-index }}-${{ github.sha }}
 
       - name: Upload failed versions' logs and traces
         if: failure()
