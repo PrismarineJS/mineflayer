@@ -245,13 +245,14 @@ function inject (bot, wrap) {
   // login race can leave a socket the server never reads again, and console
   // commands still reach that bot, so this echo is the only proof of life.
   async function serverReads (username, timeoutMs = 3000) {
-    const deadline = Date.now() + timeoutMs
-    while (Date.now() < deadline) {
-      const metadata = bot.players[username]?.entity?.metadata
-      if (metadata && Object.values(metadata).includes(127)) return
-      await sleep(50)
+    const echoed = entity => entity?.username === username && Object.values(entity.metadata).includes(127)
+    // The echo usually lands before this gate runs, so check before listening.
+    if (echoed(bot.players[username]?.entity)) return
+    try {
+      await onceWithCleanup(bot, 'entityUpdate', { timeout: timeoutMs, checkCondition: echoed })
+    } catch {
+      throw Object.assign(new Error(`server is not reading ${username}'s socket`), { serverNotReading: true })
     }
-    throw Object.assign(new Error(`server is not reading ${username}'s socket`), { serverNotReading: true })
   }
 
   async function runExample (file, run, attempt = 1) {
