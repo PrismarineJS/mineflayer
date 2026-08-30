@@ -120,8 +120,12 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
           trace.log('server jar downloaded, starting server')
           propOverrides['server-port'] = PORT
+          if (process.env.LEVEL_SEED) propOverrides['level-seed'] = process.env.LEVEL_SEED
           wrap.startServer(propOverrides, (err) => {
             if (err) return done(err)
+            // The seed is otherwise unrecoverable from a failed run: the log never
+            // prints it and the login packet only carries a hash of it.
+            wrap.writeServer('seed\n')
             console.log(`pinging ${version.minecraftVersion} port : ${PORT}`)
             trace.log('server started, pinging')
             pingUntilReady(PORT, '127.0.0.1', supportedVersion).then(results => {
