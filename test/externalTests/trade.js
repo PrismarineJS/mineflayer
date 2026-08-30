@@ -19,12 +19,18 @@ module.exports = () => async (bot) => {
   const commandBlockPos = bot.entity.position.offset(0.5, 0, 0.5)
   const redstoneBlockPos = commandBlockPos.offset(1, 0, 0)
 
-  let shouldHaveEmeralds = 0
-  for (let slot = 9; slot <= 10; slot += 1) {
-    await bot.test.setInventorySlot(slot, new Item(bot.registry.itemsByName.emerald.id, 64, 0))
-    shouldHaveEmeralds += 64
-  }
-  await bot.test.setInventorySlot(18, new Item(bot.registry.itemsByName.book.id, trades, 0))
+  // One stack per deposit, in the order the trades consume them: transfer takes
+  // the first matching stack, so every deposit is a single pick-up and place
+  // instead of splitting a bigger stack one right click at a time.
+  const emeraldPrice1 = testFluctuations ? 4 : 2
+  const emeraldStacks = [emeraldPrice1, 2, 1, 36].flatMap(price => Array(trades).fill(price))
+  const bookStacks = Array(trades).fill(1)
+  let shouldHaveEmeralds = emeraldStacks.reduce((a, b) => a + b, 0)
+  // Set the slots concurrently: on versions without a creative slot ack each set waits 400ms for a rejection.
+  await Promise.all([
+    ...emeraldStacks.map((count, i) => bot.test.setInventorySlot(9 + i, new Item(bot.registry.itemsByName.emerald.id, count, 0))),
+    ...bookStacks.map((count, i) => bot.test.setInventorySlot(9 + emeraldStacks.length + i, new Item(bot.registry.itemsByName.book.id, count, 0)))
+  ])
 
   // A command block is needed to spawn the villager due to the chat's character limit in some versions
   await bot.test.setBlock({ ...commandBlockPos, blockName: 'command_block' })
