@@ -41,6 +41,7 @@ function inject (bot, wrap) {
   bot.test.runExample = runExample
   bot.test.tellAndListen = tellAndListen
   bot.test.selfKill = selfKill
+  bot.test.killEntity = killEntity
   bot.test.wait = function (ms) {
     return new Promise((resolve) => { setTimeout(resolve, ms) })
   }
@@ -320,6 +321,14 @@ function inject (bot, wrap) {
 
   function selfKill () {
     bot.chat('/kill @p')
+  }
+
+  // /kill only starts the death animation; until the server removes the
+  // entity about a second later it still blocks placing blocks where it stands
+  async function killEntity (entity) {
+    const gone = onceWithCleanup(bot, 'entityGone', { timeout: 5000, checkCondition: (e) => e.id === entity.id })
+    bot.chat(`/kill @e[type=${entity.name}]`)
+    await gone
   }
 
   // Debug packet IO when tests are re-run with "Enable debug logging" - https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables

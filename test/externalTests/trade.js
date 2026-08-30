@@ -141,5 +141,5 @@ module.exports = () => async (bot) => {
 
   assert.rejects(bot.trade(villager, 1, 1)) // Shouldn't be able, the trade is blocked!
   villager.close()
-  bot.test.sayEverywhere(`/kill @e[type=${villagerType}]`)
+  await bot.test.killEntity(entity)
 }
