@@ -85,13 +85,14 @@ function inject (bot, wrap) {
 
   async function resetBlocksToSuperflat () {
     const groundY = 4
+    const center = bot.entity.position.floored()
     for (let y = groundY + 4; y >= groundY - 1; y--) {
       const realY = y + bot.test.groundY - 4
       bot.chat(`/fill ~-5 ${realY} ~-5 ~5 ${realY} ~5 ` + layerNames[y])
     }
-    // The fills are fire-and-forget; a marker chat message on the same
-    // ordered connection confirms they have executed and their block updates
-    // have already arrived, without assuming how long a server tick takes.
+    // The marker echo only proves the fills executed: command feedback is
+    // sent immediately while block changes flush at tick end, so the client
+    // can still hold pre-fill blocks after the echo.
     const marker = 'superflat-reset-done'
     const echo = onceWithCleanup(bot, 'messagestr', {
       timeout: 5000,
@@ -99,6 +100,31 @@ function inject (bot, wrap) {
     })
     bot.chat(marker)
     await echo
+    const staleBlock = () => {
+      for (let y = groundY + 4; y >= groundY - 1; y--) {
+        const realY = y + bot.test.groundY - 4
+        const want = layerNames[y]
+        if (!want) continue
+        for (let dx = -5; dx <= 5; dx++) {
+          for (let dz = -5; dz <= 5; dz++) {
+            const block = bot.blockAt(new Vec3(center.x + dx, realY, center.z + dz))
+            if (!block || block.name !== want) return `${center.x + dx},${realY},${center.z + dz} is ${block?.name ?? 'unloaded'}, expected ${want}`
+          }
+        }
+      }
+      return null
+    }
+    const deadline = Date.now() + 5000
+    let stale
+    while ((stale = staleBlock()) !== null) {
+      if (Date.now() > deadline) throw new Error(`world not reset: ${stale}`)
+      // Corrections arrive as block updates or, past 64 changed blocks per
+      // section, as a chunk resend, so wait on whichever comes first.
+      await Promise.race([
+        onceWithCleanup(bot.world, 'blockUpdate', { timeout: 1000 }),
+        onceWithCleanup(bot.world, 'chunkColumnLoad', { timeout: 1000 })
+      ]).catch(() => {})
+    }
   }
 
   async function placeBlock (slot, position) {
