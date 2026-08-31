@@ -108,21 +108,33 @@ function inject (bot, wrap) {
         for (let dx = -5; dx <= 5; dx++) {
           for (let dz = -5; dz <= 5; dz++) {
             const block = bot.blockAt(new Vec3(center.x + dx, realY, center.z + dz))
-            if (!block || block.name !== want) return `${center.x + dx},${realY},${center.z + dz} is ${block?.name ?? 'unloaded'}, expected ${want}`
+            if (!block || block.name !== want) {
+              return { pos: `${center.x + dx} ${realY} ${center.z + dz}`, want, desc: `${center.x + dx},${realY},${center.z + dz} is ${block?.name ?? 'unloaded'}, expected ${want}` }
+            }
           }
         }
       }
       return null
     }
     const deadline = Date.now() + 5000
+    let resyncAt = Date.now() + 1500
     let stale
     while ((stale = staleBlock()) !== null) {
-      if (Date.now() > deadline) throw new Error(`world not reset: ${stale}`)
+      if (Date.now() > deadline) throw new Error(`world not reset: ${stale.desc}`)
+      if (Date.now() > resyncAt) {
+        // A test can leave the client desynced on a block the server no
+        // longer has (e.g. a sign destroyed in the tick of its own editor
+        // interact), and then no correction ever comes. Two real changes
+        // force the server to rebroadcast the block either way.
+        bot.chat(`/setblock ${stale.pos} bedrock`)
+        bot.chat(`/setblock ${stale.pos} ${stale.want}`)
+        resyncAt = Date.now() + 1500
+      }
       // Corrections arrive as block updates or, past 64 changed blocks per
       // section, as a chunk resend, so wait on whichever comes first.
       await Promise.race([
-        onceWithCleanup(bot.world, 'blockUpdate', { timeout: 1000 }),
-        onceWithCleanup(bot.world, 'chunkColumnLoad', { timeout: 1000 })
+        onceWithCleanup(bot.world, 'blockUpdate', { timeout: 500 }),
+        onceWithCleanup(bot.world, 'chunkColumnLoad', { timeout: 500 })
       ]).catch(() => {})
     }
   }

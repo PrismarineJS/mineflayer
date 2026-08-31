@@ -23,9 +23,14 @@ module.exports = () => async (bot) => {
         assert.strictEqual(sign.signText.trimEnd(), '1\n2\n3')
 
         if (sign.blockEntity) {
-          // Check block update
-          bot.activateBlock(sign)
-          assert.notStrictEqual(sign.blockEntity, undefined)
+          // Awaited so the interact is at least on the wire before the next
+          // test's reset; on 1.20+ (editable signs) it can still share a tick
+          // with the reset fills and desync the client, which the reset's
+          // resync path repairs.
+          resolve(bot.activateBlock(sign).then(() => {
+            assert.notStrictEqual(sign.blockEntity, undefined)
+          }))
+          return
         }
 
         resolve()
