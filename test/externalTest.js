@@ -126,6 +126,15 @@ for (const supportedVersion of mineflayer.testedVersions) {
             // The seed is otherwise unrecoverable from a failed run: the log never
             // prints it and the login packet only carries a hash of it.
             wrap.writeServer('seed\n')
+            // The nether test's portal travel otherwise generates these chunks
+            // synchronously on the main thread while its clock runs. forceload
+            // itself blocks the main thread until every chunk is FULL, so it
+            // must run before the bot connects; pings are served off-thread,
+            // so the stall stays inside this hook's budget. 7x7 chunks covers
+            // the portal placement scan and every chunk the test's waits touch.
+            if (registry.supportFeature('hasExecuteCommand')) {
+              wrap.writeServer('execute in minecraft:the_nether run forceload add -48 -48 63 63\n')
+            }
             console.log(`pinging ${version.minecraftVersion} port : ${PORT}`)
             trace.log('server started, pinging')
             pingUntilReady(PORT, '127.0.0.1', supportedVersion).then(results => {

@@ -33,6 +33,30 @@ module.exports = () => async (bot) => {
     lowerBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
   }
 
+  // The tp lands while the client is still streaming pre-tp positions; the
+  // server rolls each one back ("moved too quickly") and silently drops
+  // use_item packets until the last rollback is confirmed (handleUseItemOn
+  // requires awaitingPositionFromClient == null). A chat echo round trip
+  // that sees no new rollback proves every confirm was processed, so no
+  // placement sent after it can be dropped.
+  let rollbacks = 0
+  const countRollbacks = () => rollbacks++
+  bot.on('forcedMove', countRollbacks)
+  try {
+    for (let seen = -1; seen !== rollbacks;) {
+      seen = rollbacks
+      const marker = `position-settled-${attempt}-${seen}`
+      const echo = onceWithCleanup(bot, 'messagestr', {
+        timeout: 5000,
+        checkCondition: (message) => message.includes(marker)
+      })
+      bot.chat(marker)
+      await echo
+    }
+  } finally {
+    bot.off('forcedMove', countRollbacks)
+  }
+
   await bot.lookAt(lowerBlock.position, true)
   await bot.test.setInventorySlot(36, new Item(signItem.id, 1, 0))
   const signOpen = onceWithCleanup(bot, 'signOpen', { timeout: 5000 })
