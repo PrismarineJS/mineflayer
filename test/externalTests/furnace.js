@@ -1,4 +1,5 @@
 const assert = require('assert')
+const { onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
@@ -42,8 +43,12 @@ module.exports = () => async (bot) => {
   assert.strictEqual(furnace.inputItem().type, porkchopId)
   assert.strictEqual(furnace.inputItem().count, porkchopInputCount)
 
-  // Wait and take the output and inputs
-  await bot.test.wait(500)
+  // Burning starts on the next server tick; the window properties carrying
+  // fuel and progress arrive as furnace updates, not with the item packets.
+  await onceWithCleanup(furnace, 'update', {
+    timeout: 5000,
+    checkCondition: () => furnace.fuel > 0 && furnace.fuel < 1 && furnace.progress > 0 && furnace.progress < 1
+  })
   assert(furnace.fuel > 0 && furnace.fuel < 1)
   assert(furnace.progress > 0 && furnace.progress < 1)
 
@@ -62,8 +67,6 @@ module.exports = () => async (bot) => {
   await furnace.takeInput()
   await furnace.takeFuel()
   furnace.close()
-
-  await bot.test.wait(500)
 
   // Check inventory
   const cookedPorkchopCount = bot.inventory.count(cookedPorkchopId)

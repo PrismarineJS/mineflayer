@@ -1,5 +1,6 @@
 const { Vec3 } = require('vec3')
 const assert = require('assert')
+const { onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const groundY = bot.test.groundY
@@ -8,6 +9,15 @@ module.exports = () => async (bot) => {
   const testZ = 10
   const floorY = groundY
 
+  // Command feedback is sent immediately while block changes flush at tick
+  // end, so a chat echo does not prove the fill's updates arrived; the probe
+  // block reaching its expected state does.
+  const untilBlockIs = async (pos, names) => {
+    const reached = () => names.includes(bot.blockAt(pos)?.name)
+    if (reached()) return
+    await onceWithCleanup(bot.world, 'blockUpdate', { timeout: 5000, checkCondition: reached })
+  }
+
   // --- Setup: teleport and prepare the area ---
   await bot.test.becomeCreative()
   await bot.test.teleport(new Vec3(testX, floorY + 2, testZ))
@@ -15,9 +25,8 @@ module.exports = () => async (bot) => {
 
   // Clear the test area and place a solid floor
   bot.chat(`/fill ${testX - 2} ${floorY} ${testZ - 2} ${testX + 2} ${floorY + 5} ${testZ + 2} air`)
-  await bot.test.wait(500)
   bot.chat(`/fill ${testX - 2} ${floorY} ${testZ - 2} ${testX + 2} ${floorY} ${testZ + 2} stone`)
-  await bot.test.wait(500)
+  await untilBlockIs(new Vec3(testX, floorY, testZ), ['stone'])
 
   // Place a dirt block for digTime testing
   const digBlockPos = new Vec3(testX + 1, floorY + 1, testZ)
@@ -25,7 +34,6 @@ module.exports = () => async (bot) => {
 
   // Teleport bot to the test position
   await bot.test.teleport(new Vec3(testX, floorY + 1, testZ))
-  await bot.test.wait(500)
 
   // === Test 1: No water around bot - eye-level block should not be water ===
   const eyeBlock1 = bot._getBlockAtEyeLevel()
@@ -34,8 +42,9 @@ module.exports = () => async (bot) => {
     'Eye-level block should not be water when area is dry')
 
   // === Test 2: Fill water column around bot - eye-level block should be water ===
+  const eyePos = new Vec3(testX, floorY + 2, testZ)
   bot.chat(`/fill ${testX} ${floorY + 1} ${testZ} ${testX} ${floorY + 4} ${testZ} water`)
-  await bot.test.wait(500)
+  await untilBlockIs(eyePos, ['water', 'flowing_water'])
 
   const eyeBlock2 = bot._getBlockAtEyeLevel()
   bot.test.sayEverywhere(`Test 2 (submerged): eye-level block = ${eyeBlock2?.name ?? 'null'}`)
@@ -47,12 +56,11 @@ module.exports = () => async (bot) => {
   // at eye level instead of using bot.entity.isInWater
   // Clear water and restore dirt
   bot.chat(`/fill ${testX - 1} ${floorY + 1} ${testZ - 1} ${testX + 1} ${floorY + 5} ${testZ + 1} air`)
-  await bot.test.wait(500)
+  await untilBlockIs(digBlockPos, ['air'])
+  await untilBlockIs(eyePos, ['air'])
   await bot.test.setBlock({ x: digBlockPos.x, y: digBlockPos.y, z: digBlockPos.z, blockName: 'dirt' })
-  await bot.test.wait(300)
 
   await bot.test.becomeSurvival()
-  await bot.test.wait(500)
 
   const block = bot.blockAt(digBlockPos)
   assert(block && block.name !== 'air', 'Expected a dirt block to measure digTime')
@@ -73,7 +81,6 @@ module.exports = () => async (bot) => {
   // Cleanup
   await bot.test.becomeCreative()
   bot.chat(`/fill ${testX - 2} ${floorY + 1} ${testZ - 2} ${testX + 2} ${floorY + 5} ${testZ + 2} air`)
-  await bot.test.wait(200)
 
   bot.test.sayEverywhere('digWaterSpeed: all tests passed')
 }
