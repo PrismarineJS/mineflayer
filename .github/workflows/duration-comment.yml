@@ -1,0 +1,41 @@
+name: Duration comment
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+permissions:
+  actions: read
+  pull-requests: write
+
+jobs:
+  comment:
+    if: github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: slower-*
+          merge-multiple: true
+          path: slower
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs')
+            if (!fs.existsSync('slower/pr')) return
+            const issue_number = Number(fs.readFileSync('slower/pr', 'utf8'))
+            const lines = fs.readdirSync('slower').filter(f => f.endsWith('.txt')).sort()
+              .flatMap(f => fs.readFileSync(`slower/${f}`, 'utf8').trimEnd().split('\n'))
+            const marker = '<!-- slower-tests -->'
+            const { owner, repo } = context.repo
+            const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number })
+            const existing = comments.find(c => c.body.startsWith(marker))
+            if (lines.length === 0 && !existing) return
+            const body = lines.length === 0
+              ? `${marker}\nNo tests are more than 1.5x slower than master anymore.`
+              : `${marker}\nTests more than 1.5x slower than master (durations are noisy, so this is informational):\n\`\`\`\n${lines.join('\n')}\n\`\`\``
+            if (existing) await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body })
+            else await github.rest.issues.createComment({ owner, repo, issue_number, body })
