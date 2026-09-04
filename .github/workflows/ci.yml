@@ -67,8 +67,8 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      # Per-test durations from the last master run of this version group, so a PR
-      # can be failed if it makes a test more than 1.5x slower (test/common/compareDurations.js).
+      # Per-test durations from the last master run of this version group, so a PR gets a
+      # comment listing tests it made more than 1.5x slower (test/common/compareDurations.js).
       - name: Restore duration baseline
         uses: actions/cache/restore@v4
         with:
@@ -123,7 +123,19 @@ jobs:
           exit $exit_code
 
       - name: Compare test durations against master
-        run: node test/common/compareDurations.js baseline durations
+        run: |
+          mkdir -p slower
+          echo "${{ github.event.pull_request.number }}" > slower/pr
+          node test/common/compareDurations.js baseline durations "slower/${{ strategy.job-index }}.txt"
+
+      # Fork PRs get a read-only token, so the comment is posted by
+      # duration-comment.yml from this artifact instead of from here.
+      - name: Upload slower tests for the PR comment
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: slower-${{ strategy.job-index }}
+          path: slower
 
       - name: Save duration baseline
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
