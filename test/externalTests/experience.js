@@ -1,9 +1,8 @@
 const assert = require('assert')
-const { once } = require('../../lib/promise_utils')
+const { onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   await bot.test.becomeSurvival()
-  await bot.test.wait(1000)
 
   // Initial state
   const initialState = {
@@ -21,7 +20,9 @@ module.exports = () => async (bot) => {
     : `/xp add ${bot.username} 10 points`
 
   await bot.chat(xpCommand)
-  await once(bot, 'experience')
+  // A stale experience packet can arrive between the command and the event;
+  // wait for the state the command produces, not for any event.
+  await onceWithCleanup(bot, 'experience', { timeout: 5000, checkCondition: () => bot.experience.points >= initialState.points + 10 })
 
   // Verify after points
   assert(bot.experience.points >= 10, 'Experience points should be at least 10 after adding points')
@@ -34,7 +35,7 @@ module.exports = () => async (bot) => {
     : `/xp add ${bot.username} 100 levels`
 
   await bot.chat(levelCommand)
-  await once(bot, 'experience')
+  await onceWithCleanup(bot, 'experience', { timeout: 5000, checkCondition: () => bot.experience.level >= initialState.level + 100 })
 
   // Verify after levels
   assert(bot.experience.level >= 100, 'Experience level should be at least 100 after adding levels')
