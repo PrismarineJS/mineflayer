@@ -29,6 +29,7 @@ for (const file of fs.readdirSync(currentDir).filter(f => f.startsWith('duration
   }
 }
 if (slower.length > 0) {
-  console.log(`\n${slower.length} test(s) got more than ${FACTOR}x slower than master`)
+  console.log(`\n${slower.length} test(s) got more than ${FACTOR}x slower than master:`)
+  for (const line of slower) console.log(`  SLOWER ${line}`)
   fs.writeFileSync(slowerFile, slower.join('\n') + '\n')
 }
