@@ -4,24 +4,33 @@ const { once } = require('../../lib/promise_utils')
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
 
+  const maxUses = 3
+  const trades = maxUses - 1 // each trade starts with one use spent
+
   const villagerType = bot.registry.entitiesByName.villager ? 'villager' : 'Villager'
   const testFluctuations = bot.supportFeature('selectingTradeMovesItems')
   // Item stacks are components on 1.20.5+; the NBT-era key is silently ignored.
   const countKey = bot.registry.version['>=']('1.20.5') ? 'count' : 'Count'
 
   const summonCommand = bot.supportFeature('indexesVillagerRecipes')
-    ? `/summon ${villagerType} ~ ~1 ~ {NoAI:1, Offers:{Recipes:[0:{maxUses:12,buy:{id:"minecraft:emerald",${countKey}:2},sell:{id:"minecraft:pumpkin_pie",${countKey}:2},uses: 1},1:{maxUses:12,buy:{id:"minecraft:emerald",${countKey}:2},buyB:{id:"minecraft:pumpkin_pie",${countKey}:2},sell:{id:"minecraft:wheat",${countKey}:2}, uses:1},2:{maxUses:12,buy:{id:"minecraft:emerald",${countKey}:1},sell:{id:"minecraft:glass",${countKey}:4},uses: 1},3:{maxUses:12,buy:{id:"minecraft:emerald",${countKey}:36},buyB:{id:"minecraft:book",${countKey}:1},sell:{id:"minecraft:wooden_sword",${countKey}:1},uses: 1}]}}`
-    : `/summon ${villagerType} ~ ~1 ~ {NoAI:1, Offers:{Recipes:[{maxUses:12,buy:{id:"minecraft:emerald",${countKey}:2},sell:{id:"minecraft:pumpkin_pie",${countKey}:2},${testFluctuations ? 'demand:60,priceMultiplier:0.05f,specialPrice:-4,' : ''}uses: 1},{maxUses:12,buy:{id:"minecraft:emerald",${countKey}:2},buyB:{id:"minecraft:pumpkin_pie",${countKey}:2},sell:{id:"minecraft:wheat",${countKey}:2}, uses:1},{maxUses:12,buy:{id:"minecraft:emerald",${countKey}:1},sell:{id:"minecraft:glass",${countKey}:4},uses: 1},{maxUses:12,buy:{id:"minecraft:emerald",${countKey}:36},buyB:{id:"minecraft:book",${countKey}:1},sell:{id:"minecraft:wooden_sword",${countKey}:1},uses: 1}]}}`
+    ? `/summon ${villagerType} ~ ~1 ~ {NoAI:1, Offers:{Recipes:[0:{maxUses:${maxUses},buy:{id:"minecraft:emerald",${countKey}:2},sell:{id:"minecraft:pumpkin_pie",${countKey}:2},uses: 1},1:{maxUses:${maxUses},buy:{id:"minecraft:emerald",${countKey}:2},buyB:{id:"minecraft:pumpkin_pie",${countKey}:2},sell:{id:"minecraft:wheat",${countKey}:2}, uses:1},2:{maxUses:${maxUses},buy:{id:"minecraft:emerald",${countKey}:1},sell:{id:"minecraft:glass",${countKey}:4},uses: 1},3:{maxUses:${maxUses},buy:{id:"minecraft:emerald",${countKey}:36},buyB:{id:"minecraft:book",${countKey}:1},sell:{id:"minecraft:wooden_sword",${countKey}:1},uses: 1}]}}`
+    : `/summon ${villagerType} ~ ~1 ~ {NoAI:1, Offers:{Recipes:[{maxUses:${maxUses},buy:{id:"minecraft:emerald",${countKey}:2},sell:{id:"minecraft:pumpkin_pie",${countKey}:2},${testFluctuations ? 'demand:60,priceMultiplier:0.05f,specialPrice:-4,' : ''}uses: 1},{maxUses:${maxUses},buy:{id:"minecraft:emerald",${countKey}:2},buyB:{id:"minecraft:pumpkin_pie",${countKey}:2},sell:{id:"minecraft:wheat",${countKey}:2}, uses:1},{maxUses:${maxUses},buy:{id:"minecraft:emerald",${countKey}:1},sell:{id:"minecraft:glass",${countKey}:4},uses: 1},{maxUses:${maxUses},buy:{id:"minecraft:emerald",${countKey}:36},buyB:{id:"minecraft:book",${countKey}:1},sell:{id:"minecraft:wooden_sword",${countKey}:1},uses: 1}]}}`
 
   const commandBlockPos = bot.entity.position.offset(0.5, 0, 0.5)
   const redstoneBlockPos = commandBlockPos.offset(1, 0, 0)
 
-  let shouldHaveEmeralds = 0
-  for (let slot = 9; slot <= 17; slot += 1) {
-    await bot.test.setInventorySlot(slot, new Item(bot.registry.itemsByName.emerald.id, 64, 0))
-    shouldHaveEmeralds += 64
-  }
-  await bot.test.setInventorySlot(18, new Item(bot.registry.itemsByName.book.id, 11, 0))
+  // One stack per deposit, in the order the trades consume them: transfer takes
+  // the first matching stack, so every deposit is a single pick-up and place
+  // instead of splitting a bigger stack one right click at a time.
+  const emeraldPrice1 = testFluctuations ? 4 : 2
+  const emeraldStacks = [emeraldPrice1, 2, 1, 36].flatMap(price => Array(trades).fill(price))
+  const bookStacks = Array(trades).fill(1)
+  let shouldHaveEmeralds = emeraldStacks.reduce((a, b) => a + b, 0)
+  // Set the slots concurrently: on versions without a creative slot ack each set waits 400ms for a rejection.
+  await Promise.all([
+    ...emeraldStacks.map((count, i) => bot.test.setInventorySlot(9 + i, new Item(bot.registry.itemsByName.emerald.id, count, 0))),
+    ...bookStacks.map((count, i) => bot.test.setInventorySlot(9 + emeraldStacks.length + i, new Item(bot.registry.itemsByName.book.id, count, 0)))
+  ])
 
   // A command block is needed to spawn the villager due to the chat's character limit in some versions
   bot.test.sayEverywhere(`/setblock ${commandBlockPos.toArray().join(' ')} command_block`)
@@ -51,10 +60,10 @@ module.exports = () => async (bot) => {
     assert.strictEqual(output.name, 'pumpkin_pie')
     assert.strictEqual(output.count, 2)
 
-    await bot.trade(villager, 0, 11)
-    shouldHaveEmeralds -= testFluctuations ? (2 * 2 * 11) : (2 * 11)
+    await bot.trade(villager, 0, trades)
+    shouldHaveEmeralds -= testFluctuations ? (2 * 2 * trades) : (2 * trades)
     assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.emerald.id), shouldHaveEmeralds)
-    assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.pumpkin_pie.id), 22)
+    assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.pumpkin_pie.id), 2 * trades)
   }
 
   // Handle trade #2 -- takes [2x emerald, 2x pumpkin_pie] and returns 2x wheat
@@ -73,11 +82,11 @@ module.exports = () => async (bot) => {
     assert.strictEqual(output.name, 'wheat')
     assert.strictEqual(output.count, 2)
 
-    await bot.trade(villager, 1, 11)
-    shouldHaveEmeralds -= 11 * 2
+    await bot.trade(villager, 1, trades)
+    shouldHaveEmeralds -= trades * 2
     assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.emerald.id), shouldHaveEmeralds)
     assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.pumpkin_pie.id), 0)
-    assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.wheat.id), 22)
+    assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.wheat.id), 2 * trades)
   }
 
   // Handle trade #3 -- takes 1x emerald and returns 4x glass
@@ -94,10 +103,10 @@ module.exports = () => async (bot) => {
     assert.strictEqual(output.name, 'glass')
     assert.strictEqual(output.count, 4)
 
-    await bot.trade(villager, 2, 11)
-    shouldHaveEmeralds -= 11
+    await bot.trade(villager, 2, trades)
+    shouldHaveEmeralds -= trades
     assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.emerald.id), shouldHaveEmeralds)
-    assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.glass.id), 44)
+    assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.glass.id), 4 * trades)
   }
 
   // Handle trade #4 -- takes [36x emerald, 1x book] and returns 1x wooden sword
@@ -116,16 +125,16 @@ module.exports = () => async (bot) => {
     assert.strictEqual(output.name, 'wooden_sword')
     assert.strictEqual(output.count, 1)
 
-    await bot.trade(villager, 3, 11)
-    shouldHaveEmeralds -= 11 * 36
+    await bot.trade(villager, 3, trades)
+    shouldHaveEmeralds -= trades * 36
     assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.emerald.id), shouldHaveEmeralds)
     assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.book.id), 0)
-    assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.wooden_sword.id), 11)
+    assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.wooden_sword.id), trades)
   }
 
   function verifyTrade (trade) {
     assert.strictEqual(trade.nbTradeUses, 1)
-    assert.strictEqual(trade.maximumNbTradeUses, 12)
+    assert.strictEqual(trade.maximumNbTradeUses, maxUses)
     assert.strictEqual(trade.tradeDisabled, false)
 
     const printCountInv = function (item) {
