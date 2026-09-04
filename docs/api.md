@@ -128,6 +128,7 @@
         - [bot.settings.skinParts.showHat - boolean](#botsettingsskinpartsshowhat---boolean)
       - [bot.settings.enableTextFiltering - boolean](#botsettingsenabletextfiltering---boolean)
       - [bot.settings.enableServerListing - boolean](#botsettingsenableserverlisting---boolean)
+      - [bot.settings.particleStatus - string](#botsettingsparticlestatus---string)
       - [bot.experience.level](#botexperiencelevel)
       - [bot.experience.points](#botexperiencepoints)
       - [bot.experience.progress](#botexperienceprogress)
@@ -827,6 +828,7 @@ Create and return an instance of the class bot.
  * [skinParts](#bot.settings.skinParts)
  * [enableTextFiltering](#bot.settings.enableTextFiltering)
  * [enableServerListing](#bot.settings.enableServerListing)
+ * [particleStatus](#bot.settings.particleStatus)
  * chatLengthLimit : the maximum amount of characters that can be sent in a single message. If this is not set, it will be 100 in < 1.11 and 256 in >= 1.11.
  * defaultChatPatterns: defaults to true, set to false to not add the patterns such as chat and whisper
 
@@ -1013,6 +1015,8 @@ If you have a cape you can turn it off by setting this to false.
 Unused, defaults to false in Notchian (Vanilla) client.
 #### bot.settings.enableServerListing - boolean
 This setting is sent to the server to determine whether the player should show up in server listings
+#### bot.settings.particleStatus - string
+Particle status sent to the server (1.21.3+): `all`, `decreased` or `minimal`. Defaults to `all`.
 #### bot.experience.level
 
 #### bot.experience.points
