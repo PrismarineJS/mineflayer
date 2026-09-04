@@ -1953,7 +1953,7 @@ This function returns a `Promise`, with `void` as its argument when the server c
  * `faceVector` - one of the six cardinal directions, such as `new Vec3(0, 1, 0)` for the top face,
    indicating which face of the `referenceBlock` to place the block against.
 
-The new block will be placed at `referenceBlock.position.plus(faceVector)`.
+The new block will be placed at `referenceBlock.position.plus(faceVector)`. Rejects immediately if that position is already occupied by a block the new one cannot replace (anything other than air, liquids, and replaceable plants such as grass or vines).
 
 #### bot.placeEntity(referenceBlock, faceVector)
 
