@@ -119,8 +119,10 @@ function inject (bot, wrap) {
   async function resetState () {
     await becomeCreative()
     bot.creative.startFlying()
-    const origin = new Vec3(0, bot.test.groundY, 0)
-    if (bot.entity.position.distanceTo(origin) >= 0.9) {
+    // Tests build in the columns around the origin: the bot must be on the
+    // origin block's centre, not merely within a block of it.
+    const origin = new Vec3(0.5, bot.test.groundY, 0.5)
+    if (bot.entity.position.distanceTo(origin) >= 0.1) {
       await teleport(origin)
       await bot.waitForChunksToLoad()
     }
@@ -213,15 +215,20 @@ function inject (bot, wrap) {
   }
 
   async function teleport (position) {
+    // Integer x/z land on the block centre. 'move' also fires for periodic
+    // position packets with no movement, so the wait must match the landing
+    // point exactly rather than a radius the bot may already be inside.
+    const centre = (v) => Number.isInteger(v) ? v + 0.5 : v
+    const landing = new Vec3(centre(position.x), position.y, centre(position.z))
     // Use server console for teleport — works even if bot is in a bad state
     if (bot.supportFeature('hasExecuteCommand')) {
-      wrap.writeServer(`execute in overworld run teleport ${bot.username} ${position.x} ${position.y} ${position.z}\n`)
+      wrap.writeServer(`execute in overworld run teleport ${bot.username} ${landing.x} ${landing.y} ${landing.z}\n`)
     } else {
-      wrap.writeServer(`tp ${bot.username} ${position.x} ${position.y} ${position.z}\n`)
+      wrap.writeServer(`tp ${bot.username} ${landing.x} ${landing.y} ${landing.z}\n`)
     }
     return onceWithCleanup(bot, 'move', {
       timeout,
-      checkCondition: () => bot.entity.position.distanceTo(position) < 0.9
+      checkCondition: () => bot.entity.position.distanceTo(landing) < 0.1
     })
   }
 
