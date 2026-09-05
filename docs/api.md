@@ -484,6 +484,8 @@ This function returns a `Promise`, with `void` as its argument when done withdra
 
 #### window.close()
 
+Close the `window`; returns the `Promise` from [bot.closeWindow(window)](#botclosewindowwindow).
+
 ### Recipe
 
 See [prismarine-recipe](https://github.com/PrismarineJS/prismarine-recipe)
@@ -2186,7 +2188,9 @@ Put the item at `slot` in the inventory.
 
 #### bot.closeWindow(window)
 
-Close the `window`.
+This function returns a `Promise`, with `void` as its argument once the server has acknowledged the close.
+
+Close the `window`. On 1.16.5 and below the server only learns which inventory slots the window changed on its next tick, so await this before anything else (a command, another player) touches those slots.
 
 #### bot.transfer(options)
 

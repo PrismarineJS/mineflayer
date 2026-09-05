@@ -59,5 +59,5 @@ module.exports = () => async (bot) => {
 
   assert.notStrictEqual(result.nbt, undefined)
 
-  enchantingTable.close()
+  await enchantingTable.close()
 }

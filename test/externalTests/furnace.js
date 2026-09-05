@@ -73,7 +73,7 @@ module.exports = () => async (bot) => {
   await furnace.takeOutput()
   await furnace.takeInput()
   await furnace.takeFuel()
-  furnace.close()
+  await furnace.close()
 
   await bot.test.wait(500)
 

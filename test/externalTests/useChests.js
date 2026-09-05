@@ -49,7 +49,7 @@ module.exports = () => async (bot) => {
       throw new Error(`unknown item ${name}`)
     }
     await chest.deposit(item.type, null, count)
-    chest.close()
+    await chest.close()
   }
 
   async function withdrawBones (chestLocation, count) {
@@ -63,7 +63,7 @@ module.exports = () => async (bot) => {
     await chest.withdraw(item.type, null, count)
     assert(chest.containerItems().length === 0)
     assert(chest.items().length > 0)
-    chest.close()
+    await chest.close()
   }
 
   await bot.test.setInventorySlot(chestSlot, new Item(bot.registry[blockItemsByName].chest.id, 3, 0))
@@ -107,7 +107,7 @@ module.exports = () => async (bot) => {
       await bot.test.wait(500)
 
       bot.removeListener('chestLidMove', handler)
-      chest.close()
+      await chest.close()
     }
   }
   const chest = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
@@ -265,6 +265,6 @@ module.exports = () => async (bot) => {
   }
   await testClickTransitions(window)
 
-  window.close()
+  await window.close()
   clearLargeChest()
 }
