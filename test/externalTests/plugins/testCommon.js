@@ -85,13 +85,14 @@ function inject (bot, wrap) {
 
   async function resetBlocksToSuperflat () {
     const groundY = 4
+    const center = bot.entity.position.floored()
     for (let y = groundY + 4; y >= groundY - 1; y--) {
       const realY = y + bot.test.groundY - 4
       bot.chat(`/fill ~-5 ${realY} ~-5 ~5 ${realY} ~5 ` + layerNames[y])
     }
-    // The fills are fire-and-forget; a marker chat message on the same
-    // ordered connection confirms they have executed and their block updates
-    // have already arrived, without assuming how long a server tick takes.
+    // The marker echo only proves the fills executed: command feedback is
+    // sent immediately while block changes flush at tick end, so the client
+    // can still hold pre-fill blocks after the echo.
     const marker = 'superflat-reset-done'
     const echo = onceWithCleanup(bot, 'messagestr', {
       timeout: 5000,
@@ -99,6 +100,43 @@ function inject (bot, wrap) {
     })
     bot.chat(marker)
     await echo
+    const staleBlock = () => {
+      for (let y = groundY + 4; y >= groundY - 1; y--) {
+        const realY = y + bot.test.groundY - 4
+        const want = layerNames[y]
+        if (!want) continue
+        for (let dx = -5; dx <= 5; dx++) {
+          for (let dz = -5; dz <= 5; dz++) {
+            const block = bot.blockAt(new Vec3(center.x + dx, realY, center.z + dz))
+            if (!block || block.name !== want) {
+              return { pos: `${center.x + dx} ${realY} ${center.z + dz}`, want, desc: `${center.x + dx},${realY},${center.z + dz} is ${block?.name ?? 'unloaded'}, expected ${want}` }
+            }
+          }
+        }
+      }
+      return null
+    }
+    const deadline = Date.now() + 5000
+    let resyncAt = Date.now() + 1500
+    let stale
+    while ((stale = staleBlock()) !== null) {
+      if (Date.now() > deadline) throw new Error(`world not reset: ${stale.desc}`)
+      if (Date.now() > resyncAt) {
+        // A test can leave the client desynced on a block the server no
+        // longer has (e.g. a sign destroyed in the tick of its own editor
+        // interact), and then no correction ever comes. Two real changes
+        // force the server to rebroadcast the block either way.
+        bot.chat(`/setblock ${stale.pos} bedrock`)
+        bot.chat(`/setblock ${stale.pos} ${stale.want}`)
+        resyncAt = Date.now() + 1500
+      }
+      // Corrections arrive as block updates or, past 64 changed blocks per
+      // section, as a chunk resend, so wait on whichever comes first.
+      await Promise.race([
+        onceWithCleanup(bot.world, 'blockUpdate', { timeout: 500 }),
+        onceWithCleanup(bot.world, 'chunkColumnLoad', { timeout: 500 })
+      ]).catch(() => {})
+    }
   }
 
   async function placeBlock (slot, position) {
