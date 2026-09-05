@@ -35,6 +35,24 @@ for (const version of testedVersions) {
       })
     }
 
+    for (const entityStatus of [2, 29]) {
+      it(`keeps using an item when the bot receives unrelated status ${entityStatus}`, () => {
+        const bot = createBot(registry)
+        bot.activateItem()
+        bot._client.emit('entity_status', { entityId: bot.entity.id, entityStatus })
+        assert.strictEqual(bot.usingHeldItem, true)
+        bot.deactivateItem()
+        assert.strictEqual(bot.usingHeldItem, false)
+      })
+    }
+
+    it('clears item use when the bot receives its death status', () => {
+      const bot = createBot(registry)
+      bot.activateItem()
+      bot._client.emit('entity_status', { entityId: bot.entity.id, entityStatus: 3 })
+      assert.strictEqual(bot.usingHeldItem, false)
+    })
+
     it('finishes consuming only when the bot receives its completion status', async () => {
       const bot = createBot(registry)
       const Item = require('prismarine-item')(registry)
