@@ -41,4 +41,10 @@ module.exports = () => async (bot) => {
   await bot.wake()
   await wakePromise
   assert(!bot.isSleeping)
+  // A lone sleeper on a vanilla server skips the night after ~100 ticks and
+  // is woken BY THE SERVER — which is what happened on 1.21.11+ before
+  // wake() sent the right action, and it made this test pass anyway. A real
+  // wake leaves the clock where it was; a night skip resets it to morning.
+  await once(bot, 'time')
+  assert(bot.time.timeOfDay >= midnight, `bot was woken by the night ending (time ${bot.time.timeOfDay}), not by wake()`)
 }
