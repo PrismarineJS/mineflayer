@@ -61,4 +61,7 @@ module.exports = () => async (bot) => {
 
   bot.chat(`/setblock ~ ~ ~ ${portalName}`)
   await onceWithCleanup(bot, 'spawn', { timeout: 30000 })
+  // The respawn lands at origin, so the next reset skips its chunk wait; the
+  // overworld column must be back before a later test reads blocks from it.
+  await bot.waitForChunksToLoad()
 }
