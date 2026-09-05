@@ -8,6 +8,10 @@ const mineflayer = require('../')
 const inject = require('../lib/plugins/resource_pack')
 
 describe('resource pack plugin', () => {
+  const uuid = '9f41f8d8-5a3e-4ea6-8a4c-404400000001'
+  const url = 'https://example.invalid/pack.zip'
+  const hash = 'pack-hash'
+
   function createMockBot (supportFeature) {
     const writes = []
     const bot = new EventEmitter()
@@ -18,6 +22,31 @@ describe('resource pack plugin', () => {
     return { bot, writes }
   }
 
+  function emitResourcePack (bot, usesUUID) {
+    if (usesUUID) {
+      bot._client.emit('add_resource_pack', { uuid, url })
+    } else {
+      bot._client.emit('resource_pack_send', { url, hash })
+    }
+  }
+
+  function serializeAndParse (version, usesUUID, write) {
+    const state = usesUUID ? mc.states.CONFIGURATION : mc.states.PLAY
+    const serializer = mc.createSerializer({ state, isServer: false, version })
+    const deserializer = mc.createDeserializer({ state, isServer: true, version })
+    return deserializer.parsePacketBuffer(serializer.createPacketBuffer({
+      name: write.name,
+      params: write.data
+    })).data
+  }
+
+  function assertResponse (parsed, result, usesHash, usesUUID) {
+    assert.strictEqual(parsed.name, 'resource_pack_receive')
+    assert.strictEqual(parsed.params.result, result)
+    if (usesHash) assert.strictEqual(parsed.params.hash, hash)
+    if (usesUUID) assert.strictEqual(parsed.params.uuid, uuid)
+  }
+
   for (const version of mineflayer.testedVersions) {
     const registry = minecraftData(version)
 
@@ -25,64 +54,35 @@ describe('resource pack plugin', () => {
       const usesHash = registry.supportFeature('resourcePackUsesHash')
       const usesUUID = registry.supportFeature('resourcePackUsesUUID')
       const { bot, writes } = createMockBot(registry.supportFeature)
-      const uuid = '9f41f8d8-5a3e-4ea6-8a4c-404400000001'
 
-      if (usesHash) {
-        bot._client.emit('resource_pack_send', { url: 'https://example.invalid/pack.zip', hash: 'pack-hash' })
-      } else if (usesUUID) {
-        bot._client.emit('add_resource_pack', { uuid, url: 'https://example.invalid/pack.zip' })
-      }
-
-      bot.denyResourcePack()
+      bot.once('resourcePack', () => bot.denyResourcePack())
+      emitResourcePack(bot, usesUUID)
 
       assert.strictEqual(writes.length, 1)
       assert.strictEqual(writes[0].name, 'resource_pack_receive')
       assert.strictEqual(writes[0].data.result, 1)
-      if (usesHash) {
-        assert.deepStrictEqual(writes[0].data, { hash: 'pack-hash', result: 1 })
-      } else if (usesUUID) {
-        assert.deepStrictEqual(Object.keys(writes[0].data).sort(), ['result', 'uuid'])
-        assert.strictEqual(writes[0].data.uuid, uuid)
-      } else {
-        assert.deepStrictEqual(writes[0].data, { result: 1 })
-      }
+      assert.strictEqual(writes[0].data.uuid, usesUUID ? uuid : undefined)
+      assert.strictEqual(writes[0].data.hash, usesUUID ? undefined : hash)
 
-      const state = usesUUID ? mc.states.CONFIGURATION : mc.states.PLAY
-      const serializer = mc.createSerializer({ state, isServer: false, version })
-      const packetBuffer = serializer.createPacketBuffer({
-        name: writes[0].name,
-        params: writes[0].data
-      })
-      const deserializer = mc.createDeserializer({ state, isServer: true, version })
-      const parsed = deserializer.parsePacketBuffer(packetBuffer).data
-      assert.strictEqual(parsed.name, 'resource_pack_receive')
-      assert.strictEqual(parsed.params.result, 1)
-      if (usesUUID) assert.strictEqual(parsed.params.uuid, uuid)
+      const parsed = serializeAndParse(version, usesUUID, writes[0])
+      assertResponse(parsed, 1, usesHash, usesUUID)
     })
 
-    if (registry.supportFeature('resourcePackUsesUUID')) {
-      it(`serializes the resource pack UUID when accepting in ${version}`, () => {
-        const { bot, writes } = createMockBot(registry.supportFeature)
-        const uuid = '9f41f8d8-5a3e-4ea6-8a4c-404400000001'
-        bot._client.emit('add_resource_pack', { uuid, url: 'https://example.invalid/pack.zip' })
+    it(`serializes both acceptance responses in ${version}`, () => {
+      const usesHash = registry.supportFeature('resourcePackUsesHash')
+      const usesUUID = registry.supportFeature('resourcePackUsesUUID')
+      const { bot, writes } = createMockBot(registry.supportFeature)
 
-        bot.acceptResourcePack()
+      bot.once('resourcePack', () => bot.acceptResourcePack())
+      emitResourcePack(bot, usesUUID)
 
-        assert.deepStrictEqual(writes.map(write => write.data), [
-          { uuid, result: 3 },
-          { uuid, result: 0 }
-        ])
-        const serializer = mc.createSerializer({ state: mc.states.CONFIGURATION, isServer: false, version })
-        const deserializer = mc.createDeserializer({ state: mc.states.CONFIGURATION, isServer: true, version })
-        for (const write of writes) {
-          const parsed = deserializer.parsePacketBuffer(serializer.createPacketBuffer({
-            name: write.name,
-            params: write.data
-          })).data
-          assert.strictEqual(parsed.params.uuid, uuid)
-          assert.strictEqual(parsed.params.result, write.data.result)
-        }
-      })
-    }
+      assert.deepStrictEqual(writes.map(write => write.data.result), [3, 0])
+      for (const write of writes) {
+        assert.strictEqual(write.data.uuid, usesUUID ? uuid : undefined)
+        assert.strictEqual(write.data.hash, usesUUID ? undefined : hash)
+        const parsed = serializeAndParse(version, usesUUID, write)
+        assertResponse(parsed, write.data.result, usesHash, usesUUID)
+      }
+    })
   }
 })
