@@ -609,6 +609,32 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('rain', () => {
+      it('flips isRaining on rain level zero-crossings without start_raining', (done) => {
+        // Vanilla 26.1 can bring rain in with only rain_level_change ramps,
+        // never sending start_raining/stop_raining (observed on a quick
+        // weather flip), so level crossings alone must drive isRaining.
+        const mapped = JSON.stringify(registry.protocol.play.toClient.types.packet_game_state_change).includes('rain_level_change')
+        const reason = mapped ? 'rain_level_change' : 7
+        server.on('playerJoin', (client) => {
+          assert.strictEqual(bot.isRaining, false)
+          bot.once('rain', () => {
+            assert.strictEqual(bot.isRaining, true)
+            bot.once('rain', () => {
+              assert.strictEqual(bot.isRaining, false)
+              assert.strictEqual(bot.rainState, 0)
+              done()
+            })
+            client.write('game_state_change', { reason, gameMode: 0 })
+          })
+          client.write('game_state_change', { reason, gameMode: 0.01 })
+          // A second wet level must not emit again: if it did, the inner
+          // once would run with isRaining still true and fail the assert.
+          client.write('game_state_change', { reason, gameMode: 0.5 })
+        })
+      })
+    })
+
     describe('entities', () => {
       it('entity id changes on login', (done) => {
         const loginPacket = bot.test.generateLoginPacket()
