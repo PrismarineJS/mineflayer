@@ -773,6 +773,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             assert.ok(player.skinData, 'skinData should be parsed from mojangson')
             assert.strictEqual(player.skinData.url, 'http://textures.minecraft.net/texture/abc123')
             assert.strictEqual(player.skinData.model, 'slim')
+            assert.strictEqual(player.skinData.capeUrl, undefined)
             done()
           })
 
@@ -849,6 +850,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
             SKIN: {
               url: 'http://textures.minecraft.net/texture/def456',
               metadata: { model: 'default' }
+            },
+            CAPE: {
+              url: 'http://textures.minecraft.net/texture/cape789'
             }
           }
         })
@@ -861,6 +865,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             assert.ok(player.skinData, 'skinData should be parsed from JSON')
             assert.strictEqual(player.skinData.url, 'http://textures.minecraft.net/texture/def456')
             assert.strictEqual(player.skinData.model, 'default')
+            assert.strictEqual(player.skinData.capeUrl, 'http://textures.minecraft.net/texture/cape789')
             done()
           })
 

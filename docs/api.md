@@ -424,7 +424,8 @@ The skin data is stored in the `skinData` property of the player object, if pres
 // player.skinData
 {
   url: 'http://textures.minecraft.net/texture/...',
-  model: 'slim' // or 'classic'
+  model: 'slim', // or 'classic'
+  capeUrl: 'http://textures.minecraft.net/texture/...' // only if the player has a cape
 }
 ```
 
