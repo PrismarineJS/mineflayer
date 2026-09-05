@@ -1,4 +1,5 @@
 const assert = require('assert')
+const { onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
@@ -47,7 +48,18 @@ module.exports = () => async (bot) => {
   assert(furnace.fuel > 0 && furnace.fuel < 1)
   assert(furnace.progress > 0 && furnace.progress < 1)
 
-  await bot.test.wait(furnace.progressSeconds * 1000 + 500)
+  // The furnace only completes on cookTime == totalCookTime (not >=), so the
+  // merged value must stay below 200.
+  const { x, y, z } = furnacePos
+  const cookTimeKey = bot.supportFeature('furnaceNbtUsesSnakeCase') ? 'cooking_time_spent' : 'CookTime'
+  if (bot.supportFeature('hasDataCommand')) {
+    bot.chat(`/data merge block ${x} ${y} ${z} {${cookTimeKey}:195s}`)
+  } else {
+    bot.chat(`/blockdata ${x} ${y} ${z} {${cookTimeKey}:195s}`)
+  }
+  // The 5 remaining ticks complete in 250-320ms on every tested version; a
+  // timeout means the merge was silently ignored.
+  await onceWithCleanup(furnace, 'update', { timeout: 500, checkCondition: () => furnace.outputItem() !== null })
   assert.strictEqual(furnace.outputItem(), furnace.slots[2])
   assert.strictEqual(furnace.outputItem().type, cookedPorkchopId)
   assert.strictEqual(furnace.outputItem().count, 1)
