@@ -9,7 +9,7 @@ const path = require('path')
 
 const { getPort } = require('./common/util')
 const trace = require('./common/trace')
-const { once } = require('../lib/promise_utils')
+const { once, onceWithCleanup } = require('../lib/promise_utils')
 
 // set this to false if you want to test without starting a server automatically
 const START_THE_SERVER = true
@@ -128,16 +128,23 @@ for (const supportedVersion of mineflayer.testedVersions) {
             wrap.writeServer('seed\n')
             // The nether test's portal travel otherwise generates these chunks
             // synchronously on the main thread while its clock runs. forceload
-            // itself blocks the main thread until every chunk is FULL, so it
-            // must run before the bot connects; pings are served off-thread,
-            // so the stall stays inside this hook's budget. 7x7 chunks covers
-            // the portal placement scan and every chunk the test's waits touch.
+            // itself blocks the main thread until every chunk is FULL, and a
+            // connection that is mid-login while it blocks hits the server's
+            // 30s read timeout, so the bot must not connect until the server
+            // reports the chunks loaded. Pings are served off-thread, so the
+            // stall stays inside this hook's budget. 7x7 chunks covers the
+            // portal placement scan and every chunk the test's waits touch.
+            let netherLoaded = Promise.resolve()
             if (registry.supportFeature('hasExecuteCommand')) {
+              netherLoaded = onceWithCleanup(wrap, 'line', {
+                timeout: 120000,
+                checkCondition: line => /Marked \d+ chunks in minecraft:the_nether/.test(line)
+              })
               wrap.writeServer('execute in minecraft:the_nether run forceload add -48 -48 63 63\n')
             }
             console.log(`pinging ${version.minecraftVersion} port : ${PORT}`)
             trace.log('server started, pinging')
-            pingUntilReady(PORT, '127.0.0.1', supportedVersion).then(results => {
+            Promise.all([pingUntilReady(PORT, '127.0.0.1', supportedVersion), netherLoaded]).then(([results]) => {
               console.log('pong')
               trace.log('pong', { latency: results.latency })
               assert.ok(results.latency >= 0)
