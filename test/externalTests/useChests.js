@@ -127,6 +127,21 @@ module.exports = () => async (bot) => {
   await withdrawBones(smallTrappedChestLocation, 1)
   await withdrawBones(largeTrappedChestLocations[0], 2)
 
+  // Deposit part of a stack: the halving path must leave the same counts as one-by-one
+  const boneCount = (items) => items.filter(item => item.name === 'bone').reduce((sum, item) => sum + item.count, 0)
+  await bot.test.becomeCreative()
+  await bot.test.setInventorySlot(itemByName(bot.inventory.slots, 'bone').slot, new Item(bot.registry.itemsByName.bone.id, 64, 0))
+  await bot.test.becomeSurvival()
+  assert.strictEqual(boneCount(bot.inventory.items()), 64)
+  const partialChest = await bot.openContainer(bot.blockAt(smallChestLocation))
+  await partialChest.deposit(bot.registry.itemsByName.bone.id, null, 36)
+  assert.strictEqual(itemByName(partialChest.containerItems(), 'bone').count, 36)
+  assert.strictEqual(boneCount(partialChest.items()), 28)
+  await partialChest.withdraw(bot.registry.itemsByName.bone.id, null, 36)
+  assert.strictEqual(partialChest.containerItems().length, 0)
+  assert.strictEqual(boneCount(partialChest.items()), 64)
+  partialChest.close()
+
   const itemsWithStackSize = {
     64: ['stone', 'mycelium'],
     16: ['ender_pearl', 'egg'],
