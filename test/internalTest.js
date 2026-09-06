@@ -1673,6 +1673,28 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('generic place', () => {
+      it('swings the arm after use_item_on', (done) => {
+        const Item = require('prismarine-item')(registry)
+        server.on('playerJoin', async (client) => {
+          const loggedIn = once(bot, 'login')
+          await client.write('login', bot.test.generateLoginPacket())
+          await loggedIn
+          const writes = []
+          bot._client.write = (name, params) => { writes.push(name) }
+          bot.quickBarSlot = 0
+          bot.inventory.updateSlot(bot.QUICK_BAR_START, new Item(registry.itemsByName.stone.id, 1))
+          await bot._genericPlace({ position: vec3(1, 65, 1) }, vec3(0, 1, 0), { forceLook: 'ignore', swingArm: 'right' })
+          try {
+            assert.deepStrictEqual(writes, ['block_place', 'arm_animation'])
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+    })
+
     describe('block prediction sequence', () => {
       it('shares one pre-incremented counter across use_item and use_item_on, 0 on release', function (done) {
         const useItemFields = registry.protocol?.play?.toServer?.types?.packet_use_item?.[1]
