@@ -1589,6 +1589,34 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('entity interaction', () => {
+      it('activateEntity sends interact_at at mid height then interact, with the sneak state', (done) => {
+        server.on('playerJoin', async (client) => {
+          const loggedIn = once(bot, 'login')
+          await client.write('login', bot.test.generateLoginPacket())
+          await loggedIn
+          bot.lookAt = async () => {}
+          const writes = []
+          bot._client.write = (name, params) => { writes.push({ name, params }) }
+          bot.setControlState('sneak', true)
+          const entity = { id: 7, position: vec3(3, 64, 3), height: 1.95 }
+          await bot.activateEntity(entity)
+          await bot.activateEntityAt(entity, vec3(3.5, 65, 3))
+          try {
+            assert.deepStrictEqual(writes.filter(w => w.name === 'use_entity').map(w => w.params), [
+              { target: 7, mouse: 2, x: 0, y: 0.975, z: 0, hand: 0, sneaking: true },
+              { target: 7, mouse: 0, hand: 0, sneaking: true },
+              { target: 7, mouse: 2, x: 0.5, y: 1, z: 0, hand: 0, sneaking: true },
+              { target: 7, mouse: 0, hand: 0, sneaking: true }
+            ])
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+    })
+
     describe('block prediction sequence', () => {
       it('shares one pre-incremented counter across use_item and use_item_on, 0 on release', function (done) {
         const useItemFields = registry.protocol?.play?.toServer?.types?.packet_use_item?.[1]
