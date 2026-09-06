@@ -1832,6 +1832,8 @@ You may use bot.lookAt in conjunction with this to control movement. The jumper.
  * `control` - one of ['forward', 'back', 'left', 'right', 'jump', 'sprint', 'sneak']
  * `state` - `true` or `false`
 
+`sprint` is the sprint key: like the vanilla client, the bot only sprints (and tells the server so) while it is moving forward on the ground with more than 6 food, not sneaking, not using an item, not blinded and not in water; sprinting stops against a wall.
+
 #### bot.getControlState(control)
 
 Returns true if a control state is toggled.

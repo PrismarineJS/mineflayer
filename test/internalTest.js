@@ -432,6 +432,68 @@ for (const supportedVersion of mineflayer.testedVersions) {
           })
         })
       })
+      it('sends the 1.21.2+ input packets like vanilla', async function () {
+        if (!bot.supportFeature('newPlayerInputPacket')) {
+          this.skip()
+          return
+        }
+        const sneakViaEntityAction = !bot.registry.version['>=']('1.21.6')
+        const sent = []
+        const originalWrite = bot._client.write.bind(bot._client)
+        bot._client.write = (name, params) => {
+          sent.push({ name, params })
+          return originalWrite(name, params)
+        }
+        const joined = once(server, 'playerJoin')
+        const client = (await joined)[0]
+        await client.write('login', bot.test.generateLoginPacket())
+        await client.write('update_health', { health: 20, food: 20, foodSaturation: 5 })
+        const chunk = bot.test.buildChunk()
+        chunk.setBlockType(pos, goldId)
+        await client.write('map_chunk', generateChunkPacket(chunk))
+        await once(bot, 'chunkColumnLoad')
+        const p1 = once(bot, 'forcedMove')
+        await client.write('position', { x: 1.5, y: 66, z: 1.5, dx: 0, dy: 0, dz: 0, pitch: 0, yaw: 0, flags: {}, teleportId: 0 })
+        await p1
+        await bot.waitForTicks(3)
+        assert.ok(sent.some(p => p.name === 'tick_end'), 'tick_end is sent every tick')
+        assert.ok(!sent.some(p => p.name === 'player_input' && p.params.inputs.shift), 'no shift before sneaking')
+
+        sent.length = 0
+        bot.setControlState('sneak', true)
+        await bot.waitForTicks(2)
+        const shift = sent.find(p => p.name === 'player_input')
+        assert.ok(shift, 'player_input on sneak')
+        assert.deepStrictEqual(shift.params.inputs, { forward: false, backward: false, left: false, right: false, jump: false, shift: true, sprint: false })
+        const pressShift = sent.find(p => p.name === 'entity_action')
+        if (sneakViaEntityAction) {
+          assert.strictEqual(pressShift.params.actionId, 0, 'PRESS_SHIFT_KEY entity_action up to 1.21.5')
+          assert.ok(sent.indexOf(pressShift) < sent.indexOf(shift), 'entity_action before player_input')
+        } else {
+          assert.strictEqual(pressShift, undefined, 'no entity_action for the shift key from 1.21.6')
+        }
+
+        // Sprint key while sneaking: the key set changes but the bot does not sprint.
+        sent.length = 0
+        bot.setControlState('sprint', true)
+        bot.setControlState('forward', true)
+        await bot.waitForTicks(2)
+        assert.ok(sent.some(p => p.name === 'player_input' && p.params.inputs.sprint && p.params.inputs.forward), 'player_input with sprint + forward')
+        assert.ok(!sent.some(p => p.name === 'entity_action' && (p.params.actionId === 3 || p.params.actionId === 'start_sprinting')), 'no start_sprinting while sneaking')
+
+        sent.length = 0
+        bot.setControlState('sneak', false)
+        await bot.waitForTicks(3)
+        assert.ok(sent.some(p => p.name === 'entity_action' && (p.params.actionId === 3 || p.params.actionId === 'start_sprinting')), 'start_sprinting once the sneak key is released')
+
+        sent.length = 0
+        bot.setControlState('forward', false)
+        await bot.waitForTicks(3)
+        assert.ok(sent.some(p => p.name === 'entity_action' && (p.params.actionId === 4 || p.params.actionId === 'stop_sprinting')), 'stop_sprinting without a forward impulse')
+        bot.clearControlStates()
+        bot._client.write = originalWrite
+      })
+
       it('no movement packets during a server transfer configuration phase', function (done) {
         // Regression test for https://github.com/PrismarineJS/mineflayer/issues/3776
         // While the client is in the configuration phase (Velocity/BungeeCord server
