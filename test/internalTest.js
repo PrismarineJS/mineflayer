@@ -227,6 +227,35 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
     })
+    if (supportedVersion === '1.21.4') {
+      it('stores entity attributes under their canonical resource key', (done) => {
+        bot.once('entityAttributes', (entity) => {
+          const speed = entity.attributes['minecraft:movement_speed']
+          assert.strictEqual(speed.value, 0.1)
+          assert.deepStrictEqual(speed.modifiers, [{
+            uuid: 'minecraft:effect.speed',
+            amount: 0.4,
+            operation: 2
+          }])
+          done()
+        })
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          client.write('entity_update_attributes', {
+            entityId: 0,
+            properties: [{
+              key: 'generic.movement_speed',
+              value: 0.1,
+              modifiers: [{
+                uuid: 'minecraft:effect.speed',
+                amount: 0.4,
+                operation: 2
+              }]
+            }]
+          })
+        })
+      })
+    }
     it('blockAt', (done) => {
       const pos = vec3(1, 65, 1)
       const goldId = bot.registry.blocksByName.gold_block.id
