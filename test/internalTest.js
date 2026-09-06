@@ -1789,6 +1789,30 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('attack', () => {
+      it('rejects targets the server kicks for and attacks the rest', (done) => {
+        server.on('playerJoin', async (client) => {
+          try {
+            const loggedIn = once(bot, 'login')
+            await client.write('login', bot.test.generateLoginPacket())
+            await loggedIn
+            const writes = []
+            bot._client.write = (name, params) => { writes.push(name) }
+            assert.throws(() => bot.attack(bot.entity), /cannot attack/)
+            assert.throws(() => bot.attack({ id: 11, name: 'item' }), /cannot attack/)
+            assert.throws(() => bot.attack({ id: 12, name: 'experience_orb' }), /cannot attack/)
+            assert.deepStrictEqual(writes, [])
+            bot.attack({ id: 13, name: 'zombie' })
+            assert.strictEqual(writes.length, 2)
+            assert.ok(writes.includes('arm_animation'))
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+    })
+
     describe('block prediction sequence', () => {
       it('shares one pre-incremented counter across use_item and use_item_on, 0 on release', function (done) {
         const useItemFields = registry.protocol?.play?.toServer?.types?.packet_use_item?.[1]
