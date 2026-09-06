@@ -437,7 +437,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           this.skip()
           return
         }
-        const sneakViaEntityAction = !bot.registry.version['>=']('1.21.6')
+        const sneakViaEntityAction = bot.supportFeature('sneakUsesEntityAction')
         const sent = []
         const originalWrite = bot._client.write.bind(bot._client)
         bot._client.write = (name, params) => {
