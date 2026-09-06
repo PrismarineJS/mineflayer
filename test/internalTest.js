@@ -473,7 +473,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           assert.strictEqual(pressShift, undefined, 'no entity_action for the shift key from 1.21.6')
         }
 
-        // Sprint key while sneaking: the key set changes but the bot does not sprint.
+        // Sneaking blocks sprinting; the key set still changes.
         sent.length = 0
         bot.setControlState('sprint', true)
         bot.setControlState('forward', true)
