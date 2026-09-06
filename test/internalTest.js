@@ -244,20 +244,44 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
-    it('placeBlock rejects an occupied target before sending anything', (done) => {
+    describe('placeBlock', () => {
       const below = vec3(1, 64, 1)
       const target = vec3(1, 65, 1)
-      bot.on('chunkColumnLoad', () => {
-        assert.rejects(bot.placeBlock(bot.blockAt(below), vec3(0, 1, 0)), /occupied by red_mushroom/)
-          .then(done, done)
-      })
-      server.on('playerJoin', (client) => {
+      const joinWithMushroomAt = (client) => {
         client.write('login', bot.test.generateLoginPacket())
         const chunk = bot.test.buildChunk()
         chunk.setBlockType(below, bot.registry.blocksByName.stone.id)
         chunk.setBlockType(target, bot.registry.blocksByName.red_mushroom.id)
         client.write('map_chunk', generateChunkPacket(chunk))
+      }
+
+      it('rejects an occupied target before sending anything', (done) => {
+        bot.on('chunkColumnLoad', () => {
+          assert.rejects(bot.placeBlock(bot.blockAt(below), vec3(0, 1, 0)), /occupied by red_mushroom/)
+            .then(done, done)
+        })
+        server.on('playerJoin', joinWithMushroomAt)
       })
+
+      if (registry.isNewerOrEqualTo('1.20')) {
+        it('trusts the replaceable block tag sent by the server', (done) => {
+          const Item = require('prismarine-item')(supportedVersion)
+          bot.on('chunkColumnLoad', () => {
+            bot.inventory.updateSlot(36, new Item(bot.registry.itemsByName.stone.id, 1))
+            bot._placeBlockWithOptions(bot.blockAt(below), vec3(0, 1, 0), { forceLook: true }).catch(() => {})
+          })
+          server.on('playerJoin', (client) => {
+            client.write('tags', {
+              tags: [{
+                tagType: 'minecraft:block',
+                tags: [{ tagName: 'minecraft:replaceable', entries: [bot.registry.blocksByName.red_mushroom.id] }]
+              }]
+            })
+            client.once('block_place', () => done())
+            joinWithMushroomAt(client)
+          })
+        })
+      }
     })
 
     describe('digTime', () => {
