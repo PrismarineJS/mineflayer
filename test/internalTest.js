@@ -1813,6 +1813,32 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('dismount', () => {
+      it('holds sneak for one tick on 1.21.3+ and sends the steer_vehicle unmount flag before', (done) => {
+        server.on('playerJoin', async (client) => {
+          try {
+            const loggedIn = once(bot, 'login')
+            await client.write('login', bot.test.generateLoginPacket())
+            await loggedIn
+            const events = []
+            bot.setControlState = (control, state) => { events.push([control, state]) }
+            bot.waitForTicks = async (ticks) => { events.push(['tick', ticks]) }
+            bot._client.write = (name, params) => { events.push([name, params]) }
+            bot.vehicle = { id: 21 }
+            await bot.dismount()
+            if (bot.supportFeature('newPlayerInputPacket')) {
+              assert.deepStrictEqual(events, [['sneak', true], ['tick', 1], ['sneak', false]])
+            } else {
+              assert.deepStrictEqual(events, [['steer_vehicle', { sideways: 0, forward: 0, jump: 2 }]])
+            }
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+    })
+
     describe('block prediction sequence', () => {
       it('shares one pre-incremented counter across use_item and use_item_on, 0 on release', function (done) {
         const useItemFields = registry.protocol?.play?.toServer?.types?.packet_use_item?.[1]
