@@ -1527,6 +1527,68 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('resource pack', () => {
+      function packetHas (name) {
+        const fields = registry.protocol?.play?.toServer?.types?.packet_resource_pack_receive?.[1] ??
+          registry.protocol?.configuration?.toServer?.types?.packet_resource_pack_receive?.[1]
+        return fields?.some(f => f.name === name)
+      }
+      const packUuid = '8ef4746b-93b7-3c32-9dcb-b375016c114d'
+
+      it('accepts with the vanilla status sequence', (done) => {
+        server.on('playerJoin', async (client) => {
+          const loggedIn = once(bot, 'login')
+          await client.write('login', bot.test.generateLoginPacket())
+          await loggedIn
+          if (packetHas('uuid')) {
+            bot._client.emit('add_resource_pack', { uuid: packUuid, url: 'http://example.com/pack.zip', forced: false })
+          } else {
+            bot._client.emit('resource_pack_send', { url: 'http://example.com/pack.zip', hash: 'abc' })
+          }
+          const writes = []
+          bot._client.write = (name, params) => { writes.push({ name, params }) }
+          bot.acceptResourcePack()
+          try {
+            assert.ok(writes.every(w => w.name === 'resource_pack_receive'))
+            assert.deepStrictEqual(writes.map(w => w.params.result), packetHas('uuid') ? [3, 4, 0] : [3, 0])
+            for (const { params } of writes) {
+              if (packetHas('uuid')) assert.ok(params.uuid, 'accept must carry the pack uuid')
+              else assert.strictEqual(params.uuid, undefined)
+              if (packetHas('hash')) assert.strictEqual(params.hash, 'abc')
+              else assert.strictEqual(params.hash, undefined)
+            }
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
+      it('denies with a single DECLINED', (done) => {
+        server.on('playerJoin', async (client) => {
+          const loggedIn = once(bot, 'login')
+          await client.write('login', bot.test.generateLoginPacket())
+          await loggedIn
+          if (packetHas('uuid')) {
+            bot._client.emit('add_resource_pack', { uuid: packUuid, url: 'http://example.com/pack.zip', forced: false })
+          }
+          const writes = []
+          bot._client.write = (name, params) => { writes.push({ name, params }) }
+          bot.denyResourcePack()
+          try {
+            assert.strictEqual(writes.length, 1)
+            assert.strictEqual(writes[0].name, 'resource_pack_receive')
+            assert.strictEqual(writes[0].params.result, 1)
+            if (packetHas('uuid')) assert.ok(writes[0].params.uuid, 'deny must carry the pack uuid')
+            else assert.strictEqual(writes[0].params.uuid, undefined)
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+    })
+
     describe('block prediction sequence', () => {
       it('shares one pre-incremented counter across use_item and use_item_on, 0 on release', function (done) {
         const useItemFields = registry.protocol?.play?.toServer?.types?.packet_use_item?.[1]
