@@ -1700,6 +1700,48 @@ for (const supportedVersion of mineflayer.testedVersions) {
         assert.strictEqual(bot.scoreboard.sidebar, undefined)
       })
     })
+
+    describe('teams', () => {
+      function teamPacket (teamName, mode, players) {
+        const text = registry.supportFeature('teamUsesChatComponents') ? chatText : (s) => s
+        const modes = ['add', 'remove', 'change', 'join', 'leave']
+        return {
+          team: teamName,
+          mode: registry.supportFeature('teamModeUsesStringMapper') ? modes[mode] : mode,
+          name: text(teamName),
+          prefix: text(''),
+          suffix: text(''),
+          friendlyFire: 1,
+          flags: { friendly_fire: true, see_friendly_invisible: false },
+          nameTagVisibility: 'always',
+          collisionRule: 'always',
+          color: 0,
+          formatting: 0,
+          players
+        }
+      }
+
+      it('teamRemoved carries the team that was removed', async () => {
+        const packetName = bot.supportFeature('teamUsesScoreboard') ? 'scoreboard_team' : 'teams'
+        const [client] = await once(server, 'playerJoin')
+        await client.write('login', bot.test.generateLoginPacket())
+
+        const created = once(bot, 'teamCreated')
+        client.write(packetName, teamPacket('red', 0, ['player']))
+        const [addedTeam] = await created
+        assert.strictEqual(addedTeam.team, 'red')
+
+        const removed = once(bot, 'teamRemoved')
+        client.write(packetName, teamPacket('red', 1, []))
+        const [removedTeam] = await removed
+        assert.ok(removedTeam, 'teamRemoved is given the team, not undefined')
+        assert.strictEqual(removedTeam.team, 'red')
+        assert.deepStrictEqual(removedTeam.members, ['player'])
+        assert.strictEqual(bot.teams.red, undefined)
+        assert.strictEqual(bot.teamMap.player, undefined)
+      })
+    })
+
     describe('tablist', () => {
       it('handles newlines in header and footer', (done) => {
         const HEADER = 'asd\ndsa'
