@@ -1608,7 +1608,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           await loggedIn
           bot.lookAt = async () => {}
           const writes = []
-          // serializing catches params that do not match this version's packet shape
+          // Every write must match this version's packet shape.
           bot._client.write = (name, params) => {
             bot._client.serializer.createPacketBuffer({ name, params })
             writes.push({ name, params })
@@ -1753,7 +1753,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
       // Sequence value expected for the nth prediction packet
       const seq = n => hasSequence ? n : 0
 
-      // Loads a chunk with two dirt blocks and returns the captured writes list
       async function setup (client, gameMode) {
         await bot.test.pluginsLoaded
         const dirtId = registry.blocksByName.dirt.id
