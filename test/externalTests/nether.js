@@ -13,13 +13,10 @@ module.exports = () => async (bot) => {
   }
   assert.notStrictEqual(signItem, null)
 
-  // A player is on portal cooldown for 10 ticks after a dimension change, and
-  // the server refreshes that cooldown every tick the player stands in any
-  // portal, so the bot must be out of every portal for more than 10 ticks
-  // before it steps into the next one. update_time arrives every 20 server
-  // ticks, so two of them after the bot left a portal prove at least 20
-  // ticks have passed. Start the clock as soon as the bot is out of a portal
-  // and await it right before the next one so the wait overlaps other work.
+  // A dimension change puts the player on portal cooldown for 10 ticks, and the server
+  // refreshes that cooldown every tick the player stands in any portal, so the bot must be
+  // clear of every portal for more than 10 ticks before it enters the next one. update_time
+  // arrives every 20 server ticks, so two of them prove at least 20 ticks have passed.
   const portalCooldown = async () => {
     await onceWithCleanup(bot, 'time', { timeout: 10000 })
     await onceWithCleanup(bot, 'time', { timeout: 10000 })
