@@ -500,8 +500,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
 
       it('accepts a configuration-phase resource pack with the real UUID bytes', function () {
-        // Regression for https://github.com/PrismarineJS/mineflayer/issues/4043: the accept
-        // must carry the pack's real UUID bytes; a uuid-1345 object serializes to 16 zero bytes.
+        // The accept must carry the pack's real UUID bytes; a uuid-1345 object serializes to
+        // 16 zero bytes.
         // The mock server never reaches the configuration phase, so the plugin is driven directly.
         if (!registry.supportFeature('resourcePackUsesUUID')) {
           this.skip()
