@@ -1369,6 +1369,44 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('placeEntity', () => {
+      it('builds a use_item packet this version can serialize', async () => {
+        if (!bot.supportFeature('useItemWithOwnPacket')) return // 1.8 sends block_place instead
+        const Item = require('prismarine-item')(supportedVersion)
+        const boat = registry.itemsByName.oak_boat ?? registry.itemsByName.boat
+        if (!boat) return
+
+        const [client] = await once(server, 'playerJoin')
+        await client.write('login', bot.test.generateLoginPacket())
+        const chunk = bot.test.buildChunk()
+        chunk.setBlockType(vec3(1, 65, 1), registry.blocksByName.gold_block.id)
+        await client.write('map_chunk', generateChunkPacket(chunk))
+        await once(bot, 'chunkColumnLoad')
+
+        client.write('held_item_slot', { slot: 0 })
+        await sleep(100)
+        const changed = once(bot, 'heldItemChanged')
+        client.write('set_slot', { windowId: 0, slot: 36, item: Item.toNotch(new Item(boat.id, 1)) })
+        await changed
+
+        // Record what is handed to write, so a packet that cannot be serialized is still visible.
+        const written = []
+        const write = bot._client.write.bind(bot._client)
+        bot._client.write = (name, params) => { written.push({ name, params }); return write(name, params) }
+        // Only the packets matter; nothing here places the entity, so do not wait for the spawn.
+        bot._placeEntityWithOptions(bot.blockAt(vec3(1, 65, 1)), vec3(0, 1, 0), { forceLook: 'ignore' }).catch(() => {})
+        await sleep(50)
+        bot._client.write = write
+
+        const useItem = written.find(p => p.name === 'use_item')
+        assert.ok(useItem, 'placeEntity sends use_item for a boat')
+        assert.doesNotThrow(
+          () => bot._client.serializer.proto.createPacketBuffer('packet_use_item', useItem.params),
+          'the use_item packet placeEntity builds has to serialize on this version'
+        )
+      })
+    })
+
     describe('windows', () => {
       const Item = require('prismarine-item')(supportedVersion)
       const pWindows = require('prismarine-windows')(supportedVersion)
