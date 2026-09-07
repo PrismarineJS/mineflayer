@@ -69,6 +69,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
         port: PORT
       })
       bot.test = {}
+      // Plugins are injected on a timer after createBot, which can lose the
+      // race against the mock server's playerJoin
+      bot.test.pluginsLoaded = new Promise(resolve => bot.once('inject_allowed', resolve))
 
       bot.test.buildChunk = () => {
         if (bot.supportFeature('tallWorld')) {
