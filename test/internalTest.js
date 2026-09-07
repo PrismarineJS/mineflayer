@@ -1530,62 +1530,74 @@ for (const supportedVersion of mineflayer.testedVersions) {
     describe('string mapped action ids', () => {
       // 26.1 maps client_command's actionId and use_entity's hand to strings, and 1.21.6+ maps
       // entity_action's actionId; a numeric id fails to serialize there and never reaches the server.
-      function onJoin (name, act, check) {
-        server.on('playerJoin', async (client) => {
-          client.on('packet', (data, meta) => { if (meta.name === name) check(data) })
-          await client.write('login', bot.test.generateLoginPacket())
-          const chunk = bot.test.buildChunk()
-          chunk.setBlockType(vec3(0, 64, 0), registry.blocksByName.stone.id)
-          await client.write('map_chunk', generateChunkPacket(chunk))
-          await client.write('position', {
-            x: 0,
-            y: 66,
-            z: 0,
-            dx: 0,
-            dy: 0,
-            dz: 0,
-            yaw: 0,
-            pitch: 0,
-            flags: bot.registry.version['>=']('1.21.3') ? {} : 0,
-            teleportId: 0
+      const fields = (name) => registry.protocol?.play?.toServer?.types?.[name]?.[1] ?? []
+      const has = (name, field) => fields(name).some(f => f.name === field)
+
+      // Resolves with the first matching packet the server sees. Asserting inside the packet listener
+      // would throw on the read path and wedge the connection instead of failing the test.
+      function packetFrom (name, act, want = () => true) {
+        return new Promise((resolve, reject) => {
+          server.on('playerJoin', async (client) => {
+            try {
+              client.on('packet', (data, meta) => { if (meta.name === name && want(data)) resolve(data) })
+              await client.write('login', bot.test.generateLoginPacket())
+              const chunk = bot.test.buildChunk()
+              chunk.setBlockType(vec3(0, 64, 0), registry.blocksByName.stone.id)
+              await client.write('map_chunk', generateChunkPacket(chunk))
+              await client.write('position', {
+                x: 0,
+                y: 66,
+                z: 0,
+                dx: 0,
+                dy: 0,
+                dz: 0,
+                yaw: 0,
+                pitch: 0,
+                flags: bot.registry.version['>=']('1.21.3') ? {} : 0,
+                teleportId: 0
+              })
+              await sleep(200)
+              await act()
+            } catch (err) {
+              reject(err)
+            }
           })
-          await sleep(200)
-          await act()
         })
       }
 
-      it('respawns with an action id the protocol accepts', (done) => {
-        onJoin('client_command', () => {
+      it('respawns with an action id the protocol accepts', async () => {
+        const packet = await packetFrom('client_command', () => {
           bot.isAlive = false
           bot.respawn()
-        }, (data) => {
-          assert.strictEqual(data.actionId ?? data.payload, registry.supportFeature('clientCommandUsesStringMapper') ? 'perform_respawn' : 0)
-          done()
         })
+        const mapped = fields('packet_client_command').some(f => f.name === 'actionId' && f.type[0] === 'mapper')
+        assert.strictEqual(packet.actionId ?? packet.payload, mapped ? 'perform_respawn' : 0)
       })
 
-      it('interacts with an entity using a hand the protocol accepts', (done) => {
-        onJoin('use_entity', () => {
+      it('interacts with an entity using a hand the protocol accepts', async () => {
+        const packet = await packetFrom('use_entity', () => {
           const Entity = require('prismarine-entity')(registry)
           const target = new Entity(42)
           target.position = vec3(1, 66, 0)
           target.height = 1.8
           bot.entities[target.id] = target
           return bot.activateEntity(target)
-        }, (data) => {
-          assert.strictEqual(data.hand, registry.supportFeature('useEntityUsesStringMapper') ? 'main_hand' : 0)
-          done()
         })
+        // Before 1.9 the packet carries no hand at all; getting it at the server is the whole assertion.
+        if (has('packet_use_entity', 'hand')) {
+          const mapped = fields('packet_use_entity').some(f => f.name === 'hand' && f.type[0] === 'mapper')
+          assert.strictEqual(packet.hand, mapped ? 'main_hand' : 0)
+        }
       })
 
-      it('leaves a bed with an action id the protocol accepts', (done) => {
-        onJoin('entity_action', () => {
+      it('leaves a bed with an action id the protocol accepts', async () => {
+        const mapped = registry.supportFeature('entityActionUsesStringMapper')
+        const sneakOrSprint = new Set(mapped ? ['start_sprinting', 'stop_sprinting'] : [0, 1, 3, 4])
+        const packet = await packetFrom('entity_action', () => {
           bot.isSleeping = true
           return bot.wake()
-        }, (data) => {
-          assert.strictEqual(data.actionId, registry.supportFeature('entityActionUsesStringMapper') ? 'leave_bed' : 2)
-          done()
-        })
+        }, (data) => !sneakOrSprint.has(data.actionId))
+        assert.strictEqual(packet.actionId, mapped ? 'leave_bed' : 2)
       })
     })
 
