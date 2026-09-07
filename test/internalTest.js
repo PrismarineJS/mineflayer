@@ -69,6 +69,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
         port: PORT
       })
       bot.test = {}
+      // Plugins are injected on a timer after createBot, which can lose the
+      // race against the mock server's playerJoin
+      bot.test.pluginsLoaded = new Promise(resolve => bot.once('inject_allowed', resolve))
 
       bot.test.buildChunk = () => {
         if (bot.supportFeature('tallWorld')) {
@@ -706,6 +709,31 @@ for (const supportedVersion of mineflayer.testedVersions) {
               'height should be set from codec lookup')
             done()
           })
+        })
+      })
+    })
+
+    describe('attack', () => {
+      it('rejects targets the server kicks for and attacks the rest', (done) => {
+        server.on('playerJoin', async (client) => {
+          try {
+            await bot.test.pluginsLoaded
+            const loggedIn = once(bot, 'login')
+            await client.write('login', bot.test.generateLoginPacket())
+            await loggedIn
+            const writes = []
+            bot._client.write = (name, params) => { writes.push(name) }
+            assert.throws(() => bot.attack(bot.entity), /cannot attack/)
+            assert.throws(() => bot.attack({ id: 11, name: 'item' }), /cannot attack/)
+            assert.throws(() => bot.attack({ id: 12, name: 'experience_orb' }), /cannot attack/)
+            assert.deepStrictEqual(writes, [])
+            bot.attack({ id: 13, name: 'zombie' })
+            assert.strictEqual(writes.length, 2)
+            assert.ok(writes.includes('arm_animation'))
+            done()
+          } catch (err) {
+            done(err)
+          }
         })
       })
     })

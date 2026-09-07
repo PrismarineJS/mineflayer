@@ -2037,6 +2037,8 @@ Attack a player or a mob.
  * `entity` is a type of entity. To get a specific entity use [bot.nearestEntity()](#botnearestentitymatch--entity---return-true-) or [bot.entities](#botentities).
  * `swing` Default to `true`. If false the bot does not swing its arm when attacking.
 
+Throws if `entity` is the bot itself, an item or an experience orb: the server kicks a client that attacks those.
+
 #### bot.swingArm([hand], showHand)
 
 Play an arm swing animation.
