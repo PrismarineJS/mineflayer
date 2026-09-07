@@ -1447,6 +1447,40 @@ for (const supportedVersion of mineflayer.testedVersions) {
           client.write('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
         })
       })
+
+      it('clicks carry the stateId of the window they click, not the last one synced', function (done) {
+        if (!bot.supportFeature('stateIdUsed')) {
+          this.skip()
+          return
+        }
+        const clicks = []
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          client.on('window_click', (packet) => {
+            clicks.push(packet)
+            if (clicks.length < 2) return
+            try {
+              assert.deepStrictEqual(clicks.map(c => [c.windowId, c.stateId]), [[1, 5], [0, 9]])
+              done()
+            } catch (err) {
+              done(err)
+            }
+          })
+
+          bot.once('windowOpen', async () => {
+            // a player-inventory sync while the container is open
+            client.write('set_slot', { windowId: 0, stateId: 9, slot: 36, item: Item.toNotch(null) })
+            await sleep(50)
+            await bot.clickWindow(0, 0, 0)
+            bot.closeWindow(bot.currentWindow)
+            await sleep(50)
+            await bot.clickWindow(36, 0, 0)
+          })
+
+          client.write('open_window', openWindowPacket(1, chestData))
+          client.write('window_items', { ...windowItemsPacket(1, emptyItems(chestData.slots)), stateId: 5 })
+        })
+      })
     })
 
     describe('tablist', () => {
