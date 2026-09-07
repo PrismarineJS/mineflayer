@@ -1636,6 +1636,35 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
         })
       })
+
+      it('aims activateEntity at the face of the hitbox the bot looks at', (done) => {
+        server.on('playerJoin', async (client) => {
+          await bot.test.pluginsLoaded
+          const loggedIn = once(bot, 'login')
+          await client.write('login', bot.test.generateLoginPacket())
+          await loggedIn
+          bot.lookAt = async () => {}
+          const writes = []
+          bot._client.write = (name, params) => {
+            bot._client.serializer.createPacketBuffer({ name, params })
+            writes.push({ name, params })
+          }
+          bot.entity.position = vec3(0, 64, 3)
+          // Straight along +x, so the ray enters the box at half its width on the near side.
+          const entity = { id: 7, position: vec3(3, 64, 3), height: 1.8, width: 0.6 }
+          await bot.activateEntity(entity)
+          try {
+            const first = writes.find(w => w.name === 'use_entity').params
+            const hit = first.location ?? vec3(first.x, first.y, first.z)
+            assert.ok(Math.abs(hit.x + 0.3) < 1e-9, `hit x on the near face: ${hit}`)
+            assert.ok(Math.abs(hit.z) < 1e-9, `hit z centred: ${hit}`)
+            assert.ok(hit.y > 0 && hit.y < entity.height, `hit y inside the box: ${hit}`)
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
     })
 
     describe('activateBlock', () => {
