@@ -1129,6 +1129,46 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
 
+      it('activateEntity sends an interact the server can read', (done) => {
+        server.on('playerJoin', (client) => {
+          client.on('use_entity', (packet) => {
+            assert.strictEqual(packet.target, 42)
+            done()
+          })
+          client.write('login', bot.test.generateLoginPacket())
+          const chunk = bot.test.buildChunk()
+          chunk.setBlockType(vec3(1, 65, 1), bot.registry.blocksByName.gold_block.id)
+          client.write('map_chunk', generateChunkPacket(chunk))
+          client.write('position', {
+            x: 1.5,
+            y: 66,
+            z: 1.5,
+            dx: 0, // 1.21.3
+            dy: 0, // 1.21.3
+            dz: 0, // 1.21.3
+            pitch: 0,
+            yaw: 0,
+            flags: bot.supportFeature('positionPacketHasBitflags') ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0,
+            teleportId: 0
+          })
+          bot.once('forcedMove', () => {
+            bot.entities[42] = { id: 42, position: vec3(2.5, 66, 1.5) }
+            bot.activateEntity(bot.entities[42])
+          })
+        })
+      })
+
+      it('respawn sends a client_command the server can read', (done) => {
+        server.on('playerJoin', (client) => {
+          client.on('client_command', () => done())
+          client.write('login', bot.test.generateLoginPacket())
+          bot.once('login', () => {
+            bot.isAlive = false
+            bot.respawn()
+          })
+        })
+      })
+
       it('\'itemDrop\' event', function (done) {
         const itemData = {
           itemId: 149,
