@@ -398,6 +398,81 @@ for (const supportedVersion of mineflayer.testedVersions) {
           done()
         })
       })
+      it('applies the 1.21.2+ teleport velocity with its delta flags', async function () {
+        if (!registry.protocol.play.toClient.types.packet_position[1].some(field => field.name === 'dx')) {
+          this.skip()
+          return
+        }
+        const client = (await once(server, 'playerJoin'))[0]
+        await client.write('login', bot.test.generateLoginPacket())
+        const chunk = bot.test.buildChunk()
+        chunk.setBlockType(pos, goldId)
+        await client.write('map_chunk', generateChunkPacket(chunk))
+        await once(bot, 'chunkColumnLoad')
+        const teleport = (extra) => {
+          const p = once(bot, 'forcedMove')
+          client.write('position', { x: 1.5, y: 80, z: 1.5, dx: 0, dy: 0, dz: 0, pitch: 0, yaw: 0, teleportId: 1, flags: {}, ...extra })
+          return p
+        }
+        bot.entity.velocity.set(0.25, 0.5, 0)
+        await teleport({ dx: 0.5, dz: 0.125 })
+        assert.deepStrictEqual(bot.entity.velocity, vec3(0.5, 0, 0.125), 'absolute velocity from the packet')
+        bot.entity.velocity.set(0.25, 0.5, 0)
+        await teleport({ dx: 0.5, dy: 0.5, flags: { dx: true, dy: true } })
+        assert.deepStrictEqual(bot.entity.velocity, vec3(0.75, 1, 0), 'flagged axes add to the current velocity')
+        await teleport({ yaw: 0 })
+        bot.entity.velocity.set(1, 0, 0)
+        await teleport({ yaw: 90, flags: { yawDelta: true, dx: true, dz: true } })
+        assert.ok(Math.abs(bot.entity.velocity.x) < 1e-6 && Math.abs(bot.entity.velocity.z - 1) < 1e-6, `yawDelta turns the velocity with the rotation change: ${bot.entity.velocity}`)
+      })
+
+      it('answers a teleport with an ungrounded position_look and repeats the position next tick', async function () {
+        const client = (await once(server, 'playerJoin'))[0]
+        await client.write('login', bot.test.generateLoginPacket())
+        const chunk = bot.test.buildChunk()
+        chunk.setBlockType(pos, goldId)
+        await client.write('map_chunk', generateChunkPacket(chunk))
+        await once(bot, 'chunkColumnLoad')
+        // Both teleports land in open air, so the bot falls and every tick carries a position.
+        const base = { x: 4.5, y: 80, z: 4.5, dx: 0, dy: 0, dz: 0, pitch: 0, yaw: 0, teleportId: 1, flags: bot.supportFeature('positionPacketHasBitflags') ? {} : 0 }
+        const settled = once(bot, 'forcedMove')
+        await client.write('position', base)
+        await settled
+        await sleep(300)
+        const moves = []
+        const onPacket = (data, meta) => { if (['position', 'position_look', 'look', 'flying'].includes(meta.name)) moves.push({ name: meta.name, data }) }
+        client.on('packet', onPacket)
+        const p = once(bot, 'forcedMove')
+        await client.write('position', { ...base, x: 6.5, z: 6.5, yaw: 90, teleportId: 2 })
+        await p
+        await sleep(200)
+        client.off('packet', onPacket)
+        // The reply is the first packet carrying the teleported position; a tick of the fall can
+        // reach the server first.
+        const reply = moves.find(m => m.data.x === 6.5)
+        assert.ok(reply, `no packet carried the teleported position: ${JSON.stringify(moves.map(m => m.name))}`)
+        assert.strictEqual(reply.name, 'position_look')
+        assert.strictEqual(reply.data.onGround ?? reply.data.flags?.onGround, false, 'reply is not grounded')
+        if (reply.data.flags && 'hasHorizontalCollision' in reply.data.flags) assert.strictEqual(reply.data.flags.hasHorizontalCollision, false)
+      })
+
+      it('answers a forced rotation with an ungrounded look', async function () {
+        if (!registry.protocol.play.toClient.types.packet_player_rotation) {
+          this.skip()
+          return
+        }
+        const client = (await once(server, 'playerJoin'))[0]
+        await client.write('login', bot.test.generateLoginPacket())
+        const looks = []
+        client.on('packet', (data, meta) => { if (meta.name === 'look') looks.push(data) })
+        await client.write('player_rotation', { yaw: 90, pitch: 10 })
+        await sleep(100)
+        assert.strictEqual(looks.length, 1, 'one look')
+        assert.strictEqual(looks[0].yaw, 90)
+        assert.strictEqual(looks[0].pitch, 10)
+        assert.strictEqual(looks[0].onGround ?? looks[0].flags?.onGround, false)
+      })
+
       it('gravity + land on solid block + jump', (done) => {
         let y = 80
         let landed = false
