@@ -1618,17 +1618,20 @@ for (const supportedVersion of mineflayer.testedVersions) {
           await bot.activateEntity(entity)
           await bot.activateEntityAt(entity, vec3(3.5, 65, 3))
           try {
-            const useEntityHasLocation = registry.protocol.play.toServer.types.packet_use_entity[1].some(field => field.name === 'location')
+            const fields = registry.protocol.play.toServer.types.packet_use_entity[1]
+            const useEntityHasLocation = fields.some(field => field.name === 'location')
+            const handType = fields.find(field => field.name === 'hand')?.type
+            const mainHand = Array.isArray(handType) && handType[0] === 'mapper' ? 'main_hand' : 0
             assert.deepStrictEqual(writes.filter(w => w.name === 'use_entity').map(w => w.params), useEntityHasLocation
               ? [
-                  { target: 7, hand: 0, location: vec3(0, 0.975, 0), sneaking: true },
-                  { target: 7, hand: 0, location: vec3(0.5, 1, 0), sneaking: true }
+                  { target: 7, hand: mainHand, location: vec3(0, 0.975, 0), sneaking: true },
+                  { target: 7, hand: mainHand, location: vec3(0.5, 1, 0), sneaking: true }
                 ]
               : [
-                  { target: 7, mouse: 2, x: 0, y: 0.975, z: 0, hand: 0, sneaking: true },
-                  { target: 7, mouse: 0, hand: 0, sneaking: true },
-                  { target: 7, mouse: 2, x: 0.5, y: 1, z: 0, hand: 0, sneaking: true },
-                  { target: 7, mouse: 0, hand: 0, sneaking: true }
+                  { target: 7, mouse: 2, x: 0, y: 0.975, z: 0, hand: mainHand, sneaking: true },
+                  { target: 7, mouse: 0, hand: mainHand, sneaking: true },
+                  { target: 7, mouse: 2, x: 0.5, y: 1, z: 0, hand: mainHand, sneaking: true },
+                  { target: 7, mouse: 0, hand: mainHand, sneaking: true }
                 ])
             done()
           } catch (err) {
