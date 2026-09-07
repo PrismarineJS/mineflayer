@@ -592,6 +592,56 @@ for (const supportedVersion of mineflayer.testedVersions) {
     })
 
     describe('game', () => {
+      it('respawns with the action id or name this version declares', (done) => {
+        server.on('playerJoin', async (client) => {
+          await bot.test.pluginsLoaded
+          const loggedIn = once(bot, 'login')
+          await client.write('login', bot.test.generateLoginPacket())
+          await loggedIn
+          const writes = []
+          // Every write must match this version's packet shape.
+          bot._client.write = (name, params) => {
+            bot._client.serializer.createPacketBuffer({ name, params })
+            if (name === 'client_command') writes.push(params)
+          }
+          bot.isAlive = false
+          bot.respawn()
+          try {
+            const field = registry.protocol.play.toServer.types.packet_client_command[1][0]
+            const usesNames = Array.isArray(field.type) && field.type[0] === 'mapper'
+            assert.deepStrictEqual(writes, [{ [field.name]: usesNames ? 'perform_respawn' : 0 }])
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
+      it('wakes with the action id or name this version declares', (done) => {
+        server.on('playerJoin', async (client) => {
+          await bot.test.pluginsLoaded
+          const loggedIn = once(bot, 'login')
+          await client.write('login', bot.test.generateLoginPacket())
+          await loggedIn
+          const writes = []
+          bot._client.write = (name, params) => {
+            bot._client.serializer.createPacketBuffer({ name, params })
+            if (name === 'entity_action') writes.push(params.actionId)
+          }
+          bot.isSleeping = true
+          bot.wake().then(() => {
+            try {
+              const field = registry.protocol.play.toServer.types.packet_entity_action[1][1]
+              const usesNames = Array.isArray(field.type) && field.type[0] === 'mapper'
+              assert.deepStrictEqual(writes, [usesNames ? 'leave_bed' : 2])
+              done()
+            } catch (err) {
+              done(err)
+            }
+          }, done)
+        })
+      })
+
       it('responds to ping / transaction packets', (done) => { // only on 1.17
         server.on('playerJoin', async (client) => {
           if (bot.supportFeature('transactionPacketExists')) {
