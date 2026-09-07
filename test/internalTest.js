@@ -10,7 +10,14 @@ const { once, onceWithCleanup } = require('../lib/promise_utils')
 const { EventEmitter } = require('events')
 const { getPort } = require('./common/util')
 
-for (const supportedVersion of mineflayer.testedVersions) {
+// Building a registry, a chunk implementation and a protocol per version is most of this file's load
+// time, so a run restricted to some versions must not pay for the others. MC_VERSIONS is a comma
+// separated list; unset means every tested version.
+const onlyVersions = process.env.MC_VERSIONS ? process.env.MC_VERSIONS.split(',').map(v => v.trim()) : null
+const versionsUnderTest = mineflayer.testedVersions.filter(v => onlyVersions === null || onlyVersions.includes(v))
+if (versionsUnderTest.length === 0) throw new Error(`MC_VERSIONS=${process.env.MC_VERSIONS} matches none of ${mineflayer.testedVersions.join(', ')}`)
+
+for (const supportedVersion of versionsUnderTest) {
   const registry = require('prismarine-registry')(supportedVersion)
   const version = registry.version
   const Chunk = require('prismarine-chunk')(supportedVersion)
