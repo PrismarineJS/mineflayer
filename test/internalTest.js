@@ -69,9 +69,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
         port: PORT
       })
       bot.test = {}
-      // Plugins are injected on a timer after createBot, which can lose the
-      // race against the mock server's playerJoin
-      bot.test.pluginsLoaded = new Promise(resolve => bot.once('inject_allowed', resolve))
 
       bot.test.buildChunk = () => {
         if (bot.supportFeature('tallWorld')) {
@@ -778,6 +775,39 @@ for (const supportedVersion of mineflayer.testedVersions) {
                   { target: 7, mouse: 2, x: 0.5, y: 1, z: 0, hand: mainHand, sneaking: true },
                   { target: 7, mouse: 0, hand: mainHand, sneaking: true }
                 ])
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
+      it('useOn and mount send the same interact pair as activateEntity', (done) => {
+        server.on('playerJoin', async (client) => {
+          await bot.test.pluginsLoaded
+          const loggedIn = once(bot, 'login')
+          await client.write('login', bot.test.generateLoginPacket())
+          await loggedIn
+          const writes = []
+          bot._client.write = (name, params) => {
+            bot._client.serializer.createPacketBuffer({ name, params })
+            writes.push({ name, params })
+          }
+          bot.entity.position = vec3(0, 64, 3)
+          const entity = { id: 7, position: vec3(3, 64, 3), height: 1.8, width: 0.6 }
+          bot.useOn(entity)
+          bot.mount(entity)
+          try {
+            const useEntityHasLocation = registry.protocol.play.toServer.types.packet_use_entity[1].some(field => field.name === 'location')
+            // One right click is interact_at then interact before 26.1, and a single located
+            // interact from 26.1 on; either way both actions send the same thing.
+            const perClick = useEntityHasLocation ? 1 : 2
+            const sent = writes.filter(w => w.name === 'use_entity')
+            assert.strictEqual(sent.length, 2 * perClick)
+            assert.deepStrictEqual(sent.slice(0, perClick), sent.slice(perClick))
+            const hit = sent[0].params.location ?? vec3(sent[0].params.x, sent[0].params.y, sent[0].params.z)
+            assert.ok(Math.abs(hit.x + 0.3) < 1e-9, `hit x on the near face: ${hit}`)
+            assert.ok(sent.every(w => w.params.mouse !== 1), 'a right click never sends the attack action')
             done()
           } catch (err) {
             done(err)
