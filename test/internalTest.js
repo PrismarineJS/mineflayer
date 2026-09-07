@@ -69,6 +69,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
         port: PORT
       })
       bot.test = {}
+      // Plugins are injected on a timer after createBot, which can lose the
+      // race against the mock server's playerJoin
+      bot.test.pluginsLoaded = new Promise(resolve => bot.once('inject_allowed', resolve))
 
       bot.test.buildChunk = () => {
         if (bot.supportFeature('tallWorld')) {
@@ -737,6 +740,77 @@ for (const supportedVersion of mineflayer.testedVersions) {
             // once would run with isRaining still true and fail the assert.
             client.write('game_state_change', { reason, gameMode: 0.5 })
           })
+        })
+      })
+    })
+
+    describe('entity interaction', () => {
+      it('activateEntity sends the vanilla interact packets at mid height, with the sneak state', (done) => {
+        server.on('playerJoin', async (client) => {
+          await bot.test.pluginsLoaded
+          const loggedIn = once(bot, 'login')
+          await client.write('login', bot.test.generateLoginPacket())
+          await loggedIn
+          bot.lookAt = async () => {}
+          const writes = []
+          // Every write must match this version's packet shape.
+          bot._client.write = (name, params) => {
+            bot._client.serializer.createPacketBuffer({ name, params })
+            writes.push({ name, params })
+          }
+          bot.setControlState('sneak', true)
+          const entity = { id: 7, position: vec3(3, 64, 3), height: 1.95 }
+          await bot.activateEntity(entity)
+          await bot.activateEntityAt(entity, vec3(3.5, 65, 3))
+          try {
+            const fields = registry.protocol.play.toServer.types.packet_use_entity[1]
+            const useEntityHasLocation = fields.some(field => field.name === 'location')
+            const handType = fields.find(field => field.name === 'hand')?.type
+            const mainHand = Array.isArray(handType) && handType[0] === 'mapper' ? 'main_hand' : 0
+            assert.deepStrictEqual(writes.filter(w => w.name === 'use_entity').map(w => w.params), useEntityHasLocation
+              ? [
+                  { target: 7, hand: mainHand, location: vec3(0, 0.975, 0), sneaking: true },
+                  { target: 7, hand: mainHand, location: vec3(0.5, 1, 0), sneaking: true }
+                ]
+              : [
+                  { target: 7, mouse: 2, x: 0, y: 0.975, z: 0, hand: mainHand, sneaking: true },
+                  { target: 7, mouse: 0, hand: mainHand, sneaking: true },
+                  { target: 7, mouse: 2, x: 0.5, y: 1, z: 0, hand: mainHand, sneaking: true },
+                  { target: 7, mouse: 0, hand: mainHand, sneaking: true }
+                ])
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
+      it('aims activateEntity at the face of the hitbox the bot looks at', (done) => {
+        server.on('playerJoin', async (client) => {
+          await bot.test.pluginsLoaded
+          const loggedIn = once(bot, 'login')
+          await client.write('login', bot.test.generateLoginPacket())
+          await loggedIn
+          bot.lookAt = async () => {}
+          const writes = []
+          bot._client.write = (name, params) => {
+            bot._client.serializer.createPacketBuffer({ name, params })
+            writes.push({ name, params })
+          }
+          bot.entity.position = vec3(0, 64, 3)
+          // Straight along +x, so the ray enters the box at half its width on the near side.
+          const entity = { id: 7, position: vec3(3, 64, 3), height: 1.8, width: 0.6 }
+          await bot.activateEntity(entity)
+          try {
+            const first = writes.find(w => w.name === 'use_entity').params
+            const hit = first.location ?? vec3(first.x, first.y, first.z)
+            assert.ok(Math.abs(hit.x + 0.3) < 1e-9, `hit x on the near face: ${hit}`)
+            assert.ok(Math.abs(hit.z) < 1e-9, `hit z centred: ${hit}`)
+            assert.ok(hit.y > 0 && hit.y < entity.height, `hit y inside the box: ${hit}`)
+            done()
+          } catch (err) {
+            done(err)
+          }
         })
       })
     })
