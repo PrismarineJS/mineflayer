@@ -106,6 +106,7 @@
       - [bot.game.serverBrand](#botgameserverbrand)
       - [bot.game.minY](#botgameminy)
       - [bot.game.height](#botgameheight)
+      - [bot.abilities](#botabilities)
       - [bot.physicsEnabled](#botphysicsenabled)
       - [bot.player](#botplayer)
       - [bot.players](#botplayers)
@@ -183,6 +184,7 @@
       - ["death"](#death)
       - ["health"](#health)
       - ["breath"](#breath)
+      - ["abilities" (abilities)](#abilities-abilities)
       - ["entityAttributes" (entity)](#entityattributes-entity)
       - ["entitySwingArm" (entity)](#entityswingarm-entity)
       - ["entityHurt" (entity)](#entityhurt-entity)
@@ -906,6 +908,23 @@ minimum y of the world
 
 world height
 
+#### bot.abilities
+
+What the server last allowed the player in the abilities packet.
+
+```js
+{
+  invulnerable: false,
+  // the server has the player in flight; physics stops applying gravity
+  flying: false,
+  // the player is allowed to start flying
+  mayFly: false,
+  instantBuild: false,
+  flyingSpeed: 0.05,
+  walkingSpeed: 0.1
+}
+```
+
 #### bot.physicsEnabled
 
 Enable physics, default true.
@@ -1320,6 +1339,10 @@ Fires when your hp or food change.
 #### "breath"
 
 Fires when your oxygen level change.
+
+#### "abilities" (abilities)
+
+Fires when the server sends the abilities packet, with the new [bot.abilities](#botabilities).
 
 #### "entityAttributes" (entity)
 

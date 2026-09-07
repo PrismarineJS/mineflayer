@@ -80,6 +80,7 @@ export interface BotEvents {
   death: () => Promise<void> | void
   health: () => Promise<void> | void
   breath: () => Promise<void> | void
+  abilities: (abilities: Abilities) => Promise<void> | void
   entitySwingArm: (entity: Entity) => Promise<void> | void
   entityHurt: (entity: Entity, source: Entity) => Promise<void> | void
   entityDead: (entity: Entity) => Promise<void> | void
@@ -198,6 +199,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   oxygenLevel: number
   physics: PhysicsOptions
   physicsEnabled: boolean
+  abilities: Abilities
   time: Time
   quickBarSlot: number
   inventory: Window<StorageEvents>
@@ -533,6 +535,15 @@ export interface Experience {
   level: number
   points: number
   progress: number
+}
+
+export interface Abilities {
+  invulnerable: boolean
+  flying: boolean
+  mayFly: boolean
+  instantBuild: boolean
+  flyingSpeed: number
+  walkingSpeed: number
 }
 
 export interface PhysicsOptions {
