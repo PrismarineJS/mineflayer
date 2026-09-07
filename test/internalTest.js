@@ -69,6 +69,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
         port: PORT
       })
       bot.test = {}
+      // Plugins are injected on a timer after createBot, which can lose the
+      // race against the mock server's playerJoin
+      bot.test.pluginsLoaded = new Promise(resolve => bot.once('inject_allowed', resolve))
 
       bot.test.buildChunk = () => {
         if (bot.supportFeature('tallWorld')) {
@@ -1400,6 +1403,29 @@ for (const supportedVersion of mineflayer.testedVersions) {
               stoneItem
             )
           }, 100)
+        })
+      })
+    })
+
+    describe('generic place', () => {
+      it('swings the arm after use_item_on', (done) => {
+        const Item = require('prismarine-item')(registry)
+        server.on('playerJoin', async (client) => {
+          await bot.test.pluginsLoaded
+          const loggedIn = once(bot, 'login')
+          await client.write('login', bot.test.generateLoginPacket())
+          await loggedIn
+          const writes = []
+          bot._client.write = (name, params) => { writes.push(name) }
+          bot.quickBarSlot = 0
+          bot.inventory.updateSlot(bot.QUICK_BAR_START, new Item(registry.itemsByName.stone.id, 1))
+          await bot._genericPlace({ position: vec3(1, 65, 1) }, vec3(0, 1, 0), { forceLook: 'ignore', swingArm: 'right' })
+          try {
+            assert.deepStrictEqual(writes, ['block_place', 'arm_animation'])
+            done()
+          } catch (err) {
+            done(err)
+          }
         })
       })
     })
