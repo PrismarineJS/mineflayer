@@ -363,13 +363,19 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
           bot.entity.velocity.y = -1.0 // Give bot some velocity
 
-          const p1 = once(bot, 'forcedMove')
+          // The teleport is applied from the packet queue, so read the state in the forcedMove
+          // listener: awaiting it lets the next tick's gravity run first.
+          const onForcedMove = () => new Promise(resolve => {
+            bot.once('forcedMove', () => resolve({ velocity: bot.entity.velocity.clone(), position: bot.entity.position.clone() }))
+          })
+
+          const p1 = onForcedMove()
           client.write('position', absolutePositionPacket)
-          await p1
+          const afterAbsolute = await p1
 
           // Assertions for absolute teleport
-          assert.strictEqual(bot.entity.velocity.y, 0, 'Velocity should be reset to 0 after an absolute teleport')
-          assert.deepStrictEqual(bot.entity.position, vec3(1.5, 80, 1.5), 'Position should be set absolutely')
+          assert.strictEqual(afterAbsolute.velocity.y, 0, 'Velocity should be reset to 0 after an absolute teleport')
+          assert.deepStrictEqual(afterAbsolute.position, vec3(1.5, 80, 1.5), 'Position should be set absolutely')
 
           // --- Test 2: Relative Position ---
           const relativePositionPacket = {
@@ -387,14 +393,57 @@ for (const supportedVersion of mineflayer.testedVersions) {
           const initialPosition = bot.entity.position.clone()
           const expectedPosition = initialPosition.plus(vec3(1.0, -2.0, 0.5))
 
-          const p2 = once(bot, 'forcedMove')
+          const p2 = onForcedMove()
           client.write('position', relativePositionPacket)
-          await p2
+          const afterRelative = await p2
 
           // Assertions for relative teleport
-          assert.notStrictEqual(bot.entity.velocity.y, 0, 'Velocity should be preserved after a relative teleport')
-          assert.deepStrictEqual(bot.entity.position, expectedPosition, 'Position should be updated relatively')
+          assert.notStrictEqual(afterRelative.velocity.y, 0, 'Velocity should be preserved after a relative teleport')
+          assert.deepStrictEqual(afterRelative.position, expectedPosition, 'Position should be updated relatively')
 
+          done()
+        })
+      })
+      it('answers a teleport from the packet queue, not from the read that carried it', (done) => {
+        server.on('playerJoin', async (client) => {
+          await client.write('login', bot.test.generateLoginPacket())
+          const chunk = bot.test.buildChunk()
+          chunk.setBlockType(pos, goldId)
+          await client.write('map_chunk', generateChunkPacket(chunk))
+          await once(bot, 'chunkColumnLoad')
+
+          // True for as long as the listeners of one clientbound position packet are running.
+          let insidePacketCallback = false
+          bot._client.prependListener('position', () => {
+            insidePacketCallback = true
+            process.nextTick(() => { insidePacketCallback = false })
+          })
+          const movement = new Set(['position', 'position_look', 'look', 'flying', 'teleport_confirm'])
+          const written = []
+          const write = bot._client.write.bind(bot._client)
+          bot._client.write = (name, params) => {
+            if (movement.has(name)) written.push({ name, inline: insidePacketCallback })
+            return write(name, params)
+          }
+
+          const moved = once(bot, 'forcedMove')
+          client.write('position', {
+            x: 1.5,
+            y: 80,
+            z: 1.5,
+            dx: 0, // 1.21.3
+            dy: 0, // 1.21.3
+            dz: 0, // 1.21.3
+            pitch: 0,
+            yaw: 0,
+            teleportId: 3,
+            flags: bot.supportFeature('positionPacketHasBitflags') ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0
+          })
+          await moved
+          bot._client.write = write
+
+          assert.ok(written.some(p => p.name === 'position_look'), 'the teleport is answered')
+          assert.deepStrictEqual(written.filter(p => p.inline), [], 'no movement packet is written from the position packet callback')
           done()
         })
       })
@@ -579,13 +628,16 @@ for (const supportedVersion of mineflayer.testedVersions) {
           })
           await client.write('login', loginPacket)
           await client.write('map_chunk', chunkPacket)
+          // Wait for the teleport itself rather than for a tick: physics only starts ticking once
+          // the position packet has been handled, which no longer happens inside this write.
+          const teleported = once(bot, 'forcedMove')
           await client.write('position', positionPacket)
           await client.write('update_health', {
             health: 20,
             food: 20,
             foodSaturation: 0
           })
-          await bot.waitForTicks(1)
+          await teleported
           await client.write('respawn', respawnPacket)
         })
       })
