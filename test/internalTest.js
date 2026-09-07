@@ -322,6 +322,33 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('dismount', () => {
+      it('holds sneak for one tick on 1.21.3+ and sends the steer_vehicle unmount flag before', (done) => {
+        server.on('playerJoin', async (client) => {
+          try {
+            await bot.test.pluginsLoaded
+            const loggedIn = once(bot, 'login')
+            await client.write('login', bot.test.generateLoginPacket())
+            await loggedIn
+            const events = []
+            bot.setControlState = (control, state) => { events.push([control, state]) }
+            bot.waitForTicks = async (ticks) => { events.push(['tick', ticks]) }
+            bot._client.write = (name, params) => { events.push([name, params]) }
+            bot.vehicle = { id: 21 }
+            await bot.dismount()
+            if (bot.supportFeature('newPlayerInputPacket')) {
+              assert.deepStrictEqual(events, [['sneak', true], ['tick', 1], ['sneak', false]])
+            } else {
+              assert.deepStrictEqual(events, [['steer_vehicle', { sideways: 0, forward: 0, jump: 2 }]])
+            }
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+    })
+
     describe('physics', () => {
       const pos = vec3(1, 65, 1)
       const goldId = 41
