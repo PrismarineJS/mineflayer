@@ -533,6 +533,38 @@ for (const supportedVersion of mineflayer.testedVersions) {
         assert(buf.includes(expectedBytes),
           'resource_pack_receive must carry the pack UUID bytes, not a zero UUID')
       })
+
+      // Some proxies move players through a play-phase pack request and drop the
+      // connection when it goes unanswered.
+      function playPhasePack (withListener) {
+        // The mock server never sends a pack, so the plugin is driven directly.
+        const client = new EventEmitter()
+        client.state = 'play'
+        const writes = []
+        client.write = (name, params) => { writes.push({ name, params }) }
+        const fakeBot = new EventEmitter()
+        fakeBot._client = client
+        fakeBot.supportFeature = registry.supportFeature.bind(registry)
+        require('../lib/plugins/resource_pack')(fakeBot)
+        if (withListener) fakeBot.on('resourcePack', () => {})
+
+        const pack = { url: 'https://example.invalid/pack.zip', hash: '88b406352dc8a335b1050a4bf9577a878c812012', forced: false }
+        if (registry.supportFeature('resourcePackUsesUUID')) {
+          client.emit('add_resource_pack', { uuid: '8ef4746b-93b7-3c32-9dcb-b375016c114d', ...pack })
+        } else {
+          client.emit('resource_pack_send', pack)
+        }
+        return writes.filter((w) => w.name === 'resource_pack_receive').map((w) => w.params.result)
+      }
+
+      it('accepts a play-phase resource pack when nobody listens for it', () => {
+        // ACCEPTED then SUCCESSFULLY_LOADED
+        assert.deepStrictEqual(playPhasePack(false), [3, 0])
+      })
+
+      it('leaves a play-phase resource pack to the resourcePack listener', () => {
+        assert.deepStrictEqual(playPhasePack(true), [])
+      })
     })
 
     describe('world', () => {
