@@ -1703,7 +1703,7 @@ Requests chat completion from the server.
 
 Sends a publicly broadcast chat message. Breaks up big messages into multiple chat messages as necessary.
 
-Throws if called before the `login` event: the server only accepts chat once the client is in the play state.
+Throws if called before the `login` event, or after a disconnect that happened before it: the server only accepts chat once the client is in the play state.
 
 #### bot.whisper(username, message)
 

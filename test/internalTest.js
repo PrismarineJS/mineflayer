@@ -103,9 +103,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
       }
     })
     afterEach((done) => {
-      bot.on('end', () => {
-        done()
-      })
+      if (bot._client.ended) done()
+      else bot.on('end', () => done())
       server.close()
     })
     it('chat', (done) => {
@@ -194,9 +193,20 @@ for (const supportedVersion of mineflayer.testedVersions) {
     })
     it('chat before login throws a descriptive error', async () => {
       await once(bot, 'inject_allowed')
-      const early = /before the client entered the play state/
+      const early = /before the client entered the play state; wait for/
       assert.throws(() => bot.chat('hi'), early)
       assert.throws(() => bot.whisper('gary', 'hi'), early)
+    })
+    it('chat after a kick during login throws a descriptive error', async () => {
+      // Replaces the server's login handler so the client is rejected while still in the login state.
+      server.on('connection', (client) => {
+        client.removeAllListeners('login_start')
+        client.once('login_start', () => client.end('kicked'))
+      })
+      const [reason] = await once(bot, 'end')
+      const kicked = new RegExp(`disconnected before entering the play state \\(${reason}\\)`)
+      assert.throws(() => bot.chat('hi'), kicked)
+      assert.throws(() => bot.whisper('gary', 'hi'), kicked)
     })
     it('entity effects', (done) => {
       bot.once('entityEffect', (entity, effect) => {
