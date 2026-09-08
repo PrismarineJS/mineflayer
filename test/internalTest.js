@@ -101,6 +101,49 @@ for (const supportedVersion of mineflayer.testedVersions) {
         }
         return loginPacket
       }
+
+      bot.test.generateRespawnPacket = () => {
+        const loginPacket = bot.test.generateLoginPacket()
+        let respawnPacket
+        if (bot.supportFeature('usesLoginPacket')) {
+          loginPacket.worldName = 'minecraft:overworld'
+          loginPacket.hashedSeed = [0, 0]
+          respawnPacket = {
+            // 1.19+ the `dimension` filed is a string in respawn packet and undefined in login packet, in previous versions it's same NBT data in login/respawn
+            dimension: bot.supportFeature('dimensionDataInCodec') ? 'minecraft:overworld' : loginPacket.dimension,
+            worldName: loginPacket.worldName,
+            hashedSeed: loginPacket.hashedSeed,
+            gamemode: 0,
+            previousGamemode: 255,
+            isDebug: false,
+            isFlat: false,
+            copyMetadata: true,
+            death: {
+              dimensionName: '',
+              location: {
+                x: 0,
+                y: 0,
+                z: 0
+              }
+            }
+          }
+          if (bot.supportFeature('spawnRespawnWorldDataField')) {
+            respawnPacket = {
+              worldState: respawnPacket
+            }
+            respawnPacket.worldState.name = loginPacket.worldName
+            respawnPacket.worldState.dimension = loginPacket.dimension
+          }
+        } else {
+          respawnPacket = {
+            dimension: 0,
+            hashedSeed: [0, 0],
+            gamemode: 0,
+            levelType: 'default'
+          }
+        }
+        return respawnPacket
+      }
     })
     afterEach((done) => {
       bot.on('end', () => {
@@ -540,45 +583,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       const goldId = 41
       it('switchWorld respawn', (done) => {
         const loginPacket = bot.test.generateLoginPacket()
-        let respawnPacket
-        if (bot.supportFeature('usesLoginPacket')) {
-          loginPacket.worldName = 'minecraft:overworld'
-          loginPacket.hashedSeed = [0, 0]
-          loginPacket.entityId = 0
-          respawnPacket = {
-            // 1.19+ the `dimension` filed is a string in respawn packet and undefined in login packet, in previous versions it's same NBT data in login/respawn
-            dimension: bot.supportFeature('dimensionDataInCodec') ? 'minecraft:overworld' : loginPacket.dimension,
-            worldName: loginPacket.worldName,
-            hashedSeed: loginPacket.hashedSeed,
-            gamemode: 0,
-            previousGamemode: 255,
-            isDebug: false,
-            isFlat: false,
-            copyMetadata: true,
-            death: {
-              dimensionName: '',
-              location: {
-                x: 0,
-                y: 0,
-                z: 0
-              }
-            }
-          }
-          if (bot.supportFeature('spawnRespawnWorldDataField')) {
-            respawnPacket = {
-              worldState: respawnPacket
-            }
-            respawnPacket.worldState.name = loginPacket.worldName
-            respawnPacket.worldState.dimension = loginPacket.dimension
-          }
-        } else {
-          respawnPacket = {
-            dimension: 0,
-            hashedSeed: [0, 0],
-            gamemode: 0,
-            levelType: 'default'
-          }
-        }
+        const respawnPacket = bot.test.generateRespawnPacket()
         const chunk = bot.test.buildChunk()
         chunk.setBlockType(pos, goldId)
         const chunkPacket = generateChunkPacket(chunk)
@@ -1476,6 +1481,50 @@ for (const supportedVersion of mineflayer.testedVersions) {
             const items = emptyItems(chestData.slots)
             items[chestSlot] = Item.toNotch(new Item(stoneId, 5))
             client.write('window_items', windowItemsPacket(1, items))
+          })
+
+          client.write('open_window', openWindowPacket(1, chestData))
+          client.write('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
+        })
+      })
+
+      it('drops the open window on a re-login without telling the server', (done) => {
+        // Vanilla sends no close_window for the window open before a re-login
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          client.on('close_window', () => {
+            done(new Error('close_window was sent to the new server'))
+          })
+
+          bot.once('windowOpen', (window) => {
+            bot.once('windowClose', (closed) => {
+              assert.strictEqual(closed, window)
+              assert.strictEqual(bot.currentWindow, null)
+              setTimeout(done, 100)
+            })
+            client.write('login', bot.test.generateLoginPacket())
+          })
+
+          client.write('open_window', openWindowPacket(1, chestData))
+          client.write('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
+        })
+      })
+
+      it('closes the open window on respawn like vanilla', (done) => {
+        // Vanilla sends close_window for the open window before handling a respawn
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+
+          bot.once('windowOpen', (window) => {
+            let closed = null
+            bot.once('windowClose', (w) => { closed = w })
+            client.once('close_window', (packet) => {
+              assert.strictEqual(packet.windowId, window.id)
+              assert.strictEqual(closed, window)
+              assert.strictEqual(bot.currentWindow, null)
+              done()
+            })
+            client.write('respawn', bot.test.generateRespawnPacket())
           })
 
           client.write('open_window', openWindowPacket(1, chestData))

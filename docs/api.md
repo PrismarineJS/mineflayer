@@ -1504,7 +1504,7 @@ Fires when you begin using a workbench, chest, brewing stand, etc.
 
 #### "windowClose" (window)
 
-Fires when you may no longer work with a workbench, chest, etc.
+Fires when you may no longer work with a workbench, chest, etc. Also fires when a respawn or a re-login (proxy server switch) discards the open window.
 
 #### "sleep"
 
