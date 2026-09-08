@@ -1150,6 +1150,8 @@ All scoreboards known to the bot in an object scoreboard displaySlot -> scoreboa
  * `list` - scoreboard placed in list
  * `0-18` - slots defined in [protocol](https://minecraft.wiki/w/Protocol#Display_Scoreboard)
 
+Only slots that currently display an objective are enumerable, so `Object.values(bot.scoreboard)` never contains `undefined`. The named slots are non-enumerable aliases of `0`, `1` and `2`.
+
 #### bot.teams
 
 All teams known to the bot
