@@ -192,6 +192,12 @@ for (const supportedVersion of mineflayer.testedVersions) {
         client.on('chat', onChat)
       })
     })
+    it('chat before login throws a descriptive error', async () => {
+      await once(bot, 'inject_allowed')
+      const early = /before the client entered the play state/
+      assert.throws(() => bot.chat('hi'), early)
+      assert.throws(() => bot.whisper('gary', 'hi'), early)
+    })
     it('entity effects', (done) => {
       bot.once('entityEffect', (entity, effect) => {
         assert.strictEqual(entity.id, 8)
