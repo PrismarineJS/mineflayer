@@ -35,11 +35,11 @@
     "prismarine-recipe": "^1.5.0",
     "prismarine-registry": "^1.10.0",
     "prismarine-windows": "^2.9.0",
-    "prismarine-world": "git+https://github.com/DragonModels/prismarine-world.git#42eea121552c01bf3b1d6b4eadd3b9dd2d7a25c1",
+    "prismarine-world": "git+https://github.com/DragonModels/prismarine-world.git#281ebd6fae18ff0f2a93d6e3072fca133a841d5b",
     "protodef": "^1.18.0",
     "typed-emitter": "^1.0.0",
     "uuid-1345": "^1.0.2",
-    "vec3": "^0.2.0"
+    "vec3": "^0.1.7"
   },
   "devDependencies": {
     "@types/node": "^25.2.1",
