@@ -244,6 +244,75 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('blockAtEntityCursor', () => {
+      // blockAtEntityCursor treats entity.height as the eye offset, so the
+      // player at (1.25, 64.25, 1.5) looks from y ≈ 66.05. A column of gold
+      // blocks is placed so small height/position variations can't push the
+      // eye onto a block boundary.
+      const eyePos = vec3(1.25, 64.25, 1.5)
+      const column = (x, z) => [vec3(x, 65, z), vec3(x, 66, z), vec3(x, 67, z)]
+
+      function placeGoldColumn (client, goldId, blocks) {
+        client.write('login', bot.test.generateLoginPacket())
+        const chunk = bot.test.buildChunk()
+        for (const pos of blocks) chunk.setBlockType(pos, goldId)
+        client.write('map_chunk', generateChunkPacket(chunk))
+      }
+
+      function assertGoldInColumn (block, x, z) {
+        assert.ok(block, 'blockAtEntityCursor should not return null')
+        assert.strictEqual(block.type, bot.registry.blocksByName.gold_block.id)
+        assert.strictEqual(block.position.x, x)
+        assert.strictEqual(block.position.z, z)
+        assert.ok([65, 66, 67].includes(block.position.y), `unexpected y ${block.position.y}`)
+      }
+
+      it('does not bail out when yaw is 0 (facing -Z)', (done) => {
+        const goldId = bot.registry.blocksByName.gold_block.id
+        bot.on('chunkColumnLoad', () => {
+          bot.entity.position = eyePos
+          bot.entity.yaw = 0
+          bot.entity.pitch = 0
+          assertGoldInColumn(bot.blockAtEntityCursor(), 1, 0)
+          done()
+        })
+        server.on('playerJoin', (client) => {
+          placeGoldColumn(client, goldId, column(1, 0))
+        })
+      })
+      it('does not bail out when pitch is 0 (facing +X)', (done) => {
+        const goldId = bot.registry.blocksByName.gold_block.id
+        bot.on('chunkColumnLoad', () => {
+          bot.entity.position = eyePos
+          bot.entity.yaw = Math.PI / 2
+          bot.entity.pitch = 0
+          assertGoldInColumn(bot.blockAtEntityCursor(), 0, 1)
+          done()
+        })
+        server.on('playerJoin', (client) => {
+          placeGoldColumn(client, goldId, column(0, 1))
+        })
+      })
+      it('still returns null when yaw or pitch is missing', (done) => {
+        bot.once('login', () => {
+          bot.entity.position = eyePos
+          bot.entity.height = 1.8
+          delete bot.entity.yaw
+          delete bot.entity.pitch
+          assert.strictEqual(bot.blockAtEntityCursor(bot.entity), null)
+          bot.entity.yaw = 0
+          assert.strictEqual(bot.blockAtEntityCursor(bot.entity), null)
+          bot.entity.yaw = undefined
+          bot.entity.pitch = 0
+          assert.strictEqual(bot.blockAtEntityCursor(bot.entity), null)
+          done()
+        })
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+        })
+      })
+    })
+
     describe('digTime', () => {
       it('should use eye-level water check instead of isInWater for dig speed', (done) => {
         const blockPos = vec3(1, 65, 1)
