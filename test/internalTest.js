@@ -648,6 +648,30 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
 
+      it('closeWindow(null) resolves without sending close_window or emitting windowClose', (done) => {
+        server.on('playerJoin', (client) => {
+          const sent = []
+          client.on('packet', (data, meta) => {
+            if (meta.name === 'close_window' || meta.name === 'window_click') sent.push(meta.name)
+          })
+          let closes = 0
+          bot.on('windowClose', () => closes++)
+          const loggedIn = once(bot, 'login')
+          client.write('login', bot.test.generateLoginPacket())
+          loggedIn
+            .then(() => {
+              assert.strictEqual(bot.currentWindow, null)
+              return bot.closeWindow(bot.currentWindow)
+            })
+            .then(() => sleep(100))
+            .then(() => {
+              assert.deepStrictEqual(sent, [])
+              assert.strictEqual(closes, 0)
+            })
+            .then(done, done)
+        })
+      })
+
       it('closeWindow follows close_window with a no-op inventory click on pre-1.17 only', (done) => {
         server.on('playerJoin', (client) => {
           const clicks = []
