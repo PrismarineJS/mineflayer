@@ -163,6 +163,21 @@ connect: (client) => {
 
 This affected Minecraft 1.20.2+ and is fixed in current mineflayer: the bot no longer sends movement packets while the proxy puts it through the destination server's configuration phase, and resource packs are accepted automatically during that phase. Update mineflayer to the latest version.
   
+### The bot is kicked for cheating by a server anticheat
+
+The movement stream mineflayer sends is checked against the vanilla client, so these are not bugs to report:
+ * A position packet every tick while moving and one a second while standing still (the vanilla client's 20-tick position reminder).
+ * A server teleport is answered with `teleport_confirm` followed by a `position_look` at the new position; the vanilla client sends that pair for every teleport it receives, however often the server sends them.
+ * `bot.entity.onGround` is false for one tick after a teleport: the teleport zeroes the velocity and the physics step applies gravity after moving, as the vanilla `travel` does.
+
+What does get a bot kicked:
+ * Moving while the server holds the player in place (pre-game waiting areas, freeze plugins). Every correction the server sends counts against the player, and the count lands as a kick or a temporary ban, sometimes minutes later. `forcedMove` fires on every such correction; several within a few seconds while the bot is trying to move means the server is pinning it. Release the controls and stand still until the corrections stop. mineflayer-pathfinder's `createHuman` does this on its own.
+ * Reporting `onGround: false` while standing. Physics keeps the flag right; with `bot.physicsEnabled = false` nothing does, so set `bot.entity.onGround` yourself or leave physics on and only release the controls.
+ * Several movement packets in the same millisecond. Long synchronous work on the bot's thread (rendering, parsing) delays the physics ticks and they run back to back afterwards; keep such work off the bot's event loop or in short slices.
+ * Starting and stopping in a pattern, e.g. freezing on every correction and resuming a moment later. Once the bot stops it should stay stopped until the server has been quiet for a few seconds.
+
+A kick can land well after the packets that caused it. Log the clientbound `position` packets and the bot's replies (see [How do I check packets](#how-do-i-check-packets-that-are-sentreceived)) and look for a run of identical teleports before blaming the last thing the bot did.
+
 # Common Errors
 
 ### `UnhandledPromiseRejectionWarning: Error: Failed to read asymmetric key`
