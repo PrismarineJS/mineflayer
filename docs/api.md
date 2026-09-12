@@ -1141,9 +1141,13 @@ Boolean, whether or not you are in bed.
 
 All scoreboards known to the bot in an object scoreboard name -> scoreboard.
 
+Reset on each login (every server switch on a proxy network); the object is kept and its entries are dropped without `scoreboardDeleted` events.
+
 #### bot.scoreboard
 
 All scoreboards known to the bot in an object scoreboard displaySlot -> scoreboard.
+
+Reset on each login; the object is kept and its slots are dropped.
 
  * `belowName` - scoreboard placed in belowName
  * `sidebar` - scoreboard placed in sidebar
@@ -1154,9 +1158,13 @@ All scoreboards known to the bot in an object scoreboard displaySlot -> scoreboa
 
 All teams known to the bot
 
+Reset on each login (every server switch on a proxy network); the object is kept and its entries are dropped without `teamRemoved` events.
+
 #### bot.teamMap
 
 Mapping of member to team. Uses usernames for players and UUIDs for entities.
+
+Reset on each login; the object is kept and its entries are dropped.
 
 #### bot.controlState
 
@@ -1524,7 +1532,7 @@ Fires when a scoreboard is added.
 
 #### "scoreboardDeleted" (scoreboard)
 
-Fires when a scoreboard is deleted.
+Fires when a scoreboard is deleted. Not fired for scoreboards dropped by a login.
 
 #### "scoreboardTitleChanged" (scoreboard)
 
@@ -1548,7 +1556,7 @@ Fires when a team is added.
 
 #### "teamRemoved" (team)
 
-Fires when a team is removed.
+Fires when a team is removed. Not fired for teams dropped by a login.
 
 #### "teamUpdated" (team)
 
