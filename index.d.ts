@@ -789,13 +789,13 @@ export interface VillagerTrade {
 
 export class ScoreBoard {
   name: string
-  title: string
+  title: ChatMessage
   itemsMap: { [name: string]: ScoreBoardItem }
   items: ScoreBoardItem[]
 
   constructor (packet: object);
 
-  setTitle (title: string): void;
+  setTitle (title: string | object): void;
 
   add(name: string, value: number): ScoreBoardItem;
 

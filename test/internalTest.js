@@ -1514,6 +1514,67 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('scoreboard', () => {
+      // An objective title is a plain string before 1.13, a JSON component string up to 1.20.2
+      // and an NBT component after that - and servers build it out of `extra` far more often
+      // than they put the text at the top level.
+      function objectiveTitle (parts) {
+        if (registry.supportFeature('chatPacketsUseNbtComponents')) {
+          return nbt.comp({
+            text: nbt.string(''),
+            extra: nbt.list(nbt.comp(parts.map(part => {
+              const c = { text: nbt.string(part.text) }
+              if (part.color) c.color = nbt.string(part.color)
+              return c
+            })))
+          })
+        }
+        if (registry.version['>=']('1.13')) return JSON.stringify({ text: '', extra: parts })
+        return parts.map(part => part.text).join('')
+      }
+
+      it('reads a component objective title', async () => {
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          client.write('scoreboard_objective', {
+            name: 'obj',
+            action: 0,
+            displayText: objectiveTitle([{ text: 'Bed', color: 'yellow' }, { text: 'Wars' }]),
+            type: 'integer'
+          })
+          client.write('scoreboard_display_objective', { position: 1, name: 'obj' })
+        })
+
+        const [, scoreboard] = await onceWithCleanup(bot, 'scoreboardPosition', { timeout: 5000 })
+        assert.strictEqual(scoreboard.title.toString(), 'BedWars')
+        assert.strictEqual(bot.scoreboard.sidebar.title.toString(), 'BedWars')
+        assert.strictEqual(bot.scoreboards.obj.title.toString(), 'BedWars')
+      })
+
+      it('reads a component title sent as an objective update', async () => {
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          client.write('scoreboard_objective', {
+            name: 'obj',
+            action: 0,
+            displayText: objectiveTitle([{ text: 'first' }]),
+            type: 'integer'
+          })
+          setTimeout(() => {
+            client.write('scoreboard_objective', {
+              name: 'obj',
+              action: 2,
+              displayText: objectiveTitle([{ text: 'sec', color: 'red' }, { text: 'ond' }]),
+              type: 'integer'
+            })
+          }, 100)
+        })
+
+        const [scoreboard] = await onceWithCleanup(bot, 'scoreboardTitleChanged', { timeout: 5000 })
+        assert.strictEqual(scoreboard.title.toString(), 'second')
+      })
+    })
+
     describe('activateItem rotation', () => {
       it('should send the bot rotation in the use_item packet', function (done) {
         // The rotation field in use_item was added in 1.21.1

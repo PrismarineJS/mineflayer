@@ -678,7 +678,7 @@ Name of the scoreboard.
 
 #### ScoreBoard.title
 
-The title of the scoreboard (does not always equal the name)
+The title of the scoreboard as a [ChatMessage](https://github.com/PrismarineJS/prismarine-chat) (does not always equal the name). Servers send it as a chat component, so `title.toString()` for the plain text and `title.toAnsi()` to keep its colours.
 
 #### ScoreBoard.itemsMap
 
