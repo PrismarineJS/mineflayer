@@ -35,6 +35,7 @@ const propOverrides = {
 
 const Wrap = require('minecraft-wrap').Wrap
 const download = require('minecraft-wrap').download
+const { versionsUnderTest } = require('./common/versions')
 
 const MC_SERVER_PATH = path.join(__dirname, 'server')
 
@@ -54,7 +55,7 @@ async function pingUntilReady (port, host, version, attempts = 5) {
   }
 }
 
-for (const supportedVersion of mineflayer.testedVersions) {
+for (const supportedVersion of versionsUnderTest) {
   let PORT = 25565
   const registry = require('prismarine-registry')(supportedVersion)
   const version = registry.version
