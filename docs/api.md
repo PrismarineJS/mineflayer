@@ -678,7 +678,7 @@ Name of the scoreboard.
 
 #### ScoreBoard.title
 
-The title of the scoreboard (does not always equal the name)
+The title of the scoreboard (does not always equal the name), as a `ChatMessage`.
 
 #### ScoreBoard.itemsMap
 
@@ -689,6 +689,9 @@ An object with all items in the scoreboard in it
   dzikoysk: { name: 'dzikoysk', value: 6 }
 }
 ```
+
+Each item also has a `displayName` (a `ChatMessage`): the component the server sent with the score
+on 1.20.3+, otherwise the item's name formatted by its team.
 
 #### ScoreBoard.items
 
