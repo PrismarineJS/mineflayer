@@ -33,6 +33,14 @@ module.exports = () => async (bot) => {
     lowerBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
   }
 
+  // Nether roof vegetation (mushrooms) can generate on the target block and
+  // the server rejects placing over it.
+  const signPos = lowerBlock.position.offset(0, 1, 0)
+  if (bot.blockAt(signPos).name !== 'air') {
+    bot.test.sayEverywhere(`/setblock ${signPos.x} ${signPos.y} ${signPos.z} air`)
+    await onceWithCleanup(bot, `blockUpdate:${signPos}`, { timeout: 5000 })
+  }
+
   await bot.lookAt(lowerBlock.position, true)
   await bot.test.setInventorySlot(36, new Item(signItem.id, 1, 0))
   const signOpen = onceWithCleanup(bot, 'signOpen', { timeout: 5000 })
