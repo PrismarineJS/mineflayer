@@ -306,7 +306,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       const pos = vec3(1, 65, 1)
       const goldId = 41
       it('no physics if there is no chunk', (done) => {
-        let fail = 0
+        let moves = 0
         const basePosition = {
           x: 1.5,
           y: 66,
@@ -320,25 +320,25 @@ for (const supportedVersion of mineflayer.testedVersions) {
           teleportId: 0
         }
         server.on('playerJoin', async (client) => {
-          await client.write('login', bot.test.generateLoginPacket())
-          await client.write('position', basePosition)
-          client.on('packet', (data, meta) => {
-            const packetName = meta.name
-            switch (packetName) {
-              case 'position':
-                fail++
-                break
-              case 'position_look':
-                fail++
-                break
-              case 'look':
-                fail++
-                break
-            }
-            if (fail > 1) assert.fail('position packet sent')
-          })
-          await sleep(2000)
-          done()
+          try {
+            await client.write('login', bot.test.generateLoginPacket())
+            await client.write('position', basePosition)
+            client.on('packet', (data, meta) => {
+              if (meta.name === 'position' || meta.name === 'position_look' || meta.name === 'look') moves++
+            })
+            // The physics timer runs every 50 ms, so this leaves it several chances to send.
+            await sleep(300)
+            // The reply to the teleport above is the one movement packet allowed before a chunk arrives.
+            assert.ok(moves <= 1, `sent ${moves} movement packets with no chunk loaded`)
+
+            // Loading a chunk is what releases physics: without it this test would pass while broken.
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(pos, goldId)
+            await client.write('map_chunk', generateChunkPacket(chunk))
+            await once(bot, 'chunkColumnLoad')
+            await once(bot, 'move')
+            done()
+          } catch (err) { done(err) }
         })
       })
       it('absolute position & relative position (velocity)', (done) => {
