@@ -398,6 +398,81 @@ for (const supportedVersion of mineflayer.testedVersions) {
           done()
         })
       })
+      it('applies the 1.21.2+ teleport velocity with its delta flags', async function () {
+        if (!registry.protocol.play.toClient.types.packet_position[1].some(field => field.name === 'dx')) {
+          this.skip()
+          return
+        }
+        const client = (await once(server, 'playerJoin'))[0]
+        await client.write('login', bot.test.generateLoginPacket())
+        const chunk = bot.test.buildChunk()
+        chunk.setBlockType(pos, goldId)
+        await client.write('map_chunk', generateChunkPacket(chunk))
+        await once(bot, 'chunkColumnLoad')
+        const teleport = (extra) => {
+          const p = once(bot, 'forcedMove')
+          client.write('position', { x: 1.5, y: 80, z: 1.5, dx: 0, dy: 0, dz: 0, pitch: 0, yaw: 0, teleportId: 1, flags: {}, ...extra })
+          return p
+        }
+        bot.entity.velocity.set(0.25, 0.5, 0)
+        await teleport({ dx: 0.5, dz: 0.125 })
+        assert.deepStrictEqual(bot.entity.velocity, vec3(0.5, 0, 0.125), 'absolute velocity from the packet')
+        bot.entity.velocity.set(0.25, 0.5, 0)
+        await teleport({ dx: 0.5, dy: 0.5, flags: { dx: true, dy: true } })
+        assert.deepStrictEqual(bot.entity.velocity, vec3(0.75, 1, 0), 'flagged axes add to the current velocity')
+        await teleport({ yaw: 0 })
+        bot.entity.velocity.set(1, 0, 0)
+        await teleport({ yaw: 90, flags: { yawDelta: true, dx: true, dz: true } })
+        assert.ok(Math.abs(bot.entity.velocity.x) < 1e-6 && Math.abs(bot.entity.velocity.z - 1) < 1e-6, `yawDelta turns the velocity with the rotation change: ${bot.entity.velocity}`)
+      })
+
+      it('answers a teleport with an ungrounded position_look and repeats the position next tick', async function () {
+        const client = (await once(server, 'playerJoin'))[0]
+        await client.write('login', bot.test.generateLoginPacket())
+        const chunk = bot.test.buildChunk()
+        chunk.setBlockType(pos, goldId)
+        await client.write('map_chunk', generateChunkPacket(chunk))
+        await once(bot, 'chunkColumnLoad')
+        // Both teleports land in open air, so the bot falls and every tick carries a position.
+        const base = { x: 4.5, y: 80, z: 4.5, dx: 0, dy: 0, dz: 0, pitch: 0, yaw: 0, teleportId: 1, flags: bot.supportFeature('positionPacketHasBitflags') ? {} : 0 }
+        const settled = once(bot, 'forcedMove')
+        await client.write('position', base)
+        await settled
+        await sleep(300)
+        const moves = []
+        const onPacket = (data, meta) => { if (['position', 'position_look', 'look', 'flying'].includes(meta.name)) moves.push({ name: meta.name, data }) }
+        client.on('packet', onPacket)
+        const p = once(bot, 'forcedMove')
+        await client.write('position', { ...base, x: 6.5, z: 6.5, yaw: 90, teleportId: 2 })
+        await p
+        await sleep(200)
+        client.off('packet', onPacket)
+        // The reply is the first packet carrying the teleported position; a tick of the fall can
+        // reach the server first.
+        const reply = moves.find(m => m.data.x === 6.5)
+        assert.ok(reply, `no packet carried the teleported position: ${JSON.stringify(moves.map(m => m.name))}`)
+        assert.strictEqual(reply.name, 'position_look')
+        assert.strictEqual(reply.data.onGround ?? reply.data.flags?.onGround, false, 'reply is not grounded')
+        if (reply.data.flags && 'hasHorizontalCollision' in reply.data.flags) assert.strictEqual(reply.data.flags.hasHorizontalCollision, false)
+      })
+
+      it('answers a forced rotation with an ungrounded look', async function () {
+        if (!registry.protocol.play.toClient.types.packet_player_rotation) {
+          this.skip()
+          return
+        }
+        const client = (await once(server, 'playerJoin'))[0]
+        await client.write('login', bot.test.generateLoginPacket())
+        const looks = []
+        client.on('packet', (data, meta) => { if (meta.name === 'look') looks.push(data) })
+        await client.write('player_rotation', { yaw: 90, pitch: 10 })
+        await sleep(100)
+        assert.strictEqual(looks.length, 1, 'one look')
+        assert.strictEqual(looks[0].yaw, 90)
+        assert.strictEqual(looks[0].pitch, 10)
+        assert.strictEqual(looks[0].onGround ?? looks[0].flags?.onGround, false)
+      })
+
       it('gravity + land on solid block + jump', (done) => {
         let y = 80
         let landed = false
@@ -432,6 +507,68 @@ for (const supportedVersion of mineflayer.testedVersions) {
           })
         })
       })
+      it('sends the 1.21.2+ input packets like vanilla', async function () {
+        if (!bot.supportFeature('newPlayerInputPacket')) {
+          this.skip()
+          return
+        }
+        const sneakViaEntityAction = bot.supportFeature('sneakUsesEntityAction')
+        const sent = []
+        const originalWrite = bot._client.write.bind(bot._client)
+        bot._client.write = (name, params) => {
+          sent.push({ name, params })
+          return originalWrite(name, params)
+        }
+        const joined = once(server, 'playerJoin')
+        const client = (await joined)[0]
+        await client.write('login', bot.test.generateLoginPacket())
+        await client.write('update_health', { health: 20, food: 20, foodSaturation: 5 })
+        const chunk = bot.test.buildChunk()
+        chunk.setBlockType(pos, goldId)
+        await client.write('map_chunk', generateChunkPacket(chunk))
+        await once(bot, 'chunkColumnLoad')
+        const p1 = once(bot, 'forcedMove')
+        await client.write('position', { x: 1.5, y: 66, z: 1.5, dx: 0, dy: 0, dz: 0, pitch: 0, yaw: 0, flags: {}, teleportId: 0 })
+        await p1
+        await bot.waitForTicks(3)
+        assert.ok(sent.some(p => p.name === 'tick_end'), 'tick_end is sent every tick')
+        assert.ok(!sent.some(p => p.name === 'player_input' && p.params.inputs.shift), 'no shift before sneaking')
+
+        sent.length = 0
+        bot.setControlState('sneak', true)
+        await bot.waitForTicks(2)
+        const shift = sent.find(p => p.name === 'player_input')
+        assert.ok(shift, 'player_input on sneak')
+        assert.deepStrictEqual(shift.params.inputs, { forward: false, backward: false, left: false, right: false, jump: false, shift: true, sprint: false })
+        const pressShift = sent.find(p => p.name === 'entity_action')
+        if (sneakViaEntityAction) {
+          assert.strictEqual(pressShift.params.actionId, 0, 'PRESS_SHIFT_KEY entity_action up to 1.21.5')
+          assert.ok(sent.indexOf(pressShift) < sent.indexOf(shift), 'entity_action before player_input')
+        } else {
+          assert.strictEqual(pressShift, undefined, 'no entity_action for the shift key from 1.21.6')
+        }
+
+        // Sneaking blocks sprinting; the key set still changes.
+        sent.length = 0
+        bot.setControlState('sprint', true)
+        bot.setControlState('forward', true)
+        await bot.waitForTicks(2)
+        assert.ok(sent.some(p => p.name === 'player_input' && p.params.inputs.sprint && p.params.inputs.forward), 'player_input with sprint + forward')
+        assert.ok(!sent.some(p => p.name === 'entity_action' && (p.params.actionId === 3 || p.params.actionId === 'start_sprinting')), 'no start_sprinting while sneaking')
+
+        sent.length = 0
+        bot.setControlState('sneak', false)
+        await bot.waitForTicks(3)
+        assert.ok(sent.some(p => p.name === 'entity_action' && (p.params.actionId === 3 || p.params.actionId === 'start_sprinting')), 'start_sprinting once the sneak key is released')
+
+        sent.length = 0
+        bot.setControlState('forward', false)
+        await bot.waitForTicks(3)
+        assert.ok(sent.some(p => p.name === 'entity_action' && (p.params.actionId === 4 || p.params.actionId === 'stop_sprinting')), 'stop_sprinting without a forward impulse')
+        bot.clearControlStates()
+        bot._client.write = originalWrite
+      })
+
       it('no movement packets during a server transfer configuration phase', function (done) {
         // Regression test for https://github.com/PrismarineJS/mineflayer/issues/3776
         // While the client is in the configuration phase (Velocity/BungeeCord server
