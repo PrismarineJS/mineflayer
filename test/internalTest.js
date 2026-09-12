@@ -398,6 +398,50 @@ for (const supportedVersion of mineflayer.testedVersions) {
           done()
         })
       })
+      it('answers only the latest teleport when a second one lands inside the respawn reply delay', (done) => {
+        // After a death the reply to the next teleport waits 1.5 s. A teleport that arrives inside
+        // that window replaces it: the deferred reply must not go out with the older coordinates.
+        const teleport = (teleportId, x, y, z) => ({
+          x,
+          y,
+          z,
+          dx: 0,
+          dy: 0,
+          dz: 0,
+          pitch: 0,
+          yaw: 0,
+          flags: bot.registry.version['>=']('1.21.3') ? {} : 0,
+          teleportId
+        })
+        server.on('playerJoin', async (client) => {
+          try {
+            await client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(pos, goldId)
+            await client.write('map_chunk', generateChunkPacket(chunk))
+            await once(bot, 'chunkColumnLoad')
+            const replies = []
+            client.on('packet', (data, meta) => {
+              if (meta.name === 'position_look') replies.push([data.x, data.y, data.z])
+            })
+            await client.write('position', teleport(0, 1.5, 80, 1.5))
+            while (replies.length === 0) await once(client, 'packet')
+            replies.length = 0
+
+            bot.emit('death')
+            await client.write('position', teleport(1, 3.5, 80, 3.5))
+            await sleep(100)
+            await client.write('position', teleport(2, 1.5, 66, 1.5))
+            // Outlive the 1.5 s reply delay.
+            await sleep(1700)
+
+            assert.deepStrictEqual(replies, [[1.5, 66, 1.5]], `teleport replies: ${JSON.stringify(replies)}`)
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
       it('gravity + land on solid block + jump', (done) => {
         let y = 80
         let landed = false
@@ -499,6 +543,63 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
 
+      it('cancels the delayed respawn teleport reply when a transfer lands inside its delay', function (done) {
+        // After a death the reply to the respawn teleport is deferred 1.5 s. A proxy transfer that
+        // starts inside that window must not make the timer write a play packet in the
+        // configuration state.
+        if (!bot.supportFeature('hasConfigurationState')) {
+          this.skip()
+          return
+        }
+        const positionPacket = {
+          x: 1.5,
+          y: 80,
+          z: 1.5,
+          dx: 0,
+          dy: 0,
+          dz: 0,
+          pitch: 0,
+          yaw: 0,
+          flags: bot.registry.version['>=']('1.21.3') ? {} : 0,
+          teleportId: 0
+        }
+        const movementPackets = ['position', 'position_look', 'look', 'flying']
+        const sent = []
+        server.on('playerJoin', async (client) => {
+          try {
+            const originalWrite = bot._client.write.bind(bot._client)
+            bot._client.write = (name, params) => {
+              if (movementPackets.includes(name)) sent.push(`${name} in ${bot._client.state}`)
+              return originalWrite(name, params)
+            }
+
+            await client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(pos, goldId)
+            await client.write('map_chunk', generateChunkPacket(chunk))
+            await once(bot, 'chunkColumnLoad')
+            const p1 = once(bot, 'forcedMove')
+            await client.write('position', positionPacket)
+            await p1
+
+            bot.emit('death')
+            sent.length = 0
+            await client.write('position', { ...positionPacket, teleportId: 1 })
+            await sleep(100)
+            await client.write('start_configuration', {})
+            if (bot._client.state !== 'configuration') {
+              await once(bot._client, 'state')
+            }
+            // Outlive the 1.5 s reply delay.
+            await sleep(1700)
+
+            assert.deepStrictEqual(sent, [], `movement packets written after the transfer began: ${sent.join(', ')}`)
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
       it('accepts a configuration-phase resource pack with the real UUID bytes', function () {
         // The accept must carry the pack's real UUID bytes; a uuid-1345 object serializes to
         // 16 zero bytes.
