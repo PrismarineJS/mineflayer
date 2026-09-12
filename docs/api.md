@@ -308,6 +308,10 @@
       - [bot.acceptResourcePack()](#botacceptresourcepack)
       - [bot.denyResourcePack()](#botdenyresourcepack)
       - [bot.placeBlock(referenceBlock, faceVector)](#botplaceblockreferenceblock-facevector)
+      - [bot.entityInteractionRange()](#botentityinteractionrange)
+      - [bot.blockInteractionRange()](#botblockinteractionrange)
+      - [bot.canInteractWithEntity(entity, buffer)](#botcaninteractwithentityentity-buffer--0)
+      - [bot.canInteractWithBlock(block, buffer)](#botcaninteractwithblockblock-buffer--0)
       - [bot.placeEntity(referenceBlock, faceVector)](#botplaceentityreferenceblock-facevector)
       - [bot.activateBlock(block, direction?: Vec3, cursorPos?: Vec3)](#botactivateblockblock-direction-vec3-cursorpos-vec3)
       - [bot.activateEntity(entity)](#botactivateentityentity)
@@ -1962,6 +1966,27 @@ It rejects as soon as the server refuses the placement (for example because an e
    indicating which face of the `referenceBlock` to place the block against.
 
 The new block will be placed at `referenceBlock.position.plus(faceVector)`.
+
+#### bot.entityInteractionRange()
+
+The distance the server lets the bot reach entities at, read from the `entity_interaction_range`
+attribute the server sends (1.20.5+) and falling back to vanilla's 3.0. Creative mode adds to it.
+
+#### bot.blockInteractionRange()
+
+The same for blocks: the `block_interaction_range` attribute, or vanilla's 4.5.
+
+#### bot.canInteractWithEntity(entity, buffer = 0)
+
+Whether `entity`'s hitbox is inside `bot.entityInteractionRange() + buffer` of the bot's eye. This
+is the check vanilla makes, and the one the server repeats when an interact arrives, so it answers
+"could a player standing here have clicked that?". Interactions sent from further away are dropped
+without a reply. The server gives itself 3.0 of slack, so `buffer` is the knob for asking which of
+the two questions you mean.
+
+#### bot.canInteractWithBlock(block, buffer = 0)
+
+The same for a block, measured against its own cube.
 
 #### bot.placeEntity(referenceBlock, faceVector)
 
