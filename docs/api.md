@@ -1504,7 +1504,7 @@ Fires when you begin using a workbench, chest, brewing stand, etc.
 
 #### "windowClose" (window)
 
-Fires when you may no longer work with a workbench, chest, etc.
+Fires when you may no longer work with a workbench, chest, etc. Also fires when a respawn or a re-login (proxy server switch) discards the open window.
 
 #### "sleep"
 
@@ -2196,7 +2196,7 @@ Put the item at `slot` in the inventory.
 
 This function returns a `Promise`, with `void` as its argument once the server has acknowledged the close.
 
-Close the `window`. On 1.16.5 and below the server only learns which inventory slots the window changed on its next tick, so await this before anything else (a command, another player) touches those slots.
+Close the `window`. On 1.16.5 and below the server only learns which inventory slots the window changed on its next tick, so await this before anything else (a command, another player) touches those slots. A `null` window (`bot.currentWindow` after the window closed on its own) is a no-op.
 
 #### bot.transfer(options)
 

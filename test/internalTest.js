@@ -101,6 +101,49 @@ for (const supportedVersion of mineflayer.testedVersions) {
         }
         return loginPacket
       }
+
+      bot.test.generateRespawnPacket = () => {
+        const loginPacket = bot.test.generateLoginPacket()
+        let respawnPacket
+        if (bot.supportFeature('usesLoginPacket')) {
+          loginPacket.worldName = 'minecraft:overworld'
+          loginPacket.hashedSeed = [0, 0]
+          respawnPacket = {
+            // 1.19+ the `dimension` filed is a string in respawn packet and undefined in login packet, in previous versions it's same NBT data in login/respawn
+            dimension: bot.supportFeature('dimensionDataInCodec') ? 'minecraft:overworld' : loginPacket.dimension,
+            worldName: loginPacket.worldName,
+            hashedSeed: loginPacket.hashedSeed,
+            gamemode: 0,
+            previousGamemode: 255,
+            isDebug: false,
+            isFlat: false,
+            copyMetadata: true,
+            death: {
+              dimensionName: '',
+              location: {
+                x: 0,
+                y: 0,
+                z: 0
+              }
+            }
+          }
+          if (bot.supportFeature('spawnRespawnWorldDataField')) {
+            respawnPacket = {
+              worldState: respawnPacket
+            }
+            respawnPacket.worldState.name = loginPacket.worldName
+            respawnPacket.worldState.dimension = loginPacket.dimension
+          }
+        } else {
+          respawnPacket = {
+            dimension: 0,
+            hashedSeed: [0, 0],
+            gamemode: 0,
+            levelType: 'default'
+          }
+        }
+        return respawnPacket
+      }
     })
     afterEach((done) => {
       bot.on('end', () => {
@@ -540,45 +583,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       const goldId = 41
       it('switchWorld respawn', (done) => {
         const loginPacket = bot.test.generateLoginPacket()
-        let respawnPacket
-        if (bot.supportFeature('usesLoginPacket')) {
-          loginPacket.worldName = 'minecraft:overworld'
-          loginPacket.hashedSeed = [0, 0]
-          loginPacket.entityId = 0
-          respawnPacket = {
-            // 1.19+ the `dimension` filed is a string in respawn packet and undefined in login packet, in previous versions it's same NBT data in login/respawn
-            dimension: bot.supportFeature('dimensionDataInCodec') ? 'minecraft:overworld' : loginPacket.dimension,
-            worldName: loginPacket.worldName,
-            hashedSeed: loginPacket.hashedSeed,
-            gamemode: 0,
-            previousGamemode: 255,
-            isDebug: false,
-            isFlat: false,
-            copyMetadata: true,
-            death: {
-              dimensionName: '',
-              location: {
-                x: 0,
-                y: 0,
-                z: 0
-              }
-            }
-          }
-          if (bot.supportFeature('spawnRespawnWorldDataField')) {
-            respawnPacket = {
-              worldState: respawnPacket
-            }
-            respawnPacket.worldState.name = loginPacket.worldName
-            respawnPacket.worldState.dimension = loginPacket.dimension
-          }
-        } else {
-          respawnPacket = {
-            dimension: 0,
-            hashedSeed: [0, 0],
-            gamemode: 0,
-            levelType: 'default'
-          }
-        }
+        const respawnPacket = bot.test.generateRespawnPacket()
         const chunk = bot.test.buildChunk()
         chunk.setBlockType(pos, goldId)
         const chunkPacket = generateChunkPacket(chunk)
@@ -645,6 +650,30 @@ for (const supportedVersion of mineflayer.testedVersions) {
             })
             client.write('ping', { id: 42 })
           }
+        })
+      })
+
+      it('closeWindow(null) resolves without sending close_window or emitting windowClose', (done) => {
+        server.on('playerJoin', (client) => {
+          const sent = []
+          client.on('packet', (data, meta) => {
+            if (meta.name === 'close_window' || meta.name === 'window_click') sent.push(meta.name)
+          })
+          let closes = 0
+          bot.on('windowClose', () => closes++)
+          const loggedIn = once(bot, 'login')
+          client.write('login', bot.test.generateLoginPacket())
+          loggedIn
+            .then(() => {
+              assert.strictEqual(bot.currentWindow, null)
+              return bot.closeWindow(bot.currentWindow)
+            })
+            .then(() => sleep(100))
+            .then(() => {
+              assert.deepStrictEqual(sent, [])
+              assert.strictEqual(closes, 0)
+            })
+            .then(done, done)
         })
       })
 
@@ -1480,6 +1509,84 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
           client.write('open_window', openWindowPacket(1, chestData))
           client.write('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
+        })
+      })
+
+      it('drops the open window on a re-login without telling the server', (done) => {
+        // Vanilla sends no close_window for the window open before a re-login
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          client.on('close_window', () => {
+            done(new Error('close_window was sent to the new server'))
+          })
+
+          bot.once('windowOpen', (window) => {
+            bot.once('windowClose', (closed) => {
+              assert.strictEqual(closed, window)
+              assert.strictEqual(bot.currentWindow, null)
+              setTimeout(done, 100)
+            })
+            client.write('login', bot.test.generateLoginPacket())
+          })
+
+          client.write('open_window', openWindowPacket(1, chestData))
+          client.write('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
+        })
+      })
+
+      it('closes the open window on respawn like vanilla', (done) => {
+        // Vanilla sends close_window for the open window before handling a respawn
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+
+          bot.once('windowOpen', (window) => {
+            let closed = null
+            bot.once('windowClose', (w) => { closed = w })
+            client.once('close_window', (packet) => {
+              assert.strictEqual(packet.windowId, window.id)
+              assert.strictEqual(closed, window)
+              assert.strictEqual(bot.currentWindow, null)
+              done()
+            })
+            client.write('respawn', bot.test.generateRespawnPacket())
+          })
+
+          client.write('open_window', openWindowPacket(1, chestData))
+          client.write('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
+        })
+      })
+
+      it('clicks carry the stateId of the window they click, not the last one synced', function (done) {
+        if (!bot.supportFeature('stateIdUsed')) {
+          this.skip()
+          return
+        }
+        const clicks = []
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          client.on('window_click', (packet) => {
+            clicks.push(packet)
+            if (clicks.length < 2) return
+            try {
+              assert.deepStrictEqual(clicks.map(c => [c.windowId, c.stateId]), [[1, 5], [0, 9]])
+              done()
+            } catch (err) {
+              done(err)
+            }
+          })
+
+          bot.once('windowOpen', async () => {
+            // a player-inventory sync while the container is open
+            client.write('set_slot', { windowId: 0, stateId: 9, slot: 36, item: Item.toNotch(null) })
+            await sleep(50)
+            await bot.clickWindow(0, 0, 0)
+            bot.closeWindow(bot.currentWindow)
+            await sleep(50)
+            await bot.clickWindow(36, 0, 0)
+          })
+
+          client.write('open_window', openWindowPacket(1, chestData))
+          client.write('window_items', { ...windowItemsPacket(1, emptyItems(chestData.slots)), stateId: 5 })
         })
       })
     })
