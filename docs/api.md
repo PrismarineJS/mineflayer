@@ -1248,6 +1248,8 @@ Emitted when the server changes any of the game properties.
 
 Emitted when the server sends a resource pack.
 
+The pack is accepted automatically when nobody listens to this event, or when it arrives during the configuration phase (a proxy server transfer), which the server holds open until the pack is answered. With a listener attached, a play-phase pack waits for `bot.acceptResourcePack()` or `bot.denyResourcePack()`.
+
 #### "title" (title, type)
 
 Emitted when the server sends a title
