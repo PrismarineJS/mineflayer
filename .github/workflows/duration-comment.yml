@@ -35,7 +35,7 @@ jobs:
             const existing = comments.find(c => c.body.startsWith(marker))
             if (lines.length === 0 && !existing) return
             const body = lines.length === 0
-              ? `${marker}\nNo tests are more than 1.5x slower than master anymore.`
-              : `${marker}\nTests more than 1.5x slower than master (durations are noisy, so this is informational):\n\`\`\`\n${lines.join('\n')}\n\`\`\``
+              ? `${marker}\nNo tests are more than 2x slower than master anymore.`
+              : `${marker}\nTests more than 2x slower than master (durations are noisy, so this is informational):\n\`\`\`\n${lines.join('\n')}\n\`\`\``
             if (existing) await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body })
             else await github.rest.issues.createComment({ owner, repo, issue_number, body })
