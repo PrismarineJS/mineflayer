@@ -36,6 +36,7 @@ function inject (bot, wrap) {
   bot.test.fly = fly
   bot.test.teleport = teleport
   bot.test.resetState = resetState
+  bot.test.awaitCommandsProcessed = awaitCommandsProcessed
   bot.test.setInventorySlot = setInventorySlot
   bot.test.placeBlock = placeBlock
   bot.test.runExample = runExample
@@ -93,13 +94,7 @@ function inject (bot, wrap) {
     // The marker echo only proves the fills executed: command feedback is
     // sent immediately while block changes flush at tick end, so the client
     // can still hold pre-fill blocks after the echo.
-    const marker = 'superflat-reset-done'
-    const echo = onceWithCleanup(bot, 'messagestr', {
-      timeout: 5000,
-      checkCondition: (message) => message.includes(marker)
-    })
-    bot.chat(marker)
-    await echo
+    await awaitCommandsProcessed('superflat-reset-done')
     const staleBlock = () => {
       for (let y = groundY + 4; y >= groundY - 1; y--) {
         const realY = y + bot.test.groundY - 4
@@ -137,6 +132,21 @@ function inject (bot, wrap) {
         onceWithCleanup(bot.world, 'chunkColumnLoad', { timeout: 500 })
       ]).catch(() => {})
     }
+  }
+
+  // Chat and commands run in order on the server's main thread, so the echo
+  // of a message sent after a batch of commands proves the batch has executed.
+  // Command feedback is sent immediately while block changes flush at tick
+  // end, so a caller reading blocks a command just changed still has to wait
+  // for them; but block interaction packets are not ordered behind commands
+  // on 1.21.9+, so this must precede acting on such a block.
+  async function awaitCommandsProcessed (marker) {
+    const echo = onceWithCleanup(bot, 'messagestr', {
+      timeout: 5000,
+      checkCondition: (message) => message.includes(marker)
+    })
+    bot.chat(marker)
+    await echo
   }
 
   async function placeBlock (slot, position) {
