@@ -2120,6 +2120,59 @@ for (const supportedVersion of mineflayer.testedVersions) {
     })
 
     describe('scoreboard', () => {
+      // Servers build an objective title out of `extra` far more often than they put the text at the top level.
+      function objectiveTitle (parts) {
+        if (!registry.supportFeature('chatPacketsUseNbtComponents')) return JSON.stringify({ text: '', extra: parts })
+        return nbt.comp({
+          text: nbt.string(''),
+          extra: nbt.list(nbt.comp(parts.map(part => {
+            const c = { text: nbt.string(part.text) }
+            if (part.color) c.color = nbt.string(part.color)
+            return c
+          })))
+        })
+      }
+
+      it('reads a component objective title', async () => {
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          client.write('scoreboard_objective', {
+            name: 'obj',
+            action: 0,
+            displayText: objectiveTitle([{ text: 'Bed', color: 'yellow' }, { text: 'Wars' }]),
+            type: 'integer'
+          })
+          client.write('scoreboard_display_objective', { position: 1, name: 'obj' })
+        })
+
+        const [, scoreboard] = await onceWithCleanup(bot, 'scoreboardPosition', { timeout: 5000 })
+        assert.strictEqual(scoreboard.title.toString(), 'BedWars')
+        assert.strictEqual(bot.scoreboard.sidebar.title.toString(), 'BedWars')
+        assert.strictEqual(bot.scoreboards.obj.title.toString(), 'BedWars')
+      })
+
+      it('reads a component title sent as an objective update', async () => {
+        server.on('playerJoin', async (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          client.write('scoreboard_objective', {
+            name: 'obj',
+            action: 0,
+            displayText: objectiveTitle([{ text: 'first' }]),
+            type: 'integer'
+          })
+          await once(bot, 'scoreboardCreated')
+          client.write('scoreboard_objective', {
+            name: 'obj',
+            action: 2,
+            displayText: objectiveTitle([{ text: 'sec', color: 'red' }, { text: 'ond' }]),
+            type: 'integer'
+          })
+        })
+
+        const [scoreboard] = await onceWithCleanup(bot, 'scoreboardTitleChanged', { timeout: 5000 })
+        assert.strictEqual(scoreboard.title.toString(), 'second')
+      })
+
       it('enumerates only the display slots that hold an objective', async () => {
         server.on('playerJoin', (client) => client.write('login', bot.test.generateLoginPacket()))
         await once(bot, 'login')
