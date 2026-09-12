@@ -1963,6 +1963,13 @@ It rejects as soon as the server refuses the placement (for example because an e
 
 The new block will be placed at `referenceBlock.position.plus(faceVector)`.
 
+The face and the cursor position in the packet are taken from a raycast along the bot's own look,
+the way the vanilla client derives them, so the server sees a hit the bot could have made. When no
+point on the requested face is in view — the side faces of the block you are standing on never are,
+which is why players bridge by sneaking over the edge — the requested face is sent anyway, as
+before. Set `bot.placeFaceStrict = true` (or pass `strictFace: true` to `bot._genericPlace`) to
+reject those instead: servers that validate the hit drop them silently.
+
 #### bot.placeEntity(referenceBlock, faceVector)
 
 This function returns a `Promise`, with `Entity` as its argument upon completion.
