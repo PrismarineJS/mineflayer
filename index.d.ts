@@ -350,7 +350,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   mount: (entity: Entity) => void
 
-  dismount: () => void
+  dismount: () => Promise<void>
 
   moveVehicle: (left: number, forward: number) => void
 
