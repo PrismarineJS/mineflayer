@@ -1455,6 +1455,41 @@ for (const supportedVersion of mineflayer.testedVersions) {
         carriedItem: Item.toNotch(null)
       })
 
+      it('retains server-observed block contents across window updates and close', (done) => {
+        server.on('playerJoin', (client) => {
+          bot.once('login', () => {
+            setImmediate(async () => {
+              try {
+                const position = vec3(2, 64, 3)
+                bot.world.setColumn(0, 0, bot.test.buildChunk())
+                bot.world.setBlockStateId(position, registry.blocksByName.chest.defaultState)
+                assert.strictEqual(bot.world.getObservedBlockInventory(position), null)
+                bot.activateBlock = () => {
+                  const items = emptyItems(chestData.slots)
+                  items[0] = Item.toNotch(new Item(registry.itemsByName.stone.id, 3))
+                  client.write('open_window', openWindowPacket(1, chestData))
+                  client.write('window_items', windowItemsPacket(1, items))
+                }
+                const window = await bot.openBlock(bot.blockAt(position))
+                assert.strictEqual(bot.world.getObservedBlockInventory(position).slots[0].count, 3)
+                window.updateSlot(0, new Item(registry.itemsByName.stone.id, 42))
+                assert.strictEqual(bot.world.getObservedBlockInventory(position).slots[0].count, 3)
+                const updated = once(bot, 'setWindowItems:1')
+                const items = emptyItems(chestData.slots)
+                items[0] = Item.toNotch(new Item(registry.itemsByName.stone.id, 8))
+                client.write('window_items', windowItemsPacket(1, items))
+                await updated
+                assert.strictEqual(bot.world.getObservedBlockInventory(position).slots[0].count, 8)
+                bot.closeWindow(window)
+                assert.strictEqual(bot.world.getObservedBlockInventory(position).stale, true)
+                done()
+              } catch (err) { done(err) }
+            })
+          })
+          client.write('login', bot.test.generateLoginPacket())
+        })
+      })
+
       it('opens a window whose early window_items reuses the id of a closed window', (done) => {
         const emeraldId = registry.itemsByName.emerald.id
 
