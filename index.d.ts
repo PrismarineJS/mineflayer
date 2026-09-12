@@ -326,6 +326,10 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   placeBlock: (referenceBlock: Block, faceVector: Vec3) => Promise<void>
 
+  /** Reject a placement whose requested face is not the one the bot's own crosshair reaches,
+   *  instead of sending it anyway. Off by default. */
+  placeFaceStrict: boolean
+
   placeEntity: (referenceBlock: Block, faceVector: Vec3) => Promise<Entity>
 
   activateBlock: (block: Block, direction?: Vec3, cursorPos?: Vec3) => Promise<void>
