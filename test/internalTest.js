@@ -247,6 +247,100 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('digging', () => {
+      const blockPos = vec3(1, 65, 1)
+      const otherPos = vec3(2, 65, 1)
+      const BlockFace = require('prismarine-world').iterators.BlockFace
+      const hasSequence = registry.protocol?.play?.toServer?.types?.packet_block_dig?.[1]?.some(f => f.name === 'sequence')
+      // Sequence value expected for the nth prediction packet
+      const seq = n => hasSequence ? n : 0
+
+      async function setup (client, gameMode) {
+        await bot.test.pluginsLoaded
+        const dirtId = registry.blocksByName.dirt.id
+        const loaded = once(bot, 'chunkColumnLoad')
+        client.write('login', bot.test.generateLoginPacket())
+        const chunk = bot.test.buildChunk()
+        chunk.setBlockType(blockPos, dirtId)
+        chunk.setBlockType(otherPos, dirtId)
+        client.write('map_chunk', generateChunkPacket(chunk))
+        await loaded
+        bot.entity.position = vec3(1.5, 66, 1.5)
+        bot.entity.eyeHeight = 1.62
+        bot.entity.onGround = true
+        bot.entity.effects = {}
+        bot.game.gameMode = gameMode
+        const writes = []
+        bot._client.write = (name, params) => { writes.push({ name, params }) }
+        return writes
+      }
+      const digPackets = writes => writes.filter(w => w.name === 'block_dig').map(({ params }) => [params.status, params.face, params.sequence])
+
+      it('instant break sends only START_DESTROY_BLOCK and resolves on the block update', (done) => {
+        server.on('playerJoin', async (client) => {
+          try {
+            const writes = await setup(client, 'creative')
+            const block = bot.blockAt(blockPos)
+            assert.strictEqual(bot.digTime(block), 0)
+            const completed = once(bot, 'diggingCompleted')
+            await bot.dig(block, 'ignore')
+            await completed
+            assert.deepStrictEqual(writes.map(w => w.name), ['block_dig', 'arm_animation'])
+            assert.deepStrictEqual(digPackets(writes), [[0, BlockFace.TOP, seq(1)]])
+            assert.strictEqual(bot.blockAt(blockPos).type, 0)
+            assert.strictEqual(bot.targetDigBlock, null)
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
+      it('swings every physics tick while digging', (done) => {
+        server.on('playerJoin', async (client) => {
+          try {
+            const writes = await setup(client, 'survival')
+            const block = bot.blockAt(blockPos)
+            assert.ok(bot.digTime(block) > 0)
+            const dig = bot.dig(block, 'ignore')
+            bot.emit('physicsTick')
+            bot.emit('physicsTick')
+            assert.deepStrictEqual(writes.map(w => w.name), ['block_dig', 'arm_animation', 'arm_animation', 'arm_animation'])
+            await dig
+            writes.length = 0
+            bot.emit('physicsTick')
+            assert.deepStrictEqual(writes, [])
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
+      it('aborts with face DOWN from stopDigging and with the new face on a retarget', (done) => {
+        server.on('playerJoin', async (client) => {
+          try {
+            const writes = await setup(client, 'survival')
+            const first = bot.dig(bot.blockAt(blockPos), true, vec3(-1, 0, 0))
+            const second = bot.dig(bot.blockAt(otherPos), true, vec3(0, 0, 1))
+            await assert.rejects(first, /Digging aborted/)
+            bot.stopDigging()
+            await assert.rejects(second, /Digging aborted/)
+            assert.deepStrictEqual(digPackets(writes), [
+              [0, BlockFace.WEST, seq(1)],
+              [1, BlockFace.SOUTH, 0],
+              [0, BlockFace.SOUTH, seq(2)],
+              [1, BlockFace.BOTTOM, 0]
+            ])
+            assert.strictEqual(bot.targetDigBlock, null)
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+    })
+
     describe('digTime', () => {
       it('should use eye-level water check instead of isInWater for dig speed', (done) => {
         const blockPos = vec3(1, 65, 1)
