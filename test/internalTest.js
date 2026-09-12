@@ -432,6 +432,35 @@ for (const supportedVersion of mineflayer.testedVersions) {
           })
         })
       })
+      it('reports the standing flag it had before a teleport while physics is disabled', async function () {
+        const client = (await once(server, 'playerJoin'))[0]
+        await client.write('login', bot.test.generateLoginPacket())
+        const chunk = bot.test.buildChunk()
+        chunk.setBlockType(pos, goldId)
+        await client.write('map_chunk', generateChunkPacket(chunk))
+        await once(bot, 'chunkColumnLoad')
+        const onBlock = { x: pos.x + 0.5, y: pos.y + 1, z: pos.z + 0.5, dx: 0, dy: 0, dz: 0, pitch: 0, yaw: 0, teleportId: 1, flags: bot.supportFeature('positionPacketHasBitflags') ? {} : 0 }
+        const landed = once(bot, 'forcedMove')
+        await client.write('position', onBlock)
+        await landed
+        await bot.waitForTicks(5)
+        assert.strictEqual(bot.entity.onGround, true, 'standing on the block')
+        bot.physicsEnabled = false
+        const pinned = once(bot, 'forcedMove')
+        await client.write('position', { ...onBlock, teleportId: 2 })
+        await pinned
+        await sleep(200)
+        const grounded = []
+        const onPacket = (data, meta) => {
+          if (!['position', 'position_look', 'look', 'flying'].includes(meta.name)) return
+          grounded.push(data.onGround ?? data.flags?.onGround)
+        }
+        client.on('packet', onPacket)
+        await sleep(1300)
+        client.off('packet', onPacket)
+        assert.ok(grounded.length > 0, 'the position reminder goes out with physics disabled')
+        assert.ok(grounded.every(g => g === true), `every movement packet reports standing: ${JSON.stringify(grounded)}`)
+      })
       it('no movement packets during a server transfer configuration phase', function (done) {
         // Regression test for https://github.com/PrismarineJS/mineflayer/issues/3776
         // While the client is in the configuration phase (Velocity/BungeeCord server

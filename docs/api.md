@@ -908,7 +908,7 @@ world height
 
 #### bot.physicsEnabled
 
-Enable physics, default true.
+Enable physics, default true. While it is false the position reminder still goes out every second and carries `bot.entity.onGround` as it was left: a teleport does not change it, and nothing simulates it.
 
 #### bot.player
 
