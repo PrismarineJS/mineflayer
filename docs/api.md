@@ -678,7 +678,8 @@ Name of the scoreboard.
 
 #### ScoreBoard.title
 
-The title of the scoreboard (does not always equal the name)
+The title of the scoreboard (does not always equal the name), as a `ChatMessage`. Servers send it
+as a chat component, so `.toString()` for the plain text and `.toAnsi()` for the coloured form.
 
 #### ScoreBoard.itemsMap
 
