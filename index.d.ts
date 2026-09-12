@@ -326,6 +326,21 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   placeBlock: (referenceBlock: Block, faceVector: Vec3) => Promise<void>
 
+  /** The reach the server grants for entities, from the `entity_interaction_range` attribute
+   *  (1.20.5+), or vanilla's 3.0 default. */
+  entityInteractionRange (): number
+
+  /** The reach the server grants for blocks, from the `block_interaction_range` attribute
+   *  (1.20.5+), or vanilla's 4.5 default. */
+  blockInteractionRange (): number
+
+  /** Whether the entity's hitbox is within `entityInteractionRange() + buffer` of the bot's eye,
+   *  the way the server checks an interact packet. */
+  canInteractWithEntity (entity: Entity, buffer?: number): boolean
+
+  /** Whether the block's cube is within `blockInteractionRange() + buffer` of the bot's eye. */
+  canInteractWithBlock (block: Block, buffer?: number): boolean
+
   placeEntity: (referenceBlock: Block, faceVector: Vec3) => Promise<Entity>
 
   activateBlock: (block: Block, direction?: Vec3, cursorPos?: Vec3) => Promise<void>
