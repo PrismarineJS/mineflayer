@@ -86,7 +86,8 @@ jobs:
           for v in ${{ matrix.versions }}; do
             # TRACE is cheap (<1% runtime) and only written by the harness bot,
             # so always record a packet trace for post-mortem analysis.
-            TRACE="trace-${v}.jsonl" DURATIONS="durations/durations-${v}.json" npm run mocha_test -- --retries 3 -g "${v}v" > "test-${v}.log" 2>&1 &
+            # MC_VERSIONS scopes what the test files build at load time; -g scopes what runs.
+            MC_VERSIONS="${v}" TRACE="trace-${v}.jsonl" DURATIONS="durations/durations-${v}.json" npm run mocha_test -- --retries 3 -g "${v}v" > "test-${v}.log" 2>&1 &
             pids="$pids $!"
           done
           for pid in $pids; do
