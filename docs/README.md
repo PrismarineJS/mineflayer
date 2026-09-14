@@ -221,6 +221,7 @@ The most updated and useful are :
  * [Projectile](https://github.com/firejoust/mineflayer-projectile) - Get the required launch angle for projectiles
  * [Movement](https://github.com/firejoust/mineflayer-movement) - Smooth and realistic player movement, best suited for PvP
  * [Collect Block](https://github.com/PrismarineJS/mineflayer-collectblock) - Quick and simple block collection API.
+ * [Crafting Util](https://github.com/generelschwerz/mineflayer-crafting-util) - Crafting planner and execution helpers for Mineflayer bots.
 
  But also check out :
 
