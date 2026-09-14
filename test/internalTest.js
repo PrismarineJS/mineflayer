@@ -648,6 +648,28 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
 
+      it('window titles are ChatMessages whatever shape the server sends', async () => {
+        const Item = require('prismarine-item')(registry)
+        // A component title plus the bare-string form third-party servers send.
+        const titles = registry.supportFeature('chatPacketsUseNbtComponents')
+          ? [nbt.comp({ text: nbt.string('Test Chest') }), nbt.string('Test Chest')]
+          : [JSON.stringify({ text: 'Test Chest' }), 'Test Chest']
+        const chest = registry.supportFeature('village&pillageInventoryWindows')
+          ? { inventoryType: 2 }
+          : { inventoryType: 'minecraft:chest', slotCount: 27 }
+        const [client] = await once(server, 'playerJoin')
+        client.write('login', bot.test.generateLoginPacket())
+        for (const [i, windowTitle] of titles.entries()) {
+          const windowId = i + 1
+          client.write('open_window', { windowId, windowTitle, ...chest })
+          client.write('window_items', { windowId, stateId: 0, items: [], carriedItem: Item.toNotch(null) })
+          const [window] = await once(bot, 'windowOpen')
+          assert.strictEqual(window.id, windowId)
+          assert.strictEqual(window.title.constructor.name, 'ChatMessage')
+          assert.strictEqual(window.title.toString(), 'Test Chest')
+        }
+      })
+
       it('closeWindow follows close_window with a no-op inventory click on pre-1.17 only', (done) => {
         server.on('playerJoin', (client) => {
           const clicks = []
