@@ -66,6 +66,7 @@ jobs:
           java-package: jre
       - name: Install Dependencies
         run: npm install
+      - run: cd node_modules && cd minecraft-data && mv minecraft-data minecraft-data-old && git clone -b copilot/fix-pc-protocol-enum-inconsistencies https://github.com/PrismarineJS/minecraft-data --depth 1 && node bin/generate_data.js
 
       # Per-test durations from the last master run of this version group, so a PR gets a
       # comment listing tests it made more than 2x slower (test/common/compareDurations.js).
