@@ -74,7 +74,7 @@ export interface BotEvents {
   title: (text: string, type: "subtitle" | "title") => Promise<void> | void
   rain: () => Promise<void> | void
   time: () => Promise<void> | void
-  kicked: (reason: string, loggedIn: boolean) => Promise<void> | void
+  kicked: (reason: ChatMessage, loggedIn: boolean) => Promise<void> | void
   end: (reason: string) => Promise<void> | void
   spawnReset: () => Promise<void> | void
   death: () => Promise<void> | void
