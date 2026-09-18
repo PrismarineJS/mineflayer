@@ -1,3 +1,4 @@
+/* global describe, it */
 const assert = require('assert')
 const { Vec3 } = require('vec3')
 const injectExplosion = require('../lib/plugins/explosion')
