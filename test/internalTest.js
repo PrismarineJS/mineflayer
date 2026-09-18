@@ -1236,6 +1236,22 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('held_item_slot from the server', () => {
+      it('does not echo the held_item_slot the server selects', (done) => {
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          client.on('held_item_slot', () => done(new Error('held_item_slot echoed back to the server')))
+          bot.once('login', () => {
+            client.write('held_item_slot', { slot: 3 })
+            setTimeout(() => {
+              assert.strictEqual(bot.quickBarSlot, 3)
+              done()
+            }, 300)
+          })
+        })
+      })
+    })
+
     describe('windows', () => {
       const Item = require('prismarine-item')(supportedVersion)
       const pWindows = require('prismarine-windows')(supportedVersion)
