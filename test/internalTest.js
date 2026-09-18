@@ -1801,6 +1801,41 @@ for (const supportedVersion of mineflayer.testedVersions) {
         assert.strictEqual(bot.scoreboard.sidebar, undefined)
       })
     })
+
+    describe('player_loaded', () => {
+      const basePosition = () => ({
+        x: 1.5,
+        y: 66,
+        z: 1.5,
+        dx: 0,
+        dy: 0,
+        dz: 0,
+        pitch: 0,
+        yaw: 0,
+        teleportId: 0,
+        flags: bot.registry.version['>=']('1.21.3') ? {} : 0
+      })
+      it('sends player_loaded once the chunk under the player is loaded on 1.21.4+', function (done) {
+        if (!bot.supportFeature('sendsPlayerLoadedPacket')) return this.skip()
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          client.write('position', basePosition())
+          let chunkSent = false
+          client.on('player_loaded', () => {
+            assert.ok(chunkSent, 'player_loaded sent before any chunk arrived')
+            done()
+          })
+          bot.once('spawn', () => {
+            setTimeout(() => {
+              chunkSent = true
+              client.write('map_chunk', generateChunkPacket(bot.test.buildChunk()))
+            }, 300)
+          })
+          client.write('update_health', { health: 20, food: 20, foodSaturation: 5 })
+        })
+      })
+    })
+
     describe('tablist', () => {
       it('handles newlines in header and footer', (done) => {
         const HEADER = 'asd\ndsa'
