@@ -24,6 +24,6 @@ describe('explosion damage', function () {
     const smallEntityDamage = bot.getExplosionDamages(createEntity(0.4, 0.7), source, 6, true)
     const playerSizedEntityDamage = bot.getExplosionDamages(createEntity(0.6, 1.8), source, 6, true)
 
-    assert.notStrictEqual(smallEntityDamage, playerSizedEntityDamage)
+    assert(smallEntityDamage > playerSizedEntityDamage)
   })
 })
