@@ -25,4 +25,4 @@ describe('explosion damage', function () {
 
     assert.notStrictEqual(smallEntityDamage, playerSizedEntityDamage)
   })
-}
+})
