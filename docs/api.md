@@ -216,7 +216,7 @@
       - ["blockUpdate" (oldBlock, newBlock)](#blockupdate-oldblock-newblock)
       - ["blockUpdate:(x, y, z)" (oldBlock, newBlock)](#blockupdatex-y-z-oldblock-newblock)
       - ["blockEntityData" (block)](#blockentitydata-block)
-      - ["signOpen" (block)](#signopen-block)
+      - ["signOpen" (block, isFrontText)](#signopen-block-isfronttext)
       - ["blockPlaced" (oldBlock, newBlock)](#blockplaced-oldblock-newblock)
       - ["chunkColumnLoad" (point)](#chunkcolumnload-point)
       - ["chunkColumnUnload" (point)](#chunkcolumnunload-point)
@@ -1383,9 +1383,11 @@ Note that `oldBlock` may be `null`.
 
 Fires when the server sends new block entity data for a block, for example when a sign's text is updated. `block` is the block at that position with the fresh data (may be `null` if the block is no longer loaded).
 
-#### "signOpen" (block)
+#### "signOpen" (block, isFrontText)
 
-Fires when the server opens the sign editor, right after the bot places a sign. `block` is the placed sign (may be `null` if it is not loaded). Respond with [bot.updateSign](#botupdatesignblock-text-back--false).
+Fires when the server opens the sign editor, right after the bot places a sign (a plugin can also open one for the bot). `block` is the sign (may be `null` if it is not loaded) and `isFrontText` tells which side is being edited. Write text with [bot.updateSign](#botupdatesignblock-text-back--false).
+
+Like the vanilla client, the bot keeps the editor "open" until something closes it: `bot.updateSign`, the sign being removed or unloaded, the sign getting out of reach, another window or sign editor opening, or a respawn. When the editor closes without `bot.updateSign` the bot sends back the sign's current text, rendered to plain strings the way the vanilla client does (translations resolved with the client language, `keybind` components resolved to the default key names). Servers running anti-cheat plugins probe clients this way, so nothing needs to be done for those probes.
 
 #### "blockPlaced" (oldBlock, newBlock)
 

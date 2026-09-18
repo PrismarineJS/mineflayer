@@ -244,6 +244,98 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('sign editor', () => {
+      const nbt = require('prismarine-nbt')
+      const signBlock = registry.blocksByName.oak_sign ?? registry.blocksByName.standing_sign ?? registry.blocksByName.sign
+      const signStateId = signBlock.defaultState ?? (signBlock.id << 4)
+      const nbtComponents = registry.version['>=']('1.21.5')
+      // what a vanilla client renders for these lines
+      const lines = [
+        { translate: 'key.jump' }, // known translation key
+        { keybind: 'key.wi_freecam.toggle' }, // keybind nobody registered: echoed raw
+        { keybind: 'key.jump' }, // vanilla keybind: default key name
+        { text: 'plain' }
+      ]
+      const expected = ['Jump', 'key.wi_freecam.toggle', 'Space', 'plain']
+      if (registry.version['>=']('1.19.4')) { // fallback text for a missing translation
+        lines[3] = { translate: 'not.a.real.key', fallback: 'MCD_CHECK' }
+        expected[3] = 'MCD_CHECK'
+      }
+      const messages = () => nbtComponents
+        ? nbt.list(nbt.comp(lines.map(line => Object.fromEntries(Object.entries(line).map(([k, v]) => [k, nbt.string(v)])))))
+        : nbt.list(nbt.string(lines.map(line => JSON.stringify(line))))
+      const signNbt = () => bot.supportFeature('multiSidedSigns')
+        ? nbt.comp({
+          is_waxed: nbt.byte(0),
+          front_text: nbt.comp({ messages: messages(), color: nbt.string('black'), has_glowing_text: nbt.byte(0) }),
+          back_text: nbt.comp({ messages: nbt.list(nbt.string(['', '', '', ''].map(() => nbtComponents ? '' : '{"text":""}'))), color: nbt.string('black'), has_glowing_text: nbt.byte(0) })
+        })
+        : nbt.comp(Object.fromEntries(lines.map((line, i) => [`Text${i + 1}`, nbt.string(JSON.stringify(line))])))
+      const sentLines = (packet) => [packet.text1, packet.text2, packet.text3, packet.text4]
+        .map(text => bot.supportFeature('sendStringifiedSignText') ? JSON.parse(text) : text)
+
+      it('answers a phantom sign probe like the vanilla client', (done) => {
+        const pos = vec3(1, 64, 1)
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          bot.once('chunkColumnLoad', () => {
+            bot.entity.position.set(1.5, 65, 1.5)
+            let opened = false
+            bot.once('signOpen', (block, isFrontText) => {
+              assert.strictEqual(block.position.toString(), pos.toString())
+              assert.strictEqual(isFrontText, true)
+              opened = true
+            })
+            client.once('update_sign', (packet) => {
+              assert.ok(opened)
+              assert.strictEqual(packet.location.x, pos.x)
+              assert.strictEqual(packet.location.y, pos.y)
+              assert.strictEqual(packet.location.z, pos.z)
+              assert.deepStrictEqual(sentLines(packet), expected)
+              done()
+            })
+            // the probe: sign appears, gets its text, the editor opens, the sign is gone again
+            client.write('block_change', { location: pos, type: signStateId })
+            client.write('tile_entity_data', { location: pos, action: 9, nbtData: signNbt() })
+            client.write('open_sign_entity', { location: pos, isFrontText: true })
+            client.write('block_change', { location: pos, type: 0 })
+          })
+          const chunk = bot.test.buildChunk()
+          chunk.setBlockType(pos.offset(0, -1, 0), registry.blocksByName.stone.id) // an empty chunk does not load on 1.9-1.16
+          client.write('map_chunk', generateChunkPacket(chunk))
+        })
+      })
+
+      it('keeps the editor open until bot.updateSign answers it', (done) => {
+        const pos = vec3(1, 64, 1)
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          bot.once('chunkColumnLoad', () => {
+            bot.entity.position.set(1.5, 65, 1.5)
+            let answered = false
+            bot.once('signOpen', (block) => {
+              // nothing is sent while the sign is still there
+              setTimeout(() => {
+                client.once('update_sign', (packet) => {
+                  assert.deepStrictEqual(sentLines(packet), ['hello', 'world', '', ''])
+                  done()
+                })
+                answered = true
+                bot.updateSign(block, 'hello\nworld')
+              }, 200)
+            })
+            client.on('update_sign', () => { if (!answered) done(new Error('update_sign sent before bot.updateSign')) })
+            client.write('block_change', { location: pos, type: signStateId })
+            client.write('tile_entity_data', { location: pos, action: 9, nbtData: signNbt() })
+            client.write('open_sign_entity', { location: pos, isFrontText: true })
+          })
+          const chunk = bot.test.buildChunk()
+          chunk.setBlockType(pos.offset(0, -1, 0), registry.blocksByName.stone.id) // an empty chunk does not load on 1.9-1.16
+          client.write('map_chunk', generateChunkPacket(chunk))
+        })
+      })
+    })
+
     describe('digTime', () => {
       it('should use eye-level water check instead of isInWater for dig speed', (done) => {
         const blockPos = vec3(1, 65, 1)
