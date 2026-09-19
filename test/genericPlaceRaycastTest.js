@@ -86,6 +86,46 @@ describe('_genericPlace aims the way the client does', () => {
     assert.strictEqual(packet.params.direction, 1)
   })
 
+  it('the top face of a slab is aimed at where the slab is, not where a full block would be', async () => {
+    const bot = fakeBot()
+    setBlock(bot, new Vec3(0, 63, 0), 'oak_slab')
+    bot.entity.position = new Vec3(0.5, 64, -3)
+    await bot._genericPlace(bot.world.getBlock(new Vec3(0, 63, 0)), new Vec3(0, 1, 0), { forceLook: true, strictFace: true })
+    const packet = assertPacketMatchesCrosshair(bot)
+    assert.strictEqual(packet.params.direction, 1)
+    assert.ok(Math.abs(packet.params.cursorY - 0.5) < 1e-6, 'the hit is on top of the slab, half way up the block')
+  })
+
+  it('the cursor is where the crosshair lands after the turn, when the bot moves while turning', async () => {
+    const bot = fakeBot()
+    setBlock(bot, new Vec3(0, 63, 0), 'stone')
+    bot.entity.position = new Vec3(0.5, 64, 0.5)
+    const lookAt = bot.lookAt
+    bot.lookAt = async (point) => {
+      await lookAt(point)
+      bot.entity.position = bot.entity.position.offset(0.2, 0, 0)
+    }
+    await bot._genericPlace(bot.world.getBlock(new Vec3(0, 63, 0)), new Vec3(0, 1, 0), { forceLook: true, strictFace: true })
+    const packet = assertPacketMatchesCrosshair(bot)
+    assert.strictEqual(packet.params.direction, 1)
+  })
+
+  it('strictFace refuses when the bot moves out of sight of the face while turning', async () => {
+    const bot = fakeBot()
+    setBlock(bot, new Vec3(0, 63, -2), 'stone')
+    bot.entity.position = new Vec3(0.5, 64, 0.5)
+    const lookAt = bot.lookAt
+    bot.lookAt = async (point) => {
+      await lookAt(point)
+      bot.entity.position = new Vec3(0.5, 64, -5) // round the far side, where the south face is behind the block
+    }
+    await assert.rejects(
+      () => bot._genericPlace(bot.world.getBlock(new Vec3(0, 63, -2)), new Vec3(0, 0, 1), { forceLook: true, strictFace: true }),
+      /not visible/
+    )
+    assert.strictEqual(bot.written.length, 0)
+  })
+
   it('the bridging case: the side face of the block underfoot is not one the crosshair can reach', async () => {
     // Standing on a block, every ray from the eye leaves it through the top face first, so the
     // side face cannot be the hit. This is the placement the old code always got wrong.
