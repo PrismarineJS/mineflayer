@@ -1611,6 +1611,24 @@ for (const supportedVersion of mineflayer.testedVersions) {
           assert.strictEqual(bot.scoreboards.deaths.itemsMap.wvffle, undefined)
         })
       }
+
+      it('leaves every objective alone when a removal names an unknown one', async () => {
+        const seen = collect('scoreRemoved')
+        let client
+        await onJoin((c) => {
+          client = c
+          addObjective(c, 'kills', 'Total Kills')
+          addObjective(c, 'deaths', 'Total Deaths')
+          setScore(c, 'kills', 'wvffle', 7)
+          setScore(c, 'deaths', 'wvffle', 2)
+        })
+        if (scoreHasAction) client.write('scoreboard_score', { itemName: 'wvffle', action: 1, scoreName: 'missing' })
+        else client.write('reset_score', { entity_name: 'wvffle', objective_name: 'missing' })
+        await sleep(100)
+        assert.strictEqual(seen.length, 0)
+        assert.strictEqual(bot.scoreboards.kills.itemsMap.wvffle.value, 7)
+        assert.strictEqual(bot.scoreboards.deaths.itemsMap.wvffle.value, 2)
+      })
     })
 
     describe('activateItem rotation', () => {
