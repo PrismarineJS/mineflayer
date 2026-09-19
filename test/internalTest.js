@@ -360,6 +360,73 @@ for (const supportedVersion of mineflayer.testedVersions) {
           done()
         })
       })
+      it('sends tick_end every tick even while the chunk is unloaded', function (done) {
+        if (!bot.supportFeature('clientTickEndPacket')) return this.skip()
+        server.on('playerJoin', async (client) => {
+          await client.write('login', bot.test.generateLoginPacket())
+          await client.write('position', {
+            x: 1.5,
+            y: 66,
+            z: 1.5,
+            dx: 0, // 1.21.3
+            dy: 0, // 1.21.3
+            dz: 0, // 1.21.3
+            pitch: 0,
+            yaw: 0,
+            flags: bot.registry.version['>=']('1.21.3') ? {} : 0,
+            teleportId: 0
+          })
+          let tickEnds = 0
+          client.on('packet', (data, meta) => {
+            if (meta.name === 'tick_end') tickEnds++
+          })
+          await sleep(500)
+          assert.ok(tickEnds >= 5, `only ${tickEnds} tick_end packets in 500 ms with no chunk loaded`)
+          done()
+        })
+      })
+      it('separates back-to-back teleport replies with a tick_end', function (done) {
+        if (!bot.supportFeature('clientTickEndPacket')) return this.skip()
+        server.on('playerJoin', async (client) => {
+          await client.write('login', bot.test.generateLoginPacket())
+          const chunk = bot.test.buildChunk()
+          chunk.setBlockType(pos, goldId)
+          await client.write('map_chunk', generateChunkPacket(chunk))
+          await once(bot, 'chunkColumnLoad')
+
+          const sequence = []
+          client.on('packet', (data, meta) => {
+            if (['position', 'position_look', 'tick_end'].includes(meta.name)) sequence.push(meta.name)
+          })
+          // Two forced moves handled in the same event-loop turn: no physics tick can run between the replies
+          const teleport = (teleportId) => bot._client.emit('position', {
+            x: 1.5,
+            y: 80,
+            z: 1.5,
+            dx: 0, // 1.21.3
+            dy: 0, // 1.21.3
+            dz: 0, // 1.21.3
+            pitch: 0,
+            yaw: 0,
+            teleportId,
+            flags: bot.supportFeature('positionPacketHasBitflags') ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0
+          })
+          teleport(1)
+          teleport(2)
+          await sleep(500)
+
+          let unseparated = false
+          let positionPending = false
+          for (const name of sequence) {
+            if (name === 'tick_end') positionPending = false
+            else if (positionPending) unseparated = true
+            else positionPending = true
+          }
+          assert.strictEqual(sequence.filter(n => n === 'position_look').length, 2, `expected two teleport replies: ${sequence.join(', ')}`)
+          assert.ok(!unseparated, `two position packets without a tick_end between them: ${sequence.join(', ')}`)
+          done()
+        })
+      })
       it('absolute position & relative position (velocity)', (done) => {
         server.on('playerJoin', async (client) => {
           await client.write('login', bot.test.generateLoginPacket())
