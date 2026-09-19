@@ -2050,9 +2050,9 @@ Mount a vehicle. To get back out, use `bot.dismount`.
 
 #### bot.dismount()
 
-This function returns a `Promise`, with `void` as its argument once the dismount has been sent.
+This function returns a `Promise`, with `void` as its argument once the dismount has been sent. On 1.21.3+ it resolves once the server has dismounted the bot, and rejects after 5 seconds if it does not.
 
-Dismounts from the vehicle you are in. On 1.21.3+ this holds the sneak control for one physics tick, which is how vanilla leaves a vehicle.
+Dismounts from the vehicle you are in. On 1.21.3+ this holds the sneak control until the server dismounts the bot, which is how vanilla leaves a vehicle, then puts sneak back to what it was.
 
 #### bot.moveVehicle(left,forward)
 
