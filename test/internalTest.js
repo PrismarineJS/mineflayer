@@ -536,7 +536,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
       // Some proxies move players through a play-phase pack request and drop the
       // connection when it goes unanswered.
-      function playPhasePack (withListener) {
+      function playPhasePack (listen) {
         // The mock server never sends a pack, so the plugin is driven directly.
         const client = new EventEmitter()
         client.state = 'play'
@@ -546,7 +546,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         fakeBot._client = client
         fakeBot.supportFeature = registry.supportFeature.bind(registry)
         require('../lib/plugins/resource_pack')(fakeBot)
-        if (withListener) fakeBot.on('resourcePack', () => {})
+        if (listen) listen(fakeBot)
 
         const pack = { url: 'https://example.invalid/pack.zip', hash: '88b406352dc8a335b1050a4bf9577a878c812012', forced: false }
         if (registry.supportFeature('resourcePackUsesUUID')) {
@@ -559,11 +559,27 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
       it('accepts a play-phase resource pack when nobody listens for it', () => {
         // ACCEPTED then SUCCESSFULLY_LOADED
-        assert.deepStrictEqual(playPhasePack(false), [3, 0])
+        assert.deepStrictEqual(playPhasePack(), [3, 0])
       })
 
       it('leaves a play-phase resource pack to the resourcePack listener', () => {
-        assert.deepStrictEqual(playPhasePack(true), [])
+        assert.deepStrictEqual(playPhasePack((bot) => bot.on('resourcePack', () => {})), [])
+      })
+
+      // once() removes the listener before calling it, so the plugin must not count
+      // listeners after emitting.
+      it('leaves a play-phase resource pack to a once resourcePack listener that defers', () => {
+        assert.deepStrictEqual(playPhasePack((bot) => bot.once('resourcePack', () => {})), [])
+      })
+
+      it('does not accept a play-phase resource pack a once resourcePack listener denied', () => {
+        const denied = playPhasePack((bot) => bot.on('resourcePack', () => bot.denyResourcePack()))
+        assert.deepStrictEqual(playPhasePack((bot) => bot.once('resourcePack', () => bot.denyResourcePack())), denied)
+        assert(!denied.includes(3), 'a denied pack must not be accepted')
+      })
+
+      it('answers a play-phase resource pack a once resourcePack listener accepted only once', () => {
+        assert.deepStrictEqual(playPhasePack((bot) => bot.once('resourcePack', () => bot.acceptResourcePack())), [3, 0])
       })
     })
 
