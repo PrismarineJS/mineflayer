@@ -432,7 +432,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           })
         })
       })
-      it('reports the standing flag it had before a teleport while physics is disabled', async function () {
+      it('answers a teleport airborne and then reports the standing flag it had while physics is disabled', async function () {
         const client = (await once(server, 'playerJoin'))[0]
         await client.write('login', bot.test.generateLoginPacket())
         const chunk = bot.test.buildChunk()
@@ -446,20 +446,22 @@ for (const supportedVersion of mineflayer.testedVersions) {
         await bot.waitForTicks(5)
         assert.strictEqual(bot.entity.onGround, true, 'standing on the block')
         bot.physicsEnabled = false
+        const moves = []
+        const onPacket = (data, meta) => {
+          if (!['position', 'position_look', 'look', 'flying'].includes(meta.name)) return
+          moves.push({ name: meta.name, onGround: data.onGround ?? data.flags?.onGround })
+        }
+        client.on('packet', onPacket)
         const pinned = once(bot, 'forcedMove')
         await client.write('position', { ...onBlock, teleportId: 2 })
         await pinned
-        await sleep(200)
-        const grounded = []
-        const onPacket = (data, meta) => {
-          if (!['position', 'position_look', 'look', 'flying'].includes(meta.name)) return
-          grounded.push(data.onGround ?? data.flags?.onGround)
-        }
-        client.on('packet', onPacket)
-        await sleep(1300)
+        await sleep(1500)
         client.off('packet', onPacket)
-        assert.ok(grounded.length > 0, 'the position reminder goes out with physics disabled')
-        assert.ok(grounded.every(g => g === true), `every movement packet reports standing: ${JSON.stringify(grounded)}`)
+        // The reply to the teleport is the only packet that is not grounded.
+        const airborne = moves.filter(m => m.onGround !== true)
+        assert.deepStrictEqual(airborne, [{ name: 'position_look', onGround: false }], `the teleport reply alone is airborne: ${JSON.stringify(moves)}`)
+        const reminders = moves.slice(moves.indexOf(airborne[0]) + 1)
+        assert.ok(reminders.length > 0, 'the position reminder goes out with physics disabled')
       })
       it('no movement packets during a server transfer configuration phase', function (done) {
         // Regression test for https://github.com/PrismarineJS/mineflayer/issues/3776
