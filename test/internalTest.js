@@ -339,6 +339,35 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
         })
       })
+
+      it('a dig started from diggingCompleted of an instant break keeps its own state', (done) => {
+        server.on('playerJoin', async (client) => {
+          try {
+            const writes = await setup(client, 'creative')
+            let second
+            bot.once('diggingCompleted', () => {
+              bot.game.gameMode = 'survival'
+              second = bot.dig(bot.blockAt(otherPos), 'ignore')
+            })
+            await bot.dig(bot.blockAt(blockPos), 'ignore')
+            assert.deepStrictEqual(bot.targetDigBlock.position, otherPos)
+            bot.stopDigging()
+            await assert.rejects(second, /Digging aborted/)
+            assert.deepStrictEqual(writes.filter(w => w.name === 'block_dig').map(({ params }) => [params.status, params.location]), [
+              [0, blockPos],
+              [0, otherPos],
+              [1, otherPos]
+            ])
+            assert.strictEqual(bot.listenerCount(`blockUpdate:${blockPos}`), 0)
+            assert.strictEqual(bot.listenerCount(`blockUpdate:${otherPos}`), 0)
+            assert.strictEqual(bot.targetDigBlock, null)
+            assert.notStrictEqual(bot.blockAt(otherPos).type, 0)
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
     })
 
     describe('digTime', () => {
