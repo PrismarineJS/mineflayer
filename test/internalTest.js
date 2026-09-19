@@ -558,6 +558,45 @@ for (const supportedVersion of mineflayer.testedVersions) {
         }
         bot._client.write = originalWrite
       })
+
+      it('ignores a previous level\'s announcement after a respawn', async function () {
+        if (!bot.supportFeature('sendsPlayerLoadedPacket')) {
+          this.skip()
+          return
+        }
+        let loaded = 0
+        const originalWrite = bot._client.write.bind(bot._client)
+        bot._client.write = (name, params) => {
+          if (name === 'player_loaded') loaded++
+          return originalWrite(name, params)
+        }
+        const client = (await once(server, 'playerJoin'))[0]
+        const loginPacket = bot.test.generateLoginPacket()
+        const position = { x: 1.5, y: 66, z: 1.5, dx: 0, dy: 0, dz: 0, pitch: 0, yaw: 0, flags: {}, teleportId: 0 }
+        await client.write('login', loginPacket)
+        await client.write('update_health', { health: 20, food: 20, foodSaturation: 5 })
+        const p1 = once(bot, 'forcedMove')
+        await client.write('position', position)
+        await p1
+        await client.write('game_state_change', { reason: 13, gameMode: 0 })
+        await sleep(100)
+        assert.strictEqual(loaded, 0, 'not while the bot\'s chunk is missing')
+        const respawned = once(bot, 'respawn')
+        await client.write('respawn', { worldState: loginPacket.worldState, copyMetadata: 0 })
+        await respawned
+        await client.write('update_health', { health: 20, food: 20, foodSaturation: 5 })
+        const p2 = once(bot, 'forcedMove')
+        await client.write('position', position)
+        await p2
+        await sleep(100)
+        assert.strictEqual(loaded, 0, 'not before the new level\'s chunks are announced')
+        await client.write('game_state_change', { reason: 13, gameMode: 0 })
+        await client.write('map_chunk', generateChunkPacket(bot.test.buildChunk()))
+        await once(bot, 'chunkColumnLoad')
+        await sleep(50)
+        assert.strictEqual(loaded, 1, 'once after the new level loads')
+        bot._client.write = originalWrite
+      })
     })
 
     describe('world', () => {
