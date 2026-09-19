@@ -1514,6 +1514,110 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('interaction range', () => {
+      // The bot stands at (0.5, 64, 0.5), so its eye is at (0.5, 65.62, 0.5).
+      async function join () {
+        const client = await new Promise(resolve => server.once('playerJoin', resolve))
+        client.write('login', bot.test.generateLoginPacket())
+        client.write('position', {
+          x: 0.5,
+          y: 64,
+          z: 0.5,
+          dx: 0,
+          dy: 0,
+          dz: 0,
+          yaw: 0,
+          pitch: 0,
+          flags: bot.registry.version['>=']('1.21.3') ? {} : 0,
+          teleportId: 0
+        })
+        await once(bot, 'forcedMove')
+        return client
+      }
+
+      let nextEntityId = 8
+      async function spawnVillager (client, x, y, z) {
+        // Versions prior to 1.11 have capital first letter
+        const villager = bot.registry.entitiesByName.villager ?? bot.registry.entitiesByName.Villager
+        const scale = bot.supportFeature('fixedPointPosition') ? 32 : 1
+        const entityId = nextEntityId++
+        client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
+          entityId,
+          entityUUID: '00112233-4455-6677-8899-aabbccddee' + entityId.toString(16).padStart(2, '0'),
+          objectUUID: '00112233-4455-6677-8899-aabbccddee' + entityId.toString(16).padStart(2, '0'),
+          type: villager.id,
+          x: x * scale,
+          y: y * scale,
+          z: z * scale,
+          yaw: 0,
+          pitch: 0,
+          headPitch: 0,
+          velocity: { x: 0, y: 0, z: 0 },
+          metadata: []
+        })
+        await onceWithCleanup(bot, 'entitySpawn', { timeout: 5000, checkCondition: entity => entity.id === entityId })
+        return bot.entities[entityId]
+      }
+
+      function sendRanges (client, entityRange, blockRange) {
+        const property = (key, [value, ...amounts]) => ({
+          key,
+          value,
+          modifiers: amounts.map((amount, i) => ({ uuid: `00000000-0000-0000-0000-00000000000${i}`, amount, operation: 0 }))
+        })
+        client.write('entity_update_attributes', {
+          entityId: bot.entity.id,
+          properties: [
+            property('player.entity_interaction_range', entityRange),
+            property('player.block_interaction_range', blockRange)
+          ]
+        })
+        return once(bot, 'entityAttributes')
+      }
+
+      it('falls back to the vanilla defaults when the server sends no attributes', async () => {
+        await join()
+        assert.strictEqual(bot.entityInteractionRange(), 3.0)
+        assert.strictEqual(bot.blockInteractionRange(), 4.5)
+      })
+
+      it('measures from the eye to the target hitbox, as vanilla does', async () => {
+        // The live measurement this came from: a shopkeeper the bot could not open at 3.15 blocks
+        // of feet-to-feet distance, and could at 2.80.
+        const client = await join()
+        const near = await spawnVillager(client, 0.5, 64, 3.65)
+        const far = await spawnVillager(client, 0.5, 64, 4.06)
+        assert.strictEqual(bot.canInteractWithEntity(near), true, '3.15 feet-to-feet is 2.85 eye-to-box')
+        assert.strictEqual(bot.canInteractWithEntity(far), false, '3.56 feet-to-feet is out of reach')
+        assert.strictEqual(bot.canInteractWithEntity(far, 3.0), true, 'but inside the slack the server allows itself')
+      })
+
+      it('measures a block against its own cube', async () => {
+        await join()
+        assert.strictEqual(bot.canInteractWithBlock({ position: vec3(0, 64, 4) }), true)
+        assert.strictEqual(bot.canInteractWithBlock({ position: vec3(0, 64, 7) }), false)
+      })
+
+      it('uses the ranges the server sends, with modifiers applied and clamped to [0, 64]', async function () {
+        if (!bot.registry.version['>=']('1.20.5')) return this.skip()
+        const client = await join()
+
+        await sendRanges(client, [3, 2], [4.5, 1.5])
+        assert.strictEqual(bot.entityInteractionRange(), 5)
+        assert.strictEqual(bot.blockInteractionRange(), 6)
+
+        await sendRanges(client, [3, -4], [4.5, -5.5])
+        assert.strictEqual(bot.entityInteractionRange(), 0)
+        assert.strictEqual(bot.blockInteractionRange(), 0)
+        const adjacent = await spawnVillager(client, 0.5, 64, 1.3)
+        assert.strictEqual(bot.canInteractWithEntity(adjacent), false, 'a zero range reaches nothing, however close')
+
+        await sendRanges(client, [3, 100], [4.5, 100])
+        assert.strictEqual(bot.entityInteractionRange(), 64)
+        assert.strictEqual(bot.blockInteractionRange(), 64)
+      })
+    })
+
     describe('activateItem rotation', () => {
       it('should send the bot rotation in the use_item packet', function (done) {
         // The rotation field in use_item was added in 1.21.1

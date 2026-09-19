@@ -327,11 +327,11 @@ export interface Bot extends TypedEmitter<BotEvents> {
   placeBlock: (referenceBlock: Block, faceVector: Vec3) => Promise<void>
 
   /** The reach the server grants for entities, from the `entity_interaction_range` attribute
-   *  (1.20.5+), or vanilla's 3.0 default. */
+   *  (1.20.5+) clamped to [0, 64], or vanilla's 3.0 default. */
   entityInteractionRange (): number
 
   /** The reach the server grants for blocks, from the `block_interaction_range` attribute
-   *  (1.20.5+), or vanilla's 4.5 default. */
+   *  (1.20.5+) clamped to [0, 64], or vanilla's 4.5 default. */
   blockInteractionRange (): number
 
   /** Whether the entity's hitbox is within `entityInteractionRange() + buffer` of the bot's eye,

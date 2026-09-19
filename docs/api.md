@@ -1971,6 +1971,7 @@ The new block will be placed at `referenceBlock.position.plus(faceVector)`.
 
 The distance the server lets the bot reach entities at, read from the `entity_interaction_range`
 attribute the server sends (1.20.5+) and falling back to vanilla's 3.0. Creative mode adds to it.
+Like vanilla, the value after modifiers is clamped to `[0, 64]`.
 
 #### bot.blockInteractionRange()
 
