@@ -697,6 +697,62 @@ for (const supportedVersion of mineflayer.testedVersions) {
         assert(buf.includes(expectedBytes),
           'resource_pack_receive must carry the pack UUID bytes, not a zero UUID')
       })
+
+      // Some proxies move players through a play-phase pack request and drop the
+      // connection when it goes unanswered.
+      const SUCCESSFULLY_LOADED = 0
+      const DECLINED = 1
+      const ACCEPTED = 3
+      const playPack = {
+        uuid: '8ef4746b-93b7-3c32-9dcb-b375016c114d',
+        url: 'https://example.invalid/pack.zip',
+        hash: '88b406352dc8a335b1050a4bf9577a878c812012',
+        forced: false
+      }
+
+      // Sends a pack to the real bot once it is in the play phase and returns every
+      // result it answered with, in order.
+      async function playPhasePack (listen) {
+        if (listen) listen(bot)
+        const [client] = await once(server, 'playerJoin')
+        const results = []
+        client.on('resource_pack_receive', (data) => results.push(data.result))
+        client.write('login', bot.test.generateLoginPacket())
+        await once(bot, 'login')
+        client.write(registry.supportFeature('resourcePackUsesUUID') ? 'add_resource_pack' : 'resource_pack_send', playPack)
+        // The bot answers packets in order, so by the time it replies to a keep_alive
+        // sent after the pack, whatever it had to say about the pack is already here -
+        // including the nothing it says when a listener keeps the pack.
+        client.write('keep_alive', { keepAliveId: 1234 })
+        await once(client, 'keep_alive')
+        return results
+      }
+
+      it('accepts a play-phase resource pack when nobody listens for it', async () => {
+        assert.deepStrictEqual(await playPhasePack(), [ACCEPTED, SUCCESSFULLY_LOADED])
+      })
+
+      it('leaves a play-phase resource pack to the resourcePack listener', async () => {
+        assert.deepStrictEqual(await playPhasePack((bot) => bot.on('resourcePack', () => {})), [])
+      })
+
+      // once() removes the listener before calling it, so the plugin must not count
+      // listeners after emitting.
+      it('leaves a play-phase resource pack to a once resourcePack listener that defers', async () => {
+        assert.deepStrictEqual(await playPhasePack((bot) => bot.once('resourcePack', () => {})), [])
+      })
+
+      it('does not accept a play-phase resource pack the resourcePack listener denied', async () => {
+        assert.deepStrictEqual(await playPhasePack((bot) => bot.on('resourcePack', () => bot.denyResourcePack())), [DECLINED])
+      })
+
+      it('does not accept a play-phase resource pack a once resourcePack listener denied', async () => {
+        assert.deepStrictEqual(await playPhasePack((bot) => bot.once('resourcePack', () => bot.denyResourcePack())), [DECLINED])
+      })
+
+      it('answers a play-phase resource pack a once resourcePack listener accepted only once', async () => {
+        assert.deepStrictEqual(await playPhasePack((bot) => bot.once('resourcePack', () => bot.acceptResourcePack())), [ACCEPTED, SUCCESSFULLY_LOADED])
+      })
     })
 
     describe('world', () => {
