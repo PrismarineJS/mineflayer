@@ -212,6 +212,25 @@ for (const supportedVersion of mineflayer.testedVersions) {
       assert.throws(() => bot.chat('hi'), kicked)
       assert.throws(() => bot.whisper('gary', 'hi'), kicked)
     })
+    it('kicked during login emits a ChatMessage reason with loggedIn false', async () => {
+      server.on('connection', (client) => {
+        client.removeAllListeners('login_start')
+        // The login-state disconnect packet always carries a JSON string, even on NBT-chat versions
+        client.once('login_start', () => client.write('disconnect', { reason: JSON.stringify({ text: 'login kick' }) }))
+      })
+      const [reason, loggedIn] = await once(bot, 'kicked')
+      assert.strictEqual(reason.toString(), 'login kick')
+      assert.strictEqual(loggedIn, false)
+    })
+    it('kicked during play emits a ChatMessage reason with loggedIn true', async () => {
+      server.on('playerJoin', (client) => {
+        // chatText is JSON on older versions and an NBT compound on newer ones
+        client.write('kick_disconnect', { reason: chatText('play kick') })
+      })
+      const [reason, loggedIn] = await once(bot, 'kicked')
+      assert.strictEqual(reason.toString(), 'play kick')
+      assert.strictEqual(loggedIn, true)
+    })
     it('entity effects', (done) => {
       bot.once('entityEffect', (entity, effect) => {
         assert.strictEqual(entity.id, 8)
