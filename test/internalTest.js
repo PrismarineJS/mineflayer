@@ -361,60 +361,69 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
       it('absolute position & relative position (velocity)', (done) => {
+        // forcedMove fires when the teleport is answered at the start of a physics tick, so the state
+        // it produces has to be read then; awaiting the event resumes after that tick's simulation.
+        const onForcedMove = () => new Promise(resolve => {
+          bot.once('forcedMove', () => resolve({ velocity: bot.entity.velocity.clone(), position: bot.entity.position.clone() }))
+        })
         server.on('playerJoin', async (client) => {
-          await client.write('login', bot.test.generateLoginPacket())
-          const chunk = bot.test.buildChunk()
-          chunk.setBlockType(pos, goldId)
-          await client.write('map_chunk', generateChunkPacket(chunk))
+          try {
+            await client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(pos, goldId)
+            await client.write('map_chunk', generateChunkPacket(chunk))
 
-          await once(bot, 'chunkColumnLoad')
+            await once(bot, 'chunkColumnLoad')
 
-          // --- Test 1: Absolute Position ---
-          const absolutePositionPacket = {
-            x: 1.5,
-            y: 80,
-            z: 1.5,
-            pitch: 0,
-            yaw: 0,
-            teleportId: 1,
-            flags: bot.supportFeature('positionPacketHasBitflags') ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0
+            // --- Test 1: Absolute Position ---
+            const absolutePositionPacket = {
+              x: 1.5,
+              y: 80,
+              z: 1.5,
+              pitch: 0,
+              yaw: 0,
+              teleportId: 1,
+              flags: bot.supportFeature('positionPacketHasBitflags') ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0
+            }
+
+            bot.entity.velocity.y = -1.0 // Give bot some velocity
+
+            const p1 = onForcedMove()
+            client.write('position', absolutePositionPacket)
+            const afterAbsolute = await p1
+
+            // Assertions for absolute teleport
+            assert.strictEqual(afterAbsolute.velocity.y, 0, 'Velocity should be reset to 0 after an absolute teleport')
+            assert.deepStrictEqual(afterAbsolute.position, vec3(1.5, 80, 1.5), 'Position should be set absolutely')
+
+            // --- Test 2: Relative Position ---
+            const relativePositionPacket = {
+              x: 1.0,
+              y: -2.0,
+              z: 0.5,
+              pitch: 0,
+              yaw: 0,
+              teleportId: 2,
+              flags: bot.supportFeature('positionPacketHasBitflags') ? { x: true, y: true, z: true, yaw: false, pitch: false } : 7
+            }
+
+            // Set a known velocity *before* the relative update
+            bot.entity.velocity.y = -1.0
+            const initialPosition = bot.entity.position.clone()
+            const expectedPosition = initialPosition.plus(vec3(1.0, -2.0, 0.5))
+
+            const p2 = onForcedMove()
+            client.write('position', relativePositionPacket)
+            const afterRelative = await p2
+
+            // Assertions for relative teleport
+            assert.notStrictEqual(afterRelative.velocity.y, 0, 'Velocity should be preserved after a relative teleport')
+            assert.deepStrictEqual(afterRelative.position, expectedPosition, 'Position should be updated relatively')
+
+            done()
+          } catch (err) {
+            done(err)
           }
-
-          bot.entity.velocity.y = -1.0 // Give bot some velocity
-
-          const p1 = once(bot, 'forcedMove')
-          client.write('position', absolutePositionPacket)
-          await p1
-
-          // Assertions for absolute teleport
-          assert.strictEqual(bot.entity.velocity.y, 0, 'Velocity should be reset to 0 after an absolute teleport')
-          assert.deepStrictEqual(bot.entity.position, vec3(1.5, 80, 1.5), 'Position should be set absolutely')
-
-          // --- Test 2: Relative Position ---
-          const relativePositionPacket = {
-            x: 1.0,
-            y: -2.0,
-            z: 0.5,
-            pitch: 0,
-            yaw: 0,
-            teleportId: 2,
-            flags: bot.supportFeature('positionPacketHasBitflags') ? { x: true, y: true, z: true, yaw: false, pitch: false } : 7
-          }
-
-          // Set a known velocity *before* the relative update
-          bot.entity.velocity.y = -1.0
-          const initialPosition = bot.entity.position.clone()
-          const expectedPosition = initialPosition.plus(vec3(1.0, -2.0, 0.5))
-
-          const p2 = once(bot, 'forcedMove')
-          client.write('position', relativePositionPacket)
-          await p2
-
-          // Assertions for relative teleport
-          assert.notStrictEqual(bot.entity.velocity.y, 0, 'Velocity should be preserved after a relative teleport')
-          assert.deepStrictEqual(bot.entity.position, expectedPosition, 'Position should be updated relatively')
-
-          done()
         })
       })
       it('drops the tick backlog after an event-loop stall instead of draining it', (done) => {
@@ -823,6 +832,95 @@ for (const supportedVersion of mineflayer.testedVersions) {
           assert.strictEqual(window.title.constructor.name, 'ChatMessage')
           assert.strictEqual(window.title.toString(), 'Test Chest')
         }
+      })
+
+      it('pong is written at the next tick boundary, after the movement packet of the tick that received the ping', function (done) {
+        if (bot.supportFeature('transactionPacketExists')) {
+          this.skip()
+          return
+        }
+        const movementPackets = ['position', 'position_look', 'look', 'flying']
+        server.on('playerJoin', async (client) => {
+          try {
+            client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(vec3(1, 65, 1), 41)
+            client.write('map_chunk', generateChunkPacket(chunk))
+            await once(bot, 'chunkColumnLoad')
+            client.write('position', {
+              x: 1.5,
+              y: 80,
+              z: 1.5,
+              dx: 0,
+              dy: 0,
+              dz: 0,
+              pitch: 0,
+              yaw: 0,
+              flags: bot.supportFeature('positionPacketHasBitflags') ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0,
+              teleportId: 0
+            })
+            await once(bot, 'forcedMove')
+
+            // Falling takes a few ticks to leave the teleport height.
+            await bot.waitForTicks(4)
+
+            const seen = []
+            client.on('packet', (data, meta) => seen.push({ name: meta.name, data }))
+
+            // The ping is processed inside a tick: after the simulation, before
+            // the movement packet carrying this tick's position.
+            const { tickY, pingedAt } = await new Promise(resolve => {
+              bot.once('physicsTick', () => {
+                bot._client.emit('ping', { id: 123 })
+                resolve({ tickY: bot.entity.position.y, pingedAt: Date.now() })
+              })
+            })
+            assert.ok(tickY < 80, 'bot must be falling so every tick writes a movement packet')
+
+            const [pong] = await onceWithCleanup(client, 'pong', { timeout: 200 })
+            const pongedAt = Date.now()
+            assert.strictEqual(pong.id, 123)
+            assert.ok(pongedAt - pingedAt <= 200, `pong took ${pongedAt - pingedAt} ms`)
+
+            await sleep(100)
+            const pongs = seen.filter(p => p.name === 'pong')
+            assert.strictEqual(pongs.length, 1, 'each ping is answered exactly once')
+            const pongIndex = seen.indexOf(pongs[0])
+            const before = seen[pongIndex - 1]
+            assert.ok(before !== undefined, 'a movement packet precedes the pong')
+            assert.ok(movementPackets.includes(before.name), `packet before pong is ${before.name}`)
+            assert.strictEqual(before.data.y, tickY, 'the pong follows the movement packet of the tick that received the ping')
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
+      it('pong is written within one tick when physics is not ticking', function (done) {
+        if (bot.supportFeature('transactionPacketExists')) {
+          this.skip()
+          return
+        }
+        server.on('playerJoin', async (client) => {
+          try {
+            client.write('login', bot.test.generateLoginPacket())
+            await once(bot, 'login')
+            const pongs = []
+            client.on('pong', (data) => pongs.push(data))
+            const pingedAt = Date.now()
+            client.write('ping', { id: 123 })
+            const [pong] = await onceWithCleanup(client, 'pong', { timeout: 200 })
+            const pongedAt = Date.now()
+            assert.strictEqual(pong.id, 123)
+            assert.ok(pongedAt - pingedAt <= 200, `pong took ${pongedAt - pingedAt} ms`)
+            await sleep(100)
+            assert.strictEqual(pongs.length, 1, 'each ping is answered exactly once')
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
       })
 
       it('closeWindow follows close_window with a no-op inventory click on pre-1.17 only', (done) => {
@@ -1983,6 +2081,293 @@ for (const supportedVersion of mineflayer.testedVersions) {
           bot.entity.yaw = testYaw
           bot.entity.pitch = testPitch
           bot.activateItem()
+        })
+      })
+    })
+
+    describe('teleports', () => {
+      it('answers a teleport at the next tick instead of from inside the packet handler', (done) => {
+        server.on('playerJoin', async (client) => {
+          try {
+            client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(vec3(1, 65, 1), registry.blocksByName.stone.id)
+            client.write('map_chunk', generateChunkPacket(chunk))
+            await once(bot, 'chunkColumnLoad')
+            const teleport = {
+              x: 1.5,
+              y: 80,
+              z: 1.5,
+              dx: 0,
+              dy: 0,
+              dz: 0,
+              pitch: 0,
+              yaw: 0,
+              flags: bot.supportFeature('positionPacketHasBitflags') ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0,
+              teleportId: 0
+            }
+            client.write('position', teleport)
+            await once(bot, 'forcedMove')
+
+            const writes = []
+            const write = bot._client.write.bind(bot._client)
+            bot._client.write = (name, params) => { writes.push(name); return write(name, params) }
+            try {
+              await new Promise(resolve => bot.once('physicsTick', resolve))
+              writes.length = 0
+              bot._client.emit('position', { ...teleport, y: 90, teleportId: 1 })
+              assert.deepStrictEqual(writes, [], 'the teleport must not be answered from inside the packet handler')
+              await once(bot, 'forcedMove')
+              assert.ok(writes.includes('position_look'), 'the teleport is answered on the next tick')
+            } finally {
+              bot._client.write = write
+            }
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
+      it('answers pings and teleports in the order the packets arrived', function (done) {
+        if (bot.supportFeature('transactionPacketExists')) {
+          this.skip()
+          return
+        }
+        server.on('playerJoin', async (client) => {
+          try {
+            client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(vec3(1, 65, 1), registry.blocksByName.stone.id)
+            client.write('map_chunk', generateChunkPacket(chunk))
+            await once(bot, 'chunkColumnLoad')
+            const teleport = {
+              x: 1.5,
+              y: 80,
+              z: 1.5,
+              dx: 0,
+              dy: 0,
+              dz: 0,
+              pitch: 0,
+              yaw: 0,
+              flags: bot.supportFeature('positionPacketHasBitflags') ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0,
+              teleportId: 0
+            }
+            client.write('position', teleport)
+            await once(bot, 'forcedMove')
+
+            const writes = []
+            const write = bot._client.write.bind(bot._client)
+            bot._client.write = (name, params) => { writes.push({ name, params }); return write(name, params) }
+            try {
+              await new Promise(resolve => bot.once('physicsTick', resolve))
+              writes.length = 0
+              // Between two ticks the server's ping, teleport and second ping arrive in that order.
+              bot._client.emit('ping', { id: 1 })
+              bot._client.emit('position', { ...teleport, y: 90, teleportId: 1 })
+              bot._client.emit('ping', { id: 2 })
+              assert.deepStrictEqual(writes, [], 'nothing is answered from inside the packet handlers')
+              await once(bot, 'forcedMove')
+              const replies = writes
+                .filter(w => ['pong', 'teleport_confirm', 'position_look'].includes(w.name))
+                .map(w => (w.name === 'pong' ? `pong ${w.params.id}` : w.name))
+              assert.deepStrictEqual(replies, ['pong 1', 'teleport_confirm', 'position_look', 'pong 2'])
+            } finally {
+              bot._client.write = write
+            }
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
+      it('answers every teleport queued for a tick, in arrival order', (done) => {
+        server.on('playerJoin', async (client) => {
+          try {
+            client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(vec3(1, 65, 1), registry.blocksByName.stone.id)
+            client.write('map_chunk', generateChunkPacket(chunk))
+            await once(bot, 'chunkColumnLoad')
+            const teleport = {
+              x: 1.5,
+              y: 80,
+              z: 1.5,
+              dx: 0,
+              dy: 0,
+              dz: 0,
+              pitch: 0,
+              yaw: 0,
+              flags: bot.supportFeature('positionPacketHasBitflags') ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0,
+              teleportId: 0
+            }
+            client.write('position', teleport)
+            await once(bot, 'forcedMove')
+
+            const replies = []
+            const write = bot._client.write.bind(bot._client)
+            bot._client.write = (name, params) => {
+              if (name === 'position_look') replies.push(params.y)
+              return write(name, params)
+            }
+            try {
+              await new Promise(resolve => bot.once('physicsTick', resolve))
+              replies.length = 0
+              bot._client.emit('position', { ...teleport, y: 90, teleportId: 1 })
+              bot._client.emit('position', { ...teleport, y: 100, teleportId: 2 })
+              await new Promise(resolve => bot.once('physicsTick', resolve))
+              assert.deepStrictEqual(replies, [90, 100], 'each queued teleport gets its own reply on the same tick')
+            } finally {
+              bot._client.write = write
+            }
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
+      it('a rotation arriving after a queued teleport is not overwritten by it', (done) => {
+        server.on('playerJoin', async (client) => {
+          try {
+            client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(vec3(1, 65, 1), registry.blocksByName.stone.id)
+            client.write('map_chunk', generateChunkPacket(chunk))
+            await once(bot, 'chunkColumnLoad')
+            const teleport = {
+              x: 1.5,
+              y: 80,
+              z: 1.5,
+              dx: 0,
+              dy: 0,
+              dz: 0,
+              pitch: 0,
+              yaw: 0,
+              flags: bot.supportFeature('positionPacketHasBitflags') ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0,
+              teleportId: 0
+            }
+            client.write('position', teleport)
+            await once(bot, 'forcedMove')
+
+            const replies = []
+            const write = bot._client.write.bind(bot._client)
+            bot._client.write = (name, params) => {
+              if (name === 'position_look') replies.push(params.yaw)
+              return write(name, params)
+            }
+            try {
+              await new Promise(resolve => bot.once('physicsTick', resolve))
+              replies.length = 0
+              bot._client.emit('position', { ...teleport, yaw: 30, teleportId: 1 })
+              bot._client.emit('player_rotation', { yaw: 90, pitch: 0 })
+              await once(bot, 'forcedMove')
+              assert.deepStrictEqual(replies, [30], 'the teleport is answered with its own rotation')
+              assert.strictEqual(bot.entity.yaw, require('../lib/conversions').fromNotchianYaw(90), 'the later rotation wins')
+            } finally {
+              bot._client.write = write
+            }
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
+      it('drops a teleport queued before a respawn but still answers pings', function (done) {
+        server.on('playerJoin', async (client) => {
+          try {
+            client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(vec3(1, 65, 1), registry.blocksByName.stone.id)
+            client.write('map_chunk', generateChunkPacket(chunk))
+            await once(bot, 'chunkColumnLoad')
+            const teleport = {
+              x: 1.5,
+              y: 80,
+              z: 1.5,
+              dx: 0,
+              dy: 0,
+              dz: 0,
+              pitch: 0,
+              yaw: 0,
+              flags: bot.supportFeature('positionPacketHasBitflags') ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0,
+              teleportId: 0
+            }
+            client.write('position', teleport)
+            await once(bot, 'forcedMove')
+
+            const writes = []
+            const write = bot._client.write.bind(bot._client)
+            bot._client.write = (name, params) => { writes.push(name); return write(name, params) }
+            let forcedMoves = 0
+            const onForcedMove = () => { forcedMoves++ }
+            bot.on('forcedMove', onForcedMove)
+            try {
+              await new Promise(resolve => bot.once('physicsTick', resolve))
+              writes.length = 0
+              const pings = !bot.supportFeature('transactionPacketExists')
+              if (pings) bot._client.emit('ping', { id: 1 })
+              bot._client.emit('position', { ...teleport, y: 90, teleportId: 1 })
+              bot.emit('respawn')
+              await sleep(150)
+              assert.ok(!writes.includes('teleport_confirm'), 'the old teleport is not confirmed')
+              assert.ok(!writes.includes('position_look'), 'the old teleport is not answered')
+              assert.strictEqual(forcedMoves, 0, 'physics is not re-enabled by the old teleport')
+              if (pings) assert.ok(writes.includes('pong'), 'the ping is still answered')
+            } finally {
+              bot._client.write = write
+              bot.off('forcedMove', onForcedMove)
+            }
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
+      it('drops queued replies when the client leaves the play state', (done) => {
+        server.on('playerJoin', async (client) => {
+          try {
+            client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(vec3(1, 65, 1), registry.blocksByName.stone.id)
+            client.write('map_chunk', generateChunkPacket(chunk))
+            await once(bot, 'chunkColumnLoad')
+            const teleport = {
+              x: 1.5,
+              y: 80,
+              z: 1.5,
+              dx: 0,
+              dy: 0,
+              dz: 0,
+              pitch: 0,
+              yaw: 0,
+              flags: bot.supportFeature('positionPacketHasBitflags') ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0,
+              teleportId: 0
+            }
+            client.write('position', teleport)
+            await once(bot, 'forcedMove')
+
+            const writes = []
+            const write = bot._client.write.bind(bot._client)
+            bot._client.write = (name, params) => { writes.push(name); return write(name, params) }
+            try {
+              await new Promise(resolve => bot.once('physicsTick', resolve))
+              writes.length = 0
+              bot._client.emit('position', { ...teleport, y: 90, teleportId: 1 })
+              // Only the transition is simulated; the connection itself stays in play.
+              bot._client.emit('state', 'configuration', 'play')
+              await sleep(150)
+              assert.ok(!writes.includes('position_look'), 'the teleport from the previous play session is not answered')
+            } finally {
+              bot._client.write = write
+            }
+            done()
+          } catch (err) {
+            done(err)
+          }
         })
       })
     })
