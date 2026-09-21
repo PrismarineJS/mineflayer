@@ -699,6 +699,61 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('settings', () => {
+      it('sends Client Information after login only without a configuration phase', async function () {
+        // 1.20.2+ sends it during the configuration phase instead, from options.clientSettings.
+        const hasConfigState = bot.supportFeature('hasConfigurationState')
+        const sent = []
+        const originalWrite = bot._client.write.bind(bot._client)
+        bot._client.write = (name, params) => {
+          if (name === 'settings' && bot._client.state === 'play') sent.push(params)
+          return originalWrite(name, params)
+        }
+        try {
+          const client = (await once(server, 'playerJoin'))[0]
+          await client.write('login', bot.test.generateLoginPacket())
+          await once(bot, 'login')
+          assert.strictEqual(sent.length, hasConfigState ? 0 : 1)
+
+          // A later change still goes out, on every version.
+          bot.setSettings({ viewDistance: 'short' })
+          assert.strictEqual(sent.length, hasConfigState ? 1 : 2)
+          assert.strictEqual(sent[sent.length - 1].viewDistance, 8)
+        } finally {
+          bot._client.write = originalWrite
+        }
+      })
+
+      it('keeps later settings when the server reconfigures', async function () {
+        if (!bot.supportFeature('hasConfigurationState')) {
+          this.skip()
+          return
+        }
+        const sent = []
+        const originalWrite = bot._client.write.bind(bot._client)
+        bot._client.write = (name, params) => {
+          if (name === 'settings' && bot._client.state === 'configuration') sent.push(params)
+          return originalWrite(name, params)
+        }
+        try {
+          const client = (await once(server, 'playerJoin'))[0]
+          await client.write('login', bot.test.generateLoginPacket())
+          await once(bot, 'login')
+          bot.setSettings({ viewDistance: 'short' })
+          sent.length = 0
+
+          await client.write('start_configuration', {})
+          if (bot._client.state !== 'configuration') await once(bot._client, 'state')
+          await sleep(100)
+          // node-minecraft-protocol may or may not re-send on reconfiguration, but anything
+          // it sends must carry the current settings, not the ones the bot started with.
+          for (const params of sent) assert.strictEqual(params.viewDistance, 8)
+        } finally {
+          bot._client.write = originalWrite
+        }
+      })
+    })
+
     describe('world', () => {
       const pos = vec3(1, 65, 1)
       const goldId = 41
