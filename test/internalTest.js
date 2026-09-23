@@ -9,8 +9,9 @@ const nbt = require('prismarine-nbt')
 const { once, onceWithCleanup } = require('../lib/promise_utils')
 const { EventEmitter } = require('events')
 const { getPort } = require('./common/util')
+const { versionsUnderTest } = require('./common/versions')
 
-for (const supportedVersion of mineflayer.testedVersions) {
+for (const supportedVersion of versionsUnderTest) {
   const registry = require('prismarine-registry')(supportedVersion)
   const version = registry.version
   const Chunk = require('prismarine-chunk')(supportedVersion)
