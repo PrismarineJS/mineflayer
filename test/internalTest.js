@@ -2177,6 +2177,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             bot.deactivateItem()
             const placed = bot.placeEntity({ position: vec3(1, 64, 1) }, vec3(0, 1, 0))
             await sleep(0)
+            bot.emit('entitySpawn', { name: 'zombie', position: vec3(1.5, 65, 1.5) })
             bot.emit('entitySpawn', { name: bot.supportFeature('entityNameUpperCaseNoUnderscore') ? 'Boat' : 'boat', position: vec3(1.5, 65, 1.5) })
             await placed
             bot.activateItem()
