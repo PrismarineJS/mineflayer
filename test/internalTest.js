@@ -322,6 +322,85 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('dismount', () => {
+      const vehicleId = 21
+
+      // Logs in, then spawns a pig and puts the bot on it through the packets a server sends
+      async function mountPig (client) {
+        await bot.test.pluginsLoaded
+        const loggedIn = once(bot, 'login')
+        client.write('login', bot.test.generateLoginPacket())
+        await loggedIn
+        bot.physicsEnabled = false
+        client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
+          entityId: vehicleId,
+          entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
+          objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
+          type: (bot.registry.entitiesByName.pig ?? bot.registry.entitiesByName.Pig).id, // capitalised before 1.11
+          x: 1,
+          y: 65,
+          z: 1,
+          yaw: 0,
+          pitch: 0,
+          headPitch: 0,
+          velocity: { x: 0, y: 0, z: 0 },
+          metadata: []
+        })
+        const mounted = once(bot, 'mount')
+        if (bot.registry.version['>=']('1.9')) {
+          client.write('set_passengers', { entityId: vehicleId, passengers: [bot.entity.id] })
+        } else {
+          client.write('attach_entity', { entityId: bot.entity.id, vehicleId, leash: false })
+        }
+        await mounted
+      }
+
+      it('holds sneak until the server dismounts on 1.21.3+ and sends the steer_vehicle unmount flag before', (done) => {
+        server.on('playerJoin', async (client) => {
+          try {
+            await mountPig(client)
+            if (bot.supportFeature('newPlayerInputPacket')) {
+              const shifts = []
+              client.on('player_input', ({ inputs }) => {
+                shifts.push(inputs.shift)
+                if (inputs.shift) client.write('set_passengers', { entityId: vehicleId, passengers: [] })
+              })
+              await bot.dismount()
+              assert.strictEqual(bot.vehicle, null)
+              assert.strictEqual(bot.getControlState('sneak'), false)
+              await onceWithCleanup(client, 'player_input', { timeout: 1000, checkCondition: () => shifts.length >= 2 })
+              assert.deepStrictEqual(shifts, [true, false])
+            } else {
+              const [packet] = await Promise.all([
+                onceWithCleanup(client, 'steer_vehicle', { timeout: 1000 }),
+                bot.dismount()
+              ])
+              assert.strictEqual(packet[0].jump, 2)
+            }
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
+      it('leaves an already held sneak held when the server does not dismount', function (done) {
+        this.timeout(15 * 1000)
+        server.on('playerJoin', async (client) => {
+          try {
+            await mountPig(client)
+            if (!bot.supportFeature('newPlayerInputPacket')) return done()
+            bot.setControlState('sneak', true)
+            await assert.rejects(bot.dismount())
+            assert.strictEqual(bot.getControlState('sneak'), true)
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+    })
+
     describe('physics', () => {
       const pos = vec3(1, 65, 1)
       const goldId = 41
