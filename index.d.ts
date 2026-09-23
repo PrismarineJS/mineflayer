@@ -115,7 +115,7 @@ export interface BotEvents {
   blockUpdate: (oldBlock: Block | null, newBlock: Block) => Promise<void> | void
   'blockUpdate:(x, y, z)': (oldBlock: Block | null, newBlock: Block | null) => Promise<void> | void
   blockEntityData: (block: Block | null) => Promise<void> | void
-  signOpen: (block: Block | null) => Promise<void> | void
+  signOpen: (block: Block | null, isFrontText: boolean) => Promise<void> | void
   chunkColumnLoad: (entity: Vec3) => Promise<void> | void
   chunkColumnUnload: (entity: Vec3) => Promise<void> | void
   soundEffectHeard: (

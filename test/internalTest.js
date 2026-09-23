@@ -334,6 +334,86 @@ for (const supportedVersion of mineflayer.testedVersions) {
           client.write('map_chunk', generateChunkPacket(chunk))
         })
       })
+
+      it('keeps a far sign open using the effective interaction range, not the base value', function (done) {
+        if (!registry.version['>=']('1.20.5')) return this.skip() // block_interaction_range attribute
+        const pos = vec3(1, 64, 1)
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          bot.once('chunkColumnLoad', () => {
+            // ~9.6 blocks away on x: base 4.5 (+4 screen = 8.5) would close, but a +5 add modifier gives effective 9.5
+            // (+4 = 13.5) which still covers it.
+            bot.entity.position.set(11.6, 64, 1.5)
+            bot.entity.eyeHeight = 1.62
+            bot.entity.attributes = { 'minecraft:player.block_interaction_range': { value: 4.5, modifiers: [{ operation: 0, amount: 5 }] } }
+            let closed = false
+            client.on('update_sign', () => { closed = true })
+            bot.once('signOpen', () => {
+              for (let i = 0; i < 3; i++) bot.emit('physicsTick')
+              setTimeout(() => { assert.ok(!closed, 'sign editor closed although the effective range covers it'); done() }, 60)
+            })
+            client.write('block_change', { location: pos, type: signStateId })
+            client.write('tile_entity_data', { location: pos, action: 9, nbtData: signNbt() })
+            client.write('open_sign_entity', { location: pos, isFrontText: true })
+          })
+          const chunk = bot.test.buildChunk()
+          chunk.setBlockType(pos.offset(0, -1, 0), registry.blocksByName.stone.id)
+          client.write('map_chunk', generateChunkPacket(chunk))
+        })
+      })
+
+      it('preserves literal NBT-string sign lines on 1.21.5+ instead of JSON-parsing them', function (done) {
+        if (!registry.version['>=']('1.21.5')) return this.skip()
+        const pos = vec3(1, 64, 1)
+        const literal = ['null', '{"text":"literal"}', '', ''] // valid plain lines that look like JSON/null
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          bot.once('chunkColumnLoad', () => {
+            bot.entity.position.set(1.5, 65, 1.5)
+            client.once('update_sign', (packet) => {
+              assert.deepStrictEqual(sentLines(packet), literal)
+              done()
+            })
+            const signData = nbt.comp({
+              is_waxed: nbt.byte(0),
+              front_text: nbt.comp({ messages: nbt.list(nbt.string(literal)), color: nbt.string('black'), has_glowing_text: nbt.byte(0) }),
+              back_text: nbt.comp({ messages: nbt.list(nbt.string(['', '', '', ''])), color: nbt.string('black'), has_glowing_text: nbt.byte(0) })
+            })
+            client.write('block_change', { location: pos, type: signStateId })
+            client.write('tile_entity_data', { location: pos, action: 9, nbtData: signData })
+            client.write('open_sign_entity', { location: pos, isFrontText: true })
+            client.write('block_change', { location: pos, type: 0 })
+          })
+          const chunk = bot.test.buildChunk()
+          chunk.setBlockType(pos.offset(0, -1, 0), registry.blocksByName.stone.id)
+          client.write('map_chunk', generateChunkPacket(chunk))
+        })
+      })
+
+      it('discards the sign editor on configuration entry instead of answering in a bad state', function (done) {
+        if (!registry.version['>=']('1.20.2')) return this.skip() // configuration state
+        const pos = vec3(1, 64, 1)
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          bot.once('chunkColumnLoad', () => {
+            bot.entity.position.set(1.5, 65, 1.5)
+            let sent = false
+            client.on('update_sign', () => { sent = true })
+            bot.once('signOpen', () => {
+              client.write('block_change', { location: pos, type: 0 }) // schedules the delayed close
+              bot._client.state = 'configuration'
+              bot._client.emit('state', 'configuration') // ... but we entered configuration first
+              setTimeout(() => { assert.ok(!sent, 'update_sign sent while entering configuration'); done() }, 120)
+            })
+            client.write('block_change', { location: pos, type: signStateId })
+            client.write('tile_entity_data', { location: pos, action: 9, nbtData: signNbt() })
+            client.write('open_sign_entity', { location: pos, isFrontText: true })
+          })
+          const chunk = bot.test.buildChunk()
+          chunk.setBlockType(pos.offset(0, -1, 0), registry.blocksByName.stone.id)
+          client.write('map_chunk', generateChunkPacket(chunk))
+        })
+      })
     })
 
     describe('digTime', () => {
