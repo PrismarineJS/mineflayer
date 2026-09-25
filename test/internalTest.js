@@ -986,6 +986,207 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('time', () => {
+      // 26.1+ replaced the single day time in update_time with a list of world clock
+      // updates, so the assertions below have to branch on the packet shape.
+      const usesWorldClocks = registry.protocol.play.toClient.types.packet_update_time[1]
+        .some(field => field.name === 'clockUpdates')
+      const hasTickDayTime = registry.protocol.play.toClient.types.packet_update_time[1]
+        .some(field => field.name === 'tickDayTime')
+
+      // Round trip through the real protocol so that i64 fields arrive as protodef
+      // reads them off the wire, which is what the plugin has to cope with.
+      const timeSerializer = mc.createSerializer({ state: 'play', isServer: true, version: supportedVersion })
+      const timeDeserializer = mc.createDeserializer({ state: 'play', isServer: false, version: supportedVersion })
+      const readUpdateTime = (params) => timeDeserializer
+        .parsePacketBuffer(timeSerializer.createPacketBuffer({ name: 'update_time', params }))
+        .data.params
+
+      // The mock server never reaches the configuration phase, so registry_data cannot
+      // be delivered through it and the plugin is driven directly instead.
+      // bot.registry is deliberately absent: the plugin resolves clock names from the
+      // world_clock registry it captures itself and must not reach for dimension data.
+      const driveTimePlugin = () => {
+        const client = new EventEmitter()
+        const fakeBot = new EventEmitter()
+        fakeBot._client = client
+        fakeBot.game = { dimension: 'overworld' }
+        require('../lib/plugins/time')(fakeBot)
+        return fakeBot
+      }
+
+      const WORLD_CLOCK_REGISTRY = {
+        id: 'minecraft:world_clock',
+        entries: [{ key: 'minecraft:overworld' }, { key: 'minecraft:the_end' }]
+      }
+
+      it('decodes an i64 whose low word has its high bit set', () => {
+        // protodef reads i64 as a [high, low] pair of signed int32s. Merging them without
+        // masking the low word lets its sign extension wipe the high word, so ages above
+        // 2^31 used to come out negative.
+        const fakeBot = driveTimePlugin()
+        const params = { age: [28, -1097262572] } // 123456789012
+        if (usesWorldClocks) {
+          params.clockUpdates = [{ id: 0, totalTicks: 0, partialTick: 0, rate: 1 }]
+        } else {
+          params.time = [0, 0]
+          if (hasTickDayTime) params.tickDayTime = true
+        }
+        const packet = readUpdateTime(params)
+        // Sanity check the fixture itself against protodef's own decimal rendering
+        assert.strictEqual(String(packet.age), '123456789012')
+
+        fakeBot._client.emit('update_time', packet)
+        assert.strictEqual(fakeBot.time.bigAge, 123456789012n)
+        assert.strictEqual(fakeBot.time.age, 123456789012)
+      })
+
+      if (!usesWorldClocks) {
+        it('derives the day time fields from the legacy packet', (done) => {
+          server.on('playerJoin', (client) => {
+            client.write('login', bot.test.generateLoginPacket())
+            bot.once('login', () => {
+              bot.once('time', () => {
+                assert.strictEqual(bot.time.time, 49234)
+                assert.strictEqual(bot.time.timeOfDay, 1234)
+                assert.strictEqual(bot.time.day, 2)
+                assert.strictEqual(bot.time.isDay, true)
+                assert.strictEqual(bot.time.moonPhase, 2)
+                assert.strictEqual(bot.time.doDaylightCycle, true)
+                assert.strictEqual(typeof bot.time.bigTime, 'bigint')
+                done()
+              })
+              const params = { age: [0, 49234], time: [0, 49234] }
+              if (hasTickDayTime) params.tickDayTime = true
+              client.write('update_time', params)
+            })
+          })
+        })
+
+        it('reads a negative legacy time as a stopped daylight cycle', () => {
+          // Before tickDayTime existed the server flipped the sign of time to say that
+          // the daylight cycle was off, and the absolute value is the actual time.
+          const fakeBot = driveTimePlugin()
+          const params = { age: [0, 18000], time: [-1, -18000] }
+          if (hasTickDayTime) params.tickDayTime = false
+          fakeBot._client.emit('update_time', readUpdateTime(params))
+          assert.strictEqual(fakeBot.time.doDaylightCycle, false)
+          assert.strictEqual(fakeBot.time.time, 18000)
+          assert.strictEqual(fakeBot.time.timeOfDay, 18000)
+          assert.strictEqual(fakeBot.time.isDay, false)
+        })
+      }
+
+      if (usesWorldClocks) {
+        const clockPacket = () => readUpdateTime({
+          age: [0, 49234],
+          clockUpdates: [
+            { id: 0, totalTicks: 49234, partialTick: 0, rate: 1 },
+            { id: 1, totalTicks: 6000, partialTick: 0, rate: 0 }
+          ]
+        })
+
+        it('names clocks after the world_clock registry, not the dimension registry', () => {
+          // clockUpdates[].id indexes minecraft:world_clock. Vanilla ships two world
+          // clocks but four dimension types, so the two lists disagree from index 1 on:
+          // id 1 is the_end as a clock and overworld_caves as a dimension type.
+          const fakeBot = driveTimePlugin()
+          fakeBot._client.emit('registry_data', WORLD_CLOCK_REGISTRY)
+          fakeBot._client.emit('update_time', clockPacket())
+
+          assert.deepStrictEqual(Object.keys(fakeBot.time.clocks).sort(), ['overworld', 'the_end'])
+          assert.strictEqual(fakeBot.time.clocks.the_end.totalTicks, 6000)
+          assert.strictEqual(fakeBot.time.clocks.the_end.rate, 0)
+        })
+
+        it('drives the day time fields from the overworld clock', () => {
+          const fakeBot = driveTimePlugin()
+          fakeBot._client.emit('registry_data', WORLD_CLOCK_REGISTRY)
+          fakeBot._client.emit('update_time', clockPacket())
+
+          assert.strictEqual(fakeBot.time.time, 49234)
+          assert.strictEqual(fakeBot.time.timeOfDay, 1234)
+          assert.strictEqual(fakeBot.time.day, 2)
+          assert.strictEqual(fakeBot.time.isDay, true)
+          assert.strictEqual(fakeBot.time.moonPhase, 2)
+          assert.strictEqual(fakeBot.time.doDaylightCycle, true)
+          assert.strictEqual(typeof fakeBot.time.bigTime, 'bigint')
+        })
+
+        it('keeps the day time fields filled outside the overworld', () => {
+          // The nether has no clock of its own, so looking a clock up by the bot's
+          // dimension found nothing and left every field at zero. The overworld clock
+          // owns vanilla's day and moon timelines, so it drives these fields everywhere.
+          for (const dimension of ['the_nether', 'the_end']) {
+            const fakeBot = driveTimePlugin()
+            fakeBot.game.dimension = dimension
+            fakeBot._client.emit('registry_data', WORLD_CLOCK_REGISTRY)
+            fakeBot._client.emit('update_time', clockPacket())
+
+            assert.strictEqual(fakeBot.time.timeOfDay, 1234, `timeOfDay in ${dimension}`)
+            assert.strictEqual(fakeBot.time.day, 2, `day in ${dimension}`)
+            assert.strictEqual(fakeBot.time.doDaylightCycle, true, `doDaylightCycle in ${dimension}`)
+          }
+        })
+
+        it('reads a paused clock as a stopped daylight cycle', () => {
+          const fakeBot = driveTimePlugin()
+          fakeBot._client.emit('registry_data', WORLD_CLOCK_REGISTRY)
+          fakeBot._client.emit('update_time', readUpdateTime({
+            age: [0, 18000],
+            clockUpdates: [{ id: 0, totalTicks: 18000, partialTick: 0, rate: 0 }]
+          }))
+
+          assert.strictEqual(fakeBot.time.doDaylightCycle, false)
+          assert.strictEqual(fakeBot.time.timeOfDay, 18000)
+          assert.strictEqual(fakeBot.time.isDay, false)
+        })
+
+        it('keeps clocks the server did not resend', () => {
+          const fakeBot = driveTimePlugin()
+          fakeBot._client.emit('registry_data', WORLD_CLOCK_REGISTRY)
+          fakeBot._client.emit('update_time', clockPacket())
+          fakeBot._client.emit('update_time', readUpdateTime({
+            age: [0, 49334],
+            clockUpdates: [{ id: 0, totalTicks: 49334, partialTick: 0, rate: 1 }]
+          }))
+
+          assert.strictEqual(fakeBot.time.time, 49334)
+          assert.strictEqual(fakeBot.time.clocks.the_end.totalTicks, 6000)
+        })
+
+        it('keeps the day time fields in step while extrapolating clocks', () => {
+          // Clocks carry a rate and a partial tick so the client can keep them running
+          // between packets; the derived fields have to follow or they contradict clocks.
+          const fakeBot = driveTimePlugin()
+          fakeBot._client.emit('registry_data', WORLD_CLOCK_REGISTRY)
+          fakeBot._client.emit('update_time', clockPacket())
+
+          let timeEvents = 0
+          fakeBot.on('time', () => timeEvents++)
+          for (let i = 0; i < 40; i++) fakeBot.emit('physicsTick')
+
+          assert.strictEqual(fakeBot.time.clocks.overworld.totalTicks, 49274)
+          assert.strictEqual(fakeBot.time.time, 49274)
+          assert.strictEqual(fakeBot.time.timeOfDay, 1274)
+          // A paused clock must not drift
+          assert.strictEqual(fakeBot.time.clocks.the_end.totalTicks, 6000)
+          // Extrapolation is not a packet, so it must not multiply the time event
+          assert.strictEqual(timeEvents, 0)
+        })
+
+        it('does not mutate the received packet while extrapolating', () => {
+          const fakeBot = driveTimePlugin()
+          fakeBot._client.emit('registry_data', WORLD_CLOCK_REGISTRY)
+          const packet = clockPacket()
+          fakeBot._client.emit('update_time', packet)
+          for (let i = 0; i < 40; i++) fakeBot.emit('physicsTick')
+
+          assert.strictEqual(packet.clockUpdates[0].totalTicks, 49234)
+        })
+      }
+    })
+
     describe('rain', () => {
       it('flips isRaining on rain level zero-crossings without start_raining', (done) => {
         // Vanilla 26.1 can bring rain in with only rain_level_change ramps,
