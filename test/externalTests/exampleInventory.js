@@ -51,19 +51,16 @@ module.exports = () => async (bot) => {
     assert.strictEqual(name, 'inventory')
     bot.chat('/op inventory') // to counteract spawn protection
     bot.chat('/clear inventory')
-    bot.chat(`/setblock 52 ${bot.test.groundY} 0 crafting_table`) // to make stone bricks stairs
+    await bot.test.setBlock({ x: 52, y: bot.test.groundY, z: 0, blockName: 'crafting_table' })
     bot.chat('/give inventory dirt 64')
     bot.chat('/give inventory stick 7')
     bot.chat('/give inventory iron_ore 64')
     bot.chat('/give inventory diamond_boots 1')
-    await bot.test.wait(2000)
     if (bot.registry.isOlderThan('1.9')) {
       tests.splice(tests.indexOf(tests.find(t => t.command.includes('off-hand'))), 2) // Delete off-hand command and the command after it as they don't work in 1.9
     }
-    const testFuncs = tests.map(test => makeTest(test.command, test.wantedMessage))
-    for (const test of testFuncs) {
-      await test()
-      await bot.test.wait(100)
+    for (const test of tests) {
+      await makeTest(test.command, test.wantedMessage)()
     }
     // cleanup
     bot.chat(`/setblock 52 ${bot.test.groundY} 0 air`)

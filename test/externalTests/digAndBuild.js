@@ -1,5 +1,6 @@
 const { Vec3 } = require('vec3')
 const assert = require('assert')
+const { onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
@@ -13,9 +14,16 @@ module.exports = () => async (bot) => {
   await bot.test.becomeSurvival()
   // we are bare handed
   await bot.dig(bot.blockAt(bot.entity.position.plus(new Vec3(0, -1, 0))))
-  // make sure we collected das dirt
-  await bot.test.wait(1000)
-  assert(Item.equal(bot.inventory.slots[36], new Item(bot.registry.itemsByName.dirt.id, 1, 0)))
+  // make sure we collected das dirt; the drop sits through its pickup delay
+  // before it can reach the inventory, so wait for the slot update
+  const dirt = new Item(bot.registry.itemsByName.dirt.id, 1, 0)
+  if (!Item.equal(bot.inventory.slots[36], dirt)) {
+    await onceWithCleanup(bot.inventory, 'updateSlot', {
+      timeout: 5000,
+      checkCondition: (slot) => slot === 36 && Item.equal(bot.inventory.slots[36], dirt)
+    })
+  }
+  assert(Item.equal(bot.inventory.slots[36], dirt))
   bot.test.sayEverywhere('dirt collect test: pass')
 
   async function waitForFall () {

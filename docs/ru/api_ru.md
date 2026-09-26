@@ -2134,7 +2134,7 @@ bot.once('login', () => {
 
 Может использоваться для проверки особой для текущей версии Майнкрафт возможности. Обычно это требуется только для обработки функций, зависящих от версии.
 
-Список возможностей можно найти в файле [./lib/features.json](https://github.com/PrismarineJS/mineflayer/blob/master/lib/features.json).
+Список возможностей можно найти в файле [features.json](https://github.com/PrismarineJS/minecraft-data/blob/master/data/pc/common/features.json).
 
 #### bot.waitForTicks(ticks)
 

@@ -1917,7 +1917,7 @@ Todas las opciones tienen como predeterminado false, excepto modo que es 2 (para
 
 Esto puede usarse para ver si una característica está disponible en la versión del bot de Minecraft. Normalmente esto es solo para manejar funciones que son específicas de una versión.
 
-Puedes encontrar la lista de características en [./lib/features.json](https://github.com/PrismarineJS/mineflayer/blob/master/lib/features.json) file.
+Puedes encontrar la lista de características en [features.json](https://github.com/PrismarineJS/minecraft-data/blob/master/data/pc/common/features.json) file.
 
 #### bot.waitForTicks(ticks)
 
