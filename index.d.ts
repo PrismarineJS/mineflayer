@@ -80,6 +80,7 @@ export interface BotEvents {
   death: () => Promise<void> | void
   health: () => Promise<void> | void
   breath: () => Promise<void> | void
+  abilities: (abilities: Abilities) => Promise<void> | void
   entitySwingArm: (entity: Entity) => Promise<void> | void
   entityHurt: (entity: Entity, source: Entity) => Promise<void> | void
   entityDead: (entity: Entity) => Promise<void> | void
@@ -114,6 +115,8 @@ export interface BotEvents {
   playerLeft: (entity: Player) => Promise<void> | void
   blockUpdate: (oldBlock: Block | null, newBlock: Block) => Promise<void> | void
   'blockUpdate:(x, y, z)': (oldBlock: Block | null, newBlock: Block | null) => Promise<void> | void
+  blockEntityData: (block: Block | null) => Promise<void> | void
+  signOpen: (block: Block | null) => Promise<void> | void
   chunkColumnLoad: (entity: Vec3) => Promise<void> | void
   chunkColumnUnload: (entity: Vec3) => Promise<void> | void
   soundEffectHeard: (
@@ -196,6 +199,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   oxygenLevel: number
   physics: PhysicsOptions
   physicsEnabled: boolean
+  abilities: Abilities
   time: Time
   quickBarSlot: number
   inventory: Window<StorageEvents>
@@ -406,7 +410,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   putAway: (slot: number) => Promise<void>
 
-  closeWindow: (window: Window) => void
+  closeWindow: (window: Window) => Promise<void>
 
   transfer: (options: TransferOptions) => Promise<void>
 
@@ -499,6 +503,7 @@ export interface Player {
 export interface SkinData {
   url: string
   model: string | null
+  capeUrl?: string
 }
 
 export interface ChatPattern {
@@ -530,6 +535,15 @@ export interface Experience {
   level: number
   points: number
   progress: number
+}
+
+export interface Abilities {
+  invulnerable: boolean
+  flying: boolean
+  mayFly: boolean
+  instantBuild: boolean
+  flyingSpeed: number
+  walkingSpeed: number
 }
 
 export interface PhysicsOptions {
@@ -665,7 +679,7 @@ interface ConditionalStorageEvents extends StorageEvents {
 export class Chest extends Window<StorageEvents> {
   constructor ();
 
-  close (): void;
+  close (): Promise<void>;
 
   deposit (
     itemType: number,
@@ -686,7 +700,7 @@ export class Furnace extends Window<FurnaceEvents> {
 
   constructor ();
 
-  close (): void;
+  close (): Promise<void>;
 
   takeInput (): Promise<Item>;
 
@@ -716,7 +730,7 @@ export class Furnace extends Window<FurnaceEvents> {
 export class Dispenser extends Window<StorageEvents> {
   constructor ();
 
-  close (): void;
+  close (): Promise<void>;
 
   deposit (
     itemType: number,
@@ -736,7 +750,7 @@ export class EnchantmentTable extends Window<ConditionalStorageEvents> {
 
   constructor ();
 
-  close (): void;
+  close (): Promise<void>;
 
   targetItem (): Item;
 
@@ -766,7 +780,7 @@ export class Villager extends Window<ConditionalStorageEvents> {
 
   constructor ();
 
-  close (): void;
+  close (): Promise<void>;
 }
 
 export interface VillagerTrade {

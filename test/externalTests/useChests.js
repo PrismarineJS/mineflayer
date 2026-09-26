@@ -1,9 +1,11 @@
 const { Vec3 } = require('vec3')
 const assert = require('assert')
-const { once, onceWithCleanup } = require('../../lib/promise_utils')
+const { once } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
+  // openContainer and placeBlock turn to face the block before acting.
+  bot.physics.yawSpeed = bot.physics.pitchSpeed = 1e3
 
   bot.test.groundY = bot.supportFeature('tallWorld') ? -60 : 4
 
@@ -47,7 +49,7 @@ module.exports = () => async (bot) => {
       throw new Error(`unknown item ${name}`)
     }
     await chest.deposit(item.type, null, count)
-    chest.close()
+    await chest.close()
   }
 
   async function withdrawBones (chestLocation, count) {
@@ -61,7 +63,7 @@ module.exports = () => async (bot) => {
     await chest.withdraw(item.type, null, count)
     assert(chest.containerItems().length === 0)
     assert(chest.items().length > 0)
-    chest.close()
+    await chest.close()
   }
 
   await bot.test.setInventorySlot(chestSlot, new Item(bot.registry[blockItemsByName].chest.id, 3, 0))
@@ -105,7 +107,7 @@ module.exports = () => async (bot) => {
       await bot.test.wait(500)
 
       bot.removeListener('chestLidMove', handler)
-      chest.close()
+      await chest.close()
     }
   }
   const chest = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
@@ -127,51 +129,126 @@ module.exports = () => async (bot) => {
   await withdrawBones(smallTrappedChestLocation, 1)
   await withdrawBones(largeTrappedChestLocations[0], 2)
 
+  // Deposit part of a stack: the halving path must leave the same counts as one-by-one
+  const boneCount = (items) => items.filter(item => item.name === 'bone').reduce((sum, item) => sum + item.count, 0)
+  await bot.test.becomeCreative()
+  await bot.test.setInventorySlot(itemByName(bot.inventory.slots, 'bone').slot, new Item(bot.registry.itemsByName.bone.id, 64, 0))
+  await bot.test.becomeSurvival()
+  assert.strictEqual(boneCount(bot.inventory.items()), 64)
+  const partialChest = await bot.openContainer(bot.blockAt(smallChestLocation))
+  await partialChest.deposit(bot.registry.itemsByName.bone.id, null, 36)
+  assert.strictEqual(itemByName(partialChest.containerItems(), 'bone').count, 36)
+  assert.strictEqual(boneCount(partialChest.items()), 28)
+  await partialChest.withdraw(bot.registry.itemsByName.bone.id, null, 36)
+  assert.strictEqual(partialChest.containerItems().length, 0)
+  assert.strictEqual(boneCount(partialChest.items()), 64)
+  partialChest.close()
+
   const itemsWithStackSize = {
     64: ['stone', 'mycelium'],
     16: ['ender_pearl', 'egg'],
     1: ['fishing_rod', 'bow']
   }
 
-  function getRandomStackableItem () {
-    if (Math.random() < 0.75) {
-      return itemsWithStackSize[64][~~(Math.random() * itemsWithStackSize[64].length)]
-    } else {
-      if (Math.random() < 0.5) {
-        return itemsWithStackSize[16][~~(Math.random() * itemsWithStackSize[16].length)]
+  // The transition cases need one stack of more than 2, a second stack of a
+  // different type, and a free slot. Nothing asserts on a fuller chest.
+  const layout = [
+    { slot: 0, name: itemsWithStackSize[64][0], count: 8 },
+    { slot: 1, name: itemsWithStackSize[64][1], count: 8 },
+    { slot: 2, name: itemsWithStackSize[16][0], count: 4 }
+  ]
+
+  // Write the slots server side. Filling them by clicking leaves the result at
+  // the mercy of the client's predicted state, which from 1.17 is not confirmed
+  // per click, and a lost move is invisible until an assertion reads the slot.
+  async function fillChest (pos) {
+    const at = `${pos.x} ${pos.y} ${pos.z}`
+    for (const { slot, name, count } of layout) {
+      const item = bot.registry.itemsByName[name]
+      assert.ok(item, `${name} should exist on this version`)
+      if (bot.supportFeature('hasItemCommand')) {
+        bot.chat(`/item replace block ${at} container.${slot} with ${name} ${count}`)
+      } else if (bot.supportFeature('replaceItemSlotIsPrefixed')) {
+        bot.chat(`/replaceitem block ${at} slot.container.${slot} minecraft:${name} ${count}`)
       } else {
-        return itemsWithStackSize[1][~~(Math.random() * itemsWithStackSize[1].length)]
+        bot.chat(`/replaceitem block ${at} container.${slot} ${name} ${count}`)
       }
     }
+    await bot.test.awaitCommandsProcessed('chest-filled')
   }
 
-  async function createRandomLayout (window, slotPopulationFactor) {
-    await bot.test.becomeCreative()
-
-    for (let slot = 0; slot < window.inventoryStart; slot++) {
-      if (Math.random() < slotPopulationFactor) {
-        const randomItem = getRandomStackableItem()
-        const item = bot.registry.itemsByName[randomItem]
-        bot.chat(`/give ${bot.username} ${item.name} ${Math.ceil(Math.random() * item.stackSize)}`)
-        await onceWithCleanup(window, 'updateSlot', {
-          timeout: 5000,
-          checkCondition: (slot, oldItem, newItem) => slot === window.hotbarStart && newItem?.name === item.name
-        })
-
-        // await bot.clickWindow(slot, 0, 2)
-        await bot.moveSlotItem(window.hotbarStart, slot)
-        await bot.test.wait(100)
+  // Each left/right click resolves differently depending on whether the cursor
+  // is holding something and what is in the target slot, so every case needs
+  // its own precondition rather than another random click.
+  async function testClickTransitions (window) {
+    const held = () => window.selectedItem
+    const find = (pred) => {
+      for (let i = 0; i < window.inventoryStart; i++) {
+        if (pred(window.slots[i], i)) return i
       }
+      return -1
     }
 
-    await bot.test.becomeSurvival()
-  }
+    assert.ok(!held(), 'cursor must start empty')
 
-  async function testMouseClick (window, clicks) {
-    let iterations = 0
-    while (iterations++ < clicks) {
-      await bot.clickWindow(~~(Math.random() * window.inventoryStart), 0, 0)
-    }
+    // Needs more than 2 so there is still something on the cursor after placing
+    // one, and something left to merge back.
+    const a = find(s => s !== null && s.count > 2)
+    assert.notStrictEqual(a, -1, 'expected an occupied slot holding more than 2')
+    const taken = { type: window.slots[a].type, count: window.slots[a].count }
+    await bot.clickWindow(a, 0, 0)
+    assert.ok(held(), 'left click on an occupied slot should take it')
+    assert.strictEqual(held().type, taken.type)
+    assert.strictEqual(held().count, taken.count)
+    assert.strictEqual(window.slots[a], null)
+
+    // holding + empty slot, right click -> place exactly one
+    await bot.clickWindow(a, 1, 0)
+    assert.ok(window.slots[a], 'right click on an empty slot should place one')
+    assert.strictEqual(window.slots[a].count, 1)
+    assert.strictEqual(held().count, taken.count - 1)
+
+    // holding + occupied slot of the same type -> merge into it. The slot holds
+    // 1 and the cursor the rest of the same stack, so all of it fits and the
+    // cursor is left empty.
+    await bot.clickWindow(a, 0, 0)
+    assert.strictEqual(window.slots[a].type, taken.type)
+    assert.strictEqual(window.slots[a].count, taken.count, 'the whole stack should merge back')
+    assert.ok(!held(), 'a merge that fits should empty the cursor')
+
+    // holding + occupied slot of a different type -> swap
+    await bot.clickWindow(a, 0, 0)
+    assert.ok(held(), 'expected to be holding the merged stack')
+    const other = find((s, i) => s !== null && i !== a && s.type !== held().type)
+    assert.notStrictEqual(other, -1, 'expected a slot holding a different item type')
+    const there = { type: window.slots[other].type, count: window.slots[other].count }
+    const cursor = { type: held().type, count: held().count }
+    await bot.clickWindow(other, 0, 0)
+    assert.strictEqual(window.slots[other].type, cursor.type, 'swap should leave the cursor item in the slot')
+    assert.strictEqual(window.slots[other].count, cursor.count)
+    assert.strictEqual(held().type, there.type, 'swap should leave the slot item on the cursor')
+    assert.strictEqual(held().count, there.count)
+
+    // holding + empty slot -> drop the whole stack
+    await bot.clickWindow(a, 0, 0)
+    assert.ok(!held(), 'left click on an empty slot should drop the whole stack')
+    assert.strictEqual(window.slots[a].type, there.type)
+
+    // empty cursor + occupied slot, right click -> take half
+    const big = find(s => s !== null && s.count > 1)
+    assert.notStrictEqual(big, -1, 'expected a slot holding more than 1')
+    const whole = window.slots[big].count
+    await bot.clickWindow(big, 1, 0)
+    assert.ok(held(), 'right click on an occupied slot should take half')
+    assert.strictEqual(held().count + (window.slots[big]?.count ?? 0), whole, 'the halves should account for the whole stack')
+    await bot.clickWindow(big, 0, 0)
+    assert.ok(!held(), 'putting the half back should empty the cursor')
+
+    // shift click moves the stack out of the chest entirely
+    const move = find(s => s !== null)
+    assert.notStrictEqual(move, -1, 'expected an occupied slot to shift click')
+    await bot.clickWindow(move, 0, 1)
+    assert.strictEqual(window.slots[move], null, 'shift click should empty the chest slot')
   }
 
   function clearLargeChest () {
@@ -179,11 +256,16 @@ module.exports = () => async (bot) => {
     bot.chat(`/setblock ${largeChestLocations[1].x} ${largeChestLocations[1].y} ${largeChestLocations[1].z} chest`)
   }
 
+  await fillChest(largeChestLocations[0])
   const window = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
-  await createRandomLayout(window, 0.95)
+  // Which half of a double chest the window lists first depends on the version.
+  for (const { name, count } of layout) {
+    const slot = window.slots.findIndex((s, i) => i < window.inventoryStart && s?.name === name)
+    assert.notStrictEqual(slot, -1, `expected ${name} in the chest`)
+    assert.strictEqual(window.slots[slot].count, count)
+  }
+  await testClickTransitions(window)
 
-  await testMouseClick(window, 250)
-
-  window.close()
+  await window.close()
   clearLargeChest()
 }
