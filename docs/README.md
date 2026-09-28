@@ -249,6 +249,7 @@ The most updated and useful are :
  * [hexatester/minetelegram](https://github.com/hexatester/minetelegram) -  Minecraft - Telegram bridge, build on top of mineflayer & telegraf.
  * [PrismarineJS/mineflayer-builder](https://github.com/PrismarineJS/mineflayer-builder) - Prints minecraft schematics in survival, keeping orientation
  * [SilkePilon/OpenDeliveryBot](https://github.com/SilkePilon/OpenDeliveryBot) - Minecraft bot in python to deliver items from place to place.
+ * [Muurrcc/FelixIAMinecraft](https://github.com/Muurrcc/FelixIAMinecraft) - Local AI companion built on mindcraft, with a one-command install and a live dashboard showing the bot's reasoning.
  * [and hundreds more](https://github.com/PrismarineJS/mineflayer/network/dependents) - All the projects that github detected are using mineflayer
 
 
