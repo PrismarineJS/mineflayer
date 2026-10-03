@@ -1474,6 +1474,140 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('item use and entity status', () => {
+      const Item = require('prismarine-item')(supportedVersion)
+      const packetTimeout = 2000
+      let client
+
+      // Register before writing, then resume after all plugin packet handlers ran.
+      async function sendPacket (name, packet) {
+        const received = onceWithCleanup(bot._client, name, { timeout: packetTimeout })
+        client.write(name, packet)
+        await received
+      }
+
+      beforeEach(async () => {
+        [client] = await onceWithCleanup(server, 'playerJoin', { timeout: packetTimeout })
+        const loginPacket = { ...bot.test.generateLoginPacket(), gameMode: 0 }
+        if (loginPacket.worldState) loginPacket.worldState = { ...loginPacket.worldState, gamemode: 'survival' }
+        await sendPacket('login', loginPacket)
+        await sendPacket('held_item_slot', { slot: 0 })
+        await sendPacket('update_health', { health: 20, food: 19, foodSaturation: 0 })
+        await sendPacket('set_slot', {
+          windowId: 0,
+          stateId: 1,
+          slot: 9,
+          item: Item.toNotch(new Item(registry.itemsByName.arrow.id, 1))
+        })
+        assert.strictEqual(bot.game.gameMode, 'survival')
+        assert.strictEqual(bot.food, 19)
+      })
+
+      async function equipItem (name) {
+        await sendPacket('set_slot', {
+          windowId: 0,
+          stateId: 1,
+          slot: bot.QUICK_BAR_START,
+          item: Item.toNotch(new Item(registry.itemsByName[name].id, 1))
+        })
+        assert.strictEqual(bot.heldItem.name, name)
+      }
+
+      async function startUsing (activate = () => bot.activateItem()) {
+        const legacy = bot.supportFeature('useItemWithBlockPlace')
+        const used = onceWithCleanup(client, legacy ? 'block_place' : 'use_item', { timeout: packetTimeout })
+        activate()
+        const [packet] = await used
+        if (legacy) {
+          assert.strictEqual(Item.fromNotch(packet.heldItem).type, bot.heldItem.type)
+          assert.strictEqual(packet.direction, -1)
+        } else {
+          // 26.1 decodes the numeric hand as a named enum.
+          assert.ok([0, 'main_hand'].includes(packet.hand), 'expected main-hand item use')
+        }
+        assert.strictEqual(bot.usingHeldItem, true)
+      }
+
+      async function releaseItem () {
+        const released = onceWithCleanup(client, 'block_dig', {
+          timeout: packetTimeout,
+          checkCondition: packet => packet.status === 5
+        })
+        bot.deactivateItem()
+        await released
+        assert.strictEqual(bot.usingHeldItem, false)
+      }
+
+      async function sendStatus (entityId, entityStatus) {
+        await sendPacket('entity_status', { entityId, entityStatus })
+        // consume() awaits another promise internally. Drain its continuations
+        // before checking settlement, without guessing a network delay.
+        await new Promise(resolve => setImmediate(resolve))
+      }
+
+      for (const entityStatus of [2, 3, 9, 29]) {
+        it(`keeps using an item when another entity receives status ${entityStatus}`, async () => {
+          await equipItem('bow')
+          await startUsing()
+          await sendStatus(bot.entity.id + 1, entityStatus)
+          assert.strictEqual(bot.usingHeldItem, true)
+          await releaseItem()
+        })
+      }
+
+      for (const entityStatus of [2, 29]) {
+        it(`keeps using an item when the bot receives unrelated status ${entityStatus}`, async function () {
+          if (entityStatus === 29 && !registry.itemsByName.shield) this.skip()
+          await equipItem(entityStatus === 29 ? 'shield' : 'bow')
+          await startUsing()
+          await sendStatus(bot.entity.id, entityStatus)
+          assert.strictEqual(bot.usingHeldItem, true)
+          await releaseItem()
+        })
+      }
+
+      for (const entityStatus of [3, 9]) {
+        it(`clears item use when the bot receives status ${entityStatus}`, async () => {
+          await equipItem('bow')
+          await startUsing()
+          await sendStatus(bot.entity.id, entityStatus)
+          assert.strictEqual(bot.usingHeldItem, false)
+        })
+      }
+
+      it('finishes consuming only when the bot receives its completion status', async () => {
+        await equipItem('bread')
+        let consumed
+        let settled = false
+        try {
+          await startUsing(() => {
+            consumed = bot.consume()
+            consumed.then(() => { settled = true }, () => { settled = true })
+          })
+          for (const [entityId, entityStatus] of [
+            [bot.entity.id + 1, 9],
+            [bot.entity.id + 1, 3],
+            [bot.entity.id + 1, 2],
+            [bot.entity.id + 1, 29],
+            [bot.entity.id, 2],
+            [bot.entity.id, 29]
+          ]) {
+            await sendStatus(entityId, entityStatus)
+            assert.strictEqual(settled, false, `consume settled after entity ${entityId} status ${entityStatus}`)
+            assert.strictEqual(bot.usingHeldItem, true)
+          }
+          await sendStatus(bot.entity.id, 9)
+          await consumed
+          assert.strictEqual(settled, true)
+          assert.strictEqual(bot.usingHeldItem, false)
+        } finally {
+          // Finish any pending consumption even when an assertion fails.
+          if (consumed && !settled) await sendStatus(bot.entity.id, 9)
+          if (consumed) await consumed
+        }
+      })
+    })
+
     describe('activateItem rotation', () => {
       it('should send the bot rotation in the use_item packet', function (done) {
         // The rotation field in use_item was added in 1.21.1
