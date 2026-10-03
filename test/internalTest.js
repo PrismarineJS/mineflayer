@@ -264,6 +264,50 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('resource pack', () => {
+      const RP_UUID = '9f41f8d8-5a3e-4ea6-8a4c-404400000001'
+      const url = 'https://example.invalid/pack.zip'
+      const hash = 'pack-hash'
+      const usesUUID = registry.supportFeature('resourcePackUsesUUID')
+      // The server sends the pack request the way this version models it; extra fields are ignored by the serializer.
+      const sendRequest = (client) => {
+        if (usesUUID) client.write('add_resource_pack', { uuid: RP_UUID, url, hash, forced: false, promptMessage: undefined })
+        else client.write('resource_pack_send', { url, hash, forced: false, promptMessage: undefined })
+      }
+
+      it('answers a declined pack with exactly one protocol-shaped resource_pack_receive', function (done) {
+        server.on('playerJoin', async (client) => {
+          await bot.test.pluginsLoaded
+          client.write('login', bot.test.generateLoginPacket())
+          const responses = []
+          client.on('resource_pack_receive', (packet) => responses.push(packet))
+          bot.once('resourcePack', () => bot.denyResourcePack())
+          sendRequest(client)
+          // One response, no duplicate; on UUID versions it must carry the real wire uuid, not 16 zero bytes.
+          setTimeout(() => {
+            try {
+              assert.strictEqual(responses.length, 1, `expected one response, got ${responses.length}`)
+              assert.strictEqual(responses[0].result, 1) // DECLINED
+              if (usesUUID) assert.strictEqual(responses[0].uuid, RP_UUID)
+              done()
+            } catch (err) { done(err) }
+          }, 300)
+        })
+      })
+
+      it('answers an accepted pack with ACCEPTED then SUCCESSFULLY_LOADED', function (done) {
+        server.on('playerJoin', async (client) => {
+          await bot.test.pluginsLoaded
+          client.write('login', bot.test.generateLoginPacket())
+          const results = []
+          const finish = () => { try { assert.deepStrictEqual(results, [3, 0]); done() } catch (err) { done(err) } }
+          client.on('resource_pack_receive', (packet) => { results.push(packet.result); if (results.length === 2) finish() })
+          bot.once('resourcePack', () => bot.acceptResourcePack())
+          sendRequest(client)
+        })
+      })
+    })
+
     describe('digTime', () => {
       it('should use eye-level water check instead of isInWater for dig speed', (done) => {
         const blockPos = vec3(1, 65, 1)
@@ -662,40 +706,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
             done(err)
           }
         })
-      })
-      it('accepts a configuration-phase resource pack with the real UUID bytes', function () {
-        // The accept must carry the pack's real UUID bytes; a uuid-1345 object serializes to
-        // 16 zero bytes.
-        // The mock server never reaches the configuration phase, so the plugin is driven directly.
-        if (!registry.supportFeature('resourcePackUsesUUID')) {
-          this.skip()
-          return
-        }
-        const packUuid = '8ef4746b-93b7-3c32-9dcb-b375016c114d'
-        const expectedBytes = Buffer.from(packUuid.replace(/-/g, ''), 'hex')
-        const serializer = mc.createSerializer({ state: 'configuration', isServer: false, version: supportedVersion })
-
-        const client = new EventEmitter()
-        client.state = 'configuration'
-        const writes = []
-        client.write = (name, params) => { writes.push({ name, params }) }
-        const fakeBot = new EventEmitter()
-        fakeBot._client = client
-        fakeBot.supportFeature = registry.supportFeature.bind(registry)
-        require('../lib/plugins/resource_pack')(fakeBot)
-
-        client.emit('add_resource_pack', {
-          uuid: packUuid,
-          url: 'https://example.invalid/pack.zip',
-          hash: '88b406352dc8a335b1050a4bf9577a878c812012',
-          forced: false
-        })
-
-        const accept = writes.find((w) => w.name === 'resource_pack_receive')
-        assert(accept, 'bot should answer the pack during the configuration phase')
-        const buf = serializer.createPacketBuffer({ name: accept.name, params: accept.params })
-        assert(buf.includes(expectedBytes),
-          'resource_pack_receive must carry the pack UUID bytes, not a zero UUID')
       })
     })
 
