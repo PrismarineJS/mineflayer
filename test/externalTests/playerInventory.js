@@ -32,8 +32,7 @@ module.exports = () => async (bot) => {
     timeout: 5000,
     checkCondition: (oldItem, newItem) => newItem?.type === stoneId
   })
-  bot.closeWindow(chest)
-  await returned
+  await Promise.all([bot.closeWindow(chest), returned])
 
   assert.strictEqual(bot.inventory.slots[bot.inventory.hotbarStart].type, stoneId, 'returned stone should be back in hotbar slot 0')
   assert.strictEqual(bot.inventory.slots[0], null, 'set_player_inventory slotId 0 must not write into the crafting result slot')

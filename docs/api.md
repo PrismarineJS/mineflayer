@@ -106,6 +106,7 @@
       - [bot.game.serverBrand](#botgameserverbrand)
       - [bot.game.minY](#botgameminy)
       - [bot.game.height](#botgameheight)
+      - [bot.abilities](#botabilities)
       - [bot.physicsEnabled](#botphysicsenabled)
       - [bot.player](#botplayer)
       - [bot.players](#botplayers)
@@ -128,6 +129,7 @@
         - [bot.settings.skinParts.showHat - boolean](#botsettingsskinpartsshowhat---boolean)
       - [bot.settings.enableTextFiltering - boolean](#botsettingsenabletextfiltering---boolean)
       - [bot.settings.enableServerListing - boolean](#botsettingsenableserverlisting---boolean)
+      - [bot.settings.particleStatus - string](#botsettingsparticlestatus---string)
       - [bot.experience.level](#botexperiencelevel)
       - [bot.experience.points](#botexperiencepoints)
       - [bot.experience.progress](#botexperienceprogress)
@@ -182,6 +184,7 @@
       - ["death"](#death)
       - ["health"](#health)
       - ["breath"](#breath)
+      - ["abilities" (abilities)](#abilities-abilities)
       - ["entityAttributes" (entity)](#entityattributes-entity)
       - ["entitySwingArm" (entity)](#entityswingarm-entity)
       - ["entityHurt" (entity)](#entityhurt-entity)
@@ -424,7 +427,8 @@ The skin data is stored in the `skinData` property of the player object, if pres
 // player.skinData
 {
   url: 'http://textures.minecraft.net/texture/...',
-  model: 'slim' // or 'classic'
+  model: 'slim', // or 'classic'
+  capeUrl: 'http://textures.minecraft.net/texture/...' // only if the player has a cape
 }
 ```
 
@@ -483,6 +487,8 @@ This function returns a `Promise`, with `void` as its argument when done withdra
  * `nbt` - match nbt data. `null` is do not match nbt.
 
 #### window.close()
+
+Close the `window`; returns the `Promise` from [bot.closeWindow(window)](#botclosewindowwindow).
 
 ### Recipe
 
@@ -827,6 +833,7 @@ Create and return an instance of the class bot.
  * [skinParts](#bot.settings.skinParts)
  * [enableTextFiltering](#bot.settings.enableTextFiltering)
  * [enableServerListing](#bot.settings.enableServerListing)
+ * [particleStatus](#bot.settings.particleStatus)
  * chatLengthLimit : the maximum amount of characters that can be sent in a single message. If this is not set, it will be 100 in < 1.11 and 256 in >= 1.11.
  * defaultChatPatterns: defaults to true, set to false to not add the patterns such as chat and whisper
 
@@ -900,6 +907,23 @@ minimum y of the world
 #### bot.game.height
 
 world height
+
+#### bot.abilities
+
+What the server last allowed the player in the abilities packet.
+
+```js
+{
+  invulnerable: false,
+  // the server has the player in flight; physics stops applying gravity
+  flying: false,
+  // the player is allowed to start flying
+  mayFly: false,
+  instantBuild: false,
+  flyingSpeed: 0.05,
+  walkingSpeed: 0.1
+}
+```
 
 #### bot.physicsEnabled
 
@@ -1013,6 +1037,8 @@ If you have a cape you can turn it off by setting this to false.
 Unused, defaults to false in Notchian (Vanilla) client.
 #### bot.settings.enableServerListing - boolean
 This setting is sent to the server to determine whether the player should show up in server listings
+#### bot.settings.particleStatus - string
+Particle status sent to the server (1.21.3+): `all`, `decreased` or `minimal`. Defaults to `all`.
 #### bot.experience.level
 
 #### bot.experience.points
@@ -1134,22 +1160,32 @@ Boolean, whether or not you are in bed.
 
 All scoreboards known to the bot in an object scoreboard name -> scoreboard.
 
+Reset on each login (every server switch on a proxy network); the object is kept and its entries are dropped without `scoreboardDeleted` events.
+
 #### bot.scoreboard
 
 All scoreboards known to the bot in an object scoreboard displaySlot -> scoreboard.
+
+Reset on each login; the object is kept and its slots are dropped.
 
  * `belowName` - scoreboard placed in belowName
  * `sidebar` - scoreboard placed in sidebar
  * `list` - scoreboard placed in list
  * `0-18` - slots defined in [protocol](https://minecraft.wiki/w/Protocol#Display_Scoreboard)
 
+Only slots that currently display an objective are enumerable, so `Object.values(bot.scoreboard)` never contains `undefined`. The named slots are non-enumerable aliases of `0`, `1` and `2`.
+
 #### bot.teams
 
 All teams known to the bot
 
+Reset on each login (every server switch on a proxy network); the object is kept and its entries are dropped without `teamRemoved` events.
+
 #### bot.teamMap
 
 Mapping of member to team. Uses usernames for players and UUIDs for entities.
+
+Reset on each login; the object is kept and its entries are dropped.
 
 #### bot.controlState
 
@@ -1313,6 +1349,10 @@ Fires when your hp or food change.
 #### "breath"
 
 Fires when your oxygen level change.
+
+#### "abilities" (abilities)
+
+Fires when the server sends the abilities packet, with the new [bot.abilities](#botabilities).
 
 #### "entityAttributes" (entity)
 
@@ -1517,7 +1557,7 @@ Fires when a scoreboard is added.
 
 #### "scoreboardDeleted" (scoreboard)
 
-Fires when a scoreboard is deleted.
+Fires when a scoreboard is deleted. Not fired for scoreboards dropped by a login.
 
 #### "scoreboardTitleChanged" (scoreboard)
 
@@ -1541,7 +1581,7 @@ Fires when a team is added.
 
 #### "teamRemoved" (team)
 
-Fires when a team is removed.
+Fires when a team is removed. Not fired for teams dropped by a login.
 
 #### "teamUpdated" (team)
 
@@ -1695,6 +1735,8 @@ Requests chat completion from the server.
 #### bot.chat(message)
 
 Sends a publicly broadcast chat message. Breaks up big messages into multiple chat messages as necessary.
+
+Throws if called before the `login` event, or after a disconnect that happened before it: the server only accepts chat once the client is in the play state.
 
 #### bot.whisper(username, message)
 
@@ -1948,6 +1990,7 @@ Denies resource pack.
 #### bot.placeBlock(referenceBlock, faceVector)
 
 This function returns a `Promise`, with `void` as its argument when the server confirms that the block has indeed been placed.
+It rejects as soon as the server refuses the placement (for example because an entity is in the way).
 
  * `referenceBlock` - the block you want to place a new block next to
  * `faceVector` - one of the six cardinal directions, such as `new Vec3(0, 1, 0)` for the top face,
@@ -2186,7 +2229,9 @@ Put the item at `slot` in the inventory.
 
 #### bot.closeWindow(window)
 
-Close the `window`.
+This function returns a `Promise`, with `void` as its argument once the server has acknowledged the close.
+
+Close the `window`. On 1.16.5 and below the server only learns which inventory slots the window changed on its next tick, so await this before anything else (a command, another player) touches those slots.
 
 #### bot.transfer(options)
 

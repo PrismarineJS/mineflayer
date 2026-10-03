@@ -36,6 +36,7 @@ function inject (bot, wrap) {
   bot.test.fly = fly
   bot.test.teleport = teleport
   bot.test.resetState = resetState
+  bot.test.awaitCommandsProcessed = awaitCommandsProcessed
   bot.test.setInventorySlot = setInventorySlot
   bot.test.placeBlock = placeBlock
   bot.test.runExample = runExample
@@ -85,14 +86,61 @@ function inject (bot, wrap) {
 
   async function resetBlocksToSuperflat () {
     const groundY = 4
+    const center = bot.entity.position.floored()
     for (let y = groundY + 4; y >= groundY - 1; y--) {
       const realY = y + bot.test.groundY - 4
       bot.chat(`/fill ~-5 ${realY} ~-5 ~5 ${realY} ~5 ` + layerNames[y])
     }
-    // The fills are fire-and-forget; a marker chat message on the same
-    // ordered connection confirms they have executed and their block updates
-    // have already arrived, without assuming how long a server tick takes.
-    const marker = 'superflat-reset-done'
+    // The marker echo only proves the fills executed: command feedback is
+    // sent immediately while block changes flush at tick end, so the client
+    // can still hold pre-fill blocks after the echo.
+    await awaitCommandsProcessed('superflat-reset-done')
+    const staleBlock = () => {
+      for (let y = groundY + 4; y >= groundY - 1; y--) {
+        const realY = y + bot.test.groundY - 4
+        const want = layerNames[y]
+        if (!want) continue
+        for (let dx = -5; dx <= 5; dx++) {
+          for (let dz = -5; dz <= 5; dz++) {
+            const block = bot.blockAt(new Vec3(center.x + dx, realY, center.z + dz))
+            if (!block || block.name !== want) {
+              return { pos: `${center.x + dx} ${realY} ${center.z + dz}`, want, desc: `${center.x + dx},${realY},${center.z + dz} is ${block?.name ?? 'unloaded'}, expected ${want}` }
+            }
+          }
+        }
+      }
+      return null
+    }
+    const deadline = Date.now() + 5000
+    let resyncAt = Date.now() + 1500
+    let stale
+    while ((stale = staleBlock()) !== null) {
+      if (Date.now() > deadline) throw new Error(`world not reset: ${stale.desc}`)
+      if (Date.now() > resyncAt) {
+        // A test can leave the client desynced on a block the server no
+        // longer has (e.g. a sign destroyed in the tick of its own editor
+        // interact), and then no correction ever comes. Two real changes
+        // force the server to rebroadcast the block either way.
+        bot.chat(`/setblock ${stale.pos} bedrock`)
+        bot.chat(`/setblock ${stale.pos} ${stale.want}`)
+        resyncAt = Date.now() + 1500
+      }
+      // Corrections arrive as block updates or, past 64 changed blocks per
+      // section, as a chunk resend, so wait on whichever comes first.
+      await Promise.race([
+        onceWithCleanup(bot.world, 'blockUpdate', { timeout: 500 }),
+        onceWithCleanup(bot.world, 'chunkColumnLoad', { timeout: 500 })
+      ]).catch(() => {})
+    }
+  }
+
+  // Chat and commands run in order on the server's main thread, so the echo
+  // of a message sent after a batch of commands proves the batch has executed.
+  // Command feedback is sent immediately while block changes flush at tick
+  // end, so a caller reading blocks a command just changed still has to wait
+  // for them; but block interaction packets are not ordered behind commands
+  // on 1.21.9+, so this must precede acting on such a block.
+  async function awaitCommandsProcessed (marker) {
     const echo = onceWithCleanup(bot, 'messagestr', {
       timeout: 5000,
       checkCondition: (message) => message.includes(marker)
@@ -108,17 +156,34 @@ function inject (bot, wrap) {
     return bot.placeBlock(referenceBlock, new Vec3(0, 1, 0))
   }
 
+  // Any block change since the last superflat repair marks the world dirty;
+  // resetState uses it to skip the /fill roundtrips after read-only tests.
+  // Fills themselves fire blockUpdate, so the flag is cleared after they
+  // settle; a late-arriving update just makes the next reset conservative.
+  let worldDirty = true
+  bot.on('blockUpdate', () => { worldDirty = true })
+
   // always leaves you in creative mode
   async function resetState () {
     await becomeCreative()
     bot.creative.startFlying()
-    await teleport(new Vec3(0, bot.test.groundY, 0))
-    await bot.waitForChunksToLoad()
-    await resetBlocksToSuperflat()
+    // Tests build in the columns around the origin: the bot must be on the
+    // origin block's centre, not merely within a block of it.
+    const origin = new Vec3(0.5, bot.test.groundY, 0.5)
+    if (bot.entity.position.distanceTo(origin) >= 0.1) {
+      await teleport(origin)
+      await bot.waitForChunksToLoad()
+    }
+    if (worldDirty) {
+      await resetBlocksToSuperflat()
+      worldDirty = false
+    }
     // Clear after the fills: they destroy the previous test's containers,
     // and those deferred closes return items into the inventory — the clear's
     // give-retry converges over those late returns.
-    await clearInventory()
+    if (bot.inventory.slots.some((slot) => slot != null) || bot.inventory.selectedItem) {
+      await clearInventory()
+    }
   }
 
   async function becomeCreative () {
@@ -198,15 +263,20 @@ function inject (bot, wrap) {
   }
 
   async function teleport (position) {
+    // Integer x/z land on the block centre. 'move' also fires for periodic
+    // position packets with no movement, so the wait must match the landing
+    // point exactly rather than a radius the bot may already be inside.
+    const centre = (v) => Number.isInteger(v) ? v + 0.5 : v
+    const landing = new Vec3(centre(position.x), position.y, centre(position.z))
     // Use server console for teleport — works even if bot is in a bad state
     if (bot.supportFeature('hasExecuteCommand')) {
-      wrap.writeServer(`execute in overworld run teleport ${bot.username} ${position.x} ${position.y} ${position.z}\n`)
+      wrap.writeServer(`execute in overworld run teleport ${bot.username} ${landing.x} ${landing.y} ${landing.z}\n`)
     } else {
-      wrap.writeServer(`tp ${bot.username} ${position.x} ${position.y} ${position.z}\n`)
+      wrap.writeServer(`tp ${bot.username} ${landing.x} ${landing.y} ${landing.z}\n`)
     }
     return onceWithCleanup(bot, 'move', {
       timeout,
-      checkCondition: () => bot.entity.position.distanceTo(position) < 0.9
+      checkCondition: () => bot.entity.position.distanceTo(landing) < 0.1
     })
   }
 

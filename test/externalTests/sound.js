@@ -27,8 +27,6 @@ module.exports = () => async (bot) => {
 
   // Test sound effect events
   const soundTest = async () => {
-    await new Promise(resolve => setTimeout(resolve, 2000))
-
     return retry(async () => {
       const soundPromise = once(bot, 'soundEffectHeard', 5000)
 
@@ -57,7 +55,7 @@ module.exports = () => async (bot) => {
       const isClose = positionsAreClose(position, bot.entity.position)
       assert.ok(isClose,
         `Position mismatch: expected ${JSON.stringify(bot.entity.position)}, got ${JSON.stringify(position)}`)
-    })
+    }, 2)
   }
 
   // Test note block sounds

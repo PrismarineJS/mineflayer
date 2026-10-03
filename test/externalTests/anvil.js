@@ -59,7 +59,7 @@ module.exports = () => {
     assert.strictEqual(bot.experience.level, 994)
     assert.strictEqual(anvil.slots[3].repairCost, 1)
     assert.deepStrictEqual(anvil.slots[3].enchants, [{ name: 'sharpness', lvl: 5 }])
-    anvil.close()
+    await anvil.close()
     await bot.test.wait(1000)
   })
 
@@ -83,7 +83,7 @@ module.exports = () => {
     assert.strictEqual(bot.experience.level, 996)
     assert.strictEqual(anvil.slots[3].repairCost, 1)
     assert.deepStrictEqual(anvil.slots[3].enchants, [{ name: 'sharpness', lvl: 5 }, { name: 'unbreaking', lvl: 3 }])
-    anvil.close()
+    await anvil.close()
     await bot.test.wait(1000)
   })
 
@@ -103,7 +103,7 @@ module.exports = () => {
     assert.strictEqual(bot.experience.level, 998)
     assert.strictEqual(anvil.slots[3].repairCost, renameCost())
     assert.deepStrictEqual(anvil.slots[3].customName, renameName('hello'))
-    anvil.close()
+    await anvil.close()
     await bot.test.wait(1000)
   })
 
@@ -128,7 +128,7 @@ module.exports = () => {
     assert.strictEqual(anvil.slots[3].repairCost, 1)
     assert.deepStrictEqual(anvil.slots[3].enchants, [{ name: 'sharpness', lvl: 5 }, { name: 'unbreaking', lvl: 3 }])
     assert.strictEqual(anvil.slots[3].customName, renameName('lol'))
-    anvil.close()
+    await anvil.close()
     await bot.test.wait(1000)
   })
 

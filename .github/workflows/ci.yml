@@ -68,7 +68,7 @@ jobs:
         run: npm install
 
       # Per-test durations from the last master run of this version group, so a PR gets a
-      # comment listing tests it made more than 1.5x slower (test/common/compareDurations.js).
+      # comment listing tests it made more than 2x slower (test/common/compareDurations.js).
       - name: Restore duration baseline
         uses: actions/cache/restore@v4
         with:

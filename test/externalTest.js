@@ -80,10 +80,16 @@ for (const supportedVersion of mineflayer.testedVersions) {
           viewDistance: 'tiny',
           port: PORT,
           host: '127.0.0.1',
-          version: supportedVersion
+          version: supportedVersion,
+          // Dimension travel can stall the server thread past the 30s
+          // keepalive default; mocha's per-test timeout is the real watchdog.
+          checkTimeoutInterval: TEST_TIMEOUT_MS
         })
         commonTest(bot, wrap)
         bot.test.port = PORT
+        // bot.entity survives a disconnect, so only the end event proves the
+        // connection is gone; the flag dies with the bot on reconnect.
+        bot.once('end', () => { bot.test.disconnected = true })
 
         console.log('starting bot')
         trace.log('bot created')
@@ -173,10 +179,12 @@ for (const supportedVersion of mineflayer.testedVersions) {
         viewDistance: 'tiny',
         port: PORT,
         host: '127.0.0.1',
-        version: supportedVersion
+        version: supportedVersion,
+        checkTimeoutInterval: TEST_TIMEOUT_MS
       })
       commonTest(bot, wrap)
       bot.test.port = PORT
+      bot.once('end', () => { bot.test.disconnected = true })
       await once(bot, 'spawn')
       console.log('  Bot reconnected')
       wrap.writeServer('op flatbot\n')
@@ -210,7 +218,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
               console.log(`  [retry ${this.test._currentRetry}] ${testName}`)
             }
             // Reconnect if bot got disconnected by a previous test
-            const reconnect = !bot.entity
+            const reconnect = (!bot.entity || bot.test.disconnected)
               ? reconnectBot()
               : Promise.resolve()
             reconnect.then(() => bot.test.resetState())
