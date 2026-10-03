@@ -1766,6 +1766,22 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('client brand', () => {
+      it('announces its brand during the configuration state on 1.20.2+', function (done) {
+        if (!bot.supportFeature('hasConfigurationState')) return this.skip()
+        let brandState = null
+        server.on('login', (client) => {
+          client.on('custom_payload', (packet) => {
+            if (packet.channel === 'minecraft:brand' && brandState === null) brandState = client.state
+          })
+        })
+        server.on('playerJoin', (client) => {
+          assert.strictEqual(brandState, 'configuration')
+          done()
+        })
+      })
+    })
+
     describe('activateBlock', () => {
       it('defaults the cursor to the centre of the clicked face and swings after use_item_on', (done) => {
         server.on('playerJoin', async (client) => {
