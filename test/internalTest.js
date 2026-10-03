@@ -699,6 +699,30 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('tick_end', () => {
+      const basePosition = () => ({
+        x: 1.5,
+        y: 66,
+        z: 1.5,
+        dx: 0,
+        dy: 0,
+        dz: 0,
+        pitch: 0,
+        yaw: 0,
+        teleportId: 0,
+        flags: bot.registry.version['>=']('1.21.3') ? {} : 0
+      })
+      it('ends every tick with tick_end on 1.21.2+', function (done) {
+        if (!bot.supportFeature('sendsClientTickEndPacket')) return this.skip()
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          client.write('position', basePosition())
+          let ticks = 0
+          client.on('tick_end', () => { if (++ticks === 5) done() })
+        })
+      })
+    })
+
     describe('world', () => {
       const pos = vec3(1, 65, 1)
       const goldId = 41
@@ -1497,6 +1521,64 @@ for (const supportedVersion of mineflayer.testedVersions) {
               { type: 0, key: bot.registry.supportFeature('mcDataHasEntityMetadata') ? 'byte' : 0, value: 0 },
               { type: 0, key: bot.registry.supportFeature('mcDataHasEntityMetadata') ? 'int' : 1, value: 1 }
             ]
+          })
+        })
+      })
+
+      it('only updates oxygen level from bot metadata', function (done) {
+        if (!bot.registry.supportFeature('mcDataHasEntityMetadata')) this.skip()
+
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          bot.once('login', () => {
+            bot.oxygenLevel = 20
+            let breathEvents = 0
+            bot.on('breath', () => { breathEvents++ })
+
+            bot.once('entitySpawn', (entity) => {
+              const airSupplyKey = bot.registry.entitiesByName[entity.name].metadataKeys.indexOf('air_supply')
+              bot._client.once('entity_metadata', () => {
+                try {
+                  assert.strictEqual(bot.oxygenLevel, 20)
+                  assert.strictEqual(breathEvents, 0)
+
+                  bot.once('breath', () => {
+                    try {
+                      assert.strictEqual(bot.oxygenLevel, 10)
+                      assert.strictEqual(breathEvents, 1)
+                      done()
+                    } catch (err) {
+                      done(err)
+                    }
+                  })
+                  client.write('entity_metadata', {
+                    entityId: bot.entity.id,
+                    metadata: [{ key: airSupplyKey, type: 'int', value: 150 }]
+                  })
+                } catch (err) {
+                  done(err)
+                }
+              })
+              client.write('entity_metadata', {
+                entityId: entity.id,
+                metadata: [{ key: airSupplyKey, type: 'int', value: 15 }]
+              })
+            })
+
+            const cowId = bot.registry.entitiesByName.cow.id
+            client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
+              entityId: 8,
+              entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
+              objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
+              type: cowId,
+              x: 10,
+              y: 11,
+              z: 12,
+              yaw: 13,
+              pitch: 14,
+              headPitch: 14,
+              velocity: { x: 0, y: 0, z: 0 }
+            })
           })
         })
       })
