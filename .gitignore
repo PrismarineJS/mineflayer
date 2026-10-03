@@ -3,6 +3,7 @@
 node_modules
 package-lock.json
 yarn.lock
+pnpm-lock.yaml
 /README.md
 versions/
 server_jars/

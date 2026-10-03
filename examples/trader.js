@@ -73,7 +73,7 @@ async function showTrades (id) {
       break
     default: {
       const villager = await bot.openVillager(e)
-      villager.close()
+      await villager.close()
       stringifyTrades(villager.trades).forEach((trade, i) => {
         bot.chat(`${i + 1}: ${trade}`)
       })
@@ -99,7 +99,7 @@ async function trade (id, index, count) {
       count = count || trade.maximumNbTradeUses - trade.nbTradeUses
       switch (true) {
         case !trade:
-          villager.close()
+          await villager.close()
           bot.chat('trade not found')
           break
         case trade.disabled:
@@ -123,7 +123,7 @@ async function trade (id, index, count) {
             bot.chat('an error occurred while trying to trade')
             console.log(err)
           }
-          villager.close()
+          await villager.close()
       }
     }
   }

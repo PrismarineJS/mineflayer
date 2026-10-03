@@ -1,4 +1,5 @@
 const assert = require('assert')
+const { onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   const Item = require('prismarine-item')(bot.registry)
@@ -42,12 +43,27 @@ module.exports = () => async (bot) => {
   assert.strictEqual(furnace.inputItem().type, porkchopId)
   assert.strictEqual(furnace.inputItem().count, porkchopInputCount)
 
-  // Wait and take the output and inputs
-  await bot.test.wait(500)
+  // Burning starts on the next server tick; the window properties carrying
+  // fuel and progress arrive as furnace updates, not with the item packets.
+  await onceWithCleanup(furnace, 'update', {
+    timeout: 5000,
+    checkCondition: () => furnace.fuel > 0 && furnace.fuel < 1 && furnace.progress > 0 && furnace.progress < 1
+  })
   assert(furnace.fuel > 0 && furnace.fuel < 1)
   assert(furnace.progress > 0 && furnace.progress < 1)
 
-  await bot.test.wait(furnace.progressSeconds * 1000 + 500)
+  // The furnace only completes on cookTime == totalCookTime (not >=), so the
+  // merged value must stay below 200.
+  const { x, y, z } = furnacePos
+  const cookTimeKey = bot.supportFeature('furnaceNbtUsesSnakeCase') ? 'cooking_time_spent' : 'CookTime'
+  if (bot.supportFeature('hasDataCommand')) {
+    bot.chat(`/data merge block ${x} ${y} ${z} {${cookTimeKey}:195s}`)
+  } else {
+    bot.chat(`/blockdata ${x} ${y} ${z} {${cookTimeKey}:195s}`)
+  }
+  // The 5 remaining ticks complete in 250-320ms on every tested version; a
+  // timeout means the merge was silently ignored.
+  await onceWithCleanup(furnace, 'update', { timeout: 500, checkCondition: () => furnace.outputItem() !== null })
   assert.strictEqual(furnace.outputItem(), furnace.slots[2])
   assert.strictEqual(furnace.outputItem().type, cookedPorkchopId)
   assert.strictEqual(furnace.outputItem().count, 1)
@@ -61,9 +77,7 @@ module.exports = () => async (bot) => {
   await furnace.takeOutput()
   await furnace.takeInput()
   await furnace.takeFuel()
-  furnace.close()
-
-  await bot.test.wait(500)
+  await furnace.close()
 
   // Check inventory
   const cookedPorkchopCount = bot.inventory.count(cookedPorkchopId)

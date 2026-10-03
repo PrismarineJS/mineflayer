@@ -120,7 +120,7 @@ async function rename (bot, itemName, name) {
   } catch (err) {
     bot.chat(err.message)
   }
-  anvil.close()
+  await anvil.close()
 }
 
 async function combine (bot, itemName1, itemName2, name) {
@@ -135,7 +135,7 @@ async function combine (bot, itemName1, itemName2, name) {
   } catch (err) {
     bot.chat(err.message)
   }
-  anvil.close()
+  await anvil.close()
 }
 
 bot.on('error', console.log)

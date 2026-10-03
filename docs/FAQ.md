@@ -158,6 +158,10 @@ connect: (client) => {
   ```
   `socks` is declared with `const socks = require('socks').SocksClient` and uses [this](https://www.npmjs.com/package/socks) package.
   Some servers might reject the connection. If that happens try adding `fakeHost: MC_SERVER_ADDRESS` to your createBot options.
+
+### The bot gets kicked with "An internal error occurred during your connection" when transferred between servers via a Velocity/BungeeCord proxy
+
+This affected Minecraft 1.20.2+ and is fixed in current mineflayer: the bot no longer sends movement packets while the proxy puts it through the destination server's configuration phase, and resource packs are accepted automatically during that phase. Update mineflayer to the latest version.
   
 # Common Errors
 
