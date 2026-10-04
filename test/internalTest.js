@@ -9,6 +9,9 @@ const nbt = require('prismarine-nbt')
 const { once, onceWithCleanup } = require('../lib/promise_utils')
 const { EventEmitter } = require('events')
 const { getPort } = require('./common/util')
+const fs = require('fs')
+const os = require('os')
+const path = require('path')
 
 for (const supportedVersion of mineflayer.testedVersions) {
   const registry = require('prismarine-registry')(supportedVersion)
@@ -67,7 +70,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
       bot = mineflayer.createBot({
         username: 'player',
         version: supportedVersion,
-        port: PORT
+        port: PORT,
+        badPacketsDir: path.join(os.tmpdir(), `mineflayer-bad-packets-${supportedVersion}`)
       })
       bot.test = {}
       // Plugins are injected on a timer after createBot, which can lose the
@@ -195,6 +199,30 @@ for (const supportedVersion of mineflayer.testedVersions) {
         client.on('chat', onChat)
       })
     })
+    it('dumps packets that fail to parse', (done) => {
+      bot.once('badPacket', (dump) => {
+        try {
+          assert.strictEqual(dump.mcVersion, bot.version)
+          assert.strictEqual(dump.state, 'play')
+          assert.strictEqual(dump.packetName, 'keep_alive')
+          assert.strictEqual(dump.type, 'PartialReadError')
+          assert.ok(dump.packetParsingTrace.includes('packet_keep_alive'), dump.packetParsingTrace.join(','))
+          assert.deepStrictEqual(JSON.parse(fs.readFileSync(dump.path, 'utf8')).buffer, dump.buffer)
+          fs.rmSync(dump.path)
+          done()
+        } catch (err) {
+          done(err)
+        }
+      })
+      server.on('playerJoin', (client) => {
+        client.write('login', bot.test.generateLoginPacket())
+        // keep_alive packet id without its body
+        const mappings = registry.protocol.play.toClient.types.packet[1][0].type[1].mappings
+        const id = Number(Object.keys(mappings).find(key => mappings[key] === 'keep_alive'))
+        client.writeRaw(Buffer.from([id]))
+      })
+    })
+
     it('chat before login throws a descriptive error', async () => {
       await once(bot, 'inject_allowed')
       const early = /before the client entered the play state; wait for/

@@ -33,6 +33,29 @@ export interface BotOptions extends ClientOptions {
   brand?: string
   defaultChatPatterns?: boolean
   respawn?: boolean
+  /** @default true */
+  dumpBadPackets?: boolean
+  badPacketsDir?: string
+}
+
+export interface BadPacketDump {
+  mcVersion: string
+  protocolVersion: number | null
+  mineflayerVersion: string
+  minecraftProtocolVersion: string | null
+  state: string
+  direction: 'toClient'
+  packetId: number | null
+  packetName: string | null
+  type: 'ReadError' | 'PartialReadError' | 'SizeMismatch'
+  error: { message: string, field: string | null, stack: string } | null
+  bytesRead: number | null
+  packetLength: number
+  packetParsingTrace: string[]
+  partialData: any
+  buffer: string
+  date: string
+  path: string
 }
 
 export type ChatLevel = 'enabled' | 'commandsOnly' | 'disabled'
@@ -62,6 +85,7 @@ export interface BotEvents {
   ) => Promise<void> | void
   actionBar: (jsonMsg: ChatMessage) => Promise<void> | void
   error: (err: Error) => Promise<void> | void
+  badPacket: (dump: BadPacketDump) => Promise<void> | void
   message: (jsonMsg: ChatMessage, position: string) => Promise<void> | void
   messagestr: (message: string, position: string, jsonMsg: ChatMessage) => Promise<void> | void
   unmatchedMessage: (stringMsg: string, jsonMsg: ChatMessage) => Promise<void> | void
