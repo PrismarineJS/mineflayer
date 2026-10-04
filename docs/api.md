@@ -2263,10 +2263,15 @@ and full-window updates do. Even an open window describes the last received data
 not unseen server changes.
 
 These observations are held in memory separately from raw block-entity NBT.
-Block changes, raw block-entity replacements, column replacement/unload, respawn,
-login and disconnect discard them. After invalidation, opening the container again
-is required to establish a new observation. Double-chest windows are left unknown
-because a 54-slot window has no single block identity; neither half is inferred.
+Each bot owns its snapshot in the shared world; closing or resetting one bot
+cannot remove another bot's snapshot. A getter without an owner returns the
+newest non-stale snapshot, or the newest stale snapshot when no live snapshot
+exists. Block changes, raw block-entity replacements, column replacement/unload,
+respawn, login and disconnect discard all owners. After invalidation, opening the
+container again is required to establish a new observation. The world emits
+`observedBlockInventoryUpdate` when its aggregate snapshot changes. Double-chest
+windows are left unknown because a 54-slot window has no single block identity;
+neither half is inferred.
 Player, entity and personal ender chest inventories are excluded. Opening block
 and entity windows concurrently is rejected because their source is ambiguous.
 

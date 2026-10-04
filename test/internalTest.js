@@ -2070,6 +2070,56 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
 
+      it('marks a block snapshot stale when an entity window replaces it', (done) => {
+        server.on('playerJoin', (client) => {
+          bot.once('login', () => {
+            setImmediate(async () => {
+              try {
+                const position = vec3(2, 64, 3)
+                bot.world.setColumn(0, 0, bot.test.buildChunk())
+                bot.world.setBlockStateId(position, registry.blocksByName.chest.defaultState)
+                bot.activateBlock = () => {
+                  client.write('open_window', openWindowPacket(1, chestData))
+                  client.write('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
+                }
+                await bot.openBlock(bot.blockAt(position))
+                bot.activateEntity = () => {
+                  client.write('open_window', openWindowPacket(2, chestData))
+                  client.write('window_items', windowItemsPacket(2, emptyItems(chestData.slots)))
+                }
+                await bot.openEntity({ id: 10 })
+                assert.strictEqual(bot.world.getObservedBlockInventory(position).stale, true)
+                done()
+              } catch (err) { done(err) }
+            })
+          })
+          client.write('login', bot.test.generateLoginPacket())
+        })
+      })
+
+      it('rejects overlapping block and entity opens before attribution', (done) => {
+        server.on('playerJoin', (client) => {
+          bot.once('login', () => {
+            setImmediate(async () => {
+              try {
+                const position = vec3(2, 64, 3)
+                bot.world.setColumn(0, 0, bot.test.buildChunk())
+                bot.world.setBlockStateId(position, registry.blocksByName.chest.defaultState)
+                bot.activateBlock = () => {}
+                const opening = bot.openBlock(bot.blockAt(position))
+                await assert.rejects(bot.openEntity({ id: 10 }), /already being opened/)
+                client.write('open_window', openWindowPacket(1, chestData))
+                client.write('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
+                await opening
+                assert.notStrictEqual(bot.world.getObservedBlockInventory(position), null)
+                done()
+              } catch (err) { done(err) }
+            })
+          })
+          client.write('login', bot.test.generateLoginPacket())
+        })
+      })
+
       it('opens a window whose early window_items reuses the id of a closed window', (done) => {
         const emeraldId = registry.itemsByName.emerald.id
 
