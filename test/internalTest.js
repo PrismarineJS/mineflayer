@@ -912,9 +912,17 @@ for (const supportedVersion of mineflayer.testedVersions) {
             assert.strictEqual(pongs.length, 1, 'each ping is answered exactly once')
             const pongIndex = seen.indexOf(pongs[0])
             const before = seen[pongIndex - 1]
-            assert.ok(before !== undefined, 'a movement packet precedes the pong')
-            assert.ok(movementPackets.includes(before.name), `packet before pong is ${before.name}`)
-            assert.strictEqual(before.data.y, tickY, 'the pong follows the movement packet of the tick that received the ping')
+            assert.ok(before !== undefined, 'a packet precedes the pong')
+            if (bot.supportFeature('sendsClientTickEndPacket')) {
+              assert.strictEqual(before.name, 'tick_end', `packet before pong is ${before.name}`)
+              const movement = seen[pongIndex - 2]
+              assert.ok(movement !== undefined, 'a movement packet precedes tick_end')
+              assert.ok(movementPackets.includes(movement.name), `packet before tick_end is ${movement.name}`)
+              assert.strictEqual(movement.data.y, tickY, 'tick_end follows the movement packet of the tick that received the ping')
+            } else {
+              assert.ok(movementPackets.includes(before.name), `packet before pong is ${before.name}`)
+              assert.strictEqual(before.data.y, tickY, 'the pong follows the movement packet of the tick that received the ping')
+            }
             done()
           } catch (err) {
             done(err)
