@@ -912,9 +912,17 @@ for (const supportedVersion of mineflayer.testedVersions) {
             assert.strictEqual(pongs.length, 1, 'each ping is answered exactly once')
             const pongIndex = seen.indexOf(pongs[0])
             const before = seen[pongIndex - 1]
-            assert.ok(before !== undefined, 'a movement packet precedes the pong')
-            assert.ok(movementPackets.includes(before.name), `packet before pong is ${before.name}`)
-            assert.strictEqual(before.data.y, tickY, 'the pong follows the movement packet of the tick that received the ping')
+            assert.ok(before !== undefined, 'a packet precedes the pong')
+            if (bot.supportFeature('sendsClientTickEndPacket')) {
+              assert.strictEqual(before.name, 'tick_end', `packet before pong is ${before.name}`)
+              const movement = seen[pongIndex - 2]
+              assert.ok(movement !== undefined, 'a movement packet precedes tick_end')
+              assert.ok(movementPackets.includes(movement.name), `packet before tick_end is ${movement.name}`)
+              assert.strictEqual(movement.data.y, tickY, 'tick_end follows the movement packet of the tick that received the ping')
+            } else {
+              assert.ok(movementPackets.includes(before.name), `packet before pong is ${before.name}`)
+              assert.strictEqual(before.data.y, tickY, 'the pong follows the movement packet of the tick that received the ping')
+            }
             done()
           } catch (err) {
             done(err)
@@ -1968,6 +1976,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       // legacy 'minecraft:chest' has a dynamic size resolved from the packet's
       // slotCount (container slots only); the modern equivalent is fixed
       const chestData = pWindows.windows['minecraft:generic_9x3'] ?? { type: 'minecraft:chest', slots: 63 }
+      const doubleChestData = pWindows.windows['minecraft:generic_9x6'] ?? { type: 'minecraft:chest', slots: 90 }
       const merchantData = pWindows.windows['minecraft:merchant'] ?? pWindows.windows['minecraft:villager']
       const emptyItems = (n) => Array.from({ length: n }, () => Item.toNotch(null))
       const openWindowPacket = (windowId, winData) => ({
@@ -1982,6 +1991,286 @@ for (const supportedVersion of mineflayer.testedVersions) {
         stateId: 1,
         items,
         carriedItem: Item.toNotch(null)
+      })
+
+      it('retains server-observed block contents across window updates and close', (done) => {
+        server.on('playerJoin', (client) => {
+          bot.once('login', () => {
+            setImmediate(async () => {
+              try {
+                const position = vec3(2, 64, 3)
+                bot.world.setColumn(0, 0, bot.test.buildChunk())
+                bot.world.setBlockStateId(position, registry.blocksByName.chest.defaultState)
+                const raw = { value: { sentinel: { type: 'int', value: 123 } } }
+                bot.world.setBlockEntity(position, raw)
+                assert.strictEqual(bot.world.getObservedBlockInventory(position), null)
+                bot.activateBlock = () => {
+                  const items = emptyItems(chestData.slots)
+                  items[0] = Item.toNotch(new Item(registry.itemsByName.stone.id, 3))
+                  client.write('open_window', openWindowPacket(1, chestData))
+                  client.write('window_items', windowItemsPacket(1, items))
+                }
+                const window = await bot.openBlock(bot.blockAt(position))
+                assert.strictEqual(bot.world.getObservedBlockInventory(position).slots[0].count, 3)
+                assert.deepStrictEqual(bot.world.getBlockEntity(position), raw)
+                // A local prediction in another container slot must never be
+                // republished when the server reports slot 0.
+                window.updateSlot(1, new Item(registry.itemsByName.stone.id, 42))
+                assert.strictEqual(bot.world.getObservedBlockInventory(position).slots[0].count, 3)
+                const serverSlot = once(window, 'updateSlot:0', 5000)
+                client.write('set_slot', {
+                  windowId: 1,
+                  slot: 0,
+                  item: Item.toNotch(new Item(registry.itemsByName.stone.id, 7))
+                })
+                await serverSlot
+                assert.strictEqual(bot.world.getObservedBlockInventory(position).slots[0].count, 7)
+                assert.strictEqual(bot.world.getObservedBlockInventory(position).slots[1], null)
+                const playerSlot = once(window, 'updateSlot:27', 5000)
+                client.write('set_slot', {
+                  windowId: 1,
+                  slot: 27,
+                  item: Item.toNotch(new Item(registry.itemsByName.stone.id, 55))
+                })
+                await playerSlot
+                assert.strictEqual(bot.world.getObservedBlockInventory(position).slots.length, 27)
+                assert.strictEqual(bot.world.getObservedBlockInventory(position).slots[0].count, 7)
+                const updated = once(bot, 'setWindowItems:1')
+                const items = emptyItems(chestData.slots)
+                items[0] = Item.toNotch(new Item(registry.itemsByName.stone.id, 8))
+                client.write('window_items', windowItemsPacket(1, items))
+                await updated
+                assert.strictEqual(bot.world.getObservedBlockInventory(position).slots[0].count, 8)
+                bot.closeWindow(window)
+                assert.strictEqual(bot.world.getObservedBlockInventory(position).stale, true)
+                done()
+              } catch (err) { done(err) }
+            })
+          })
+          client.write('login', bot.test.generateLoginPacket())
+        })
+      })
+
+      it('leaves a double chest window unobserved', (done) => {
+        server.on('playerJoin', (client) => {
+          bot.once('login', () => {
+            setImmediate(async () => {
+              try {
+                const position = vec3(2, 64, 3)
+                bot.world.setColumn(0, 0, bot.test.buildChunk())
+                bot.world.setBlockStateId(position, registry.blocksByName.chest.defaultState)
+                bot.activateBlock = () => {
+                  client.write('open_window', openWindowPacket(1, doubleChestData))
+                  client.write('window_items', windowItemsPacket(1, emptyItems(doubleChestData.slots)))
+                }
+                const window = await bot.openBlock(bot.blockAt(position))
+                assert.strictEqual(window.inventoryStart, 54)
+                assert.strictEqual(bot.world.getObservedBlockInventory(position), null)
+                done()
+              } catch (err) { done(err) }
+            })
+          })
+          client.write('login', bot.test.generateLoginPacket())
+        })
+      })
+
+      it('clears an observation when the block entity changes', (done) => {
+        server.on('playerJoin', (client) => {
+          bot.once('login', () => {
+            setImmediate(async () => {
+              try {
+                const position = vec3(2, 64, 3)
+                bot.world.setColumn(0, 0, bot.test.buildChunk())
+                bot.world.setBlockStateId(position, registry.blocksByName.chest.defaultState)
+                bot.activateBlock = () => {
+                  client.write('open_window', openWindowPacket(1, chestData))
+                  client.write('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
+                }
+                await bot.openBlock(bot.blockAt(position))
+                assert.notStrictEqual(bot.world.getObservedBlockInventory(position), null)
+                bot.world.setBlockEntity(position, { value: {} })
+                assert.strictEqual(bot.world.getObservedBlockInventory(position), null)
+                done()
+              } catch (err) { done(err) }
+            })
+          })
+          client.write('login', bot.test.generateLoginPacket())
+        })
+      })
+
+      it('marks a block snapshot stale when an entity window replaces it', (done) => {
+        server.on('playerJoin', (client) => {
+          bot.once('login', () => {
+            setImmediate(async () => {
+              try {
+                const position = vec3(2, 64, 3)
+                bot.world.setColumn(0, 0, bot.test.buildChunk())
+                bot.world.setBlockStateId(position, registry.blocksByName.chest.defaultState)
+                bot.activateBlock = () => {
+                  client.write('open_window', openWindowPacket(1, chestData))
+                  client.write('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
+                }
+                await bot.openBlock(bot.blockAt(position))
+                bot.activateEntity = () => {
+                  client.write('open_window', openWindowPacket(2, chestData))
+                  client.write('window_items', windowItemsPacket(2, emptyItems(chestData.slots)))
+                }
+                await bot.openEntity({ id: 10 })
+                assert.strictEqual(bot.world.getObservedBlockInventory(position).stale, true)
+                done()
+              } catch (err) { done(err) }
+            })
+          })
+          client.write('login', bot.test.generateLoginPacket())
+        })
+      })
+
+      it('rejects overlapping block and entity opens before attribution', (done) => {
+        server.on('playerJoin', (client) => {
+          bot.once('login', () => {
+            setImmediate(async () => {
+              try {
+                const position = vec3(2, 64, 3)
+                bot.world.setColumn(0, 0, bot.test.buildChunk())
+                bot.world.setBlockStateId(position, registry.blocksByName.chest.defaultState)
+                bot.activateBlock = () => {}
+                const opening = bot.openBlock(bot.blockAt(position))
+                await assert.rejects(bot.openEntity({ id: 10 }), /already being opened/)
+                client.write('open_window', openWindowPacket(1, chestData))
+                client.write('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
+                await opening
+                assert.notStrictEqual(bot.world.getObservedBlockInventory(position), null)
+                done()
+              } catch (err) { done(err) }
+            })
+          })
+          client.write('login', bot.test.generateLoginPacket())
+        })
+      })
+
+      it('keeps inventory windows usable when observation is disabled', (done) => {
+        const disabled = mineflayer.createBot({
+          username: 'disabled-observer',
+          version: supportedVersion,
+          port: PORT,
+          plugins: { observed_block_inventories: false }
+        })
+        const login = bot.test.generateLoginPacket()
+        let disabledClient
+        const onJoin = (client) => {
+          if (client.username === 'disabled-observer') disabledClient = client
+          client.write('login', login)
+        }
+        server.on('playerJoin', onJoin)
+        Promise.all([once(bot, 'login'), once(disabled, 'login')]).then(async () => {
+          try {
+            assert.ok(disabledClient)
+            const position = vec3(2, 64, 3)
+            disabled.world.setColumn(0, 0, bot.test.buildChunk())
+            disabled.world.setBlockStateId(position, registry.blocksByName.chest.defaultState)
+            disabled.activateBlock = () => setImmediate(() => {
+              disabledClient.write('open_window', openWindowPacket(1, chestData))
+              disabledClient.write('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
+            })
+            await disabled.openBlock(disabled.blockAt(position))
+            assert.strictEqual(disabled._observedBlockInventories, undefined)
+            disabled.end('test')
+            await once(disabled, 'end')
+            done()
+          } catch (err) {
+            disabled.end('test')
+            done(err)
+          } finally {
+            server.off('playerJoin', onJoin)
+          }
+        }).catch(done)
+      })
+
+      it('isolates close and end resets for two real bots sharing a world', async function () {
+        this.timeout(20000)
+        const peers = []
+        const clients = new Map()
+        const login = bot.test.generateLoginPacket()
+        const onJoin = (client) => {
+          clients.set(client.username, client)
+          client.on('packet', (data, meta) => {
+            if (meta.name === 'window_click' && data.action !== undefined) {
+              client.write('transaction', { windowId: data.windowId, action: data.action, accepted: true })
+            }
+          })
+          client.write('login', login)
+        }
+        const endBot = async (peer) => {
+          if (!peer || peer._client.ended) return
+          const ended = once(peer, 'end', 5000)
+          peer.end('test')
+          try {
+            await ended
+          } catch (err) {
+            // Only force the socket after the public bot lifecycle failed to
+            // finish, so the assertion path still reports the real failure.
+            peer._client.socket?.destroy()
+            throw err
+          }
+        }
+        const open = async (peer, client, position, count, windowId) => {
+          peer.activateBlock = () => {
+            const items = emptyItems(chestData.slots)
+            items[0] = Item.toNotch(new Item(registry.itemsByName.stone.id, count))
+            client.write('open_window', openWindowPacket(windowId, chestData))
+            client.write('window_items', windowItemsPacket(windowId, items))
+          }
+          return peer.openBlock(peer.blockAt(position))
+        }
+
+        server.on('playerJoin', onJoin)
+        try {
+          const botLogin = once(bot, 'login', 1000)
+          const peer = mineflayer.createBot({ username: 'observer-b', version: supportedVersion, port: PORT })
+          peers.push(peer)
+          await Promise.all([botLogin, once(peer, 'login', 1000)])
+          peer.world = bot.world
+          const position = vec3(2, 64, 3)
+          bot.world.setColumn(0, 0, bot.test.buildChunk())
+          bot.world.setBlockStateId(position, registry.blocksByName.chest.defaultState)
+          const botClient = clients.get('player')
+          const peerClient = clients.get('observer-b')
+          assert.ok(botClient)
+          assert.ok(peerClient)
+
+          const first = await open(bot, botClient, position, 1, 1)
+          const second = await open(peer, peerClient, position, 2, 1)
+          await bot.closeWindow(first)
+          assert.strictEqual(bot.world.getObservedBlockInventory(position).slots[0].count, 2)
+          await open(bot, botClient, position, 3, 2)
+          await peer.closeWindow(second)
+          assert.strictEqual(bot.world.getObservedBlockInventory(position).slots[0].count, 3)
+
+          await open(bot, botClient, position, 4, 3)
+          await open(peer, peerClient, position, 5, 2)
+          await endBot(peer)
+          assert.strictEqual(bot.world.getObservedBlockInventory(position).slots[0].count, 4)
+
+          const peerAgain = mineflayer.createBot({ username: 'observer-b-again', version: supportedVersion, port: PORT })
+          peers.push(peerAgain)
+          await once(peerAgain, 'login', 1000)
+          peerAgain.world = bot.world
+          const peerAgainClient = clients.get('observer-b-again')
+          assert.ok(peerAgainClient)
+          await open(peerAgain, peerAgainClient, position, 6, 1)
+          await endBot(bot)
+          assert.strictEqual(peerAgain.world.getObservedBlockInventory(position).slots[0].count, 6)
+          await endBot(peerAgain)
+        } finally {
+          server.off('playerJoin', onJoin)
+          for (const peer of peers) {
+            try {
+              await endBot(peer)
+            } catch {}
+          }
+          for (const client of clients.values()) client.socket?.destroy()
+          server.socketServer?.closeAllConnections?.()
+        }
       })
 
       it('opens a window whose early window_items reuses the id of a closed window', (done) => {
@@ -2147,6 +2436,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       it('clears teams and objectives on login but not on respawn', async () => {
         const teamPacketName = bot.supportFeature('teamUsesScoreboard') ? 'scoreboard_team' : 'teams'
         const [client] = await once(server, 'playerJoin')
+        await bot.test.pluginsLoaded
         const loginPacket = bot.test.generateLoginPacket()
         const teams = bot.teams
         const teamMap = bot.teamMap

@@ -2251,6 +2251,31 @@ Transfer some kind of item from one range to an other. `options` is an object co
 
 Open a block, for example a chest, returns a promise on the opening `Window`.
 
+After opening a chest, trapped chest, barrel, hopper, furnace, blast furnace,
+smoker, dispenser, dropper, brewing stand or shulker box, the last server-observed
+container contents are available from `bot.world.getObservedBlockInventory(block.position)`.
+This returns `null` before observation, otherwise a defensive copy with `kind`
+(block name), `slots` (item data records or `null`, excluding player slots),
+`observedAt` (local time in milliseconds), and `stale` (whether the window closed).
+Item records preserve item data, including NBT and components, but are not `Item`
+instances. Local click predictions do not change these records; only server slot
+and full-window updates do. Even an open window describes the last received data,
+not unseen server changes.
+
+These observations are held in memory separately from raw block-entity NBT.
+Each bot owns its snapshot in the shared world; closing or resetting one bot
+cannot remove another bot's snapshot. A getter without an owner returns the
+newest non-stale snapshot, or the newest stale snapshot when no live snapshot
+exists. Block changes, raw block-entity replacements, and column replacement or
+unload invalidate all owners. This bot removes only its own owner on respawn,
+login, and disconnect. After invalidation, opening the container again is
+required to establish a new observation. The world emits
+`observedBlockInventoryUpdate` for owner updates and aggregate changes. Double-chest
+windows are left unknown because a 54-slot window has no single block identity;
+neither half is inferred.
+Player, entity and personal ender chest inventories are excluded. Opening block
+and entity windows concurrently is rejected because their source is ambiguous.
+
  * `block` is the block the bot will open.
  * `direction` Optional defaults to `new Vec3(0, 1, 0)` (up). A vector off the direction the container block should be interacted with. Does nothing when a container entity is targeted.
  * `cursorPos` Optional defaults to `new Vec3(0.5, 0.5, 0.5)` (block center). The curos position when opening the block instance. This is send with the activate block packet. Does nothing when a container entity is targeted.
