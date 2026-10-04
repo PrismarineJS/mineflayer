@@ -247,6 +247,149 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
     })
+    describe('item use and entity status', () => {
+      const Item = require('prismarine-item')(supportedVersion)
+      const packetTimeout = 2000
+      const statuses = { hurt: 2, death: 3, completion: 9, 'shield block': 29 }
+      let client
+
+      // Register before writing, then resume after all plugin packet handlers ran.
+      async function sendPacket (name, packet) {
+        const received = onceWithCleanup(bot._client, name, { timeout: packetTimeout })
+        client.write(name, packet)
+        await received
+      }
+
+      beforeEach(async () => {
+        [client] = await onceWithCleanup(server, 'playerJoin', { timeout: packetTimeout })
+        if (!bot.inventory) await onceWithCleanup(bot, 'inject_allowed', { timeout: packetTimeout })
+        const loginPacket = { ...bot.test.generateLoginPacket(), gameMode: 0 }
+        if (loginPacket.worldState) loginPacket.worldState = { ...loginPacket.worldState, gamemode: 'survival' }
+        await sendPacket('login', loginPacket)
+        await sendPacket('held_item_slot', { slot: 0 })
+        await sendPacket('update_health', { health: 20, food: 19, foodSaturation: 0 })
+        assert.strictEqual(bot.game.gameMode, 'survival')
+        assert.strictEqual(bot.food, 19)
+      })
+
+      async function equipItem (name) {
+        if (name === 'bow') {
+          await sendPacket('set_slot', {
+            windowId: 0,
+            stateId: 1,
+            slot: 9,
+            item: Item.toNotch(new Item(registry.itemsByName.arrow.id, 1))
+          })
+        }
+        await sendPacket('set_slot', {
+          windowId: 0,
+          stateId: 1,
+          slot: bot.QUICK_BAR_START,
+          item: Item.toNotch(new Item(registry.itemsByName[name].id, 1))
+        })
+        assert.strictEqual(bot.heldItem.name, name)
+      }
+
+      async function startUsing (activate = () => bot.activateItem()) {
+        const legacy = bot.supportFeature('useItemWithBlockPlace')
+        const used = onceWithCleanup(client, legacy ? 'block_place' : 'use_item', { timeout: packetTimeout })
+        activate()
+        const [packet] = await used
+        if (legacy) {
+          assert.strictEqual(Item.fromNotch(packet.heldItem).type, bot.heldItem.type)
+          assert.strictEqual(packet.direction, -1)
+        } else {
+          // 26.1 decodes the numeric hand as a named enum.
+          assert.ok([0, 'main_hand'].includes(packet.hand), 'expected main-hand item use')
+        }
+        assert.strictEqual(bot.usingHeldItem, true)
+      }
+
+      async function releaseItem () {
+        const released = onceWithCleanup(client, 'block_dig', {
+          timeout: packetTimeout,
+          checkCondition: packet => packet.status === 5
+        })
+        bot.deactivateItem()
+        await released
+        assert.strictEqual(bot.usingHeldItem, false)
+      }
+
+      async function sendStatus (entityId, status) {
+        await sendPacket('entity_status', { entityId, entityStatus: statuses[status] })
+        // consume() awaits another promise internally. Drain its continuations
+        // before checking settlement, without guessing a network delay.
+        await new Promise(resolve => setImmediate(resolve))
+      }
+
+      // Nearby entity notifications used to clear the bot's item-use flag;
+      // own hurt and shield-block notifications must preserve it too.
+      for (const status of Object.keys(statuses)) {
+        it(`keeps using an item when another entity receives ${status}`, async () => {
+          await equipItem('bow')
+          await startUsing()
+          await sendStatus(bot.entity.id + 1, status)
+          assert.strictEqual(bot.usingHeldItem, true)
+          await releaseItem()
+        })
+      }
+
+      for (const status of ['hurt', 'shield block']) {
+        it(`keeps using an item when the bot receives ${status}`, async function () {
+          if (status === 'shield block' && !registry.itemsByName.shield) this.skip()
+          await equipItem(status === 'shield block' ? 'shield' : 'bow')
+          await startUsing()
+          await sendStatus(bot.entity.id, status)
+          assert.strictEqual(bot.usingHeldItem, true)
+          await releaseItem()
+        })
+      }
+
+      for (const status of ['death', 'completion']) {
+        it(`clears item use when the bot receives ${status}`, async () => {
+          await equipItem('bow')
+          await startUsing()
+          await sendStatus(bot.entity.id, status)
+          assert.strictEqual(bot.usingHeldItem, false)
+        })
+      }
+
+      it('finishes consuming only when the bot receives its completion status', async () => {
+        await equipItem('bread')
+        let consumed
+        let settled = false
+        try {
+          await startUsing(() => {
+            consumed = bot.consume()
+            consumed.then(() => { settled = true }, () => { settled = true })
+          })
+          // Check the promise after each ignored packet: sending own completion
+          // first would hide consumption that settled on a foreign notification.
+          for (const { entity, status } of [
+            { entity: 'other entity', status: 'completion' },
+            { entity: 'other entity', status: 'death' },
+            { entity: 'other entity', status: 'hurt' },
+            { entity: 'other entity', status: 'shield block' },
+            { entity: 'bot', status: 'hurt' },
+            { entity: 'bot', status: 'shield block' }
+          ]) {
+            const entityId = entity === 'bot' ? bot.entity.id : bot.entity.id + 1
+            await sendStatus(entityId, status)
+            assert.strictEqual(settled, false, `consume settled after ${entity} received ${status}`)
+            assert.strictEqual(bot.usingHeldItem, true)
+          }
+          await sendStatus(bot.entity.id, 'completion')
+          await consumed
+          assert.strictEqual(settled, true)
+          assert.strictEqual(bot.usingHeldItem, false)
+        } finally {
+          // Finish any pending consumption even when an assertion fails.
+          if (consumed && !settled) await sendStatus(bot.entity.id, 'completion')
+          if (consumed) await consumed
+        }
+      })
+    })
+
     it('blockAt', (done) => {
       const pos = vec3(1, 65, 1)
       const goldId = bot.registry.blocksByName.gold_block.id
