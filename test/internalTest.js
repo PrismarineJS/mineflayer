@@ -539,6 +539,87 @@ for (const supportedVersion of mineflayer.testedVersions) {
           })
         })
       })
+      it('echoes the resolved position and wire rotation in teleport_confirm', function (done) {
+        // Regression test for the 26.3+ accept_teleportation shape: the server
+        // resolves the teleport and expects the confirm to echo the resolved
+        // position and wire rotation back. Sending only the id leaves the other
+        // fields undefined (NaN on the wire) and the server kicks the bot with
+        // "Invalid move player packet received". Older protocols ignore the
+        // extra fields, so the echo is safe to send everywhere.
+        // 1.8.x has no teleport_confirm packet at all (teleports are answered with
+        // the position packet), so there is nothing to pin there.
+        if (!bot.supportFeature('teleportUsesOwnPacket')) {
+          this.skip()
+          return
+        }
+        server.on('playerJoin', async (client) => {
+          try {
+            await client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(pos, goldId)
+            await client.write('map_chunk', generateChunkPacket(chunk))
+            await once(bot, 'chunkColumnLoad')
+            const confirms = []
+            client.on('packet', (data, meta) => {
+              if (meta.name === 'teleport_confirm') confirms.push(data)
+            })
+            // Initial spawn teleport.
+            await client.write('position', {
+              x: 1.5,
+              y: 80,
+              z: 1.5,
+              dx: 0,
+              dy: 0,
+              dz: 0,
+              pitch: 0,
+              yaw: 0,
+              flags: bot.supportFeature('positionPacketHasBitflags') ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0,
+              teleportId: 0
+            })
+            while (confirms.length === 0) await once(client, 'packet')
+            confirms.length = 0
+            // The server resolves a new teleport with fresh coordinates + rotation.
+            await client.write('position', {
+              x: 10.25,
+              y: 70.5,
+              z: -3.75,
+              dx: 0,
+              dy: 0,
+              dz: 0,
+              pitch: 15,
+              yaw: 90,
+              flags: bot.supportFeature('positionPacketHasBitflags') ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0,
+              teleportId: 7
+            })
+            while (confirms.length === 0) await once(client, 'packet')
+            const confirm = confirms[0]
+            assert.strictEqual(confirm.teleportId, 7, 'teleportId is echoed')
+            // The echoed position/rotation fields only exist once the 26.3+ schema
+            // lands in minecraft-data (accept_teleportation widens there). Gate the
+            // echo assertions on the schema so this test is green before and after
+            // the data update, while still pinning the behavior the moment the
+            // fields are serializable.
+            const schema = bot.registry.protocol.types.packet_teleport_confirm
+            const schemaNames = Array.isArray(schema) && Array.isArray(schema[1])
+              ? schema[1].map(f => f && f.name)
+              : []
+            if (schemaNames.includes('x')) {
+              assert.strictEqual(confirm.x, 10.25, 'x echoes the resolved position')
+              assert.strictEqual(confirm.y, 70.5, 'y echoes the resolved position')
+              assert.strictEqual(confirm.z, -3.75, 'z echoes the resolved position')
+              assert.strictEqual(confirm.yRot, 90, 'yRot echoes the wire yaw')
+              assert.strictEqual(confirm.xRot, 15, 'xRot echoes the wire pitch')
+            } else {
+              // Pre-26.3 data: only the id is on the wire; assert nothing else leaked.
+              assert.deepStrictEqual(Object.keys(confirm).filter(k => k !== 'teleportId'), [],
+                'no extra fields on pre-26.3 teleport_confirm')
+            }
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
       it('no movement packets during a server transfer configuration phase', function (done) {
         // Regression test for https://github.com/PrismarineJS/mineflayer/issues/3776
         // While the client is in the configuration phase (Velocity/BungeeCord server
