@@ -2266,10 +2266,11 @@ These observations are held in memory separately from raw block-entity NBT.
 Each bot owns its snapshot in the shared world; closing or resetting one bot
 cannot remove another bot's snapshot. A getter without an owner returns the
 newest non-stale snapshot, or the newest stale snapshot when no live snapshot
-exists. Block changes, raw block-entity replacements, column replacement/unload,
-respawn, login and disconnect discard all owners. After invalidation, opening the
-container again is required to establish a new observation. The world emits
-`observedBlockInventoryUpdate` when its aggregate snapshot changes. Double-chest
+exists. Block changes, raw block-entity replacements, and column replacement or
+unload invalidate all owners. This bot removes only its own owner on respawn,
+login, and disconnect. After invalidation, opening the container again is
+required to establish a new observation. The world emits
+`observedBlockInventoryUpdate` for owner updates and aggregate changes. Double-chest
 windows are left unknown because a 54-slot window has no single block identity;
 neither half is inferred.
 Player, entity and personal ender chest inventories are excluded. Opening block

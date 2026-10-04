@@ -2007,6 +2007,21 @@ for (const supportedVersion of mineflayer.testedVersions) {
                 assert.deepStrictEqual(bot.world.getBlockEntity(position), raw)
                 window.updateSlot(0, new Item(registry.itemsByName.stone.id, 42))
                 assert.strictEqual(bot.world.getObservedBlockInventory(position).slots[0].count, 3)
+                bot._client.emit('set_slot', {
+                  windowId: 1,
+                  stateId: 2,
+                  slot: 0,
+                  item: Item.toNotch(new Item(registry.itemsByName.stone.id, 7))
+                })
+                assert.strictEqual(bot.world.getObservedBlockInventory(position).slots[0].count, 7)
+                bot._client.emit('set_slot', {
+                  windowId: 1,
+                  stateId: 3,
+                  slot: 27,
+                  item: Item.toNotch(new Item(registry.itemsByName.stone.id, 55))
+                })
+                assert.strictEqual(bot.world.getObservedBlockInventory(position).slots.length, 27)
+                assert.strictEqual(bot.world.getObservedBlockInventory(position).slots[0].count, 7)
                 const updated = once(bot, 'setWindowItems:1')
                 const items = emptyItems(chestData.slots)
                 items[0] = Item.toNotch(new Item(registry.itemsByName.stone.id, 8))
@@ -2118,6 +2133,39 @@ for (const supportedVersion of mineflayer.testedVersions) {
           })
           client.write('login', bot.test.generateLoginPacket())
         })
+      })
+
+      it('keeps inventory windows usable when observation is disabled', (done) => {
+        const disabled = mineflayer.createBot({
+          username: 'disabled-observer',
+          version: supportedVersion,
+          port: PORT,
+          plugins: { observed_block_inventories: false }
+        })
+        const login = bot.test.generateLoginPacket()
+        const onJoin = (client) => client.write('login', login)
+        server.on('playerJoin', onJoin)
+        Promise.all([once(bot, 'login'), once(disabled, 'login')]).then(async () => {
+          try {
+            const position = vec3(2, 64, 3)
+            disabled.world.setColumn(0, 0, bot.test.buildChunk())
+            disabled.world.setBlockStateId(position, registry.blocksByName.chest.defaultState)
+            disabled.activateBlock = () => setImmediate(() => {
+              disabled._client.emit('open_window', openWindowPacket(1, chestData))
+              disabled._client.emit('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
+            })
+            await disabled.openBlock(disabled.blockAt(position))
+            assert.strictEqual(disabled._observedBlockInventories, undefined)
+            disabled.end('test')
+            await once(disabled, 'end')
+            done()
+          } catch (err) {
+            disabled.end('test')
+            done(err)
+          } finally {
+            server.off('playerJoin', onJoin)
+          }
+        }).catch(done)
       })
 
       it('opens a window whose early window_items reuses the id of a closed window', (done) => {
