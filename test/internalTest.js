@@ -2168,6 +2168,45 @@ for (const supportedVersion of mineflayer.testedVersions) {
         }).catch(done)
       })
 
+      it('isolates resets for observers sharing a world', (done) => {
+        server.on('playerJoin', (client) => client.write('login', bot.test.generateLoginPacket()))
+        bot.once('login', () => {
+          try {
+            const position = vec3(2, 64, 3)
+            bot.world.setColumn(0, 0, bot.test.buildChunk())
+            bot.world.setBlockStateId(position, registry.blocksByName.chest.defaultState)
+            const other = new EventEmitter()
+            other.world = bot.world
+            other._client = new EventEmitter()
+            require('../lib/plugins/observed_block_inventories')(other)
+
+            function seed (observer, count) {
+              const window = { inventoryStart: 27, slots: Array(27).fill(null) }
+              window.slots[0] = new Item(registry.itemsByName.stone.id, count)
+              observer.currentWindow = window
+              const context = observer._observedBlockInventories.begin(bot.blockAt(position))
+              observer._observedBlockInventories.prepare(window, true)()
+              observer._observedBlockInventories.cancel(context)
+            }
+
+            seed(bot, 1)
+            seed(other, 2)
+            bot._observedBlockInventories.reset()
+            assert.strictEqual(bot.world.getObservedBlockInventory(position).slots[0].count, 2)
+            other._observedBlockInventories.reset()
+            assert.strictEqual(bot.world.getObservedBlockInventory(position), null)
+
+            seed(bot, 3)
+            seed(other, 4)
+            other._observedBlockInventories.reset()
+            assert.strictEqual(bot.world.getObservedBlockInventory(position).slots[0].count, 3)
+            bot._observedBlockInventories.reset()
+            assert.strictEqual(bot.world.getObservedBlockInventory(position), null)
+            done()
+          } catch (err) { done(err) }
+        })
+      })
+
       it('opens a window whose early window_items reuses the id of a closed window', (done) => {
         const emeraldId = registry.itemsByName.emerald.id
 
