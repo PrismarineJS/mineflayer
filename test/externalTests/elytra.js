@@ -1,4 +1,5 @@
 const assert = require('assert')
+const { onceWithCleanup } = require('../../lib/promise_utils')
 
 module.exports = () => async (bot) => {
   // don't continue unless this version supports elytra
@@ -19,8 +20,14 @@ module.exports = () => async (bot) => {
 
   await bot.look(bot.entity.yaw, 0)
   await bot.waitForTicks(5)
-  await assert.doesNotReject(bot.elytraFly())
-  await bot.waitForTicks(20) // wait for server to accept
+  // This event is emitted from the server's entity metadata update. Waiting
+  // for it verifies that the server decoded start_fall_flying successfully.
+  const elytraFlew = onceWithCleanup(bot, 'entityElytraFlew', {
+    timeout: 5000,
+    checkCondition: entity => entity.id === bot.entity.id
+  })
+  const elytraFly = bot.elytraFly()
+  await Promise.all([assert.doesNotReject(elytraFly), elytraFlew])
   assert.ok(bot.entity.elytraFlying)
 
   if (!supportsFireworkRockets) return
