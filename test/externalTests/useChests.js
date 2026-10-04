@@ -161,7 +161,7 @@ module.exports = () => async (bot) => {
   // Write the slots server side. Filling them by clicking leaves the result at
   // the mercy of the client's predicted state, which from 1.17 is not confirmed
   // per click, and a lost move is invisible until an assertion reads the slot.
-  function fillChest (pos) {
+  async function fillChest (pos) {
     const at = `${pos.x} ${pos.y} ${pos.z}`
     for (const { slot, name, count } of layout) {
       const item = bot.registry.itemsByName[name]
@@ -174,6 +174,7 @@ module.exports = () => async (bot) => {
         bot.chat(`/replaceitem block ${at} container.${slot} ${name} ${count}`)
       }
     }
+    await bot.test.awaitCommandsProcessed('chest-filled')
   }
 
   // Each left/right click resolves differently depending on whether the cursor
@@ -255,7 +256,7 @@ module.exports = () => async (bot) => {
     bot.chat(`/setblock ${largeChestLocations[1].x} ${largeChestLocations[1].y} ${largeChestLocations[1].z} chest`)
   }
 
-  fillChest(largeChestLocations[0])
+  await fillChest(largeChestLocations[0])
   const window = await bot.openContainer(bot.blockAt(largeChestLocations[0]))
   // Which half of a double chest the window lists first depends on the version.
   for (const { name, count } of layout) {
