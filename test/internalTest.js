@@ -1013,6 +1013,44 @@ for (const supportedVersion of mineflayer.testedVersions) {
           })
         })
       })
+
+      it('reads difficulty from the difficulty packet whatever shape it arrives in', async () => {
+        // The difficulty field is a mapper, so the protocol hands the plugin the
+        // name ('hard'), not the id (3). Looking the name up in difficultyNames
+        // returned undefined and left bot.game.difficulty unusable.
+        const [client] = await once(server, 'playerJoin')
+        client.write('login', bot.test.generateLoginPacket())
+        await once(bot, 'login')
+
+        client.write('difficulty', { difficulty: 'hard', difficultyLocked: false })
+        await sleep(100)
+        assert.strictEqual(bot.game.difficulty, 'hard')
+
+        client.write('difficulty', { difficulty: 'peaceful', difficultyLocked: false })
+        await sleep(100)
+        assert.strictEqual(bot.game.difficulty, 'peaceful')
+      })
+
+      it('keeps a login difficulty of 0 as peaceful', function (done) {
+        const loginPacket = bot.test.generateLoginPacket()
+        // Only 1.8-1.13.2 login packets carry difficulty; newer ones get it
+        // from the difficulty packet (covered above).
+        const loginDeclaresDifficulty = JSON.stringify(registry.protocol.play.toClient.types.packet_login)
+          .includes('"difficulty"')
+        if (!loginDeclaresDifficulty || !('difficulty' in loginPacket)) {
+          this.skip()
+          return
+        }
+        loginPacket.difficulty = 0
+        server.on('playerJoin', (client) => {
+          client.write('login', loginPacket)
+          bot.once('login', () => {
+            assert.strictEqual(bot.game.difficulty, 'peaceful',
+              'difficulty 0 is peaceful, not a missing value')
+            done()
+          })
+        })
+      })
     })
 
     describe('rain', () => {
