@@ -2670,6 +2670,83 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('sound', () => {
+      const ENTITY_SOUND = 'minecraft:entity.zombie.ambient'
+
+      async function loginBot () {
+        server.on('playerJoin', (client) => client.write('login', bot.test.generateLoginPacket()))
+        await once(bot, 'login')
+        await bot.test.pluginsLoaded
+        assert.ok(bot.entities[bot.entity.id], 'bot entity should be tracked')
+      }
+
+      // Builds an entity_sound_effect packet the way the given version encodes
+      // the sound: a plain registry id up to 1.19.2, "ID or X" on 1.19.3 - 1.20.4
+      // and an ItemSoundHolder from 1.20.6 onwards.
+      function emitEntitySound (byId, inlined) {
+        const packet = {
+          soundCategory: version['>=']('1.19.3') ? 'master' : 0,
+          entityId: bot.entity.id,
+          volume: 1,
+          pitch: 1,
+          seed: 1
+        }
+        if (version['>=']('1.20.6')) {
+          packet.sound = inlined
+            ? { data: { soundName: inlined, fixedRange: null } }
+            : { soundId: byId }
+        } else if (version['>=']('1.19.3')) {
+          // 0 is reserved for the inlined resource, a reference is id + 1 and
+          // leaves soundEvent as an own (undefined) property of the packet
+          packet.soundId = inlined ? 0 : byId + 1
+          packet.soundEvent = inlined ? { resource: inlined, range: null } : undefined
+        } else {
+          packet.soundId = byId
+        }
+        bot._client.emit('entity_sound_effect', packet)
+      }
+
+      it('emits soundEffectHeard when an entity sound names its resource', async function () {
+        if (!version['>=']('1.19.3')) return this.skip()
+        await loginBot()
+        const heard = once(bot, 'soundEffectHeard')
+        emitEntitySound(null, ENTITY_SOUND)
+        const [soundName, position, volume, pitch] = await heard
+        assert.strictEqual(soundName, ENTITY_SOUND)
+        assert.strictEqual(position, bot.entities[bot.entity.id].position)
+        assert.strictEqual(volume, 1)
+        assert.strictEqual(pitch, 1)
+      })
+
+      it('resolves an entity sound that references a registry id', async function () {
+        const sounds = bot.registry.sounds
+        if (!version['>=']('1.14') || !sounds) return this.skip()
+        const byId = Number(Object.keys(sounds)[0])
+        await loginBot()
+        const heard = once(bot, 'soundEffectHeard')
+        emitEntitySound(byId, null)
+        const [soundName, position] = await heard
+        assert.strictEqual(soundName, sounds[byId].name)
+        assert.strictEqual(position, bot.entities[bot.entity.id].position)
+      })
+
+      it('emits nothing for an entity the bot does not know', async function () {
+        await loginBot()
+        let heard = false
+        bot.on('soundEffectHeard', () => { heard = true })
+        bot._client.emit('entity_sound_effect', {
+          soundId: 0,
+          soundEvent: { resource: ENTITY_SOUND, range: null },
+          soundCategory: 'master',
+          entityId: bot.entity.id + 999,
+          volume: 1,
+          pitch: 1
+        })
+        await sleep(50)
+        assert.strictEqual(heard, false, 'position would be undefined, so the event must be dropped')
+      })
+    })
+
     describe('onceWithCleanup', () => {
       it('rejects instead of throwing out of emit when checkCondition throws', async () => {
         // A condition that throws used to unwind whatever was emitting. For a
