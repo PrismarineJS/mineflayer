@@ -2697,3 +2697,49 @@ for (const supportedVersion of mineflayer.testedVersions) {
     })
   })
 }
+
+// The loop above only ever starts servers mineflayer supports, so the path a
+// bot takes when the server it reaches is out of range needs its own block.
+describe('loader: unsupported server version', function () {
+  this.timeout(10 * 1000)
+  const unsupportedVersion = '1.7.10'
+  let server
+  let PORT
+
+  beforeEach(async function () {
+    PORT = await getPort()
+    server = mc.createServer({
+      'online-mode': false,
+      version: unsupportedVersion,
+      port: PORT
+    })
+    await once(server, 'listening')
+  })
+
+  afterEach(function () {
+    if (server.listening) server.close()
+  })
+
+  it('reports an out of range server version through the error event instead of throwing out of createBot', async function () {
+    assert.ok(require('prismarine-registry')(unsupportedVersion).version['<'](mineflayer.oldestSupportedVersion),
+      `${unsupportedVersion} must be older than mineflayer's oldest supported version for this test`)
+
+    const bot = mineflayer.createBot({
+      username: 'player',
+      version: unsupportedVersion,
+      port: PORT,
+      logErrors: false
+    })
+    // next() reports the failure on a timer, so both listeners are in place
+    // well before it can fire and createBot() has already returned.
+    const errorEvent = once(bot, 'error')
+    const endEvent = once(bot, 'end')
+
+    const [err] = await errorEvent
+    assert.ok(/is not supported/.test(err.message), `unexpected error: ${err.message}`)
+    assert.ok(err.message.includes(mineflayer.oldestSupportedVersion), `unexpected error: ${err.message}`)
+
+    const [reason] = await endEvent
+    assert.ok(String(reason).includes('unsupported server version'), `unexpected end reason: ${reason}`)
+  })
+})
