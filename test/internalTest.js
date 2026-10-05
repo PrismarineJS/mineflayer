@@ -260,105 +260,142 @@ for (const supportedVersion of mineflayer.testedVersions) {
     // set_passengers exists from 1.9 onward; 1.8 uses the attach_entity packet,
     // which is handled by a separate code path.
     if (version.majorVersion !== '1.8') {
-      it('mount and dismount via set_passengers', async () => {
-        const vehicleId = 50
-        const botEntityId = 0 // generateLoginPacket sets the bot's entityId to 0
-        const vehicleType = vehicleTypeId(bot.registry)
+      const vehicleId = 50
+      const botEntityId = 0 // generateLoginPacket sets the bot's entityId to 0
 
+      // Sent over one stream and processed in order: login creates bot.entity,
+      // then the spawn packet creates the vehicle.
+      function loginWithVehicle (client) {
+        client.write('login', bot.test.generateLoginPacket())
+        client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
+          entityId: vehicleId,
+          entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
+          objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
+          type: vehicleTypeId(bot.registry),
+          x: 1,
+          y: 65,
+          z: 1,
+          yaw: 0,
+          pitch: 0,
+          headPitch: 0,
+          velocity: { x: 0, y: 0, z: 0 },
+          metadata: []
+        })
+      }
+
+      // The vehicle events are synchronous, so listeners must see both sides of the
+      // relationship already updated. Record that state from inside the listener: an
+      // awaited event promise resumes only after the handler has finished, so it
+      // would miss a half-applied update.
+      function onceWithState (event, rider) {
+        return new Promise((resolve) => bot.once(event, (...args) => {
+          resolve({
+            args,
+            botVehicle: bot.vehicle?.id ?? null,
+            botEntityVehicle: bot.entity.vehicle?.id ?? null,
+            riderVehicle: rider ? (rider.vehicle?.id ?? null) : undefined,
+            passengers: bot.entities[vehicleId].passengers.map((e) => e.id)
+          })
+        }))
+      }
+
+      it('mount and dismount via set_passengers', async () => {
         let client
         server.on('playerJoin', (c) => {
           client = c
-          // Sent over one stream and processed in order: login creates bot.entity,
-          // spawn creates the vehicle, then set_passengers mounts the bot onto it.
-          c.write('login', bot.test.generateLoginPacket())
-          c.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
-            entityId: vehicleId,
-            entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
-            objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
-            type: vehicleType,
-            x: 1,
-            y: 65,
-            z: 1,
-            yaw: 0,
-            pitch: 0,
-            headPitch: 0,
-            velocity: { x: 0, y: 0, z: 0 },
-            metadata: []
-          })
+          loginWithVehicle(c)
           c.write('set_passengers', { entityId: vehicleId, passengers: [botEntityId] })
         })
 
-        await once(bot, 'mount')
-        assert.ok(bot.vehicle, 'bot.vehicle should be set after mount')
-        assert.strictEqual(bot.vehicle.id, vehicleId)
-        assert.ok(bot.vehicle.passengers.some((e) => e.id === bot.entity.id), 'bot should be in vehicle.passengers')
+        const mounted = await onceWithState('mount')
+        assert.strictEqual(mounted.botVehicle, vehicleId, 'bot.vehicle should be set when mount fires')
+        assert.strictEqual(mounted.botEntityVehicle, vehicleId, 'bot.entity.vehicle should be set when mount fires')
+        assert.deepStrictEqual(mounted.passengers, [botEntityId], 'bot should be in vehicle.passengers when mount fires')
 
         // Server dismounts the bot by re-sending the vehicle's passenger list
         // without the bot — the vehicle still exists. This is the case the
         // includes(bot.entity.id) check alone would miss.
+        const dismount = onceWithState('dismount')
         client.write('set_passengers', { entityId: vehicleId, passengers: [] })
-        const [originalVehicle] = await once(bot, 'dismount')
-        assert.strictEqual(bot.vehicle, null, 'bot.vehicle should be cleared after dismount')
-        assert.strictEqual(bot.entity.vehicle, null, 'bot.entity.vehicle should be cleared after dismount')
-        assert.strictEqual(originalVehicle.id, vehicleId, 'dismount should report the vehicle that was left')
+        const dismounted = await dismount
+        assert.strictEqual(dismounted.args[0].id, vehicleId, 'dismount should report the vehicle that was left')
+        assert.strictEqual(dismounted.botVehicle, null, 'bot.vehicle should be cleared when dismount fires')
+        assert.strictEqual(dismounted.botEntityVehicle, null, 'bot.entity.vehicle should be cleared when dismount fires')
+        assert.deepStrictEqual(dismounted.passengers, [], 'bot should be gone from vehicle.passengers when dismount fires')
       })
 
       it('emits entityAttach/entityDetach and tracks driver order via set_passengers', async () => {
-        const vehicleId = 50
         const riderA = 100
         const riderB = 101
 
         let client
         server.on('playerJoin', (c) => {
           client = c
-          c.write('login', bot.test.generateLoginPacket())
-          c.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
-            entityId: vehicleId,
-            entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
-            objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
-            type: vehicleTypeId(bot.registry),
-            x: 1,
-            y: 65,
-            z: 1,
-            yaw: 0,
-            pitch: 0,
-            headPitch: 0,
-            velocity: { x: 0, y: 0, z: 0 },
-            metadata: []
-          })
+          loginWithVehicle(c)
         })
         // bot.entities is undefined until the plugin is injected on 'inject_allowed'
         // (fired via setTimeout after connect), so guard with ?. and wait for the spawn.
         while (!bot.entities?.[vehicleId]) await sleep(5) // wait for injection + spawn packet
-        const vehicle = bot.entities[vehicleId]
 
         // riderA (another entity, not the bot) boards: expect entityAttach.
-        let attach = once(bot, 'entityAttach')
+        let attach = onceWithState('entityAttach')
         client.write('set_passengers', { entityId: vehicleId, passengers: [riderA] })
-        let [entity, reportedVehicle] = await attach
+        let state = await attach
+        let [entity, reportedVehicle] = state.args
         assert.strictEqual(entity.id, riderA, 'entityAttach should report the entity that boarded')
         assert.strictEqual(reportedVehicle.id, vehicleId, 'entityAttach should report the vehicle boarded')
-        assert.strictEqual(entity.vehicle, vehicle, 'rider.vehicle should point at the vehicle')
-        assert.deepStrictEqual(vehicle.passengers.map((e) => e.id), [riderA])
+        assert.strictEqual(entity.vehicle, reportedVehicle, 'rider.vehicle should point at the vehicle')
+        assert.deepStrictEqual(state.passengers, [riderA], 'rider should be in vehicle.passengers when entityAttach fires')
 
         // riderB boards too: another entityAttach, riderA stays the front seat (driver).
-        attach = once(bot, 'entityAttach')
+        attach = onceWithState('entityAttach')
         client.write('set_passengers', { entityId: vehicleId, passengers: [riderA, riderB] })
-        ;[entity] = await attach
+        state = await attach
+        ;[entity] = state.args
         assert.strictEqual(entity.id, riderB)
-        assert.deepStrictEqual(vehicle.passengers.map((e) => e.id), [riderA, riderB], 'order preserved, index 0 is the driver')
+        assert.deepStrictEqual(state.passengers, [riderA, riderB], 'order preserved, index 0 is the driver')
 
         // The driver (riderA) leaves while riderB stays: expect entityDetach for riderA
         // and riderB promoted to the front seat. This is the case the old loop, which
         // only iterated the new list, dropped entirely.
-        const detach = once(bot, 'entityDetach')
+        const detach = onceWithState('entityDetach', bot.entities[riderA])
         client.write('set_passengers', { entityId: vehicleId, passengers: [riderB] })
-        const [gone, leftVehicle] = await detach
+        state = await detach
+        const [gone, leftVehicle] = state.args
         assert.strictEqual(gone.id, riderA, 'entityDetach should report the entity that left')
         assert.strictEqual(leftVehicle.id, vehicleId)
-        assert.strictEqual(gone.vehicle, null, 'departed rider.vehicle should be cleared')
-        assert.deepStrictEqual(vehicle.passengers.map((e) => e.id), [riderB], 'departed rider removed, no stale entry')
-        assert.strictEqual(vehicle.passengers[0].id, riderB, 'riderB is promoted to the front seat')
+        assert.strictEqual(state.riderVehicle, null, 'departed rider.vehicle should be cleared when entityDetach fires')
+        assert.deepStrictEqual(state.passengers, [riderB], 'departed rider removed and riderB promoted to the front seat when entityDetach fires')
+      })
+
+      it('dismounts riders when their vehicle is destroyed', async () => {
+        const rider = 100
+
+        let client
+        server.on('playerJoin', (c) => {
+          client = c
+          loginWithVehicle(c)
+          c.write('set_passengers', { entityId: vehicleId, passengers: [botEntityId, rider] })
+        })
+        await once(bot, 'mount')
+
+        // A destroyed vehicle gets no further set_passengers; entity_destroy alone
+        // has to detach everyone riding it.
+        const dismount = onceWithState('dismount')
+        const detach = onceWithState('entityDetach', bot.entities[rider])
+        client.write('entity_destroy', { entityIds: [vehicleId] })
+
+        const dismounted = await dismount
+        assert.strictEqual(dismounted.args[0].id, vehicleId, 'dismount should report the destroyed vehicle')
+        assert.strictEqual(dismounted.botVehicle, null, 'bot.vehicle should be cleared when dismount fires')
+        assert.strictEqual(dismounted.botEntityVehicle, null, 'bot.entity.vehicle should be cleared when dismount fires')
+        assert.deepStrictEqual(dismounted.passengers, [], 'destroyed vehicle should have no passengers when dismount fires')
+
+        const detached = await detach
+        assert.strictEqual(detached.args[0].id, rider, 'entityDetach should report the other rider')
+        assert.strictEqual(detached.args[1].id, vehicleId)
+        assert.strictEqual(detached.riderVehicle, null, 'rider.vehicle should be cleared when entityDetach fires')
+        assert.deepStrictEqual(detached.passengers, [], 'destroyed vehicle should have no passengers when entityDetach fires')
       })
     }
     it('blockAt', (done) => {
