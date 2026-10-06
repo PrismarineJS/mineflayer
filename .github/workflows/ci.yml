@@ -37,6 +37,7 @@ jobs:
       run: |
         node -e "
           const v = require('./lib/version').testedVersions;
+          if (!Array.isArray(v) || !v.length || new Set(v).size !== v.length || v.some(v => typeof v !== 'string' || !v.trim())) throw new Error('Invalid test version matrix');
           const groups = [];
           const SIZE = 4;
           for (let i = 0; i < v.length; i += SIZE) {
@@ -151,3 +152,35 @@ jobs:
           name: failing-versions-${{ strategy.job-index }}
           path: artifacts/
           retention-days: 7
+
+  # Stable branch-protection check; every required matrix job must pass.
+  ci:
+    name: ci
+    if: ${{ always() }}
+    needs: ["Lint", "PrepareSupportedVersions", "MinecraftServer"]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: Require all mandatory jobs to succeed
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+          EXPECTED_JOBS: '["Lint", "PrepareSupportedVersions", "MinecraftServer"]'
+          MATRIX_OUTPUTS: '[["PrepareSupportedVersions", "matrix", "include"]]'
+        shell: python
+        run: |
+          import json, os, sys
+          needs = json.loads(os.environ["NEEDS_JSON"])
+          expected = json.loads(os.environ["EXPECTED_JOBS"])
+          if not expected or set(needs) != set(expected):
+              sys.exit("Missing or unexpected required jobs")
+          failed = {name: job.get("result") for name, job in needs.items()
+                    if job.get("result") != "success"}
+          if failed:
+              sys.exit("Required jobs did not succeed: " + json.dumps(failed))
+          for job, output, field in json.loads(os.environ["MATRIX_OUTPUTS"]):
+              matrix = json.loads(needs[job]["outputs"][output])
+              entries = matrix[field] if field else matrix
+              if not isinstance(entries, list) or not entries:
+                  sys.exit("Empty or invalid required matrix: " + job)
+          print("All required jobs succeeded")
