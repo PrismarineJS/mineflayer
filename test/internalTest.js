@@ -205,7 +205,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
       // Replaces the server's login handler so the client is rejected while still in the login state.
       server.on('connection', (client) => {
         client.removeAllListeners('login_start')
-        client.once('login_start', () => client.end('kicked'))
+        client.once('login_start', async () => {
+          await bot.test.pluginsLoaded
+          client.end('kicked')
+        })
       })
       const [reason] = await once(bot, 'end')
       const kicked = new RegExp(`disconnected before entering the play state \\(${reason}\\)`)
