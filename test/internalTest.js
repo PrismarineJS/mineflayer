@@ -264,6 +264,89 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    it('relights after a block change', function (done) {
+      // 1.8 chunks store light through uint4's writeUInt4LE, which clobbers the neighbouring nibble
+      if (bot.registry.version['<']('1.9')) return this.skip()
+      const lamp = vec3(8, 65, 8)
+      const roof = vec3(3, 70, 3)
+      const glowstone = bot.registry.blocksByName.glowstone.minStateId
+      const stone = bot.registry.blocksByName.stone.minStateId
+      // The server only sends block changes; the light that follows is the client's to work out.
+      const steps = [
+        {
+          location: lamp,
+          type: glowstone,
+          check: () => {
+            assert.strictEqual(bot.world.getBlockLight(lamp), 15)
+            assert.strictEqual(bot.world.getBlockLight(lamp.offset(1, 0, 0)), 14)
+            assert.strictEqual(bot.world.getBlockLight(lamp.offset(-3, 1, 0)), 11)
+          }
+        },
+        {
+          location: lamp,
+          type: 0,
+          check: () => {
+            assert.strictEqual(bot.world.getBlockLight(lamp.offset(1, 0, 0)), 0)
+            assert.strictEqual(bot.world.getBlockLight(lamp.offset(-3, 1, 0)), 0)
+          }
+        },
+        {
+          location: roof,
+          type: stone,
+          check: () => {
+            assert.strictEqual(bot.world.getSkyLight(roof), 0)
+            assert.strictEqual(bot.world.getSkyLight(roof.offset(0, -1, 0)), 14) // lit from the side
+            assert.strictEqual(bot.world.getSkyLight(roof.offset(1, -1, 0)), 15)
+          }
+        },
+        {
+          location: roof,
+          type: 0,
+          check: () => {
+            assert.strictEqual(bot.world.getSkyLight(roof.offset(0, -1, 0)), 15)
+          }
+        }
+      ]
+      let client
+      const next = () => {
+        const step = steps.shift()
+        if (!step) return done()
+        bot.once('blockUpdate', () => setImmediate(() => {
+          try { step.check() } catch (err) { return done(err) }
+          next()
+        }))
+        client.write('block_change', { location: step.location, type: step.type })
+      }
+      bot.once('chunkColumnLoad', next)
+      server.on('playerJoin', (c) => {
+        client = c
+        client.write('login', bot.test.generateLoginPacket())
+        const chunk = bot.test.buildChunk()
+        for (let x = 0; x < 16; x++) {
+          for (let z = 0; z < 16; z++) {
+            chunk.setBlockStateId(vec3(x, 64, z), stone)
+            for (let y = 65; y < 256; y++) chunk.setSkyLight(vec3(x, y, z), 15)
+          }
+        }
+        client.write('map_chunk', generateChunkPacket(chunk))
+        if (bot.supportFeature('lightSentSeparately') && bot.registry.version['<']('1.18')) {
+          const light = chunk.dumpLight()
+          client.write('update_light', bot.supportFeature('newLightingDataFormat')
+            ? { chunkX: 0, chunkZ: 0, trustEdges: true, ...light }
+            : {
+                chunkX: 0,
+                chunkZ: 0,
+                trustEdges: true,
+                skyLightMask: chunk.skyLightMask,
+                blockLightMask: chunk.blockLightMask,
+                emptySkyLightMask: 0,
+                emptyBlockLightMask: 0,
+                data: light
+              })
+        }
+      })
+    })
+
     describe('digTime', () => {
       it('should use eye-level water check instead of isInWater for dig speed', (done) => {
         const blockPos = vec3(1, 65, 1)
