@@ -18,6 +18,12 @@ const TEST_TIMEOUT_MS = 90000
 
 const excludedTests = ['digEverything', 'anvil', 'placeEntity']
 
+// CI splits each version's test files into TEST_SHARDS contiguous runs, each
+// in its own process against its own server; this process runs the
+// TEST_SHARD-th.
+const TEST_SHARD = Number(process.env.TEST_SHARD ?? 0)
+const TEST_SHARDS = Number(process.env.TEST_SHARDS ?? 1)
+
 const propOverrides = {
   'level-type': 'FLAT',
   'spawn-npcs': 'true',
@@ -60,7 +66,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
   const version = registry.version
   const MC_SERVER_JAR_DIR = process.env.MC_SERVER_JAR_DIR || `${process.cwd()}/server_jars`
   const MC_SERVER_JAR = `${MC_SERVER_JAR_DIR}/minecraft_server.${version.minecraftVersion}.jar`
-  const wrap = new Wrap(MC_SERVER_JAR, `${MC_SERVER_PATH}_${supportedVersion}`)
+  const wrap = new Wrap(MC_SERVER_JAR, `${MC_SERVER_PATH}_${supportedVersion}_${TEST_SHARD}`)
   wrap.on('line', (line) => {
     console.log(line)
   })
@@ -205,6 +211,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         const bDangerous = dangerousTests.includes(bName) ? 1 : 0
         return aDangerous - bDangerous
       })
+      .filter((test, i, tests) => Math.floor(i * TEST_SHARDS / tests.length) === TEST_SHARD)
       .forEach((test) => {
         test = path.basename(test, '.js')
         const testFunctions = require(`./externalTests/${test}`)(supportedVersion)
