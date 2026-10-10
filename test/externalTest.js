@@ -18,9 +18,7 @@ const TEST_TIMEOUT_MS = 90000
 
 const excludedTests = ['digEverything', 'anvil', 'placeEntity']
 
-// CI splits each version's test files into TEST_SHARDS contiguous runs, each
-// in its own process against its own server; this process runs the
-// TEST_SHARD-th.
+// Shards run concurrently, so each needs its own server directory.
 const TEST_SHARD = Number(process.env.TEST_SHARD ?? 0)
 const TEST_SHARDS = Number(process.env.TEST_SHARDS ?? 1)
 
