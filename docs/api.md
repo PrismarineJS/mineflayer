@@ -892,6 +892,8 @@ The bot's current dimension, such as `overworld`, `the_end` or `the_nether`.
 
 #### bot.game.difficulty
 
+The current difficulty, one of `peaceful`, `easy`, `normal` or `hard`.
+
 #### bot.game.gameMode
 
 #### bot.game.hardcore
