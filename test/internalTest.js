@@ -707,6 +707,59 @@ for (const supportedVersion of mineflayer.testedVersions) {
         bot._client.write = originalWrite
       })
 
+      it('sends the held controls while riding like vanilla', async function () {
+        const vehicleId = 21
+        const client = (await once(server, 'playerJoin'))[0]
+        await bot.test.pluginsLoaded
+        const loggedIn = once(bot, 'login')
+        client.write('login', bot.test.generateLoginPacket())
+        await loggedIn
+        const chunk = bot.test.buildChunk()
+        chunk.setBlockType(pos, goldId)
+        client.write('map_chunk', generateChunkPacket(chunk))
+        client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
+          entityId: vehicleId,
+          entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
+          objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
+          type: (bot.registry.entitiesByName.pig ?? bot.registry.entitiesByName.Pig).id, // capitalised before 1.11
+          x: 1,
+          y: 65,
+          z: 1,
+          yaw: 0,
+          pitch: 0,
+          headPitch: 0,
+          velocity: { x: 0, y: 0, z: 0 },
+          metadata: []
+        })
+        const mounted = once(bot, 'mount')
+        if (bot.supportFeature('setPassengerStackEntity')) {
+          client.write('set_passengers', { entityId: vehicleId, passengers: [bot.entity.id] })
+        } else {
+          client.write('attach_entity', { entityId: bot.entity.id, vehicleId, leash: false })
+        }
+        await mounted
+
+        const received = (name, matches) => onceWithCleanup(client, name, { timeout: 1000, checkCondition: matches })
+        if (bot.supportFeature('newPlayerInputPacket')) {
+          const actions = []
+          client.on('entity_action', ({ actionId }) => actions.push(actionId))
+          bot.setControlState('sneak', true)
+          await received('player_input', ({ inputs }) => inputs.shift)
+          assert.deepStrictEqual(actions, bot.supportFeature('sneakUsesEntityAction') ? ['start_sneaking'] : [])
+          bot.moveVehicle(0, 1)
+          await received('player_input', ({ inputs }) => inputs.forward && inputs.shift)
+        } else {
+          // steer_vehicle goes out every tick, not only when a control changes
+          await received('steer_vehicle', ({ jump }) => jump === 0)
+          bot.setControlState('sneak', true)
+          await received('steer_vehicle', ({ jump }) => jump === 0x02)
+          await received('steer_vehicle', ({ jump }) => jump === 0x02)
+          bot.moveVehicle(0, 1)
+          await received('steer_vehicle', ({ forward, jump }) => forward === 1 && jump === 0x02)
+        }
+        bot.clearControlStates()
+      })
+
       it('stops sprinting when the controls clear with physics disabled', async function () {
         const sent = []
         const originalWrite = bot._client.write.bind(bot._client)
