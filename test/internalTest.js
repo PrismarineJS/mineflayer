@@ -676,6 +676,73 @@ for (const supportedVersion of mineflayer.testedVersions) {
         bot._client.write = originalWrite
       })
 
+      it('sends the held controls again to the player a login creates', async function () {
+        const sent = []
+        const originalWrite = bot._client.write.bind(bot._client)
+        bot._client.write = (name, params) => {
+          sent.push({ name, params })
+          return originalWrite(name, params)
+        }
+        const client = (await once(server, 'playerJoin'))[0]
+        const chunk = bot.test.buildChunk()
+        chunk.setBlockType(pos, goldId)
+        const join = async (teleportId) => {
+          await client.write('login', bot.test.generateLoginPacket())
+          await client.write('map_chunk', generateChunkPacket(chunk))
+          const moved = once(bot, 'forcedMove')
+          await client.write('position', { x: 1.5, y: 66, z: 1.5, dx: 0, dy: 0, dz: 0, pitch: 0, yaw: 0, flags: bot.supportFeature('positionPacketHasBitflags') ? {} : 0, teleportId })
+          await moved
+        }
+        const sneakSent = () => sent.some(p => (p.name === 'entity_action' && p.params.actionId === 0) ||
+          (p.name === 'player_input' && p.params.inputs.shift))
+        await join(0)
+        bot.setControlState('sneak', true)
+        await bot.waitForTicks(2)
+        assert.ok(sneakSent(), 'sneak is sent')
+
+        sent.length = 0
+        await join(1)
+        await bot.waitForTicks(2)
+        assert.ok(sneakSent(), 'the still-held sneak is sent to the new player')
+        bot.clearControlStates()
+        bot._client.write = originalWrite
+      })
+
+      it('stops sprinting when the controls clear with physics disabled', async function () {
+        const sent = []
+        const originalWrite = bot._client.write.bind(bot._client)
+        bot._client.write = (name, params) => {
+          sent.push({ name, params })
+          return originalWrite(name, params)
+        }
+        const client = (await once(server, 'playerJoin'))[0]
+        await client.write('login', bot.test.generateLoginPacket())
+        await client.write('update_health', { health: 20, food: 20, foodSaturation: 5 })
+        const chunk = bot.test.buildChunk()
+        chunk.setBlockType(pos, goldId)
+        await client.write('map_chunk', generateChunkPacket(chunk))
+        await once(bot, 'chunkColumnLoad')
+        const moved = once(bot, 'forcedMove')
+        await client.write('position', { x: 1.5, y: 66, z: 1.5, dx: 0, dy: 0, dz: 0, pitch: 0, yaw: 0, flags: bot.supportFeature('positionPacketHasBitflags') ? {} : 0, teleportId: 0 })
+        await moved
+        await bot.waitForTicks(3)
+        const sprintAction = (start) => sent.some(p => p.name === 'entity_action' &&
+          (p.params.actionId === (start ? 3 : 4) || p.params.actionId === (start ? 'start_sprinting' : 'stop_sprinting')))
+        bot.setControlState('sprint', true)
+        bot.setControlState('forward', true)
+        await bot.waitForTicks(2)
+        assert.ok(sprintAction(true), 'start_sprinting')
+
+        sent.length = 0
+        bot.physicsEnabled = false
+        bot.clearControlStates()
+        // physicsTick is not emitted with physics disabled.
+        await sleep(200)
+        bot.physicsEnabled = true
+        assert.ok(sprintAction(false), 'stop_sprinting')
+        bot._client.write = originalWrite
+      })
+
       it('no movement packets during a server transfer configuration phase', function (done) {
         // Regression test for https://github.com/PrismarineJS/mineflayer/issues/3776
         // While the client is in the configuration phase (Velocity/BungeeCord server
