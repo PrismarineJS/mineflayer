@@ -516,21 +516,20 @@ for (const supportedVersion of mineflayer.testedVersions) {
         chunk.setBlockType(pos, goldId)
         await client.write('map_chunk', generateChunkPacket(chunk))
         await once(bot, 'chunkColumnLoad')
+        // forcedMove fires at the start of the tick that answers the teleport, before that tick simulates.
         const teleport = (extra) => {
-          const p = once(bot, 'forcedMove')
+          const p = new Promise(resolve => bot.once('forcedMove', () => resolve(bot.entity.velocity.clone())))
           client.write('position', { x: 1.5, y: 80, z: 1.5, dx: 0, dy: 0, dz: 0, pitch: 0, yaw: 0, teleportId: 1, flags: {}, ...extra })
           return p
         }
         bot.entity.velocity.set(0.25, 0.5, 0)
-        await teleport({ dx: 0.5, dz: 0.125 })
-        assert.deepStrictEqual(bot.entity.velocity, vec3(0.5, 0, 0.125), 'absolute velocity from the packet')
+        assert.deepStrictEqual(await teleport({ dx: 0.5, dz: 0.125 }), vec3(0.5, 0, 0.125), 'absolute velocity from the packet')
         bot.entity.velocity.set(0.25, 0.5, 0)
-        await teleport({ dx: 0.5, dy: 0.5, flags: { dx: true, dy: true } })
-        assert.deepStrictEqual(bot.entity.velocity, vec3(0.75, 1, 0), 'flagged axes add to the current velocity')
+        assert.deepStrictEqual(await teleport({ dx: 0.5, dy: 0.5, flags: { dx: true, dy: true } }), vec3(0.75, 1, 0), 'flagged axes add to the current velocity')
         await teleport({ yaw: 0 })
         bot.entity.velocity.set(1, 0, 0)
-        await teleport({ yaw: 90, flags: { yawDelta: true, dx: true, dz: true } })
-        assert.ok(Math.abs(bot.entity.velocity.x) < 1e-6 && Math.abs(bot.entity.velocity.z - 1) < 1e-6, `yawDelta turns the velocity with the rotation change: ${bot.entity.velocity}`)
+        const turned = await teleport({ yaw: 90, flags: { yawDelta: true, dx: true, dz: true } })
+        assert.ok(Math.abs(turned.x) < 1e-6 && Math.abs(turned.z - 1) < 1e-6, `yawDelta turns the velocity with the rotation change: ${turned}`)
       })
 
       it('answers a teleport with an ungrounded position_look and repeats the position next tick', async function () {
@@ -649,7 +648,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         assert.deepStrictEqual(shift.params.inputs, { forward: false, backward: false, left: false, right: false, jump: false, shift: true, sprint: false })
         const pressShift = sent.find(p => p.name === 'entity_action')
         if (sneakViaEntityAction) {
-          assert.strictEqual(pressShift.params.actionId, 0, 'PRESS_SHIFT_KEY entity_action up to 1.21.5')
+          assert.strictEqual(pressShift.params.actionId, 'start_sneaking', 'PRESS_SHIFT_KEY entity_action up to 1.21.5')
           assert.ok(sent.indexOf(pressShift) < sent.indexOf(shift), 'entity_action before player_input')
         } else {
           assert.strictEqual(pressShift, undefined, 'no entity_action for the shift key from 1.21.6')
@@ -661,17 +660,17 @@ for (const supportedVersion of mineflayer.testedVersions) {
         bot.setControlState('forward', true)
         await bot.waitForTicks(2)
         assert.ok(sent.some(p => p.name === 'player_input' && p.params.inputs.sprint && p.params.inputs.forward), 'player_input with sprint + forward')
-        assert.ok(!sent.some(p => p.name === 'entity_action' && (p.params.actionId === 3 || p.params.actionId === 'start_sprinting')), 'no start_sprinting while sneaking')
+        assert.ok(!sent.some(p => p.name === 'entity_action' && p.params.actionId === 'start_sprinting'), 'no start_sprinting while sneaking')
 
         sent.length = 0
         bot.setControlState('sneak', false)
         await bot.waitForTicks(3)
-        assert.ok(sent.some(p => p.name === 'entity_action' && (p.params.actionId === 3 || p.params.actionId === 'start_sprinting')), 'start_sprinting once the sneak key is released')
+        assert.ok(sent.some(p => p.name === 'entity_action' && p.params.actionId === 'start_sprinting'), 'start_sprinting once the sneak key is released')
 
         sent.length = 0
         bot.setControlState('forward', false)
         await bot.waitForTicks(3)
-        assert.ok(sent.some(p => p.name === 'entity_action' && (p.params.actionId === 4 || p.params.actionId === 'stop_sprinting')), 'stop_sprinting without a forward impulse')
+        assert.ok(sent.some(p => p.name === 'entity_action' && p.params.actionId === 'stop_sprinting'), 'stop_sprinting without a forward impulse')
         bot.clearControlStates()
         bot._client.write = originalWrite
       })
@@ -693,7 +692,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           await client.write('position', { x: 1.5, y: 66, z: 1.5, dx: 0, dy: 0, dz: 0, pitch: 0, yaw: 0, flags: bot.supportFeature('positionPacketHasBitflags') ? {} : 0, teleportId })
           await moved
         }
-        const sneakSent = () => sent.some(p => (p.name === 'entity_action' && p.params.actionId === 0) ||
+        const sneakSent = () => sent.some(p => (p.name === 'entity_action' && p.params.actionId === 'start_sneaking') ||
           (p.name === 'player_input' && p.params.inputs.shift))
         await join(0)
         bot.setControlState('sneak', true)
@@ -2765,7 +2764,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
               bot._client.emit('position', { ...teleport, yaw: 30, teleportId: 1 })
               bot._client.emit('player_rotation', { yaw: 90, pitch: 0 })
               await once(bot, 'forcedMove')
-              assert.deepStrictEqual(replies, [30], 'the teleport is answered with its own rotation')
+              // The reply leaves the last-sent record alone, so that tick's movement packet may follow it.
+              assert.strictEqual(replies[0], 30, 'the teleport is answered with its own rotation')
               assert.strictEqual(bot.entity.yaw, require('../lib/conversions').fromNotchianYaw(90), 'the later rotation wins')
             } finally {
               bot._client.write = write
