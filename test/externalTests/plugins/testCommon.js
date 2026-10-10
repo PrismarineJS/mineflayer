@@ -91,6 +91,10 @@ function inject (bot, wrap) {
       const realY = y + bot.test.groundY - 4
       bot.chat(`/fill ~-5 ${realY} ~-5 ~5 ${realY} ~5 ` + layerNames[y])
     }
+    // A fill over one half of a bed drops the other half; drops must die
+    // before their 10-tick pickup delay lets the bot collect them mid-test.
+    const itemEntity = bot.registry.entitiesByName.item ?? bot.registry.entitiesByName.Item
+    bot.chat(`/kill @e[type=${itemEntity.name}]`)
     // The marker echo only proves the fills executed: command feedback is
     // sent immediately while block changes flush at tick end, so the client
     // can still hold pre-fill blocks after the echo.
