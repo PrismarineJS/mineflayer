@@ -914,7 +914,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
             const pongs = seen.filter(p => p.name === 'pong')
             assert.strictEqual(pongs.length, 1, 'each ping is answered exactly once')
             const pongIndex = seen.indexOf(pongs[0])
-            const before = seen[pongIndex - 1]
+            // On 1.21.2+ the tick ends with tick_end after its movement packet, like vanilla
+            const before = seen.slice(0, pongIndex).filter(p => p.name !== 'tick_end').pop()
             assert.ok(before !== undefined, 'a movement packet precedes the pong')
             assert.ok(movementPackets.includes(before.name), `packet before pong is ${before.name}`)
             assert.strictEqual(before.data.y, tickY, 'the pong follows the movement packet of the tick that received the ping')
