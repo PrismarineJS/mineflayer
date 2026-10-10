@@ -723,6 +723,49 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('resource pack', () => {
+      const packUuid = '8ef4746b-93b7-3c32-9dcb-b375016c114d'
+
+      // Answers the pack with `answer`, then swings the arm so the arm_animation
+      // packet marks the end of the resource_pack_receive packets the bot sent
+      function answerPack (answer, cb) {
+        server.on('playerJoin', (client) => {
+          const results = []
+          client.on('resource_pack_receive', (packet) => results.push(packet))
+          client.on('arm_animation', () => cb(results))
+          bot.once('resourcePack', () => {
+            answer()
+            bot.swingArm()
+          })
+          client.write('login', bot.test.generateLoginPacket())
+          if (bot.supportFeature('resourcePackUsesUUID')) {
+            client.write('add_resource_pack', { uuid: packUuid, url: 'http://example.com/pack.zip', hash: 'abc', forced: false })
+          } else {
+            client.write('resource_pack_send', { url: 'http://example.com/pack.zip', hash: 'abc', forced: false })
+          }
+        })
+      }
+
+      it('accepts with the vanilla status sequence', (done) => {
+        answerPack(() => bot.acceptResourcePack(), (results) => {
+          assert.deepStrictEqual(results.map(p => p.result), bot.supportFeature('resourcePackUsesUUID') ? [3, 4, 0] : [3, 0])
+          for (const packet of results) {
+            if (bot.supportFeature('resourcePackUsesUUID')) assert.strictEqual(packet.uuid, packUuid)
+            if (bot.supportFeature('resourcePackUsesHash')) assert.strictEqual(packet.hash, 'abc')
+          }
+          done()
+        })
+      })
+
+      it('denies with a single DECLINED', (done) => {
+        answerPack(() => bot.denyResourcePack(), (results) => {
+          assert.deepStrictEqual(results.map(p => p.result), [1])
+          if (bot.supportFeature('resourcePackUsesUUID')) assert.strictEqual(results[0].uuid, packUuid)
+          done()
+        })
+      })
+    })
+
     describe('world', () => {
       const pos = vec3(1, 65, 1)
       const goldId = 41
