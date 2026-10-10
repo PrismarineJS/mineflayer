@@ -37,11 +37,9 @@ jobs:
       run: |
         node -e "
           const v = require('./lib/version').testedVersions;
-          // These servers burn 25-220 CPU-seconds building their data fixers
-          // at startup, enough to stall anything sharing their 4-core runner,
-          // so each gets its own, sized for 2 cores per server so its two test
-          // processes' servers share it. The rest share a runner in pairs and
-          // skip C2: it costs them more CPU at startup than it ever saves.
+          // Slow versions' startup data fixer builds saturate a runner, so one each.
+          // ActiveProcessorCount=2 assumes TEST_SHARDS=2 servers on a 4-core runner.
+          // TieredStopAtLevel=1 slows their startup, but speeds up the rest's.
           const slow = ['1.13.2', '1.14.4', '1.15.2', '1.16.5', '1.17.1', '1.18.2'];
           const groups = v.filter(x => slow.includes(x)).map(x => ({ versions: x, java: '-XX:ActiveProcessorCount=2' }));
           const rest = v.filter(x => !slow.includes(x));
@@ -68,8 +66,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 25
-      # There is no lockfile, so the date in the key is what picks up new
-      # dependency releases, at most a day late.
+      # No lockfile: the date in the key is what picks up new dependency releases.
       - id: date
         run: echo "date=$(date -u +%F)" >> $GITHUB_OUTPUT
       - name: Cache node_modules
@@ -82,8 +79,7 @@ jobs:
         if: steps.modules.outputs.cache-hit != 'true'
         run: npm install
 
-      # Restored and saved separately: actions/cache only saves when the job
-      # passes, and a failing test shouldn't cost the next run its jars.
+      # Split restore/save: actions/cache doesn't save when the job fails.
       - name: Restore server jars
         id: jars
         uses: actions/cache/restore@v4
@@ -107,11 +103,8 @@ jobs:
         env:
           JAVA_TOOL_OPTIONS: ${{ matrix.java }}
         run: |
-          # Each version's external tests are split across TEST_SHARDS
-          # processes, each with its own server, and its internal tests, which
-          # need no server, run in one more. Those finish well within the
-          # external ones, so they're niced to leave the CPU to the servers
-          # starting up.
+          # Internal tests need no server, so they're niced to leave the CPU to
+          # the servers starting up.
           TEST_SHARDS=2
           parts=""
           pids=""
