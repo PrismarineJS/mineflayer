@@ -15,9 +15,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Use Node.js 22.x
-      uses: actions/setup-node@v1.4.4
+      uses: actions/setup-node@v4
       with:
         node-version: 24
     - run: npm i && npm run lint
@@ -28,20 +28,22 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Use Node.js 22.x
-      uses: actions/setup-node@v1.4.4
+      uses: actions/setup-node@v4
       with:
         node-version: 24
     - id: set-matrix
       run: |
         node -e "
           const v = require('./lib/version').testedVersions;
-          const groups = [];
-          const SIZE = 4;
-          for (let i = 0; i < v.length; i += SIZE) {
-            groups.push({ versions: v.slice(i, i + SIZE).join(' ') });
-          }
+          // Slow versions' startup data fixer builds saturate a runner, so one each.
+          // ActiveProcessorCount=2 assumes TEST_SHARDS=2 servers on a 4-core runner.
+          // TieredStopAtLevel=1 slows their startup, but speeds up the rest's.
+          const slow = ['1.13.2', '1.14.4', '1.15.2', '1.16.5', '1.17.1', '1.18.2'];
+          const groups = v.filter(x => slow.includes(x)).map(x => ({ versions: x, java: '-XX:ActiveProcessorCount=2' }));
+          const rest = v.filter(x => !slow.includes(x));
+          for (let i = 0; i < rest.length; i += 2) groups.push({ versions: rest.slice(i, i + 2).join(' '), java: '-XX:TieredStopAtLevel=1' });
           console.log('matrix='+JSON.stringify({'include': groups}))
         " >> $GITHUB_OUTPUT
 
@@ -54,18 +56,36 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Use Node.js 22.x
-        uses: actions/setup-node@v1.4.4
+        uses: actions/setup-node@v4
         with:
           node-version: 24
       - name: Setup Java JDK
-        uses: actions/setup-java@v1.4.3
+        uses: actions/setup-java@v4
         with:
+          distribution: temurin
           java-version: 25
-          java-package: jre
+      # No lockfile: the date in the key is what picks up new dependency releases.
+      - id: date
+        run: echo "date=$(date -u +%F)" >> $GITHUB_OUTPUT
+      - name: Cache node_modules
+        id: modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package.json') }}-${{ steps.date.outputs.date }}
       - name: Install Dependencies
+        if: steps.modules.outputs.cache-hit != 'true'
         run: npm install
+
+      # Split restore/save: actions/cache doesn't save when the job fails.
+      - name: Restore server jars
+        id: jars
+        uses: actions/cache/restore@v4
+        with:
+          path: server_jars
+          key: server-jars-${{ matrix.versions }}
 
       # Per-test durations from the last master run of this version group, so a PR gets a
       # comment listing tests it made more than 2x slower (test/common/compareDurations.js).
@@ -80,47 +100,68 @@ jobs:
           mkdir -p durations
 
       - name: Start Tests
+        env:
+          JAVA_TOOL_OPTIONS: ${{ matrix.java }}
         run: |
-          exit_code=0
+          # Internal tests need no server, so they're niced to leave the CPU to
+          # the servers starting up.
+          TEST_SHARDS=2
+          parts=""
           pids=""
-          for v in ${{ matrix.versions }}; do
+          start () { # <part> <mocha grep> <shard> [nice]
+            parts="$parts $1"
             # TRACE is cheap (<1% runtime) and only written by the harness bot,
             # so always record a packet trace for post-mortem analysis.
-            TRACE="trace-${v}.jsonl" DURATIONS="durations/durations-${v}.json" npm run mocha_test -- --retries 3 -g "${v}v" > "test-${v}.log" 2>&1 &
+            TEST_SHARD=$3 TEST_SHARDS=$TEST_SHARDS TRACE="trace-$1.jsonl" DURATIONS="durations/durations-$1.json" \
+              $4 npm run mocha_test -- --retries 3 -g "$2" > "test-$1.log" 2>&1 &
             pids="$pids $!"
+          }
+          for v in ${{ matrix.versions }}; do
+            for s in $(seq 0 $((TEST_SHARDS - 1))); do
+              start "$v-external$s" "mineflayer_external ${v}v" $s
+            done
+            start "$v-internal" "mineflayer_internal ${v}v" 0 "nice -n 10"
           done
+          exit_code=0
           for pid in $pids; do
             wait $pid || exit_code=$?
           done
-          # Print passing versions first, then failing versions last
-          for v in ${{ matrix.versions }}; do
-            if ! grep -q "failing" "test-${v}.log"; then
+          # Print passing parts first, then failing parts last
+          for p in $parts; do
+            if ! grep -q "failing" "test-${p}.log"; then
               echo ""
               echo "=========================================="
-              echo "  Results for Minecraft ${v}"
+              echo "  Results for Minecraft ${p}"
               echo "=========================================="
-              cat "test-${v}.log"
+              cat "test-${p}.log"
             fi
           done
-          for v in ${{ matrix.versions }}; do
-            if grep -q "failing" "test-${v}.log"; then
+          for p in $parts; do
+            if grep -q "failing" "test-${p}.log"; then
               echo ""
               echo "=========================================="
-              echo "  FAILED: Minecraft ${v}"
+              echo "  FAILED: Minecraft ${p}"
               echo "=========================================="
-              cat "test-${v}.log"
+              cat "test-${p}.log"
             fi
           done
-          # Only the failing versions' logs and packet traces are uploaded,
+          # Only the failing parts' logs and packet traces are uploaded,
           # so artifact storage stays small; they auto-expire quickly too.
           mkdir -p artifacts
-          for v in ${{ matrix.versions }}; do
-            if grep -q "failing" "test-${v}.log"; then
-              cp "test-${v}.log" artifacts/
-              cp "trace-${v}.jsonl" artifacts/ 2>/dev/null || true
+          for p in $parts; do
+            if grep -q "failing" "test-${p}.log"; then
+              cp "test-${p}.log" artifacts/
+              cp "trace-${p}.jsonl" artifacts/ 2>/dev/null || true
             fi
           done
           exit $exit_code
+
+      - name: Save server jars
+        if: always() && steps.jars.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: server_jars
+          key: server-jars-${{ matrix.versions }}
 
       - name: Compare test durations against master
         run: |
