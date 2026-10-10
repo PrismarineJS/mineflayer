@@ -244,6 +244,21 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    it('blockAtCursor raycasts from the eye, including along a pitch of 0', () => {
+      // The plugin is driven directly against a world with a single block at eye level.
+      const World = require('prismarine-world')(registry)
+      const fakeBot = new EventEmitter()
+      fakeBot.world = new World(null).sync
+      fakeBot.world.setColumn(0, 0, registry.supportFeature('tallWorld') ? new Chunk({ minY: -64, worldHeight: 384 }) : new Chunk())
+      fakeBot.world.setBlockStateId(vec3(1, 65, 4), registry.blocksByName.stone.defaultState)
+      fakeBot.entity = { position: vec3(1.5, 64, 1.5), height: 1.8, eyeHeight: 1.62, yaw: Math.PI, pitch: 0 }
+      require('../lib/plugins/ray_trace')(fakeBot)
+
+      const block = fakeBot.blockAtCursor(5)
+      assert.ok(block, 'a block straight ahead is found when looking level')
+      assert.ok(block.intersect.distanceTo(vec3(1.5, 65.62, 4)) < 1e-6, `the ray leaves from the eye, not the top of the head: ${block.intersect}`)
+    })
+
     describe('digTime', () => {
       it('should use eye-level water check instead of isInWater for dig speed', (done) => {
         const blockPos = vec3(1, 65, 1)
