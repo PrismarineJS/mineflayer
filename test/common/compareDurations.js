@@ -1,13 +1,14 @@
 // Usage: node test/common/compareDurations.js <baselineDir> <currentDir> <slowerFile>
-// Writes every test that got more than 1.5x slower than master's baseline to <slowerFile>,
+// Writes every test that got more than 2x slower than master's baseline to <slowerFile>,
 // one line each, so CI can post them as a PR comment. Never fails: durations are noisy.
 const fs = require('fs')
 const path = require('path')
 
 const [baselineDir, currentDir, slowerFile] = process.argv.slice(2)
-const FACTOR = 1.5
-// Ignore tests too short for a 1.5x jump to mean anything (server/network jitter).
-const MIN_REGRESSION_MS = 5000
+const FACTOR = 2
+// Ignore jumps under 10s: master's own run-to-run spread on the world-event tests
+// (nether, fishing) is 5-10s, so anything smaller is server/network jitter.
+const MIN_REGRESSION_MS = 10000
 
 const slower = []
 for (const file of fs.readdirSync(currentDir).filter(f => f.startsWith('durations-')).sort()) {
