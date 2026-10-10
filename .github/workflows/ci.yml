@@ -67,8 +67,9 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      # Per-test durations from the last master run of this version group, so a PR gets a
-      # comment listing tests it made more than 2x slower (test/common/compareDurations.js).
+      # Per-test durations from the last 10 master runs of this version group, so a PR gets a
+      # comment listing tests it made more than 2x slower than all of them
+      # (test/common/compareDurations.js).
       - name: Restore duration baseline
         uses: actions/cache/restore@v4
         with:
