@@ -23,6 +23,28 @@ for (const supportedVersion of mineflayer.testedVersions) {
       : JSON.stringify({ text })
   }
 
+  const TEAM_MODES = ['add', 'remove', 'change', 'join', 'leave']
+  function teamPacket (teamName, mode, players) {
+    const text = registry.supportFeature('teamUsesChatComponents') ? chatText : (s) => s
+    // 1.21.6 maps the mode to a string; 1.21.5 alone sends the rules as numbers.
+    const mappedMode = registry.version['>=']('1.21.6')
+    const enumRules = registry.version['>=']('1.21.5') && registry.version['<']('1.21.6')
+    return {
+      team: teamName,
+      mode: mappedMode ? TEAM_MODES[mode] : mode,
+      name: text(teamName),
+      prefix: text(''),
+      suffix: text(''),
+      friendlyFire: 1,
+      flags: { friendly_fire: true, see_friendly_invisible: false },
+      nameTagVisibility: enumRules ? 0 : 'always',
+      collisionRule: enumRules ? 0 : 'always',
+      color: 0,
+      formatting: 0,
+      players
+    }
+  }
+
   function generateChunkPacket (chunk) {
     const lights = chunk.dumpLight()
     return {
@@ -1702,25 +1724,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
     })
 
     describe('teams', () => {
-      function teamPacket (teamName, mode, players) {
-        const text = registry.supportFeature('teamUsesChatComponents') ? chatText : (s) => s
-        const modes = ['add', 'remove', 'change', 'join', 'leave']
-        return {
-          team: teamName,
-          mode: registry.supportFeature('teamModeUsesStringMapper') ? modes[mode] : mode,
-          name: text(teamName),
-          prefix: text(''),
-          suffix: text(''),
-          friendlyFire: 1,
-          flags: { friendly_fire: true, see_friendly_invisible: false },
-          nameTagVisibility: 'always',
-          collisionRule: 'always',
-          color: 0,
-          formatting: 0,
-          players
-        }
-      }
-
       it('teamRemoved carries the team that was removed', async () => {
         const packetName = bot.supportFeature('teamUsesScoreboard') ? 'scoreboard_team' : 'teams'
         const [client] = await once(server, 'playerJoin')
@@ -1773,26 +1776,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
     })
 
     describe('scoreboard reset on login', () => {
-      function teamAddPacket (teamName, players) {
-        const text = registry.supportFeature('teamUsesChatComponents') ? chatText : (s) => s
-        const mappedMode = registry.version['>=']('1.21.6')
-        const enumRules = registry.version['>=']('1.21.5') && registry.version['<']('1.21.6')
-        return {
-          team: teamName,
-          mode: mappedMode ? 'add' : 0,
-          name: text(teamName),
-          prefix: text(''),
-          suffix: text(''),
-          friendlyFire: 1,
-          flags: { friendly_fire: true, see_friendly_invisible: false },
-          nameTagVisibility: enumRules ? 0 : 'always',
-          collisionRule: enumRules ? 0 : 'always',
-          color: 0,
-          formatting: 0,
-          players
-        }
-      }
-
       function objectiveAddPacket (name) {
         const typeField = registry.protocol.play.toClient.types.packet_scoreboard_objective[1].find(f => f.name === 'type')
         return {
@@ -1838,7 +1821,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         const positions = bot.scoreboard
 
         await client.write('login', loginPacket)
-        client.write(teamPacketName, teamAddPacket('red', ['alice']))
+        client.write(teamPacketName, teamPacket('red', 0, ['alice']))
         await once(bot, 'teamCreated')
         client.write('scoreboard_objective', objectiveAddPacket('kills'))
         client.write('scoreboard_display_objective', { position: 1, name: 'kills' })
@@ -1867,7 +1850,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
         assert.strictEqual(bot.scoreboard.belowName, undefined)
         assert.strictEqual(removedEvents, 0)
 
-        client.write(teamPacketName, teamAddPacket('red', ['bob']))
+        client.write(teamPacketName, teamPacket('red', 0, ['bob']))
         await once(bot, 'teamCreated')
         assert.deepStrictEqual(bot.teams.red.members, ['bob'])
         assert.strictEqual(bot.teamMap.alice, undefined)
