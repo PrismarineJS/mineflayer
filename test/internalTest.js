@@ -723,6 +723,90 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('player_loaded', () => {
+      it('is sent once the chunks are announced and the bot\'s chunk has arrived', async function () {
+        if (!bot.supportFeature('sendsPlayerLoadedPacket')) {
+          this.skip()
+          return
+        }
+        let loaded = 0
+        const client = (await once(server, 'playerJoin'))[0]
+        client.on('player_loaded', () => { loaded++ })
+        await client.write('login', bot.test.generateLoginPacket())
+        await client.write('update_health', { health: 20, food: 20, foodSaturation: 5 })
+        await once(bot, 'spawn')
+        const p1 = once(bot, 'forcedMove')
+        await client.write('position', { x: 1.5, y: 66, z: 1.5, dx: 0, dy: 0, dz: 0, pitch: 0, yaw: 0, flags: {}, teleportId: 0 })
+        await p1
+        await sleep(100)
+        assert.strictEqual(loaded, 0, 'not before the server announces the chunks')
+        await client.write('game_state_change', { reason: 13, gameMode: 0 })
+        await sleep(100)
+        assert.strictEqual(loaded, 0, 'not before the chunk the bot stands in arrives')
+        await client.write('map_chunk', generateChunkPacket(bot.test.buildChunk()))
+        await once(bot, 'chunkColumnLoad')
+        await sleep(50)
+        assert.strictEqual(loaded, 1, 'once after the chunk arrives')
+      })
+
+      it('is sent again after a login that keeps the bot alive (server transfer)', async function () {
+        if (!bot.supportFeature('sendsPlayerLoadedPacket')) {
+          this.skip()
+          return
+        }
+        let loaded = 0
+        const client = (await once(server, 'playerJoin'))[0]
+        client.on('player_loaded', () => { loaded++ })
+        const chunk = generateChunkPacket(bot.test.buildChunk())
+        for (let login = 1; login <= 2; login++) {
+          await client.write('login', bot.test.generateLoginPacket())
+          await client.write('update_health', { health: 20, food: 20, foodSaturation: 5 })
+          const p = once(bot, 'forcedMove')
+          await client.write('position', { x: 1.5, y: 66, z: 1.5, dx: 0, dy: 0, dz: 0, pitch: 0, yaw: 0, flags: {}, teleportId: 0 })
+          await p
+          await client.write('game_state_change', { reason: 13, gameMode: 0 })
+          await client.write('map_chunk', chunk)
+          await once(bot, 'chunkColumnLoad')
+          await sleep(50)
+          assert.strictEqual(loaded, login, `once per login, after login ${login}`)
+        }
+      })
+
+      it('ignores a previous level\'s announcement after a respawn', async function () {
+        if (!bot.supportFeature('sendsPlayerLoadedPacket')) {
+          this.skip()
+          return
+        }
+        let loaded = 0
+        const client = (await once(server, 'playerJoin'))[0]
+        client.on('player_loaded', () => { loaded++ })
+        const loginPacket = bot.test.generateLoginPacket()
+        const position = { x: 1.5, y: 66, z: 1.5, dx: 0, dy: 0, dz: 0, pitch: 0, yaw: 0, flags: {}, teleportId: 0 }
+        await client.write('login', loginPacket)
+        await client.write('update_health', { health: 20, food: 20, foodSaturation: 5 })
+        const p1 = once(bot, 'forcedMove')
+        await client.write('position', position)
+        await p1
+        await client.write('game_state_change', { reason: 13, gameMode: 0 })
+        await sleep(100)
+        assert.strictEqual(loaded, 0, 'not while the bot\'s chunk is missing')
+        const respawned = once(bot, 'respawn')
+        await client.write('respawn', { worldState: loginPacket.worldState, copyMetadata: 0 })
+        await respawned
+        await client.write('update_health', { health: 20, food: 20, foodSaturation: 5 })
+        const p2 = once(bot, 'forcedMove')
+        await client.write('position', position)
+        await p2
+        await sleep(100)
+        assert.strictEqual(loaded, 0, 'not before the new level\'s chunks are announced')
+        await client.write('game_state_change', { reason: 13, gameMode: 0 })
+        await client.write('map_chunk', generateChunkPacket(bot.test.buildChunk()))
+        await once(bot, 'chunkColumnLoad')
+        await sleep(50)
+        assert.strictEqual(loaded, 1, 'once after the new level loads')
+      })
+    })
+
     describe('world', () => {
       const pos = vec3(1, 65, 1)
       const goldId = 41
