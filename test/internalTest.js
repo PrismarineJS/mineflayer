@@ -1127,6 +1127,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       const afterLogin = (done, body) => {
         server.on('playerJoin', async (client) => {
           try {
+            await bot.test.pluginsLoaded
             const loggedIn = once(bot, 'login')
             await client.write('login', bot.test.generateLoginPacket())
             await loggedIn
@@ -1195,6 +1196,16 @@ for (const supportedVersion of mineflayer.testedVersions) {
           assert.ok(Math.abs(hit.z) < 1e-9, `hit z centred: ${hit}`)
           assert.ok(hit.y > 0 && hit.y < entity.height, `hit y inside the box: ${hit}`)
           assert.deepStrictEqual(looks, [entity.position.plus(hit)])
+        })
+      })
+
+      it('activateEntity from inside the hitbox hits its middle', (done) => {
+        afterLogin(done, async (sent) => {
+          bot.lookAt = async () => {}
+          const entity = { id: 7, position: vec3(3, 64, 3), height: 3, width: 2 }
+          bot.entity.position = vec3(3.2, 64, 3)
+          await bot.activateEntity(entity)
+          assert.deepStrictEqual(hitOf(sent()[0].params), vec3(0, 1.5, 0))
         })
       })
 
