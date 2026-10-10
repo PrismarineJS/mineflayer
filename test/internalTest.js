@@ -911,10 +911,15 @@ for (const supportedVersion of mineflayer.testedVersions) {
             const pongs = seen.filter(p => p.name === 'pong')
             assert.strictEqual(pongs.length, 1, 'each ping is answered exactly once')
             const pongIndex = seen.indexOf(pongs[0])
-            const before = seen[pongIndex - 1]
-            assert.ok(before !== undefined, 'a movement packet precedes the pong')
-            assert.ok(movementPackets.includes(before.name), `packet before pong is ${before.name}`)
-            assert.strictEqual(before.data.y, tickY, 'the pong follows the movement packet of the tick that received the ping')
+            const before = seen.slice(0, pongIndex)
+            // The pong is written at the tick boundary, after that tick's movement packet. On 1.21.2+ the tick also ends
+            // with a tick_end packet, so tick_end (not the movement packet) is what immediately precedes the pong; only
+            // tick_end may sit between the movement packet and the pong.
+            const lastMovement = [...before].reverse().find(p => movementPackets.includes(p.name))
+            assert.ok(lastMovement !== undefined, 'a movement packet precedes the pong')
+            assert.strictEqual(lastMovement.data.y, tickY, 'the pong follows the movement packet of the tick that received the ping')
+            const between = before.slice(before.lastIndexOf(lastMovement) + 1)
+            assert.ok(between.every(p => p.name === 'tick_end'), `only tick_end may separate the movement packet from the pong, saw ${between.map(p => p.name).join(', ')}`)
             done()
           } catch (err) {
             done(err)
