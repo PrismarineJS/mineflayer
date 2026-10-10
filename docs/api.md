@@ -1321,7 +1321,8 @@ Emitted when the server sends a time update. See `bot.time`.
 #### "kicked" (reason, loggedIn)
 
 Emitted when the bot is kicked from the server. `reason`
-is a chat message explaining why you were kicked. `loggedIn`
+is a [ChatMessage](https://github.com/PrismarineJS/prismarine-chat) object
+explaining why you were kicked. `loggedIn`
 is `true` if the client was kicked after successfully logging in,
 or `false` if the kick occurred in the login phase.
 
