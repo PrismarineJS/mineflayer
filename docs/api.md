@@ -180,6 +180,7 @@
       - ["kicked" (reason, loggedIn)](#kicked-reason-loggedin)
       - ["end" (reason)](#end-reason)
       - ["error" (err)](#error-err)
+      - ["badPacket" (dump)](#badpacket-dump)
       - ["spawnReset"](#spawnreset)
       - ["death"](#death)
       - ["health"](#health)
@@ -821,6 +822,8 @@ Create and return an instance of the class bot.
  * client : an instance of node-minecraft-protocol, if not specified, mineflayer makes its own client. This can be used to enable using mineflayer through a proxy of many clients or a vanilla client and a mineflayer client.
  * brand : the brand name for the client to use. Defaults to vanilla. Can be used to simulate custom clients for servers that require it.
  * respawn : when set to false disables bot from automatically respawning, defaults to true.
+ * dumpBadPackets : when a packet from the server cannot be parsed, save it (raw bytes and parser trace) to a local JSON file so it can be attached to a GitHub issue. Nothing is sent anywhere. Defaults to true. See the ["badPacket"](#badpacket-dump) event.
+ * badPacketsDir : directory where unparsable packets are saved, defaults to `~/.mineflayer/bad-packets`.
  * plugins : object : defaults to {}
    - pluginName : false : don't load internal plugin with given name ie. `pluginName`
    - pluginName : true : load internal plugin with given name ie. `pluginName` even though loadInternalplugins is set to false
@@ -1333,6 +1336,14 @@ Emitted when you are no longer connected to the server.
 #### "error" (err)
 
 Emitted when an error occurs.
+
+#### "badPacket" (dump)
+
+Emitted when a packet from the server could not be parsed (or was not fully read) and was saved to disk (see the `dumpBadPackets` option).
+`dump` contains `mcVersion`, `state`, `packetId`, `packetName`, `type` (`'ReadError'`, `'PartialReadError'` or `'SizeMismatch'`),
+`packetParsingTrace` (the protocol types being read when it failed, e.g. `['readVarInt', 'SlotComponent', 'Slot', 'packet_set_slot']`),
+`buffer` (the raw packet as hex) and `path` (the file it was written to).
+The file may contain chat or other data sent by the server, review it before sharing it on a GitHub issue.
 
 #### "spawnReset"
 
