@@ -63,5 +63,10 @@ module.exports = () => async (bot) => {
     const elapsed = Date.now() - before
     assert.ok(elapsed < 1000, `3 sequential slot sets took ${elapsed}ms`)
     await bot.creative.clearSlot(SLOT)
+
+    await bot.creative.setInventorySlot(SLOT, new Item(8, 1, 0))
+    const rejectedClear = bot.creative.clearSlot(SLOT)
+    bot.inventory.emit(`updateSlot:${SLOT}`, null, new Item(8, 1, 0))
+    await assert.rejects(rejectedClear, /Server rejected/)
   }
 }
