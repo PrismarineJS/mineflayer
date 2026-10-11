@@ -1823,6 +1823,47 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
         })
       })
+
+      // 1.21.3+ name a cooldown's group, which is the item's id unless its use_cooldown component
+      // names another; before, they name the item
+      it('stops using the held item when it goes on cooldown, not another item', (done) => {
+        const cooldownFields = require('minecraft-data')(supportedVersion).protocol.play.toClient.types.packet_set_cooldown?.[1].map(f => f.name)
+        if (!cooldownFields) return done() // 1.8 has no item cooldowns
+        const byGroup = cooldownFields.includes('cooldownGroup')
+        const cooldown = (name, group) => byGroup
+          ? { cooldownGroup: group ?? `minecraft:${name}`, cooldownTicks: 20 }
+          : { itemID: registry.itemsByName[name].id, cooldownTicks: 20 }
+        server.on('playerJoin', async (client) => {
+          await bot.test.pluginsLoaded
+          const loggedIn = once(bot, 'login')
+          await client.write('login', bot.test.generateLoginPacket())
+          await loggedIn
+          bot._client.write = () => {}
+          bot.quickBarSlot = 0
+          const held = new Item(registry.itemsByName.ender_pearl.id, 4)
+          bot.inventory.updateSlot(bot.QUICK_BAR_START, held)
+          const usingAfter = async (packet) => {
+            bot.activateItem()
+            const received = once(bot._client, 'set_cooldown')
+            client.write('set_cooldown', packet)
+            await received
+            return bot.usingHeldItem
+          }
+          try {
+            assert.strictEqual(await usingAfter(cooldown('snowball')), true)
+            assert.strictEqual(await usingAfter(cooldown('ender_pearl')), false)
+            if (byGroup) {
+              // An item whose use_cooldown component names a group goes on cooldown with that group
+              held.componentMap.set('use_cooldown', { type: 'use_cooldown', data: { seconds: 1, cooldownGroup: 'minecraft:pearls' } })
+              assert.strictEqual(await usingAfter(cooldown('ender_pearl')), true)
+              assert.strictEqual(await usingAfter(cooldown('ender_pearl', 'minecraft:pearls')), false)
+            }
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
     })
 
     describe('heldItemChanged', () => {
