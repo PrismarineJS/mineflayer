@@ -620,13 +620,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
         }
         const sneakViaEntityAction = bot.supportFeature('sneakUsesEntityAction')
         const sent = []
-        const originalWrite = bot._client.write.bind(bot._client)
-        bot._client.write = (name, params) => {
-          sent.push({ name, params })
-          return originalWrite(name, params)
-        }
         const joined = once(server, 'playerJoin')
         const client = (await joined)[0]
+        client.on('packet', (params, { name }) => sent.push({ name, params }))
         await client.write('login', bot.test.generateLoginPacket())
         await client.write('update_health', { health: 20, food: 20, foodSaturation: 5 })
         const chunk = bot.test.buildChunk()
@@ -645,7 +641,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
         await bot.waitForTicks(2)
         const shift = sent.find(p => p.name === 'player_input')
         assert.ok(shift, 'player_input on sneak')
-        assert.deepStrictEqual(shift.params.inputs, { forward: false, backward: false, left: false, right: false, jump: false, shift: true, sprint: false })
+        const { _value, ...inputs } = shift.params.inputs // the parsed bitflags carry their raw value
+        assert.deepStrictEqual(inputs, { forward: false, backward: false, left: false, right: false, jump: false, shift: true, sprint: false })
         const pressShift = sent.find(p => p.name === 'entity_action')
         if (sneakViaEntityAction) {
           assert.strictEqual(pressShift.params.actionId, 'start_sneaking', 'PRESS_SHIFT_KEY entity_action up to 1.21.5')
@@ -672,17 +669,12 @@ for (const supportedVersion of mineflayer.testedVersions) {
         await bot.waitForTicks(3)
         assert.ok(sent.some(p => p.name === 'entity_action' && p.params.actionId === 'stop_sprinting'), 'stop_sprinting without a forward impulse')
         bot.clearControlStates()
-        bot._client.write = originalWrite
       })
 
       it('sends the held controls again to the player a login creates', async function () {
         const sent = []
-        const originalWrite = bot._client.write.bind(bot._client)
-        bot._client.write = (name, params) => {
-          sent.push({ name, params })
-          return originalWrite(name, params)
-        }
         const client = (await once(server, 'playerJoin'))[0]
+        client.on('packet', (params, { name }) => sent.push({ name, params }))
         const chunk = bot.test.buildChunk()
         chunk.setBlockType(pos, goldId)
         const join = async (teleportId) => {
@@ -704,7 +696,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
         await bot.waitForTicks(2)
         assert.ok(sneakSent(), 'the still-held sneak is sent to the new player')
         bot.clearControlStates()
-        bot._client.write = originalWrite
       })
 
       it('sends the held controls while riding like vanilla', async function () {
@@ -762,12 +753,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
       it('stops sprinting when the controls clear with physics disabled', async function () {
         const sent = []
-        const originalWrite = bot._client.write.bind(bot._client)
-        bot._client.write = (name, params) => {
-          sent.push({ name, params })
-          return originalWrite(name, params)
-        }
         const client = (await once(server, 'playerJoin'))[0]
+        client.on('packet', (params, { name }) => sent.push({ name, params }))
         await client.write('login', bot.test.generateLoginPacket())
         await client.write('update_health', { health: 20, food: 20, foodSaturation: 5 })
         const chunk = bot.test.buildChunk()
@@ -792,7 +779,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
         await sleep(200)
         bot.physicsEnabled = true
         assert.ok(sprintAction(false), 'stop_sprinting')
-        bot._client.write = originalWrite
       })
 
       it('no movement packets during a server transfer configuration phase', function (done) {
