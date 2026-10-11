@@ -332,6 +332,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
         client.write('login', bot.test.generateLoginPacket())
         await loggedIn
         bot.physicsEnabled = false
+        // The riding tick only sends inputs over a loaded chunk
+        const chunk = bot.test.buildChunk()
+        chunk.setBlockType(vec3(1, 65, 1), 41)
+        client.write('map_chunk', generateChunkPacket(chunk))
         client.write(bot.registry.supportFeature('consolidatedEntitySpawnPacket') ? 'spawn_entity' : 'spawn_entity_living', {
           entityId: vehicleId,
           entityUUID: '00112233-4455-6677-8899-aabbccddeeff',
@@ -355,28 +359,23 @@ for (const supportedVersion of mineflayer.testedVersions) {
         await mounted
       }
 
-      it('holds sneak until the server dismounts on 1.21.3+ and sends the steer_vehicle unmount flag before', (done) => {
+      it('holds sneak until the server dismounts', (done) => {
         server.on('playerJoin', async (client) => {
           try {
             await mountPig(client)
-            if (bot.supportFeature('newPlayerInputPacket')) {
-              const shifts = []
-              client.on('player_input', ({ inputs }) => {
-                shifts.push(inputs.shift)
-                if (inputs.shift) client.write('set_passengers', { entityId: vehicleId, passengers: [] })
-              })
-              await bot.dismount()
-              assert.strictEqual(bot.vehicle, null)
-              assert.strictEqual(bot.getControlState('sneak'), false)
-              await onceWithCleanup(client, 'player_input', { timeout: 1000, checkCondition: () => shifts.length >= 2 })
-              assert.deepStrictEqual(shifts, [true, false])
-            } else {
-              const [packet] = await Promise.all([
-                onceWithCleanup(client, 'steer_vehicle', { timeout: 1000 }),
-                bot.dismount()
-              ])
-              assert.strictEqual(packet[0].jump, 2)
+            const dismountOnShift = (shift) => {
+              if (!shift) return
+              if (bot.supportFeature('setPassengerStackEntity')) {
+                client.write('set_passengers', { entityId: vehicleId, passengers: [] })
+              } else {
+                client.write('attach_entity', { entityId: bot.entity.id, vehicleId: -1, leash: false })
+              }
             }
+            client.on('player_input', ({ inputs }) => dismountOnShift(inputs.shift))
+            client.on('steer_vehicle', ({ jump }) => dismountOnShift(jump & 0x02))
+            await bot.dismount()
+            assert.strictEqual(bot.vehicle, null)
+            assert.strictEqual(bot.getControlState('sneak'), false)
             done()
           } catch (err) {
             done(err)
@@ -389,7 +388,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
         server.on('playerJoin', async (client) => {
           try {
             await mountPig(client)
-            if (!bot.supportFeature('newPlayerInputPacket')) return done()
             bot.setControlState('sneak', true)
             await assert.rejects(bot.dismount())
             assert.strictEqual(bot.getControlState('sneak'), true)
