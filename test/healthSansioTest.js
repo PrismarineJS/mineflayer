@@ -1,13 +1,13 @@
 /* eslint-env mocha */
-// Tests for health without a server: the sans-io core (lib/core/health.js) with no version data,
-// its codec (lib/core/healthCodec.js) against each tested version's packet schema, and the plugin.
+// Tests for health without a server: the sans-io core (lib/plugins/health/core.js) with no version data,
+// its codec (lib/plugins/health/codec.js) against each tested version's packet schema, and the plugin.
 
 const assert = require('assert')
 const { EventEmitter } = require('events')
 const mc = require('minecraft-protocol')
 const { testedVersions } = require('../lib/version')
-const { createConfig, createState, step } = require('../lib/core/health')
-const { createCodec } = require('../lib/core/healthCodec')
+const { createConfig, createState, step } = require('../lib/plugins/health/core')
+const { createCodec } = require('../lib/plugins/health/codec')
 const injectHealth = require('../lib/plugins/health')
 
 const health = (value) => ({ type: 'healthUpdate', health: value, food: 18, foodSaturation: 2.5 })
