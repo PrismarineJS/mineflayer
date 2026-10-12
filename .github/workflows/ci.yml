@@ -58,7 +58,7 @@ jobs:
           node-version: 24
       - name: Install Dependencies
         run: npm install
-      - run: npm run mocha_test -- -g "loader: unsupported server version"
+      - run: 'npm run mocha_test -- -g "loader: unsupported server version"'
 
   MinecraftServer:
     needs: PrepareSupportedVersions
