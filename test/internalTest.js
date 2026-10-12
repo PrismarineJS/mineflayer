@@ -2672,21 +2672,26 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
     describe('sound', () => {
       const ENTITY_SOUND = 'minecraft:entity.zombie.ambient'
+      let serverClient
 
       async function loginBot () {
-        server.on('playerJoin', (client) => client.write('login', bot.test.generateLoginPacket()))
+        server.on('playerJoin', (client) => {
+          serverClient = client
+          client.write('login', bot.test.generateLoginPacket())
+        })
         await once(bot, 'login')
         await bot.test.pluginsLoaded
         assert.ok(bot.entities[bot.entity.id], 'bot entity should be tracked')
       }
 
-      // Builds an entity_sound_effect packet the way the given version encodes
-      // the sound: a plain registry id up to 1.19.2, "ID or X" on 1.19.3 - 1.20.4
-      // and an ItemSoundHolder from 1.20.6 onwards.
-      function emitEntitySound (byId, inlined) {
+      // Writes entity_sound_effect from the server side the way the given
+      // version encodes the sound: a plain registry id up to 1.19.2, "ID or X"
+      // on 1.19.3 - 1.20.4 and an ItemSoundHolder from 1.20.6 onwards, so the
+      // packet crosses the real serializer/parser boundary.
+      function writeEntitySound (byId, inlined, entityId = bot.entity.id) {
         const packet = {
           soundCategory: version['>=']('1.19.3') ? 'master' : 0,
-          entityId: bot.entity.id,
+          entityId,
           volume: 1,
           pitch: 1,
           seed: 1
@@ -2696,21 +2701,23 @@ for (const supportedVersion of mineflayer.testedVersions) {
             ? { data: { soundName: inlined, fixedRange: null } }
             : { soundId: byId }
         } else if (version['>=']('1.19.3')) {
-          // 0 is reserved for the inlined resource, a reference is id + 1 and
-          // leaves soundEvent as an own (undefined) property of the packet
+          // 0 is reserved for the inlined resource, a reference is id + 1
           packet.soundId = inlined ? 0 : byId + 1
           packet.soundEvent = inlined ? { resource: inlined, range: null } : undefined
         } else {
           packet.soundId = byId
         }
-        bot._client.emit('entity_sound_effect', packet)
+        serverClient.write('entity_sound_effect', packet)
       }
 
       it('emits soundEffectHeard when an entity sound names its resource', async function () {
-        if (!version['>=']('1.19.3')) return this.skip()
+        // The server-side writer cannot produce an inlined holder on 1.20.6+:
+        // minecraft-protocol's registryEntryHolder serializer skips the
+        // discriminator byte without writing it, so the packet is corrupt.
+        if (!version['>=']('1.19.3') || version['>=']('1.20.6')) return this.skip()
         await loginBot()
         const heard = once(bot, 'soundEffectHeard')
-        emitEntitySound(null, ENTITY_SOUND)
+        writeEntitySound(null, ENTITY_SOUND)
         const [soundName, position, volume, pitch] = await heard
         assert.strictEqual(soundName, ENTITY_SOUND)
         assert.strictEqual(position, bot.entities[bot.entity.id].position)
@@ -2724,24 +2731,18 @@ for (const supportedVersion of mineflayer.testedVersions) {
         const byId = Number(Object.keys(sounds)[0])
         await loginBot()
         const heard = once(bot, 'soundEffectHeard')
-        emitEntitySound(byId, null)
+        writeEntitySound(byId, null)
         const [soundName, position] = await heard
         assert.strictEqual(soundName, sounds[byId].name)
         assert.strictEqual(position, bot.entities[bot.entity.id].position)
       })
 
       it('emits nothing for an entity the bot does not know', async function () {
+        if (!version['>=']('1.14')) return this.skip() // packet absent before 1.14
         await loginBot()
         let heard = false
         bot.on('soundEffectHeard', () => { heard = true })
-        bot._client.emit('entity_sound_effect', {
-          soundId: 0,
-          soundEvent: { resource: ENTITY_SOUND, range: null },
-          soundCategory: 'master',
-          entityId: bot.entity.id + 999,
-          volume: 1,
-          pitch: 1
-        })
+        writeEntitySound(0, null, bot.entity.id + 999)
         await sleep(50)
         assert.strictEqual(heard, false, 'position would be undefined, so the event must be dropped')
       })
