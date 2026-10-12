@@ -2716,8 +2716,10 @@ describe('loader: unsupported server version', function () {
     await once(server, 'listening')
   })
 
-  afterEach(function () {
-    if (server.listening) server.close()
+  afterEach(async function () {
+    const closed = once(server, 'close')
+    server.close()
+    await closed
   })
 
   it('reports an out of range server version through the error event instead of throwing out of createBot', async function () {
