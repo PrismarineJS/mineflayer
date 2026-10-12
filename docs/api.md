@@ -1442,7 +1442,8 @@ of the chunk with the smallest x, y, and z values.
 
 #### "soundEffectHeard" (soundName, position, volume, pitch)
 
-Fires when the client hears a named sound effect.
+Fires when the client hears a named sound effect, including the sounds played
+by an entity, where `position` is that entity's position.
 
  * `soundName`: name of the sound effect
  * `position`: a Vec3 instance where the sound originates
