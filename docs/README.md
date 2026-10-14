@@ -17,7 +17,7 @@ First time using Node.js? You may want to start with the [tutorial](tutorial.md)
 
 ## Features
 
- * Supports Minecraft 1.8 to 1.21.11 (1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19, 1.20, 1.21, 1.21.9, 1.21.11) <!--version-->
+ * Supports Minecraft 1.8 to 26.1 (1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19, 1.20, 1.21, 1.21.9, 1.21.11, 26.1) <!--version-->
  * Entity knowledge and tracking.
  * Block knowledge. You can query the world around you. Milliseconds to find any block.
  * Physics and movement - handle all bounding boxes
@@ -159,7 +159,7 @@ A lot of the active development is happening inside of small npm packages which 
 
 #### The Node Way&trade;
 
-> "When applications are done well, they are just the really application-specific, brackish residue that can't be so easily abstracted away. All the nice, reusable components sublimate away onto github and npm where everybody can collaborate to advance the commons." — substack from ["how I write modules"](https://gist.github.com/substack/5075355)
+> "When applications are done well, they are just the really application-specific, brackish residue that can't be so easily abstracted away. All the nice, reusable components sublimate away onto github and npm where everybody can collaborate to advance the commons." — substack from ["how I write modules"](https://web.archive.org/web/20220301041352/https://gist.github.com/substack/5075355) (2013)
 
 #### Modules
 
