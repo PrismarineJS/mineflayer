@@ -2727,14 +2727,17 @@ for (const supportedVersion of mineflayer.testedVersions) {
             await once(bot, 'forcedMove')
 
             const replies = []
+            let answered = false
             const write = bot._client.write.bind(bot._client)
             bot._client.write = (name, params) => {
-              if (name === 'position_look') replies.push(params.yaw)
+              // The same tick's movement packet, turning toward the later rotation, follows the reply
+              if (name === 'position_look' && !answered) replies.push(params.yaw)
               return write(name, params)
             }
             try {
               await new Promise(resolve => bot.once('physicsTick', resolve))
               replies.length = 0
+              bot.once('forcedMove', () => { answered = true })
               bot._client.emit('position', { ...teleport, yaw: 30, teleportId: 1 })
               bot._client.emit('player_rotation', { yaw: 90, pitch: 0 })
               await once(bot, 'forcedMove')
