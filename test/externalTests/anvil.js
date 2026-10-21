@@ -132,5 +132,27 @@ module.exports = () => {
     await bot.test.wait(1000)
   })
 
+  addTest('rename with 40-char name on 1.17+', async (b, renameCost, renameName, Item, bot, makeBook, makeItem) => { // the name limit was raised to 50 in 1.17 (#3945)
+    if (!bot.supportFeature('anvilNameLengthIsFifty')) return // 1.16 and below: limit is still 35
+
+    bot.chat(`/clear ${bot.username}`)
+    await bot.test.becomeCreative()
+
+    await bot.test.setInventorySlot(36, makeItem({ type: bot.registry.itemsByName.diamond_sword.id }))
+
+    await bot.test.becomeSurvival()
+
+    const anvil = await bot.openAnvil(b)
+
+    const sword = anvil.findInventoryItem(bot.registry.itemsByName.diamond_sword.id)
+    const longName = 'a'.repeat(40)
+    await anvil.rename(sword, longName)
+    // test result
+    assert.strictEqual(anvil.slots[3].repairCost, renameCost())
+    assert.deepStrictEqual(anvil.slots[3].customName, renameName(longName))
+    anvil.close()
+    await bot.test.wait(1000)
+  })
+
   return tests
 }
