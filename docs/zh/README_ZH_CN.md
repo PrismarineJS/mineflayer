@@ -19,7 +19,7 @@
 
 ## 特点
 
- * 支持版本：Minecraft 1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19 和 1.20 
+ * 支援Minecraft 1.8 至 1.21.11版本(1.8, 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19, 1.20, 1.21, 1.21.9, 1.21.11)
  * 实体感知与追踪
  * 方块感知，你可以在几毫秒内查找到bot周围的任何方块
  * 物理和运动引擎 - 支持所有的碰撞箱
@@ -41,7 +41,14 @@
 
 然后在你创建的bot项目目录中，使用命令行运行：
 
-`npm install mineflayer`
+```bash
+npm install mineflayer
+```
+
+要更新 mineflayer（或任何 Node.js）套件及其相依项目，请使用： 
+```bash
+npm update
+```
 
 ## 文档
 
@@ -82,11 +89,11 @@ const mineflayer = require('mineflayer')
 
 const bot = mineflayer.createBot({
   host: 'localhost', // minecraft 服务器的 IP 地址
-  username: 'email@example.com', // minecraft 用户名
-  password: '12345678' // minecraft 密码, 如果你玩的是不需要正版验证的服务器，请注释掉。
-  // port: 25565,                // 默认使用 25565，如果你的服务器端口不是这个请取消注释并填写。
-  // version: false,             // 如果需要指定使用一个版本或快照时，请取消注释并手动填写（如："1.8.9" 或 "1.16.5"），否则会自动设置。
-  // auth: 'mojang'              // 如果需要使用微软账号登录时，请取消注释，然后将值设置为 'microsoft'，否则会自动设置为 'mojang'。
+  username: 'Bot', // minecraft 用户名
+  auth: 'microsoft' // 对于离线模式（正版验证关闭）的服务器，你可以将其设置为 'offline'
+  // port: 25565,              // 默认使用 25565，如果你的服务器端口不是这个请取消注释并填写。
+  // version: false,           // 如果需要指定使用一个版本或快照时，请取消注释并手动填写（如："1.8.9" 或 "1.16.5"），否则会自动设置。
+  // password: '12345678'      // 如果想使用基于密码的身份验证则设置（可能不可靠），请取消注释并手动填写。如果指定了此项，username 必须是邮箱。
 })
 
 bot.on('chat', (username, message) => {
@@ -97,6 +104,21 @@ bot.on('chat', (username, message) => {
 // 记录错误和被踢出服务器的原因:
 bot.on('kicked', console.log)
 bot.on('error', console.log)
+```  
+
+#### 连接到 Realm
+
+要加入你的 Minecraft 账号受邀加入的 Realm，你可以传入一个带有选择器函数的 realms 对象，如下所示。
+
+```js
+const client = mineflayer.createBot({
+  username: 'email@example.com', // Minecraft 账号用户名
+  realms: {
+    // 此函数在调用时会传入一个包含账号可加入的 Realms 数组，它应该返回想要加入的那一个。
+    pickRealm: (realms) => realms[0]
+  },
+  auth: 'microsoft'
+})
 ```
 
 ### 看看你的 bot 在做什么
