@@ -654,6 +654,19 @@ for (const supportedVersion of mineflayer.testedVersions) {
         const joined = once(server, 'playerJoin')
         const client = (await joined)[0]
         client.on('packet', (params, { name }) => sent.push({ name, params }))
+        // Resolves when the server receives the tick_end closing the `ticks`th tick counted from the
+        // one the matching packet was sent in, so `sent` then holds everything those ticks sent.
+        const ticksAfter = (packetName, matches, ticks = 1) => {
+          let ended = -1
+          return onceWithCleanup(client, 'packet', {
+            timeout: 5000,
+            checkCondition: (params, { name }) => {
+              if (ended < 0 && name === packetName && (!matches || matches(params))) ended = 0
+              if (ended >= 0 && name === 'tick_end') ended++
+              return ended === ticks
+            }
+          }).catch(() => assert.fail(`the server did not receive ${packetName}`))
+        }
         await client.write('login', bot.test.generateLoginPacket())
         await client.write('update_health', { health: 20, food: 20, foodSaturation: 5 })
         const chunk = bot.test.buildChunk()
@@ -663,13 +676,14 @@ for (const supportedVersion of mineflayer.testedVersions) {
         const p1 = once(bot, 'forcedMove')
         await client.write('position', { x: 1.5, y: 66, z: 1.5, dx: 0, dy: 0, dz: 0, pitch: 0, yaw: 0, flags: {}, teleportId: 0 })
         await p1
-        await bot.waitForTicks(3)
+        await ticksAfter('tick_end', undefined, 3)
         assert.ok(sent.some(p => p.name === 'tick_end'), 'tick_end is sent every tick')
         assert.ok(!sent.some(p => p.name === 'player_input' && p.params.inputs.shift), 'no shift before sneaking')
 
         sent.length = 0
+        const shiftTick = ticksAfter('player_input', ({ inputs }) => inputs.shift)
         bot.setControlState('sneak', true)
-        await bot.waitForTicks(2)
+        await shiftTick
         const shift = sent.find(p => p.name === 'player_input')
         assert.ok(shift, 'player_input on sneak')
         const { _value, ...inputs } = shift.params.inputs // the parsed bitflags carry their raw value
@@ -684,28 +698,25 @@ for (const supportedVersion of mineflayer.testedVersions) {
 
         // Sneaking blocks sprinting; the key set still changes.
         sent.length = 0
+        const sprintKeyTicks = ticksAfter('player_input', ({ inputs }) => inputs.sprint && inputs.forward, 2)
         bot.setControlState('sprint', true)
         bot.setControlState('forward', true)
-        await bot.waitForTicks(2)
+        await sprintKeyTicks
         assert.ok(sent.some(p => p.name === 'player_input' && p.params.inputs.sprint && p.params.inputs.forward), 'player_input with sprint + forward')
         assert.ok(!sent.some(p => p.name === 'entity_action' && p.params.actionId === 'start_sprinting'), 'no start_sprinting while sneaking')
 
-        sent.length = 0
+        const startSprinting = ticksAfter('entity_action', ({ actionId }) => actionId === 'start_sprinting')
         bot.setControlState('sneak', false)
-        await bot.waitForTicks(3)
-        assert.ok(sent.some(p => p.name === 'entity_action' && p.params.actionId === 'start_sprinting'), 'start_sprinting once the sneak key is released')
+        await startSprinting // once the sneak key is released
 
-        sent.length = 0
+        const stopSprinting = ticksAfter('entity_action', ({ actionId }) => actionId === 'stop_sprinting')
         bot.setControlState('forward', false)
-        await bot.waitForTicks(3)
-        assert.ok(sent.some(p => p.name === 'entity_action' && p.params.actionId === 'stop_sprinting'), 'stop_sprinting without a forward impulse')
+        await stopSprinting // without a forward impulse
         bot.clearControlStates()
       })
 
       it('sends the held controls again to the player a login creates', async function () {
-        const sent = []
         const client = (await once(server, 'playerJoin'))[0]
-        client.on('packet', (params, { name }) => sent.push({ name, params }))
         const chunk = bot.test.buildChunk()
         chunk.setBlockType(pos, goldId)
         const join = async (teleportId) => {
@@ -715,17 +726,19 @@ for (const supportedVersion of mineflayer.testedVersions) {
           await client.write('position', { x: 1.5, y: 66, z: 1.5, dx: 0, dy: 0, dz: 0, pitch: 0, yaw: 0, flags: bot.supportFeature('positionPacketHasBitflags') ? {} : 0, teleportId })
           await moved
         }
-        const sneakSent = () => sent.some(p => (p.name === 'entity_action' && p.params.actionId === 'start_sneaking') ||
-          (p.name === 'player_input' && p.params.inputs.shift))
+        const sneakReceived = (message) => onceWithCleanup(client, 'packet', {
+          timeout: 5000,
+          checkCondition: (params, { name }) => (name === 'entity_action' && params.actionId === 'start_sneaking') ||
+            (name === 'player_input' && params.inputs.shift)
+        }).catch(() => assert.fail(message))
         await join(0)
+        const sneak = sneakReceived('sneak is sent')
         bot.setControlState('sneak', true)
-        await bot.waitForTicks(2)
-        assert.ok(sneakSent(), 'sneak is sent')
+        await sneak
 
-        sent.length = 0
+        const resent = sneakReceived('the still-held sneak is sent to the new player')
         await join(1)
-        await bot.waitForTicks(2)
-        assert.ok(sneakSent(), 'the still-held sneak is sent to the new player')
+        await resent
         bot.clearControlStates()
       })
 
@@ -783,9 +796,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
 
       it('stops sprinting when the controls clear with physics disabled', async function () {
-        const sent = []
         const client = (await once(server, 'playerJoin'))[0]
-        client.on('packet', (params, { name }) => sent.push({ name, params }))
         await client.write('login', bot.test.generateLoginPacket())
         await client.write('update_health', { health: 20, food: 20, foodSaturation: 5 })
         const chunk = bot.test.buildChunk()
@@ -795,21 +806,23 @@ for (const supportedVersion of mineflayer.testedVersions) {
         const moved = once(bot, 'forcedMove')
         await client.write('position', { x: 1.5, y: 66, z: 1.5, dx: 0, dy: 0, dz: 0, pitch: 0, yaw: 0, flags: bot.supportFeature('positionPacketHasBitflags') ? {} : 0, teleportId: 0 })
         await moved
-        await bot.waitForTicks(3)
-        const sprintAction = (start) => sent.some(p => p.name === 'entity_action' &&
-          (p.params.actionId === (start ? 3 : 4) || p.params.actionId === (start ? 'start_sprinting' : 'stop_sprinting')))
+        const sprintAction = (start) => onceWithCleanup(client, 'entity_action', {
+          timeout: 5000,
+          checkCondition: ({ actionId }) => actionId === (start ? 3 : 4) || actionId === (start ? 'start_sprinting' : 'stop_sprinting')
+        }).catch(() => assert.fail(start ? 'start_sprinting' : 'stop_sprinting'))
+        const started = sprintAction(true)
         bot.setControlState('sprint', true)
         bot.setControlState('forward', true)
-        await bot.waitForTicks(2)
-        assert.ok(sprintAction(true), 'start_sprinting')
+        await started
 
-        sent.length = 0
+        const stopped = sprintAction(false)
         bot.physicsEnabled = false
         bot.clearControlStates()
-        // physicsTick is not emitted with physics disabled.
-        await sleep(200)
-        bot.physicsEnabled = true
-        assert.ok(sprintAction(false), 'stop_sprinting')
+        try {
+          await stopped
+        } finally {
+          bot.physicsEnabled = true
+        }
       })
 
       it('no movement packets during a server transfer configuration phase', function (done) {
