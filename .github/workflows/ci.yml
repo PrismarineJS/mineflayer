@@ -67,6 +67,18 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      # Reuse downloaded server jars across runs. On a cache hit the tests skip
+      # download() and its runtime Mojang version-manifest fetch. Jars never change
+      # for a version, so a change to lib/version.js still restores this group's
+      # previous jars and only the missing ones are downloaded.
+      - name: Restore Minecraft server jars
+        id: server-jars
+        uses: actions/cache/restore@v6
+        with:
+          path: server_jars
+          key: server-jars-${{ strategy.job-index }}-${{ hashFiles('lib/version.js') }}
+          restore-keys: server-jars-${{ strategy.job-index }}-
+
       # Per-test durations from the last master run of this version group, so a PR gets a
       # comment listing tests it made more than 2x slower (test/common/compareDurations.js).
       - name: Restore duration baseline
@@ -121,6 +133,15 @@ jobs:
             fi
           done
           exit $exit_code
+
+      # Saved even when tests fail: flaky tests would otherwise discard the jars
+      # this run just downloaded.
+      - name: Save Minecraft server jars
+        if: always() && steps.server-jars.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: server_jars
+          key: server-jars-${{ strategy.job-index }}-${{ hashFiles('lib/version.js') }}
 
       - name: Compare test durations against master
         run: |
