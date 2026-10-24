@@ -108,15 +108,13 @@ for (const supportedVersion of mineflayer.testedVersions) {
       else bot.on('end', () => done())
       server.close()
     })
-    // One test per file under test/internalTests/<plugin>/<test-name>.js; the file name is the test
-    // name and the folder name is its describe. A file exports (bot, server) returning a promise, or
+    // One file per plugin under test/internalTests/<plugin>.js; the file name is the describe and the
+    // file exports an object mapping each test name to (bot, server) returning a promise, or
     // (bot, server, done). One that needs this.skip() must be a `function`, not an arrow.
     const internalTestsFolder = path.join(__dirname, 'internalTests')
-    for (const plugin of fs.readdirSync(internalTestsFolder)) {
-      describe(plugin, () => {
-        for (const file of fs.readdirSync(path.join(internalTestsFolder, plugin))) {
-          const run = require(`./internalTests/${plugin}/${file}`)
-          const name = path.basename(file, '.js').replace(/-/g, ' ')
+    for (const file of fs.readdirSync(internalTestsFolder)) {
+      describe(path.basename(file, '.js'), () => {
+        for (const [name, run] of Object.entries(require(`./internalTests/${file}`))) {
           if (run.length > 2) it(name, function (done) { run.call(this, bot, server, done) })
           else it(name, function () { return run.call(this, bot, server) })
         }
