@@ -410,7 +410,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
 
   putAway: (slot: number) => Promise<void>
 
-  closeWindow: (window: Window) => Promise<void>
+  closeWindow: (window: Window | null) => Promise<void>
 
   transfer: (options: TransferOptions) => Promise<void>
 
