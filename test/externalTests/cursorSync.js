@@ -24,8 +24,32 @@ module.exports = () => async (bot) => {
   assert.strictEqual(bot.inventory.selectedItem, null, 'the cursor should be empty like the server\'s')
   assert.strictEqual(bot.inventory.slots[30]?.type, stoneId)
   await bot.moveSlotItem(30, 36)
+  // These clicks match the server, so on 1.17.1+ it answers nothing, and on
+  // 1.21.9+ the next test's /clear can overtake them: the clicks then carry
+  // a stateId the clear bumped, and the server's full resync lands mid-test.
+  // A stats round trip is queued behind the clicks, so any correction has
+  // arrived by its answer and the model below is the server's.
+  await awaitServerProcessed(bot)
   assert.strictEqual(bot.inventory.slots[36]?.type, stoneId)
   assert.strictEqual(bot.inventory.slots[30], null)
+  assert.strictEqual(bot.inventory.selectedItem, null)
+}
+
+// The server answers a stats request after every packet sent before it.
+function awaitServerProcessed (bot, timeout = 5000) {
+  const answered = new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      bot._client.removeListener('statistics', onStats)
+      reject(new Error('the server never answered the stats request'))
+    }, timeout)
+    function onStats () {
+      clearTimeout(timer)
+      resolve()
+    }
+    bot._client.once('statistics', onStats)
+  })
+  bot._client.write('client_command', bot.supportFeature('respawnIsPayload') ? { payload: 1 } : { actionId: 'request_stats' })
+  return answered
 }
 
 // Resolves on the first packet that sets the cursor to an item matching
