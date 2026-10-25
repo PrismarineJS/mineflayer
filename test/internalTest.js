@@ -539,6 +539,37 @@ for (const supportedVersion of mineflayer.testedVersions) {
           })
         })
       })
+      it('answers a teleport airborne and then reports the standing flag it had while physics is disabled', async function () {
+        const client = (await once(server, 'playerJoin'))[0]
+        await client.write('login', bot.test.generateLoginPacket())
+        const chunk = bot.test.buildChunk()
+        chunk.setBlockType(pos, goldId)
+        await client.write('map_chunk', generateChunkPacket(chunk))
+        await once(bot, 'chunkColumnLoad')
+        const onBlock = { x: pos.x + 0.5, y: pos.y + 1, z: pos.z + 0.5, dx: 0, dy: 0, dz: 0, pitch: 0, yaw: 0, teleportId: 1, flags: bot.supportFeature('positionPacketHasBitflags') ? {} : 0 }
+        const landed = once(bot, 'forcedMove')
+        await client.write('position', onBlock)
+        await landed
+        await bot.waitForTicks(5)
+        assert.strictEqual(bot.entity.onGround, true, 'standing on the block')
+        bot.physicsEnabled = false
+        const moves = []
+        const onPacket = (data, meta) => {
+          if (!['position', 'position_look', 'look', 'flying'].includes(meta.name)) return
+          moves.push({ name: meta.name, onGround: data.onGround ?? data.flags?.onGround })
+        }
+        client.on('packet', onPacket)
+        const pinned = once(bot, 'forcedMove')
+        await client.write('position', { ...onBlock, teleportId: 2 })
+        await pinned
+        await sleep(1500)
+        client.off('packet', onPacket)
+        // The reply to the teleport is the only packet that is not grounded.
+        const airborne = moves.filter(m => m.onGround !== true)
+        assert.deepStrictEqual(airborne, [{ name: 'position_look', onGround: false }], `the teleport reply alone is airborne: ${JSON.stringify(moves)}`)
+        const reminders = moves.slice(moves.indexOf(airborne[0]) + 1)
+        assert.ok(reminders.length > 0, 'the position reminder goes out with physics disabled')
+      })
       it('no movement packets during a server transfer configuration phase', function (done) {
         // Regression test for https://github.com/PrismarineJS/mineflayer/issues/3776
         // While the client is in the configuration phase (Velocity/BungeeCord server
@@ -1588,6 +1619,47 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
 
+      it('applies the 1.21.2+ entity_teleport relative flags', async function () {
+        if (!bot.supportFeature('entityTeleportHasRelativeFlags')) {
+          this.skip()
+          return
+        }
+        const client = (await once(server, 'playerJoin'))[0]
+        const spawned = once(bot, 'entitySpawn')
+        client.write('spawn_entity', {
+          entityId: 8,
+          objectUUID: '00112233-4455-6677-8899-aabbccddeeff',
+          type: bot.registry.entitiesByName.creeper.id,
+          x: 10,
+          y: 11,
+          z: 12,
+          yaw: 0,
+          pitch: 0,
+          headPitch: 0,
+          velocity: { x: 0, y: 0, z: 0 },
+          objectData: 0
+        })
+        const entity = (await spawned)[0]
+        const teleport = async (extra) => {
+          const moved = once(bot, 'entityMoved')
+          client.write('entity_teleport', { entityId: 8, x: 10, y: 11, z: 12, dx: 0, dy: 0, dz: 0, yaw: 0, pitch: 0, flags: {}, onGround: false, ...extra })
+          await moved
+        }
+        entity.velocity.set(0.25, 0.5, 0)
+        await teleport({ x: 1, y: 2, z: 3, dx: 0.5, dz: 0.125, yaw: 90, pitch: 10 })
+        assert.deepStrictEqual(entity.position, vec3(1, 2, 3), 'absolute position')
+        assert.deepStrictEqual(entity.velocity, vec3(0.5, 0, 0.125), 'absolute velocity from the packet')
+        assert.ok(Math.abs(entity.yaw - Math.PI / 2) < 1e-6 && Math.abs(entity.pitch + 10 * Math.PI / 180) < 1e-6, 'float rotation')
+        await teleport({ x: 1, y: -1, dx: 0.5, dy: 0.5, yaw: 90, flags: { x: true, y: true, dx: true, dy: true, yaw: true } })
+        assert.deepStrictEqual(entity.position, vec3(2, 1, 12), 'flagged axes add to the current position')
+        assert.deepStrictEqual(entity.velocity, vec3(1, 0.5, 0), 'flagged axes add to the current velocity, the rest are absolute')
+        assert.ok(Math.abs(entity.yaw) < 1e-6, 'flagged yaw adds to the current yaw')
+        await teleport({ yaw: 0 })
+        entity.velocity.set(1, 0, 0)
+        await teleport({ yaw: 90, flags: { yawDelta: true, dx: true, dz: true } })
+        assert.ok(Math.abs(entity.velocity.x) < 1e-6 && Math.abs(entity.velocity.z - 1) < 1e-6, `yawDelta turns the velocity with the rotation change: ${entity.velocity}`)
+      })
+
       it('\'itemDrop\' event', function (done) {
         const itemData = {
           itemId: 149,
@@ -2057,10 +2129,125 @@ for (const supportedVersion of mineflayer.testedVersions) {
         assert.strictEqual(bot.scoreboard.list, undefined)
         assert.deepStrictEqual(Object.keys(bot.scoreboard), ['1'])
         assert.ok(Object.values(bot.scoreboard).every(sb => sb !== undefined))
-        assert.doesNotThrow(() => { for (const sb of Object.values(bot.scoreboard)) assert.strictEqual(sb.title, 'Test 1') })
+        assert.doesNotThrow(() => { for (const sb of Object.values(bot.scoreboard)) assert.strictEqual(sb.title.toString(), 'Test 1') })
         bot._client.emit('scoreboard_objective', { name: 'test1', action: 1 })
         assert.deepStrictEqual(Object.keys(bot.scoreboard), [])
         assert.strictEqual(bot.scoreboard.sidebar, undefined)
+      })
+
+      // 1.20.3 dropped the action field from the score packet and moved removal to reset_score.
+      const objectiveFields = registry.protocol?.play?.toClient?.types?.packet_scoreboard_objective?.[1] ?? []
+      const scoreHasAction = (registry.protocol?.play?.toClient?.types?.packet_scoreboard_score?.[1] ?? [])
+        .some(field => field.name === 'action')
+      // 1.8 to 1.12 name the objective's render type; later versions send its index.
+      const objectiveType = objectiveFields.find(f => f.name === 'type')?.type?.[1]?.fields?.[0] === 'string' ? 'integer' : 0
+
+      const addObjective = (client, name, title) => client.write('scoreboard_objective', {
+        name, action: 0, displayText: chatText(title), type: objectiveType
+      })
+      const setScore = (client, objective, entity, value, display) => client.write('scoreboard_score', scoreHasAction
+        ? { itemName: entity, action: 0, scoreName: objective, value }
+        : { itemName: entity, scoreName: objective, value, display_name: display })
+
+      // Every packet the server sends on join lands in one batch, so the events they raise are all
+      // emitted before the first await returns; each test collects them instead of awaiting in turn.
+      function collect (...events) {
+        const seen = []
+        for (const name of events) bot.on(name, (...args) => seen.push([name, ...args]))
+        return seen
+      }
+      // Resolves once the bot has joined and the packets written for it have been handled.
+      function onJoin (write) {
+        return new Promise(resolve => {
+          server.on('playerJoin', (client) => {
+            write(client)
+            sleep(100).then(resolve)
+          })
+        })
+      }
+
+      it('reads the objective title, whatever shape the version sends it in', async () => {
+        const seen = collect('scoreboardCreated', 'scoreboardPosition')
+        await onJoin((client) => {
+          addObjective(client, 'kills', 'Total Kills')
+          client.write('scoreboard_display_objective', { position: 1, name: 'kills' })
+        })
+        const created = seen.find(e => e[0] === 'scoreboardCreated')
+        assert.ok(created, 'no scoreboardCreated')
+        assert.strictEqual(created[1].title.toString(), 'Total Kills')
+        assert.ok(seen.some(e => e[0] === 'scoreboardPosition'), 'no scoreboardPosition')
+        assert.strictEqual(bot.scoreboard.sidebar, bot.scoreboards.kills)
+      })
+
+      it('records a score and drops it again', async () => {
+        const seen = collect('scoreUpdated', 'scoreRemoved')
+        let client
+        await onJoin((c) => {
+          client = c
+          addObjective(c, 'kills', 'Total Kills')
+          setScore(c, 'kills', 'wvffle', 7)
+        })
+        const updated = seen.find(e => e[0] === 'scoreUpdated')
+        assert.ok(updated, 'no scoreUpdated')
+        const [, scoreboard, added] = updated
+        assert.strictEqual(added.value, 7)
+        assert.strictEqual(scoreboard.itemsMap.wvffle, added)
+        assert.strictEqual(added.displayName.toString(), 'wvffle')
+
+        if (scoreHasAction) client.write('scoreboard_score', { itemName: 'wvffle', action: 1, scoreName: 'kills' })
+        else client.write('reset_score', { entity_name: 'wvffle', objective_name: 'kills' })
+        await sleep(100)
+        const removal = seen.find(e => e[0] === 'scoreRemoved')
+        assert.ok(removal, 'no scoreRemoved')
+        assert.strictEqual(removal[2].value, 7)
+        assert.strictEqual(bot.scoreboards.kills.itemsMap.wvffle, undefined)
+      })
+
+      if (!scoreHasAction) {
+        it('draws a score with the display name the server sends for it', async () => {
+          const seen = collect('scoreUpdated')
+          await onJoin((client) => {
+            addObjective(client, 'kills', 'Total Kills')
+            setScore(client, 'kills', 'wvffle', 3, chatText('Wvffle the Great'))
+          })
+          assert.ok(seen.length, 'no scoreUpdated')
+          assert.strictEqual(seen[0][2].displayName.toString(), 'Wvffle the Great')
+        })
+
+        it('drops a score from every objective when reset_score names none', async () => {
+          let client
+          await onJoin((c) => {
+            client = c
+            addObjective(c, 'kills', 'Total Kills')
+            addObjective(c, 'deaths', 'Total Deaths')
+            setScore(c, 'kills', 'wvffle', 7)
+            setScore(c, 'deaths', 'wvffle', 2)
+          })
+          assert.strictEqual(bot.scoreboards.kills.itemsMap.wvffle.value, 7)
+          assert.strictEqual(bot.scoreboards.deaths.itemsMap.wvffle.value, 2)
+          client.write('reset_score', { entity_name: 'wvffle', objective_name: undefined })
+          await sleep(100)
+          assert.strictEqual(bot.scoreboards.kills.itemsMap.wvffle, undefined)
+          assert.strictEqual(bot.scoreboards.deaths.itemsMap.wvffle, undefined)
+        })
+      }
+
+      it('leaves every objective alone when a removal names an unknown one', async () => {
+        const seen = collect('scoreRemoved')
+        let client
+        await onJoin((c) => {
+          client = c
+          addObjective(c, 'kills', 'Total Kills')
+          addObjective(c, 'deaths', 'Total Deaths')
+          setScore(c, 'kills', 'wvffle', 7)
+          setScore(c, 'deaths', 'wvffle', 2)
+        })
+        if (scoreHasAction) client.write('scoreboard_score', { itemName: 'wvffle', action: 1, scoreName: 'missing' })
+        else client.write('reset_score', { entity_name: 'wvffle', objective_name: 'missing' })
+        await sleep(100)
+        assert.strictEqual(seen.length, 0)
+        assert.strictEqual(bot.scoreboards.kills.itemsMap.wvffle.value, 7)
+        assert.strictEqual(bot.scoreboards.deaths.itemsMap.wvffle.value, 2)
       })
     })
     describe('tablist', () => {
