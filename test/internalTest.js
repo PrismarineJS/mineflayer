@@ -320,6 +320,135 @@ for (const supportedVersion of mineflayer.testedVersions) {
           client.write('map_chunk', generateChunkPacket(chunk))
         })
       })
+
+      describe('dig start', () => {
+        const blockPos = vec3(1, 65, 1)
+        const bedrockPos = vec3(2, 65, 1)
+        const obsidianPos = vec3(3, 65, 1)
+        let block
+        let diggingPackets
+
+        beforeEach(async () => {
+          const loaded = once(bot, 'chunkColumnLoad')
+          server.once('playerJoin', async (client) => {
+            await bot.test.pluginsLoaded
+            client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(blockPos, bot.registry.blocksByName.dirt.id)
+            chunk.setBlockType(bedrockPos, bot.registry.blocksByName.bedrock.id)
+            chunk.setBlockType(obsidianPos, bot.registry.blocksByName.obsidian.id)
+            client.write('map_chunk', generateChunkPacket(chunk))
+          })
+          await loaded
+          bot.physicsEnabled = false
+          bot.entity.eyeHeight = 1.62
+          bot.entity.position = vec3(1.5, 66, 1.5)
+          bot.entity.onGround = true
+          bot.entity.effects = {}
+          bot.game.gameMode = 'survival'
+          block = bot.blockAt(blockPos)
+          diggingPackets = []
+          const write = bot._client.write
+          bot._client.write = function (name, packet) {
+            if (name === 'block_dig') diggingPackets.push(packet)
+            return write.call(this, name, packet)
+          }
+        })
+
+        for (const onGround of [false, true]) {
+          it(`uses onGround=${onGround} after aiming`, async () => {
+            bot.entity.onGround = !onGround
+            const observed = []
+            const digTime = bot.digTime
+            bot.digTime = function (block) {
+              observed.push(bot.entity.onGround)
+              return digTime.call(this, block)
+            }
+            bot.lookAt = async () => {
+              await new Promise(resolve => setImmediate(resolve))
+              bot.entity.onGround = onGround
+            }
+
+            await bot.dig(block)
+
+            assert.strictEqual(observed.at(-1), onGround)
+            assert.deepStrictEqual(diggingPackets.map(packet => packet.status), [0, 2])
+            assert.strictEqual(bot.targetDigBlock, null)
+          })
+        }
+
+        it('rejects an infinite post-aim estimate without starting or replacing a dig', async () => {
+          const activeBlock = bot.blockAt(obsidianPos)
+          bot.lookAt = async () => {}
+          const activeDig = bot.dig(activeBlock, true, vec3(1, 0, 0))
+          const aborted = assert.rejects(activeDig, /Digging aborted/)
+          await new Promise(resolve => setImmediate(resolve))
+          assert.strictEqual(bot.targetDigFace, 5)
+          const stopDigging = bot.stopDigging
+          const bedrock = bot.blockAt(bedrockPos)
+          // Older tables use null or zero hardness; keep this unbreakable fixture explicit.
+          bedrock.hardness = -1
+          const eventName = `blockUpdate:${bedrock.position}`
+          const listeners = bot.listenerCount(eventName)
+          bot.game.gameMode = 'creative'
+          assert(Number.isFinite(bot.digTime(bedrock)))
+          bot.lookAt = async () => {
+            await new Promise(resolve => setImmediate(resolve))
+            bot.game.gameMode = 'survival'
+          }
+
+          try {
+            await assert.rejects(bot.dig(bedrock), /dig time for bedrock is Infinity/)
+            assert.deepStrictEqual(diggingPackets.map(packet => packet.status), [0])
+            assert.strictEqual(bot.targetDigBlock, activeBlock)
+            assert.strictEqual(bot.targetDigFace, 5)
+            assert.strictEqual(bot.stopDigging, stopDigging)
+            assert.strictEqual(bot.listenerCount(eventName), listeners)
+          } finally {
+            bot.stopDigging()
+            await aborted
+          }
+          assert.deepStrictEqual(diggingPackets.map(packet => packet.status), [0, 1])
+          assert.deepStrictEqual(diggingPackets.map(packet => packet.face), [5, 5])
+          assert.strictEqual(bot.targetDigBlock, null)
+        })
+
+        it('uses the new face when replacing a dig', async () => {
+          bot.lookAt = async () => {}
+          const activeDig = bot.dig(bot.blockAt(obsidianPos), true, vec3(1, 0, 0))
+          const aborted = assert.rejects(activeDig, /Digging aborted/)
+          await new Promise(resolve => setImmediate(resolve))
+
+          await bot.dig(block, true, vec3(-1, 0, 0))
+          await aborted
+
+          assert.deepStrictEqual(diggingPackets.map(packet => packet.status), [0, 1, 0, 2])
+          assert.deepStrictEqual(diggingPackets.map(packet => packet.face), [5, 4, 4, 4])
+          assert.strictEqual(bot.targetDigBlock, null)
+        })
+
+        it('allows an infinite estimate to become finite while aiming', async () => {
+          const bedrock = bot.blockAt(bedrockPos)
+          bedrock.hardness = -1
+          assert.strictEqual(bot.digTime(bedrock), Infinity)
+          bot.lookAt = async () => {
+            await new Promise(resolve => setImmediate(resolve))
+            bot.game.gameMode = 'creative'
+          }
+
+          await bot.dig(bedrock)
+
+          assert.deepStrictEqual(diggingPackets.map(packet => packet.status), [0, 2])
+          assert.strictEqual(bot.targetDigBlock, null)
+        })
+
+        it('completes normally when aiming is skipped', async () => {
+          bot.lookAt = () => { throw new Error('unexpected lookAt') }
+          await bot.dig(block, 'ignore')
+          assert.deepStrictEqual(diggingPackets.map(packet => packet.status), [0, 2])
+          assert.strictEqual(bot.targetDigBlock, null)
+        })
+      })
     })
 
     describe('physics', () => {
