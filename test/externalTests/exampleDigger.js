@@ -7,9 +7,15 @@ module.exports = () => async (bot) => {
     assert.strictEqual(name, 'digger')
     // Both commands must be confirmed before digging: the op counteracts
     // spawn protection and the dirt is needed by the later equip step.
-    const opped = onceWithCleanup(bot, 'messagestr', {
+    // A retry reuses the name on the same server, so the player can already be
+    // an operator: 1.13+ then answers with commands.op.failed instead, wrapped
+    // in a red text component like every command error.
+    const opped = onceWithCleanup(bot, 'message', {
       timeout: 5000,
-      checkCondition: (msg) => msg.includes(`Opped ${name}`) || msg.includes(`Made ${name} a server operator`)
+      checkCondition: (msg) => {
+        const key = msg.json.translate ?? msg.json.extra?.[0]?.translate
+        return key === 'commands.op.success' || key === 'commands.op.failed'
+      }
     })
     // Old versions render the give feedback with unsubstituted placeholders
     // ("Given [Dirt] * %d to 64"), so only the prefix can be matched.

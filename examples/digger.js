@@ -66,6 +66,7 @@ async function dig () {
       bot.chat(`starting to dig ${target.name}`)
       try {
         await bot.dig(target)
+        await waitToLand()
         bot.chat(`finished digging ${target.name}`)
       } catch (err) {
         console.log(err.stack)
@@ -76,31 +77,53 @@ async function dig () {
   }
 }
 
-function build () {
+// Digging can finish before the bot has started to fall (in creative mode it
+// is instant), so give physics a tick and then wait until the bot stands on
+// something again.
+async function waitToLand () {
+  await bot.waitForTicks(1)
+  for (let i = 0; i < 20 && !bot.entity.onGround; i++) {
+    await bot.waitForTicks(1)
+  }
+}
+
+async function build () {
+  // Only read our position once we have settled, otherwise we might try to
+  // build on the block we just dug.
+  await waitToLand()
   const referenceBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
+  if (!referenceBlock || referenceBlock.boundingBox !== 'block') {
+    bot.chat('cannot build: there is no solid block below me')
+    return
+  }
   const jumpY = Math.floor(bot.entity.position.y) + 1.0
+
+  // Jump, and place a block under our feet once we are high enough
+  let lastError
   bot.setControlState('jump', true)
-  bot.on('move', placeIfHighEnough)
-
-  let tryCount = 0
-
-  async function placeIfHighEnough () {
-    if (bot.entity.position.y > jumpY) {
+  try {
+    for (let attempt = 0; attempt < 5; attempt++) {
+      // A jump takes about 12 ticks: if we are not high enough after 20,
+      // we never will be.
+      for (let tick = 0; tick < 20 && bot.entity.position.y <= jumpY; tick++) {
+        await bot.waitForTicks(1)
+      }
+      if (bot.entity.position.y <= jumpY) {
+        lastError = new Error('could not jump high enough')
+        break
+      }
       try {
         await bot.placeBlock(referenceBlock, vec3(0, 1, 0))
-        bot.setControlState('jump', false)
-        bot.removeListener('move', placeIfHighEnough)
         bot.chat('Placing a block was successful')
+        return
       } catch (err) {
-        tryCount++
-        if (tryCount > 10) {
-          bot.chat(err.message)
-          bot.setControlState('jump', false)
-          bot.removeListener('move', placeIfHighEnough)
-        }
+        lastError = err
       }
     }
+  } finally {
+    bot.setControlState('jump', false)
   }
+  bot.chat(`failed to place a block: ${lastError.message}`)
 }
 
 async function equipDirt () {
