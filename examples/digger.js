@@ -12,6 +12,7 @@
  */
 const mineflayer = require('mineflayer')
 const vec3 = require('vec3')
+const { on } = require('events')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node digger.js <host> <port> [<name>] [<password>]')
@@ -76,31 +77,55 @@ async function dig () {
   }
 }
 
-function build () {
-  const referenceBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
-  const jumpY = Math.floor(bot.entity.position.y) + 1.0
+// Resolves on the first physics tick on which we are above y, or throws once ms
+// have passed.
+async function waitUntilAbove (y, ms) {
+  for await (const _ of on(bot, 'physicsTick', { signal: AbortSignal.timeout(ms) })) { // eslint-disable-line no-unused-vars
+    if (bot.entity.position.y > y) return
+  }
+}
+
+async function build () {
+  // Digging is instant in creative mode, so we may still be standing over the
+  // hole we just dug: build on the first solid block below us, not on the one
+  // at our feet.
+  let referenceBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
+  for (let i = 0; i < 2 && referenceBlock && referenceBlock.boundingBox !== 'block'; i++) {
+    referenceBlock = bot.blockAt(referenceBlock.position.offset(0, -1, 0))
+  }
+  if (!referenceBlock || referenceBlock.boundingBox !== 'block') {
+    bot.chat('cannot build: there is no solid block below me')
+    return
+  }
+  // Our feet must be above the block we place on top of the reference block
+  const jumpY = referenceBlock.position.y + 2
+
+  // Jump, and place a block under our feet once we are high enough. Jumping
+  // only starts once we stand on the reference block, so if we have not fallen
+  // into the hole yet we first fall, then jump.
+  let lastError
   bot.setControlState('jump', true)
-  bot.on('move', placeIfHighEnough)
-
-  let tryCount = 0
-
-  async function placeIfHighEnough () {
-    if (bot.entity.position.y > jumpY) {
+  try {
+    for (let attempt = 0; attempt < 5; attempt++) {
+      try {
+        // Falling into the hole and jumping out take about 20 ticks
+        await waitUntilAbove(jumpY, 2000)
+      } catch (err) {
+        lastError = new Error('could not jump high enough')
+        break
+      }
       try {
         await bot.placeBlock(referenceBlock, vec3(0, 1, 0))
-        bot.setControlState('jump', false)
-        bot.removeListener('move', placeIfHighEnough)
         bot.chat('Placing a block was successful')
+        return
       } catch (err) {
-        tryCount++
-        if (tryCount > 10) {
-          bot.chat(err.message)
-          bot.setControlState('jump', false)
-          bot.removeListener('move', placeIfHighEnough)
-        }
+        lastError = err
       }
     }
+  } finally {
+    bot.setControlState('jump', false)
   }
+  bot.chat(`failed to place a block: ${lastError.message}`)
 }
 
 async function equipDirt () {
