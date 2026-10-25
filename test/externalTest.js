@@ -9,7 +9,7 @@ const path = require('path')
 
 const { getPort } = require('./common/util')
 const trace = require('./common/trace')
-const { once } = require('../lib/promise_utils')
+const { once, onceWithCleanup } = require('../lib/promise_utils')
 
 // set this to false if you want to test without starting a server automatically
 const START_THE_SERVER = true
@@ -74,7 +74,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
     })
     before(function (done) {
       this.timeout(1000 * 120)
+      let loginAttempts = 0
       function begin () {
+        loginAttempts++
         bot = mineflayer.createBot({
           username: 'flatbot',
           viewDistance: 'tiny',
@@ -97,6 +99,18 @@ for (const supportedVersion of mineflayer.testedVersions) {
         bot._client.on('error', err => trace.log('bot client error', { error: err?.message ?? String(err) }))
         bot._client.on('end', reason => trace.log('bot client ended', { reason }))
         bot.once('login', () => trace.log('bot logged in'))
+        // On <=1.20.1 a vanilla login race can leave the server never reading
+        // the bot's socket again, while console commands like op still reach
+        // the bot. The server echoing our settings' skinParts (127) in our own
+        // entity_metadata is the proof it reads us.
+        let serverReads
+        bot.once('login', () => {
+          // A timeout means no echo, which the op handler answers by logging in again.
+          serverReads = onceWithCleanup(bot, 'entityUpdate', {
+            timeout: 5000,
+            checkCondition: entity => entity === bot.entity && Object.values(entity.metadata).includes(127)
+          }).then(() => true, () => false)
+        })
         bot.once('spawn', () => {
           console.log('bot spawned, opping...')
           trace.log('bot spawned, opping')
@@ -108,8 +122,19 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
           bot.once('messagestr', msg => {
             if (msg.includes('Made flatbot a server operator') || msg === '[Server: Opped flatbot]') {
-              trace.log('bot opped, setup done')
-              done()
+              serverReads.then(reads => {
+                if (reads) {
+                  trace.log('bot opped, setup done')
+                  return done()
+                }
+                console.log('server is not reading the bot socket, logging in again')
+                trace.log('server is not reading the bot socket', { loginAttempts })
+                if (loginAttempts >= 3) return done(new Error('server is not reading the bot socket'))
+                // So the next login's op prints the message awaited above.
+                wrap.writeServer('deop flatbot\n')
+                bot.once('end', begin)
+                bot.end()
+              })
             }
           })
         })
