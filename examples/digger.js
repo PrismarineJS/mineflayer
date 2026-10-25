@@ -12,6 +12,7 @@
  */
 const mineflayer = require('mineflayer')
 const vec3 = require('vec3')
+const { on } = require('events')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node digger.js <host> <port> [<name>] [<password>]')
@@ -66,7 +67,6 @@ async function dig () {
       bot.chat(`starting to dig ${target.name}`)
       try {
         await bot.dig(target)
-        await waitToLand()
         bot.chat(`finished digging ${target.name}`)
       } catch (err) {
         console.log(err.stack)
@@ -77,38 +77,40 @@ async function dig () {
   }
 }
 
-// Digging can finish before the bot has started to fall (in creative mode it
-// is instant), so give physics a tick and then wait until the bot stands on
-// something again.
-async function waitToLand () {
-  await bot.waitForTicks(1)
-  for (let i = 0; i < 20 && !bot.entity.onGround; i++) {
-    await bot.waitForTicks(1)
+// Resolves on the first physics tick on which we are above y, or throws once ms
+// have passed.
+async function waitUntilAbove (y, ms) {
+  for await (const _ of on(bot, 'physicsTick', { signal: AbortSignal.timeout(ms) })) { // eslint-disable-line no-unused-vars
+    if (bot.entity.position.y > y) return
   }
 }
 
 async function build () {
-  // Only read our position once we have settled, otherwise we might try to
-  // build on the block we just dug.
-  await waitToLand()
-  const referenceBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
+  // Digging is instant in creative mode, so we may still be standing over the
+  // hole we just dug: build on the first solid block below us, not on the one
+  // at our feet.
+  let referenceBlock = bot.blockAt(bot.entity.position.offset(0, -1, 0))
+  for (let i = 0; i < 2 && referenceBlock && referenceBlock.boundingBox !== 'block'; i++) {
+    referenceBlock = bot.blockAt(referenceBlock.position.offset(0, -1, 0))
+  }
   if (!referenceBlock || referenceBlock.boundingBox !== 'block') {
     bot.chat('cannot build: there is no solid block below me')
     return
   }
-  const jumpY = Math.floor(bot.entity.position.y) + 1.0
+  // Our feet must be above the block we place on top of the reference block
+  const jumpY = referenceBlock.position.y + 2
 
-  // Jump, and place a block under our feet once we are high enough
+  // Jump, and place a block under our feet once we are high enough. Jumping
+  // only starts once we stand on the reference block, so if we have not fallen
+  // into the hole yet we first fall, then jump.
   let lastError
   bot.setControlState('jump', true)
   try {
     for (let attempt = 0; attempt < 5; attempt++) {
-      // A jump takes about 12 ticks: if we are not high enough after 20,
-      // we never will be.
-      for (let tick = 0; tick < 20 && bot.entity.position.y <= jumpY; tick++) {
-        await bot.waitForTicks(1)
-      }
-      if (bot.entity.position.y <= jumpY) {
+      try {
+        // Falling into the hole and jumping out take about 20 ticks
+        await waitUntilAbove(jumpY, 2000)
+      } catch (err) {
         lastError = new Error('could not jump high enough')
         break
       }
