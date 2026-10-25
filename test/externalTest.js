@@ -9,7 +9,7 @@ const path = require('path')
 
 const { getPort } = require('./common/util')
 const trace = require('./common/trace')
-const { once } = require('../lib/promise_utils')
+const { once, onceWithCleanup } = require('../lib/promise_utils')
 
 // set this to false if you want to test without starting a server automatically
 const START_THE_SERVER = true
@@ -75,44 +75,10 @@ for (const supportedVersion of mineflayer.testedVersions) {
     before(function (done) {
       this.timeout(1000 * 120)
       function begin () {
-        bot = mineflayer.createBot({
-          username: 'flatbot',
-          viewDistance: 'tiny',
-          port: PORT,
-          host: '127.0.0.1',
-          version: supportedVersion,
-          // Dimension travel can stall the server thread past the 30s
-          // keepalive default; mocha's per-test timeout is the real watchdog.
-          checkTimeoutInterval: TEST_TIMEOUT_MS
-        })
-        commonTest(bot, wrap)
-        bot.test.port = PORT
-        // bot.entity survives a disconnect, so only the end event proves the
-        // connection is gone; the flag dies with the bot on reconnect.
-        bot.once('end', () => { bot.test.disconnected = true })
-
-        console.log('starting bot')
-        trace.log('bot created')
-        bot._client.on('connect', () => trace.log('bot tcp connected'))
-        bot._client.on('error', err => trace.log('bot client error', { error: err?.message ?? String(err) }))
-        bot._client.on('end', reason => trace.log('bot client ended', { reason }))
-        bot.once('login', () => trace.log('bot logged in'))
-        bot.once('spawn', () => {
-          console.log('bot spawned, opping...')
-          trace.log('bot spawned, opping')
-          wrap.writeServer('op flatbot\n')
-          if (bot.supportFeature('gameRuleUsesResourceLocation')) {
-            wrap.writeServer('gamerule minecraft:spawn_monsters false\n')
-          } else {
-            wrap.writeServer('gamerule spawnMonsters false\n')
-          }
-          bot.once('messagestr', msg => {
-            if (msg.includes('Made flatbot a server operator') || msg === '[Server: Opped flatbot]') {
-              trace.log('bot opped, setup done')
-              done()
-            }
-          })
-        })
+        connectBot().then(() => {
+          trace.log('bot opped, setup done')
+          done()
+        }, done)
       }
 
       if (START_THE_SERVER) {
@@ -164,6 +130,76 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    // Set once the server confirms the first op; later logins reuse ops.json,
+    // and re-opping an op only answers on the console, so there is nothing to await.
+    let opped = false
+
+    function createBot () {
+      const newBot = mineflayer.createBot({
+        username: 'flatbot',
+        viewDistance: 'tiny',
+        port: PORT,
+        host: '127.0.0.1',
+        version: supportedVersion,
+        // Dimension travel can stall the server thread past the 30s
+        // keepalive default; mocha's per-test timeout is the real watchdog.
+        checkTimeoutInterval: TEST_TIMEOUT_MS
+      })
+      commonTest(newBot, wrap)
+      newBot.test.port = PORT
+      // bot.entity survives a disconnect, so only the end event proves the
+      // connection is gone; the flag dies with the bot on reconnect.
+      newBot.once('end', () => { newBot.test.disconnected = true })
+
+      console.log('starting bot')
+      trace.log('bot created')
+      newBot._client.on('connect', () => trace.log('bot tcp connected'))
+      newBot._client.on('error', err => trace.log('bot client error', { error: err?.message ?? String(err) }))
+      newBot._client.on('end', reason => trace.log('bot client ended', { reason }))
+      newBot.once('login', () => trace.log('bot logged in'))
+      return newBot
+    }
+
+    // Servers before 1.20.2 toggle Netty autoRead around the login->play
+    // protocol switch, and a burst of play packets can race it into a state
+    // where autoRead is on but OP_READ is gone: the server never reads the
+    // bot's socket again while still sending to it. Console commands don't go
+    // through that socket, so only a chat echo proves the connection works. A
+    // fresh login with the same name kicks the dead session as a duplicate.
+    async function connectBot (attempts = 3) {
+      for (let attempt = 1; ; attempt++) {
+        bot = createBot()
+        await once(bot, 'spawn')
+        console.log('bot spawned, opping...')
+        trace.log('bot spawned, opping')
+        const opConfirmed = opped
+          ? Promise.resolve()
+          : onceWithCleanup(bot, 'messagestr', {
+            timeout: 10000,
+            checkCondition: msg => msg.includes('Made flatbot a server operator') || msg === '[Server: Opped flatbot]'
+          })
+        wrap.writeServer('op flatbot\n')
+        if (!opped) {
+          if (bot.supportFeature('gameRuleUsesResourceLocation')) {
+            wrap.writeServer('gamerule minecraft:spawn_monsters false\n')
+          } else {
+            wrap.writeServer('gamerule spawnMonsters false\n')
+          }
+        }
+        await opConfirmed
+        opped = true
+        try {
+          await bot.test.awaitCommandsProcessed('connection-probe')
+          trace.log('connection probe echoed', { attempt })
+          return
+        } catch (err) {
+          trace.log('server is not reading the bot socket, reconnecting', { attempt })
+          if (attempt === attempts) throw new Error(`server never read the bot socket in ${attempts} logins`)
+          try { bot.end() } catch (e) { /* ignore */ }
+        }
+      }
+    }
+
     // mocha doesn't cancel a test it kills at its timeout, it just stops waiting
     // for it: the attempt's example keeps running and its listeners keep
     // reacting to the shared bot, so the next test (or retry) would run the
@@ -174,21 +210,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
       console.log('  Bot disconnected, reconnecting...')
       try { bot.end() } catch (e) { /* ignore */ }
       await new Promise(resolve => setTimeout(resolve, 1000))
-      bot = mineflayer.createBot({
-        username: 'flatbot',
-        viewDistance: 'tiny',
-        port: PORT,
-        host: '127.0.0.1',
-        version: supportedVersion,
-        checkTimeoutInterval: TEST_TIMEOUT_MS
-      })
-      commonTest(bot, wrap)
-      bot.test.port = PORT
-      bot.once('end', () => { bot.test.disconnected = true })
-      await once(bot, 'spawn')
+      await connectBot()
       console.log('  Bot reconnected')
-      wrap.writeServer('op flatbot\n')
-      await new Promise(resolve => setTimeout(resolve, 2000))
     }
 
     const externalTestsFolder = path.resolve(__dirname, './externalTests')
