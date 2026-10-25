@@ -1138,6 +1138,23 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('health', () => {
+      it('has health and food set when spawn fires', (done) => {
+        server.on('playerJoin', (client) => {
+          bot.once('spawn', () => {
+            assert.strictEqual(bot.health, 15)
+            assert.strictEqual(bot.food, 18)
+            assert.strictEqual(bot.foodSaturation, 2.5)
+            done()
+          })
+          client.write('login', bot.test.generateLoginPacket())
+          bot.once('login', () => {
+            client.write('update_health', { health: 15, food: 18, foodSaturation: 2.5 })
+          })
+        })
+      })
+    })
+
     describe('entities', () => {
       it('entity id changes on login', (done) => {
         const loginPacket = bot.test.generateLoginPacket()
