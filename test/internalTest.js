@@ -264,6 +264,189 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    it('blockAtCursor raycasts from the eye, including along a pitch of 0', () => {
+      // The plugin is driven directly against a world with a single block at eye level.
+      const World = require('prismarine-world')(registry)
+      const fakeBot = new EventEmitter()
+      fakeBot.world = new World(null).sync
+      fakeBot.world.setColumn(0, 0, registry.supportFeature('tallWorld') ? new Chunk({ minY: -64, worldHeight: 384 }) : new Chunk())
+      fakeBot.world.setBlockStateId(vec3(1, 65, 4), registry.blocksByName.stone.defaultState)
+      fakeBot.entity = { position: vec3(1.5, 64, 1.5), height: 1.8, eyeHeight: 1.62, yaw: Math.PI, pitch: 0 }
+      require('../lib/plugins/ray_trace')(fakeBot)
+
+      const block = fakeBot.blockAtCursor(5)
+      assert.ok(block, 'a block straight ahead is found when looking level')
+      assert.ok(block.intersect.distanceTo(vec3(1.5, 65.62, 4)) < 1e-6, `the ray leaves from the eye, not the top of the head: ${block.intersect}`)
+    })
+
+    describe('_genericPlace aims the way the client does', () => {
+      // The plugin is driven directly, so each packet can be checked against the bot's own
+      // crosshair in a world built by hand.
+      function placingBot () {
+        const World = require('prismarine-world')(registry)
+        const Item = require('prismarine-item')(registry)
+        const fakeBot = new EventEmitter()
+        fakeBot.registry = registry
+        fakeBot.supportFeature = registry.supportFeature.bind(registry)
+        fakeBot.world = new World(null).sync
+        for (const cz of [-1, 0]) {
+          fakeBot.world.setColumn(0, cz, registry.supportFeature('tallWorld') ? new Chunk({ minY: -64, worldHeight: 384 }) : new Chunk())
+        }
+        fakeBot.entity = { position: vec3(0.5, 64, 0.5), height: 1.8, eyeHeight: 1.62, yaw: 0, pitch: 0 }
+        fakeBot.heldItem = new Item(registry.itemsByName.stone.id, 1)
+        fakeBot.written = []
+        fakeBot._client = { write: (name, params) => fakeBot.written.push({ name, params }) }
+        fakeBot._nextSequence = () => 0
+        fakeBot.swingArm = () => {}
+        fakeBot.lookAt = async (point) => {
+          const delta = point.minus(fakeBot.entity.position.offset(0, fakeBot.entity.eyeHeight, 0))
+          fakeBot.entity.yaw = Math.atan2(-delta.x, -delta.z)
+          fakeBot.entity.pitch = Math.atan2(delta.y, Math.sqrt(delta.x * delta.x + delta.z * delta.z))
+        }
+        require('../lib/plugins/ray_trace')(fakeBot)
+        require('../lib/plugins/generic_place')(fakeBot)
+        return fakeBot
+      }
+
+      function setBlock (fakeBot, pos, name) {
+        fakeBot.world.setBlockStateId(pos, registry.blocksByName[name].defaultState)
+      }
+
+      function place (fakeBot, pos, faceVector, options) {
+        return fakeBot._genericPlace(fakeBot.world.getBlock(pos), faceVector, { forceLook: true, ...options })
+      }
+
+      function placePacket (fakeBot) {
+        return fakeBot.written.find(p => p.name === 'block_place')?.params
+      }
+
+      // Raycast independently of ray_trace, from the eye along the bot's yaw and pitch.
+      function crosshairHit (fakeBot) {
+        const { position, eyeHeight, yaw, pitch } = fakeBot.entity
+        const dir = vec3(-Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), -Math.cos(yaw) * Math.cos(pitch))
+        return fakeBot.world.raycast(position.offset(0, eyeHeight, 0), dir, 8)
+      }
+
+      function assertPacketMatchesCrosshair (fakeBot) {
+        const packet = placePacket(fakeBot)
+        assert.ok(packet, 'a block_place went out')
+        const hit = crosshairHit(fakeBot)
+        assert.ok(hit, 'the crosshair hits something')
+        assert.ok(hit.position.equals(vec3(packet.location.x, packet.location.y, packet.location.z)), 'the packet names the block the crosshair is on')
+        assert.strictEqual(packet.direction, hit.face, 'the packet names the face the crosshair hits')
+        const cursor = hit.intersect.minus(hit.position)
+        const intCursor = registry.supportFeature('blockPlaceHasHeldItem') || registry.supportFeature('blockPlaceHasHandAndIntCursor')
+        const expected = intCursor ? cursor.scaled(16).floored() : cursor
+        assert.ok(vec3(packet.cursorX, packet.cursorY, packet.cursorZ).distanceTo(expected) < 1e-6, `the cursor is the ray's own hit point ${expected}`)
+        return packet
+      }
+
+      it('sends a side face in view as the raycast found it', async () => {
+        const fakeBot = placingBot()
+        setBlock(fakeBot, vec3(0, 63, 0), 'stone')
+        setBlock(fakeBot, vec3(0, 63, -2), 'stone')
+        await place(fakeBot, vec3(0, 63, -2), vec3(0, 0, 1))
+        assertPacketMatchesCrosshair(fakeBot)
+      })
+
+      it('sends the top face underfoot as the raycast found it', async () => {
+        const fakeBot = placingBot()
+        setBlock(fakeBot, vec3(0, 63, 0), 'stone')
+        await place(fakeBot, vec3(0, 63, 0), vec3(0, 1, 0))
+        assert.strictEqual(assertPacketMatchesCrosshair(fakeBot).direction, 1)
+      })
+
+      it('aims at the top of a slab, not where a full block would be', async () => {
+        const fakeBot = placingBot()
+        setBlock(fakeBot, vec3(0, 63, 0), registry.blocksByName.oak_slab ? 'oak_slab' : 'wooden_slab')
+        fakeBot.entity.position = vec3(0.5, 64, -3)
+        await place(fakeBot, vec3(0, 63, 0), vec3(0, 1, 0), { strictFace: true })
+        assert.strictEqual(assertPacketMatchesCrosshair(fakeBot).direction, 1)
+      })
+
+      it('reads the cursor after the turn when the bot moves while turning', async () => {
+        const fakeBot = placingBot()
+        setBlock(fakeBot, vec3(0, 63, 0), 'stone')
+        const lookAt = fakeBot.lookAt
+        fakeBot.lookAt = async (point) => {
+          await lookAt(point)
+          fakeBot.entity.position = fakeBot.entity.position.offset(0.2, 0, 0)
+        }
+        await place(fakeBot, vec3(0, 63, 0), vec3(0, 1, 0), { strictFace: true })
+        assert.strictEqual(assertPacketMatchesCrosshair(fakeBot).direction, 1)
+      })
+
+      it('with strictFace, refuses when the bot moves out of sight of the face while turning', async () => {
+        const fakeBot = placingBot()
+        setBlock(fakeBot, vec3(0, 63, -2), 'stone')
+        const lookAt = fakeBot.lookAt
+        fakeBot.lookAt = async (point) => {
+          await lookAt(point)
+          fakeBot.entity.position = vec3(0.5, 64, -5) // the far side, where the south face is behind the block
+        }
+        await assert.rejects(place(fakeBot, vec3(0, 63, -2), vec3(0, 0, 1), { strictFace: true }), /not visible/)
+        assert.strictEqual(fakeBot.written.length, 0)
+      })
+
+      it('still sends the side face of the block underfoot, which the crosshair cannot reach', async () => {
+        // Every ray from the eye leaves the block underfoot through its top face first.
+        const fakeBot = placingBot()
+        setBlock(fakeBot, vec3(0, 63, 0), 'stone')
+        await place(fakeBot, vec3(0, 63, 0), vec3(0, 0, 1))
+        assert.strictEqual(placePacket(fakeBot).direction, 3)
+        assert.strictEqual(crosshairHit(fakeBot).face, 1)
+      })
+
+      it('reaches that side face once the bot hangs out over the edge', async () => {
+        // Sneaking lets the hitbox hang past the edge, which puts the eye outside the block's column.
+        const fakeBot = placingBot()
+        setBlock(fakeBot, vec3(0, 63, 0), 'stone')
+        fakeBot.entity.position = vec3(0.5, 64, 1.25)
+        await place(fakeBot, vec3(0, 63, 0), vec3(0, 0, 1), { strictFace: true })
+        assert.strictEqual(assertPacketMatchesCrosshair(fakeBot).direction, 3)
+      })
+
+      it('with strictFace, refuses the side face of the block underfoot', async () => {
+        const fakeBot = placingBot()
+        setBlock(fakeBot, vec3(0, 63, 0), 'stone')
+        await assert.rejects(place(fakeBot, vec3(0, 63, 0), vec3(0, 0, 1), { strictFace: true }), /not visible/)
+        assert.strictEqual(fakeBot.written.length, 0)
+      })
+
+      it('with _placeFaceStrict, refuses for every placement', async () => {
+        const fakeBot = placingBot()
+        fakeBot._placeFaceStrict = true
+        setBlock(fakeBot, vec3(0, 63, 0), 'stone')
+        await assert.rejects(place(fakeBot, vec3(0, 63, 0), vec3(0, 0, 1)), /not visible/)
+      })
+
+      it('keeps the old aim against a reference block with no collision box', async () => {
+        // examples/digger places against the air it just dug.
+        const fakeBot = placingBot()
+        fakeBot._placeFaceStrict = true
+        setBlock(fakeBot, vec3(0, 62, 0), 'stone')
+        await place(fakeBot, vec3(0, 63, 0), vec3(0, 1, 0))
+        const packet = placePacket(fakeBot)
+        assert.ok(vec3(packet.location.x, packet.location.y, packet.location.z).equals(vec3(0, 63, 0)))
+        assert.strictEqual(packet.direction, 1)
+      })
+
+      it('keeps the requested face when the caller supplies its own cursor', async () => {
+        const fakeBot = placingBot()
+        setBlock(fakeBot, vec3(0, 63, 0), 'stone')
+        setBlock(fakeBot, vec3(0, 63, 1), 'stone')
+        await place(fakeBot, vec3(0, 63, 1), vec3(0, 0, 1), { delta: vec3(0.5, 0.5, 1) })
+        assert.strictEqual(placePacket(fakeBot).direction, 3)
+      })
+
+      it('keeps the requested face when told not to look', async () => {
+        const fakeBot = placingBot()
+        setBlock(fakeBot, vec3(0, 63, 1), 'stone')
+        await place(fakeBot, vec3(0, 63, 1), vec3(0, 0, 1), { forceLook: 'ignore' })
+        assert.strictEqual(placePacket(fakeBot).direction, 3)
+      })
+    })
+
     describe('digTime', () => {
       it('should use eye-level water check instead of isInWater for dig speed', (done) => {
         const blockPos = vec3(1, 65, 1)
