@@ -27,9 +27,13 @@ for (const supportedVersion of mineflayer.testedVersions) {
   const TEAM_MODES = ['add', 'remove', 'change', 'join', 'leave']
   function teamPacket (teamName, mode, players) {
     const text = registry.supportFeature('teamUsesChatComponents') ? chatText : (s) => s
-    // 1.21.6 maps the mode to a string; 1.21.5 alone sends the rules as numbers.
+    // 1.21.6 maps the mode to a string. The 1.21.5 rules are bare varints until
+    // minecraft-data maps them to names too, so read the packet definition
+    // rather than the version: mapped rules get the name, unmapped ones the id.
     const mappedMode = registry.version['>=']('1.21.6')
-    const enumRules = registry.version['>=']('1.21.5') && registry.version['<']('1.21.6')
+    const packetType = registry.supportFeature('teamUsesScoreboard') ? 'packet_scoreboard_team' : 'packet_teams'
+    const packetDef = JSON.stringify(registry.protocol.play.toClient.types[packetType])
+    const bareRules = registry.version['>=']('1.21.5') && !packetDef.includes('"mappings":{"0":"always"')
     return {
       team: teamName,
       mode: mappedMode ? TEAM_MODES[mode] : mode,
@@ -38,8 +42,8 @@ for (const supportedVersion of mineflayer.testedVersions) {
       suffix: text(''),
       friendlyFire: 1,
       flags: { friendly_fire: true, see_friendly_invisible: false },
-      nameTagVisibility: enumRules ? 0 : 'always',
-      collisionRule: enumRules ? 0 : 'always',
+      nameTagVisibility: bareRules ? 0 : 'always',
+      collisionRule: bareRules ? 0 : 'always',
       color: 0,
       formatting: 0,
       players
