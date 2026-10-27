@@ -1138,6 +1138,138 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('entity interaction', () => {
+      // Before 26.1 one right click is interact_at then interact; from 26.1 on it is a single
+      // located interact.
+      const perClick = () => (registry.supportFeature('useEntityHasLocation') ? 1 : 2)
+      const hitOf = ({ location, x, y, z }) => location ? vec3(location.x, location.y, location.z) : vec3(x, y, z)
+      // The hit point crosses the wire as floats (a packed lpVec3 on 26.1), so it comes back close to
+      // what was sent rather than equal to it.
+      const assertNear = (actual, expected, message) =>
+        assert.ok(actual.distanceTo(expected) < 1e-3, `${message}: ${actual}, expected ${expected}`)
+
+      // The bot writes the numeric hand id; 26.1's schema maps it to a name when the server decodes it.
+      const HAND_MAIN = registry.supportFeature('useEntityHasLocation') ? 'main_hand' : 0
+      // What the server decodes for one right click, without the hit point: the hand is on the wire
+      // from 1.9 and the sneak flag from 1.16.
+      const clickFields = (fields) => {
+        const p = { ...fields }
+        if (registry.version['<']('1.9')) delete p.hand
+        if (registry.version['<']('1.16')) delete p.sneaking
+        return p
+      }
+      const decodedClick = (packet) => {
+        const { x, y, z, location, ...rest } = packet
+        return rest
+      }
+
+      // Logs in, then runs the body, handing it a reader that waits until the server has decoded n
+      // use_entity packets. The bot's writes are left alone, so each packet goes through the
+      // version's serializer and the mock server's parser; a packet either side rejects fails the
+      // test with that error instead of a timeout.
+      const afterLogin = (done, body) => {
+        server.on('playerJoin', async (client) => {
+          try {
+            await bot.test.pluginsLoaded
+            const loggedIn = once(bot, 'login')
+            await client.write('login', bot.test.generateLoginPacket())
+            await loggedIn
+            const received = []
+            client.on('use_entity', (packet) => received.push(packet))
+            const failed = new Promise((resolve, reject) => {
+              bot.once('error', reject)
+              client.once('error', reject)
+            })
+            const sent = async (n) => {
+              while (received.length < n) await Promise.race([once(client, 'use_entity'), failed])
+              return received
+            }
+            await Promise.race([body(sent), failed])
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      }
+
+      it('activateEntity sends the vanilla interact packets with the sneak state', (done) => {
+        afterLogin(done, async (sent) => {
+          bot.lookAt = async () => {}
+          bot.setControlState('sneak', true)
+          // Eye at (0, 1.62, -4) relative to the entity, so the line to its middle enters the box
+          // through the face at z = -0.5.
+          bot.entity.position = vec3(3, 64, -1)
+          const entity = { id: 7, position: vec3(3, 64, 3), width: 1, height: 1.95 }
+          await bot.activateEntity(entity)
+          await bot.activateEntityAt(entity, vec3(3.5, 65, 3))
+          const packets = await sent(2 * perClick())
+          const click = clickFields({ target: 7, hand: HAND_MAIN, sneaking: true })
+          assert.deepStrictEqual(packets.map(decodedClick), registry.supportFeature('useEntityHasLocation')
+            ? [click, click]
+            : [{ ...click, mouse: 2 }, { ...click, mouse: 0 }, { ...click, mouse: 2 }, { ...click, mouse: 0 }])
+          const located = packets.filter((p, i) => i % perClick() === 0)
+          assertNear(hitOf(located[0]), vec3(0, 1.055625, -0.5), 'activateEntity hit')
+          assertNear(hitOf(located[1]), vec3(0.5, 1, 0), 'activateEntityAt hit')
+        })
+      })
+
+      it('useOn and mount send the same interact pair as activateEntity', (done) => {
+        afterLogin(done, async (sent) => {
+          bot.entity.position = vec3(0, 64, 3)
+          const entity = { id: 7, position: vec3(3, 64, 3), height: 1.8, width: 0.6 }
+          bot.useOn(entity)
+          bot.mount(entity)
+          const packets = await sent(2 * perClick())
+          // Both actions are one right click, so both send what activateEntity sends.
+          assert.deepStrictEqual(packets.slice(0, perClick()), packets.slice(perClick()))
+          assertNear(hitOf(packets[0]), vec3(-0.3, hitOf(packets[0]).y, 0), 'hit on the near face')
+          assert.ok(packets.every(p => p.mouse !== 1), 'a right click never sends the attack action')
+        })
+      })
+
+      it('aims activateEntity at the face of the hitbox the bot looks at', (done) => {
+        afterLogin(done, async (sent) => {
+          const looks = []
+          bot.lookAt = async (point) => { looks.push(point) }
+          bot.entity.position = vec3(0, 64, 3)
+          // Straight along +x, so the line enters the box at half its width on the near side.
+          const entity = { id: 7, position: vec3(3, 64, 3), height: 1.8, width: 0.6 }
+          await bot.activateEntity(entity)
+          const hit = hitOf((await sent(1))[0])
+          assertNear(hit, vec3(-0.3, hit.y, 0), 'hit on the near face, centred')
+          assert.ok(hit.y > 0 && hit.y < entity.height, `hit y inside the box: ${hit}`)
+          assert.strictEqual(looks.length, 1)
+          assertNear(looks[0], entity.position.plus(hit), 'looks at the hit it sends')
+        })
+      })
+
+      it('activateEntity from inside the hitbox hits its middle', (done) => {
+        afterLogin(done, async (sent) => {
+          bot.lookAt = async () => {}
+          const entity = { id: 7, position: vec3(3, 64, 3), height: 3, width: 2 }
+          bot.entity.position = vec3(3.2, 64, 3)
+          await bot.activateEntity(entity)
+          assertNear(hitOf((await sent(1))[0]), vec3(0, 1.5, 0), 'hit')
+        })
+      })
+
+      it('activateEntity on an entity of unknown size hits its position', (done) => {
+        afterLogin(done, async (sent) => {
+          bot.lookAt = async () => {}
+          bot.entity.position = vec3(0, 64, 3)
+          // prismarine-entity leaves an entity type minecraft-data does not know at the zero size it
+          // starts with; an entity built by hand may carry no size field at all.
+          const entities = [
+            { id: 7, position: vec3(3, 64, 3), width: 0, height: 0 },
+            { id: 7, position: vec3(3, 64, 3) }
+          ]
+          for (const entity of entities) await bot.activateEntity(entity)
+          const packets = await sent(entities.length * perClick())
+          for (const p of packets.filter((p, i) => i % perClick() === 0)) assertNear(hitOf(p), vec3(0, 0, 0), 'hit')
+        })
+      })
+    })
+
     describe('entities', () => {
       it('entity id changes on login', (done) => {
         const loginPacket = bot.test.generateLoginPacket()
