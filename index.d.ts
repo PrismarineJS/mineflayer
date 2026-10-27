@@ -51,7 +51,6 @@ export interface BadPacketDump {
   error: { message: string, field: string | null, stack: string } | null
   bytesRead: number | null
   packetLength: number
-  packetParsingTrace: string[]
   partialData: any
   buffer: string
   date: string

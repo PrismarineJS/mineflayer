@@ -199,28 +199,62 @@ for (const supportedVersion of mineflayer.testedVersions) {
         client.on('chat', onChat)
       })
     })
-    it('dumps packets that fail to parse', (done) => {
-      bot.once('badPacket', (dump) => {
-        try {
-          assert.strictEqual(dump.mcVersion, bot.version)
-          assert.strictEqual(dump.state, 'play')
-          assert.strictEqual(dump.packetName, 'keep_alive')
-          assert.strictEqual(dump.type, 'PartialReadError')
-          assert.ok(dump.packetParsingTrace.includes('packet_keep_alive'), dump.packetParsingTrace.join(','))
-          assert.deepStrictEqual(JSON.parse(fs.readFileSync(dump.path, 'utf8')).buffer, dump.buffer)
-          fs.rmSync(dump.path)
-          done()
-        } catch (err) {
-          done(err)
-        }
+    // Each test sends one bad keep_alive from the server and checks the dump mineflayer writes for it
+    function expectBadPacket (type, check) {
+      return new Promise((resolve, reject) => {
+        bot.once('badPacket', (dump) => {
+          try {
+            assert.strictEqual(dump.mcVersion, bot.version)
+            assert.strictEqual(dump.state, 'play')
+            assert.strictEqual(dump.direction, 'toClient')
+            assert.strictEqual(dump.packetName, 'keep_alive')
+            assert.strictEqual(dump.type, type)
+            assert.deepStrictEqual(JSON.parse(fs.readFileSync(dump.path, 'utf8')).buffer, dump.buffer)
+            fs.rmSync(dump.path)
+            check(dump)
+            resolve()
+          } catch (err) {
+            reject(err)
+          }
+        })
+      })
+    }
+    const keepAliveMappings = registry.protocol.play.toClient.types.packet[1][0].type[1].mappings
+    const keepAliveId = Number(Object.keys(keepAliveMappings).find(key => keepAliveMappings[key] === 'keep_alive'))
+
+    it('dumps packets that are not fully read', async () => {
+      const keepAliveIdType = registry.protocol.play.toClient.types.packet_keep_alive[1][0].type
+      const keepAlive = mc.createSerializer({ state: 'play', isServer: true, version: supportedVersion })
+        .createPacketBuffer({ name: 'keep_alive', params: { keepAliveId: keepAliveIdType === 'i64' ? 1n : 1 } })
+      const sent = Buffer.concat([keepAlive, Buffer.from([1, 2, 3])])
+      const dumped = expectBadPacket('SizeMismatch', (dump) => {
+        assert.strictEqual(dump.buffer, sent.toString('hex'))
+        assert.strictEqual(dump.bytesRead, keepAlive.length)
+        assert.strictEqual(dump.partialData.name, 'keep_alive')
+        assert.strictEqual(dump.error, null)
       })
       server.on('playerJoin', (client) => {
         client.write('login', bot.test.generateLoginPacket())
-        // keep_alive packet id without its body
-        const mappings = registry.protocol.play.toClient.types.packet[1][0].type[1].mappings
-        const id = Number(Object.keys(mappings).find(key => mappings[key] === 'keep_alive'))
-        client.writeRaw(Buffer.from([id]))
+        client.writeRaw(sent)
       })
+      await dumped
+    })
+
+    it('dumps packets that fail to parse', async function () {
+      // protodef only reports partial reads to node-minecraft-protocol since 1.20.0
+      const [major, minor] = require('protodef/package.json').version.split('.').map(Number)
+      if (major === 1 && minor < 20) return this.skip()
+      const sent = Buffer.from([keepAliveId]) // keep_alive packet id without its body
+      const dumped = expectBadPacket('PartialReadError', (dump) => {
+        assert.strictEqual(dump.buffer, sent.toString('hex'))
+        assert.ok(dump.error.stack.includes('PartialReadError'), dump.error.stack)
+        assert.strictEqual(dump.bytesRead, null)
+      })
+      server.on('playerJoin', (client) => {
+        client.write('login', bot.test.generateLoginPacket())
+        client.writeRaw(sent)
+      })
+      await dumped
     })
 
     it('chat before login throws a descriptive error', async () => {
