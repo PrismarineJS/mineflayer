@@ -2857,6 +2857,42 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('dig raycast', () => {
+      it('takes the face whose ray hits the block itself, even at the aimed point', (done) => {
+        // Pressed against the block's north side, only the north face is a candidate. The ray to
+        // its centre hits the block there, but from this eye rounding puts the hit a hair before
+        // the aimed point, and it was taken for another block in the way: 'Block not in view'.
+        const blockPos = vec3(1, 66, 1)
+        const playerPos = vec3(1.440136230817807, 65, 0.27078923270961175)
+        bot.on('chunkColumnLoad', async () => {
+          bot.entity.eyeHeight = 1.62
+          bot.entity.onGround = true
+          bot.entity.effects = {}
+          bot.game.gameMode = 'survival'
+          bot.entity.position = playerPos
+          bot.lookAt = async () => {}
+          let error = null
+          const digging = bot.dig(bot.blockAt(blockPos), true, 'raycast').catch(err => { error = err })
+          await sleep(50)
+          try {
+            assert.strictEqual(error, null, `dig failed: ${error?.message}`)
+            assert.strictEqual(bot.targetDigFace, 2) // north
+            bot.stopDigging()
+            await digging
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          const chunk = bot.test.buildChunk()
+          chunk.setBlockType(blockPos, bot.registry.blocksByName.dirt.id)
+          client.write('map_chunk', generateChunkPacket(chunk))
+        })
+      })
+    })
+
     describe('onceWithCleanup', () => {
       it('rejects instead of throwing out of emit when checkCondition throws', async () => {
         // A condition that throws used to unwind whatever was emitting. For a
