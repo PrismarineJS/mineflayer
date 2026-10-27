@@ -1838,7 +1838,6 @@ for (const supportedVersion of mineflayer.testedVersions) {
           const loggedIn = once(bot, 'login')
           await client.write('login', bot.test.generateLoginPacket())
           await loggedIn
-          bot._client.write = () => {}
           bot.quickBarSlot = 0
           const held = new Item(registry.itemsByName.ender_pearl.id, 4)
           bot.inventory.updateSlot(bot.QUICK_BAR_START, held)
