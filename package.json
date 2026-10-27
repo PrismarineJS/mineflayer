@@ -44,7 +44,7 @@
   "devDependencies": {
     "@types/node": "^25.2.1",
     "doctoc": "^2.0.1",
-    "minecraft-wrap": "^1.3.0",
+    "minecraft-wrap": "^1.10.0",
     "mineflayer": "./",
     "mocha": "^11.0.1",
     "protodef-yaml": "^1.5.3",
