@@ -199,15 +199,43 @@ for (const supportedVersion of mineflayer.testedVersions) {
         client.on('chat', onChat)
       })
     })
-    it('dumps packets that fail to parse', (done) => {
+    it('dumps packets with trailing bytes', (done) => {
+      const mappings = registry.protocol.play.toClient.types.packet[1][0].type[1].mappings
+      const keepAliveId = Number(Object.keys(mappings).find(key => mappings[key] === 'keep_alive'))
       bot.once('badPacket', (dump) => {
         try {
           assert.strictEqual(dump.mcVersion, bot.version)
           assert.strictEqual(dump.state, 'play')
+          assert.strictEqual(dump.packetId, keepAliveId)
+          assert.strictEqual(dump.packetName, 'keep_alive')
+          assert.strictEqual(dump.type, 'SizeMismatch')
+          assert.ok(dump.bytesRead < dump.packetLength)
+          assert.ok(dump.buffer.endsWith('deadbeef'), dump.buffer)
+          assert.deepStrictEqual(JSON.parse(fs.readFileSync(dump.path, 'utf8')).buffer, dump.buffer)
+          fs.rmSync(dump.path)
+          done()
+        } catch (err) {
+          done(err)
+        }
+      })
+      server.on('playerJoin', (client) => {
+        client.write('login', bot.test.generateLoginPacket())
+        const keepAliveIdType = registry.protocol.play.toClient.types.packet_keep_alive[1][0].type
+        const keepAlive = client.serializer.createPacketBuffer({ name: 'keep_alive', params: { keepAliveId: keepAliveIdType === 'i64' ? 42n : 42 } })
+        client.writeRaw(Buffer.concat([keepAlive, Buffer.from([0xde, 0xad, 0xbe, 0xef])]))
+      })
+    })
+
+    it('dumps packets that are cut short', function (done) {
+      // protodef only reports partial reads to minecraft-protocol since 1.20.0
+      const [major, minor] = require('protodef/package.json').version.split('.').map(Number)
+      if (major === 1 && minor < 20) return this.skip()
+      bot.once('badPacket', (dump) => {
+        try {
+          assert.strictEqual(dump.state, 'play')
           assert.strictEqual(dump.packetName, 'keep_alive')
           assert.strictEqual(dump.type, 'PartialReadError')
           assert.ok(dump.packetParsingTrace.includes('packet_keep_alive'), dump.packetParsingTrace.join(','))
-          assert.deepStrictEqual(JSON.parse(fs.readFileSync(dump.path, 'utf8')).buffer, dump.buffer)
           fs.rmSync(dump.path)
           done()
         } catch (err) {

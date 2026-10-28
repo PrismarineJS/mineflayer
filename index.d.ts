@@ -50,10 +50,10 @@ export interface BadPacketDump {
   type: 'ReadError' | 'PartialReadError' | 'SizeMismatch'
   error: { message: string, field: string | null, stack: string } | null
   bytesRead: number | null
-  packetLength: number
+  packetLength: number | null
   packetParsingTrace: string[]
   partialData: any
-  buffer: string
+  buffer: string | null
   date: string
   path: string
 }
