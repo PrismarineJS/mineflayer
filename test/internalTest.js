@@ -752,6 +752,38 @@ for (const supportedVersion of mineflayer.testedVersions) {
           client.on('tick_end', () => { if (++ticks === 5) done() })
         })
       })
+      it('never sends two position packets without a tick_end between them on 1.21.2+', function (done) {
+        if (!bot.supportFeature('sendsClientTickEndPacket')) return this.skip()
+        server.on('playerJoin', async (client) => {
+          try {
+            await client.write('login', bot.test.generateLoginPacket())
+            await client.write('map_chunk', generateChunkPacket(bot.test.buildChunk()))
+            await once(bot, 'chunkColumnLoad')
+            const sequence = []
+            client.on('packet', (data, meta) => {
+              if (['position', 'position_look', 'tick_end'].includes(meta.name)) sequence.push(meta.name)
+            })
+            // Two teleports delivered in one event-loop turn queue two replies that the next physics tick
+            // flushes back to back; emitting them directly keeps both in the same turn (a socket write could
+            // split them across ticks).
+            const teleport = (teleportId) => bot._client.emit('position', { ...basePosition(), y: 80, teleportId })
+            teleport(1)
+            teleport(2)
+            await sleep(500)
+            let positionPending = false
+            for (const name of sequence) {
+              if (name === 'tick_end') positionPending = false
+              else {
+                assert.ok(!positionPending, `two position packets without a tick_end between them: ${sequence.join(', ')}`)
+                positionPending = true
+              }
+            }
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
     })
 
     describe('world', () => {
