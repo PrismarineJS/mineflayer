@@ -2703,7 +2703,9 @@ for (const supportedVersion of mineflayer.testedVersions) {
               bot._client.emit('position', { ...teleport, y: 90, teleportId: 1 })
               bot._client.emit('position', { ...teleport, y: 100, teleportId: 2 })
               await new Promise(resolve => bot.once('physicsTick', resolve))
-              assert.deepStrictEqual(replies, [90, 100], 'each queued teleport gets its own reply on the same tick')
+              // 26.3+ confirms only the newest teleport (a stale confirm with its old position gets the bot kicked)
+              const expected = bot.supportFeature('teleportConfirmHasPosition') ? [100] : [90, 100]
+              assert.deepStrictEqual(replies, expected, 'each queued teleport gets its own reply on the same tick')
             } finally {
               bot._client.write = write
             }
