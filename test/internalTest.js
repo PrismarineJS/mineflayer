@@ -264,6 +264,38 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('findBlocks', () => {
+      it('reads only the sections whose palette or single state can match', async () => {
+        const chestPos = vec3(1, 65, 1)
+        const chestId = bot.registry.blocksByName.chest.id
+        const [client] = await once(server, 'playerJoin')
+        client.write('login', bot.test.generateLoginPacket())
+        const chunk = bot.test.buildChunk()
+        chunk.setBlockType(chestPos, chestId)
+        client.write('map_chunk', generateChunkPacket(chunk))
+        await once(bot, 'chunkColumnLoad')
+
+        let blocksRead = 0
+        const blockAt = bot.blockAt
+        bot.blockAt = (...args) => {
+          blocksRead++
+          return blockAt(...args)
+        }
+        const found = bot.findBlocks({ matching: chestId, point: vec3(8, 70, 8), maxDistance: 64, count: 2 })
+        assert.deepStrictEqual(found, [chestPos])
+        // Every other section is air: absent before 1.18, a single state with no palette since.
+        // 1.8 sections have no palette, so they are all read.
+        if (bot.registry.version['>=']('1.9')) assert.strictEqual(blocksRead, 16 * 16 * 16)
+
+        if (bot.registry.version['>=']('1.18')) {
+          // A section of a single matching state is still searched
+          const airPos = vec3(8, 100, 8)
+          const airId = bot.registry.blocksByName.air.id
+          assert.deepStrictEqual(bot.findBlocks({ matching: airId, point: airPos, maxDistance: 1, count: 1 }), [airPos])
+        }
+      })
+    })
+
     describe('digTime', () => {
       it('should use eye-level water check instead of isInWater for dig speed', (done) => {
         const blockPos = vec3(1, 65, 1)
