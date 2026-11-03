@@ -12,6 +12,7 @@ const { getPort } = require('./common/util')
 
 for (const supportedVersion of mineflayer.testedVersions) {
   const registry = require('prismarine-registry')(supportedVersion)
+  const swingPacket = registry.supportFeature('swingUsesPunchPacket') ? 'punch' : 'arm_animation' // 26.3+: swing became punch
   const version = registry.version
   const Chunk = require('prismarine-chunk')(supportedVersion)
   const Item = require('prismarine-item')(registry)
@@ -1858,7 +1859,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           await bot.activateBlock(block, vec3(-1, 0, 0))
           try {
             const scale = bot.supportFeature('blockPlaceHasHandAndFloatCursor') || bot.supportFeature('blockPlaceHasInsideBlock') ? 1 : 16
-            assert.deepStrictEqual(writes.map(w => w.name), ['block_place', 'arm_animation', 'block_place', 'arm_animation'])
+            assert.deepStrictEqual(writes.map(w => w.name), ['block_place', swingPacket, 'block_place', swingPacket])
             const cursor = ({ params }) => [params.cursorX / scale, params.cursorY / scale, params.cursorZ / scale, params.direction]
             assert.deepStrictEqual(cursor(writes[0]), [0.5, 1, 0.5, 1])
             assert.deepStrictEqual(cursor(writes[2]), [0, 0.5, 0.5, 4])
@@ -2030,7 +2031,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
           bot.inventory.updateSlot(bot.QUICK_BAR_START, new Item(registry.itemsByName.stone.id, 1))
           await bot._genericPlace({ position: vec3(1, 65, 1) }, vec3(0, 1, 0), { forceLook: 'ignore', swingArm: 'right' })
           try {
-            assert.deepStrictEqual(writes, ['block_place', 'arm_animation'])
+            assert.deepStrictEqual(writes, ['block_place', swingPacket])
             done()
           } catch (err) {
             done(err)
@@ -2455,7 +2456,7 @@ for (const supportedVersion of mineflayer.testedVersions) {
             await placed
             bot.activateItem()
 
-            assert.deepStrictEqual(writes.filter(([name]) => name !== 'arm_animation'), [
+            assert.deepStrictEqual(writes.filter(([name]) => name !== swingPacket), [
               ['use_item', 1],
               ['block_dig', 0],
               ['block_place', 2],
