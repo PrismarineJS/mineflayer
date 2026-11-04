@@ -22,7 +22,8 @@ module.exports = () => async (bot) => {
   // One stack per deposit, in the order the trades consume them: transfer takes
   // the first matching stack, so every deposit is a single pick-up and place
   // instead of splitting a bigger stack one right click at a time.
-  const emeraldPrice1 = testFluctuations ? 4 : 2
+  // 2 + floor(2 * demand 60 * 0.05) = 8 once the server resets the NBT specialPrice (26.3); the leftover is put away
+  const emeraldPrice1 = testFluctuations ? 8 : 2
   const emeraldStacks = [emeraldPrice1, 2, 1, 36].flatMap(price => Array(trades).fill(price))
   const bookStacks = Array(trades).fill(1)
   let shouldHaveEmeralds = emeraldStacks.reduce((a, b) => a + b, 0)
@@ -62,7 +63,8 @@ module.exports = () => async (bot) => {
     assert.strictEqual(output.count, 2)
 
     await bot.trade(villager, 0, trades)
-    shouldHaveEmeralds -= testFluctuations ? (2 * 2 * trades) : (2 * trades)
+    // The server reports the demand-adjusted price (26.3 resets the NBT specialPrice when the window opens).
+    shouldHaveEmeralds -= trade.realPrice * trades
     assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.emerald.id), shouldHaveEmeralds)
     assert.strictEqual(bot.currentWindow.count(bot.registry.itemsByName.pumpkin_pie.id), 2 * trades)
   }

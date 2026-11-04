@@ -66,12 +66,16 @@ jobs:
           java-package: jre
       - name: Install Dependencies
         run: npm install
-      - run: cd node_modules && cd minecraft-data && mv minecraft-data minecraft-data-old && git clone -b pc_26_3 https://github.com/PrismarineJS/minecraft-data --depth 1 && node bin/generate_data.js
-      - run: curl -o node_modules/protodef/src/serializer.js https://raw.githubusercontent.com/extremeheat/node-protodef/refs/heads/dlog/src/serializer.js && curl -o node_modules/protodef/src/compiler.js https://raw.githubusercontent.com/extremeheat/node-protodef/refs/heads/dlog/src/compiler.js
+      # Until the 26.3 releases are published: data from the stacked 26.3 fix PR on PrismarineJS/minecraft-data#1301, and
+      # minecraft-protocol / prismarine-chunk / prismarine-physics from the 26.3 branches (entityDelta, 26.3 chunk mapping,
+      # 26.3 liquid gravity). The published protodef 1.19 handles the 26.3 encodings, so the debug build override is gone.
+      - run: npm install --no-save github:suisarbre/node-minecraft-protocol#port-26.3 github:suisarbre/prismarine-chunk#port-26.3 github:suisarbre/prismarine-physics#port-26.3
+      - run: cd node_modules && cd minecraft-data && mv minecraft-data minecraft-data-old && git clone -b port-26.3 https://github.com/suisarbre/minecraft-data --depth 1 && node bin/generate_data.js
 
 
-      # Per-test durations from the last master run of this version group, so a PR gets a
-      # comment listing tests it made more than 2x slower (test/common/compareDurations.js).
+      # Per-test durations from the last 10 master runs of this version group, so a PR gets a
+      # comment listing tests it made more than 2x slower than all of them
+      # (test/common/compareDurations.js).
       - name: Restore duration baseline
         uses: actions/cache/restore@v4
         with:
