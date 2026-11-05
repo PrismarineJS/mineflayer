@@ -1,7 +1,12 @@
-if (typeof process !== 'undefined' && !process.browser && process.platform !== 'browser' && parseInt(process.versions.node.split('.')[0]) < 18) {
-  console.error('Your node version is currently', process.versions.node)
-  console.error('Please update it to a version >= 22.x.x from https://nodejs.org/')
-  process.exit(1)
-}
+const mineflayer = require('mineflayer')
 
-module.exports = require('./lib/loader.js')
+const bot = mineflayer.createBot({
+  host: process.env.MC_SERVER_HOST,
+  port: Number(process.env.MC_SERVER_PORT || 25565),
+  username: 'FrostBot',
+  auth: 'offline'
+})
+
+bot.on('login', () => console.log('Bot joined server!'))
+bot.on('error', console.log)
+bot.on('end', () => console.log('Bot disconnected'))
