@@ -10,7 +10,9 @@
     "pretest": "npm run lint",
     "lint": "standard && standard-markdown",
     "fix": "standard --fix && standard-markdown --fix",
-    "prepublishOnly": "cp docs/README.md README.md"
+    "prepublishOnly": "cp docs/README.md README.md",
+    "test:models": "node scripts/check-models.js",
+    "test:models:runner": "node --test scripts/check-models.test.js"
   },
   "repository": {
     "type": "git",
