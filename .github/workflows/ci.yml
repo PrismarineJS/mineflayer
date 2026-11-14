@@ -11,6 +11,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  ModelCheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/cache@v4
+        with:
+          path: .cache/tla/tla2tools.jar
+          key: tla-${{ runner.os }}-${{ hashFiles('models/tla/toolchain.json') }}
+      - run: npm run test:models:runner
+      - run: npm run test:models
+      - name: Upload model-checking diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tla-results
+          path: .cache/tla/results/
+          include-hidden-files: true
+          retention-days: 7
+
   Lint:
     runs-on: ubuntu-latest
 

@@ -8,6 +8,7 @@ const { sleep } = require('../lib/promise_utils')
 const nbt = require('prismarine-nbt')
 const { once, onceWithCleanup } = require('../lib/promise_utils')
 const { EventEmitter } = require('events')
+const { mock } = require('node:test')
 const { getPort } = require('./common/util')
 
 for (const supportedVersion of mineflayer.testedVersions) {
@@ -502,6 +503,57 @@ for (const supportedVersion of mineflayer.testedVersions) {
             done()
           } catch (err) {
             done(err)
+          }
+        })
+      })
+      it('cancels a delayed respawn reply created while draining two queued teleports', (done) => {
+        server.on('playerJoin', async (client) => {
+          let write
+          try {
+            await bot.test.pluginsLoaded
+            client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(pos, goldId)
+            client.write('map_chunk', generateChunkPacket(chunk))
+            await once(bot, 'chunkColumnLoad')
+            const teleport = {
+              x: 1.5,
+              y: 80,
+              z: 1.5,
+              dx: 0,
+              dy: 0,
+              dz: 0,
+              pitch: 0,
+              yaw: 0,
+              flags: bot.supportFeature('positionPacketHasBitflags') ? {} : 0,
+              teleportId: 0
+            }
+            client.write('position', teleport)
+            await once(bot, 'forcedMove')
+            bot.physicsEnabled = false
+            const replies = []
+            write = bot._client.write.bind(bot._client)
+            bot._client.write = (name, params) => {
+              if (name === 'position_look') replies.push(params.y)
+              return write(name, params)
+            }
+            // Real physics intervals drain the queue. Only the respawn timeout
+            // and its Date.now eligibility check use a controlled clock.
+            mock.timers.enable({ apis: ['setTimeout', 'Date'], now: Date.now() })
+            bot.emit('death')
+            bot._client.emit('position', { ...teleport, y: 90, teleportId: 1 })
+            bot._client.emit('position', { ...teleport, y: 100, teleportId: 2 })
+            assert.deepStrictEqual(replies, [], 'both arrivals precede the queue drain')
+            await new Promise(resolve => bot._replyOnNextTick(resolve))
+            assert.deepStrictEqual(replies, [100], 'the newer teleport is answered during the drain')
+            mock.timers.tick(1500)
+            assert.deepStrictEqual(replies, [100], 'the older delayed reply must stay cancelled')
+            done()
+          } catch (err) {
+            done(err)
+          } finally {
+            mock.timers.reset()
+            if (write) bot._client.write = write
           }
         })
       })

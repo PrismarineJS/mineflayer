@@ -1,0 +1,12 @@
+{
+  "module": "TeleportReplies",
+  "checks": [
+    {
+      "config": "small.cfg"
+    },
+    {
+      "config": "regression.cfg",
+      "expectViolation": "ReplyOrder"
+    }
+  ]
+}

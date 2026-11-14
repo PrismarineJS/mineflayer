@@ -1,3 +1,7 @@
 # shared with .gitignore
 # different than .gitignore
 test
+models/
+scripts/check-models.js
+scripts/check-models.test.js
+.cache/
