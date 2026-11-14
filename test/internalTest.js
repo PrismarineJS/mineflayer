@@ -2113,6 +2113,58 @@ for (const supportedVersion of mineflayer.testedVersions) {
         carriedItem: Item.toNotch(null)
       })
 
+      it('reconciles an omitted transaction acknowledgement across the action ID wrap', function (done) {
+        if (!registry.supportFeature('transactionPacketExists')) return this.skip()
+        server.on('playerJoin', async (client) => {
+          let write
+          try {
+            await bot.test.pluginsLoaded
+            const loggedIn = once(bot, 'login')
+            client.write('login', bot.test.generateLoginPacket())
+            await loggedIn
+            let sentClick
+            write = bot._client.write.bind(bot._client)
+            bot._client.write = (name, params) => {
+              if (name !== 'window_click') return write(name, params)
+              sentClick = params
+              // Keep the actual packet encoder, but control delivery and replies.
+              bot._client.serializer.createPacketBuffer({ name, params })
+            }
+            mock.timers.enable({ apis: ['setTimeout'] })
+            // Cross the real 32767 boundary through public clicks. Do not seed
+            // a private counter or shrink it to the model checker's domain.
+            for (let action = 1; action < 32767; action++) {
+              const click = bot.clickWindow(-999, 0, 0)
+              assert.strictEqual(sentClick.action, action)
+              bot._client.emit('transaction', { windowId: 0, action, accepted: true })
+              await click
+              // Settled operations still have timeout callbacks; expire them
+              // in small batches to keep the test's controlled clock bounded.
+              if (action % 128 === 0) mock.timers.tick(20000)
+            }
+            const omitted = bot.clickWindow(-999, 0, 0)
+            assert.strictEqual(sentClick.action, 32767)
+            const timedOut = assert.rejects(omitted, /Server didn't respond to transaction/)
+            mock.timers.tick(5000)
+            await timedOut
+
+            const wrapped = bot.clickWindow(-999, 0, 0)
+            wrapped.catch(() => {})
+            assert.strictEqual(sentClick.action, 1)
+            assert.doesNotThrow(() => {
+              bot._client.emit('transaction', { windowId: 0, action: 1, accepted: true })
+            }, 'the later acknowledgement reconciles the queue in send order')
+            await wrapped
+            done()
+          } catch (err) {
+            done(err)
+          } finally {
+            mock.timers.reset()
+            if (write) bot._client.write = write
+          }
+        })
+      })
+
       it('opens a window whose early window_items reuses the id of a closed window', (done) => {
         const emeraldId = registry.itemsByName.emerald.id
 
