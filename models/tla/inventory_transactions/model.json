@@ -1,0 +1,15 @@
+{
+  "module": "InventoryWrap",
+  "checks": [
+    {
+      "config": "small.cfg"
+    },
+    {
+      "config": "regression.cfg",
+      "expectViolation": "NoAssertion"
+    },
+    {
+      "config": "control.cfg"
+    }
+  ]
+}
