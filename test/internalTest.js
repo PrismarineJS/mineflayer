@@ -2061,6 +2061,72 @@ for (const supportedVersion of mineflayer.testedVersions) {
         carriedItem: Item.toNotch(null)
       })
 
+      // set_player_inventory (1.21.3+) carries a player-inventory index, not a
+      // window slot; the handler must normalize it and mirror the update into
+      // the player section of an open container.
+      const hasSetPlayerInventory = !!registry.protocol.play.toClient.types.packet[1][1].type[1].fields.set_player_inventory
+
+      async function openChest (client) {
+        client.write('window_items', windowItemsPacket(2, emptyItems(chestData.slots)))
+        client.write('open_window', openWindowPacket(2, chestData))
+        const [window] = await once(bot, 'windowOpen')
+        return window
+      }
+
+      if (hasSetPlayerInventory) {
+        it('mirrors set_player_inventory into the open container with normalized slots', async function () {
+          const emeraldItem = () => new Item(registry.itemsByName.emerald.id, 1)
+
+          let serverClient
+          server.on('playerJoin', (client) => {
+            serverClient = client
+            client.write('login', bot.test.generateLoginPacket())
+          })
+          await once(bot, 'login')
+          await bot.test.pluginsLoaded
+
+          const window = await openChest(serverClient)
+
+          // hotbar (player index 0) lands in bot.inventory slot 36 and the
+          // container's hotbar section, not the container's own slots
+          serverClient.write('set_player_inventory', { slotId: 0, contents: Item.toNotch(emeraldItem()) })
+          await sleep(100)
+          assert.strictEqual(bot.inventory.slots[36]?.name, 'emerald', 'hotbar slot 0 must reach inventory slot 36')
+          assert.strictEqual(window.slots[window.hotbarStart]?.name, 'emerald', 'hotbar slot 0 must mirror into the container hotbar')
+
+          // main inventory (player index 9) mirrors into the container's
+          // player section start
+          serverClient.write('set_player_inventory', { slotId: 9, contents: Item.toNotch(emeraldItem()) })
+          await sleep(100)
+          assert.strictEqual(bot.inventory.slots[9]?.name, 'emerald')
+          assert.strictEqual(window.slots[window.inventoryStart]?.name, 'emerald', 'main inventory slot 9 must mirror into the container player section')
+
+          // armor (player index 36, feet) belongs to the armor slots, never to
+          // the container's hotbar
+          serverClient.write('set_player_inventory', { slotId: 36, contents: Item.toNotch(emeraldItem()) })
+          await sleep(100)
+          assert.strictEqual(bot.inventory.slots[8]?.name, 'emerald', 'armor slot 36 must reach the feet armor slot')
+          assert.strictEqual(window.slots[window.hotbarStart]?.name, 'emerald', 'armor slot 36 must not touch the container hotbar')
+        })
+
+        it('does not mirror set_player_inventory when no container is open', async function () {
+          const emeraldItem = () => new Item(registry.itemsByName.emerald.id, 1)
+
+          let serverClient
+          server.on('playerJoin', (client) => {
+            serverClient = client
+            client.write('login', bot.test.generateLoginPacket())
+          })
+          await once(bot, 'login')
+          await bot.test.pluginsLoaded
+
+          serverClient.write('set_player_inventory', { slotId: 0, contents: Item.toNotch(emeraldItem()) })
+          await sleep(100)
+          assert.strictEqual(bot.inventory.slots[36]?.name, 'emerald')
+          assert.strictEqual(bot.currentWindow, null)
+        })
+      }
+
       it('opens a window whose early window_items reuses the id of a closed window', (done) => {
         const emeraldId = registry.itemsByName.emerald.id
 
