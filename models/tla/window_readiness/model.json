@@ -1,0 +1,7 @@
+{
+  "module": "WindowReady",
+  "checks": [
+    { "config": "small.cfg" },
+    { "config": "regression.cfg", "expectViolation": "NoStaleOpen" }
+  ]
+}

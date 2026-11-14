@@ -2113,6 +2113,44 @@ for (const supportedVersion of mineflayer.testedVersions) {
         carriedItem: Item.toNotch(null)
       })
 
+      it('does not announce a closed pending window when its ID is reused after login', (done) => {
+        server.on('playerJoin', async (client) => {
+          try {
+            await bot.test.pluginsLoaded
+            const loggedIn = once(bot, 'login')
+            client.write('login', bot.test.generateLoginPacket())
+            await loggedIn
+            // A pre-1.17 close requests an inventory synchronization click.
+            client.on('window_click', packet => {
+              client.write('transaction', { windowId: packet.windowId, action: packet.action, accepted: true })
+            })
+            const opened = []
+            bot.on('windowOpen', window => opened.push(window))
+            bot._client.emit('open_window', openWindowPacket(1, chestData))
+            const first = bot.currentWindow
+            // Public cancellation can happen after open_window but before its
+            // separate contents packet arrives. Preserve inbound packet order.
+            const closed = bot.closeWindow(first)
+            bot._client.emit('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
+            await closed
+            assert.deepStrictEqual(opened, [])
+
+            bot._client.emit('login', bot.test.generateLoginPacket())
+            bot._client.emit('open_window', openWindowPacket(1, chestData))
+            const second = bot.currentWindow
+            const items = emptyItems(chestData.slots)
+            items[0] = Item.toNotch(new Item(registry.itemsByName.emerald.id, 3))
+            bot._client.emit('window_items', windowItemsPacket(1, items))
+            assert.strictEqual(second.slots[0].count, 3)
+            assert.deepStrictEqual(opened.map(window => window === first ? 'closed' : window === second ? 'current' : 'unexpected'),
+              ['current'], 'only the current window becomes ready')
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
       it('opens a window whose early window_items reuses the id of a closed window', (done) => {
         const emeraldId = registry.itemsByName.emerald.id
 
