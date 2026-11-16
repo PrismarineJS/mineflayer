@@ -1104,6 +1104,32 @@ for (const supportedVersion of mineflayer.testedVersions) {
         assert.ok(block.position.equals(pos))
         assert.strictEqual(isOpen, 1)
       })
+
+      it('emits chestLidMove only when the open count changes', async () => {
+        const pos = vec3(1, 65, 1)
+        const chestId = bot.registry.blocksByName.chest.id
+        const location = { x: pos.x, y: pos.y, z: pos.z }
+        const [client] = await once(server, 'playerJoin')
+        client.write('login', bot.test.generateLoginPacket())
+        const chunk = bot.test.buildChunk()
+        chunk.setBlockType(pos, chestId)
+        client.write('map_chunk', generateChunkPacket(chunk))
+        await once(bot, 'chunkColumnLoad')
+
+        const counts = []
+        bot.on('chestLidMove', (block, isOpen) => counts.push(isOpen))
+        const last = onceWithCleanup(bot, 'chestLidMove', {
+          timeout: 2000,
+          checkCondition: (block, isOpen) => isOpen === 2
+        })
+        // A closed container that repeats its count (0 first), then a chest
+        // that is opened, repeats 1 while open, and says 0 twice when closed.
+        for (const byte2 of [0, 1, 1, 0, 0, 2]) {
+          client.write('block_action', { location, byte1: 1, byte2, blockId: chestId })
+        }
+        await last
+        assert.deepStrictEqual(counts, [1, 0, 2])
+      })
     })
 
     describe('abilities', () => {
