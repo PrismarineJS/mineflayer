@@ -35,7 +35,7 @@ First time using Node.js? You may want to start with the [tutorial](tutorial.md)
 
 ## Installation
 
-First install Node.js >= 18 from [nodejs.org](https://nodejs.org/) then:
+First install Node.js >= 22 from [nodejs.org](https://nodejs.org/) then:
 
 ```bash
 npm install mineflayer
@@ -130,7 +130,7 @@ Just run `npm install prismarine-viewer` and add this to your bot:
 ```js
 const { mineflayer: mineflayerViewer } = require('prismarine-viewer')
 bot.once('spawn', () => {
-  mineflayerViewer(bot, { port: 3007, firstPerson: true }) // port is the minecraft server port, if first person is false, you get a bird's-eye view
+  mineflayerViewer(bot, { port: 3007, firstPerson: true }) // port is the local web server port, if first person is false, you get a bird's-eye view
 })
 ```
 And you'll get a *live* view looking like this:
