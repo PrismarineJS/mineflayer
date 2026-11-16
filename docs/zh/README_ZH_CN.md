@@ -132,7 +132,7 @@ const client = mineflayer.createBot({
 ```js
 const { mineflayer: mineflayerViewer } = require('prismarine-viewer')
 bot.once('spawn', () => {
-  mineflayerViewer(bot, { port: 3007, firstPerson: true }) // port 是 minecraft 服务器端口，如果 firstPerson 为 false，你将得到鸟瞰视角
+  mineflayerViewer(bot, { port: 3007, firstPerson: true }) // port 是本地网页运行的端口，如果 firstPerson 为 false，你将得到鸟瞰视角
 })
 ```
 
