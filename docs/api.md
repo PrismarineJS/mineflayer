@@ -1478,6 +1478,9 @@ Fires when a note block goes off somewhere.
 #### "pistonMove" (block, isPulling, direction)
 
 #### "chestLidMove" (block, isOpen, block2)
+
+Fires when the number of players that have a chest open changes.
+
 * `block`: a Block instance, the block whose lid opened. The right block if it's a double chest
 * `isOpen`: number of players that have the chest open. 0 if it's closed
 * `block2`: a Block instance, the other half of the block whose lid opened. null if it's not a double chest
