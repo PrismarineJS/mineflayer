@@ -1660,6 +1660,17 @@ for (const supportedVersion of mineflayer.testedVersions) {
         assert.ok(Math.abs(entity.velocity.x) < 1e-6 && Math.abs(entity.velocity.z - 1) < 1e-6, `yawDelta turns the velocity with the rotation change: ${entity.velocity}`)
       })
 
+      it('reads entity_velocity in blocks per tick', async () => {
+        const client = (await once(server, 'playerJoin'))[0]
+        // 1.21.9+ sends blocks per tick, older versions 1/8000 of a block per tick
+        const velocity = bot.supportFeature('entityVelocityIsLpVec3') ? { x: 0.5, y: -0.25, z: 0 } : { x: 4000, y: -2000, z: 0 }
+        const received = once(bot._client, 'entity_velocity')
+        client.write('entity_velocity', { entityId: 8, velocity })
+        await received
+        const v = bot.entities[8].velocity
+        assert.ok(Math.abs(v.x - 0.5) < 1e-3 && Math.abs(v.y + 0.25) < 1e-3 && v.z === 0, `velocity: ${v}`)
+      })
+
       it('\'itemDrop\' event', function (done) {
         const itemData = {
           itemId: 149,
