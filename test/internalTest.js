@@ -2470,6 +2470,73 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('block prediction sequence in a new world', () => {
+      it('starts again at 1 on login and on a respawn into another world, not on a respawn in the same world', function (done) {
+        const useItemFields = registry.protocol?.play?.toServer?.types?.packet_use_item?.[1]
+        if (!useItemFields?.some(f => f.name === 'sequence')) {
+          this.skip()
+          return
+        }
+        const loginPacket = bot.test.generateLoginPacket()
+        const respawnPacket = (worldName) => {
+          const packet = {
+            dimension: 'minecraft:overworld',
+            worldName,
+            hashedSeed: [0, 0],
+            gamemode: 0,
+            previousGamemode: 255,
+            isDebug: false,
+            isFlat: false,
+            copyMetadata: true,
+            death: { dimensionName: '', location: { x: 0, y: 0, z: 0 } }
+          }
+          if (!bot.supportFeature('spawnRespawnWorldDataField')) return packet
+          return { worldState: { ...packet, name: worldName, dimension: loginPacket.dimension } }
+        }
+        server.on('playerJoin', async (client) => {
+          await bot.test.pluginsLoaded
+          const respawn = async (worldName) => {
+            const respawned = once(bot._client, 'respawn')
+            client.write('respawn', respawnPacket(worldName))
+            await respawned
+          }
+          const sequences = []
+          const use = () => {
+            const write = bot._client.write
+            bot._client.write = (name, params) => { if (name === 'use_item') sequences.push(params.sequence) }
+            bot.activateItem()
+            bot.deactivateItem()
+            bot._client.write = write
+          }
+          try {
+            const loggedIn = once(bot, 'login')
+            await client.write('login', loginPacket)
+            await loggedIn
+            bot.quickBarSlot = 0
+            bot.inventory.updateSlot(bot.QUICK_BAR_START, new Item(registry.itemsByName.stone.id, 1))
+
+            await respawn('minecraft:overworld')
+            use()
+            use()
+            await respawn('minecraft:overworld') // what a death sends
+            use()
+            await respawn('minecraft:the_nether')
+            use()
+            use()
+            const loggedInAgain = once(bot._client, 'login')
+            client.write('login', loginPacket) // what a proxy sends when it moves the player to another server
+            await loggedInAgain
+            use()
+
+            assert.deepStrictEqual(sequences, [1, 2, 3, 1, 2, 1])
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+    })
+
     describe('activateBlock rotation', () => {
       it('faces the point on the clicked face that the packet reports', async () => {
         const blockPos = vec3(1, 65, 1)

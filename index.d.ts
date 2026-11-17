@@ -27,6 +27,8 @@ export interface BotOptions extends ClientOptions {
   difficulty?: number
   chatLengthLimit?: number
   physicsEnabled?: boolean
+  /** @default 'immediate' */
+  digPacing?: 'immediate' | 'vanilla'
   /** @default 4 */
   maxCatchupTicks?: number
   client?: Client
@@ -199,6 +201,7 @@ export interface Bot extends TypedEmitter<BotEvents> {
   oxygenLevel: number
   physics: PhysicsOptions
   physicsEnabled: boolean
+  digPacing: 'immediate' | 'vanilla'
   abilities: Abilities
   time: Time
   quickBarSlot: number
