@@ -2470,6 +2470,74 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('dig refused by the server', () => {
+      // The server answers the finish of a dig: with the block set to air, or with the block put back.
+      async function digAgainst (answer) {
+        const blockPos = vec3(1, 65, 1)
+        const stoneId = registry.blocksByName.stone.id
+        const chunk = bot.test.buildChunk()
+        for (let x = 0; x < 16; x++) for (let z = 0; z < 16; z++) chunk.setBlockType(vec3(x, 64, z), stoneId)
+        chunk.setBlockType(blockPos, stoneId)
+        await new Promise(resolve => {
+          server.on('playerJoin', async (client) => {
+            client.write('login', bot.test.generateLoginPacket())
+            client.write('map_chunk', generateChunkPacket(chunk))
+            client.write('position', {
+              x: 1.5,
+              y: 65,
+              z: 4.5,
+              dx: 0,
+              dy: 0,
+              dz: 0,
+              yaw: 0,
+              pitch: 0,
+              flags: bot.registry.version['>=']('1.21.3') ? {} : 0,
+              teleportId: 0
+            })
+            client.on('block_dig', (packet) => {
+              if (packet.status !== 2) return
+              const state = answer === 'air' ? 0 : bot.test.stoneState
+              client.write('block_change', { location: packet.location, type: state })
+              if (packet.sequence !== undefined) client.write('acknowledge_player_digging', { sequenceId: packet.sequence })
+            })
+            await sleep(400)
+            resolve()
+          })
+        })
+        const block = bot.blockAt(blockPos)
+        bot.test.stoneState = block.stateId
+        bot.digTime = () => 100
+        const events = []
+        bot.on('diggingCompleted', () => events.push('completed'))
+        bot.on('diggingAborted', () => events.push('aborted'))
+        let error = null
+        await bot.dig(block, 'ignore').catch((err) => { error = err })
+        await sleep(200)
+        return { error, events, name: bot.blockAt(blockPos).name }
+      }
+      const acknowledgesSequence = registry.protocol.play.toClient.types.packet_acknowledge_player_digging?.[1]?.some?.(f => f.name === 'sequenceId')
+
+      it('resolves when the server sets the block to air', async () => {
+        const { error, events, name } = await digAgainst('air')
+        assert.strictEqual(error, null)
+        assert.deepStrictEqual(events, ['completed'])
+        assert.strictEqual(name, 'air')
+      })
+
+      it('rejects when the server puts the block back (1.19+), resolves as before on older versions', async () => {
+        const { error, events, name } = await digAgainst('put back')
+        assert.strictEqual(name, 'stone')
+        if (acknowledgesSequence) {
+          assert.strictEqual(error?.code, 'DigRefused')
+          assert.strictEqual(error.block.name, 'stone')
+          assert.deepStrictEqual(events, ['aborted'])
+        } else {
+          assert.strictEqual(error, null)
+          assert.deepStrictEqual(events, ['completed'])
+        }
+      })
+    })
+
     describe('activateBlock rotation', () => {
       it('faces the point on the clicked face that the packet reports', async () => {
         const blockPos = vec3(1, 65, 1)
