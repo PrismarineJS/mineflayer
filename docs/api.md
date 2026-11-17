@@ -1971,7 +1971,7 @@ dig any other blocks until the block has been broken, or you call
 
  * `block` - the block to start digging into
  * `forceLook` - (optional) if true, the bot snaps its head to the block and starts mining instantly. If false or omitted, the bot turns its head to the block at its normal look rate and waits for the turn to finish before digging. Can also be assigned 'ignore' to prevent the bot from moving its head at all.
- * `digFace` - (optional) Default is 'auto' looks at the center of the block and mines the top face. Can also be a vec3 vector
+ * `digFace` - (optional) Default is 'auto' looks at the center of the block and mines the top face, or, when the top of the block is above the bot's eyes, the face in front of them. Can also be a vec3 vector
  of the face the bot should be looking at when digging the block. For example: ```vec3(0, 1, 0)``` when mining the top. Can also be 'raycast' raycast checks if there is a face visible by the bot and mines that face. Useful for servers with anti cheat.
 
 If you call bot.dig twice before the first dig is finished, you will get a fatal 'diggingAborted' error.
