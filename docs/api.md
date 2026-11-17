@@ -107,6 +107,7 @@
       - [bot.game.minY](#botgameminy)
       - [bot.game.height](#botgameheight)
       - [bot.abilities](#botabilities)
+      - [bot.digPacing](#botdigpacing)
       - [bot.physicsEnabled](#botphysicsenabled)
       - [bot.player](#botplayer)
       - [bot.players](#botplayers)
@@ -829,6 +830,7 @@ Create and return an instance of the class bot.
    - pluginName : true : load internal plugin with given name ie. `pluginName` even though loadInternalplugins is set to false
    - pluginName : external plugin inject function : loads external plugin, overrides internal plugin with given name ie. `pluginName`
  * physicsEnabled : true by default, should the bot be affected by physics? can later be modified via bot.physicsEnabled
+ * digPacing : 'immediate' by default, 'vanilla' makes [bot.dig](#botdigblock-forcelook-digface) send its packets the way the vanilla client does. Can later be modified via [bot.digPacing](#botdigpacing)
  * [chat](#bot.settings.chat)
  * [colorsEnabled](#bot.settings.colorsEnabled)
  * [viewDistance](#bot.settings.viewDistance)
@@ -927,6 +929,13 @@ What the server last allowed the player in the abilities packet.
   walkingSpeed: 0.1
 }
 ```
+
+#### bot.digPacing
+
+How `bot.dig` times its packets, default `'immediate'`.
+
+ * `'immediate'` - the dig starts the moment `bot.dig` has turned the bot, the arm swings every 350 ms, the finish is sent when the dig time is over and the next dig can start at once.
+ * `'vanilla'` - the dig follows the vanilla client: the start is sent inside a physics tick, one tick after the look, the arm swings once in every tick of the dig, the finish is sent inside a tick, and a dig that follows a broken block starts no sooner than 6 ticks (300 ms) after that block's finish (no wait after an instant break). Servers that check these packets refuse fewer digs; each block costs up to one tick more, and 300 ms more when dug right after another.
 
 #### bot.physicsEnabled
 
