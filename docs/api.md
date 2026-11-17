@@ -1965,6 +1965,8 @@ This function returns a `Promise`, with `void` as its argument when the block is
 Begin digging into `block` with the currently equipped item.
 See also "diggingCompleted" and "diggingAborted" events.
 
+On 1.19 and later the promise settles when the server has answered the dig. It rejects with an `Error` whose `code` is `'DigRefused'` (and `block` the block) when the server put the block back instead of breaking it, as protection plugins, spawn protection and adventure mode do; "diggingAborted" is emitted and the block is back in `bot.blockAt`. A server that refuses without sending the block back cannot be told from one that broke it, and the promise resolves.
+
 Note that once you begin digging into a block, you may not
 dig any other blocks until the block has been broken, or you call
 `bot.stopDigging()`.
