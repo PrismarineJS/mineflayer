@@ -431,7 +431,7 @@ To remove specific listener you can use `bot.removeListener()` method.
 Not only bot object, [`Chest`](http://prismarinejs.github.io/mineflayer/#/api?id=mineflayerchest), [`Furnace`](http://prismarinejs.github.io/mineflayer/#/api?id=mineflayerfurnace), [`Dispenser`](http://prismarinejs.github.io/mineflayer/#/api?id=mineflayerdispenser), [`EnchantmentTable`](http://prismarinejs.github.io/mineflayer/#/api?id=mineflayerenchantmenttable), [`Villager`](http://prismarinejs.github.io/mineflayer/#/api?id=mineflayervillager) object also have their own events!
 
 ### Promises
-A [promise](https://nodejs.dev/learn/understanding-javascript-promises) is a function that you can use the `await` variable to wait on until it's job is complete. (you can omit the await to not wait for results)
+A [promise](https://nodejs.org/learn/asynchronous-work/discover-promises-in-nodejs) is a function that you can use the `await` variable to wait on until it's job is complete. (you can omit the await to not wait for results)
 
 ```js
 async function consume (bot) {

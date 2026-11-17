@@ -432,7 +432,7 @@ bot.once('spawn', () => {
 События имеет не только объект бота, например у [`Сундуков`](http://prismarinejs.github.io/mineflayer/#/api_ru?id=mineflayerchest), [`Печек`](http://prismarinejs.github.io/mineflayer/#/api_ru?id=mineflayerfurnace), [`Раздатчиков`](http://prismarinejs.github.io/mineflayer/#/api_ru?id=mineflayerdispenser), [`Столов зачарования`](http://prismarinejs.github.io/mineflayer/#/api_ru?id=mineflayerenchantmenttable), [`Жителей`](http://prismarinejs.github.io/mineflayer/#/api_ru?id=mineflayervillager) также есть свои события.
 
 ### Промисы
-[Промисы](https://nodejs.dev/learn/understanding-javascript-promises) - это функции, которые вы можете использовать с помощью переменной `await` для ожидания, пока какая-либо функция не завершится (вы также можете прервать await, чтобы не ожидать результата).
+[Промисы](https://nodejs.org/learn/asynchronous-work/discover-promises-in-nodejs) - это функции, которые вы можете использовать с помощью переменной `await` для ожидания, пока какая-либо функция не завершится (вы также можете прервать await, чтобы не ожидать результата).
 
 ```js
 async function consume (bot) {
