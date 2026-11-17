@@ -66,6 +66,14 @@ describe('digging plugin pacing', () => {
       assert.ok(bot.sent.every(packet => !packet.inTick))
     })
 
+    it('sends start, swing and finish at once for an instant break', async () => {
+      const bot = createMockBot(undefined, 0)
+      await bot.dig(block(2), 'ignore')
+      await bot.dig(block(3), 'ignore')
+      assert.deepStrictEqual(bot.sent.map(label), ['start', 'swing', 'finish', 'start', 'swing', 'finish'])
+      assert.ok(bot.sent[5].at - bot.sent[0].at < 60)
+    })
+
     it('swings every 350 ms and starts the next dig without a pause', async () => {
       const bot = createMockBot({}, 800)
       await bot.dig(block(2), 'ignore')
@@ -120,15 +128,21 @@ describe('digging plugin pacing', () => {
       assert.ok(start.at - finish.at >= 295, `start ${start.at - finish.at} ms after the finish`)
     })
 
-    it('does not wait after an instant break', async () => {
+    it('sends the start alone for an instant break (creative, or a block one hit breaks) and does not wait after it', async () => {
       const bot = createMockBot({ digPacing: 'vanilla' }, 0)
       const first = bot.dig(block(2), 'ignore')
       await runTicks(bot, 1)
       await first
+      assert.strictEqual(bot.targetDigBlock, null)
       const second = bot.dig(block(3), 'ignore')
       await runTicks(bot, 1)
       await second
-      assert.deepStrictEqual(perTick(bot, 1, 2), [['start', 'finish', 'swing'], ['start', 'finish', 'swing']])
+      const third = bot.dig(block(4), true)
+      await sleep(10) // the turn
+      await runTicks(bot, 2)
+      await third
+      assert.deepStrictEqual(perTick(bot, 1, 4), [['start', 'swing'], ['start', 'swing'], [], ['start', 'swing']])
+      assert.ok(bot.sent.every(packet => packet.inTick))
     })
 
     it('sends no abort for a dig that has not started', async () => {
