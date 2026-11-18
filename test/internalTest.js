@@ -2090,6 +2090,45 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
 
+      it('moveSlotItem in an open chest puts the swapped stack back where the first came from', (done) => {
+        const stoneId = registry.itemsByName.stone.id
+        const dirtId = registry.itemsByName.dirt.id
+        const items = emptyItems(chestData.slots)
+        items[0] = Item.toNotch(new Item(stoneId, 5))
+        items[1] = Item.toNotch(new Item(dirtId, 7))
+        const clicked = []
+
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+
+          client.on('window_click', (packet) => {
+            clicked.push(packet.slot)
+            if (registry.supportFeature('transactionPacketExists')) {
+              client.write('transaction', { windowId: packet.windowId, action: packet.action, accepted: true })
+            }
+          })
+          bot.once('windowOpen', async (window) => {
+            try {
+              await bot.test.pluginsLoaded
+              await bot.moveSlotItem(0, 1)
+              // the swap left dirt on the chest's cursor; the third click puts it in slot 0
+              assert.strictEqual(window.selectedItem, null)
+              assert.strictEqual(window.slots[0]?.type, dirtId)
+              assert.strictEqual(window.slots[1]?.type, stoneId)
+              // 1.17+ clicks aren't answered, so give the last one time to arrive
+              await new Promise(resolve => setTimeout(resolve, 200))
+              assert.deepStrictEqual(clicked, [0, 1, 0])
+              done()
+            } catch (err) {
+              done(err)
+            }
+          })
+
+          client.write('open_window', openWindowPacket(1, chestData))
+          client.write('window_items', windowItemsPacket(1, items))
+        })
+      })
+
       it('applies the player-inventory region of a trailing sync for a closed window', (done) => {
         const stoneId = registry.itemsByName.stone.id
         // chest slot 30 is in the window's player-inventory region and maps
