@@ -2155,6 +2155,7 @@ Returns a promise on an `anvil` instance which represents the anvil you are open
 #### bot.openVillager(villagerEntity)
 
 Returns a promise on a `Villager` instance which represents the trading window you are opening.
+`villagerEntity` is a villager or a wandering trader.
 You can listen to the `ready` event on this `Villager` to know when it's ready
 
 #### bot.trade(villagerInstance, tradeIndex, [times])
