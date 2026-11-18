@@ -2090,6 +2090,40 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
 
+      it('_syncWindow waits for the answer to its own click, not an older copy still on its way', function (done) {
+        if (!registry.supportFeature('stateIdUsed')) return this.skip()
+        const stoneId = registry.itemsByName.stone.id
+        // the window as it was between two earlier clicks: a stack in slot 0
+        const between = emptyItems(chestData.slots)
+        between[0] = Item.toNotch(new Item(stoneId, 5))
+
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+
+          client.on('window_click', (packet) => {
+            if (packet.stateId !== -1) return
+            // the copy the server sent for an earlier stale click arrives
+            // first, and the answer to the sync a tick later
+            client.write('window_items', { ...windowItemsPacket(1, between), stateId: 2 })
+            setTimeout(() => {
+              client.write('window_items', { ...windowItemsPacket(1, emptyItems(chestData.slots)), stateId: 3 })
+            }, 30)
+          })
+          bot.once('windowOpen', async (window) => {
+            try {
+              await bot._syncWindow(window)
+              assert.strictEqual(window.slots[0], null)
+              done()
+            } catch (err) {
+              done(err)
+            }
+          })
+
+          client.write('open_window', openWindowPacket(1, chestData))
+          client.write('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
+        })
+      })
+
       it('applies the player-inventory region of a trailing sync for a closed window', (done) => {
         const stoneId = registry.itemsByName.stone.id
         // chest slot 30 is in the window's player-inventory region and maps
