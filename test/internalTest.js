@@ -377,10 +377,13 @@ for (const supportedVersion of mineflayer.testedVersions) {
             await once(bot, 'chunkColumnLoad')
 
             // --- Test 1: Absolute Position ---
+            // 1.21.2+ packets carry the speed: relative deltas keep the current one
+            const carriesSpeed = bot.registry.version['>=']('1.21.3')
             const absolutePositionPacket = {
               x: 1.5,
               y: 80,
               z: 1.5,
+              ...(carriesSpeed ? { dx: 0, dy: 0, dz: 0 } : {}),
               pitch: 0,
               yaw: 0,
               teleportId: 1,
@@ -402,10 +405,11 @@ for (const supportedVersion of mineflayer.testedVersions) {
               x: 1.0,
               y: -2.0,
               z: 0.5,
+              ...(carriesSpeed ? { dx: 0, dy: 0, dz: 0 } : {}),
               pitch: 0,
               yaw: 0,
               teleportId: 2,
-              flags: bot.supportFeature('positionPacketHasBitflags') ? { x: true, y: true, z: true, yaw: false, pitch: false } : 7
+              flags: bot.supportFeature('positionPacketHasBitflags') ? { x: true, y: true, z: true, yaw: false, pitch: false, ...(carriesSpeed ? { dx: true, dy: true, dz: true } : {}) } : 7
             }
 
             // Set a known velocity *before* the relative update
@@ -421,6 +425,33 @@ for (const supportedVersion of mineflayer.testedVersions) {
             assert.notStrictEqual(afterRelative.velocity.y, 0, 'Velocity should be preserved after a relative teleport')
             assert.deepStrictEqual(afterRelative.position, expectedPosition, 'Position should be updated relatively')
 
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+      it('takes the speed a 1.21.2+ position packet carries', function (done) {
+        if (!bot.registry.version['>=']('1.21.3')) return this.skip()
+        const onForcedMove = () => new Promise(resolve => bot.once('forcedMove', () => resolve(bot.entity.velocity.clone())))
+        server.on('playerJoin', async (client) => {
+          try {
+            await client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(pos, goldId)
+            await client.write('map_chunk', generateChunkPacket(chunk))
+            await once(bot, 'chunkColumnLoad')
+            const flags = (on) => Object.fromEntries(['x', 'y', 'z', 'yaw', 'pitch', 'dx', 'dy', 'dz', 'yawDelta'].map(k => [k, on.includes(k)]))
+            // A speed given outright replaces the bot's own, as a server that puts a player back gives it
+            bot.entity.velocity.set(0.5, 0.5, 0.5)
+            let moved = onForcedMove()
+            client.write('position', { x: 1.5, y: 80, z: 1.5, dx: 0.1, dy: -0.2, dz: 0.3, pitch: 0, yaw: 0, teleportId: 1, flags: flags([]) })
+            assert.deepStrictEqual(await moved, vec3(0.1, -0.2, 0.3), 'the speed of the packet')
+            // Relative parts add to it
+            bot.entity.velocity.set(0.5, 0.5, 0.5)
+            moved = onForcedMove()
+            client.write('position', { x: 1.5, y: 80, z: 1.5, dx: 0.1, dy: 0, dz: 0, pitch: 0, yaw: 0, teleportId: 2, flags: flags(['dx', 'dy']) })
+            assert.deepStrictEqual(await moved, vec3(0.6, 0.5, 0), 'dx and dy added, dz given')
             done()
           } catch (err) {
             done(err)
