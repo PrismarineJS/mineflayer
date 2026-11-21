@@ -2117,6 +2117,98 @@ for (const supportedVersion of mineflayer.testedVersions) {
           client.write('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
         })
       })
+
+      // The vanilla server (handleContainerClick) reads a click only for the
+      // window it has open and still valid, and drops any other without a reply.
+      const settlesSoon = (promise) => Promise.race([
+        promise,
+        new Promise((resolve, reject) => setTimeout(() => reject(new Error('_syncWindow did not settle within 2 s')), 2000))
+      ])
+
+      it('_syncWindow of the inventory returns at once while a chest is open', function (done) {
+        if (!registry.supportFeature('stateIdUsed')) return this.skip()
+        const clicks = []
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          client.on('window_click', (packet) => clicks.push(packet.windowId))
+          bot.once('windowOpen', async () => {
+            try {
+              await settlesSoon(bot._syncWindow(bot.inventory))
+              assert.deepStrictEqual(clicks, [])
+              done()
+            } catch (err) {
+              done(err)
+            }
+          })
+          client.write('open_window', openWindowPacket(1, chestData))
+          client.write('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
+        })
+      })
+
+      it('_syncWindow of a window the server already shut returns at once', function (done) {
+        if (!registry.supportFeature('stateIdUsed')) return this.skip()
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          bot.once('windowOpen', (window) => {
+            bot.once('windowClose', async () => {
+              try {
+                await settlesSoon(bot._syncWindow(window))
+                done()
+              } catch (err) {
+                done(err)
+              }
+            })
+            client.write('close_window', { windowId: 1 })
+          })
+          client.write('open_window', openWindowPacket(1, chestData))
+          client.write('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
+        })
+      })
+
+      it('_syncWindow returns when the server shuts the window instead of answering', function (done) {
+        if (!registry.supportFeature('stateIdUsed')) return this.skip()
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          // the chest is out of reach: the click is dropped and the server's
+          // tick shuts the window
+          client.on('window_click', () => client.write('close_window', { windowId: 1 }))
+          bot.once('windowOpen', async (window) => {
+            try {
+              await settlesSoon(bot._syncWindow(window))
+              assert.strictEqual(bot.currentWindow, null)
+              done()
+            } catch (err) {
+              done(err)
+            }
+          })
+          client.write('open_window', openWindowPacket(1, chestData))
+          client.write('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
+        })
+      })
+
+      it('_syncWindow still waits for the answer of an open window', function (done) {
+        if (!registry.supportFeature('stateIdUsed')) return this.skip()
+        const stoneId = registry.itemsByName.stone.id
+        server.on('playerJoin', (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          client.on('window_click', (packet) => {
+            const items = emptyItems(chestData.slots)
+            items[0] = Item.toNotch(new Item(stoneId, 5))
+            client.write('window_items', { ...windowItemsPacket(packet.windowId, items), stateId: 2 })
+          })
+          bot.once('windowOpen', async (window) => {
+            try {
+              await settlesSoon(bot._syncWindow(window))
+              assert.strictEqual(window.slots[0]?.type, stoneId)
+              done()
+            } catch (err) {
+              done(err)
+            }
+          })
+          client.write('open_window', openWindowPacket(1, chestData))
+          client.write('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
+        })
+      })
     })
 
     describe('scoreboard', () => {
