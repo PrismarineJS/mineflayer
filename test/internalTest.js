@@ -2117,6 +2117,124 @@ for (const supportedVersion of mineflayer.testedVersions) {
           client.write('window_items', windowItemsPacket(1, emptyItems(chestData.slots)))
         })
       })
+
+      // A chest with diamonds in its own slot 9, and a stick in inventory slot
+      // 9, which the open chest shows at its slot inventoryStart. Resolves
+      // with the clicks and closes the server gets once the chest is open.
+      function openChestWithStick (client, inventoryItems = []) {
+        const stickId = registry.itemsByName.stick.id
+        const diamondId = registry.itemsByName.diamond.id
+        const packets = []
+        client.on('packet', (data, meta) => {
+          if (meta.name === 'close_window') packets.push(['close', data.windowId])
+          if (meta.name !== 'window_click') return
+          packets.push(['click', data.windowId, data.slot])
+          if (bot.supportFeature('transactionPacketExists')) {
+            client.write('transaction', { windowId: data.windowId, action: data.action, accepted: true })
+          }
+        })
+        const inventory = emptyItems(bot.inventory.slots.length)
+        inventory[9] = Item.toNotch(new Item(stickId, 1))
+        for (const [slot, item] of inventoryItems) inventory[slot] = Item.toNotch(item)
+        client.write('window_items', windowItemsPacket(0, inventory))
+        const chest = emptyItems(chestData.slots)
+        chest[9] = Item.toNotch(new Item(diamondId, 64))
+        // the player's part of the window, as the server sends it
+        const inventoryStart = chestData.slots - 36
+        for (let slot = 9; slot <= 44; slot++) chest[slot - 9 + inventoryStart] = inventory[slot]
+        const opened = once(bot, 'windowOpen').then(([window]) => ({ window, packets }))
+        client.write('open_window', openWindowPacket(1, chestData))
+        client.write('window_items', windowItemsPacket(1, chest))
+        return opened
+      }
+
+      it('equip with a chest open moves the inventory item, not the chest slot of the same number', function (done) {
+        server.on('playerJoin', async (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          try {
+            await once(bot, 'login')
+            const { window, packets } = await openChestWithStick(client)
+            await bot.equip(bot.inventory.slots[9], 'hand')
+            await sleep(100)
+            const hotbar = 36 - 9 + window.inventoryStart
+            assert.deepStrictEqual(packets, [['click', 1, window.inventoryStart], ['click', 1, hotbar]])
+            assert.strictEqual(bot.currentWindow, window)
+            assert.strictEqual(window.slots[hotbar]?.name, 'stick')
+            assert.strictEqual(window.slots[9]?.name, 'diamond')
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
+      it('equip with a chest open takes an item of the window by its window slot', function (done) {
+        server.on('playerJoin', async (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          try {
+            await once(bot, 'login')
+            const { window, packets } = await openChestWithStick(client)
+            await bot.equip(window.slots[window.inventoryStart], 'hand')
+            await sleep(100)
+            const hotbar = 36 - 9 + window.inventoryStart
+            assert.deepStrictEqual(packets, [['click', 1, window.inventoryStart], ['click', 1, hotbar]])
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
+      it('tossStack with a chest open throws the inventory item and leaves the chest open', function (done) {
+        server.on('playerJoin', async (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          try {
+            await once(bot, 'login')
+            const { window, packets } = await openChestWithStick(client)
+            await bot.tossStack(bot.inventory.slots[9])
+            await sleep(100)
+            assert.deepStrictEqual(packets, [['click', 1, window.inventoryStart], ['click', 1, -999]])
+            assert.strictEqual(bot.currentWindow, window)
+            assert.strictEqual(window.slots[9]?.name, 'diamond')
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
+      it('tossStack with a chest open throws a chest item given by its window slot', function (done) {
+        server.on('playerJoin', async (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          try {
+            await once(bot, 'login')
+            const { window, packets } = await openChestWithStick(client)
+            await bot.tossStack(window.slots[9])
+            await sleep(100)
+            assert.deepStrictEqual(packets, [['click', 1, 9], ['click', 1, -999]])
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
+      it('equip to an armour slot with a chest open throws without clicking', function (done) {
+        server.on('playerJoin', async (client) => {
+          client.write('login', bot.test.generateLoginPacket())
+          try {
+            await once(bot, 'login')
+            const helmet = new Item(registry.itemsByName.iron_helmet.id, 1)
+            const { packets } = await openChestWithStick(client, [[10, helmet]])
+            await assert.rejects(bot.equip(bot.inventory.slots[10], 'head'), /while a window is open/)
+            await sleep(100)
+            assert.deepStrictEqual(packets, [])
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
     })
 
     describe('scoreboard', () => {
