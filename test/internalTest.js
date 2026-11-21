@@ -2713,6 +2713,62 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
 
+      it('turns a relative teleport from the look the bot sent, not the one it was asked for', (done) => {
+        server.on('playerJoin', async (client) => {
+          try {
+            client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(vec3(1, 65, 1), registry.blocksByName.stone.id)
+            client.write('map_chunk', generateChunkPacket(chunk))
+            await once(bot, 'chunkColumnLoad')
+            const bitflags = bot.supportFeature('positionPacketHasBitflags')
+            const teleport = {
+              x: 1.5,
+              y: 80,
+              z: 1.5,
+              dx: 0,
+              dy: 0,
+              dz: 0,
+              pitch: 0,
+              yaw: 0,
+              flags: bitflags ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0,
+              teleportId: 0
+            }
+            client.write('position', teleport)
+            await once(bot, 'forcedMove')
+
+            const looks = []
+            const write = bot._client.write.bind(bot._client)
+            bot._client.write = (name, params) => {
+              if (name === 'look' || name === 'position_look') looks.push({ name, yaw: params.yaw, pitch: params.pitch })
+              return write(name, params)
+            }
+            try {
+              // A slow turn: the head moves a little each tick towards the asked look.
+              bot.look(bot.entity.yaw + 1.5, 0.6)
+              await new Promise(resolve => bot.once('physicsTick', resolve))
+              await new Promise(resolve => bot.once('physicsTick', resolve))
+              const sent = looks[looks.length - 1]
+              assert.ok(sent && Math.abs(sent.yaw) > 1 && Math.abs(sent.yaw) < 80, 'the head is partway through the turn')
+              looks.length = 0
+              // A teleport that keeps the look (yaw and pitch relative, by 0), as an anticheat setback sends it.
+              const keep = { ...teleport, teleportId: 1, flags: bitflags ? { ...teleport.flags, yaw: true, pitch: true } : 24 }
+              bot._client.emit('position', keep)
+              await once(bot, 'forcedMove')
+              const answer = looks[0]
+              assert.strictEqual(answer.name, 'position_look')
+              assert.ok(Math.abs(answer.yaw - sent.yaw) < 1e-3, `answered yaw ${answer.yaw}, last sent ${sent.yaw}`)
+              assert.ok(Math.abs(answer.pitch - sent.pitch) < 1e-3, `answered pitch ${answer.pitch}, last sent ${sent.pitch}`)
+            } finally {
+              bot._client.write = write
+            }
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
       it('a rotation arriving after a queued teleport is not overwritten by it', (done) => {
         server.on('playerJoin', async (client) => {
           try {
