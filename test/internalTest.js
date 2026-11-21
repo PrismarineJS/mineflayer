@@ -2855,6 +2855,56 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
         })
       })
+
+      it('a forced look keeps the sent yaw on the circle it was on', (done) => {
+        server.on('playerJoin', async (client) => {
+          try {
+            client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(vec3(1, 65, 1), registry.blocksByName.stone.id)
+            client.write('map_chunk', generateChunkPacket(chunk))
+            await once(bot, 'chunkColumnLoad')
+            const teleport = {
+              x: 1.5,
+              y: 80,
+              z: 1.5,
+              dx: 0,
+              dy: 0,
+              dz: 0,
+              pitch: 0,
+              yaw: 0,
+              flags: bot.supportFeature('positionPacketHasBitflags') ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0,
+              teleportId: 0
+            }
+            client.write('position', teleport)
+            await once(bot, 'forcedMove')
+
+            const yaws = []
+            const write = bot._client.write.bind(bot._client)
+            bot._client.write = (name, params) => {
+              if (name === 'look' || name === 'position_look') yaws.push(params.yaw)
+              return write(name, params)
+            }
+            try {
+              // Turn the head past 180 degrees, the way a player keeps turning.
+              await bot.look(bot.entity.yaw + 2, 0)
+              const before = yaws[yaws.length - 1]
+              assert.ok(before < -100 && before > -130, `turned to ${before}`)
+              // Look a little further at once, with the yaw given in the range Math.atan2 returns.
+              const yaw = bot.entity.yaw + 0.1 - 2 * Math.PI
+              await bot.look(yaw, 0, true)
+              await new Promise(resolve => bot.once('physicsTick', resolve))
+              const after = yaws[yaws.length - 1]
+              assert.ok(Math.abs(after - before) < 10, `the yaw went from ${before} to ${after}`)
+            } finally {
+              bot._client.write = write
+            }
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
     })
 
     describe('onceWithCleanup', () => {
