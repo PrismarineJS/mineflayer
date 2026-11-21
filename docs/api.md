@@ -1957,6 +1957,8 @@ This function returns a `Promise`, with `void` as its argument once tossing is c
 
 This function returns a `Promise`, with `void` as its argument once activating
 elytra flight is complete. It will throw an Error if it fails.
+The start is sent in the next physics tick. Since 1.15 the bot glides from that tick on, as the
+client does, without waiting for the server's answer.
 
 #### bot.dig(block, [forceLook], [digFace])
 

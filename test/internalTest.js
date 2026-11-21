@@ -461,6 +461,62 @@ for (const supportedVersion of mineflayer.testedVersions) {
           done()
         })
       })
+      it('elytraFly sends the start in a tick and glides in that tick on 1.15+', function (done) {
+        if (!registry.itemsByName.elytra) return this.skip()
+        const Item = require('prismarine-item')(supportedVersion)
+        server.on('playerJoin', async (client) => {
+          try {
+            client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(pos, goldId)
+            await client.write('map_chunk', generateChunkPacket(chunk))
+            client.write('position', {
+              x: 1.5,
+              y: 90,
+              z: 1.5,
+              dx: 0,
+              dy: 0,
+              dz: 0,
+              pitch: 0,
+              yaw: 0,
+              teleportId: 1,
+              flags: bot.supportFeature('positionPacketHasBitflags') ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0
+            })
+            client.write('set_slot', {
+              windowId: 0,
+              slot: bot.getEquipmentDestSlot('torso'),
+              item: Item.toNotch(new Item(registry.itemsByName.elytra.id, 1))
+            })
+            await once(bot, 'physicsTick')
+            await sleep(200) // falling, elytra in the chest slot
+            assert.strictEqual(bot.inventory.slots[bot.getEquipmentDestSlot('torso')]?.name, 'elytra')
+            assert.strictEqual(bot.entity.onGround, false)
+
+            // What the bot writes, and how each of its ticks moves
+            const log = []
+            const write = bot._client.write.bind(bot._client)
+            bot._client.write = (name, params) => {
+              log.push(name)
+              return write(name, params)
+            }
+            bot.on('physicsTick', () => log.push(bot.entity.elytraFlying ? 'tick:gliding' : 'tick:falling'))
+            await bot.elytraFly() // called outside of a tick
+            await once(bot, 'physicsTick')
+
+            const start = log.indexOf('entity_action')
+            assert.ok(start >= 0, 'no entity_action written')
+            const tick = log.findIndex((name, i) => i > start && name.startsWith('tick:'))
+            const moves = ['position', 'look', 'position_look', 'flying']
+            assert.ok(!log.slice(start + 1, tick).some(name => moves.includes(name)), `the start left in another tick than the next move: ${log.join(' ')}`)
+            // The server never answered: the client opens the elytra itself since 1.15
+            const expected = registry.version['>=']('1.15') ? 'tick:gliding' : 'tick:falling'
+            assert.strictEqual(log[tick], expected, log.join(' '))
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
       it('answers only the latest teleport when a second one lands inside the respawn reply delay', (done) => {
         // After a death the reply to the next teleport waits 1.5 s. A teleport that arrives inside
         // that window replaces it: the deferred reply must not go out with the older coordinates.
