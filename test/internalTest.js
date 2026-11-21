@@ -2760,6 +2760,54 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
 
+      it('keeps sending the yaw a teleport turned to, past 180 degrees', (done) => {
+        server.on('playerJoin', async (client) => {
+          try {
+            client.write('login', bot.test.generateLoginPacket())
+            const chunk = bot.test.buildChunk()
+            chunk.setBlockType(vec3(1, 65, 1), registry.blocksByName.stone.id)
+            client.write('map_chunk', generateChunkPacket(chunk))
+            await once(bot, 'chunkColumnLoad')
+            const bitflags = bot.supportFeature('positionPacketHasBitflags')
+            const teleport = {
+              x: 1.5,
+              y: 80,
+              z: 1.5,
+              dx: 0,
+              dy: 0,
+              dz: 0,
+              pitch: 0,
+              yaw: 120,
+              flags: bitflags ? { x: false, y: false, z: false, yaw: false, pitch: false } : 0,
+              teleportId: 0
+            }
+            client.write('position', teleport)
+            await once(bot, 'forcedMove')
+
+            const yaws = []
+            const write = bot._client.write.bind(bot._client)
+            bot._client.write = (name, params) => {
+              if (name === 'look' || name === 'position_look') yaws.push(params.yaw)
+              return write(name, params)
+            }
+            try {
+              // A turn by 90 degrees, as /tp @s ~ ~ ~ ~90 ~ sends it.
+              const turn = { ...teleport, yaw: 90, teleportId: 1, flags: bitflags ? { ...teleport.flags, yaw: true } : 8 }
+              bot._client.emit('position', turn)
+              await once(bot, 'forcedMove')
+              for (let i = 0; i < 5; i++) await new Promise(resolve => bot.once('physicsTick', resolve))
+              assert.strictEqual(yaws[0], 210, 'the teleport is answered with the turned yaw')
+              assert.deepStrictEqual(yaws.filter(yaw => yaw !== 210), [], 'the bot keeps sending the yaw it answered')
+            } finally {
+              bot._client.write = write
+            }
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
+
       it('drops a teleport queued before a respawn but still answers pings', function (done) {
         server.on('playerJoin', async (client) => {
           try {
