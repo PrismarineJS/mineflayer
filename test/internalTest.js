@@ -2387,6 +2387,74 @@ for (const supportedVersion of mineflayer.testedVersions) {
       })
     })
 
+    describe('oxygen level', () => {
+      function respawnPacket (loginPacket, keepEntityData) {
+        if (!bot.supportFeature('usesLoginPacket')) {
+          return { dimension: 0, hashedSeed: [0, 0], gamemode: 0, levelType: 'default' }
+        }
+        loginPacket.worldName = 'minecraft:overworld'
+        loginPacket.hashedSeed = [0, 0]
+        const packet = {
+          dimension: bot.supportFeature('dimensionDataInCodec') ? 'minecraft:overworld' : loginPacket.dimension,
+          worldName: loginPacket.worldName,
+          hashedSeed: loginPacket.hashedSeed,
+          gamemode: 0,
+          previousGamemode: 255,
+          isDebug: false,
+          isFlat: false,
+          copyMetadata: keepEntityData,
+          death: { dimensionName: '', location: { x: 0, y: 0, z: 0 } }
+        }
+        if (!bot.supportFeature('spawnRespawnWorldDataField')) return packet
+        delete packet.copyMetadata
+        packet.name = loginPacket.worldName
+        packet.dimension = loginPacket.dimension
+        // 1.20.5+: a bit field next to worldState, 0x02 keeps the entity data
+        return { worldState: packet, copyMetadata: keepEntityData ? 3 : 0 }
+      }
+
+      function airPacket (entityId, air) {
+        const metadata = bot.registry.supportFeature('mcDataHasEntityMetadata')
+          ? { key: bot.registry.entitiesByName.player.metadataKeys.indexOf('air_supply'), type: 'int', value: air }
+          : { key: 1, type: 1, value: air }
+        return { entityId, metadata: [metadata] }
+      }
+
+      it('starts at full air on login and after a respawn into a new body', async () => {
+        const [client] = await once(server, 'playerJoin')
+        await bot.test.pluginsLoaded
+        const loginPacket = bot.test.generateLoginPacket()
+        let breathEvents = 0
+        bot.on('breath', () => { breathEvents++ })
+
+        client.write('login', loginPacket)
+        await once(bot, 'login')
+        assert.strictEqual(bot.oxygenLevel, 20)
+
+        // another entity's air does not count, the bot's own does
+        client.write('entity_metadata', airPacket(bot.entity.id + 8, 15))
+        client.write('entity_metadata', airPacket(bot.entity.id, 150))
+        breathEvents = 0
+        await once(bot, 'breath')
+        assert.strictEqual(bot.oxygenLevel, 10)
+        assert.strictEqual(breathEvents, 1)
+
+        if (bot.supportFeature('usesLoginPacket')) {
+          // a respawn that keeps the entity data (changing dimension) keeps the air
+          client.write('respawn', respawnPacket(loginPacket, true))
+          await once(bot._client, 'respawn')
+          assert.strictEqual(bot.oxygenLevel, 10)
+          assert.strictEqual(breathEvents, 1)
+        }
+
+        // a respawn after a death starts a new body with full air, and the server sends no air_supply for it
+        client.write('respawn', respawnPacket(loginPacket, false))
+        await once(bot._client, 'respawn')
+        assert.strictEqual(bot.oxygenLevel, 20)
+        assert.strictEqual(breathEvents, 2)
+      })
+    })
+
     describe('block prediction sequence', () => {
       it('shares one pre-incremented counter across use_item and use_item_on, 0 on release', function (done) {
         const useItemFields = registry.protocol?.play?.toServer?.types?.packet_use_item?.[1]
