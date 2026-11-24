@@ -1069,6 +1069,7 @@ saturation of 5.0. Eating food increases the saturation as well as the food bar.
 #### bot.oxygenLevel
 
 Number in the range [0, 20] representing the number of water-icons known as oxygen level.
+It is 20 after login and after a respawn into a new body (for example after a death), and follows the server from there.
 
 #### bot.physics
 
