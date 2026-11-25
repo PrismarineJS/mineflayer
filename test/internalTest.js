@@ -246,6 +246,20 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
     })
+    it('animation ids follow the version; 26.3 swings come in swing_animation', () => {
+      const seen = []
+      for (const name of ['entitySwingArm', 'entityHurt', 'entityCriticalEffect']) {
+        bot.on(name, (entity) => seen.push([name, entity.id]))
+      }
+      bot._client.emit('animation', { entityId: 8, animation: 1 })
+      if (bot.supportFeature('animateWithoutSwings')) {
+        bot._client.emit('swing_animation', { entityId: 8, hand: 0, animationType: 0, duration: 6 })
+        assert.deepStrictEqual(seen, [['entityCriticalEffect', 8], ['entitySwingArm', 8]])
+      } else {
+        assert.deepStrictEqual(seen, [['entityHurt', 8]])
+      }
+    })
+
     it('blockAt', (done) => {
       const pos = vec3(1, 65, 1)
       const goldId = bot.registry.blocksByName.gold_block.id
