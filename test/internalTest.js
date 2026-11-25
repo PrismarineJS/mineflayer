@@ -247,6 +247,16 @@ for (const supportedVersion of mineflayer.testedVersions) {
         })
       })
     })
+    it('entity status 2 is hurt only before 1.19.4', (done) => {
+      bot.once('login', () => {
+        const hurt = []
+        bot.on('entityHurt', (entity) => hurt.push(entity.id))
+        bot._client.emit('entity_status', { entityId: 8, entityStatus: 2 })
+        assert.deepStrictEqual(hurt, bot.registry.version['<']('1.19.4') ? [8] : [])
+        done()
+      })
+    })
+
     it('blockAt', (done) => {
       const pos = vec3(1, 65, 1)
       const goldId = bot.registry.blocksByName.gold_block.id
