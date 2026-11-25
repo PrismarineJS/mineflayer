@@ -2015,6 +2015,66 @@ for (const supportedVersion of mineflayer.testedVersions) {
           }
         })
       })
+      it('rejects a hand equip while sleeping and sends it after waking', (done) => {
+        server.on('playerJoin', async (client) => {
+          try {
+            await bot.test.pluginsLoaded
+            const sent = collectHeldItemSlots(client)
+            let serverSlot = 0
+            let serverSleeping = false
+            const sendServerSlot = (slot) => {
+              serverSlot = slot
+              client.write('held_item_slot', { slot })
+            }
+            client.on('packet', (data, meta) => {
+              if (meta.name !== 'held_item_slot' || serverSleeping) return
+              sendServerSlot(data.slotId)
+            })
+
+            const loggedIn = once(bot, 'login')
+            client.write('login', bot.test.generateLoginPacket())
+            await loggedIn
+            sendServerSlot(0)
+            client.write('set_slot', {
+              windowId: 0,
+              slot: 36,
+              item: Item.toNotch(new Item(registry.itemsByName.stone.id, 1))
+            })
+            client.write('set_slot', {
+              windowId: 0,
+              slot: 39,
+              item: Item.toNotch(new Item(registry.itemsByName.diamond.id, 1))
+            })
+            await sleep(300)
+
+            bot.isSleeping = true
+            serverSleeping = true
+            await assert.rejects(
+              bot.equip(bot.inventory.slots[39], 'hand'),
+              /Cannot change held item slot while sleeping/
+            )
+            assert.strictEqual(bot.quickBarSlot, 0)
+            assert.strictEqual(serverSlot, 0)
+            assert.deepStrictEqual(sent, [])
+
+            sendServerSlot(1)
+            await sleep(300)
+            assert.strictEqual(bot.quickBarSlot, 1)
+            assert.strictEqual(serverSlot, 1)
+
+            bot.isSleeping = false
+            serverSleeping = false
+            await bot.equip(bot.inventory.slots[39], 'hand')
+            await sleep(300)
+            assert.strictEqual(bot.quickBarSlot, 3)
+            assert.strictEqual(serverSlot, 3)
+            assert.deepStrictEqual(sent, [1, 3])
+            done()
+          } catch (err) {
+            done(err)
+          }
+        })
+      })
     })
 
     describe('generic place', () => {
